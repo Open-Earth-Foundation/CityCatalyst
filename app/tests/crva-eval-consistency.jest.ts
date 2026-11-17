@@ -13,6 +13,9 @@ function row(partial: Partial<ScoredRow>): ScoredRow {
     fieldId: "A1.2a",
     itemKey: "k",
     goldStatus: "FOUND",
+    goldValue: "",
+    goldEvidence: "",
+    goldPages: [],
     isV0Field: true,
     trap: false,
     modelValue: "",
@@ -131,5 +134,14 @@ describe("consistency", () => {
     expect(md).toContain("Average prompt tokens: 200");
     expect(md).toContain("Average completion tokens: 20");
     expect(md).toContain("run-3 (failed)");
+  });
+});
+
+describe("consistencyMarkdown with too few runs", () => {
+  it("notes that consistency needs at least 2 runs", () => {
+    const one = consistencyMarkdown({ runs: runsWith(["FOUND"]) });
+    expect(one).toContain("consistency needs at least 2 runs");
+    const two = consistencyMarkdown({ runs: runsWith(["FOUND", "FOUND"]) });
+    expect(two).not.toContain("consistency needs at least 2 runs");
   });
 });

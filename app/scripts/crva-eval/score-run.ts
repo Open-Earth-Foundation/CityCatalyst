@@ -3,10 +3,18 @@
  *
  *   npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-n.json> --city <slug> [--rejudge] [--seed 1285]
  *
- * Needs JUDGE_MODEL. Output goes to score-run-<n>/ next to the run file:
- * scored.csv, scored.json, judge.jsonl, review.csv and report.md.
+ * Needs JUDGE_MODEL. Refuses a gold file whose page count differs from the
+ * run's. Output goes to score-run-<n>/ next to the run file: scored.csv,
+ * scored.json, judge.jsonl, review.csv and report.md. Fields already in
+ * judge.jsonl are reused; --rejudge renames it to judge.<timestamp>.jsonl first.
  */
-import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  appendFile,
+  mkdir,
+  readFile,
+  rename,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import env from "@next/env";
@@ -20,8 +28,8 @@ import { readGoldWorkbook } from "./gold";
 import { JudgeCallError, judgeClientConfig, judgeField } from "./judge";
 import { buildReport } from "./report";
 import type { RunStats } from "./run-adapter";
-import { reviewSample, scoreRun, sheetCsv } from "./score";
-import { goldFieldId, type Judgment } from "./types";
+import { reviewCsv, reviewSample, scoreRun, sheetCsv } from "./score";
+import { goldFieldId, type GoldWorkbook, type Judgment } from "./types";
 
 /** One line of judge.jsonl: a single judge call, successful or not. */
 export interface JudgeLogLine {
@@ -87,6 +95,48 @@ export function parseLog(text: string): JudgeLogLine[] {
   return lines;
 }
 
+/** The scanned copy of a PDF carries an `_escaneado` suffix; same document. */
+function pdfName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\.pdf$/, "")
+    .replace(/_escaneado$/, "");
+}
+
+/** A gold file for another PDF would score every row wrong, so catch it early. */
+export function checkGoldMatchesRun(
+  gold: Pick<GoldWorkbook, "pdfFileName" | "pageCount">,
+  bundle: Pick<CrvaDraftBundle, "file" | "pageCount">,
+): { error?: string; warning?: string } {
+  if (gold.pageCount !== bundle.pageCount) {
+    return {
+      error: `gold has ${gold.pageCount} pages, run has ${bundle.pageCount}: wrong gold file?`,
+    };
+  }
+  if (pdfName(gold.pdfFileName) !== pdfName(bundle.file)) {
+    return {
+      warning: `gold is for "${gold.pdfFileName}", run is for "${bundle.file}"`,
+    };
+  }
+  return {};
+}
+
+/** Moves an existing judge log aside so --rejudge never loses the judgments it replaces. */
+export async function backupJudgeLog(
+  logPath: string,
+  now = new Date(),
+): Promise<string | null> {
+  const stamp = now.toISOString().replace(/[:.]/g, "-");
+  const backup = path.join(path.dirname(logPath), `judge.${stamp}.jsonl`);
+  try {
+    await rename(logPath, backup);
+    return backup;
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw err;
+  }
+}
+
 function argValue(flag: string, fallback?: string): string {
   const i = process.argv.indexOf(flag);
   const value = i >= 0 ? process.argv[i + 1] : fallback;
@@ -136,14 +186,24 @@ async function main() {
   }
 
   const gold = await readGoldWorkbook(goldPath);
+  const check = checkGoldMatchesRun(gold, bundle);
+  if (check.error) {
+    console.error(check.error);
+    process.exitCode = 1;
+    return;
+  }
+  if (check.warning) console.warn(`Warning: ${check.warning}`);
   const runNumber = path.basename(runPath).match(/run-(\d+)/)?.[1] ?? "1";
   const outDir = path.join(path.dirname(runPath), `score-run-${runNumber}`);
   await mkdir(outDir, { recursive: true });
   const logPath = path.join(outDir, "judge.jsonl");
 
   // A kept log means no LLM calls for fields it already judged.
+  if (rejudge) {
+    const backup = await backupJudgeLog(logPath);
+    if (backup) console.log(`Previous judge log kept as ${backup}`);
+  }
   const cached = rejudge ? null : await readLog(logPath);
-  if (rejudge) await writeFile(logPath, "");
   const judgments = judgmentsFromLog(cached ?? []);
 
   const toJudge = CRVA_FIELD_IDS.filter(
@@ -200,7 +260,7 @@ async function main() {
   );
   await writeFile(
     path.join(outDir, "review.csv"),
-    sheetCsv(reviewSample(rows, seed)),
+    reviewCsv(reviewSample(rows, seed)),
   );
   await writeFile(
     path.join(outDir, "report.md"),

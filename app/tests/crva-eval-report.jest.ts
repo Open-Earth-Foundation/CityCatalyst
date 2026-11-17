@@ -1,10 +1,15 @@
 import { describe, expect, it, jest } from "@jest/globals";
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import {
   buildReport,
   summarize,
   type ReportRunStats,
 } from "../scripts/crva-eval/report";
 import {
+  backupJudgeLog,
+  checkGoldMatchesRun,
   judgeAdapterField,
   judgmentsFromLog,
   modelsFromLog,
@@ -24,6 +29,9 @@ function row(overrides: Partial<ScoredRow>): ScoredRow {
     fieldId: "A1.2a",
     itemKey: "k",
     goldStatus: "FOUND",
+    goldValue: "",
+    goldEvidence: "",
+    goldPages: [],
     isV0Field: true,
     trap: false,
     modelValue: "",
@@ -394,5 +402,235 @@ describe("field aliases", () => {
     });
     expect((result.request as { fieldId: string }).fieldId).toBe("A2.4");
     expect(result.judgments[0].itemKey).toBe("Puerto");
+  });
+});
+
+describe("traps per entry", () => {
+  const trapGold: GoldWorkbook = {
+    ...gold,
+    rows: [
+      {
+        ...gold.rows[0],
+        rowNumber: 50,
+        notes: "TRAP: summary table",
+        trapNote: true,
+      },
+    ],
+    traps: [
+      { pages: [40, 41], what: "Annex table", why: "Old year" },
+      { pages: "all", what: "Footer", why: "Repeats" },
+      { pages: [90], what: "Empty page", why: "Nothing" },
+    ],
+  };
+  const rows = [
+    row({ rowNumber: 33, goldPages: [40], verdict: "Correct" }),
+    row({ rowNumber: 35, goldPages: [12, 41], verdict: "Omission" }),
+    row({ rowNumber: 36, goldPages: [12], verdict: "Correct" }),
+    row({
+      rowNumber: 50,
+      goldPages: [12],
+      verdict: "Partial",
+      trap: true,
+    }),
+    row({
+      kind: "extra",
+      rowNumber: null,
+      modelValue: "v",
+      modelEvidence: 'p. 41 — "q"',
+      verdict: "Hallucination",
+    }),
+    row({ modelValue: "w", modelEvidence: 'p. 40 — "q"', rowNumber: 33 }),
+  ];
+  const traps = buildReport({ city: "x", rows, gold: trapGold, stats })
+    .split("## Traps")[1]
+    .split("\n## ")[0];
+
+  it("lists gold rows on the entry's pages with verdicts and citing values", () => {
+    expect(traps).toContain(
+      "- p. 40, 41: Annex table (Old year): rows 33 Correct, 35 Omission; 2 model values cite these pages",
+    );
+    expect(traps).toContain(
+      "- p. 90: Empty page (Nothing): no gold rows on these pages; 0 model values cite these pages",
+    );
+  });
+
+  it("entries for all pages have no row list", () => {
+    expect(traps).toContain(
+      "- all pages: Footer (Repeats): applies to all pages",
+    );
+  });
+
+  it("lists rows with a TRAP: note and says traps are keyed by page", () => {
+    expect(traps).toContain("Rows with a TRAP: note: rows 50 Partial");
+    expect(traps).toMatch(/keyed by page, not by item_key/);
+    expect(traps).toMatch(/Rows on trap pages: 1/);
+  });
+});
+
+describe("thresholds and value share", () => {
+  const rows = [
+    ...rowsOf("Correct", 8),
+    ...rowsOf("Omission", 2),
+    ...rowsOf("Omission", 10, { isV0Field: false }),
+  ];
+  const report = buildReport({ city: "x", rows, gold, stats });
+
+  it("evaluates 80% correct on v0 and shows overall beside it", () => {
+    const t = report.split("## Thresholds")[1].split("\n## ")[0];
+    expect(t).toContain(
+      "| At least 80% correct (v0 fields) | 80.0% v0; overall 40.0% | pass |",
+    );
+  });
+
+  it("counts model values judged Correct or Normalisation", () => {
+    const valueRows = [
+      row({ modelValue: "a", verdict: "Correct" }),
+      row({ modelValue: "b", verdict: "Normalisation" }),
+      row({ modelValue: "c", verdict: "Wrong content" }),
+      row({ modelValue: "", verdict: "Omission" }),
+      row({
+        kind: "extra",
+        rowNumber: null,
+        modelValue: "d",
+        verdict: "Hallucination",
+      }),
+      row({
+        kind: "extra",
+        rowNumber: null,
+        modelValue: "e",
+        verdict: null,
+        notes: "GOLD GAP",
+      }),
+      row({
+        kind: "duplicate",
+        rowNumber: null,
+        modelValue: "f",
+        verdict: null,
+        notes: "duplicate of k",
+      }),
+      row({
+        kind: "extra",
+        rowNumber: null,
+        modelValue: "g",
+        verdict: null,
+        notes: "not judged",
+        uncertain: true,
+      }),
+      row({
+        kind: "extra",
+        rowNumber: null,
+        modelValue: "h",
+        verdict: null,
+        notes: "not judged; adapter field A2.4a",
+        uncertain: true,
+      }),
+      row({ modelValue: "i", verdict: "Correct", isV0Field: false }),
+    ];
+    const r = buildReport({ city: "x", rows: valueRows, gold, stats });
+    const line = (section: string) =>
+      r.split(`## ${section}`)[1].split("\n## ")[0];
+    expect(line("Overall")).toContain(
+      "Model values judged Correct or Normalisation: 3 of 7 (42.9%) — comparable to the Madrid hand review (71%)",
+    );
+    expect(line("v0 fields (12)")).toContain(
+      "Model values judged Correct or Normalisation: 2 of 6 (33.3%)",
+    );
+  });
+
+  it("counts not-judged rows by prefix, so aliased ones count too", () => {
+    const r = buildReport({
+      city: "x",
+      rows: [
+        row({
+          kind: "extra",
+          rowNumber: null,
+          verdict: null,
+          notes: "not judged; adapter field A2.4a",
+        }),
+        row({
+          kind: "extra",
+          rowNumber: null,
+          verdict: null,
+          notes: "GOLD GAP; adapter field A2.4a",
+        }),
+      ],
+      gold,
+      stats,
+    });
+    expect(r).toMatch(/Not judged rows: 1/);
+    expect(r).toMatch(/GOLD GAP rows: 1/);
+  });
+});
+
+describe("part pages in the Run section", () => {
+  it("prints the part page ranges", () => {
+    const r = buildReport({
+      city: "x",
+      rows: [],
+      gold,
+      stats: {
+        ...stats,
+        partRanges: [
+          { startPage: 1, pageCount: 62, bytes: 1 },
+          { startPage: 63, pageCount: 59, bytes: 1 },
+          { startPage: 122, pageCount: 64, bytes: 1 },
+        ],
+      },
+    });
+    expect(r).toContain("- Part pages: 1–62, 63–121, 122–185");
+  });
+
+  it("says when an older run file has no part pages", () => {
+    const r = buildReport({ city: "x", rows: [], gold, stats });
+    expect(r).toContain("- Part pages: part pages not recorded");
+  });
+});
+
+describe("score-run input checks", () => {
+  const goldWb = { ...gold, pdfFileName: "Analisis_CABA_2020.pdf" };
+
+  it("refuses a gold file with another page count", () => {
+    expect(
+      checkGoldMatchesRun(goldWb, { file: "x.pdf", pageCount: 137 }),
+    ).toEqual({
+      error: "gold has 185 pages, run has 137: wrong gold file?",
+    });
+  });
+
+  it("ignores case and an _escaneado suffix in the PDF name", () => {
+    expect(
+      checkGoldMatchesRun(goldWb, {
+        file: "analisis_caba_2020_ESCANEADO.pdf",
+        pageCount: 185,
+      }),
+    ).toEqual({});
+  });
+
+  it("warns, without failing, when the PDF names differ", () => {
+    expect(
+      checkGoldMatchesRun(goldWb, { file: "seattle.pdf", pageCount: 185 }),
+    ).toEqual({
+      warning: 'gold is for "Analisis_CABA_2020.pdf", run is for "seattle.pdf"',
+    });
+  });
+});
+
+describe("--rejudge keeps the old judge log", () => {
+  it("renames judge.jsonl to a timestamped backup", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "crva-judge-"));
+    const log = path.join(dir, "judge.jsonl");
+    writeFileSync(log, "old line");
+    const backup = await backupJudgeLog(
+      log,
+      new Date("2026-11-17T10:20:30.400Z"),
+    );
+    expect(path.basename(backup!)).toBe("judge.2026-11-17T10-20-30-400Z.jsonl");
+    expect(readdirSync(dir)).toEqual(["judge.2026-11-17T10-20-30-400Z.jsonl"]);
+    expect(readFileSync(backup!, "utf8")).toBe("old line");
+  });
+
+  it("does nothing when there is no log yet", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "crva-judge-"));
+    expect(await backupJudgeLog(path.join(dir, "judge.jsonl"))).toBeNull();
   });
 });

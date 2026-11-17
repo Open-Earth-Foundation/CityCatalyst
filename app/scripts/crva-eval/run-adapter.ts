@@ -3,11 +3,11 @@
  *
  *   npx tsx scripts/crva-eval/run-adapter.ts --pdf <path> --city <slug> --runs <n> [--max-part-mib 15]
  *
- * Output: reports/crva-eval/<city>/<timestamp>/run-<n>.json and runs.md.
+ * Output: app/reports/crva-eval/<city>/<timestamp>/run-<n>.json and runs.md.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import env from "@next/env";
 import { IngestRunner } from "@/backend/ingest/IngestRunner";
 import { MemoryIngestStore } from "@/backend/ingest/MemoryIngestStore";
@@ -20,10 +20,17 @@ import { createLLMClient, type LLMClient } from "@/backend/llm";
 import { recordingClient } from "./llm-recorder";
 import { mergePartBundles } from "./merge-bundles";
 import { DEFAULT_MAX_PART_BYTES, splitPdf } from "./split-pdf";
+import { formatPartPages, type PartRange } from "./types";
 
 /** The runner requires a scope, and nothing is stored, so any UUID works. */
 const EVAL_CITY_ID = "00000000-0000-4000-8000-00000000c1a5";
 const MAX_PART_RETRIES = 2;
+/** app/, two levels up from this script, so reports land there from any cwd. */
+export const APP_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+);
 const MAX_EXTRA_FAILED_RUNS = 2;
 
 export interface RunStats {
@@ -31,6 +38,8 @@ export interface RunStats {
   status: "ok" | "failed";
   minutes: number;
   parts: number;
+  /** Pages of the original PDF in each part; missing in run files written before it existed. */
+  partRanges?: PartRange[];
   retries: number;
   ocrPages: number;
   promptTokens: number;
@@ -142,6 +151,11 @@ export async function runOnce(input: RunOnceInput): Promise<{
     status: merged ? "ok" : "failed",
     minutes: Math.round(((Date.now() - started) / 60_000) * 10) / 10,
     parts: parts.length,
+    partRanges: parts.map((p) => ({
+      startPage: p.startPage,
+      pageCount: p.pageCount,
+      bytes: p.buffer.length,
+    })),
     retries,
     ocrPages,
     promptTokens: calls.reduce((sum, c) => sum + c.promptTokens, 0),
@@ -168,6 +182,12 @@ function droppedShare(s: RunStats): string {
     : `${((s.valuesDropped / total) * 100).toFixed(1)}%`;
 }
 
+function droppedByReason(s: RunStats): string {
+  const entries = Object.entries(s.droppedByReason);
+  if (entries.length === 0) return "none";
+  return entries.map(([reason, n]) => `${reason} ${n}`).join(", ");
+}
+
 /** Same rows as the Madrid table in docs/CrvaIngestAdapter.md, one column per run. */
 export function runsTableMarkdown(stats: RunStats[]): string {
   const rows: [string, (s: RunStats) => string | number][] = [
@@ -187,6 +207,12 @@ export function runsTableMarkdown(stats: RunStats[]): string {
     ["Completion tokens", (s) => s.completionTokens],
     ["OCR pages", (s) => s.ocrPages],
     ["Parts", (s) => s.parts],
+    [
+      "Part pages",
+      (s) =>
+        s.partRanges?.length ? formatPartPages(s.partRanges) : "not recorded",
+    ],
+    ["Dropped by reason", droppedByReason],
     ["Part retries", (s) => s.retries],
     ["Minutes", (s) => s.minutes],
   ];
@@ -207,6 +233,12 @@ export function shouldStartRun(
   return completed < wanted && failed < MAX_EXTRA_FAILED_RUNS;
 }
 
+/** The --runs value, or null when it is not a positive integer. */
+export function parseRunCount(text: string): number | null {
+  const n = Number(text);
+  return text.trim() !== "" && Number.isInteger(n) && n > 0 ? n : null;
+}
+
 function argValue(flag: string, fallback?: string): string {
   const i = process.argv.indexOf(flag);
   const value = i >= 0 ? process.argv[i + 1] : fallback;
@@ -218,12 +250,17 @@ async function main() {
   env.loadEnvConfig(process.cwd());
   const pdfPath = argValue("--pdf");
   const city = argValue("--city");
-  const runs = Number(argValue("--runs", "1"));
+  const runs = parseRunCount(argValue("--runs", "1"));
+  if (runs === null) {
+    console.error("--runs must be a positive integer");
+    process.exitCode = 1;
+    return;
+  }
   const maxPartBytes = Number(argValue("--max-part-mib", "15")) * 1024 * 1024;
 
   const pdf = await readFile(pdfPath);
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const outDir = path.join("reports", "crva-eval", city, stamp);
+  const outDir = path.join(APP_DIR, "reports", "crva-eval", city, stamp);
   await mkdir(outDir, { recursive: true });
 
   const all: RunStats[] = [];

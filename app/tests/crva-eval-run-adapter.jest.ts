@@ -4,7 +4,11 @@ import { CcraIngestPlugin } from "@/backend/ingest/plugins/CcraIngestPlugin";
 import type { LLMClient } from "@/backend/llm";
 import type { MistralOcrResult } from "@/backend/MistralOcrService";
 import { recordingClient } from "../scripts/crva-eval/llm-recorder";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
+  APP_DIR,
+  parseRunCount,
   runOnce,
   shouldStartRun,
   runsTableMarkdown,
@@ -119,6 +123,11 @@ describe("runOnce", () => {
     // Part 2 starts on original page 2, so its page-1 quote moves to page 2.
     expect(bundle?.values.map((v) => v.source.page)).toEqual([1, 2]);
     expect(bundle?.file).toBe("city.pdf");
+    expect(stats.partRanges?.map((r) => [r.startPage, r.pageCount])).toEqual([
+      [1, 1],
+      [2, 1],
+    ]);
+    expect(stats.partRanges?.every((r) => r.bytes > 0)).toBe(true);
   });
 
   it("reads the bundle from the review draft", async () => {
@@ -177,6 +186,25 @@ describe("runOnce", () => {
   });
 });
 
+const base: RunStats = {
+  run: 1,
+  status: "ok",
+  minutes: 1,
+  parts: 1,
+  retries: 0,
+  ocrPages: 1,
+  promptTokens: 1,
+  completionTokens: 1,
+  llmCalls: 1,
+  nonStopFinishes: 0,
+  valuesKept: 1,
+  valuesDropped: 0,
+  droppedByReason: {},
+  fieldsWithValue: 1,
+  figures: 0,
+  warnings: 0,
+};
+
 describe("runsTableMarkdown", () => {
   it("dropped share counts all reasons", () => {
     const stats = {
@@ -200,6 +228,29 @@ describe("runsTableMarkdown", () => {
     const table = runsTableMarkdown([stats]);
     expect(table).toContain("1.2%");
     expect(table).toContain("Run 1");
+    expect(table).toContain("| Part pages | not recorded |");
+    expect(table).toContain("| Dropped by reason | quote_not_on_page 1 |");
+  });
+
+  it("lists part pages and every drop reason", () => {
+    const table = runsTableMarkdown([
+      {
+        ...base,
+        droppedByReason: { quote_not_on_page: 2, bad_page: 1 },
+        partRanges: [
+          { startPage: 1, pageCount: 62, bytes: 10 },
+          { startPage: 63, pageCount: 59, bytes: 10 },
+          { startPage: 122, pageCount: 64, bytes: 10 },
+        ],
+      },
+      { ...base, run: 2, droppedByReason: {} },
+    ]);
+    expect(table).toContain(
+      "| Part pages | 1–62, 63–121, 122–185 | not recorded |",
+    );
+    expect(table).toContain(
+      "| Dropped by reason | quote_not_on_page 2, bad_page 1 | none |",
+    );
   });
 });
 
@@ -212,5 +263,21 @@ describe("shouldStartRun", () => {
   it("stops after 2 failed runs", () => {
     expect(shouldStartRun(3, 0, 1)).toBe(true);
     expect(shouldStartRun(3, 0, 2)).toBe(false);
+  });
+});
+
+describe("CLI inputs", () => {
+  it("--runs must be a positive integer", () => {
+    expect(parseRunCount("5")).toBe(5);
+    for (const bad of ["0", "-1", "1.5", "abc", ""]) {
+      expect(parseRunCount(bad)).toBeNull();
+    }
+  });
+
+  it("reports go under the app directory, whatever the cwd", () => {
+    // This test file sits in app/tests, so its parent is the app directory.
+    expect(APP_DIR).toBe(
+      path.resolve(fileURLToPath(new URL("..", import.meta.url))),
+    );
   });
 });

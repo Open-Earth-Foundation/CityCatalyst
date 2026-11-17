@@ -1,6 +1,7 @@
-import { ADAPTER_TO_GOLD_FIELD, goldFieldId } from "./types";
+import { ADAPTER_TO_GOLD_FIELD, formatPartPages, goldFieldId } from "./types";
 import { CRVA_FIELD_IDS } from "@/backend/ingest/plugins/ccra/draft-schema";
 import type { RunStats } from "./run-adapter";
+import { citedPage, GOLD_GAP, NOT_JUDGED } from "./score";
 import {
   MODEL_STATUSES,
   VERDICTS,
@@ -64,6 +65,72 @@ export function summarize(
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
+// Aliased rows add "; adapter field <id>" after the label.
+const notJudged = (r: ScoredRow) => r.notes.startsWith(NOT_JUDGED);
+const goldGap = (r: ScoredRow) => r.notes.startsWith(GOLD_GAP);
+
+/**
+ * Value-level share, the unit of the Madrid hand review (share of the model's
+ * values a person would keep). Denominator: every model value that received a
+ * judgment, i.e. gold rows filled by a value, extras (Hallucination,
+ * Misattribution, GOLD GAP, stale judgments) and duplicates; values the judge
+ * never covered ("not judged") are left out. Numerator: those whose verdict is
+ * Correct or Normalisation. Duplicates have no verdict, so they only count in
+ * the denominator, as a repeated value is not one a person would keep.
+ */
+export function valueShare(rows: ScoredRow[]): {
+  usable: number;
+  judged: number;
+} {
+  const judged = rows.filter((r) => r.modelValue !== "" && !notJudged(r));
+  const usable = judged.filter(
+    (r) => r.verdict === "Correct" || r.verdict === "Normalisation",
+  ).length;
+  return { usable, judged: judged.length };
+}
+
+function valueShareLine(rows: ScoredRow[]): string {
+  const { usable, judged } = valueShare(rows);
+  return `Model values judged Correct or Normalisation: ${usable} of ${judged} (${pct(judged === 0 ? 0 : usable / judged)}) — comparable to the Madrid hand review (71%).`;
+}
+
+/** "rows 33 Correct, 35 Omission": gold rows and their verdicts. */
+function rowVerdicts(rows: ScoredRow[]): string {
+  return `rows ${rows.map((r) => `${r.rowNumber} ${r.verdict ?? "no verdict"}`).join(", ")}`;
+}
+
+function trapLines(rows: ScoredRow[], gold: GoldWorkbook): string[] {
+  const goldRows = rows
+    .filter((r) => r.kind === "gold")
+    .sort((a, b) => a.rowNumber! - b.rowNumber!);
+  const lines = gold.traps.map((t) => {
+    if (t.pages === "all") {
+      return `- all pages: ${t.what} (${t.why}): applies to all pages`;
+    }
+    const pages = new Set(t.pages);
+    const onPages = goldRows.filter((r) =>
+      r.goldPages.some((p) => pages.has(p)),
+    );
+    const citing = rows.filter((r) => {
+      const page = r.modelValue ? citedPage(r) : null;
+      return page !== null && pages.has(page);
+    }).length;
+    const list = onPages.length
+      ? rowVerdicts(onPages)
+      : "no gold rows on these pages";
+    return `- p. ${t.pages.join(", ")}: ${t.what} (${t.why}): ${list}; ${citing} model values cite these pages`;
+  });
+  const noted = new Set(
+    gold.rows.filter((r) => r.trapNote).map((r) => r.rowNumber),
+  );
+  const notedRows = goldRows.filter((r) => noted.has(r.rowNumber!));
+  return [
+    ...lines,
+    "",
+    `Rows with a TRAP: note: ${notedRows.length ? rowVerdicts(notedRows) : "none"}.`,
+  ];
+}
+
 function summaryBlock(s: ScoreSummary, warning?: string): string {
   const verdictRows = VERDICTS.map((v) => `| ${v} | ${s.verdictCounts[v]} |`);
   const matrixRows = MODEL_STATUSES.map(
@@ -115,10 +182,6 @@ export function buildReport(input: {
 
   const trapRows = rows.filter((r) => r.trap);
   const trapSummary = summarize(trapRows);
-  const trapLines = gold.traps.map(
-    (t) =>
-      `- ${t.pages === "all" ? "all pages" : `p. ${t.pages.join(", ")}`}: ${t.what} (${t.why})`,
-  );
 
   const perField = CRVA_FIELD_IDS.map((id) => {
     const gid = goldFieldId(id);
@@ -142,10 +205,11 @@ export function buildReport(input: {
 
   const uncertain = rows.filter((r) => r.uncertain).length;
   const duplicates = rows.filter((r) => r.kind === "duplicate").length;
-  const goldGaps = rows.filter((r) => r.notes === "GOLD GAP").length;
-  const notJudged = rows.filter(
-    (r) => r.notes === "not judged" || r.reason === "field not judged",
+  const goldGaps = rows.filter(goldGap).length;
+  const notJudgedRows = rows.filter(
+    (r) => notJudged(r) || r.reason === "field not judged",
   ).length;
+  const v0Rows = rows.filter((r) => r.isV0Field);
 
   return (
     [
@@ -162,9 +226,13 @@ export function buildReport(input: {
           : undefined,
       ),
       "",
+      valueShareLine(rows),
+      "",
       `## v0 fields (${CRVA_FIELD_IDS.length})`,
       "",
       summaryBlock(v0),
+      "",
+      valueShareLine(v0Rows),
       "",
       "| Field | Scored rows | Share correct |",
       "| --- | --- | --- |",
@@ -176,7 +244,9 @@ export function buildReport(input: {
       "",
       "## Traps",
       "",
-      ...trapLines,
+      "Traps are keyed by page, not by item_key: a gold row is listed under an entry when one of its gold pages is on the entry's pages.",
+      "",
+      ...trapLines(rows, gold),
       "",
       `Rows on trap pages: ${trapRows.length}, scored ${trapSummary.scored}, share correct ${pct(trapSummary.shareCorrect)}.`,
       "",
@@ -194,10 +264,12 @@ export function buildReport(input: {
         stats.fieldsWithValue >= THRESHOLDS.minFields,
         String(stats.fieldsWithValue),
       ),
+      // The adapter is judged on its own 12 fields; the other fields have no
+      // model values, so the overall share mostly measures the gold's size.
       check(
-        "At least 80% correct",
-        overall.shareCorrect >= THRESHOLDS.minCorrect,
-        pct(overall.shareCorrect),
+        "At least 80% correct (v0 fields)",
+        v0.shareCorrect >= THRESHOLDS.minCorrect,
+        `${pct(v0.shareCorrect)} v0; overall ${pct(overall.shareCorrect)}`,
       ),
       "",
       "## Run",
@@ -213,12 +285,13 @@ export function buildReport(input: {
         .join(", ")}`,
       `- Extraction model: ${input.extractionModel ?? "unknown"}`,
       `- Run ${stats.run}: ${stats.status}, ${stats.minutes} min, ${stats.parts} parts, ${stats.llmCalls} LLM calls`,
+      `- Part pages: ${stats.partRanges?.length ? formatPartPages(stats.partRanges) : "part pages not recorded"}`,
       `- Values kept: ${stats.valuesKept}, dropped: ${stats.valuesDropped}`,
       `- Fields with a value: ${stats.fieldsWithValue} of ${CRVA_FIELD_IDS.length}`,
       `- Uncertain rows: ${uncertain}`,
       `- Duplicates: ${duplicates}`,
       `- GOLD GAP rows: ${goldGaps}`,
-      `- Not judged rows: ${notJudged}`,
+      `- Not judged rows: ${notJudgedRows}`,
       `- Fields not judged (judge call failed twice): ${input.failedFields?.length ? input.failedFields.join(", ") : "none"}`,
     ].join("\n") + "\n"
   );

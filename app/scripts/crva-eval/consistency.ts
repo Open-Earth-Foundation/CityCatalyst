@@ -85,6 +85,11 @@ export function consistencyMarkdown(
     `Runs considered: ${runs.length}`,
   ];
   if (skipped.length > 0) lines.push(`Skipped: ${skipped.join(", ")}`);
+  if (runs.length < 2) {
+    lines.push(
+      "Note: consistency needs at least 2 runs; the shares below compare a run with itself.",
+    );
+  }
   lines.push(
     "",
     `Same status in every run (v0 gold rows): ${pct(result.sameStatusShare)}`,

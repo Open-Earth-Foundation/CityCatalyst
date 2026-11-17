@@ -947,9 +947,9 @@
   "approval": {
     "status": "approved",
     "reviewer": "Piotr Nowakowski",
-    "reviewed_at": "2026-11-09",
+    "reviewed_at": "2026-11-17",
     "source_sha256": "524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28",
     "template_sha256": "ff4acfabce5077cdb0bc6f7edf390a90c18a0d1f7fe9b5df73241044313f3d3a",
-    "requirements_sha256": "95eb056ee9a716d03e606c837969719668df35126da9accd1411f9bb56844de2"
+    "requirements_sha256": "3388d83391fdb116e5d361ceee4f940ee8e7cdd2e87daa9abef0aa49e8aba58a"
   }
 }

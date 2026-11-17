@@ -26,7 +26,7 @@ export function mergePartBundles(
   values.sort((a, b) => a.source.page - b.source.page);
   const deduped = dedupeValues(values);
 
-  const covered = new Set(deduped.map((v) => v.fieldId));
+  const covered = new Set<string>(deduped.map((v) => v.fieldId));
   return {
     file: original.file,
     pageCount: original.pageCount,

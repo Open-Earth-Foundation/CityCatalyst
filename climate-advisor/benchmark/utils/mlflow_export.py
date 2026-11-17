@@ -18,6 +18,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from mlflow.entities import Metric, Param
+from mlflow.environment_variables import MLFLOW_SUPPRESS_PRINTING_URL_TO_STDOUT
 from mlflow.tracking import MlflowClient
 
 MANIFEST = "sha256-manifest.json"
@@ -60,6 +61,9 @@ def export_run_dir(
     Children use run-id/fixture names, shared compatibility params and their own
     status tags; parent-only quality/comparison tags are not inherited.
     """
+    # set_terminated prints an emoji run link; a cp1252 Windows console raises on it,
+    # which aborted uploads and left runs RUNNING. The run ID is logged below instead.
+    MLFLOW_SUPPRESS_PRINTING_URL_TO_STDOUT.set(True)
     client = MlflowClient(tracking_uri=tracking_uri)
     # Snapshot first so the checksum manifest describes exactly the uploaded bytes.
     with tempfile.TemporaryDirectory() as temporary:

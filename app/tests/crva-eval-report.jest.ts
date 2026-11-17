@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { PDFDocument } from "pdf-lib";
 import {
   buildReport,
   summarize,
@@ -14,6 +15,7 @@ import {
   judgmentsFromLog,
   modelsFromLog,
   parseLog,
+  recoverPartRanges,
 } from "../scripts/crva-eval/score-run";
 import type {
   GoldWorkbook,
@@ -651,6 +653,64 @@ describe("part pages in the Run section", () => {
   it("says when an older run file has no part pages", () => {
     const r = buildReport({ city: "x", rows: [], gold, stats });
     expect(r).toContain("- Part pages: part pages not recorded");
+  });
+
+  it("labels part pages recomputed from the PDF", () => {
+    const r = buildReport({
+      city: "x",
+      rows: [],
+      gold,
+      stats: {
+        ...stats,
+        partRanges: [{ startPage: 1, pageCount: 185, bytes: 1 }],
+      },
+      partRangesRecomputed: true,
+    });
+    expect(r).toContain("- Part pages: 1–185 (recomputed from the PDF)");
+  });
+});
+
+describe("recoverPartRanges", () => {
+  async function pdf(pages: number): Promise<Buffer> {
+    const doc = await PDFDocument.create();
+    for (let i = 0; i < pages; i++) doc.addPage([200, 200]);
+    return Buffer.from(await doc.save());
+  }
+
+  it("recomputes the ranges when the part count matches", async () => {
+    const buffer = await pdf(6);
+    const result = await recoverPartRanges({
+      pdf: buffer,
+      maxPartBytes: 15 * 1024 * 1024,
+      parts: 1,
+      pageCount: 6,
+    });
+    expect(result.warning).toBeUndefined();
+    expect(result.ranges).toEqual([
+      { startPage: 1, pageCount: 6, bytes: buffer.length },
+    ]);
+  });
+
+  it("warns and records nothing when the part count differs", async () => {
+    const result = await recoverPartRanges({
+      pdf: await pdf(6),
+      maxPartBytes: 15 * 1024 * 1024,
+      parts: 3,
+      pageCount: 6,
+    });
+    expect(result.ranges).toBeUndefined();
+    expect(result.warning).toMatch(/1 part.*3/);
+  });
+
+  it("warns when the PDF page count differs from the run's", async () => {
+    const result = await recoverPartRanges({
+      pdf: await pdf(5),
+      maxPartBytes: 15 * 1024 * 1024,
+      parts: 1,
+      pageCount: 6,
+    });
+    expect(result.ranges).toBeUndefined();
+    expect(result.warning).toMatch(/5 pages.*6/);
   });
 });
 

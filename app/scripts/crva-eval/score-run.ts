@@ -1,7 +1,7 @@
 /**
  * Scores one adapter run against the gold workbook.
  *
- *   npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-n.json> --city <slug> [--rejudge] [--seed 1285] [--out <dir name>]
+ *   npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run <run-n.json> --city <slug> [--rejudge] [--seed 1285] [--pdf <pdf> [--max-part-mib 15]] [--out <dir name>]
  *
  * Needs JUDGE_MODEL. Refuses a gold file whose page count differs from the
  * run's. Output goes to score-run-<n>/ (or the plain directory name given by --out, e.g. score-run-1-b for a second judging) next to the run file: scored.csv,
@@ -16,6 +16,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
+import { PDFDocument } from "pdf-lib";
 import { pathToFileURL } from "node:url";
 import env from "@next/env";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
@@ -28,8 +29,14 @@ import { readGoldWorkbook } from "./gold";
 import { JudgeCallError, judgeClientConfig, judgeField } from "./judge";
 import { buildReport } from "./report";
 import type { RunStats } from "./run-adapter";
+import { splitPdf } from "./split-pdf";
 import { reviewCsv, reviewSample, scoreRun, sheetCsv } from "./score";
-import { goldFieldId, type GoldWorkbook, type Judgment } from "./types";
+import {
+  goldFieldId,
+  type GoldWorkbook,
+  type Judgment,
+  type PartRange,
+} from "./types";
 
 /** One line of judge.jsonl: a single judge call, successful or not. */
 export interface JudgeLogLine {
@@ -119,6 +126,38 @@ export function checkGoldMatchesRun(
     };
   }
   return {};
+}
+
+/**
+ * Part pages for a run recorded before partRanges existed. The split is
+ * deterministic, so it is only trusted when the PDF has the run's page count
+ * and splitting gives the run's part count; otherwise nothing is recorded.
+ */
+export async function recoverPartRanges(input: {
+  pdf: Buffer;
+  maxPartBytes: number;
+  parts: number;
+  pageCount: number;
+}): Promise<{ ranges?: PartRange[]; warning?: string }> {
+  const pages = (await PDFDocument.load(input.pdf)).getPageCount();
+  if (pages !== input.pageCount) {
+    return {
+      warning: `the PDF has ${pages} pages, the run has ${input.pageCount}: part pages not recomputed`,
+    };
+  }
+  const parts = await splitPdf(input.pdf, input.maxPartBytes);
+  if (parts.length !== input.parts) {
+    return {
+      warning: `splitting the PDF gives ${parts.length} part(s), the run used ${input.parts}: part pages not recomputed (check --max-part-mib)`,
+    };
+  }
+  return {
+    ranges: parts.map((p) => ({
+      startPage: p.startPage,
+      pageCount: p.pageCount,
+      bytes: p.buffer.length,
+    })),
+  };
 }
 
 /** Moves an existing judge log aside so --rejudge never loses the judgments it replaces. */
@@ -218,6 +257,23 @@ async function main() {
     return;
   }
   if (check.warning) console.warn(`Warning: ${check.warning}`);
+  // Older run files have no part pages; --pdf rebuilds them.
+  let reportStats = stats;
+  let partRangesRecomputed = false;
+  const pdfIndex = process.argv.indexOf("--pdf");
+  if (pdfIndex >= 0 && !stats.partRanges?.length) {
+    const recovered = await recoverPartRanges({
+      pdf: await readFile(argValue("--pdf")),
+      maxPartBytes: Number(argValue("--max-part-mib", "15")) * 1024 * 1024,
+      parts: stats.parts,
+      pageCount: bundle.pageCount,
+    });
+    if (recovered.warning) console.warn(`Warning: ${recovered.warning}`);
+    if (recovered.ranges) {
+      reportStats = { ...stats, partRanges: recovered.ranges };
+      partRangesRecomputed = true;
+    }
+  }
   const outDir = path.join(path.dirname(runPath), outName);
   await mkdir(outDir, { recursive: true });
   const logPath = path.join(outDir, "judge.jsonl");
@@ -292,7 +348,8 @@ async function main() {
       city,
       rows,
       gold,
-      stats,
+      stats: reportStats,
+      partRangesRecomputed,
       judgeModel,
       judgeModels,
       extractionModel: bundle.extractionModel,

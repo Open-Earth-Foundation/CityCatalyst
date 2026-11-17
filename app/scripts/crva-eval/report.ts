@@ -241,6 +241,8 @@ export function buildReport(input: {
   extractionModel?: string;
   /** Fields whose judge call failed twice; the scorer marks them not judged. */
   failedFields?: string[];
+  /** The part pages were rebuilt from the PDF, not recorded by the run. */
+  partRangesRecomputed?: boolean;
 }): string {
   const { city, rows, gold, stats } = input;
   const v0Ids = new Set<string>([
@@ -365,7 +367,7 @@ export function buildReport(input: {
         .join(", ")}`,
       `- Extraction model: ${input.extractionModel ?? "unknown"}`,
       `- Run ${stats.run}: ${stats.status}, ${stats.minutes} min, ${stats.parts} parts, ${stats.llmCalls} LLM calls`,
-      `- Part pages: ${stats.partRanges?.length ? formatPartPages(stats.partRanges) : "part pages not recorded"}`,
+      `- Part pages: ${stats.partRanges?.length ? formatPartPages(stats.partRanges) + (input.partRangesRecomputed ? " (recomputed from the PDF)" : "") : "part pages not recorded"}`,
       `- Values kept: ${stats.valuesKept}, dropped: ${stats.valuesDropped}`,
       `- Fields with a value: ${stats.fieldsWithValue} of ${CRVA_FIELD_IDS.length}`,
       `- Uncertain rows: ${uncertain}`,

@@ -29,7 +29,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -49,7 +49,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -77,7 +77,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -121,11 +121,11 @@
           },
           {
             "chapter_ref": "project_description",
-            "priority": "mandatory"
+            "priority": "desirable"
           },
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -259,7 +259,7 @@
           },
           {
             "chapter_ref": "project_financing",
-            "priority": "desirable"
+            "priority": "mandatory"
           },
           {
             "chapter_ref": "project_analysis",
@@ -311,7 +311,7 @@
           },
           {
             "chapter_ref": "project_financing",
-            "priority": "desirable"
+            "priority": "mandatory"
           },
           {
             "chapter_ref": "project_activities",
@@ -401,6 +401,15 @@
         "extraction_fact": "flood-risk-area-count"
       },
       {
+        "id": "prioritization-criteria",
+        "statement": "Flood-risk areas were prioritized on storm system conditions, critical infrastructure, frequency of flooding, social vulnerability index, and number of flood-prone structures.",
+        "origin": "document",
+        "chapters": [
+          "project_analysis"
+        ],
+        "extraction_fact": "prioritization-criteria"
+      },
+      {
         "id": "selected-sites",
         "statement": "The project addresses the flood-risk areas near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace.",
         "origin": "document",
@@ -411,12 +420,30 @@
         "extraction_fact": "selected-sites"
       },
       {
+        "id": "selected-areas-and-concepts",
+        "statement": "The city selected three flood-risk areas, for which six mitigation concepts were identified and evaluated in the updated stormwater model.",
+        "origin": "document",
+        "chapters": [
+          "project_activities"
+        ],
+        "extraction_fact": "selected-areas-and-concepts"
+      },
+      {
         "id": "wilson-pond-damages",
         "statement": "At Wilson Pond the lowest structures are affected during the 2-year 24-hour rainfall event.",
         "origin": "document",
         "chapters": [
           "flood_damages"
         ]
+      },
+      {
+        "id": "concept-level-costs",
+        "statement": "The evaluated projects, their model results and their cost estimates are concept-level designs with planning-level cost estimates.",
+        "origin": "document",
+        "chapters": [
+          "project_financing"
+        ],
+        "extraction_fact": "concept-level-costs"
       },
       {
         "id": "concept-cost-figures",
@@ -773,8 +800,60 @@
           {
             "id": "svi",
             "statement": "The prioritization incorporated the social vulnerability index."
+          },
+          {
+            "id": "area-count",
+            "statement": "746 flood-risk areas were evaluated, 601 of them within or primarily within the Richfield municipal boundary."
+          },
+          {
+            "id": "design-storms",
+            "statement": "The alternatives were modeled against 2-, 10- and 100-year, 24-hour design storms."
+          },
+          {
+            "id": "modeled-reductions",
+            "statement": "Every concept's modeled 10-year, 24-hour peak water-level reductions are still stated: Wilson Pond Concept A 1.4, 0.8 and 3.9 feet; Concept B 0.6, 0.4 and 1.9 feet; Concept C 0.6, 0.5 and 2.3 feet; northwest of Roosevelt Park 3.7, 1.0 and 0.5 feet; near Woodlawn Terrace Concept A 0.1 and 0.1 foot; and Concept B 0.8 and 0.5 foot."
+          },
+          {
+            "id": "box-culverts",
+            "statement": "Wilson Pond Concept B uses a 5-foot-by-5-foot box culvert and Concept C two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494."
+          },
+          {
+            "id": "cost-exclusions",
+            "statement": "The cost estimates exclude planning, engineering and design; construction management; permitting; property or easement acquisition; operations and maintenance; and monitoring."
+          },
+          {
+            "id": "planning-level",
+            "statement": "The modeled results are planning-level outcomes, not final design commitments."
+          },
+          {
+            "id": "groundwater-and-pumping",
+            "statement": "At Wilson Pond, underground storage was not pursued because shallow groundwater is expected, and pumped drawdown was not pursued because of the high flow rate needed within an assumed 24-hour period."
+          },
+          {
+            "id": "other-sites-screening",
+            "statement": "Northwest of Roosevelt Park, surface storage was not pursued because the open space is higher than the flood-risk area and increased downstream capacity was not evaluated further because the area drains to Norby's Pond; near Woodlawn Terrace, surface storage was not pursued because the open space is developed with baseball fields and parking lots."
+          },
+          {
+            "id": "coordination",
+            "statement": "Wilson Pond concepts would increase the volume and peak rate of discharge leaving Richfield and need coordination with the City of Bloomington or MnDOT; the near Woodlawn Terrace underground-storage concept needs an agreement with the parking-lot owner."
+          },
+          {
+            "id": "not-verified",
+            "statement": "No survey data was collected to verify whether the identified structures are flood-prone."
+          },
+          {
+            "id": "high-density-housing",
+            "statement": "The Woodlawn Terrace area affects three high-density housing structures."
+          },
+          {
+            "id": "markers",
+            "statement": "All eight [Information needed: ...] questions are still asked: selected location and concept, selection rationale, environmental effects, social and economic effects, public input, environmental review status, water-plan alignment, and wetland replacement credits."
           }
-        ]
+        ],
+        "length_ratio": {
+          "min_ratio": 0.5,
+          "max_ratio": 0.8
+        }
       },
       {
         "id": "agent-without-value",
@@ -784,6 +863,84 @@
           {
             "id": "unchanged",
             "statement": "The concept note is unchanged; no authorized agent is invented."
+          }
+        ]
+      },
+      {
+        "id": "agent-after-clarification",
+        "instruction": "Dana Whitfield, City Manager.",
+        "recent_messages": [
+          {
+            "role": "user",
+            "content": "Fill in the authorized agent."
+          },
+          {
+            "role": "assistant",
+            "content": "The application does not say who the authorized agent is. Who should I name, and what is their title?"
+          }
+        ],
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "applicant_project_information"
+        ],
+        "expected_changes": [
+          {
+            "id": "agent-stated",
+            "statement": "The applicant chapter names Dana Whitfield, City Manager, as the authorized agent instead of asking for one."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "contact-still-asked",
+            "statement": "The local government contact is still requested; Dana Whitfield is not entered as the contact."
+          },
+          {
+            "id": "submittal-date-still-asked",
+            "statement": "The application submittal date is still requested."
+          },
+          {
+            "id": "project-name-still-asked",
+            "statement": "The official project name is still requested."
+          },
+          {
+            "id": "applicant",
+            "statement": "The City of Richfield, Minnesota is the applicant."
+          },
+          {
+            "id": "funds-official-still-asked",
+            "statement": "The project financing chapter still asks for evidence of financial capability, including the official authorized to commit funds."
+          }
+        ]
+      },
+      {
+        "id": "delete-site-constraints-paragraph",
+        "instruction": "In Existing mitigation and regulatory measures, delete the final paragraph, the one listing location-specific constraints such as shallow groundwater near Wilson Pond. Keep the paragraph before it.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "existing_mitigation_regulation"
+        ],
+        "expected_changes": [
+          {
+            "id": "constraints-paragraph-removed",
+            "statement": "The existing mitigation and regulatory measures chapter no longer contains the paragraph on location-specific constraints (expected shallow groundwater near Wilson Pond, downstream flood-risk conditions near northwest of Roosevelt Park, and private-property agreements near Woodlawn Terrace)."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "coordination-paragraph",
+            "statement": "The chapter still says that Wilson Pond alternatives need additional coordination with the City of Bloomington or MnDOT because increased discharge would be conveyed beyond Richfield toward the Minnesota River."
+          },
+          {
+            "id": "design-review",
+            "statement": "The chapter still says the selected concept needs site-specific design optimization, utility-conflict evaluation and permitting review."
+          },
+          {
+            "id": "ordinance-marker",
+            "statement": "The chapter still asks for the applicable floodplain ordinance standards and enforcement procedures, the project's compliance, required permits and any unresolved violations."
+          },
+          {
+            "id": "analysis-untouched",
+            "statement": "The project analysis chapter still mentions expected shallow groundwater near Wilson Pond."
           }
         ]
       }

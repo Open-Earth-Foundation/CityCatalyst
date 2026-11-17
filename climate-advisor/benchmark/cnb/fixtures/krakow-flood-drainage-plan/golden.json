@@ -29,7 +29,7 @@
         "requirements": [
           {
             "chapter_ref": "informacje_o_projekcie",
-            "priority": "mandatory"
+            "priority": "desirable"
           },
           {
             "chapter_ref": "zadania",
@@ -101,7 +101,7 @@
         "requirements": [
           {
             "chapter_ref": "uzasadnienie",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -173,7 +173,7 @@
         "requirements": [
           {
             "chapter_ref": "informacje_o_projekcie",
-            "priority": "mandatory"
+            "priority": "desirable"
           },
           {
             "chapter_ref": "uzasadnienie",
@@ -221,7 +221,7 @@
           },
           {
             "chapter_ref": "budzet",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -293,7 +293,7 @@
         "requirements": [
           {
             "chapter_ref": "ryzyka",
-            "priority": "desirable"
+            "priority": "mandatory"
           }
         ]
       },
@@ -333,7 +333,7 @@
         "requirements": [
           {
             "chapter_ref": "budzet",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -353,7 +353,7 @@
         "requirements": [
           {
             "chapter_ref": "budzet",
-            "priority": "desirable"
+            "priority": "mandatory"
           },
           {
             "chapter_ref": "ryzyka",
@@ -806,8 +806,52 @@
           {
             "id": "strategy",
             "statement": "The link to the strategy 'Tu chcę żyć. Kraków 2030' remains."
+          },
+          {
+            "id": "tributaries",
+            "statement": "Tributaries of the Vistula and urban streams also pose a threat, because their outflow can be restricted during Vistula floods when the levee sluices are closed."
+          },
+          {
+            "id": "runoff-drivers",
+            "statement": "Land-use change in the catchment, loss of natural retention and growth of sealed surfaces accelerate surface runoff, compounded by more frequent and more intense extreme rainfall."
+          },
+          {
+            "id": "insufficient-protection",
+            "statement": "Despite the flood-protection measures taken, the city's current protection does not guarantee a sufficient level of protection against floods and local flooding."
+          },
+          {
+            "id": "key-problems",
+            "statement": "The list of key problems still includes local flooding caused by insufficient capacity, silting or poor condition of ditches and sewers, underdeveloped retention or storm sewers in peripheral areas, growing sealed surfaces together with drought, and the need to counteract landslide activation."
+          },
+          {
+            "id": "preparatory-needs",
+            "statement": "Continuing the storm-sewer inventory, deploying modelling tools and preparing technical concepts for problem catchments are still named as needs."
+          },
+          {
+            "id": "scope-marker",
+            "statement": "The chapter still asks for the exact investment components, locations and scale of the project."
+          },
+          {
+            "id": "plan-horizon",
+            "statement": "The Plan is still dated 2023-2035."
+          },
+          {
+            "id": "specific-objectives",
+            "statement": "The project still responds to the Plan's specific objectives of reducing flood threats, reducing the risk of local flooding during intense rainfall and river floods, and ensuring sustainable rainwater management."
+          },
+          {
+            "id": "strategy-goals",
+            "statement": "Strategic goal IV and operational goals IV.3 'Zrównoważone środowisko' and IV.5 'Wysoki poziom bezpieczeństwa w Krakowie' are still named."
+          },
+          {
+            "id": "adaptation-hazards",
+            "statement": "The Plan's call for adaptation to extreme weather, including sudden rain, storms, droughts, heat and cold waves and the urban heat island, remains."
           }
-        ]
+        ],
+        "length_ratio": {
+          "min_ratio": 0.5,
+          "max_ratio": 0.8
+        }
       },
       {
         "id": "grant-without-value",
@@ -817,6 +861,84 @@
           {
             "id": "unchanged",
             "statement": "The concept note is unchanged; no grant amount is invented."
+          }
+        ]
+      },
+      {
+        "id": "cofinancing-from-earlier-message",
+        "instruction": "Tak, wpisz.",
+        "recent_messages": [
+          {
+            "role": "user",
+            "content": "Wnioskujemy o 42 500 000 zł dofinansowania z NFOŚiGW, czyli 85% kosztów kwalifikowalnych."
+          },
+          {
+            "role": "assistant",
+            "content": "Dziękuję. Czy mam wpisać tę kwotę i ten udział do rozdziału „Budżet i źródła finansowania”?"
+          }
+        ],
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "budzet"
+        ],
+        "expected_changes": [
+          {
+            "id": "cofinancing-stated",
+            "statement": "The budget chapter states the requested NFOŚiGW co-financing of PLN 42,500,000, equal to 85% of eligible costs, as the user gave it in an earlier message, instead of asking for it."
+          },
+          {
+            "id": "table-updated",
+            "statement": "The financing summary table shows PLN 42,500,000 and 85% in the requested NFOŚiGW co-financing row instead of 'Do potwierdzenia'."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "cost-still-asked",
+            "statement": "The chapter still asks for the total project cost and its cost breakdown; none is invented."
+          },
+          {
+            "id": "own-contribution-still-asked",
+            "statement": "The chapter still asks for the amount, source and form of the applicant's own contribution."
+          },
+          {
+            "id": "plan-cost",
+            "statement": "The Plan's estimated cost of PLN 1,275,867,730 is still described as the cost of the whole Plan, not the budget of this project."
+          }
+        ]
+      },
+      {
+        "id": "delete-weather-risk-row",
+        "instruction": "Usuń z tabeli ryzyk w rozdziale „Analiza ryzyka i trwałość” wiersz o niekorzystnych warunkach pogodowych. Pozostałe wiersze zostaw bez zmian.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "ryzyka"
+        ],
+        "expected_changes": [
+          {
+            "id": "weather-row-removed",
+            "statement": "The risk table no longer has a row on adverse weather conditions (intense rainfall and high water interrupting the works)."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "inventory-row",
+            "statement": "The risk table still has the row on incomplete inventory or insufficient hydraulic assessment of the system, with its proposed response."
+          },
+          {
+            "id": "criteria-row",
+            "statement": "The risk table still has the row on not meeting the formal or substantive criteria for external financing, with its proposed response."
+          },
+          {
+            "id": "financing-row",
+            "statement": "The risk table still has the row on insufficient or late financing, with its proposed response."
+          },
+          {
+            "id": "serious-risks",
+            "statement": "The chapter still says the Plan rates the financing, documentation, required-decision and property-title risks as serious."
+          },
+          {
+            "id": "risk-owner-marker",
+            "statement": "The chapter still asks for the risk owners, monitoring frequency, escalation procedure and contingency arrangements."
           }
         ]
       }

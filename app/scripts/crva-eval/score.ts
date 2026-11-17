@@ -22,7 +22,8 @@ const V0_FIELDS = new Set([
 ]);
 
 /** A figure row is only worth a human look when the gold itself describes a figure. */
-const FIGURE_WORDS = /\b(figura|fig\.|mapa|gr[aá]fico|figure|map|chart)\b/i;
+const FIGURE_WORDS =
+  /\b(?:figura|fig\b\.?|mapa|gr[aá]fico|figure|map|chart)\b/i;
 
 /** Best first; a better verdict wins when several values hit one gold row. */
 const VERDICT_RANK: Verdict[] = [

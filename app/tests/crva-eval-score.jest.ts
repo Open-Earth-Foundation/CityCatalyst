@@ -137,6 +137,16 @@ describe("scoreRun without matches", () => {
       });
     });
 
+    it("matches the Fig. abbreviation", () => {
+      const [row] = score(
+        [goldRow({ evidence: "Fig. 6 Cuenca del Plata" })],
+        [],
+        {},
+        { figures: captioned },
+      );
+      expect(row.modelStatus).toBe("PARTIAL");
+    });
+
     it("does not apply when the figure has no caption", () => {
       const [row] = score(
         [figureRow],

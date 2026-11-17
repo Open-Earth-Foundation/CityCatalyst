@@ -33,9 +33,26 @@ on:
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
+concurrency:
+  # A new push to a PR cancels that PR's older run. Develop pushes deploy, so they never cancel each other.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   runTests:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       NODE_ENV: test
       NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
@@ -62,8 +79,7 @@ jobs:
         env:
           GLOBAL_API_URL: https://ccglobal.openearth.dev
         run: |
-          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
-          sleep 10
+          # The service is healthy before steps start. Keep citycatalyst a non-superuser DB owner, as before.
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
           cp env.example .env
@@ -71,18 +87,6 @@ jobs:
           npm run db:seed
           npm run sync-catalogue
           npm run sync-emissions-factors
-
-      - uses: actions/cache@v4
-        with:
-          # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Setup Environment Variables
         run: |
@@ -93,9 +97,7 @@ jobs:
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
 
-      - name: Run NextJS build
-        run: npm run build
-
+      # No `next build` here: e2eTests builds the same commit with the same env, and pushToGHCR needs both jobs.
       - name: Lint the OpenAPI spec
         run: |
           npm run openapi:build
@@ -165,9 +167,6 @@ jobs:
           name: coverage-report
           path: app/coverage/
           retention-days: 30
-
-      - name: Shut down database
-        run: docker stop github_action_postgresql
 
   # Playwright runs in its own job, in parallel with runTests, on the official
   # Playwright image. The image already has the browsers and their system
@@ -280,12 +279,10 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev
             NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
-          cache-from: |
-            type=gha,scope=citycatalyst-shared
-            type=gha,scope=${{ github.ref_name }}
-            type=gha,scope=main
-            type=gha,scope=develop
-          cache-to: type=gha,mode=max,scope=citycatalyst-shared
+          # Inline cache rides along with the pushed image, so there is no separate cache upload
+          # (the old gha mode=max export took 2-5 min per run). Reuses the npm layers when package*.json is unchanged.
+          cache-from: type=registry,ref=ghcr.io/open-earth-foundation/citycatalyst:latest
+          cache-to: type=inline
 
       - name: Build and push web image
         uses: docker/build-push-action@v5
@@ -300,12 +297,8 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev
             NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
-          cache-from: |
-            type=gha,scope=citycatalyst-shared
-            type=gha,scope=${{ github.ref_name }}
-            type=gha,scope=main
-            type=gha,scope=develop
-          cache-to: type=gha,mode=max,scope=citycatalyst-shared
+          cache-from: type=registry,ref=ghcr.io/open-earth-foundation/citycatalyst-web:latest
+          cache-to: type=inline
 
   deployToEKS:
     needs: pushToGHCR

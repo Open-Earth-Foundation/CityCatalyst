@@ -30,6 +30,18 @@ concurrency:
 jobs:
   cc-ca-auth-contract:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       NODE_ENV: test
       DATABASE_HOST: localhost
@@ -73,8 +85,7 @@ jobs:
       - name: Set up app database and smoke fixture
         working-directory: app
         run: |
-          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
-          sleep 10
+          # The service is healthy before steps start. Keep citycatalyst a non-superuser DB owner, as in web-develop.
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
           cp env.example .env

@@ -341,6 +341,25 @@ jobs:
           path: app/playwright-report/
           retention-days: 30
 
+  # Keeps the repo under GitHub's 10 GB cache limit: each develop push saves a new Next.js build cache,
+  # and a lockfile change saves new node_modules caches. Only the newest of each is ever restored.
+  pruneCaches:
+    needs: e2eTests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Delete all but the newest develop cache per prefix
+        run: |
+          for prefix in nextjs- node-modules-host- node-modules-playwright-; do
+            gh cache list --ref refs/heads/develop --key "$prefix" --sort created_at --order desc \
+              --limit 100 --json id --jq '.[1:][].id' | xargs -r -n1 gh cache delete
+          done
+
   pushToGHCR:
     needs: [runTests, coverage, e2eTests]
     runs-on: ubuntu-latest

@@ -20,9 +20,12 @@ uv sync --locked
 uv run python -m benchmark.cnb.scripts.evaluate --label my-change
 ```
 
-A full run calls the configured producer and judge models, takes about 15–35
-minutes and costs a few dollars. `--parallel` runs the three fixtures at once;
-`--fixture <id>` and `--stage <name>` (repeatable) select part of the corpus.
+A full run calls the configured producer and judge models. Expect about $8–10
+and 45–60 minutes one fixture at a time, or about 20 minutes with `--parallel`,
+which runs the three fixtures at once. For reference, the 2026-11-10 baseline
+cost $8.23, and its stages took 46 minutes in total before the clean-draft
+verification control was added. `--fixture <id>` and `--stage <name>`
+(repeatable) select part of the corpus.
 The run is saved in `output/cnb_golden_set/runs/<run-id>/` (git-ignored) and
 compared with the approved baseline in `baseline.json`.
 
@@ -38,9 +41,18 @@ partial report. `delivery.json` separates execution, ground-truth approval,
 baseline compatibility and publication. Missing judgments never count as
 resolved failures, and missing usage is not proof of zero spend.
 
-Exit codes: `0` passing against an approved baseline; `1` quality failure; `2`
-the run ID already exists; `3` evaluation, approval, baseline comparison or
-publication unavailable.
+Exit codes answer "did my change make things worse than the baseline?":
+
+- `0`: nothing regressed (outcome `improved` or `unchanged`).
+- `1`: something regressed (outcome `regressed` or `mixed`).
+- `2`: the run ID already exists.
+- `3`: the evaluation, ground-truth approval, baseline comparison or publication
+  is unavailable.
+
+The absolute gates (thresholds, single failures) are still reported per stage,
+but they are not the exit code: the approved baseline itself fails some of them.
+A failed `--mlflow` upload is logged and recorded in `delivery.json`; retry it
+with `mlflow_log log`.
 
 ## Compare two runs
 
@@ -48,19 +60,48 @@ publication unavailable.
 uv run python -m benchmark.cnb.scripts.compare --baseline-run benchmark/cnb/results/runs/<run-a> --candidate-run output/cnb_golden_set/runs/<run-b>
 ```
 
-Any two run folders work, including one restored from MLflow. The command writes
+Any two run folders work, including one restored from MLflow. Add
+`--baseline-repeat <run>` (repeatable) for other runs of run A's configuration;
+they set the noise range. The command writes
 `output/cnb_compare/<run-a>__<run-b>/` with `comparison.md`, `comparison.json`
-and `index.html`, which opens on the A → B comparison. Score deltas, new and
-resolved failures appear only when both runs used the same fixtures, golden
+and `index.html`, which opens on the A → B comparison. It uses the same exit codes
+as `evaluate`. Changes appear only when both runs used the same fixtures, golden
 expectations and judge policy. Otherwise the runs are shown side by side with
 the reason, and the command exits `3`.
 
+### Deciding better or worse
+
+The first line of `comparison.md`, the viewer's **Baseline review**, and the
+MLflow tag `comparison_outcome` give one outcome: `improved`, `regressed`,
+`mixed` (some of each), `unchanged` or `unavailable`. It is built from two kinds
+of evidence:
+
+- **Items**: every expected fact, topic, gap, chapter, seeded defect, edit case
+  and extraction evidence row has a stable golden ID. An item **regressed** when
+  its verdict got worse (for example `covered` → `missing`), and **improved**
+  when it got better. The judge's wording never counts as a change.
+- **Metrics**: each rate knows its direction (for example, a lower false-alarm
+  rate is better). Pure counts are shown as context only.
+
+One run of each configuration cannot tell a change from model variation: two
+runs of the same code on 2026-11-09 and 2026-11-10 differed by 10–17 points on
+several metrics. The approved baseline therefore lists **repeats**, which are
+other runs of the same configuration. A metric inside the spread of the
+baseline runs is `within_noise`, and an item whose verdict differs between them
+is `flaky`. Neither counts as better or worse. Without repeats the report says
+"noise not measured", and every change counts. Treat a small change as
+unconfirmed until it holds in a second run.
+
 ### Reading extraction scores
 
-`required_fact_coverage` is the judge's share of mandatory chapter-fact pairs
-fully covered in their receiving chapter. Python adds judge-free metrics from
-whether every golden evidence passage of a fact survives verbatim in a retained
-quotation. They change only when the producer's output changes:
+The headline is `fact_evidence_retained`: did extraction keep the fact at all?
+Routing it to the right chapter is a second, diagnostic question. Chapter
+writing also receives the full source text, so a misrouted fact can still reach
+the draft. `required_fact_coverage` is the judge's share of mandatory
+chapter-fact pairs fully covered in their receiving chapter. Python adds
+judge-free metrics from whether every golden evidence passage of a fact survives
+verbatim in a retained quotation. They change only when the producer's output
+changes:
 
 - `fact_evidence_retained`: share of facts with a mandatory pair whose evidence
   was kept anywhere (any chapter or the document-level quotations). Each fact
@@ -76,23 +117,55 @@ The per-pair status is in `details.evidence_retention` of `report.json`. A fact
 paraphrased from a different passage than its golden evidence shows as not
 extracted here, while the judge may still accept it.
 
+### What the other stages score
+
+- **Claims** (extraction and chapter writing): each output unit gets one verdict,
+  its worst claim. `claim_support_rate` is the share of fully supported units,
+  so the way the judge splits text into claims does not move the score.
+- **Chapter writing**: `chapters_satisfied_rate` is the share of required chapters
+  the judge marks satisfied. Transfer is traced once per linked drafting fact.
+  Every claim must carry a verdict against the drafter's own input.
+- **Verification**: the gate is `min_defect_recall`; a single missed defect shows
+  as a regressed item, not as an automatic failure. `false_alarm_rate` counts
+  distinct issues, so repeating a finding cannot dilute it, and
+  `duplicate_findings` is reported separately. The validator also runs on the
+  clean reference draft as a control (`clean_false_alarm_rate`). The judge sees
+  the template the validator checks against. A detected defect must cite a
+  finding.
+- **Editing**: resizing requests have a deterministic `length_ratio` band on every
+  edited chapter.
+
 ## Store runs in MLflow (draft)
 
-Add `--mlflow` to `evaluate` to upload the finished run folder to the
+Add `--mlflow` to `evaluate` to upload the finished run to the
 [`Clima-CNB-Benchmark`](https://mlflow-dev.openearth.dev/#/experiments/11)
-experiment, separate from the service's `Clima` traces. It needs
-`MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD`
-(the `.env` values work). Each run becomes one parent MLflow run with the
-provenance as params, plus one child per fixture with `<stage>.<metric>` and
-usage metrics, so MLflow's **Compare** view lines up scores, cost and time
-across runs. The whole run folder, with a SHA-256 manifest, is the parent's
-artifact. `delivery.json` records the MLflow run ID.
-
-Existing folders can be uploaded and any MLflow run restored, checksum-verified,
-for `compare`, the viewer or `propose_baseline`:
+experiment, separate from the service's `Clima` traces, or upload an existing
+folder:
 
 ```bash
 uv run python -m benchmark.cnb.scripts.mlflow_log log output/cnb_golden_set/runs/<run-id>
+```
+
+`MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD`
+come from the environment or `climate-advisor/.env`; existing environment values
+take precedence.
+
+To compare runs, select two parent runs in the experiment and click **Compare**:
+
+- `mean.<stage>.<metric>` is the average rate across fixtures, and
+  `<fixture>.<stage>.<metric>` is each fixture's score, next to the provenance
+  params, cost and time.
+- The tags `baseline_run_id`, `comparison_outcome` and `quality_regression`
+  record the comparison against the approved baseline.
+- Check that the `corpus_fingerprint` and `evaluator_fingerprint` params match
+  before reading a difference.
+
+Expand a parent to reach its `<run-id>/<fixture>` child runs. Each carries the
+same provenance params, that fixture's stage scores and its own status tags. The
+complete run folder is the parent's artifact, with a SHA-256 manifest. Restore
+it, checksum-verified, for `compare`, the viewer or `propose_baseline`:
+
+```bash
 uv run python -m benchmark.cnb.scripts.mlflow_log download <mlflow-run-id> --results-dir output/cnb-restored
 ```
 
@@ -134,8 +207,10 @@ It copies the run's durable files (report, outputs, `llm_config.json`,
 `viewer.js`; not its comparison or review bundle) into `results/runs/<run-id>/`,
 writes `baseline.json` with the report and artifact hashes, the fingerprints and
 the reviewer, and checks them with the evaluator's own baseline loader before
-writing anything. Commit both in a PR; that review is the approval. A JSON field
-does not prove a review happened.
+writing anything. Add `--repeat <run>` for each extra run of the same commit,
+run with `evaluate --label baseline-repeat`. Two repeats are the minimum for a
+noise range, and they are committed beside the baseline. Commit everything in a
+PR; that review is the approval. A JSON field does not prove a review happened.
 
 The loader accepts a baseline only when the saved run matches its report and
 artifact hashes, the run completed with every requested fixture and stage, every
@@ -147,9 +222,24 @@ failures are allowed in a baseline; an incomplete run is not. The scoped
 Two runs are comparable when they share two fingerprints: the **corpus** (every
 fixture's golden expectations, source, drafting input and reference draft, but
 not its approval record) and the **judge policy** (judge model, all four judge
-prompts, the scoring code and the judge's output schemas). Changing production
-code, prompts or models never breaks comparability; that is what the benchmark
-measures. A run of selected fixtures or stages is compared on that scope only.
+prompts, the scoring, judge-call and workspace code in `golden_set/`, and the
+judge's output schemas). Changing production code, prompts or models never
+breaks comparability; that is what the benchmark measures. A run of selected
+fixtures or stages is compared on that scope only.
+
+A change that only affects scoring does not need a new paid run. This covers
+metrics, gates and citation checks.
+
+```bash
+uv run python -m benchmark.cnb.scripts.rescore --run benchmark/cnb/results/runs/<run-id>
+```
+
+It re-scores every stage from the saved judge inputs and judgments, and writes
+the copy to `output/cnb_golden_set/rescored/<run-id>/`. To re-approve the copy,
+replace the committed run folder and run `propose_baseline` on the copy, once
+for the baseline and once per repeat. `rescore` refuses when the judge model,
+the judge prompts or the fixtures changed, or when the current code would build
+a different judge input. Those changes need a new run.
 
 ## Judge calibration
 
@@ -158,7 +248,9 @@ uv run python -m benchmark.cnb.scripts.calibrate
 ```
 
 Scores the judge against human-labelled candidates; see
-[calibration/README.md](calibration/README.md).
+[calibration/README.md](calibration/README.md). The 24 cases cover only the
+extraction judge. The chapter, gap, defect and edit judgments have no
+calibration yet.
 
 ## What is here
 
@@ -167,7 +259,7 @@ Scores the judge against human-labelled candidates; see
 | `fixtures/` | The three documents with golden expectations, drafting inputs and reference drafts. [`fixtures/README.md`](fixtures/README.md) explains the format, gates and approval. |
 | `prompts/` | The four judge prompts, one per stage, with few-shot examples. |
 | `golden_set/` | Stage execution and scoring (below). |
-| `scripts/` | `evaluate`, `compare`, `propose_baseline`, `publish`, `calibrate`. |
+| `scripts/` | `evaluate`, `compare`, `rescore`, `propose_baseline`, `publish`, `mlflow_log`, `calibrate`. |
 | `viewer/` | The static site source: `index.html` and `app.js`. |
 | `results/` | Committed runs; the approved baseline lives here. |
 | `calibration/` | Human-labelled judge calibration cases. |

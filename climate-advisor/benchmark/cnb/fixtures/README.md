@@ -55,8 +55,10 @@ English for a Polish source; the judge compares meaning across languages.
 
 - `approval`: review status, reviewer/date, and source/template/requirements
   fingerprints. Approved
-  records require an actual review date, never a future date. All shipped
-  requirements are **pending Product review**.
+  records require an actual review date, never a future date. The shipped
+  requirements carry an engineering approval (Piotr Nowakowski); a Product
+  review has not happened yet. Each fixture's `approval` block names the current
+  reviewer and date.
 - `extraction`: facts defined once (stable ID, statement, exact evidence with
   allowed page or heading locators), explicit `requirements` entries containing
   `chapter_ref` and `priority` (`mandatory` or `desirable`), topics and the topic
@@ -74,14 +76,15 @@ English for a Polish source; the judge compares meaning across languages.
   messages, the expected outcome (`edit` or `clarification`), the chapters the
   edit may change, statements that must change, and statements that must survive.
 
-## Human approval and proposed requirement rows
+## Human approval and requirement consistency
 
-The migrated rows are proposals derived from the existing chapter-writing links
-and template descriptions. Linked facts inherit their previous extraction
-mandatory/desirable priority; unlinked facts are mapped to the relevant template
-chapter (for example, financing estimates to Financing and methodology to
-Project analysis). Product must verify both the placement and priority; these
-mappings are not human-approved by this migration.
+The requirement rows were first derived from the chapter-writing links and the
+template descriptions, then reviewed by engineering. Product should still check
+placement and priority. `fixture_problems` keeps the two stages consistent: an
+extraction pair is mandatory only when a required drafting fact links that fact
+to that chapter, and a required drafting fact needs its extraction fact
+mandatory in one of its chapters. A fact is therefore mandatory only where a
+correct application chapter would be wrong without it.
 
 `ground_truth_fingerprints(loaded)` hashes the actual source Markdown, normalized
 complete drafting input, and normalized four-stage requirements. Changing source,
@@ -128,13 +131,18 @@ benchmark's source-preservation policy.
 
 ## Few-shot calibration examples
 
-Every judge prompt contains an `<examples>` block of worked verdicts. Each
-anchored example quotes a passage **extracted verbatim** from a fixture document
-and names its source unit; `test_few_shot_passages_are_extracted_verbatim_from_fixtures`
-fails if a passage is not an exact substring of that unit, or if it overlaps any
-golden evidence text, so examples never reveal the answer for an evaluated fact.
-Extraction examples must also quote retained text verbatim. Examples span all
-three documents and both languages.
+Every judge prompt contains an `<examples>` block of worked verdicts. Anchored
+examples quote passages **extracted verbatim** from fixture documents and name
+their source units. The offline `judge_example_problems(fixtures, prompts)` guard
+checks exact source membership and parses both `<examples>` and `<example_output>`
+JSON. It checks prose strings (excluding `unit`/`unit_id` locators) against all
+fixtures' extraction evidence and fact
+statements, drafting facts/gaps, seeded-defect find/replace text, and editing
+expectations. After case-folding and collapsing punctuation/whitespace, a shared
+substring of at least 40 characters, or containment of a whole golden evidence
+or expectation text, is reported as overlap. This deterministic guard does not detect arbitrary
+semantic paraphrases. Examples use unscored source passages, span all three
+documents and both languages, and keep extraction quotations verbatim.
 
 ## Stage gates
 
@@ -202,8 +210,9 @@ the slowest fixture's time instead of the sum); by default they run one at a
 time to keep provider load bounded. `--run-id` names the run folder (default: UTC time plus the label); an
 existing run is never overwritten. There is no `--repeats` flag; run again and
 compare the runs with `benchmark.cnb.scripts.compare`. A full run makes one
-extraction, one draft per chapter, two or more validator passes per chapter, up
-to four edit plans with review per fixture, and four judge calls per fixture. Nothing runs it automatically. See [benchmark.md](../benchmark.md) for
+extraction, one draft per chapter, validator passes per chapter on the seeded
+and the clean reference draft, up to six edit plans with review per fixture, and
+five judge calls per fixture. Nothing runs it automatically. See [benchmark.md](../benchmark.md) for
 comparing runs and baseline approval.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor

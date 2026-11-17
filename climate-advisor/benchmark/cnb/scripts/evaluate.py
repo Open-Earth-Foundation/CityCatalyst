@@ -24,9 +24,10 @@ Inputs:
 - --label: optional short note shown in the viewer, for example "pr-3295".
 - --mlflow: upload the finished run folder to the Clima-CNB-Benchmark MLflow
   experiment (needs MLFLOW_TRACKING_URI and MLFLOW_TRACKING_USERNAME/PASSWORD);
-  delivery.json records the MLflow run ID, and a failed upload exits 3.
+  delivery.json records the MLflow run ID or the failure.
 - --baseline-manifest / --baseline-results-dir: reviewed baseline manifest and durable run store.
-- --timeout-seconds: evaluation deadline (default 3600); finalization follows timeout.
+- --timeout-seconds: evaluation deadline (default 5400; a serial run takes 45-60
+  minutes); finalization follows timeout.
 - --parallel: evaluate fixtures concurrently in one process (faster; default is
   one fixture at a time to keep provider load bounded).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
@@ -45,8 +46,11 @@ Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - viewer.js, and the refreshed viewer at <results-dir>/index.html (see
   benchmark/cnb/scripts/publish.py). Open it to browse and compare runs.
 - delivery.json, comparison.json/.md, and review-bundle.zip with candidate and approved baseline.
-- Exit 0 for approved passing evaluation; 1 for quality failure; 2 for an existing
-  run; 3 for unavailable/incomplete evaluation, approval, comparison or publication.
+- Exit 0 when nothing regressed against the approved baseline (outcome improved or
+  unchanged); 1 when something regressed (outcome regressed or mixed); 2 for an
+  existing run; 3 for unavailable/incomplete evaluation, approval, comparison or
+  publication. Absolute quality gates are reported, not used as the exit code.
+  A failed MLflow upload is logged and recorded in delivery.json only.
 
 Usage (from climate-advisor/):
 - uv run python -m benchmark.cnb.scripts.evaluate
@@ -97,6 +101,7 @@ from benchmark.cnb.golden_set.core import (
 )
 from benchmark.cnb.golden_set.judge import (
     GoldenJudgeError,
+    judge_example_problems,
     judge_output,
     judge_prompt_versions,
 )
@@ -116,6 +121,7 @@ from benchmark.cnb.golden_set.baseline import (
     content_digest,
     evaluation_fingerprints,
     load_approved_baseline,
+    load_repeat_reports,
     compare_reports,
     render_comparison,
 )
@@ -174,7 +180,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--timeout-seconds",
         type=int,
-        default=3600,
+        default=5400,
         help="Maximum evaluation wall time; preserve partial reports on timeout",
     )
     parser.add_argument(
@@ -205,27 +211,32 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def code_version() -> str | None:
-    """The current git commit; uncommitted tracked changes add ``-dirty-<diff hash>``.
+    """The current git commit; local changes add ``-dirty-<hash>``.
 
-    The diff hash tells two runs from different uncommitted states apart.
+    The hash covers tracked changes (``git diff HEAD``) and the content of
+    untracked, non-ignored files under climate-advisor/, so a new helper module
+    also tells two runs apart.
     """
+    root = BENCHMARK_ROOT.parents[1]
     try:
         commit = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=BENCHMARK_ROOT,
+            capture_output=True, text=True, check=True, cwd=root,
         ).stdout.strip()
         diff = subprocess.run(
-            ["git", "diff", "HEAD"],
-            capture_output=True,
-            check=True,
-            cwd=BENCHMARK_ROOT,
+            ["git", "diff", "HEAD"], capture_output=True, check=True, cwd=root,
         ).stdout
+        untracked = subprocess.run(
+            ["git", "ls-files", "--others", "--exclude-standard", "-z"],
+            capture_output=True, check=True, cwd=root,
+        ).stdout.split(b"\0")
     except (OSError, subprocess.CalledProcessError):
         return None
-    return f"{commit}-dirty-{hashlib.sha256(diff).hexdigest()[:8]}" if diff else commit
+    digest = hashlib.sha256(diff)
+    for name in sorted(path for path in untracked if path):
+        digest.update(name + b"\0" + (root / name.decode()).read_bytes())
+    local = bool(diff) or any(untracked)
+    return f"{commit}-dirty-{digest.hexdigest()[:8]}" if local else commit
 
 
 def prompt_versions(settings: Settings) -> dict[str, str]:
@@ -275,6 +286,13 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         raise GoldenJudgeError(
             "Configure models.cnb_golden_set_judge before evaluation"
         )
+    # Worked examples must never quote the answer key of an evaluated item.
+    leaks = judge_example_problems(
+        load_golden_fixtures(args.fixtures_dir),
+        {stage: settings.llm.prompts.get_prompt(f"cnb_golden_set_{stage}_judge") for stage in STAGES},
+    )
+    if leaks:
+        raise GoldenJudgeError(f"Judge prompt examples overlap the golden set: {leaks[:3]}")
     report = args.report
     report.requested_stages = stages
     report.expected_fixture_ids = [item.fixture.fixture_id for item in fixtures]
@@ -556,12 +574,16 @@ async def _evaluate_chapter_writing(
 
 
 async def _judge(payload: JudgeInput, settings: Settings, output_dir: Path) -> Any:
-    """Save a structured judgment, or return an evaluation-error report."""
+    """Save the judge's input and structured judgment, or return an evaluation-error report.
+
+    The saved input lets scripts/rescore.py re-score the judgment offline.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "judge_input.json").write_text(payload.model_dump_json(), encoding="utf-8")
     try:
         judgment = await judge_output(payload, settings)
     except GoldenJudgeError as exc:
         return StageReport(evaluation_errors=[str(exc)])
-    output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "judgment.json").write_text(
         judgment.model_dump_json(), encoding="utf-8"
     )
@@ -766,7 +788,11 @@ def main(argv: list[str] | None = None) -> int:
         if baseline_dir
         else None
     )
-    comparison = compare_reports(args.report.model_dump(mode="json"), baseline_report)
+    comparison = compare_reports(
+        args.report.model_dump(mode="json"),
+        baseline_report,
+        load_repeat_reports(baseline_dir, selection) if baseline_dir else [],
+    )
     if args.delivery["execution"] != "complete" or not args.report.fixtures:
         comparison["evaluation_unavailable"] = True
     comparison["baseline"] = selection
@@ -819,15 +845,18 @@ def main(argv: list[str] | None = None) -> int:
         delivery_path.write_text(
             json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
         )
+        if not mlflow_run_id:
+            logger.error("MLflow upload failed; the run is complete on disk, retry with mlflow_log log")
+    # The exit code answers "did this change make things worse than the baseline?".
     unavailable = (
         args.delivery["execution"] != "complete"
         or comparison["evaluation_unavailable"]
         or selection["status"] != "comparable"
         or args.delivery["approval_pending"]
         or args.delivery["publication"]["status"] != "published"
-        or args.delivery.get("mlflow", {}).get("status") == "failed"
     )
-    return 3 if unavailable else (0 if args.report.passed else 1)
+    logger.info("Outcome against the baseline: %s", comparison["outcome"])
+    return 3 if unavailable else (1 if comparison["quality_regression"] else 0)
 
 
 if __name__ == "__main__":

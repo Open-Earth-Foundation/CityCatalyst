@@ -285,11 +285,27 @@ class EditMessage(GoldenContract):
     content: str = Field(min_length=1)
 
 
+class LengthBand(GoldenContract):
+    """Allowed length of each edited chapter as a share of its original length."""
+
+    min_ratio: float = Field(gt=0)
+    max_ratio: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def ordered(self) -> LengthBand:
+        """The band must not be empty."""
+        if self.min_ratio > self.max_ratio:
+            raise ValueError("min_ratio must not exceed max_ratio")
+        return self
+
+
 class EditCase(GoldenContract):
     """One chat edit request against the reference draft.
 
     ``allowed_chapters`` lists every chapter the edit may change; any other
     changed chapter is a collateral edit. A clarification case allows none.
+    ``length_ratio`` is a deterministic length check for resizing requests
+    (for example "shorten by a third"), applied to every edited chapter.
     """
 
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]*$")
@@ -300,6 +316,7 @@ class EditCase(GoldenContract):
     allowed_chapters: list[str] = Field(default_factory=list)
     expected_changes: list[EditExpectation] = Field(default_factory=list)
     must_preserve: list[EditExpectation] = Field(default_factory=list)
+    length_ratio: LengthBand | None = None
 
     @model_validator(mode="after")
     def check_outcome(self) -> EditCase:

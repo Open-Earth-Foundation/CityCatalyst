@@ -1,7 +1,8 @@
 # Human-labelled judge calibration
 
-`cases.json` contains 24 **proposed**, unapproved labels. They are not evidence
-that a human has reviewed the judge. Each of six requirement families has a
+`cases.json` contains 24 labels with an engineering approval (Piotr Nowakowski,
+2026-11-09), each bound to its `case_sha256`. They cover the extraction judge
+only; the chapter, gap, defect and edit judgments are not calibrated yet. Each of six requirement families has a
 correct, partly correct, materially incorrect and missing candidate. Families
 cover English/Polish, funding status, dates, institutional responsibilities,
 table amounts, currencies and units. All currently belong to the held-out split;

@@ -44,6 +44,7 @@ from benchmark.cnb.golden_set.models import (
     JudgeInput,
     ReferenceDraft,
     StageReport,
+    TextReference,
     TextUnit,
 )
 
@@ -239,6 +240,32 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
     for fact in writing.facts:
         if fact.extraction_fact and fact.extraction_fact not in extraction_ids:
             problems.append(f"{fact.id}: unknown extraction fact {fact.extraction_fact}")
+    # A chapter cannot need a fact from extraction that the draft does not need.
+    for fact in fixture.extraction.facts:
+        users = [
+            f for f in writing.facts if f.extraction_fact == fact.id and f.required
+        ]
+        problems += [
+            f"{fact.id}: mandatory for {requirement.chapter_ref} but no required "
+            "drafting fact links it to that chapter"
+            for requirement in fact.requirements
+            if requirement.priority == "mandatory"
+            and not any(
+                not f.chapters or requirement.chapter_ref in f.chapters for f in users
+            )
+        ]
+    # ...and a fact the draft requires must be mandatory where the draft uses it.
+    by_id = {fact.id: fact for fact in fixture.extraction.facts}
+    for fact in writing.facts:
+        source = by_id.get(fact.extraction_fact or "")
+        if fact.required and source and not any(
+            r.priority == "mandatory" and (not fact.chapters or r.chapter_ref in fact.chapters)
+            for r in source.requirements
+        ):
+            problems.append(
+                f"{fact.id}: required for drafting but {source.id} is not mandatory "
+                "in any of its chapters"
+            )
     owned = {
         field for chapter in template.chapter_schema for field in chapter.get("required_fields", [])
     }
@@ -407,6 +434,19 @@ def validate_judgment(payload: JudgeInput, judgment: JudgeEvaluation) -> list[st
     return errors
 
 
+def reference_problems(
+    label: str, refs: Sequence[TextReference], units: dict[str, TextUnit]
+) -> list[str]:
+    """Each citation must name a supplied unit and quote it exactly."""
+    return [
+        f"{label}: citation is not exact text of a supplied unit ({ref.unit_id})"
+        for ref in refs
+        if ref.unit_id not in units
+        or not ref.quote.strip()
+        or ref.quote not in units[ref.unit_id].text
+    ]
+
+
 def exactly_once(label: str, expected: Sequence[str], actual: Sequence[str]) -> list[str]:
     """Require one verdict per expected ID, with no extras or repeats."""
     if len(set(expected)) != len(expected) or Counter(expected) != Counter(actual):
@@ -492,21 +532,27 @@ def score_facts_and_claims(
     for fact in judgment.facts:
         if fact.verdict == "contradicted":
             report.semantic_failures.append(f"contradicted fact: {fact.id}")
-    supported = 0
+    # One verdict per output unit (its worst claim): how the judge splits text
+    # into claims must not move the score or the failure count.
+    problems_by_unit: dict[str, list[str]] = {}
     for claim in judgment.claims:
-        # One failure per claim, naming every way it is not fully supported.
         verdicts = [f"{claim.verdict} by the source"] if claim.verdict != "supported" else []
-        if not is_extraction and claim.supplied_verdict not in {None, "supported"}:
+        if not is_extraction and claim.supplied_verdict != "supported":
             verdicts.append(f"{claim.supplied_verdict} by the drafter input")
         if not claim.self_contained:
             verdicts.append("lacks sufficient context")
-        supported += not verdicts
+        problems = problems_by_unit.setdefault(claim.output.unit_id, [])
         if verdicts:
+            problems.append(f"{', '.join(verdicts)}: {claim.reason}")
+    for unit_id, problems in problems_by_unit.items():
+        if problems:
             report.semantic_failures.append(
-                f"{claim.output.unit_id}: claim {', '.join(verdicts)}: {claim.reason}"
+                f"{unit_id}: {len(problems)} claim(s) not fully supported: {' | '.join(problems)}"
             )
-    if judgment.claims:
-        report.metrics["claim_support_rate"] = supported / len(judgment.claims)
+    if problems_by_unit:
+        report.metrics["claim_support_rate"] = sum(
+            not problems for problems in problems_by_unit.values()
+        ) / len(problems_by_unit)
     for conflict in judgment.contradictions:
         report.semantic_failures.append(f"contradictory output: {conflict.reason}")
 

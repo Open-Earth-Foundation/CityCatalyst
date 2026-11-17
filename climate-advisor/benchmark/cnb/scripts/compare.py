@@ -9,6 +9,9 @@ are shown side by side with the reason they are not comparable.
 Inputs:
 - --baseline-run: run folder containing report.json and viewer.js (run A).
 - --candidate-run: run folder containing report.json and viewer.js (run B).
+- --baseline-repeat: another run of run A's configuration (repeatable). Their
+  spread is the noise range: changes inside it are "within noise", and items
+  whose verdict differs between the A runs are "flaky".
 - --output: review folder to create (default
   climate-advisor/output/cnb_compare/<baseline-id>__<candidate-id>); an existing
   folder is refused.
@@ -16,8 +19,10 @@ Inputs:
 Outputs (no model calls, network or database; the input runs are not modified):
 - <output>/index.html opening on the A → B comparison, with both runs under runs/.
 - <output>/comparison.json and comparison.md with per-fixture, per-stage results.
-- Exit 0 when compared; 2 for invalid arguments; 3 when the runs are not
-  comparable (the side-by-side review is still written).
+- Exit 0 when nothing regressed (outcome improved or unchanged); 1 when
+  something regressed (regressed or mixed); 2 for invalid arguments; 3 when the
+  runs are not comparable or a judgment is unavailable (the side-by-side review
+  is still written).
 
 Usage (from climate-advisor/):
 - uv run python -m benchmark.cnb.scripts.compare \
@@ -48,6 +53,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare two saved CNB benchmark runs.")
     parser.add_argument("--baseline-run", type=Path, required=True, help="Run A folder")
     parser.add_argument("--candidate-run", type=Path, required=True, help="Run B folder")
+    parser.add_argument(
+        "--baseline-repeat",
+        type=Path,
+        action="append",
+        default=[],
+        help="Another run of run A's configuration; repeat the flag for several",
+    )
     parser.add_argument("--output", type=Path, help="Review folder to create")
     args = parser.parse_args(argv)
     for run in (args.baseline_run, args.candidate_run):
@@ -71,7 +83,16 @@ def main(argv: list[str] | None = None) -> int:
 
     # Only comparable runs get deltas; others are reviewed side by side.
     reasons = incompatibility(baseline, candidate)
-    comparison = compare_reports(candidate, None if reasons else baseline)
+    repeats = [
+        json.loads((run / "report.json").read_text(encoding="utf-8"))
+        for run in args.baseline_repeat
+    ]
+    reasons += [
+        f"repeat {report.get('run_id')} is not comparable with run A"
+        for report in repeats
+        if incompatibility(baseline, report)
+    ]
+    comparison = compare_reports(candidate, None if reasons else baseline, repeats)
     selection = {
         "status": "incompatible" if reasons else "comparable",
         "reason": "; ".join(reasons) or "Same fixtures, expectations and judge policy",
@@ -92,8 +113,10 @@ def main(argv: list[str] | None = None) -> int:
     (args.output / "comparison.md").write_text(render_comparison(comparison, delivery), encoding="utf-8")
     if reasons:
         logger.warning("Runs are not comparable: %s", selection["reason"])
-    logger.info("Open %s", index)
-    return 3 if reasons else 0
+    logger.info("Outcome: %s. Open %s", comparison["outcome"], index)
+    if reasons or comparison["evaluation_unavailable"]:
+        return 3
+    return 1 if comparison["quality_regression"] else 0
 
 
 if __name__ == "__main__":

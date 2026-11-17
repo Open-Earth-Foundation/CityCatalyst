@@ -1035,7 +1035,7 @@
       ${jump(fid, stage, [["sec-transfer", "Transfer"], ["sec-gaps", "Expected gaps"], ["sec-raised", "Raised gaps"], ["sec-facts", "Facts"], ["sec-chapters", "Chapters"], ["sec-claims", "Claims"], ["sec-output", "Generated application"]])}
       ${j ? `
       <h2 id="sec-transfer">Extraction → draft: where facts survive or are lost</h2>
-      <p class="sub">For each receiving extraction chapter: did extraction keep the linked fact, and did the drafter carry it into an allowed draft chapter? Draft verdicts aggregate allowed chapters; they do not prove transfer to every receiving chapter. <b>Recovered</b> means the drafter used the full source text.</p>
+      <p class="sub">Once per linked drafting fact: did extraction keep it in any receiving chapter, and did the drafter carry it into an allowed draft chapter? <b>Recovered</b> means the drafter used the full source text.</p>
       <div class="card" style="padding:0"><table>
         <thead><tr><th>Draft fact</th><th>1 · Extraction</th><th>2 · Draft</th><th>Outcome</th></tr></thead>
         <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))}` : ""}</div></td>
@@ -1360,12 +1360,12 @@
 
   // ---------- runs: loading, picking, comparing ----------
   const RUN_METRICS = {
-    extraction: [["required_fact_coverage", "facts kept"], ["fact_evidence_retained", "evidence extracted"], ["pair_evidence_in_chapter", "evidence in its chapter"], ["topic_coverage", "topics"]],
-    chapter_writing: [["required_fact_coverage", "facts"], ["gap_recall", "gaps flagged"], ["flagged_gap_validity", "raised gaps genuine"]],
-    verification: [["defect_recall", "defects found"], ["false_alarm_rate", "false alarms"]],
+    extraction: [["fact_evidence_retained", "facts extracted"], ["pair_evidence_in_chapter", "routed to their chapter"], ["required_fact_coverage", "judge: facts in chapter"], ["topic_coverage", "topics"]],
+    chapter_writing: [["required_fact_coverage", "facts"], ["chapters_satisfied_rate", "chapters satisfied"], ["gap_recall", "gaps flagged"], ["flagged_gap_validity", "raised gaps genuine"]],
+    verification: [["defect_recall", "defects found"], ["false_alarm_rate", "false alarms"], ["clean_false_alarm_rate", "false alarms, clean draft"]],
     editing: [["case_pass_rate", "cases pass"]],
   };
-  const LOWER_IS_BETTER = new Set(["false_alarm_rate"]);
+  const LOWER_IS_BETTER = new Set(["false_alarm_rate", "clean_false_alarm_rate"]);
   const runLabel = (r) => `${r.label ? `${r.label} · ` : ""}${r.generated_at ? new Date(r.generated_at).toLocaleString() : r.id}`;
   const indexFixtureIds = () => [...new Set(INDEX.flatMap((r) => Object.keys(r.fixtures)))].sort();
   const shortFixture = (fid) => fid.split("-")[0].replace(/^./, (c) => c.toUpperCase());
@@ -1513,15 +1513,16 @@
   function reviewSummary() {
     if (!REVIEW) return "";
     const evidence = (id, row) => id ? `<a href="?run=${enc(id)}#/f/${enc(row.fixture_id)}/${enc(row.stage)}">${esc(id)}</a>` : "unavailable";
-    return `<h2>Baseline review</h2><div class="callout"><b>${esc(REVIEW.baseline?.status || "unavailable")}</b>: ${esc(REVIEW.baseline?.reason || "Pinned approved baseline")}
-      <p>Quality regression: ${esc(REVIEW.quality_regression)} · quality failures: ${esc(REVIEW.quality_failures)} · evaluation unavailable: ${esc(REVIEW.evaluation_unavailable)}</p>
+    const tone = { improved: "good", unchanged: "", regressed: "bad", mixed: "bad", unavailable: "err" }[REVIEW.outcome] || "";
+    const items = (row, key, title) => row[key]?.length ? `<h4>${title}</h4><ul>${row[key].map((i) => `<li><code>${esc(i.id)}</code> ${esc(i.before)} → ${esc(i.after)}</li>`).join("")}</ul>` : "";
+    return `<h2>Baseline review</h2><div class="callout ${tone}"><b>Outcome: ${esc(REVIEW.outcome || "unavailable")}</b> · baseline ${esc(REVIEW.baseline?.status || "unavailable")}: ${esc(REVIEW.baseline?.reason || "")}
+      <p>${REVIEW.noise_measured ? `Noise range from ${REVIEW.baseline_run_ids.length} baseline runs.` : "Noise not measured: one baseline run, so small changes may be model variation."}</p>
       <a href="comparison.md">Download review summary</a> · <a href="comparison.json">Comparison data</a></div>
-      ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.new_failures.length} new failures · ${row.evaluation_errors.length} unavailable</summary>
-        <p>Baseline: ${evidence(REVIEW.baseline_run_id, row)} · Candidate: ${evidence(REVIEW.candidate_run_id, row)}</p>
-        ${["new_failures", "resolved_failures", "quality_failures", "evaluation_errors"].map((key) => row[key].length ? `<h4>${esc(key.replace(/_/g, " "))}</h4><ul>${row[key].map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : "").join("")}
-        <h4>Chapter and mandatory evidence</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.details, null, 2))}</pre>
-        <h4>Metrics</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.metrics, null, 2))}</pre>
-        <h4>Usage and cost completeness</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify({ baseline: row.baseline_usage, candidate: row.candidate_usage }, null, 2))}</pre>
+      ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.regressed_items?.length || 0} regressed · ${row.improved_items?.length || 0} improved · ${row.flaky_items?.length || 0} flaky${row.evaluation_errors.length ? " · unavailable" : ""}</summary>
+        <p>Baseline: ${evidence(REVIEW.baseline_run_ids?.[0], row)} · Candidate: ${evidence(REVIEW.candidate_run_id, row)}</p>
+        ${items(row, "regressed_items", "Regressed")}${items(row, "improved_items", "Improved")}${items(row, "flaky_items", "Flaky across baseline runs")}
+        ${row.evaluation_errors.length ? `<h4>Evaluation unavailable</h4><ul>${row.evaluation_errors.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
+        <table><thead><tr><th>Metric</th><th>Baseline</th><th>Candidate</th><th>Change</th></tr></thead><tbody>${Object.entries(row.metrics || {}).filter(([, m]) => m.delta).map(([key, m]) => `<tr><td>${esc(key)}</td><td>${pct(m.baseline)}</td><td>${pct(m.candidate)}</td><td>${esc(m.status || "context")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No metric changed.</td></tr>`}</tbody></table>
       </details>`).join("")}`;
   }
 
@@ -1554,11 +1555,22 @@
       <div class="card" style="padding:0"><table><thead><tr><th>Input</th><th>Run A</th><th>Run B</th><th></th></tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
   }
 
+  // The review's noise status for one metric, when the review compares exactly A → B.
+  function reviewMetric(A, B, fid, stage, key) {
+    if (!REVIEW || REVIEW.baseline_run_ids?.[0] !== A.run.id || REVIEW.candidate_run_id !== B.run.id) return null;
+    return REVIEW.rows?.find((r) => r.fixture_id === fid && r.stage === stage)?.metrics?.[key] || null;
+  }
+
   function stageDiff(A, B) {
     const fids = [...new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))];
     const fx = (run, fid) => run.fixtures.find((f) => f.golden.fixture_id === fid);
     const reasons = incompatibility(A.run, B.run);
-    return `<h2>Stage results, A → B</h2>
+    const reviewed = REVIEW && REVIEW.baseline_run_ids?.[0] === A.run.id && REVIEW.candidate_run_id === B.run.id;
+    const noise = reviewed
+      ? (REVIEW.noise_measured ? `<p class="sub">Changes inside the spread of ${REVIEW.baseline_run_ids.length} baseline runs show as ≈ (within noise).</p>`
+        : `<p class="sub"><b>Noise not measured:</b> the baseline has one run, so small changes may be model variation. Add baseline repeats to confirm them.</p>`)
+      : `<p class="sub">Open the review written by compare or evaluate to see which changes are within noise.</p>`;
+    return `<h2>Stage results, A → B</h2>${reasons.length ? "" : noise}
       ${reasons.length ? `<div class="callout bad" style="margin-bottom:14px"><b>Not comparable: ${esc(reasons.join("; "))}.</b>
         <div class="small muted" style="margin-top:4px">Both results are shown side by side, but a higher or lower score here does not mean the producer got better or worse.</div></div>` : ""}
       <div class="card" style="padding:0;overflow-x:auto"><table>
@@ -1569,7 +1581,9 @@
           const metrics = RUN_METRICS[s].map(([key, name]) => {
             const va = a?.report?.metrics?.[key], vb = b?.report?.metrics?.[key];
             if (va == null && vb == null) return "";
-            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${reasons.length ? "" : delta(key, va, vb)}</div>`;
+            const status = reviewMetric(A, B, fid, s, key)?.status;
+            const change = reasons.length ? "" : status === "within_noise" ? `<span class="muted">≈ within noise</span>` : delta(key, va, vb);
+            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${change}</div>`;
           }).join("");
           return `<td>${badge(sa)} → ${badge(sb)}${metrics}</td>`;
         }).join("")}</tr>`).join("")}</tbody></table></div>`;

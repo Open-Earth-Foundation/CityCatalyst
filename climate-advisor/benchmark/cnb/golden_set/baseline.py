@@ -66,12 +66,17 @@ def evaluation_fingerprints(
                 "prompts": judge_prompts,
                 "judge": judge,
                 "comparison_policy": 2,
-                # Scoring code and the judge's structured-output schemas, not report contracts.
+                # Scoring, judge invocation and input-building code, and the judge's
+                # structured-output schemas; not report contracts. A scorer-only change
+                # can be applied to saved runs with scripts/rescore.py.
                 "scorers": {
                     name: hashlib.sha256(
                         Path(__file__).with_name(name).read_text(encoding="utf-8").encode("utf-8")
                     ).hexdigest()
-                    for name in ("core.py", "chapters.py", "verification.py", "editing.py")
+                    for name in (
+                        "core.py", "chapters.py", "verification.py", "editing.py",
+                        "judge.py", "workspace.py",
+                    )
                 },
                 "judge_schemas": {
                     stage: content_digest(output.model_json_schema())
@@ -196,9 +201,14 @@ def load_approved_baseline(
             }
         if not (directory / "viewer.js").is_file():
             raise ValueError("Approved run has no immutable viewer snapshot")
+        repeat_ids = [
+            _checked_repeat(results_dir, entry, manifest["fingerprints"])
+            for entry in manifest.get("repeats", [])
+        ]
         return directory, {
             "status": "comparable",
             "baseline_run_id": run_id,
+            "repeat_run_ids": repeat_ids,
             "approval": approval,
             "report_sha256": manifest["report_sha256"],
             "artifact_sha256": manifest["artifact_sha256"],
@@ -207,11 +217,134 @@ def load_approved_baseline(
         return None, {"status": "incompatible", "reason": str(exc)}
 
 
+# Verdict quality per judge vocabulary; an item regresses when its rank drops.
+VERDICT_RANK = {
+    "covered": 2, "partially_covered": 1, "missing": 0, "contradicted": 0,
+    "satisfied": 2, "partially_satisfied": 1, "not_satisfied": 0,
+    "flagged": 2, "partially_flagged": 1, "not_flagged": 0, "fabricated": 0,
+    "detected": 2, "partially_detected": 1, "missed": 0,
+    "in_chapter": 2, "misrouted": 1, "not_extracted": 0,
+    "passed": 1, "failed": 0,
+}
+LOWER_IS_BETTER = {
+    "false_alarm_rate", "clean_false_alarm_rate", "false_alarms", "clean_false_alarms",
+    "duplicate_findings", "pairs_misrouted", "pairs_not_extracted",
+    "unsupported_changes", "collateral_edits",
+}
+HIGHER_IS_BETTER_SUFFIXES = (
+    "_rate", "_coverage", "_recall", "_validity", "_retained", "_in_chapter",
+)
+
+
+def metric_direction(key: str) -> str | None:
+    """``higher``, ``lower``, or None for counts that only give context."""
+    if key in LOWER_IS_BETTER:
+        return "lower"
+    return "higher" if key.endswith(HIGHER_IS_BETTER_SUFFIXES) else None
+
+
+def verdict_items(stage: dict[str, Any]) -> dict[str, str]:
+    """Stable item IDs and verdicts of one stage report, the unit of a regression.
+
+    Items are expected facts, topics, gaps, chapters, seeded defects, edit cases
+    and extraction evidence rows. Their IDs come from the golden set, so the
+    judge's free-text reasons never decide what changed.
+    """
+    judgment = stage.get("judgment") or {}
+    details = stage.get("details") or {}
+    items = {}
+    fields = (
+        ("facts", "id"),
+        ("topics", "id"),
+        ("gaps", "id"),
+        ("chapters", "chapter_ref"),
+        ("defects", "id"),
+    )
+    for field, key in fields:
+        for item in judgment.get(field) or []:
+            items[f"{field[:-1]}:{item[key]}"] = item["verdict"]
+    for case in details.get("cases") or []:
+        if "passed" in case:
+            items[f"case:{case['case_id']}"] = "passed" if case["passed"] else "failed"
+    for row in details.get("evidence_retention") or []:
+        items[f"evidence:{row['id']}"] = row["status"]
+    return items
+
+
+def _metric_change(key: str, values: list[float], candidate: float | None) -> dict[str, Any]:
+    """Delta against the baseline, and a status against the baseline runs' spread."""
+    baseline = values[0] if values else None
+    change: dict[str, Any] = {
+        "baseline": baseline,
+        "candidate": candidate,
+        "delta": None,
+        "range": None,
+        "status": None,
+    }
+    if baseline is None or candidate is None:
+        return change
+    change["delta"] = candidate - baseline
+    change["range"] = [min(values), max(values)]
+    direction = metric_direction(key)
+    if direction is None:
+        return change
+    low, high = change["range"]
+    if low <= candidate <= high:
+        change["status"] = "within_noise" if low < high else "same"
+    else:
+        up = candidate > high
+        change["status"] = "better" if up == (direction == "higher") else "worse"
+    return change
+
+
+def _checked_repeat(results_dir: Path, entry: Any, fingerprints: dict[str, str]) -> str:
+    """Validate one repeat run of the baseline configuration and return its run ID.
+
+    A repeat must be committed unchanged, complete, and scored under the same
+    fingerprints; it only measures noise and is never a baseline on its own.
+    """
+    run_id = entry["run_id"]
+    if not isinstance(run_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,99}", run_id):
+        raise ValueError("Invalid baseline repeat run ID")
+    directory = results_dir / "runs" / run_id
+    report_path = directory / "report.json"
+    if hashlib.sha256(report_path.read_bytes()).hexdigest() != entry["report_sha256"]:
+        raise ValueError(f"Baseline repeat {run_id} report changed")
+    if artifact_digest(directory) != entry["artifact_sha256"]:
+        raise ValueError(f"Baseline repeat {run_id} artifacts changed")
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    recorded = {
+        "corpus": report.get("corpus_fingerprint"),
+        "judge_policy": report.get("evaluator_fingerprint"),
+    }
+    if recorded != fingerprints or report.get("completed") is not True or report.get("run_errors"):
+        raise ValueError(f"Baseline repeat {run_id} is incomplete or scored differently")
+    return run_id
+
+
+def load_repeat_reports(baseline_dir: Path, selection: dict[str, Any]) -> list[dict[str, Any]]:
+    """Reports of the validated baseline repeats, which set the noise range."""
+    return [
+        json.loads((baseline_dir.parent / run_id / "report.json").read_text(encoding="utf-8"))
+        for run_id in selection.get("repeat_run_ids", [])
+    ]
+
+
 def compare_reports(
-    candidate: dict[str, Any], baseline: dict[str, Any] | None
+    candidate: dict[str, Any],
+    baseline: dict[str, Any] | None,
+    repeats: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Keep quality findings and unavailable coverage independent, including mixed runs."""
-    old = {f["fixture_id"]: f for f in (baseline or {}).get("fixtures", [])}
+    """Compare a candidate with the baseline by item verdicts and metrics.
+
+    ``repeats`` are other runs of the baseline configuration. Their spread is the
+    noise range: a metric inside it is ``within_noise``, and an item whose verdict
+    differs between the baseline runs is ``flaky`` rather than improved or
+    regressed. Without repeats every change counts and ``noise_measured`` is false.
+    ``outcome`` is improved, regressed, mixed, unchanged or unavailable.
+    """
+    baselines = [baseline, *(repeats or [])] if baseline else []
+    old = [{f["fixture_id"]: f for f in report.get("fixtures", [])} for report in baselines]
     new = {f["fixture_id"]: f for f in candidate.get("fixtures", [])}
     rows = []
     # Compare only the candidate's scope; a partial run is not missing the rest.
@@ -219,139 +352,148 @@ def compare_reports(
     stages = [s for s in STAGES if s in (candidate.get("requested_stages") or STAGES)]
     for fid in sorted(fixture_ids):
         for stage in stages:
-            before, after = old.get(fid, {}).get(stage), new.get(fid, {}).get(stage)
-            a, b = before or {}, after or {}
-            failures_a = set(
-                a.get("integrity_failures", []) + a.get("semantic_failures", [])
-            )
-            failures_b = set(
-                b.get("integrity_failures", []) + b.get("semantic_failures", [])
-            )
-            failures_a.update(
-                f"mandatory_pair:{pair}"
-                for pair in a.get("details", {}).get("missing_mandatory_pairs", [])
-            )
-            failures_b.update(
-                f"mandatory_pair:{pair}"
-                for pair in b.get("details", {}).get("missing_mandatory_pairs", [])
-            )
-            errors = list(b.get("evaluation_errors", []))
-            if not after or not b.get("judgment"):
+            before = [report.get(fid, {}).get(stage) or {} for report in old]
+            after = new.get(fid, {}).get(stage) or {}
+            errors = list(after.get("evaluation_errors", []))
+            if not after.get("judgment"):
                 errors.append("Stage or valid judgment unavailable")
-            comparable = bool(
-                baseline
-                and a.get("judgment")
-                and not a.get("evaluation_errors")
-                and b.get("judgment")
-                and not errors
+            usable = [a for a in before if a.get("judgment") and not a.get("evaluation_errors")]
+            comparable = bool(before) and len(usable) == len(before) and not errors
+
+            # Step 1: item verdicts, flaky when the baseline runs disagree.
+            regressed, improved, flaky = [], [], []
+            if comparable:
+                base_items = [verdict_items(a) for a in usable]
+                for item, verdict in sorted(verdict_items(after).items()):
+                    first = base_items[0].get(item)
+                    if first is None or first == verdict:
+                        continue
+                    record = {"id": item, "before": first, "after": verdict}
+                    if len({items.get(item) for items in base_items}) > 1:
+                        flaky.append(record)
+                    elif VERDICT_RANK.get(verdict, 0) < VERDICT_RANK.get(first, 0):
+                        regressed.append(record)
+                    elif VERDICT_RANK.get(verdict, 0) > VERDICT_RANK.get(first, 0):
+                        improved.append(record)
+
+            # Step 2: metrics with direction and noise status.
+            keys = sorted(
+                {key for a in usable for key in a.get("metrics", {})}
+                | after.get("metrics", {}).keys()
             )
-            missing_a = set(a.get("details", {}).get("missing_mandatory_pairs", []))
-            missing_b = set(b.get("details", {}).get("missing_mandatory_pairs", []))
             metrics = {
-                key: {
-                    "baseline": a.get("metrics", {}).get(key),
-                    "candidate": b.get("metrics", {}).get(key),
-                    "delta": b.get("metrics", {})[key] - a.get("metrics", {})[key]
+                key: _metric_change(
+                    key,
+                    [a["metrics"][key] for a in usable if key in a.get("metrics", {})]
                     if comparable
-                    and key in a.get("metrics", {})
-                    and key in b.get("metrics", {})
-                    else None,
-                }
-                for key in sorted(
-                    a.get("metrics", {}).keys() | b.get("metrics", {}).keys()
+                    else [],
+                    after.get("metrics", {}).get(key),
                 )
+                for key in keys
             }
             rows.append(
                 {
                     "fixture_id": fid,
                     "stage": stage,
-                    "quality_failures": sorted(failures_b),
-                    "new_failures": sorted(failures_b - failures_a)
-                    if comparable
-                    else [],
-                    "resolved_failures": sorted(failures_a - failures_b)
-                    if comparable
-                    else [],
-                    "new_missing_mandatory_ids": sorted(missing_b - missing_a)
-                    if comparable
-                    else [],
-                    "resolved_mandatory_ids": sorted(missing_a - missing_b)
-                    if comparable
-                    else [],
+                    "regressed_items": regressed,
+                    "improved_items": improved,
+                    "flaky_items": flaky,
+                    "quality_failures": sorted(
+                        after.get("integrity_failures", []) + after.get("semantic_failures", [])
+                    ),
                     "evaluation_errors": errors,
                     "metrics": metrics,
-                    "details": b.get("details", {}),
-                    "missing_mandatory_ids": b.get("details", {}).get(
-                        "missing_mandatory_pairs", []
-                    ),
-                    "baseline_usage": old.get(fid, {}).get("usage", {}).get(stage),
+                    "baseline_usage": old[0].get(fid, {}).get("usage", {}).get(stage)
+                    if old
+                    else None,
                     "candidate_usage": new.get(fid, {}).get("usage", {}).get(stage),
                 }
             )
-    return {
-        "candidate_run_id": candidate.get("run_id"),
-        "rows": rows,
-        "quality_regression": any(
-            row["new_failures"] or row["new_missing_mandatory_ids"] for row in rows
-        )
-        if baseline
-        else None,
-        "quality_failures": any(row["quality_failures"] for row in rows),
-        "evaluation_unavailable": candidate.get("completed") is False
+
+    # Step 3: one outcome for the whole run.
+    unavailable = (
+        candidate.get("completed") is False
         or bool(candidate.get("run_errors"))
         or not rows
-        or any(row["evaluation_errors"] for row in rows),
+        or any(row["evaluation_errors"] for row in rows)
+    )
+    worse = any(
+        row["regressed_items"] or any(m["status"] == "worse" for m in row["metrics"].values())
+        for row in rows
+    )
+    better = any(
+        row["improved_items"] or any(m["status"] == "better" for m in row["metrics"].values())
+        for row in rows
+    )
+    if not baseline or unavailable:
+        outcome = "unavailable"
+    elif worse:
+        outcome = "mixed" if better else "regressed"
+    else:
+        outcome = "improved" if better else "unchanged"
+    return {
+        "candidate_run_id": candidate.get("run_id"),
+        "baseline_run_ids": [report.get("run_id") for report in baselines],
+        "noise_measured": len(baselines) > 1,
+        "outcome": outcome,
+        "rows": rows,
+        "quality_regression": outcome in {"regressed", "mixed"} if baseline else None,
+        "quality_failures": any(row["quality_failures"] for row in rows),
+        "evaluation_unavailable": unavailable,
         "baseline_wall_seconds": (baseline or {}).get("wall_seconds"),
         "candidate_wall_seconds": candidate.get("wall_seconds"),
     }
 
 
 def render_comparison(comparison: dict[str, Any], delivery: dict[str, Any]) -> str:
-    """Render the same comparison data consumed by the downloadable viewer."""
+    """A short review summary: outcome, changed items, and directed metric changes."""
     selection = delivery.get("baseline", {})
+    runs = len(comparison["baseline_run_ids"])
+    noise = (
+        f"noise range from {runs} baseline runs"
+        if comparison["noise_measured"]
+        else "noise not measured (one baseline run), so treat small changes as unconfirmed"
+    )
     lines = [
         "# CNB benchmark review",
         "",
-        f"Execution: **{delivery.get('execution', 'unknown')}**.",
-        f"Approved baseline comparison: **{selection.get('status', 'unavailable')}** — {selection.get('reason', '')}",
-        f"Ground truth awaiting approval: {delivery.get('approval_pending', [])}. Publication: **{delivery.get('publication', {}).get('status', 'preparing')}**.",
-        f"Quality regression: **{comparison['quality_regression']}**; quality failures: **{comparison['quality_failures']}**; evaluation unavailable: **{comparison['evaluation_unavailable']}**.",
+        f"**Outcome: {comparison['outcome']}**; {noise}.",
+        f"Execution: **{delivery.get('execution', 'unknown')}**. Baseline: "
+        f"**{selection.get('status', 'unavailable')}**: {selection.get('reason', '')}",
+        f"Ground truth awaiting approval: {delivery.get('approval_pending', [])}. "
+        f"Publication: **{delivery.get('publication', {}).get('status', 'preparing')}**.",
         "",
     ]
     lines.extend(f"- Execution error: {error}" for error in delivery.get("errors", []))
+    candidate = quote(str(comparison["candidate_run_id"]), safe="")
     for row in comparison["rows"]:
         fid, stage = row["fixture_id"], row["stage"]
-        candidate = quote(str(comparison["candidate_run_id"]), safe="")
         link = f"index.html?run={candidate}#/f/{quote(fid, safe='')}/{stage}"
         lines += [f"## {fid} / {stage}", "", f"[Candidate evidence]({link})"]
-        if selection.get("baseline_run_id"):
-            lines.append(
-                f"[Baseline evidence](index.html?run={quote(selection['baseline_run_id'], safe='')}#/f/{quote(fid, safe='')}/{stage})"
-            )
-        for key in (
-            "new_failures",
-            "resolved_failures",
-            "new_missing_mandatory_ids",
-            "resolved_mandatory_ids",
-            "quality_failures",
-            "evaluation_errors",
+        for key, label in (
+            ("regressed_items", "Regressed"),
+            ("improved_items", "Improved"),
+            ("flaky_items", "Flaky across baseline runs"),
         ):
             lines.extend(
-                f"- {key}: {' '.join(str(item).split())[:500]}" for item in row[key]
+                f"- {label}: `{item['id']}` {item['before']} → {item['after']}"
+                for item in row[key]
             )
-        lines += [
-            "",
-            "| Metric | Baseline | Candidate | Delta |",
-            "| --- | ---: | ---: | ---: |",
-        ]
         lines.extend(
-            f"| {key} | {values['baseline']} | {values['candidate']} | {values['delta']} |"
-            for key, values in row["metrics"].items()
+            f"- Evaluation unavailable: {' '.join(str(e).split())[:300]}"
+            for e in row["evaluation_errors"]
         )
-        lines.append(
-            f"\nUsage (baseline → candidate): `{json.dumps(row['baseline_usage'])}` → `{json.dumps(row['candidate_usage'])}`"
-        )
-        lines.append(
-            f"\nChapter/mandatory evidence: `{json.dumps(row['details'], ensure_ascii=False)}`\n"
-        )
+        changed = {k: v for k, v in row["metrics"].items() if v["delta"]}
+        if changed:
+            lines += ["", "| Metric | Baseline | Candidate | Change |", "| --- | ---: | ---: | --- |"]
+            lines.extend(
+                f"| {key} | {_fmt(v['baseline'])} | {_fmt(v['candidate'])} | {v['status'] or 'context'} |"
+                for key, v in changed.items()
+            )
+        lines.append("")
     return "\n".join(lines) + "\n"
+
+
+def _fmt(value: float | None) -> str:
+    """Short numeric table cell."""
+    return "–" if value is None else f"{value:.2f}"

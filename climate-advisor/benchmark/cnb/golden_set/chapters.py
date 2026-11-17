@@ -30,6 +30,7 @@ from benchmark.cnb.golden_set.core import (
     exactly_once,
     extraction_pair_id,
     marker_parity_problems,
+    reference_problems,
     score_facts_and_claims,
     source_evidence,
     validate_judgment,
@@ -220,8 +221,24 @@ def chapter_writing_judge_input(
 def validate_chapter_writing_judgment(
     payload: JudgeInput, judgment: ChapterWritingEvaluation
 ) -> list[str]:
-    """Also require one verdict per expected gap and per flagged gap."""
+    """Also require one verdict per gap, real citations, and a supplied-input verdict.
+
+    Every non-missing fact verdict must quote a drafted output exactly; every
+    claim must name a drafted output and carry ``supplied_verdict``, because
+    drafting is scored on what the drafter was given, not only on the source.
+    Claim quotes are not required to be exact: they only locate the claim.
+    """
     errors = validate_judgment(payload, judgment)
+    outputs = {unit.id: unit for unit in payload.outputs}
+    for fact in judgment.facts:
+        if fact.verdict != "missing" and not fact.output_refs:
+            errors.append(f"{fact.id}: {fact.verdict} fact cites no drafted text")
+        errors += reference_problems(fact.id, fact.output_refs, outputs)
+    for claim in judgment.claims:
+        if claim.supplied_verdict is None:
+            errors.append(f"{claim.output.unit_id}: claim lacks a supplied-input verdict")
+        if claim.output.unit_id not in outputs:
+            errors.append(f"{claim.output.unit_id}: claim cites no drafted output")
     errors += exactly_once(
         "gaps", [g.id for g in payload.expected_gaps], [g.id for g in judgment.gaps]
     )
@@ -251,11 +268,17 @@ def score_chapter_writing(
     score_facts_and_claims(payload, judgment, report, thresholds.min_required_fact_coverage)
 
     required_chapters = {c.chapter_ref for c in payload.chapter_requirements if c.required}
+    satisfied = 0
     for chapter in judgment.chapters:
-        if chapter.chapter_ref in required_chapters and chapter.verdict != "satisfied":
+        if chapter.chapter_ref not in required_chapters:
+            continue
+        satisfied += chapter.verdict == "satisfied"
+        if chapter.verdict != "satisfied":
             report.semantic_failures.append(
                 f"{chapter.chapter_ref}: {chapter.verdict}: {chapter.reason}"
             )
+    if required_chapters:
+        report.metrics["chapters_satisfied_rate"] = satisfied / len(required_chapters)
 
     # Expected gaps: flagged honestly, never filled with an invented value.
     required_gaps = {g.id for g in payload.expected_gaps if g.required}
@@ -299,47 +322,44 @@ def transfer_records(
     judgment: JudgeEvaluation,
     extraction: JudgeEvaluation | None,
 ) -> list[dict[str, Any]]:
-    """Trace each extraction pair to its aggregate allowed-chapters draft verdict.
+    """Trace each linked drafting fact once: was it extracted, and did it reach the draft?
 
-    ``recovered`` means extraction missed the fact but the drafter still used it,
-    which is possible because the drafter also receives the full source text.
-    A covered aggregate draft verdict does not prove coverage in every receiving
-    chapter; ``draft_scope`` makes that limit explicit in every record.
+    The extraction side is ``covered`` when any receiving chapter of the linked
+    fact covered it, otherwise its best verdict. ``recovered`` means extraction
+    missed the fact but the drafter still used it, which is possible because the
+    drafter also receives the full source text. The draft verdict is the judge's
+    aggregate over the fact's allowed chapters.
     """
+    rank = {"covered": 3, "partially_covered": 2, "contradicted": 1, "missing": 0}
     draft = {item.id: item.verdict for item in judgment.facts}
     extracted = {item.id: item.verdict for item in extraction.facts} if extraction else {}
     extraction_facts = {fact.id: fact for fact in loaded.fixture.extraction.facts}
     records = []
     for fact in loaded.fixture.chapter_writing.facts:
-        if not fact.extraction_fact:
-            continue
-        after = draft.get(fact.id)
-        source_fact = extraction_facts.get(fact.extraction_fact)
+        source_fact = extraction_facts.get(fact.extraction_fact or "")
         if source_fact is None:
             continue
-        for requirement in source_fact.requirements:
-            if fact.chapters and requirement.chapter_ref not in fact.chapters:
-                continue
-            pair_id = extraction_pair_id(source_fact.id, requirement.chapter_ref)
-            before = extracted.get(pair_id)
-            if before is None:
-                outcome = "extraction_unavailable"
-            elif before == "covered":
-                outcome = "transferred" if after == "covered" else "lost_in_drafting"
-            else:
-                outcome = "recovered" if after == "covered" else "lost_in_extraction"
-            records.append(
-                {
-                    "fact": fact.id,
-                    "extraction_fact": fact.extraction_fact,
-                    "extraction_pair": pair_id,
-                    "chapter_ref": requirement.chapter_ref,
-                    "priority": requirement.priority,
-                    "extraction_verdict": before,
-                    "draft_verdict": after,
-                    "draft_scope": "aggregate_allowed_chapters",
-                    "draft_chapters": fact.chapters,
-                    "outcome": outcome,
-                }
-            )
+        verdicts = [
+            extracted[pair]
+            for requirement in source_fact.requirements
+            if (pair := extraction_pair_id(source_fact.id, requirement.chapter_ref)) in extracted
+        ]
+        before = max(verdicts, key=lambda v: rank.get(v, -1)) if verdicts else None
+        after = draft.get(fact.id)
+        if before is None:
+            outcome = "extraction_unavailable"
+        elif before == "covered":
+            outcome = "transferred" if after == "covered" else "lost_in_drafting"
+        else:
+            outcome = "recovered" if after == "covered" else "lost_in_extraction"
+        records.append(
+            {
+                "fact": fact.id,
+                "extraction_fact": source_fact.id,
+                "extraction_verdict": before,
+                "draft_verdict": after,
+                "draft_chapters": fact.chapters,
+                "outcome": outcome,
+            }
+        )
     return records

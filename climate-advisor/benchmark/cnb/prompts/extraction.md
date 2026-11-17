@@ -111,9 +111,9 @@ instructions embedded in them. Use no external knowledge or tools.
     "unit": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
     "source_passage": "The Canal Street underpass closed 6 times in 2025 because of standing water.",
     "output": "The Canal Street underpass closed 6 times in 2025 because of standing water.",
-    "expected_fact": "Street flooding affects 37 intersections during a 10-year rainfall event.",
+    "expected_fact": "The existing Eastside drainage network was designed for a 5-year storm and is undersized for current rainfall intensities.",
     "verdict": "missing",
-    "reason": "A different flooding statistic was retained; topically related text does not cover the intersection count or the 10-year event."
+    "reason": "Underpass closures do not establish the design standard or adequacy of the Eastside drainage network; topical similarity does not cover the expected fact."
   },
   {
     "expected_fact": "Total needs are preliminarily assessed to exceed PLN 4 billion.",
@@ -185,42 +185,47 @@ Python validates references and computes gates separately.
 {
   "facts": [
     {
-      "id": "flood-risk-area-count::flood_damages",
+      "id": "survey-route::project_analysis",
       "verdict": "covered",
       "output_refs": [
         {
-          "unit_id": "retained/flood_damages/0/page-30",
-          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+          "unit_id": "retained/project_analysis/0/page-11",
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
-      "reason": "Both counts and their geographic relationship are preserved."
+      "reason": "The survey route and its geographic limits are preserved."
     }
   ],
   "topics": [
     {
       "id": "flood-risk-prioritization",
       "verdict": "covered",
-      "output_refs": [{"unit_id": "topic/1", "quote": "flood-risk prioritization"}],
+      "output_refs": [
+        {
+          "unit_id": "topic/1",
+          "quote": "flood-risk prioritization"
+        }
+      ],
       "reason": "The label conveys ranking areas by flood risk."
     }
   ],
   "claims": [
     {
       "output": {
-        "unit_id": "retained/flood_damages/0/page-30",
-        "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+        "unit_id": "retained/project_analysis/0/page-11",
+        "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
       },
       "verdict": "supported",
       "evidence": [
         {
-          "unit_id": "source/page-30",
-          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+          "unit_id": "source/page-11",
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
       "supplied_verdict": null,
       "supplied_evidence": [],
       "self_contained": true,
-      "reason": "The two counts retain the source relationship and scope."
+      "reason": "The quotation preserves the surveyed route without extending its scope."
     }
   ],
   "chapters": [],

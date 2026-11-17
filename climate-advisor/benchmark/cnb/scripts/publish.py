@@ -35,6 +35,7 @@ from pathlib import Path
 from benchmark.cnb.golden_set.baseline import (
     compare_reports,
     load_approved_baseline,
+    load_repeat_reports,
     render_comparison,
 )
 from benchmark.cnb.golden_set.viewer import (
@@ -103,7 +104,11 @@ def main(argv: list[str] | None = None) -> int:
             if baseline
             else None
         )
-        comparison = compare_reports(report, baseline_report)
+        comparison = compare_reports(
+            report,
+            baseline_report,
+            load_repeat_reports(baseline, selection) if baseline else [],
+        )
         if delivery.get("execution") != "complete" or not report.get("fixtures"):
             comparison["evaluation_unavailable"] = True
         comparison["baseline"] = selection

@@ -277,6 +277,66 @@ describe("number format check", () => {
     expect(european.totalCO2e).toBe(6_600_000);
   });
 
+  // A page with a kt table and a tonnes table (Piotr's review on #3420).
+  const mixedPage =
+    "Table 3: Transport (kt CO2e)\n| Diesel | 48 |\n\n" +
+    "Table 4: Buildings (t CO2e)\n| Natural gas | 6.600 |\n| Fuel oil | 7.5 |\n";
+
+  it("a kt caption of another table does not set the factor of a tonnes table", () => {
+    const { rows } = finalizeExtractedRows(
+      [
+        lineItem({
+          totalCO2eText: "6.600",
+          totalCO2e: 6600,
+          unit: "t",
+          page: 1,
+        }),
+      ],
+      2021,
+      { source: { text: mixedPage, kind: "page" } },
+    );
+    expect(rows[0]).toMatchObject({ printedFactor: 1, numberCheck: true });
+    const [european] = applyReadings(
+      rows,
+      { units: {}, numberFormat: "english" },
+      { units: {}, numberFormat: "european" },
+    );
+    expect(european.totalCO2e).toBe(6600);
+  });
+
+  it("a tonnes-table value the model scaled by kt is read at factor 1 and held", () => {
+    const { rows } = finalizeExtractedRows(
+      [
+        lineItem({
+          totalCO2eText: "7.5",
+          totalCO2e: 7500,
+          unit: "t",
+          co2: 7000,
+          page: 1,
+        }),
+      ],
+      2021,
+      { source: { text: mixedPage, kind: "page" } },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 7.5,
+      co2: 7,
+      printedFactor: 1,
+      unitCheck: "missing",
+      unitHint: "t",
+    });
+  });
+
+  it("a row of the kt table on a mixed page keeps the kt factor", () => {
+    const { rows } = finalizeExtractedRows(
+      [lineItem({ totalCO2eText: "48", totalCO2e: 48000, unit: "t", page: 1 })],
+      2021,
+      { source: { text: mixedPage, kind: "page" } },
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 48000, printedFactor: 1000 });
+    expect(rows[0].unitCheck).toBeUndefined();
+  });
+
   it("a number the model left in kt takes the unit multiplier", () => {
     const { rows } = finalizeExtractedRows(
       [lineItem({ totalCO2eText: "6.600", totalCO2e: 6.6, unit: "kt" })],

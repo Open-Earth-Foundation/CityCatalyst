@@ -17,6 +17,7 @@ import {
   namesMtSymbol,
   inheritedMtSymbol,
   namesPerPerson,
+  tableUnitEvidence,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -750,5 +751,43 @@ describe("namesMtSymbol", () => {
       [3, false],
       [4, false],
     ]);
+  });
+});
+
+describe("tableUnitEvidence", () => {
+  const page =
+    "Table 3: Transport (kt CO2e)\n| Diesel | 48 |\n\n" +
+    "Table 4: Buildings (t CO2e)\n| Natural gas | 6.600 |\n";
+
+  it("reads the unit of the table that prints the value", () => {
+    expect(tableUnitEvidence(page, "48")).toBe("large");
+    expect(tableUnitEvidence(page, "6.600")).toBe("none");
+  });
+
+  it("reads a unit in the header row", () => {
+    const text =
+      "| Sector | Emissions (Mt CO2e) |\n|---|---|\n| Waste | 500,886 |\n";
+    expect(tableUnitEvidence(text, "500,886")).toBe("large");
+  });
+
+  it("is mixed when the tables disagree or one names kt and t", () => {
+    expect(
+      tableUnitEvidence(page + "\nTable 5\n| Fuel oil | 48 |\n", "48"),
+    ).toBe("mixed");
+    const columns =
+      "| Sector | kt CO2e | t CO2e |\n|---|---|---|\n| Waste | 1.5 | 900 |\n";
+    expect(tableUnitEvidence(columns, "900")).toBe("mixed");
+  });
+
+  it("is unknown when no table prints the value", () => {
+    expect(tableUnitEvidence(page, "7.5")).toBe("unknown");
+  });
+
+  it("a continued table at the top of the page takes the inherited unit", () => {
+    const text =
+      "<!-- page: 4 -->\n| Waste | 12 |\n\nTable 9 (t)\n| Water | 3 |\n";
+    expect(tableUnitEvidence(text, "12", true)).toBe("large");
+    expect(tableUnitEvidence(text, "12", false)).toBe("none");
+    expect(tableUnitEvidence(text, "3", true)).toBe("none");
   });
 });

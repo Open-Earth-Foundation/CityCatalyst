@@ -65,6 +65,8 @@ import {
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  tableUnitEvidence,
+  type TableUnitEvidence,
   namesMtSymbol,
   namesSmallUnit,
   namesTonneUnit,
@@ -2668,6 +2670,11 @@ type PrintedTextContext = {
    * be scaled.
    */
   largeUnit: boolean;
+  /**
+   * Large-unit evidence of the tables that print a value (`tableUnitEvidence`
+   * on the source text). Absent: no table evidence, as `"unknown"`.
+   */
+  tableUnit?: (printed: string) => TableUnitEvidence;
 };
 
 /** Reading of an ambiguous number when the document style is undetected. */
@@ -2693,9 +2700,15 @@ function withoutPrintedText(row: ExtractedRow): ExtractedRow {
  *
  * The factor comes from unit evidence, never from the ratio alone: for
  * `6.600`, english × 1000 equals european × 1. It is the unit multiplier when
- * the model left the number in kt or Mt; 1000, 1,000,000 or 1, in that order,
- * when the source names a large unit or inherits a kt or Mt scale from a
- * continued table (`context.largeUnit`); else 1. At each factor the current
+ * the model left the number in kt or Mt. When the source names a large unit
+ * or inherits a kt or Mt scale from a continued table (`context.largeUnit`),
+ * the tables that print the value decide (`context.tableUnit`). When they
+ * are in tonnes or disagree, 1 is tried first, then 1000 and 1,000,000, and a
+ * value that matches only at a large factor (the model applied a kt caption of
+ * another table) is read at factor 1 and held for review (`unitCheck:
+ * "missing"`, hint "t"). Otherwise (a large-unit table, or no table prints the
+ * value) 1000, 1,000,000 or 1, in that order.
+ * Without a large unit on the source the factor is 1. At each factor the current
  * reading is tried first, then, for an ambiguous number, the other one. When
  * only the other reading matches (the model read it the other way), the value
  * is stored under the current reading. With no match the text is dropped, the
@@ -2717,12 +2730,21 @@ function withPrintedText(
   const other: NumberReading =
     context.reading === "english" ? "european" : "english";
   const readings = ambiguous ? [context.reading, other] : [context.reading];
+  const evidence =
+    multiplier === 1 && context.largeUnit
+      ? (context.tableUnit?.(text) ?? "unknown")
+      : null;
+  // The value's own table is in tonnes, or its tables disagree: a large
+  // factor there is the model applying another table's caption.
+  const tableNotLarge = evidence === "none" || evidence === "mixed";
   const factors =
     multiplier !== 1
       ? [multiplier]
-      : context.largeUnit
-        ? [1000, 1_000_000, 1]
-        : [1];
+      : tableNotLarge
+        ? [1, 1000, 1_000_000]
+        : evidence
+          ? [1000, 1_000_000, 1]
+          : [1];
   for (const factor of factors) {
     for (const reading of readings) {
       if (!matchesPrinted(value, parseNumberString(text, reading), factor)) {
@@ -2747,9 +2769,11 @@ function withPrintedText(
             }
           : {}),
       };
-      if (reading === context.reading) return checked;
+      const held =
+        tableNotLarge && factor !== 1 ? heldAtTonnes(checked, factor) : checked;
+      if (reading === context.reading) return held;
       const [converted] = applyReadings(
-        [checked],
+        [held],
         { units: {}, numberFormat: reading },
         { units: {}, numberFormat: context.reading },
       );
@@ -2761,6 +2785,33 @@ function withPrintedText(
     "Printed text does not match the extracted value; text ignored",
   );
   return withoutPrintedText(row);
+}
+
+/**
+ * A checked row read at factor 1 instead of `factor`: its total and gases (and
+ * the stored gases) divided by the factor, with `printedFactor` 1, and held
+ * for the unit card (`unitCheck: "missing"`, hint "t").
+ */
+function heldAtTonnes(row: ExtractedRow, factor: number): ExtractedRow {
+  const down = (v: number | null | undefined) => (v == null ? v : v / factor);
+  const out: ExtractedRow = {
+    ...row,
+    totalCO2e: down(row.totalCO2e) ?? null,
+    printedFactor: 1,
+    unitCheck: "missing",
+    unitHint: "t",
+  };
+  for (const gas of ["co2", "ch4", "n2o"] as const) {
+    if (row[gas] != null) out[gas] = down(row[gas]);
+  }
+  if (row.extractedGases) {
+    const stored = { ...row.extractedGases };
+    for (const gas of ["co2", "ch4", "n2o"] as const) {
+      if (stored[gas] != null) stored[gas] = down(stored[gas]);
+    }
+    out.extractedGases = stored;
+  }
+  return out;
 }
 
 /**
@@ -3444,6 +3495,14 @@ function finalizeRows(
     largeUnit:
       !!source &&
       (namesLargeUnit(source.text) || sourceScales.some((m) => m >= 1000)),
+    tableUnit: source
+      ? (printed) =>
+          tableUnitEvidence(
+            source.text,
+            printed,
+            (options?.inheritedScales ?? []).some((m) => m >= 1000),
+          )
+      : undefined,
   };
 
   // A document that defines MT as metric tons, on a page whose captions spell

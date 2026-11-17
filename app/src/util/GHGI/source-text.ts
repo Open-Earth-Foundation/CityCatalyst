@@ -257,6 +257,77 @@ export function numbersInTableCells(
   return readNumbers(cellText, style, [STANDALONE_NUMBER_TOKEN]);
 }
 
+/** Large-unit evidence of the tables that print one value (see `tableUnitEvidence`). */
+export type TableUnitEvidence = "large" | "none" | "mixed" | "unknown";
+
+/**
+ * Whether the Markdown tables that print `printed` in a body cell are in a
+ * large unit (kt, Mt, Gg). A table's own evidence is its header row plus the
+ * lines between the previous table and it (its caption, heading, unit line),
+ * read with the rules of `namesLargeUnit`. A table with no such lines at the
+ * top of the page continues a table from an earlier page and takes
+ * `inheritedLarge`.
+ *
+ * - `"large"`: every table that prints the value names a large unit and no
+ *   tonne unit;
+ * - `"none"`: no table that prints the value names a large unit;
+ * - `"mixed"`: the tables disagree, or one names both a large and a tonne
+ *   unit (columns in different units);
+ * - `"unknown"`: no table prints the value (prose, a chart, a cell that holds
+ *   more than the number).
+ *
+ * A kt caption of another table on the page is not evidence for this value.
+ */
+export function tableUnitEvidence(
+  text: string,
+  printed: string,
+  inheritedLarge = false,
+): TableUnitEvidence {
+  const target = printed.trim();
+  if (!target) return "unknown";
+  const lines = text.split(/\r?\n/);
+  const kinds = new Set<"large" | "none" | "both">();
+  let contextStart = 0;
+  let seenTable = false;
+  let i = 0;
+  while (i < lines.length) {
+    if (!lines[i].includes("|")) {
+      i++;
+      continue;
+    }
+    const start = i;
+    while (i < lines.length && lines[i].includes("|")) i++;
+    const block = lines.slice(start, i);
+    // Page markers (`<!-- page: 3 -->`) are not captions.
+    const above = lines
+      .slice(contextStart, start)
+      .filter((l) => l.trim() && !/^<!--.*-->$/.test(l.trim()));
+    const continued = !seenTable && above.length === 0;
+    seenTable = true;
+    contextStart = i;
+    const separator = block.findIndex((l) => TABLE_SEPARATOR.test(l));
+    // With its separator line, so the caption rules see a header row.
+    const header = separator > 0 ? block.slice(0, separator + 1) : [];
+    const body = block.filter(
+      (l, k) => !TABLE_SEPARATOR.test(l) && (separator < 0 || k > separator),
+    );
+    const prints = body.some((line) =>
+      line
+        .split("|")
+        .map((cell) => cell.trim())
+        .some((cell) => cell === target || cell.split(/\s+/).includes(target)),
+    );
+    if (!prints) continue;
+    const own = [...above, ...header].join("\n");
+    const large = namesLargeUnit(own) || (continued && inheritedLarge);
+    const tonnes = namesTonneUnit(own);
+    kinds.add(large ? (tonnes ? "both" : "large") : "none");
+  }
+  if (kinds.size === 0) return "unknown";
+  if (kinds.size !== 1 || kinds.has("both")) return "mixed";
+  return kinds.has("large") ? "large" : "none";
+}
+
 /**
  * A factor the model may apply to a printed figure to get tonnes: ×1000 for kt
  * or Gg, ×1,000,000 for Mt, ×0.001 for kg (Santiago 2022 prints kg). A scale

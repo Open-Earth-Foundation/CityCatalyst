@@ -1,10 +1,14 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import {
   buildReport,
   summarize,
   type ReportRunStats,
 } from "../scripts/crva-eval/report";
-import { judgmentsFromLog } from "../scripts/crva-eval/score-run";
+import {
+  judgmentsFromLog,
+  modelsFromLog,
+  parseLog,
+} from "../scripts/crva-eval/score-run";
 import type {
   GoldWorkbook,
   ModelStatus,
@@ -62,7 +66,17 @@ const stats: ReportRunStats = {
 const gold: GoldWorkbook = {
   pdfFileName: "ba.pdf",
   pageCount: 185,
-  rows: [],
+  rows: Array.from({ length: 34 }, (_, i) => ({
+    rowNumber: i + 2,
+    fieldId: `Z${i}`,
+    itemKey: "k",
+    goldValue: "",
+    pages: [],
+    evidence: "",
+    status: "FOUND" as const,
+    notes: "",
+    trapNote: false,
+  })),
   traps: [
     { pages: [18], what: "Look-alike table", why: "Different year" },
     { pages: "all", what: "Scanned PDF", why: "OCR noise" },
@@ -216,4 +230,93 @@ describe("judgmentsFromLog", () => {
     expect(Object.keys(out)).toEqual(["A"]);
     expect(out.A[0].reason).toBe("new");
   });
+});
+
+describe("report hardening", () => {
+  const base = { city: "x", rows: rowsOf("Correct", 2), gold, stats };
+
+  it("names the models from the log and warns when JUDGE_MODEL differs", () => {
+    const r = buildReport({ ...base, judgeModel: "now", judgeModels: ["old"] });
+    expect(r).toContain("Judge model: old");
+    expect(r).toMatch(/Warning:.*old.*JUDGE_MODEL is now now/);
+    const same = buildReport({ ...base, judgeModel: "a", judgeModels: ["a"] });
+    expect(same).not.toContain("Warning:");
+  });
+
+  it("warns under Overall when fields were not judged", () => {
+    const r = buildReport({ ...base, failedFields: ["A1.2a", "B1"] });
+    const overall = r.split("## Overall")[1].split("\n## ")[0];
+    expect(overall).toContain(
+      "Fields not judged: A1.2a, B1; their gold rows count as Omission / Correct (NOT_FOUND) and are marked uncertain.",
+    );
+    expect(
+      buildReport(base).split("## Overall")[1].split("\n## ")[0],
+    ).not.toContain("Fields not judged");
+  });
+
+  it("computes the other fields count and has the matrix header", () => {
+    const r = buildReport(base);
+    expect(r).toContain("## Other fields (34)");
+    expect(r).toContain("Gold status (rows) / model status (columns)");
+  });
+
+  it("modelsFromLog reports the models of the used lines", () => {
+    const b = { request: null, response: null, attempt: 1 };
+    const j = [{}] as never;
+    expect(
+      modelsFromLog([
+        { fieldId: "A", model: "m1", ok: true, judgments: j, ...b },
+        { fieldId: "A", model: "m2", ok: true, judgments: j, ...b },
+        { fieldId: "B", model: "m3", ok: false, ...b },
+      ]),
+    ).toEqual(["m2"]);
+  });
+
+  it("parseLog skips an unparsable last line but not an earlier one", () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const ok = JSON.stringify({ fieldId: "A", ok: true });
+    expect(
+      parseLog(`${ok}
+{"fieldId":`),
+    ).toHaveLength(1);
+    expect(warn).toHaveBeenCalled();
+    expect(() =>
+      parseLog(`{bad
+${ok}
+`),
+    ).toThrow();
+    warn.mockRestore();
+  });
+});
+
+describe("score-run CLI seed", () => {
+  it("exits with an error for a non-integer --seed", async () => {
+    const { execFileSync } = await import("node:child_process");
+    let stderr = "";
+    try {
+      execFileSync(
+        "npx",
+        [
+          "tsx",
+          "scripts/crva-eval/score-run.ts",
+          "--gold",
+          "a",
+          "--run",
+          "b",
+          "--city",
+          "c",
+          "--seed",
+          "abc",
+        ],
+        {
+          env: { ...process.env, JUDGE_MODEL: "m" },
+          shell: true,
+          stdio: "pipe",
+        },
+      );
+    } catch (err) {
+      stderr = String((err as { stderr?: Buffer }).stderr);
+    }
+    expect(stderr).toContain("--seed must be an integer");
+  }, 60000);
 });

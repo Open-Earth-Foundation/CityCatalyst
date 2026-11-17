@@ -47,4 +47,4 @@ Verdict definitions are provisional (from the xlsx and the ticket) until the ans
 1. Open the Gold tab. If there is no `model status` column after `model evidence`, insert one.
 2. Open `scored.csv`. Check that `gold_row` lines up with the Sheet row numbers.
 3. Paste the columns `model value` to `verdict` at row 2 of column H.
-4. Put `eval notes` into `notes` only for the extra rows (empty `gold_row`). Never overwrite the annotator's notes on gold rows.
+4. For extra and duplicate rows (empty `gold_row`), also paste `field_id` and `item_key` into the `field_id` and `item_key` columns of the new rows at the end of the Sheet, and put `eval notes` into `notes`. Never overwrite the annotator's notes on gold rows.

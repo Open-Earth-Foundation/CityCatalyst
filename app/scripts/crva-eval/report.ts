@@ -63,7 +63,7 @@ export function summarize(
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
-function summaryBlock(s: ScoreSummary): string {
+function summaryBlock(s: ScoreSummary, warning?: string): string {
   const verdictRows = VERDICTS.map((v) => `| ${v} | ${s.verdictCounts[v]} |`);
   const matrixRows = MODEL_STATUSES.map(
     (g) =>
@@ -71,12 +71,13 @@ function summaryBlock(s: ScoreSummary): string {
   );
   return [
     `Scored rows: ${s.scored}. Share correct: ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
+    ...(warning ? ["", warning] : []),
     "",
     "| Verdict | Rows |",
     "| --- | --- |",
     ...verdictRows,
     "",
-    `| Gold status \ model status | ${MODEL_STATUSES.join(" | ")} |`,
+    `| Gold status (rows) / model status (columns) | ${MODEL_STATUSES.join(" | ")} |`,
     `| --- | ${MODEL_STATUSES.map(() => "---").join(" | ")} |`,
     ...matrixRows,
   ].join("\n");
@@ -91,12 +92,16 @@ export function buildReport(input: {
   rows: ScoredRow[];
   gold: GoldWorkbook;
   stats: RunStats;
+  /** The JUDGE_MODEL value now; compared with the models in the log. */
   judgeModel?: string;
+  /** Models recorded in the judge log lines that produced the judgments. */
+  judgeModels?: string[];
   extractionModel?: string;
   /** Fields whose judge call failed twice; the scorer marks them not judged. */
   failedFields?: string[];
 }): string {
   const { city, rows, gold, stats } = input;
+  const v0Ids = new Set<string>(CRVA_FIELD_IDS);
   const overall = summarize(rows);
   const v0 = summarize(rows, (r) => r.isV0Field);
   const other = summarize(rows, (r) => !r.isV0Field);
@@ -116,6 +121,19 @@ export function buildReport(input: {
     return `| ${id} | ${s.scored} | ${pct(s.shareCorrect)} |`;
   });
 
+  const usedModels = input.judgeModels?.length
+    ? input.judgeModels
+    : input.judgeModel
+      ? [input.judgeModel]
+      : [];
+  const modelMismatch =
+    input.judgeModel !== undefined &&
+    usedModels.some((m) => m !== input.judgeModel);
+  const notJudgedFields = input.failedFields ?? [];
+  const otherFieldCount = new Set(
+    gold.rows.map((r) => r.fieldId).filter((id) => !v0Ids.has(id)),
+  ).size;
+
   const uncertain = rows.filter((r) => r.uncertain).length;
   const duplicates = rows.filter((r) => r.kind === "duplicate").length;
   const goldGaps = rows.filter((r) => r.notes === "GOLD GAP").length;
@@ -131,7 +149,12 @@ export function buildReport(input: {
       "",
       "## Overall",
       "",
-      summaryBlock(overall),
+      summaryBlock(
+        overall,
+        notJudgedFields.length > 0
+          ? `Fields not judged: ${notJudgedFields.join(", ")}; their gold rows count as Omission / Correct (NOT_FOUND) and are marked uncertain.`
+          : undefined,
+      ),
       "",
       `## v0 fields (${CRVA_FIELD_IDS.length})`,
       "",
@@ -141,7 +164,7 @@ export function buildReport(input: {
       "| --- | --- | --- |",
       ...perField,
       "",
-      "## Other fields (34)",
+      `## Other fields (${otherFieldCount})`,
       "",
       summaryBlock(other),
       "",
@@ -173,7 +196,12 @@ export function buildReport(input: {
       "",
       "## Run",
       "",
-      `- Judge model: ${input.judgeModel ?? "unknown"}`,
+      `- Judge model: ${usedModels.length ? usedModels.join(", ") : "unknown"}`,
+      ...(modelMismatch
+        ? [
+            `- Warning: judgments in the log came from ${usedModels.join(", ")}, but JUDGE_MODEL is now ${input.judgeModel}.`,
+          ]
+        : []),
       `- Extraction model: ${input.extractionModel ?? "unknown"}`,
       `- Run ${stats.run}: ${stats.status}, ${stats.minutes} min, ${stats.parts} parts, ${stats.llmCalls} LLM calls`,
       `- Values kept: ${stats.valuesKept}, dropped: ${stats.valuesDropped}`,

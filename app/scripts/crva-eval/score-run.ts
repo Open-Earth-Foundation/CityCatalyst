@@ -26,6 +26,8 @@ import type { Judgment } from "./types";
 /** One line of judge.jsonl: a single judge call, successful or not. */
 export interface JudgeLogLine {
   fieldId: string;
+  /** The judge model of this call, so a cached run reports the right one. */
+  model: string;
   attempt: number;
   ok: boolean;
   request: unknown;
@@ -45,11 +47,30 @@ export function judgmentsFromLog(
   return result;
 }
 
-function parseLog(text: string): JudgeLogLine[] {
-  return text
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => JSON.parse(line) as JudgeLogLine);
+/** Models of the lines that produced the used judgments (last ok line per field). */
+export function modelsFromLog(lines: JudgeLogLine[]): string[] {
+  const last = new Map<string, string>();
+  for (const line of lines) {
+    if (line.ok && line.judgments) {
+      last.set(line.fieldId, line.model ?? "unknown");
+    }
+  }
+  return [...new Set(last.values())];
+}
+
+/** A half-written last line (interrupted run) is skipped; an earlier bad line is an error. */
+export function parseLog(text: string): JudgeLogLine[] {
+  const raw = text.split("\n").filter((line) => line.trim());
+  const lines: JudgeLogLine[] = [];
+  raw.forEach((line, i) => {
+    try {
+      lines.push(JSON.parse(line) as JudgeLogLine);
+    } catch (err) {
+      if (i < raw.length - 1) throw err;
+      console.warn("judge.jsonl: skipping unparsable last line");
+    }
+  });
+  return lines;
 }
 
 function argValue(flag: string, fallback?: string): string {
@@ -76,10 +97,15 @@ async function main() {
     process.exitCode = 1;
     return;
   }
+  const seed = Number(argValue("--seed", "1285"));
+  if (!Number.isInteger(seed)) {
+    console.error("--seed must be an integer");
+    process.exitCode = 1;
+    return;
+  }
   const goldPath = argValue("--gold");
   const runPath = argValue("--run");
   const city = argValue("--city");
-  const seed = Number(argValue("--seed", "1285"));
   const rejudge = process.argv.includes("--rejudge");
 
   const run = JSON.parse(await readFile(runPath, "utf8")) as {
@@ -118,6 +144,7 @@ async function main() {
       for (let attempt = 1; attempt <= 2; attempt++) {
         const line: JudgeLogLine = {
           fieldId,
+          model: judgeModel,
           attempt,
           ok: false,
           request: null,
@@ -149,6 +176,8 @@ async function main() {
     });
   }
 
+  // Read the log back so freshly judged fields count too.
+  const judgeModels = modelsFromLog((await readLog(logPath)) ?? []);
   const rows = scoreRun({ gold, bundle, judgments });
   await writeFile(path.join(outDir, "scored.csv"), sheetCsv(rows));
   await writeFile(
@@ -167,6 +196,7 @@ async function main() {
       gold,
       stats,
       judgeModel,
+      judgeModels,
       extractionModel: bundle.extractionModel,
       failedFields,
     }),

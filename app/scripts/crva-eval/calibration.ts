@@ -2,8 +2,10 @@
  * Judge calibration: a stratified sample of judged rows goes to a Claude
  * reviewer, who fills the reviewer columns; `score` then measures how often
  * the reviewer agrees with the GPT judge. Run with
- *   tsx scripts/crva-eval/calibration.ts sample --scored <scored.json> [--seed 1] [--size 40]
- *   tsx scripts/crva-eval/calibration.ts score --sample <calibration-sample.csv>
+ *   tsx scripts/crva-eval/calibration.ts sample --scored <scored.json> [--seed 1] [--size 40] [--blind]
+ *   tsx scripts/crva-eval/calibration.ts score --sample <calibration-sample.csv> [--reviewer <filled calibration-reviewer.csv>]
+ * `--blind` also writes calibration-reviewer.csv without the judge columns, so
+ * the reviewer is not anchored by the judge's answer.
  * Outputs are written next to the input file.
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -12,7 +14,12 @@ import { pathToFileURL } from "node:url";
 import { parse } from "csv-parse/sync";
 import { stringify } from "csv-stringify/sync";
 import { mulberry32 } from "./score";
-import { VERDICTS, type ScoredRow } from "./types";
+import {
+  ERROR_CAUSES,
+  PARTIAL_REASONS,
+  VERDICTS,
+  type ScoredRow,
+} from "./types";
 
 export const AGREEMENT_TARGET = 0.85;
 const MIN_PER_VERDICT = 3;
@@ -22,7 +29,7 @@ const MIN_PER_EXTRA_KIND = 3;
 const GAP_LABEL = "GOLD GAP";
 const DUPLICATE_LABEL = "duplicate";
 
-const SAMPLE_HEADER = [
+const SAMPLE_HEADER: string[] = [
   "gold_row",
   "field_id",
   "item_key",
@@ -112,30 +119,80 @@ export function calibrationSample(
   return [...picked].sort((a, b) => a - b).map((i) => rows[i]);
 }
 
-/** The sample CSV: judge columns filled, reviewer columns left blank. */
-export function sampleCsv(allRows: ScoredRow[], sample: ScoredRow[]): string {
+const JUDGE_COLUMNS = [
+  "judge verdict",
+  "judge partial reason",
+  "judge cause",
+  "judge reason",
+];
+const REVIEWER_COLUMNS = [
+  "reviewer verdict",
+  "reviewer partial reason",
+  "reviewer cause",
+  "reviewer note",
+];
+
+function sampleRecords(
+  allRows: ScoredRow[],
+  sample: ScoredRow[],
+): Record<string, string>[] {
   const ids = rowIds(allRows);
-  const records = sample.map((r) => [
-    r.rowNumber ?? "",
-    r.fieldId,
-    r.itemKey,
-    r.goldStatus ?? "",
-    r.goldValue,
-    r.goldEvidence,
-    r.goldPages.join(", "),
-    r.modelValue,
-    r.modelEvidence,
-    judgeLabel(r),
-    r.partialReason ?? "",
-    r.cause ?? "",
-    r.reason,
-    ids[allRows.indexOf(r)],
-    "",
-    "",
-    "",
-    "",
-  ]);
-  return stringify([SAMPLE_HEADER, ...records]);
+  return sample.map((r) => ({
+    gold_row: String(r.rowNumber ?? ""),
+    field_id: r.fieldId,
+    item_key: r.itemKey,
+    "gold status": r.goldStatus ?? "",
+    "gold value": r.goldValue,
+    "gold evidence": r.goldEvidence,
+    "gold pages": r.goldPages.join(", "),
+    "model value": r.modelValue,
+    "model evidence": r.modelEvidence,
+    "judge verdict": judgeLabel(r),
+    "judge partial reason": r.partialReason ?? "",
+    "judge cause": r.cause ?? "",
+    "judge reason": r.reason,
+    "row id": ids[allRows.indexOf(r)],
+    ...Object.fromEntries(REVIEWER_COLUMNS.map((c) => [c, ""])),
+  }));
+}
+
+/** The answer key: judge columns filled, reviewer columns left blank. */
+export function sampleCsv(allRows: ScoredRow[], sample: ScoredRow[]): string {
+  return stringify(sampleRecords(allRows, sample), {
+    header: true,
+    columns: SAMPLE_HEADER,
+  });
+}
+
+/** Same rows and order as the key, without the judge columns, so the reviewer is not anchored. */
+export function reviewerCsv(allRows: ScoredRow[], sample: ScoredRow[]): string {
+  return stringify(sampleRecords(allRows, sample), {
+    header: true,
+    columns: SAMPLE_HEADER.filter((c) => !JUDGE_COLUMNS.includes(c)),
+  });
+}
+
+/** Puts the reviewer's columns onto the key rows by row id; unknown or missing ids are errors. */
+export function joinReviewer(
+  key: Record<string, string>[],
+  reviewer: Record<string, string>[],
+): Record<string, string>[] {
+  const byId = new Map(reviewer.map((r) => [r["row id"], r]));
+  const keyIds = new Set(key.map((k) => k["row id"]));
+  const unknown = [...byId.keys()].filter((id) => !keyIds.has(id));
+  if (unknown.length)
+    throw new Error(`Reviewer rows not in the sample: ${unknown.join(", ")}`);
+  const missing = [...keyIds].filter((id) => !byId.has(id));
+  if (missing.length)
+    throw new Error(
+      `Sample rows missing from reviewer file: ${missing.join(", ")}`,
+    );
+  return key.map((k) => ({
+    ...k,
+    ...Object.fromEntries(
+      REVIEWER_COLUMNS.map((c) => [c, byId.get(k["row id"])?.[c] ?? ""]),
+    ),
+  }));
 }
 
 export interface Disagreement {
@@ -156,10 +213,17 @@ export interface Agreement {
   partial: { both: number; agreed: number };
   cause: { both: number; agreed: number };
   disagreements: Disagreement[];
+  /** Reviewer values that are not a known verdict, label, partial reason or cause. */
+  unrecognised: { rowId: string; field: string; value: string }[];
 }
 
-const same = (a: string, b: string) =>
-  a.trim().toLowerCase() === b.trim().toLowerCase();
+/** Canonical spelling of a value, or null when it is not one of `allowed`. */
+function canonical(value: string, allowed: readonly string[]): string | null {
+  const v = value.trim().toLowerCase();
+  return allowed.find((a) => a.toLowerCase() === v) ?? null;
+}
+
+const VERDICT_LABELS = [...VERDICTS, GAP_LABEL, DUPLICATE_LABEL];
 
 /** Agreement between the judge and the reviewer over the rows the reviewer filled. */
 export function agreement(records: Record<string, string>[]): Agreement {
@@ -172,58 +236,70 @@ export function agreement(records: Record<string, string>[]): Agreement {
     partial: { both: 0, agreed: 0 },
     cause: { both: 0, agreed: 0 },
     disagreements: [],
+    unrecognised: [],
   };
   for (const rec of records) {
-    const judge = (rec["judge verdict"] ?? "").trim();
-    const reviewer = (rec["reviewer verdict"] ?? "").trim();
-    if (!reviewer) continue;
+    const judgeRaw = (rec["judge verdict"] ?? "").trim();
+    const reviewerRaw = (rec["reviewer verdict"] ?? "").trim();
+    if (!reviewerRaw) continue;
+    const judge = canonical(judgeRaw, VERDICT_LABELS) ?? judgeRaw;
+    const reviewer = canonical(reviewerRaw, VERDICT_LABELS);
+    const shown = reviewer ?? reviewerRaw;
     const id = rec["row id"] ?? "";
     const note = rec["reviewer note"] ?? "";
-    const ok = same(judge, reviewer);
+    if (reviewer === null)
+      out.unrecognised.push({
+        rowId: id,
+        field: "verdict",
+        value: reviewerRaw,
+      });
+    const ok = judge === reviewer;
     out.reviewed++;
     if (ok) out.agreed++;
     const stat = (out.perVerdict[judge] ??= { reviewed: 0, agreed: 0 });
     stat.reviewed++;
     if (ok) stat.agreed++;
     const line = (out.confusion[judge] ??= {});
-    line[reviewer] = (line[reviewer] ?? 0) + 1;
+    line[shown] = (line[shown] ?? 0) + 1;
     if (!ok)
       out.disagreements.push({
         rowId: id,
         field: "verdict",
         judge,
-        reviewer,
+        reviewer: shown,
         note,
       });
 
+    // Compare canonical spellings; a reviewer value outside the allowed set disagrees.
+    const check = (
+      field: "partial reason" | "cause",
+      judgeValue: string,
+      reviewerValue: string,
+      allowed: readonly string[],
+      tally: { both: number; agreed: number },
+    ) => {
+      const r = canonical(reviewerValue, allowed);
+      if (r === null && reviewerValue)
+        out.unrecognised.push({ rowId: id, field, value: reviewerValue });
+      tally.both++;
+      if (r !== null && r === canonical(judgeValue, allowed)) tally.agreed++;
+      else
+        out.disagreements.push({
+          rowId: id,
+          field,
+          judge: judgeValue,
+          reviewer: r ?? reviewerValue,
+          note,
+        });
+    };
     const jPartial = (rec["judge partial reason"] ?? "").trim();
     const rPartial = (rec["reviewer partial reason"] ?? "").trim();
-    if (same(judge, "Partial") && same(reviewer, "Partial")) {
-      out.partial.both++;
-      if (same(jPartial, rPartial)) out.partial.agreed++;
-      else
-        out.disagreements.push({
-          rowId: id,
-          field: "partial reason",
-          judge: jPartial,
-          reviewer: rPartial,
-          note,
-        });
-    }
+    if (judge === "Partial" && reviewer === "Partial")
+      check("partial reason", jPartial, rPartial, PARTIAL_REASONS, out.partial);
     const jCause = (rec["judge cause"] ?? "").trim();
     const rCause = (rec["reviewer cause"] ?? "").trim();
-    if (jCause && rCause) {
-      out.cause.both++;
-      if (same(jCause, rCause)) out.cause.agreed++;
-      else
-        out.disagreements.push({
-          rowId: id,
-          field: "cause",
-          judge: jCause,
-          reviewer: rCause,
-          note,
-        });
-    }
+    if (jCause && rCause)
+      check("cause", jCause, rCause, ERROR_CAUSES, out.cause);
   }
   out.rate = out.reviewed ? out.agreed / out.reviewed : null;
   return out;
@@ -233,12 +309,16 @@ const pct = (n: number, d: number) =>
   d ? `${((100 * n) / d).toFixed(1)}%` : "n/a";
 const cell = (s: string) => s.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
 
-export function calibrationMarkdown(a: Agreement): string {
+export function calibrationMarkdown(a: Agreement, blind = false): string {
   const passed = a.rate !== null && a.rate >= AGREEMENT_TARGET;
   const lines = [
     "# Judge calibration",
     "",
     "The reviewer is also an LLM (Claude); this measures agreement between models, not human truth.",
+    "",
+    blind
+      ? "Review mode: blind (the reviewer did not see the judge columns)."
+      : "Review mode: not blind (the reviewer saw the judge columns, so agreement may be inflated).",
     "",
     `Target: at least ${AGREEMENT_TARGET * 100}% agreement. Result: **${passed ? "PASS" : "FAIL"}**.`,
     "",
@@ -272,9 +352,19 @@ export function calibrationMarkdown(a: Agreement): string {
     `- Partial reason agreement (both Partial): ${a.partial.agreed}/${a.partial.both} (${pct(a.partial.agreed, a.partial.both)})`,
     `- Cause agreement (both gave a cause): ${a.cause.agreed}/${a.cause.both} (${pct(a.cause.agreed, a.cause.both)})`,
     "",
-    "## Disagreements",
+    "## Unrecognised reviewer values",
     "",
   );
+  if (a.unrecognised.length === 0) lines.push("None.");
+  else
+    lines.push(
+      "These count as disagreements.",
+      "",
+      ...a.unrecognised.map(
+        (u) => `- ${cell(u.rowId)} (${u.field}): ${cell(u.value)}`,
+      ),
+    );
+  lines.push("", "## Disagreements", "");
   if (a.disagreements.length === 0) lines.push("None.");
   else
     lines.push(
@@ -308,16 +398,36 @@ async function main(): Promise<void> {
     const out = path.join(path.dirname(scoredPath), "calibration-sample.csv");
     await writeFile(out, sampleCsv(rows, sample), "utf8");
     console.log(`Wrote ${sample.length} rows to ${out}`);
+    if (process.argv.includes("--blind")) {
+      const blindOut = path.join(
+        path.dirname(scoredPath),
+        "calibration-reviewer.csv",
+      );
+      await writeFile(blindOut, reviewerCsv(rows, sample), "utf8");
+      console.log(`Wrote the blind reviewer copy to ${blindOut}`);
+    }
   } else if (command === "score") {
     const samplePath = path.resolve(argValue("--sample"));
-    const records = parse(await readFile(samplePath, "utf8"), {
-      columns: true,
-      skip_empty_lines: true,
-      relax_column_count: true,
-    }) as Record<string, string>[];
+    const read = async (file: string) =>
+      parse(await readFile(file, "utf8"), {
+        columns: true,
+        skip_empty_lines: true,
+        relax_column_count: true,
+      }) as Record<string, string>[];
+    const reviewerPath = process.argv.includes("--reviewer")
+      ? path.resolve(argValue("--reviewer"))
+      : null;
+    const key = await read(samplePath);
+    const records = reviewerPath
+      ? joinReviewer(key, await read(reviewerPath))
+      : key;
     const result = agreement(records);
     const out = path.join(path.dirname(samplePath), "calibration.md");
-    await writeFile(out, calibrationMarkdown(result), "utf8");
+    await writeFile(
+      out,
+      calibrationMarkdown(result, reviewerPath !== null),
+      "utf8",
+    );
     console.log(
       `Agreement ${pct(result.agreed, result.reviewed)} over ${result.reviewed} rows; wrote ${out}`,
     );

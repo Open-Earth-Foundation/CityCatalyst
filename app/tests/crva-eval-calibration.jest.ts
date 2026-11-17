@@ -4,6 +4,8 @@ import {
   agreement,
   calibrationMarkdown,
   calibrationSample,
+  joinReviewer,
+  reviewerCsv,
   rowIds,
   sampleCsv,
 } from "../scripts/crva-eval/calibration";
@@ -206,5 +208,100 @@ describe("agreement", () => {
       calibrationMarkdown(agreement([rec({ "reviewer verdict": "Omission" })])),
     ).toContain("**FAIL**");
     expect(calibrationMarkdown(agreement([]))).toContain("**FAIL**");
+  });
+});
+
+describe("blind reviewer copy", () => {
+  const rows = dataset();
+  const s = calibrationSample(rows, 1, 30);
+  const parseCsv = (csv: string) =>
+    parse(csv, { columns: true }) as Record<string, string>[];
+
+  it("has the same rows and order but no judge columns", () => {
+    const key = parseCsv(sampleCsv(rows, s));
+    const blind = parseCsv(reviewerCsv(rows, s));
+    expect(blind.map((r) => r["row id"])).toEqual(key.map((r) => r["row id"]));
+    const columns = Object.keys(blind[0]);
+    expect(columns.some((c) => c.startsWith("judge"))).toBe(false);
+    expect(columns).toEqual(
+      expect.arrayContaining([
+        "row id",
+        "gold value",
+        "model value",
+        "reviewer verdict",
+        "reviewer note",
+      ]),
+    );
+  });
+
+  it("joins the filled reviewer columns onto the key by row id", () => {
+    const key = parseCsv(sampleCsv(rows, s));
+    const blind = parseCsv(reviewerCsv(rows, s)).reverse();
+    blind[0]["reviewer verdict"] = "Omission";
+    blind[0]["reviewer note"] = "n";
+    const joined = joinReviewer(key, blind);
+    const last = joined[joined.length - 1];
+    expect(last["reviewer verdict"]).toBe("Omission");
+    expect(last["reviewer note"]).toBe("n");
+    expect(last["judge verdict"]).toBe(key[key.length - 1]["judge verdict"]);
+  });
+
+  it("errors on unknown or missing row ids", () => {
+    const key = parseCsv(sampleCsv(rows, s));
+    const blind = parseCsv(reviewerCsv(rows, s));
+    expect(() =>
+      joinReviewer(key, [...blind, { ...blind[0], "row id": "zzz" }]),
+    ).toThrow(/zzz/);
+    expect(() => joinReviewer(key, blind.slice(1))).toThrow(
+      new RegExp(blind[0]["row id"]),
+    );
+  });
+});
+
+describe("reviewer value normalisation", () => {
+  const rec = (o: Record<string, string>) => ({
+    "row id": "g2",
+    "judge verdict": "Wrong content",
+    "judge partial reason": "",
+    "judge cause": "prompt",
+    "reviewer verdict": "",
+    "reviewer partial reason": "",
+    "reviewer cause": "",
+    "reviewer note": "",
+    ...o,
+  });
+
+  it("matches case-insensitively and reports canonical casing", () => {
+    const a = agreement([
+      rec({
+        "reviewer verdict": " wrong CONTENT ",
+        "reviewer cause": "PROMPT",
+      }),
+      rec({
+        "row id": "e3",
+        "judge verdict": "GOLD GAP",
+        "reviewer verdict": "gold gap",
+      }),
+    ]);
+    expect(a.agreed).toBe(2);
+    expect(a.cause).toEqual({ both: 1, agreed: 1 });
+    expect(a.confusion["Wrong content"]["Wrong content"]).toBe(1);
+    expect(a.unrecognised).toEqual([]);
+  });
+
+  it("lists unrecognised values and counts them as disagreements", () => {
+    const a = agreement([
+      rec({ "reviewer verdict": "Totally wrong", "reviewer cause": "vibes" }),
+    ]);
+    expect(a.agreed).toBe(0);
+    expect(a.unrecognised).toEqual([
+      { rowId: "g2", field: "verdict", value: "Totally wrong" },
+      { rowId: "g2", field: "cause", value: "vibes" },
+    ]);
+    const md = calibrationMarkdown(a, true);
+    expect(md).toContain("Totally wrong");
+    expect(md).toContain("vibes");
+    expect(md).toContain("Review mode: blind");
+    expect(calibrationMarkdown(a)).toContain("Review mode: not blind");
   });
 });

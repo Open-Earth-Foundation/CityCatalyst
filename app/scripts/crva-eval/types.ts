@@ -50,3 +50,20 @@ export interface GoldWorkbook {
   rows: GoldRow[];
   traps: TrapEntry[];
 }
+
+/** The judge's reading of one model value of a field. */
+export interface Judgment {
+  /** Index into the field's values in bundle order. */
+  valueIndex: number;
+  /** Gold row the value fills, or null when it fills none. */
+  itemKey: string | null;
+  verdict: Verdict | null;
+  modelStatus: ModelStatus;
+  reason: string;
+  /** A close call a person checks before the number is published. */
+  uncertain: boolean;
+  /** The value is in the PDF but the gold missed it; no row, no verdict. */
+  goldGap: boolean;
+  /** `<fieldId>/<item_key>` of the row the value belongs in, for Misattribution. */
+  misattributedTo: string | null;
+}

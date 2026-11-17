@@ -1,3 +1,4 @@
+import { ADAPTER_TO_GOLD_FIELD, goldFieldId } from "./types";
 import { CRVA_FIELD_IDS } from "@/backend/ingest/plugins/ccra/draft-schema";
 import type { RunStats } from "./run-adapter";
 import {
@@ -101,7 +102,10 @@ export function buildReport(input: {
   failedFields?: string[];
 }): string {
   const { city, rows, gold, stats } = input;
-  const v0Ids = new Set<string>(CRVA_FIELD_IDS);
+  const v0Ids = new Set<string>([
+    ...CRVA_FIELD_IDS,
+    ...Object.values(ADAPTER_TO_GOLD_FIELD),
+  ]);
   const overall = summarize(rows);
   const v0 = summarize(rows, (r) => r.isV0Field);
   const other = summarize(rows, (r) => !r.isV0Field);
@@ -117,8 +121,10 @@ export function buildReport(input: {
   );
 
   const perField = CRVA_FIELD_IDS.map((id) => {
-    const s = summarize(rows, (r) => r.fieldId === id);
-    return `| ${id} | ${s.scored} | ${pct(s.shareCorrect)} |`;
+    const gid = goldFieldId(id);
+    const s = summarize(rows, (r) => r.fieldId === id || r.fieldId === gid);
+    const label = gid === id ? id : `${id} (gold ${gid})`;
+    return `| ${label} | ${s.scored} | ${pct(s.shareCorrect)} |`;
   });
 
   const usedModels = input.judgeModels?.length
@@ -202,6 +208,9 @@ export function buildReport(input: {
             `- Warning: judgments in the log came from ${usedModels.join(", ")}, but JUDGE_MODEL is now ${input.judgeModel}.`,
           ]
         : []),
+      `- Field aliases: ${Object.entries(ADAPTER_TO_GOLD_FIELD)
+        .map(([a, g]) => `${a} -> ${g}`)
+        .join(", ")}`,
       `- Extraction model: ${input.extractionModel ?? "unknown"}`,
       `- Run ${stats.run}: ${stats.status}, ${stats.minutes} min, ${stats.parts} parts, ${stats.llmCalls} LLM calls`,
       `- Values kept: ${stats.valuesKept}, dropped: ${stats.valuesDropped}`,

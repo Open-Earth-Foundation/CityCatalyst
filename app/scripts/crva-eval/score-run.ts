@@ -21,7 +21,7 @@ import { JudgeCallError, judgeClientConfig, judgeField } from "./judge";
 import { buildReport } from "./report";
 import type { RunStats } from "./run-adapter";
 import { reviewSample, scoreRun, sheetCsv } from "./score";
-import type { Judgment } from "./types";
+import { goldFieldId, type Judgment } from "./types";
 
 /** One line of judge.jsonl: a single judge call, successful or not. */
 export interface JudgeLogLine {
@@ -34,6 +34,20 @@ export interface JudgeLogLine {
   response: unknown;
   judgments?: Judgment[];
   error?: string;
+}
+
+/**
+ * Judges one adapter field. The gold answer key may use another id for the
+ * same requirement, so the judge sees the gold id while the values stay the
+ * adapter's; the caller stores the result under the adapter id.
+ */
+export function judgeAdapterField(
+  input: Omit<Parameters<typeof judgeField>[0], "fieldId"> & {
+    adapterFieldId: string;
+  },
+) {
+  const { adapterFieldId, ...rest } = input;
+  return judgeField({ ...rest, fieldId: goldFieldId(adapterFieldId) });
 }
 
 /** Rebuilds judgments from the last ok line of each field. */
@@ -151,10 +165,10 @@ async function main() {
           response: null,
         };
         try {
-          const result = await judgeField({
+          const result = await judgeAdapterField({
             client,
             model: judgeModel,
-            fieldId,
+            adapterFieldId: fieldId,
             goldRows: gold.rows,
             values: bundle.values.filter((v) => v.fieldId === fieldId),
             figures: bundle.figures,

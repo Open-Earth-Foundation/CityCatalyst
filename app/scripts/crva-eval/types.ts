@@ -88,3 +88,12 @@ export interface ScoredRow {
   reason: string;
   uncertain: boolean;
 }
+
+/** Adapter field ids whose gold answer key uses another id for the same requirement. */
+export const ADAPTER_TO_GOLD_FIELD: Record<string, string> = {
+  "A2.4a": "A2.4",
+};
+
+export function goldFieldId(adapterFieldId: string): string {
+  return ADAPTER_TO_GOLD_FIELD[adapterFieldId] ?? adapterFieldId;
+}

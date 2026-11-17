@@ -5,6 +5,7 @@ import {
   type ReportRunStats,
 } from "../scripts/crva-eval/report";
 import {
+  judgeAdapterField,
   judgmentsFromLog,
   modelsFromLog,
   parseLog,
@@ -319,4 +320,79 @@ describe("score-run CLI seed", () => {
     }
     expect(stderr).toContain("--seed must be an integer");
   }, 60000);
+});
+
+describe("field aliases", () => {
+  it("lists the aliases and labels the A2.4a row with its gold id", () => {
+    const report = buildReport({
+      city: "x",
+      rows: [row({ fieldId: "A2.4", isV0Field: true, verdict: "Correct" })],
+      gold,
+      stats,
+    });
+    expect(report).toContain("Field aliases: A2.4a -> A2.4");
+    expect(report).toMatch(/^\| A2\.4a \(gold A2\.4\) \| 1 \|/m);
+  });
+
+  it("does not count A2.4 gold rows among other fields", () => {
+    const withA24: GoldWorkbook = {
+      ...gold,
+      rows: [...gold.rows, { ...gold.rows[0], fieldId: "A2.4" }],
+    };
+    const report = buildReport({ city: "x", rows: [], gold: withA24, stats });
+    expect(report).toContain("## Other fields (34)");
+  });
+
+  it("the judge call receives the gold field id", async () => {
+    const client = {
+      getConfig: () => ({ models: { crva_extraction: { name: "j" } } }),
+      complete: async () => ({
+        content: JSON.stringify({
+          judgments: [
+            {
+              valueIndex: 0,
+              itemKey: "Puerto",
+              verdict: "Correct",
+              modelStatus: "FOUND",
+              reason: "ok",
+              uncertain: false,
+              goldGap: false,
+              misattributedTo: null,
+            },
+          ],
+        }),
+        finishReason: "stop",
+      }),
+    };
+    const result = await judgeAdapterField({
+      client: client as never,
+      model: "j",
+      adapterFieldId: "A2.4a",
+      goldRows: [
+        {
+          rowNumber: 2,
+          fieldId: "A2.4",
+          itemKey: "Puerto",
+          goldValue: "Port",
+          pages: [10],
+          evidence: "",
+          status: "FOUND",
+          notes: "",
+          trapNote: false,
+        },
+      ],
+      values: [
+        {
+          fieldId: "A2.4a",
+          value: { name: "Puerto", description: "Port" },
+          source: { file: "f", page: 10, quote: "El puerto" },
+          origin: "ai_draft",
+          confirmed: false,
+        },
+      ],
+      figures: [],
+    });
+    expect((result.request as { fieldId: string }).fieldId).toBe("A2.4");
+    expect(result.judgments[0].itemKey).toBe("Puerto");
+  });
 });

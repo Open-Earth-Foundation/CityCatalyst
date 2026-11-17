@@ -124,17 +124,39 @@ describe("scoreRun without matches", () => {
     expect(row.uncertain).toBe(false);
   });
 
-  it("a figure on a FOUND row page makes the row PARTIAL for review", () => {
-    const [row] = score(
-      [goldRow({})],
-      [],
-      {},
-      { figures: [{ page: 179, imageId: "i", caption: null }] },
-    );
-    expect(row).toMatchObject({
-      verdict: "Omission",
-      modelStatus: "PARTIAL",
-      notes: "figure listed on p. 179 for review",
+  describe("figure-only PARTIAL", () => {
+    const figureRow = goldRow({ evidence: "Figura 3. Mapa de riesgo" });
+    const captioned = [{ page: 179, imageId: "i", caption: "Mapa" }];
+
+    it("applies with a captioned figure and a figure-like gold row", () => {
+      const [row] = score([figureRow], [], {}, { figures: captioned });
+      expect(row).toMatchObject({
+        verdict: "Omission",
+        modelStatus: "PARTIAL",
+        notes: "figure listed on p. 179 for review",
+      });
+    });
+
+    it("does not apply when the figure has no caption", () => {
+      const [row] = score(
+        [figureRow],
+        [],
+        {},
+        { figures: [{ page: 179, imageId: "i", caption: null }] },
+      );
+      expect(row).toMatchObject({
+        verdict: "Omission",
+        modelStatus: "NOT_FOUND",
+      });
+      expect(row.notes).toBe("");
+    });
+
+    it("does not apply when the gold row does not mention a figure", () => {
+      const [row] = score([goldRow({})], [], {}, { figures: captioned });
+      expect(row).toMatchObject({
+        verdict: "Omission",
+        modelStatus: "NOT_FOUND",
+      });
     });
   });
 
@@ -210,6 +232,57 @@ describe("scoreRun with matches", () => {
       { "A1.2a": [judgment({ verdict: "Hallucination" })] },
     );
     expect(row).toMatchObject({ kind: "gold", verdict: "Hallucination" });
+  });
+});
+
+describe("field aliases", () => {
+  const a24: CrvaDraftValue = {
+    fieldId: "A2.4a",
+    value: { name: "Puerto", description: "Port" },
+    source: { file: "ba.pdf", page: 10, quote: "El puerto" },
+    origin: "ai_draft",
+    confirmed: false,
+  };
+
+  it("an A2.4a value fills an A2.4 gold row", () => {
+    const rows = score(
+      [goldRow({ fieldId: "A2.4", itemKey: "Puerto" })],
+      [a24],
+      { "A2.4a": [judgment({ itemKey: "Puerto" })] },
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      fieldId: "A2.4",
+      isV0Field: true,
+      verdict: "Correct",
+      modelValue: "Puerto — Port",
+    });
+  });
+
+  it("an unmatched A2.4a value keeps the adapter field id", () => {
+    const rows = score([], [a24], {
+      "A2.4a": [
+        judgment({
+          itemKey: null,
+          verdict: "Hallucination",
+          modelStatus: "NOT_FOUND",
+        }),
+      ],
+    });
+    expect(rows[0]).toMatchObject({
+      kind: "extra",
+      fieldId: "A2.4a",
+      isV0Field: true,
+    });
+  });
+
+  it("A2.4 rows with no judged values count as v0 and not judged", () => {
+    const rows = score([goldRow({ fieldId: "A2.4", itemKey: "P" })], [a24], {});
+    expect(rows[0]).toMatchObject({
+      isV0Field: true,
+      uncertain: true,
+      reason: "field not judged",
+    });
   });
 });
 

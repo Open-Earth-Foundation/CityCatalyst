@@ -3,17 +3,26 @@ import {
   type CrvaDraftBundle,
   type CrvaDraftValue,
 } from "@/backend/ingest/plugins/ccra/draft-schema";
-import type {
-  GoldRow,
-  GoldWorkbook,
-  Judgment,
-  ScoredRow,
-  Verdict,
+import {
+  ADAPTER_TO_GOLD_FIELD,
+  goldFieldId,
+  type GoldRow,
+  type GoldWorkbook,
+  type Judgment,
+  type ScoredRow,
+  type Verdict,
 } from "./types";
 
 type Source = CrvaDraftValue["source"];
 
-const V0_FIELDS = new Set(CRVA_FIELD_IDS);
+// Gold ids count as v0 too, so aliased rows (A2.4) are scored as v0.
+const V0_FIELDS = new Set([
+  ...CRVA_FIELD_IDS,
+  ...Object.values(ADAPTER_TO_GOLD_FIELD),
+]);
+
+/** A figure row is only worth a human look when the gold itself describes a figure. */
+const FIGURE_WORDS = /\b(figura|fig\.|mapa|gr[aá]fico|figure|map|chart)\b/i;
 
 /** Best first; a better verdict wins when several values hit one gold row. */
 const VERDICT_RANK: Verdict[] = [
@@ -73,12 +82,15 @@ export function scoreRun(input: {
   for (const trap of gold.traps) {
     if (trap.pages !== "all") trap.pages.forEach((p) => trapPages.add(p));
   }
-  const figurePages = new Set(bundle.figures.map((f) => f.page));
+  const figurePages = new Set(
+    bundle.figures.filter((f) => f.caption?.trim()).map((f) => f.page),
+  );
   const goldRows = [...gold.rows].sort((a, b) => a.rowNumber - b.rowNumber);
 
+  // Values and gold rows are grouped under the gold field id.
   const fieldIds = new Set<string>([
     ...goldRows.map((r) => r.fieldId),
-    ...bundle.values.map((v) => v.fieldId),
+    ...bundle.values.map((v) => goldFieldId(v.fieldId)),
   ]);
 
   const goldScored: ScoredRow[] = [];
@@ -88,8 +100,15 @@ export function scoreRun(input: {
 
   for (const fieldId of fieldIds) {
     const isV0Field = V0_FIELDS.has(fieldId);
-    const values = bundle.values.filter((v) => v.fieldId === fieldId);
-    const fieldJudgments = judgments[fieldId] ?? [];
+    const values = bundle.values.filter(
+      (v) => goldFieldId(v.fieldId) === fieldId,
+    );
+    // Judgments are stored under the adapter's own field id.
+    const adapterId =
+      Object.keys(ADAPTER_TO_GOLD_FIELD).find(
+        (k) => ADAPTER_TO_GOLD_FIELD[k] === fieldId,
+      ) ?? fieldId;
+    const fieldJudgments = judgments[adapterId] ?? [];
     // An empty list is the same as a field the judge never reached.
     const notJudged =
       isV0Field && fieldJudgments.length === 0 && values.length > 0;
@@ -118,13 +137,13 @@ export function scoreRun(input: {
       }
       extras.push({
         index: judgment.valueIndex,
-        row: extraRow(fieldId, value, judgment, trapPages),
+        row: extraRow(value.fieldId, value, judgment, trapPages),
       });
     }
     // Every bundle value must reach the output, judged or not.
     values.forEach((value, index) => {
       if (seen.has(index)) return;
-      extras.push({ index, row: unjudgedRow(fieldId, value, trapPages) });
+      extras.push({ index, row: unjudgedRow(value.fieldId, value, trapPages) });
     });
 
     const filled = new Map<number, Match>();
@@ -211,8 +230,12 @@ export function scoreRun(input: {
         });
         continue;
       }
-      // A figure on the row's pages is queued for human review, not read.
-      const figurePage = row.pages.find((page) => figurePages.has(page));
+      // A captioned figure on the row's pages is queued for human review, but
+      // only when the gold row itself points at a figure; scanned PDFs have
+      // captioned figures on most pages.
+      const figurePage = FIGURE_WORDS.test(`${row.evidence} ${row.goldValue}`)
+        ? row.pages.find((page) => figurePages.has(page))
+        : undefined;
       goldScored.push({
         ...empty,
         modelStatus: figurePage === undefined ? "NOT_FOUND" : "PARTIAL",

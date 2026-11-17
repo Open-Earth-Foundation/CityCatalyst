@@ -12,40 +12,41 @@ Engineering scripts. They run the CRVA ingest adapter on a city PDF, then score 
 
 ## Commands
 
-From `app/` in Command Prompt:
+From `app/` (forward slashes work in Command Prompt and PowerShell too):
 
 ```
-npx tsx scripts/crva-eval/run-adapter.ts --pdf "C:\Users\david\Downloads\Analisis_Riesgos_Climaticos_CABA_2020_escaneado.pdf" --city buenos-aires --runs 1
+npx tsx scripts/crva-eval/run-adapter.ts --pdf <path-to-pdf> --city buenos-aires --runs 1
 ```
 
-Check `runs.md` in the new folder: status ok, parts and boundaries listed. Then:
+`--runs` must be a positive integer. Check `runs.md` in the new folder: status ok, part pages and drop reasons listed. Then:
 
 ```
-npx tsx scripts/crva-eval/score-run.ts --gold "C:\Users\david\Downloads\Buenos_Aires_CRVA_2020.xlsx" --run reports\crva-eval\buenos-aires\<timestamp>\run-1.json --city buenos-aires
+npx tsx scripts/crva-eval/score-run.ts --gold <path-to-gold.xlsx> --run reports/crva-eval/buenos-aires/<timestamp>/run-1.json --city buenos-aires
 ```
 
-Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (default 15); `--rejudge` calls the judge again (otherwise an existing `judge.jsonl` is reused and no LLM calls are made), `--seed 1285` changes the review sample.
+Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (default 15). On `score-run.ts`, fields already in `judge.jsonl` are reused, and only v0 fields missing from it are sent to the judge (LLM calls); `--rejudge` renames the existing log to `judge.<timestamp>.jsonl` and judges every field again; `--seed 1285` changes the review sample.
 
-A failed run (`bundle` null) is refused. Only the 12 v0 fields with at least one value are judged; a field whose judge call fails twice is listed in `report.md` under Run and shown as `field not judged`.
+`score-run.ts` refuses a failed run (`bundle` null) and a gold file whose `PDF pages` differs from the run's page count. It warns when the Header's PDF file name differs from the run's file (case and an `_escaneado` suffix are ignored). Only the 12 v0 fields with at least one value are judged; a field whose judge call fails twice is listed in `report.md` under Run and shown as `field not judged`.
 
 ## Output
 
-`reports/crva-eval/<city>/<timestamp>/`:
+`app/reports/crva-eval/<city>/<timestamp>/` (under `app/` whatever the working directory):
 
-| File                        | Content                                                                          |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| `run-<n>.json`, `runs.md`   | Adapter output and run statistics                                                |
-| `score-run-<n>/scored.csv`  | Columns to paste into the Sheet                                                  |
-| `score-run-<n>/scored.json` | The same rows with the judge's reasons                                           |
-| `score-run-<n>/judge.jsonl` | One line per judge call (request, response, judgments or error)                  |
-| `score-run-<n>/review.csv`  | Uncertain rows plus a seeded sample of confident verdicts, for a person to check |
-| `score-run-<n>/report.md`   | Share correct, verdict counts, status matrix, traps, thresholds, run details     |
+| File                        | Content                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `run-<n>.json`, `runs.md`   | Adapter output and run statistics, including the part page ranges and dropped values per reason               |
+| `score-run-<n>/scored.csv`  | Columns to paste into the Sheet                                                                               |
+| `score-run-<n>/scored.json` | The same rows with the judge's reasons and the gold side                                                      |
+| `score-run-<n>/judge.jsonl` | One line per judge call (request, response, judgments or error)                                               |
+| `score-run-<n>/review.csv`  | Uncertain rows plus a seeded sample of confident verdicts, gold and model side by side, for a person to check |
+| `score-run-<n>/report.md`   | Share correct, value-level share, verdict counts, status matrix, traps per entry, thresholds, run details     |
 
-Verdict definitions are provisional (from the xlsx and the ticket) until the answer key doc is available.
+Verdict definitions are provisional (from the xlsx and the ticket) until the answer key doc is available. The 80% threshold is evaluated on the v0 fields; `report.md` shows the overall share beside it.
 
 ## Paste into the Sheet
 
-1. Open the Gold tab. If there is no `model status` column after `model evidence`, insert one.
+1. Open the Gold tab. If there is no `model status` column after `model evidence`, insert one. If there is no `eval notes` column at the end of the tab, add one.
 2. Open `scored.csv`. Check that `gold_row` lines up with the Sheet row numbers.
-3. Paste the columns `model value` to `verdict` at row 2 of column H.
-4. For extra and duplicate rows (empty `gold_row`), also paste `field_id` and `item_key` into the `field_id` and `item_key` columns of the new rows at the end of the Sheet, and put `eval notes` into `notes`. Never overwrite the annotator's notes on gold rows.
+3. Paste the columns `model value` to `verdict` at row 2 of the `model value` column.
+4. Paste the `eval notes` column of the CSV at row 2 of the `eval notes` column, for every row. Never paste eval notes into the gold `notes` column of gold rows: that column is the annotator's.
+5. For extra and duplicate rows (empty `gold_row`), also paste `field_id` and `item_key` into the `field_id` and `item_key` columns of the new rows at the end of the Sheet.

@@ -105,9 +105,8 @@ The quote check removes every unverified value, so a "verified share" measure wo
 The eval harness in `app/scripts/crva-eval/` runs the adapter on a PDF and scores the result against a gold `.xlsx`. From `app/`:
 
 ```
-npx tsx scripts/crva-eval/run-adapter.ts --pdf <path> --city <slug> --runs 1
-npx tsx scripts/crva-eval/score-run.ts --gold <xlsx> --run reports\crva-eval\<city>\<timestamp>
-un-1.json --city <slug>
+npx tsx scripts/crva-eval/run-adapter.ts --pdf <path-to-pdf> --city <slug> --runs 1
+npx tsx scripts/crva-eval/score-run.ts --gold <path-to-gold.xlsx> --run reports/crva-eval/<city>/<timestamp>/run-1.json --city <slug>
 ```
 
 Options, environment variables and outputs are in [`../scripts/crva-eval/README.md`](../scripts/crva-eval/README.md). The plugin sends the item bytes as a `data:` URL by default, because Mistral cannot fetch the `madrid.es` link (error 3310).

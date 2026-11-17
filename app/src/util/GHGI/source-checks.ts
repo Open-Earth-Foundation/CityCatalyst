@@ -264,7 +264,9 @@ function convert<R extends CheckableValue>(
 ): R {
   const key = "totalCO2e" in item || !("value" in item) ? "totalCO2e" : "value";
   const current = item[key];
-  if (current == null) return item;
+  if (current == null && GAS_KEYS.every((gas) => item[gas] == null)) {
+    return item;
+  }
 
   const group = unitGroupKey(item);
   const unitApplies = group != null;
@@ -280,6 +282,17 @@ function convert<R extends CheckableValue>(
   // Multiply first, then divide: Mt to t by a ratio of 1e-6 drifts on decimals.
   const scale = (n: number) =>
     unitApplies ? (n * UNIT_FACTOR[toUnit]) / UNIT_FACTOR[fromUnit] : n;
+
+  if (current == null) {
+    // A gas-only row: no total or printed text, so only the unit applies.
+    if (!unitApplies || fromUnit === toUnit) return item;
+    const next: CheckableValue = { ...item };
+    for (const gas of GAS_KEYS) {
+      const gasValue = item[gas];
+      if (gasValue != null) next[gas] = scale(gasValue);
+    }
+    return next as R;
+  }
 
   let value = scale(current);
   let separatorChanged = false;
@@ -418,10 +431,16 @@ export function totalPlausibility(
 const BASIC_LABEL = /\bBASIC\b(?!\s*\+)/i;
 const BASIC_PLUS_LABEL = /\bBASIC\s*\+(?!\s*S3)/i;
 
+/** Any BASIC+ label, BASIC+ S3 included: above a BASIC inventory. */
+const ANY_BASIC_PLUS_LABEL = /\bBASIC\s*\+/i;
+const BASIC_PLUS_S3_LABEL = /\bBASIC\s*\+\s*S3\b/i;
+
 /**
  * Index of the reported total that matches the inventory level: the BASIC or
  * BASIC+ labeled one when present, else the largest. Only positive totals that
- * are not net totals qualify. Null when no candidate qualifies.
+ * are not net totals qualify, and the fallback skips totals labeled for a
+ * higher level (BASIC+ or BASIC+ S3 for BASIC, BASIC+ S3 for BASIC+). Null
+ * when no candidate qualifies.
  */
 export function selectLevelTotal(
   candidates: ReportedTotal[],
@@ -441,9 +460,15 @@ export function selectLevelTotal(
     );
     if (labeled >= 0) return labeled;
   }
+  const higher =
+    inventoryType === "gpc_basic"
+      ? ANY_BASIC_PLUS_LABEL
+      : inventoryType === "gpc_basic_plus"
+        ? BASIC_PLUS_S3_LABEL
+        : null;
   let best: number | null = null;
   candidates.forEach((c, i) => {
-    if (!qualifies(c)) return;
+    if (!qualifies(c) || higher?.test(c.label)) return;
     if (best == null || c.value > candidates[best].value) best = i;
   });
   return best;

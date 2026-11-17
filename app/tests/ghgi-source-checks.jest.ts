@@ -50,6 +50,17 @@ describe("applyReadings", () => {
     expect(r.co2).toBe(100000000);
   });
 
+  it("scales the gases of a gas-only MT row", () => {
+    const rows = [
+      { totalCO2e: null, unitCheck: "MT" as const, co2: 100, ch4: null },
+    ];
+    const [r] = applyReadings(rows, T_EN, MT_EN);
+    expect(r.totalCO2e).toBeNull();
+    expect(r.co2).toBe(100_000_000);
+    expect(r.ch4).toBeNull();
+    expect(applyReadings([r], MT_EN, T_EN)).toEqual(rows);
+  });
+
   it("round-trips readings", () => {
     const rows = [
       { totalCO2e: 252514, unitCheck: "MT" as const, co2: 100 },
@@ -267,6 +278,18 @@ describe("unit groups", () => {
     expect(mt[0].totalCO2e).toBe(1_500_000);
   });
 
+  it("scales the gases of a gas-only row in a page group", () => {
+    const gasOnly = [
+      row({ totalCO2e: null, unitCheck: "missing", page: 12, n2o: 2.5 }),
+    ];
+    const [r] = applyReadings(gasOnly, current, {
+      ...current,
+      units: { p12: "kt", p14: "t" },
+    });
+    expect(r.totalCO2e).toBeNull();
+    expect(r.n2o).toBe(2500);
+  });
+
   it("leaves MT rows to the doc reading and unit-less rows to their page", () => {
     const rows = [
       row({ totalCO2e: 2, unitCheck: "MT", page: 12 }),
@@ -445,6 +468,18 @@ describe("selectLevelTotal", () => {
   });
   it("returns null for no candidates", () => {
     expect(selectLevelTotal([], "gpc_basic")).toBeNull();
+  });
+  it("never falls back to a higher level than the inventory", () => {
+    const c = [
+      total("Total gross emissions", 412300),
+      total("BASIC+ total", 498000),
+      total("BASIC+ S3 total", 610000),
+    ];
+    expect(selectLevelTotal(c, "gpc_basic")).toBe(0);
+    expect(selectLevelTotal(c, "gpc_basic_plus")).toBe(1);
+    expect(
+      selectLevelTotal([total("BASIC+ total", 498000)], "gpc_basic"),
+    ).toBeNull();
   });
   it("skips a labelled total that is net or not positive", () => {
     const c = [

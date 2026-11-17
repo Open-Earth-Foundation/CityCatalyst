@@ -50,12 +50,15 @@ def export_run_dir(
     run_dir: Path, *, experiment_name: str,
     metrics: Mapping[str, float | None], params: Mapping[str, object],
     tags: Mapping[str, str], children: Mapping[str, Mapping[str, float | None]],
+    child_tags: Mapping[str, Mapping[str, str]] | None = None,
     tracking_uri: str | None = None,
 ) -> str:
     """Snapshot a directory, log parent/fixture runs, and return the parent ID.
 
     Raises on incomplete upload and marks created runs FAILED. The source is
     never changed. Only files within the source directory may be exported.
+    Children use run-id/fixture names, shared compatibility params and their own
+    status tags; parent-only quality/comparison tags are not inherited.
     """
     client = MlflowClient(tracking_uri=tracking_uri)
     # Snapshot first so the checksum manifest describes exactly the uploaded bytes.
@@ -80,13 +83,24 @@ def export_run_dir(
         parent_id = parent.info.run_id
         try:
             _log_values(client, parent_id, metrics, params)
+            # Only identity tags are shared; fixture judgments must stay local.
+            original_run_id = tags.get("run_id") or run_dir.name
+            shared_tags = {key: value for key, value in tags.items() if key in (
+                "suite", "run_id", "label", "code_version", "draft",
+            )}
             for name, child_metrics in children.items():
-                child = client.create_run(experiment_id, run_name=name, tags={
-                    **tags, "fixture_id": name, "mlflow.parentRunId": parent_id,
+                fixture_params = {key: params.get(key) for key in (
+                    "code_version", "corpus_fingerprint", "evaluator_fingerprint",
+                    "llm_config_sha256", "label",
+                )}
+                fixture_params.update(run_id=original_run_id, fixture_id=name)
+                child = client.create_run(experiment_id, run_name=f"{original_run_id}/{name}", tags={
+                    **shared_tags, **(child_tags or {}).get(name, {}),
+                    "fixture_id": name, "mlflow.parentRunId": parent_id,
                 })
                 child_id = child.info.run_id
                 try:
-                    _log_values(client, child_id, child_metrics, {})
+                    _log_values(client, child_id, child_metrics, fixture_params)
                 except Exception:
                     client.set_terminated(child_id, "FAILED")
                     raise

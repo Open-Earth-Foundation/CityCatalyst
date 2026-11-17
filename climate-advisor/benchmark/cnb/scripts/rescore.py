@@ -2,7 +2,8 @@
 
 Use it after changing only how judgments are scored (metrics, gates, citation
 checks) to bring the approved baseline and any saved run up to the new judge
-policy for the price of nothing. It reuses each stage's saved judge input and
+policy for the price of nothing, or after retrying a failed judge call from its
+saved judge_input.json, which scores that stage for the first time. It reuses each stage's saved judge input and
 judgment. It refuses when the scores would not be honest: the fixtures, judge
 model or judge prompts changed, or the current code would build a different
 judge input from the saved outputs. Those changes need a new benchmark run.
@@ -198,7 +199,8 @@ def rescore(run: Path, output: Path, fixtures_dir: Path) -> dict[str, str]:
         extraction = None
         for stage in STAGES:
             old = fixture.get(stage)
-            if not old or not old.get("judgment"):
+            # A stage whose judge failed can be scored once a retried judgment is saved.
+            if not old or not (old.get("judgment") or (folder / stage / "judgment.json").is_file()):
                 continue
             report = rescore_stage(by_id[fid], stage, folder, old, extraction)
             if stage == "extraction" and not report.evaluation_errors:

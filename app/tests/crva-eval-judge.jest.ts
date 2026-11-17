@@ -518,6 +518,108 @@ describe("judgeField", () => {
   );
 });
 
+describe("other fields' gold rows", () => {
+  const rows: GoldRow[] = [
+    gold({}),
+    gold({
+      rowNumber: 5,
+      fieldId: "B1.2a",
+      itemKey: "Heat",
+      goldValue: "Olas de calor <script>",
+    }),
+    gold({ rowNumber: 6, fieldId: "B1.2a", itemKey: "Gone", status: "N/A" }),
+    gold({
+      rowNumber: 7,
+      fieldId: "C1.2c",
+      itemKey: "Inundaciones pluviales",
+      goldValue: `Sectores | críticos\n${"x".repeat(200)}`,
+    }),
+    ...Array.from({ length: 45 }, (_, i) =>
+      gold({
+        rowNumber: 100 + i,
+        fieldId: "Z.9",
+        itemKey: `z${i}`,
+        goldValue: "z",
+      }),
+    ),
+  ];
+
+  async function promptFor(judgments: unknown[] = [judgment({})]) {
+    const { client, calls } = stubClient(judgments);
+    const result = await judgeField({
+      client,
+      model: MODEL,
+      fieldId: "A1.2a",
+      goldRows: rows,
+      values: [value("a"), value("b"), value("c")],
+      figures: [],
+    });
+    const user = calls[0].messages[1].content;
+    const block = /<other_field_rows>\n([\s\S]*?)\n<\/other_field_rows>/.exec(
+      user,
+    )![1];
+    return {
+      block: block.split("\n"),
+      system: calls[0].messages[0].content,
+      result,
+    };
+  }
+
+  it("lists non-N/A rows of other fields as field_id | item_key | gold value", async () => {
+    const { block } = await promptFor();
+    expect(block[0]).toBe("field_id | item_key | gold value");
+    expect(block).toContain("B1.2a | Heat | Olas de calor \\u003cscript>");
+    expect(block.join("\n")).not.toContain("Gone");
+    expect(block.join("\n")).not.toContain("Balay (1961)");
+    const pluvial = block.find((l) => l.startsWith("C1.2c"))!;
+    expect(
+      pluvial.startsWith(
+        "C1.2c | Inundaciones pluviales | Sectores / críticos x",
+      ),
+    ).toBe(true);
+    expect(pluvial.endsWith("…")).toBe(true);
+    expect(pluvial.length).toBeLessThan(170);
+  });
+
+  it("caps the rows shown per field and says how many were left out", async () => {
+    const { block } = await promptFor();
+    expect(block.filter((l) => l.startsWith("Z.9 |"))).toHaveLength(40);
+    expect(block).toContain("(5 more rows of Z.9 not shown)");
+  });
+
+  it("tells the judge to check other fields before matching", async () => {
+    const { system } = await promptFor();
+    expect(system).toContain(
+      "Before matching a value to a row of this field, check whether its content fits a row of another field better",
+    );
+  });
+
+  it("accepts a real other-field row or ? and flags an unknown one", async () => {
+    const mis = (valueIndex: number, to: string) =>
+      judgment({
+        valueIndex,
+        itemKey: null,
+        modelStatus: "NOT_FOUND",
+        verdict: "Misattribution",
+        cause: "prompt",
+        misattributedTo: to,
+      });
+    const { result } = await promptFor([
+      mis(0, "C1.2c/Inundaciones pluviales"),
+      mis(1, "C1.2c/?"),
+      mis(2, "C1.2c/Nope"),
+    ]);
+    expect(result.judgments.map((j) => j.uncertain)).toEqual([
+      false,
+      false,
+      true,
+    ]);
+    expect(result.judgments[2].reason).toContain(
+      'judge check: misattributedTo "C1.2c/Nope" names no gold row of C1.2c',
+    );
+  });
+});
+
 describe("judgeClientConfig", () => {
   it("points the crva_extraction role at the judge model and keeps the rest", () => {
     const base = {

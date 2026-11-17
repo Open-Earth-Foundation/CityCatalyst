@@ -450,7 +450,7 @@ describe("partial reason and cause", () => {
     ]);
   });
 
-  it("rows with no verdict carry neither", () => {
+  it("a duplicate keeps the judge's explanation but no verdict", () => {
     const rows = score([goldRow({})], [sourceValue("a"), sourceValue("b")], {
       "A1.2a": [
         judgment({ valueIndex: 0 }),
@@ -461,8 +461,55 @@ describe("partial reason and cause", () => {
       kind: "duplicate",
       verdict: null,
       partialReason: null,
-      cause: null,
+      cause: "scope",
     });
+  });
+});
+
+describe("judge verdict", () => {
+  it("is the judgment's verdict on filled rows, extras and duplicates", () => {
+    const rows = score(
+      [goldRow({})],
+      [sourceValue("a"), sourceValue("b"), sourceValue("c")],
+      {
+        "A1.2a": [
+          judgment({ valueIndex: 0 }),
+          judgment({
+            valueIndex: 1,
+            verdict: "Partial",
+            partialReason: "less_detail",
+            cause: "prompt",
+          }),
+          judgment({
+            valueIndex: 2,
+            itemKey: null,
+            modelStatus: "NOT_FOUND",
+            verdict: "Hallucination",
+            cause: "prompt",
+          }),
+        ],
+      },
+    );
+    expect(rows.map((r) => [r.kind, r.verdict, r.judgeVerdict])).toEqual([
+      ["gold", "Correct", "Correct"],
+      ["extra", "Hallucination", "Hallucination"],
+      ["duplicate", null, "Partial"],
+    ]);
+    // The Sheet still shows no verdict on the duplicate.
+    expect(sheetCsv(rows).split("\n")[3]).toMatch(/,FOUND,,duplicate of /);
+  });
+
+  it("is null on rows scored by rule or not judged", () => {
+    const rows = score(
+      [
+        goldRow({}),
+        goldRow({ rowNumber: 3, itemKey: "N", status: "NOT_FOUND" }),
+        goldRow({ rowNumber: 4, fieldId: "X.5", itemKey: "k" }),
+      ],
+      [sourceValue("a")],
+      {},
+    );
+    expect(rows.map((r) => r.judgeVerdict)).toEqual([null, null, null, null]);
   });
 });
 
@@ -652,6 +699,7 @@ describe("reviewSample", () => {
     uncertain: false,
     partialReason: null,
     cause: null,
+    judgeVerdict: null,
     ...extra,
   });
 

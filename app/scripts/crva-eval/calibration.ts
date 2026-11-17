@@ -55,9 +55,13 @@ function isGoldGap(row: ScoredRow): boolean {
   return row.kind === "extra" && row.notes.startsWith(GAP_LABEL);
 }
 
-/** What the judge said about the row: a verdict, or GOLD GAP / duplicate. */
+/**
+ * What the judge said about the row: a verdict, or GOLD GAP / duplicate. A
+ * duplicate shows the judge's own verdict for its value; scored.json files
+ * written before judgeVerdict existed fall back to the label.
+ */
 export function judgeLabel(row: ScoredRow): string {
-  if (row.kind === "duplicate") return DUPLICATE_LABEL;
+  if (row.kind === "duplicate") return row.judgeVerdict ?? DUPLICATE_LABEL;
   if (isGoldGap(row)) return GAP_LABEL;
   return row.verdict ?? "";
 }

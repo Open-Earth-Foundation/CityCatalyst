@@ -45,6 +45,7 @@ function row(overrides: Partial<ScoredRow>): ScoredRow {
     uncertain: false,
     partialReason: null,
     cause: null,
+    judgeVerdict: null,
     ...overrides,
   };
 }
@@ -590,7 +591,7 @@ describe("thresholds and measures", () => {
     it("causes count error verdicts only", () => {
       const table = (prompt: number, fov: number) =>
         [
-          "| Cause (error verdicts) | Rows |",
+          "| Cause (error verdicts; judge's guess; low agreement in calibration) | Rows |",
           "| --- | --- |",
           "| ocr_text_extraction | 1 |",
           "| chunking | 1 |",

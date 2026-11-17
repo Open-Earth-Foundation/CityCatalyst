@@ -140,6 +140,12 @@ export interface ScoredRow {
   partialReason: PartialReason | null | undefined;
   /** From that judgment; rule-scored Omission rows of non-v0 fields get field_outside_v0. */
   cause: ErrorCause | null | undefined;
+  /**
+   * The verdict the judge gave this row's value, kept for calibration. It can
+   * differ from `verdict`: a duplicate keeps it while its published verdict is
+   * null. Null on rows scored by rule or not judged.
+   */
+  judgeVerdict: Verdict | null;
 }
 
 /** Adapter field ids whose gold answer key uses another id for the same requirement. */

@@ -161,7 +161,7 @@ function reasonTables(rows: ScoredRow[]): string {
     ),
     "",
     countTable(
-      "Cause (error verdicts)",
+      "Cause (error verdicts; judge's guess; low agreement in calibration)",
       errors.map((r) => r.cause),
       ERROR_CAUSES,
     ),

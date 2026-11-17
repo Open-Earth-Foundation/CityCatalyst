@@ -32,6 +32,7 @@ function row(partial: Partial<ScoredRow>): ScoredRow {
     uncertain: false,
     partialReason: null,
     cause: null,
+    judgeVerdict: null,
     ...partial,
   };
 }
@@ -64,6 +65,44 @@ function dataset(): ScoredRow[] {
   rows.push(row({ rowNumber: 901, verdict: null }));
   return rows;
 }
+
+describe("duplicates in the calibration sample", () => {
+  it("show the judge's own verdict when it is known", () => {
+    const rows = [
+      row({}),
+      row({
+        kind: "duplicate",
+        rowNumber: null,
+        verdict: null,
+        judgeVerdict: "Partial",
+      }),
+      row({ kind: "duplicate", rowNumber: null, verdict: null }),
+    ];
+    const records = parse(sampleCsv(rows, rows), {
+      columns: true,
+    }) as Record<string, string>[];
+    expect(records.map((r) => [r["row id"], r["judge verdict"]])).toEqual([
+      ["g2", "Correct"],
+      ["d1", "Partial"],
+      ["d2", "duplicate"],
+    ]);
+    const a = agreement(
+      records.map((r) => ({ ...r, "reviewer verdict": "Partial" })),
+    );
+    expect(
+      a.disagreements.filter((d) => d.field === "verdict").map((d) => d.rowId),
+    ).toEqual(["g2", "d2"]);
+  });
+
+  it("reads a scored.json written before judgeVerdict existed", () => {
+    const old = row({ kind: "duplicate", rowNumber: null, verdict: null });
+    delete (old as Partial<ScoredRow>).judgeVerdict;
+    const [record] = parse(sampleCsv([old], [old]), {
+      columns: true,
+    }) as Record<string, string>[];
+    expect(record["judge verdict"]).toBe("duplicate");
+  });
+});
 
 describe("calibrationSample", () => {
   const rows = dataset();

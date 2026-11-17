@@ -27,6 +27,7 @@ function row(partial: Partial<ScoredRow>): ScoredRow {
     uncertain: false,
     partialReason: null,
     cause: null,
+    judgeVerdict: null,
     ...partial,
   };
 }

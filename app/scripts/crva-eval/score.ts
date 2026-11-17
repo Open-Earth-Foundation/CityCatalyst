@@ -80,6 +80,9 @@ function explanationOf(judgment: Judgment) {
 
 const NO_EXPLANATION = { partialReason: null, cause: null };
 
+/** Rows scored by rule or not judged: the judge said nothing about them. */
+const NO_JUDGMENT = { ...NO_EXPLANATION, judgeVerdict: null };
+
 function goldOf(row: GoldRow | undefined) {
   return {
     goldValue: row?.goldValue ?? "",
@@ -215,7 +218,9 @@ export function scoreRun(input: {
             notes: withAdapterField(`duplicate of ${key}`, value.fieldId),
             reason: judgment.reason,
             uncertain: judgment.uncertain,
-            ...NO_EXPLANATION,
+            // Published without a verdict, but calibration compares the judge's own.
+            ...explanationOf(judgment),
+            judgeVerdict: judgment.verdict,
           },
         });
       });
@@ -244,6 +249,7 @@ export function scoreRun(input: {
           reason: match.judgment.reason,
           uncertain: match.judgment.uncertain,
           ...explanationOf(match.judgment),
+          judgeVerdict: match.judgment.verdict,
         });
         continue;
       }
@@ -254,7 +260,7 @@ export function scoreRun(input: {
         notes: "",
         reason: "",
         uncertain: false,
-        ...NO_EXPLANATION,
+        ...NO_JUDGMENT,
       };
       if (row.status === "N/A") {
         goldScored.push({ ...empty, modelStatus: "NOT_FOUND", verdict: null });
@@ -339,6 +345,7 @@ function extraRow(
     reason: judgment.reason,
     uncertain,
     ...(verdict === null ? NO_EXPLANATION : explanationOf(judgment)),
+    judgeVerdict: judgment.verdict,
   };
 }
 
@@ -364,7 +371,7 @@ function unjudgedRow(
     notes: withAdapterField(NOT_JUDGED, value.fieldId),
     reason: "",
     uncertain: true,
-    ...NO_EXPLANATION,
+    ...NO_JUDGMENT,
   };
 }
 

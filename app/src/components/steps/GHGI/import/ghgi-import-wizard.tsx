@@ -33,6 +33,7 @@ import { logger } from "@/services/logger";
 import { getApiErrorMessage } from "@/util/helpers";
 import type { ImportStatusResponse } from "@/util/types";
 import { readImportChunkProgress } from "@/util/import-chunk-progress";
+import { hasPendingSourceChecks } from "@/util/GHGI/source-checks";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
 import { useAppDispatch } from "@/lib/hooks";
@@ -50,6 +51,8 @@ function resolveErrorMessage(
 
 /** Error code from the approve route when the inventory has data and the user has not confirmed replacing it. */
 const INVENTORY_HAS_DATA_CODE = "inventory-has-data";
+/** Error code from the approve route while a review source check is unanswered. */
+const SOURCE_CHECKS_PENDING_CODE = "source-checks-pending";
 
 function ImportButton({
   cityId,
@@ -57,6 +60,7 @@ function ImportButton({
   importedFileId,
   mappingOverrides,
   pendingRows,
+  sourceChecksPending,
   onImport,
   onImportProgressChange,
   disabled,
@@ -70,6 +74,8 @@ function ImportButton({
   mappingOverrides: Record<string, unknown>;
   /** Rows with no decision yet. The server rejects approval while above zero. */
   pendingRows: number;
+  /** A source check is unanswered. The server rejects approval then. */
+  sourceChecksPending: boolean;
   onImport: () => void;
   onImportProgressChange: (inProgress: boolean) => void;
   disabled?: boolean;
@@ -207,6 +213,10 @@ function ImportButton({
         setShowReplaceConfirm(true);
         return;
       }
+      if (errorCode === SOURCE_CHECKS_PENDING_CODE) {
+        makeErrorToast(t("import-source-checks-pending"));
+        return;
+      }
       makeErrorToast(
         "Import failed",
         getApiErrorMessage(error, "Failed to import data"),
@@ -218,20 +228,32 @@ function ImportButton({
     <>
       <Button
         w="auto"
+        flex={{ base: "1", md: "none" }}
+        minW={0}
         gap="8px"
         py="16px"
-        px="24px"
+        px={{ base: "16px", md: "24px" }}
+        whiteSpace="normal"
         onClick={() =>
           inventoryHasData ? setShowReplaceConfirm(true) : handleImport(false)
         }
-        h="64px"
+        h="auto"
+        minH="64px"
         loading={isImporting || isImportPolling}
-        disabled={disabled || pendingRows > 0 || isImporting || isImportPolling}
+        disabled={
+          disabled ||
+          sourceChecksPending ||
+          pendingRows > 0 ||
+          isImporting ||
+          isImportPolling
+        }
       >
         <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-          {pendingRows > 0
-            ? t("import-rows-pending", { count: pendingRows })
-            : t("import-inventory")}
+          {sourceChecksPending
+            ? t("import-source-checks-pending-button")
+            : pendingRows > 0
+              ? t("import-rows-pending", { count: pendingRows })
+              : t("import-inventory")}
         </Text>
         <MdArrowForward height="24px" width="24px" />
       </Button>
@@ -1181,43 +1203,48 @@ export default function GhgiImportWizard({
                       cityName={inventory?.city?.name}
                     />
                   ) : (
-                    <>
-                      <ImportReviewRows
-                        t={t}
-                        lng={lng}
-                        fileId={importedFileId}
-                        rows={rowPreview?.reviewRows ?? []}
-                        onDecide={handleRowDecision}
-                      />
-                      {(rowPreview?.scopeWarnings ?? []).length > 0 && (
-                        <Box mb={6}>
-                          <Text
-                            color="sentiment.warningDefault"
-                            fontWeight="medium"
-                          >
-                            {t("import-scope-warning")}
-                          </Text>
-                          {rowPreview?.scopeWarnings?.map((row) => (
-                            <Text key={row.rowNumber} fontSize="body.sm">
-                              {t("import-scope-warning-row", {
-                                row: row.rowNumber,
-                                reference: row.gpcRefNo,
-                                scope: row.scope || t("import-scope-missing"),
-                              })}
-                            </Text>
-                          ))}
-                        </Box>
+                    <ReviewConfirmStep
+                      t={t}
+                      lng={lng}
+                      cityId={cityId}
+                      cityName={inventory?.city?.name}
+                      inventoryId={inventoryId}
+                      importedFileId={importedFileId}
+                      onEditMapping={goToPrevStep}
+                      mappingOverrides={allOverrides}
+                      renderRows={(locked) => (
+                        <>
+                          <ImportReviewRows
+                            t={t}
+                            lng={lng}
+                            fileId={importedFileId}
+                            rows={rowPreview?.reviewRows ?? []}
+                            onDecide={handleRowDecision}
+                            disabled={locked}
+                          />
+                          {(rowPreview?.scopeWarnings ?? []).length > 0 && (
+                            <Box mb={6}>
+                              <Text
+                                color="sentiment.warningDefault"
+                                fontWeight="medium"
+                              >
+                                {t("import-scope-warning")}
+                              </Text>
+                              {rowPreview?.scopeWarnings?.map((row) => (
+                                <Text key={row.rowNumber} fontSize="body.sm">
+                                  {t("import-scope-warning-row", {
+                                    row: row.rowNumber,
+                                    reference: row.gpcRefNo,
+                                    scope:
+                                      row.scope || t("import-scope-missing"),
+                                  })}
+                                </Text>
+                              ))}
+                            </Box>
+                          )}
+                        </>
                       )}
-                      <ReviewConfirmStep
-                        t={t}
-                        cityId={cityId}
-                        cityName={inventory?.city?.name}
-                        inventoryId={inventoryId}
-                        importedFileId={importedFileId}
-                        onEditMapping={goToPrevStep}
-                        mappingOverrides={allOverrides}
-                      />
-                    </>
+                    />
                   )}
                 </motion.div>
               )}
@@ -1245,7 +1272,12 @@ export default function GhgiImportWizard({
                 />
               </Box>
             </Box>
-            <Box w="full" display="flex" justifyContent="end" px="135px">
+            <Box
+              w="full"
+              display="flex"
+              justifyContent="end"
+              px={{ base: "16px", md: "135px" }}
+            >
               {activeStep === 0 && (
                 <Button
                   w="auto"
@@ -1309,13 +1341,16 @@ export default function GhgiImportWizard({
                 </Button>
               )}
               {activeStep === 2 && importedFileId && inventoryId && (
-                <HStack gap="16px">
+                <HStack
+                  gap={{ base: "8px", md: "16px" }}
+                  w={{ base: "full", md: "auto" }}
+                >
                   <Button
                     variant="outline"
-                    minW="171px"
+                    minW={{ base: "auto", md: "171px" }}
                     gap="8px"
                     py="16px"
-                    px="24px"
+                    px={{ base: "16px", md: "24px" }}
                     h="64px"
                     disabled={isImportInProgress}
                     onClick={() => {
@@ -1347,6 +1382,10 @@ export default function GhgiImportWizard({
                     importedFileId={importedFileId}
                     mappingOverrides={allOverrides}
                     pendingRows={pendingRows}
+                    sourceChecksPending={hasPendingSourceChecks(
+                      mappingStepData?.mappingConfiguration
+                        ?.extractionSummary ?? null,
+                    )}
                     onImportProgressChange={setIsImportInProgress}
                     disabled={
                       fileYearMismatch ||

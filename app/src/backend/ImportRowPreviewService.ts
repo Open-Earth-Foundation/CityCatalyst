@@ -86,14 +86,17 @@ function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
  * Nothing here looks at the wording of a quote: a found quote proves the text
  * exists, so it never clears a row. Only a recorded decision does.
  * A reference conflict comes first; then a unit or value that extraction could
- * not confirm on the page, even on a reference the document printed.
+ * not confirm on the page, even on a reference the document printed. A unit
+ * the source-check unit group answers (`review.unitGroup`) is no row issue.
  */
 export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
-  if (row.review?.unitCheck === "missing") return "unit-unconfirmed";
+  // A unit group's answer is the decision for its rows (see `unitGroup`).
+  if (row.review?.unitCheck === "missing" && !row.review.unitGroup)
+    return "unit-unconfirmed";
   if (row.review?.valueCheck === "not_found") return "value-unconfirmed";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))

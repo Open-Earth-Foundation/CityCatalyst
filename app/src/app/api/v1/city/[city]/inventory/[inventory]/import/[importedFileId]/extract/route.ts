@@ -57,7 +57,7 @@ import { z } from "zod";
 /** Queue-only endpoint; a deployment-managed scheduler triggers processing. */
 export const maxDuration = 30;
 
-export const POST = apiHandler(async (_req, { session, params }) => {
+export const POST = apiHandler(async (req, { session, params }) => {
   if (!session) throw new createHttpError.Unauthorized("Not signed in");
 
   const cityId = z.string().uuid().parse(params.city);
@@ -105,6 +105,13 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     );
   }
 
+  // The request takes no body. Source metadata stored by an earlier version of
+  // this endpoint is cleared: the server picks the number format itself.
+  const { sourceMetadata: _stale, ...mappingConfiguration } =
+    importedFile.mappingConfiguration || {};
+  if (_stale !== undefined) {
+    await importedFile.update({ mappingConfiguration });
+  }
   await enqueueInventoryPdfOcr(importedFile);
   return NextResponse.json(
     {

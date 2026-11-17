@@ -184,7 +184,7 @@ ${ROLE_TEXT}
 </role>
 
 <task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. When the unit is written "MT" in capitals, do not convert; set unit to "MT". Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
 
 ${TASK_RULES}
 </task>
@@ -197,7 +197,8 @@ ${TASK_RULES}
 Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
 ${OUTPUT_FIELDS_HEAD}
 - totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
-- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
+- totalCO2eText (string | null): the totalCO2e cell exactly as printed, before any conversion (e.g. "48", "6.600", "1,234,567"). Null for a notation key.
+- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt", "MT"); null when the document does not say.
 ${OUTPUT_FIELDS_TAIL}
 
 ${NUMBERS_TEXT}
@@ -207,7 +208,7 @@ ${TAXONOMY_TEXT}
 
 <example_output>
 {"rows": [
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "totalCO2eText": "125,000", "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "unit": "tCO2e", "activityClass": "grid_energy", "rowType": "line_item", "notationKey": null, "scope": "2", "gpcRefNo": "I.1.2", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "unit": "tCO2e", "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "totalCO2e": 167000, "unit": "tCO2e", "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "source": "Table 5"},

@@ -255,6 +255,7 @@ describe("CC-1163 check 1: total in text", () => {
         Math.abs(stored.importedSum - stored.reportedTotals[0].value) /
         Math.abs(stored.reportedTotals[0].value),
       mismatch: true,
+      source: "document",
     });
   });
 });

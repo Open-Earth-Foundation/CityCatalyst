@@ -13,7 +13,11 @@ import {
   isLineItemValueInNumbers,
   numbersInTableCells,
   inheritedPageScales,
+  definesMtAsMetricTons,
+  namesMtSymbol,
+  inheritedMtSymbol,
   namesPerPerson,
+  tableUnitEvidence,
 } from "@/util/GHGI/source-text";
 import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
 
@@ -684,5 +688,106 @@ describe("inheritedPageScales: tables continued from the previous page", () => {
       { page: 22, text: "| Residuos | 2 |" },
     ]);
     expect(inherited.get(22)).toEqual([]);
+  });
+});
+
+describe("definesMtAsMetricTons", () => {
+  it.each([
+    "MT: metric tons",
+    "Glossary\nMT = metric tonnes\nCO2e: carbon dioxide equivalent",
+    "MT – metric ton",
+    "all values in metric tons (MT) of CO2e",
+    "MT (metric tons)",
+    "MT: Metric Tons",
+    "MTCO2e: metric tons of carbon dioxide equivalent",
+  ])("true on %j", (text) => {
+    expect(definesMtAsMetricTons(text)).toBe(true);
+  });
+
+  it.each([
+    "Mt: million tonnes",
+    "mt: metric tons",
+    "Mt (metric tons)",
+    "emissions in million metric tons (MT)",
+    "| Sector | 2021 Emissions (Mt CO2e) |\n| Energy | 1,500,000 |",
+    "",
+  ])("false on %j", (text) => {
+    expect(definesMtAsMetricTons(text)).toBe(false);
+  });
+});
+
+describe("namesMtSymbol", () => {
+  it("true on an (Mt CO2e) header", () => {
+    expect(
+      namesMtSymbol("| Sector | 2021 Emissions (Mt CO2e) |\n|---|---|\n"),
+    ).toBe(true);
+  });
+
+  it.each([
+    "| Sector | 2021 Emissions (million metric tons CO2e) |\n|---|---|\n",
+    "| Sector | Emissions (megatonnes CO2e) |\n|---|---|\n",
+    "| Sector | Emissions (thousand Mt CO2e) |\n|---|---|\n",
+    "Mt Eden road works took 3 years.",
+  ])("false on %j", (text) => {
+    expect(namesMtSymbol(text)).toBe(false);
+  });
+
+  it("a continued table inherits it", () => {
+    const inherited = inheritedMtSymbol([
+      {
+        page: 1,
+        text: "Table 1\n| Sector | (Mt CO2e) |\n|---|---|\n| A | 1 |",
+      },
+      { page: 2, text: "| B | 2 |" },
+      {
+        page: 3,
+        text: "Table 2\n| Sector | (million tonnes CO2e) |\n|---|---|\n",
+      },
+      { page: 4, text: "| C | 3 |" },
+    ]);
+    expect([...inherited]).toEqual([
+      [1, false],
+      [2, true],
+      [3, false],
+      [4, false],
+    ]);
+  });
+});
+
+describe("tableUnitEvidence", () => {
+  const page =
+    "Table 3: Transport (kt CO2e)\n| Diesel | 48 |\n\n" +
+    "Table 4: Buildings (t CO2e)\n| Natural gas | 6.600 |\n";
+
+  it("reads the unit of the table that prints the value", () => {
+    expect(tableUnitEvidence(page, "48")).toBe("large");
+    expect(tableUnitEvidence(page, "6.600")).toBe("none");
+  });
+
+  it("reads a unit in the header row", () => {
+    const text =
+      "| Sector | Emissions (Mt CO2e) |\n|---|---|\n| Waste | 500,886 |\n";
+    expect(tableUnitEvidence(text, "500,886")).toBe("large");
+  });
+
+  it("is mixed when the tables disagree or one names kt and t", () => {
+    expect(
+      tableUnitEvidence(page + "\nTable 5\n| Fuel oil | 48 |\n", "48"),
+    ).toBe("mixed");
+    const columns =
+      "| Sector | kt CO2e | t CO2e |\n|---|---|---|\n| Waste | 1.5 | 900 |\n";
+    expect(tableUnitEvidence(columns, "900")).toBe("mixed");
+  });
+
+  it("is unknown when no table prints the value", () => {
+    expect(tableUnitEvidence(page, "7.5")).toBe("unknown");
+  });
+
+  it("a continued table at the top of the page takes the inherited unit", () => {
+    const text =
+      "<!-- page: 4 -->\n| Waste | 12 |\n\nTable 9 (t)\n| Water | 3 |\n";
+    expect(tableUnitEvidence(text, "12", true)).toBe("large");
+    expect(tableUnitEvidence(text, "12", false)).toBe("none");
+    expect(tableUnitEvidence(text, "3", true)).toBe("none");
   });
 });

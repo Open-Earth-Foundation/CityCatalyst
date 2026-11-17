@@ -18,6 +18,7 @@ import {
   type TableBundle,
 } from "@/util/GHGI/table-bundles";
 import {
+  CELL_UNIT_FACTOR,
   findCell,
   readCell,
   type CellRead,
@@ -33,12 +34,29 @@ import {
 import {
   GRID_GENERATION_GPC_REF,
   isImportedWasteRef,
-  isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
+import {
+  applyReadings,
+  baseUnitReading,
+  compareTableIds,
+  selectLevelTotal,
+  sumImported,
+  unitGroupKey,
+  UNIT_FACTOR,
+  UNIT_GROUP_OPTIONS,
+  type ExtractedGases,
+  type NumberReading,
+  type SourceChecks,
+  type UnitGroup,
+  type UnitReading,
+} from "@/util/GHGI/source-checks";
 import { toCanonical } from "@/util/notation-keys";
 import {
+  definesMtAsMetricTons,
   detectNumberStyle,
+  inheritedMtSymbol,
   inheritedPageScales,
+  isAmbiguousNumberText,
   isLineItemValueInNumbers,
   isValueInNumbers,
   numbersInText,
@@ -47,11 +65,17 @@ import {
   parseNumberString,
   yearEvidence,
   namesLargeUnit,
+  tableUnitEvidence,
+  type TableUnitEvidence,
+  namesMtSymbol,
   namesSmallUnit,
+  namesTonneUnit,
   namesKilogram,
   namesMegatonne,
   namesUnit,
+  lineNamesMtSymbol,
   KILOTONNE_PATTERNS,
+  TONNE_UNIT_PATTERNS,
   pageScaleEvidence,
   type NumberStyle,
   type Scale,
@@ -67,6 +91,10 @@ import {
   type ExtractionSummary,
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
+import {
+  resolveNumberStyle,
+  type SourceMetadata,
+} from "@/util/GHGI/source-metadata";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import {
   STRUCTURED_SYSTEM_PROMPT,
@@ -144,6 +172,8 @@ function sumLabelLevel(row: ExtractedRow): "subtotal" | "total" | null {
 /** Max chars of extraction LLM response to include in logs (avoids huge payloads). */
 const EXTRACTION_LOG_LIMIT = 4000;
 
+export { sumImported };
+
 export type ExtractedRowType = "line_item" | "subtotal" | "total";
 
 export type ExtractedRow = {
@@ -191,16 +221,6 @@ export type ExtractedRow = {
    * captions allow. The row is kept and goes to review.
    */
   valueCheck?: "not_found" | null;
-  /**
-   * `missing`: the row has no unit on a page whose captions name kt, Mt, Gg or
-   * kg. It is kept as tonnes, not rescaled, and goes to review.
-   */
-  unitCheck?: "missing" | null;
-  /**
-   * Structured path: the value as printed in its cell, as the model copied it
-   * (normalized by `readCell` when the read succeeded).
-   */
-  totalCO2eText?: string | null;
   /** Structured path: the model's reference of the value cell (`t3:r5:c2`). */
   valueCell?: string | null;
   /** Structured path: the model's references of the gas cells. */
@@ -238,6 +258,53 @@ export type ExtractedRow = {
   rowType?: ExtractedRowType | null;
   /** Unit of totalCO2e as written in the source (t, kt, Mt, tCO2e). Converted to tonnes after extraction. */
   unit?: string | null;
+  /**
+   * The totalCO2e cell exactly as printed. Kept only when it parses and
+   * `printedFactor` checks out against the stored value.
+   */
+  totalCO2eText?: string | null;
+  /**
+   * Stored totalCO2e divided by the printed number under the current number
+   * reading: 1, 1000 or 1,000,000 (the model's unit, or the page's large
+   * unit); on the structured path the factor of the cell's resolved unit
+   * (`CELL_UNIT_FACTOR`, so 0.001 for kg), 1 without one. Excludes the "MT"
+   * unit factor, which `applyReadings` applies through `unitCheck`; a row
+   * restored from the model's Mt scaling (`asPrintedMt`) has 1.
+   */
+  printedFactor?: number | null;
+  /**
+   * `MT`: the unit may be metric tonnes or megatonnes; the row is read as
+   * tonnes, as printed, until the unit card is answered. Set for a printed
+   * "MT", for "Mt" in a document that defines MT as metric tons, for a row
+   * the model scaled from such an "Mt" (read back, also on the chunk path,
+   * R28), for a unit-less row under such an "Mt" caption (R27), and on the
+   * structured path for a capital MT alone in the cell's header.
+   * `missing`: the unit is not confirmed. Markdown path: no unit on a page
+   * whose captions name kt, Mt, Gg or kg (or that continues such a table).
+   * Structured path: a unit conflict, no unit in a table with such evidence,
+   * or no unit where the model read kt, Mt or kg (R26). It is kept as
+   * printed, in tonnes, not rescaled, and goes to the unit group card.
+   */
+  unitCheck?: "MT" | "missing" | null;
+  /**
+   * On `unitCheck: "MT"` rows: the unit as printed, before cleaning ("MT
+   * CO2e", "Mt"). The unit card shows its spelling.
+   */
+  printedUnit?: string | null;
+  /**
+   * On `unitCheck: "missing"` rows: the reading the page's captions suggest
+   * ("kt" or "Mt" when the page names only that unit, "kg" when only kg, else
+   * "t"). Kept on the row because the checks are rebuilt later without the
+   * page text.
+   */
+  unitHint?: UnitReading | "kg" | null;
+  /** True when the printed number reads two ways (`6.600`) and the document style is undetected. */
+  numberCheck?: boolean | null;
+  /**
+   * On `numberCheck` rows with gases: the gases as extracted, restored when the
+   * review returns to that number reading (see `applyReadings`).
+   */
+  extractedGases?: ExtractedGases | null;
   emissionFactorUnit?: string | null;
   emissionFactorSource?: string | null;
   emissionFactorDescription?: string | null;
@@ -259,7 +326,7 @@ const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emi
 - If this segment contains only sector-level totals: output one row per sector.
 - Never output a single aggregated row when the segment shows multiple line items (multiple activities, subsectors, or sectors). Extract every row you see in the inventory tables.
 - If the table has columns by year (e.g. CY 2015): year = the column header (2015); totalCO2e = tCO₂e from that column for that row; activityAmount = Consumed from that column; one output row per table row, do not collapse the year column into one total.
-- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Convert to tonnes when the unit is stated and set "unit" to "t".
+- Set rowType on every row ("line_item", "subtotal" or "total"). Scope 1/2/3 columns give one line_item row each; BASIC, BASIC+, Total and sub-total columns or rows are never line_item. Convert to tonnes when the unit is stated and set "unit" to "t". When the unit is written "MT" in capitals, do not convert; set unit to "MT". Copy each totalCO2e cell exactly as printed into totalCO2eText.
 - Numbers: output numeric fields as JSON numbers; strip thousand separators (e.g. 48,000 → 48000); use decimal point for decimals (1,5 → 1.5).\n\nSegment text:\n\n`;
 
 /** Max document length in a single LLM request; above CHUNK_THRESHOLD we split into chunks. */
@@ -299,6 +366,10 @@ export type ExtractOptions = {
   targetYear?: number;
   /** Called after each chunk when extraction runs in chunks (current 1-based, total). Used for progress polling. */
   onChunkProgress?: (current: number, total: number) => void | Promise<void>;
+  /** What the user said about the source: number format and reported total. */
+  sourceMetadata?: SourceMetadata | null;
+  /** Inventory level (`gpc_basic`, `gpc_basic_plus`): picks the suggested document total. */
+  inventoryType?: string | null;
 };
 
 export type ExtractionResult = {
@@ -673,7 +744,9 @@ function selectPages(
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
-    if (otherRows > 0) droppedRows.other_page = otherRows;
+    if (otherRows > 0) {
+      droppedRows.other_page = (droppedRows.other_page ?? 0) + otherRows;
+    }
     const keys = new Set<string>();
     const rows: ExtractedRow[] = [];
     for (const row of chosen.flatMap((p) => p.result.rows)) {
@@ -780,25 +853,42 @@ export async function extractInventoryFromDocument(
   return withProvenance(
     await extractRowsFromDocument(documentContent, options),
     documentContent,
+    options,
   );
 }
 
 /**
  * verifyRowProvenance (references, direction quotes, activity-class rules)
- * on extracted rows, and the reconciliation sum after it.
+ * on extracted rows, the reconciliation sum after it, and the review checks
+ * built again from the stored rows and totals.
  */
 function withProvenance(
   result: ExtractionResult,
   documentContent: string,
+  options: ExtractOptions | undefined,
 ): ExtractionResult {
   const rows = verifyRowProvenance(result.rows, documentContent);
+  const metadata = options?.sourceMetadata;
   // The activity-class rules can move a row onto or off a reference left out
   // of the total (I.4.4), so the reconciliation sum is taken after them.
   // Mismatch and deviation are derived from it on read (reconcileExtraction).
+  const summary: ExtractionSummary = {
+    ...result.summary,
+    importedSum: sumImported(rows),
+  };
+  // Page selection merges per-page summaries, so the checks are built again
+  // from the rows and totals that are stored.
+  delete summary.sourceChecks;
+  const sourceChecks = buildSourceChecks(rows, summary.reportedTotals, {
+    targetYear: summary.targetYear,
+    inventoryType: options?.inventoryType,
+    reading: ambiguousReading(metadata),
+  });
+  if (sourceChecks) summary.sourceChecks = sourceChecks;
   return {
     ...result,
     rows,
-    summary: { ...result.summary, importedSum: sumImported(rows) },
+    summary,
   };
 }
 
@@ -874,6 +964,18 @@ export function verifyRowProvenance(
   return fillMissingGpcRefNo(applyActivityClassRules(checked)).map((row) =>
     row.gpcRefNo && !row.refSource ? { ...row, refSource: "inferred" } : row,
   );
+}
+
+/** Prompt line telling the model the decimal separator, when metadata decides it. */
+function numberStyleInstruction(
+  text: string,
+  metadata: SourceMetadata | null | undefined,
+): string {
+  if (!metadata?.numberFormat) return "";
+  if (detectNumberStyle(text) !== "unknown") return "";
+  return metadata.numberFormat === "european"
+    ? 'Numbers in this document use "," as the decimal separator and "." for thousands.\n\n'
+    : 'Numbers in this document use "." as the decimal separator and "," for thousands.\n\n';
 }
 
 type SchemaState = { useSchema: boolean };
@@ -1058,11 +1160,17 @@ async function extractRowsFromDocument(
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
+  const metadata = options?.sourceMetadata;
+  const documentStyle = detectNumberStyle(documentContent);
   const allPages = splitDocumentPages(documentContent);
   const pages = allPages.filter((p) => isCandidatePage(p.text));
   // Unit evidence of a table continued from previous pages, read from the page
   // text of every page before the concurrent page calls.
   const inheritedScales = inheritedPageScales(allPages);
+  const inheritedMt = inheritedMtSymbol(allPages);
+  // A glossary may define MT on another page than the table: read it once on
+  // the whole document, for every page and chunk (CC-1233).
+  const mtIsMetricTons = definesMtAsMetricTons(documentContent);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1079,16 +1187,21 @@ async function extractRowsFromDocument(
           normalizeExtractedRows(
             await extractSegment(
               page.text,
-              yearInstruction,
+              numberStyleInstruction(page.text, metadata) + yearInstruction,
               false,
               schemaState,
+              resolveNumberStyle(page.text, metadata),
             ),
           ).map((row) => ({ ...row, page: page.page })),
           year,
           {
             deferYearAssumption: true,
             source: { text: page.text, kind: "page" },
+            sourceMetadata: metadata,
+            documentStyle,
             inheritedScales: inheritedScales.get(page.page) ?? [],
+            inheritedMtSymbol: inheritedMt.get(page.page) ?? false,
+            mtIsMetricTons,
           },
         ),
       onProgress
@@ -1115,7 +1228,11 @@ async function extractRowsFromDocument(
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
-        { source: { text: documentContent, kind: "document" } },
+        {
+          source: { text: documentContent, kind: "document" },
+          sourceMetadata: metadata,
+          mtIsMetricTons,
+        },
       );
       return checkExtractionResult(
         withFailedPages(
@@ -1156,6 +1273,8 @@ async function extractRowsFromDocument(
   return checkExtractionResult(
     finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
       source: { text: documentContent, kind: "document" },
+      sourceMetadata: metadata,
+      mtIsMetricTons,
     }),
     allRows.length,
     targetYear,
@@ -1165,6 +1284,14 @@ async function extractRowsFromDocument(
 /** The single year (1990 to the current year) a bundle's notes name, or null. */
 function singleNoteYear(bundle: TableBundle): number | null {
   return bundle.yearNotes.length === 1 ? bundle.yearNotes[0] : null;
+}
+
+/**
+ * `readCell` gives no unit and no conflict, at a level that names one, only
+ * for a capital MT alone: metric tonnes or megatonnes.
+ */
+function isLoneMtRead(read: Extract<CellRead, { ok: true }>): boolean {
+  return read.unit == null && read.unitSource != null && !read.unitConflict;
 }
 
 /**
@@ -1185,7 +1312,9 @@ function readsAsTonnes(
 /**
  * The gas cell `ref` in tonnes, or null: it must be in the value cell's table
  * and row, read (`readCell` on the cell's own text, so the parse, per-person
- * and unit checks apply), and be in tonnes (`readsAsTonnes`).
+ * and unit checks apply), and be in tonnes (`readsAsTonnes`). On a row whose
+ * value is a lone capital `MT` (`valueIsMt`), a gas cell read the same way is
+ * kept as printed too: the "MT" answer of the unit card scales it.
  */
 function gasFromCell(
   bundles: TableBundle[],
@@ -1194,6 +1323,7 @@ function gasFromCell(
   style: NumberStyle,
   currentYear: number,
   hasScaleEvidence: (bundle: TableBundle) => boolean,
+  valueIsMt: boolean,
 ): number | null {
   if (!ref) return null;
   const found = findCell(bundles, ref);
@@ -1206,8 +1336,9 @@ function gasFromCell(
   }
   // The model names the gas cell but copies no text: the cell's own text is read.
   const read = readCell(bundles, ref, found.cell.text, style, currentYear);
-  if (!read.ok || !readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
-    return null;
+  if (!read.ok) return null;
+  if (!readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
+    if (!(valueIsMt && isLoneMtRead(read))) return null;
   }
   return read.tonnes;
 }
@@ -1230,6 +1361,19 @@ function gasFromCell(
  * keeps the model's value and unit for review (`valueCheck: "not_found"`);
  * finalizeRows converts it with that unit. Gases come only from cells in the value cell's table
  * and row, in tonnes (`gasFromCell`); any other gas is null.
+ *
+ * The review marks of the Markdown path (#3420) are set from the cell too:
+ * `printedFactor` is `CELL_UNIT_FACTOR` of the resolved unit (1 without one);
+ * a capital `MT` alone at the deciding level is kept as printed, in tonnes,
+ * with `unitCheck: "MT"` (`printedUnit` "MT"), not "missing"; a "missing" row
+ * gets its table's `unitHint` ("t" for a unit conflict); a number that reads
+ * two ways in a document of undetected style gets `numberCheck`; and in a
+ * document that defines MT as metric tons, an `Mt` cell of a table that
+ * spells the `Mt` symbol is read back as printed (`asPrintedMt`).
+ * `totalCO2eText` keeps the cell's sign when the model copied the number
+ * without it. A row whose cell does not read keeps the model's text with
+ * `printedFactor` set to the model's unit factor when the text matches its
+ * value at that factor.
  */
 function readRowCells(
   row: ExtractedRow,
@@ -1237,6 +1381,7 @@ function readRowCells(
   style: NumberStyle,
   currentYear: number,
   hasScaleEvidence: (bundle: TableBundle) => boolean,
+  marks: StructuredMarks,
 ): ExtractedRow {
   const out: ExtractedRow = { ...row, co2: null, ch4: null, n2o: null };
   const found = row.valueCell ? findCell(bundles, row.valueCell) : null;
@@ -1250,13 +1395,31 @@ function readRowCells(
     if (out.totalCO2e != null) out.valueCheck = "not_found";
     return out;
   }
+  // A capital MT, asked on the unit card; its gas cells are read the same way.
+  const ambiguousMt = isLoneMtRead(read);
   const gas = (ref: string | null | undefined) =>
-    gasFromCell(bundles, ref, found, style, currentYear, hasScaleEvidence);
+    gasFromCell(
+      bundles,
+      ref,
+      found,
+      style,
+      currentYear,
+      hasScaleEvidence,
+      ambiguousMt,
+    );
   out.co2 = gas(row.co2Cell);
   out.ch4 = gas(row.ch4Cell);
   out.n2o = gas(row.n2oCell);
   out.totalCO2e = read.tonnes;
-  out.totalCO2eText = read.printed;
+  // `readCell` accepts printed text without the cell's sign ("25,639" of
+  // "(25,639)"): the text keeps the sign, so a number-format answer that
+  // parses it again does not flip the value.
+  const printedValue = parseNumberString(read.printed, style);
+  out.totalCO2eText =
+    read.tonnes < 0 && !(printedValue != null && printedValue < 0)
+      ? `-${read.printed}`
+      : read.printed;
+  out.printedFactor = CELL_UNIT_FACTOR[read.unit ?? "t"];
   // No level names a unit, yet the model read a known unit other than
   // tonnes (kt, Mt, kg): code cannot tell which is right (R26). An unknown
   // or ambiguous model unit (`MT`, `tCO_{2}e` OCR markup) is not evidence.
@@ -1269,9 +1432,27 @@ function readRowCells(
     modelFactor !== 1;
   const tonnes =
     !modelUnitDiffers && readsAsTonnes(read, found.bundle, hasScaleEvidence);
-  out.unit = tonnes ? "t" : null;
+  out.unit = tonnes || ambiguousMt ? "t" : null;
   out.unitSource = read.unitSource;
-  if (!tonnes) out.unitCheck = "missing";
+  if (ambiguousMt) {
+    out.unitCheck = "MT";
+    out.printedUnit = "MT";
+  } else if (!tonnes) {
+    out.unitCheck = "missing";
+    out.unitHint = read.unitConflict ? "t" : marks.unitHint(found.bundle);
+  }
+  if (marks.undetected && isAmbiguousNumberText(out.totalCO2eText)) {
+    out.numberCheck = true;
+    if (out.co2 != null || out.ch4 != null || out.n2o != null) {
+      out.extractedGases = {
+        ...(out.co2 != null ? { co2: out.co2 } : {}),
+        ...(out.ch4 != null ? { ch4: out.ch4 } : {}),
+        ...(out.n2o != null ? { n2o: out.n2o } : {}),
+        numberFormat: marks.reading,
+        unit: "t",
+      };
+    }
+  }
   out.sourceCell = {
     tableId: found.bundle.tableId,
     page: found.bundle.page,
@@ -1279,6 +1460,15 @@ function readRowCells(
     col: found.col,
   };
   out.year = read.columnYear ?? singleNoteYear(found.bundle) ?? row.year;
+  // A document that defines MT as metric tons, on a table that spells the
+  // `Mt` symbol: an `Mt` cell is read back as printed, asked like "MT".
+  if (
+    read.unit === "Mt" &&
+    marks.mtIsMetricTons &&
+    marks.mtSymbol(found.bundle)
+  ) {
+    return asPrintedMt(out);
+  }
   return out;
 }
 
@@ -1360,15 +1550,7 @@ function tableScaleEvidence(
   bundle: TableBundle,
 ): boolean {
   return continuationChain(bundles, bundle).some((b) => {
-    const notes = [
-      ...(b.caption ? [b.caption] : []),
-      ...b.headings,
-      ...b.unitNotes,
-      ...b.grid
-        .slice(0, b.headerRowCount)
-        .flat()
-        .map((cell) => cell.text),
-    ];
+    const notes = bundleNotes(b);
     const pageText = pageTextOutsideTables(doc, b.page);
     return (
       notes.some(
@@ -1381,6 +1563,80 @@ function tableScaleEvidence(
       namesSmallUnit(pageText)
     );
   });
+}
+
+/** A table's caption, headings, unit notes and header cells. */
+function bundleNotes(b: TableBundle): string[] {
+  return [
+    ...(b.caption ? [b.caption] : []),
+    ...b.headings,
+    ...b.unitNotes,
+    ...b.grid
+      .slice(0, b.headerRowCount)
+      .flat()
+      .map((cell) => cell.text),
+  ];
+}
+
+/**
+ * What the structured path knows of the document and a table for the review
+ * marks of the Markdown path (#3420); see `readRowCells`.
+ */
+type StructuredMarks = {
+  /** `unitHint` of a unit-less row of the table (`tableUnitHint`). */
+  unitHint: (bundle: TableBundle) => UnitReading | "kg";
+  /** The table, or a table up its chain, spells the `Mt` symbol. */
+  mtSymbol: (bundle: TableBundle) => boolean;
+  /** The document defines MT as metric tons (`definesMtAsMetricTons`). */
+  mtIsMetricTons: boolean;
+  /** The document's number style is undetected: a number may read two ways. */
+  undetected: boolean;
+  /** Reading the cells were parsed under. */
+  reading: NumberReading;
+};
+
+/**
+ * The unit a table suggests for its unit-less cells, with the rules of
+ * `unitHintForPage`: "kt", "Mt" or "kg" when the notes of the table and its
+ * chain (`bundleNotes`) and the text outside the tables of their pages name
+ * only that scale, else tonnes (mixed units, or a note naming tonnes).
+ */
+function tableUnitHint(
+  doc: StructuredDocument,
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): UnitReading | "kg" {
+  const chain = continuationChain(bundles, bundle);
+  const notes = chain.flatMap(bundleNotes);
+  const pageTexts = [...new Set(chain.map((b) => b.page))].map((page) =>
+    pageTextOutsideTables(doc, page),
+  );
+  const scales = new Set<Scale>(pageTexts.flatMap(pageScaleEvidence));
+  let tonnes = pageTexts.some(namesTonneUnit);
+  for (const line of notes) {
+    const kt = namesUnit(line, KILOTONNE_PATTERNS);
+    const mt = namesMegatonne(line);
+    if (kt) scales.add(1000);
+    if (mt) scales.add(1_000_000);
+    if (namesKilogram(line)) scales.add(0.001);
+    // "thousand tonnes" names kt, not tonnes.
+    if (!kt && !mt && namesUnit(line, TONNE_UNIT_PATTERNS)) tonnes = true;
+  }
+  if (tonnes || scales.size !== 1) return "t";
+  const [scale] = scales;
+  if (scale === 1000) return "kt";
+  if (scale === 1_000_000) return "Mt";
+  return "kg";
+}
+
+/** True when the table, or a table up its chain, spells the `Mt` symbol in its notes. */
+function tableNamesMtSymbol(
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): boolean {
+  return continuationChain(bundles, bundle)
+    .flatMap(bundleNotes)
+    .some(lineNamesMtSymbol);
 }
 
 /**
@@ -1442,7 +1698,9 @@ export async function extractInventoryFromStructured(
   const yearInstruction = yearInstructionFor(targetYear);
   const currentYear = new Date().getUTCFullYear();
   const bundles = buildTableBundles(doc, currentYear);
-  const style = detectNumberStyle(markdown);
+  const metadata = options?.sourceMetadata;
+  const documentStyle = detectNumberStyle(markdown);
+  const style = resolveNumberStyle(markdown, metadata);
   const scaleEvidence = new Map(
     bundles.map((bundle) => [
       bundle.tableId,
@@ -1451,9 +1709,19 @@ export async function extractInventoryFromStructured(
   );
   const hasScaleEvidence = (bundle: TableBundle) =>
     scaleEvidence.get(bundle.tableId) ?? true;
+  const marks: StructuredMarks = {
+    unitHint: (bundle) => tableUnitHint(doc, bundles, bundle),
+    mtSymbol: (bundle) => tableNamesMtSymbol(bundles, bundle),
+    // A glossary may define MT on any page (CC-1233).
+    mtIsMetricTons: definesMtAsMetricTons(markdown),
+    undetected: documentStyle === "unknown",
+    reading:
+      documentStyle !== "unknown" ? documentStyle : ambiguousReading(metadata),
+  };
   const markdownPages = splitDocumentPages(markdown);
   const markdownByPage = new Map(markdownPages.map((p) => [p.page, p.text]));
   const inheritedScales = inheritedPageScales(markdownPages);
+  const inheritedMt = inheritedMtSymbol(markdownPages);
   const tablePages = new Set(bundles.map((bundle) => bundle.page));
   type StructuredPage =
     | { page: number; kind: "tables"; prompt: string }
@@ -1518,6 +1786,7 @@ export async function extractInventoryFromStructured(
         targetYear,
       ),
       markdown,
+      options,
     );
   }
   const schemaState: SchemaState = { useSchema: true };
@@ -1533,16 +1802,21 @@ export async function extractInventoryFromStructured(
           normalizeExtractedRows(
             await extractSegment(
               item.text,
-              yearInstruction,
+              numberStyleInstruction(item.text, metadata) + yearInstruction,
               false,
               schemaState,
+              resolveNumberStyle(item.text, metadata),
             ),
           ).map((row) => ({ ...row, page })),
           year,
           {
             deferYearAssumption: true,
             source: { text: item.text, kind: "page" },
+            sourceMetadata: metadata,
+            documentStyle,
             inheritedScales: inheritedScales.get(page) ?? [],
+            inheritedMtSymbol: inheritedMt.get(page) ?? false,
+            mtIsMetricTons: marks.mtIsMetricTons,
             currentYear,
           },
         );
@@ -1560,12 +1834,16 @@ export async function extractInventoryFromStructured(
           style,
           currentYear,
           hasScaleEvidence,
+          marks,
         ),
       );
       return finalizeRows(normalizeExtractedRows(rows), year, {
         deferYearAssumption: true,
         readFromCells: true,
         currentYear,
+        sourceMetadata: metadata,
+        inventoryType: options?.inventoryType,
+        documentStyle,
         totalsPageText: markdownByPage.get(page),
         inheritedScales: inheritedScales.get(page) ?? [],
       });
@@ -1584,6 +1862,7 @@ export async function extractInventoryFromStructured(
   return withProvenance(
     checkExtractionResult(selected, extractedRowCount(perPage), targetYear),
     markdown,
+    options,
   );
 }
 
@@ -1606,7 +1885,10 @@ async function extractByChunks(
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
-  const style = detectNumberStyle(documentContent);
+  const style = resolveNumberStyle(documentContent, options?.sourceMetadata);
+  yearInstruction =
+    numberStyleInstruction(documentContent, options?.sourceMetadata) +
+    yearInstruction;
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -1820,7 +2102,7 @@ async function extractSegment(
   prefix: string,
   isSegment: boolean,
   state: SchemaState,
-  style: NumberStyle = detectNumberStyle(content),
+  style: NumberStyle = resolveNumberStyle(content, null),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
   return normalizeRows(
@@ -2191,6 +2473,12 @@ function normalizeRows(
       const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
+    if (
+      typeof row.totalCO2eText === "string" &&
+      !isPlaceholderOrEmpty(row.totalCO2eText)
+    ) {
+      out.totalCO2eText = row.totalCO2eText.trim();
+    }
     if (row.refSource === "document" || row.refSource === "inferred") {
       out.refSource = row.refSource;
     }
@@ -2334,6 +2622,474 @@ export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
   return fillActivityTypeFromCategory(fillMissingGpcRefNo(rows));
 }
 
+/** A unit without its CO2e, "metric", "of", brackets and spaces: "(MT CO2e)" is "MT". */
+function cleanUnit(unit: string): string {
+  return unit
+    .trim()
+    .replace(/co[2₂]\s*-?\s*(equiv\w*|eq|e)?\.?/gi, "")
+    .replace(/\bmetric\b/gi, "")
+    .replace(/\bof\b/gi, "")
+    .replace(/[()\s]/g, "");
+}
+
+/**
+ * True for "MT" in capitals (after cleaning): metric tonnes or megatonnes. Such
+ * rows are kept as tonnes and get a unit check in the review. "Mt" and "mt" are
+ * not ambiguous. tonnesMultiplier still returns null for "MT".
+ */
+function isAmbiguousMtUnit(unit: string | null | undefined): boolean {
+  return unit != null && cleanUnit(unit) === "MT";
+}
+
+/** Rounding allowed between the stored value and printed number × factor. */
+const PRINTED_FACTOR_TOLERANCE = 0.005;
+
+/** True when `printed × factor` equals `value` within rounding. */
+function matchesPrinted(
+  value: number,
+  printed: number | null,
+  factor: number,
+): boolean {
+  if (printed == null) return false;
+  const expected = printed * factor;
+  if (expected === 0) return value === 0;
+  return Math.abs(value / expected - 1) <= PRINTED_FACTOR_TOLERANCE;
+}
+
+type PrintedTextContext = {
+  /** The document prints no unambiguous number of either style. */
+  undetected: boolean;
+  /**
+   * Reading the stored values follow: a user format, else the document style,
+   * else the metadata format, else english.
+   */
+  reading: NumberReading;
+  /**
+   * The source text names kt or Mt on a caption, or the page inherits a kt or
+   * Mt scale from a table continued from previous pages: a printed number may
+   * be scaled.
+   */
+  largeUnit: boolean;
+  /**
+   * Large-unit evidence of the tables that print a value (`tableUnitEvidence`
+   * on the source text). Absent: no table evidence, as `"unknown"`.
+   */
+  tableUnit?: (printed: string) => TableUnitEvidence;
+};
+
+/** Reading of an ambiguous number when the document style is undetected. */
+function ambiguousReading(
+  metadata: SourceMetadata | null | undefined,
+): NumberReading {
+  return metadata?.numberFormat ?? "english";
+}
+
+function withoutPrintedText(row: ExtractedRow): ExtractedRow {
+  const out = { ...row };
+  delete out.totalCO2eText;
+  delete out.printedFactor;
+  delete out.numberCheck;
+  delete out.extractedGases;
+  return out;
+}
+
+/**
+ * Checks the printed text of a row against its stored totalCO2e (already in
+ * tonnes) and sets `printedFactor`, plus `numberCheck` when the number reads
+ * two ways in a document of undetected style.
+ *
+ * The factor comes from unit evidence, never from the ratio alone: for
+ * `6.600`, english × 1000 equals european × 1. It is the unit multiplier when
+ * the model left the number in kt or Mt. When the source names a large unit
+ * or inherits a kt or Mt scale from a continued table (`context.largeUnit`),
+ * the tables that print the value decide (`context.tableUnit`). When they
+ * are in tonnes or disagree, 1 is tried first, then 1000 and 1,000,000, and a
+ * value that matches only at a large factor (the model applied a kt caption of
+ * another table) is read at factor 1 and held for review (`unitCheck:
+ * "missing"`, hint "t"). Otherwise (a large-unit table, or no table prints the
+ * value) 1000, 1,000,000 or 1, in that order.
+ * Without a large unit on the source the factor is 1. At each factor the current
+ * reading is tried first, then, for an ambiguous number, the other one. When
+ * only the other reading matches (the model read it the other way), the value
+ * is stored under the current reading. With no match the text is dropped, the
+ * model's number kept, and the mismatch logged.
+ *
+ * A row that already has a `printedFactor` was checked before (page selection
+ * finalizes again without the source) and is returned as is.
+ */
+function withPrintedText(
+  row: ExtractedRow,
+  context: PrintedTextContext,
+  multiplier: number,
+): ExtractedRow {
+  const text = row.totalCO2eText;
+  if (text == null || row.printedFactor != null) return row;
+  const value = row.totalCO2e;
+  if (value == null) return withoutPrintedText(row);
+  const ambiguous = context.undetected && isAmbiguousNumberText(text);
+  const other: NumberReading =
+    context.reading === "english" ? "european" : "english";
+  const readings = ambiguous ? [context.reading, other] : [context.reading];
+  const evidence =
+    multiplier === 1 && context.largeUnit
+      ? (context.tableUnit?.(text) ?? "unknown")
+      : null;
+  // The value's own table is in tonnes, or its tables disagree: a large
+  // factor there is the model applying another table's caption.
+  const tableNotLarge = evidence === "none" || evidence === "mixed";
+  const factors =
+    multiplier !== 1
+      ? [multiplier]
+      : tableNotLarge
+        ? [1, 1000, 1_000_000]
+        : evidence
+          ? [1000, 1_000_000, 1]
+          : [1];
+  for (const factor of factors) {
+    for (const reading of readings) {
+      if (!matchesPrinted(value, parseNumberString(text, reading), factor)) {
+        continue;
+      }
+      const hasGases = row.co2 != null || row.ch4 != null || row.n2o != null;
+      const checked: ExtractedRow = {
+        ...withoutPrintedText(row),
+        totalCO2eText: text,
+        printedFactor: factor,
+        ...(ambiguous ? { numberCheck: true } : {}),
+        // Gases as the model read them: under `reading`, before any unit answer.
+        ...(ambiguous && hasGases
+          ? {
+              extractedGases: {
+                ...(row.co2 != null ? { co2: row.co2 } : {}),
+                ...(row.ch4 != null ? { ch4: row.ch4 } : {}),
+                ...(row.n2o != null ? { n2o: row.n2o } : {}),
+                numberFormat: reading,
+                unit: "t" as const,
+              },
+            }
+          : {}),
+      };
+      const held =
+        tableNotLarge && factor !== 1 ? heldAtTonnes(checked, factor) : checked;
+      if (reading === context.reading) return held;
+      const [converted] = applyReadings(
+        [held],
+        { units: {}, numberFormat: reading },
+        { units: {}, numberFormat: context.reading },
+      );
+      return converted;
+    }
+  }
+  logger.warn(
+    { text, value, label: row.category ?? row.subsector ?? null },
+    "Printed text does not match the extracted value; text ignored",
+  );
+  return withoutPrintedText(row);
+}
+
+/**
+ * A checked row read at factor 1 instead of `factor`: its total and gases (and
+ * the stored gases) divided by the factor, with `printedFactor` 1, and held
+ * for the unit card (`unitCheck: "missing"`, hint "t").
+ */
+function heldAtTonnes(row: ExtractedRow, factor: number): ExtractedRow {
+  const down = (v: number | null | undefined) => (v == null ? v : v / factor);
+  const out: ExtractedRow = {
+    ...row,
+    totalCO2e: down(row.totalCO2e) ?? null,
+    printedFactor: 1,
+    unitCheck: "missing",
+    unitHint: "t",
+  };
+  for (const gas of ["co2", "ch4", "n2o"] as const) {
+    if (row[gas] != null) out[gas] = down(row[gas]);
+  }
+  if (row.extractedGases) {
+    const stored = { ...row.extractedGases };
+    for (const gas of ["co2", "ch4", "n2o"] as const) {
+      if (stored[gas] != null) stored[gas] = down(stored[gas]);
+    }
+    out.extractedGases = stored;
+  }
+  return out;
+}
+
+/**
+ * A row the model scaled by 1,000,000 (`printedFactor`) read back as printed,
+ * with `unitCheck: "MT"` and `printedUnit` "Mt": the total and gases divided
+ * by the factor, and `printedFactor` 1, since the "MT" factor is applied by
+ * the unit reading.
+ */
+function asPrintedMt(row: ExtractedRow): ExtractedRow {
+  const factor = UNIT_FACTOR.Mt;
+  const out: ExtractedRow = {
+    ...row,
+    printedFactor: 1,
+    unitCheck: "MT",
+    printedUnit: "Mt",
+  };
+  if (row.totalCO2e != null) out.totalCO2e = row.totalCO2e / factor;
+  for (const gas of ["co2", "ch4", "n2o"] as const) {
+    const value = row[gas];
+    if (value != null) out[gas] = value / factor;
+  }
+  const stored = row.extractedGases;
+  if (stored) {
+    const gases: ExtractedGases = { ...stored };
+    for (const gas of ["co2", "ch4", "n2o"] as const) {
+      const value = stored[gas];
+      if (value != null) gases[gas] = value / factor;
+    }
+    out.extractedGases = gases;
+  }
+  return out;
+}
+
+/** Fields of a row a reported total keeps for the review checks. */
+function totalCheckFields(row: ExtractedRow): Partial<ReportedTotal> {
+  const out: Partial<ReportedTotal> = {};
+  if (row.source) out.source = row.source;
+  if (row.page != null) out.page = row.page;
+  if (row.unitCheck) out.unitCheck = row.unitCheck;
+  if (row.printedUnit) out.printedUnit = row.printedUnit;
+  if (row.numberCheck) out.numberCheck = true;
+  if (row.totalCO2eText != null) out.totalCO2eText = row.totalCO2eText;
+  if (row.printedFactor != null) out.printedFactor = row.printedFactor;
+  return out;
+}
+
+/** Most document totals the total check lists. */
+const MAX_TOTAL_CANDIDATES = 5;
+/** Most examples the number format check shows. */
+const MAX_NUMBER_EXAMPLES = 3;
+
+function itemLabel(row: ExtractedRow): string {
+  return (
+    row.category?.trim() ||
+    row.activityType?.trim() ||
+    row.subsector?.trim() ||
+    row.sector?.trim() ||
+    ""
+  );
+}
+
+/**
+ * The checks the review asks before approval, or undefined without rows:
+ * - `unit` when a row or total was written "MT" (read as tonnes);
+ * - `unitGroups`: one per page with rows printed without a unit
+ *   (`unitCheck: "missing"`), preselected from the rows' `unitHint`;
+ * - `numberFormat` when a printed number reads two ways in a document of
+ *   undetected style;
+ * - `total` always: the printed, year-matched grand totals (at most 5) and the
+ *   one matching the inventory level, which the cap always keeps.
+ */
+function buildSourceChecks(
+  rows: ExtractedRow[],
+  reportedTotals: ReportedTotal[],
+  options: {
+    targetYear: number | null | undefined;
+    inventoryType: string | null | undefined;
+    reading: NumberReading;
+  },
+): SourceChecks | undefined {
+  if (rows.length === 0) return undefined;
+  const checks: SourceChecks = {};
+
+  const mtRows = rows.filter((row) => row.unitCheck === "MT");
+  const mtTotals = reportedTotals.filter((t) => t.unitCheck === "MT");
+  if (mtRows.length > 0 || mtTotals.length > 0) {
+    const items = [...mtRows, ...mtTotals];
+    const sources = [
+      ...new Set(
+        items
+          .map((item) => item.source?.trim())
+          .filter((source): source is string => !!source),
+      ),
+    ];
+    const pages = [
+      ...new Set(
+        items
+          .map((item) => item.page)
+          .filter((page): page is number => page != null),
+      ),
+    ].sort((a, b) => a - b);
+    // The spellings the document printed ("MT", "Mt"), cleaned of CO2e words.
+    const spellings = [
+      ...new Set(
+        items
+          .map((item) => item.printedUnit && cleanUnit(item.printedUnit))
+          .filter((unit): unit is string => !!unit),
+      ),
+    ];
+    const exampleRow = mtRows.find((row) => row.totalCO2e != null);
+    const exampleTotal = mtTotals[0];
+    checks.unit = {
+      status: "pending",
+      reading: "t",
+      evidence: {
+        unitText: spellings.length > 0 ? spellings.join(" / ") : "MT",
+        sources,
+        pages,
+        example: exampleRow
+          ? {
+              label: itemLabel(exampleRow),
+              text: exampleRow.totalCO2eText ?? String(exampleRow.totalCO2e),
+            }
+          : exampleTotal
+            ? {
+                label: exampleTotal.label,
+                text: exampleTotal.totalCO2eText ?? String(exampleTotal.value),
+              }
+            : null,
+      },
+    };
+  }
+
+  const unitGroups = buildUnitGroups(rows);
+  if (unitGroups.length > 0) checks.unitGroups = unitGroups;
+
+  const examples = [
+    ...rows
+      .filter((row) => row.numberCheck && row.totalCO2eText)
+      .map((row) => ({ label: itemLabel(row), text: row.totalCO2eText! })),
+    ...reportedTotals
+      .filter((t) => t.numberCheck && t.totalCO2eText)
+      .map((t) => ({ label: t.label, text: t.totalCO2eText! })),
+  ];
+  if (examples.length > 0) {
+    checks.numberFormat = {
+      status: "pending",
+      reading: options.reading,
+      examples: examples.slice(0, MAX_NUMBER_EXAMPLES),
+    };
+  }
+
+  // Same targets as the reconciliation, so the card lists what the review
+  // reconciles against: no removals, no other year, no total the model computed.
+  const targets = reconciliationTargets(reportedTotals, options.targetYear);
+  const targetValues = new Set([...targets.grand, ...targets.net]);
+  const seen = new Set<string>();
+  const printed = reportedTotals
+    .filter(
+      (t) =>
+        isGrandTotal(t) &&
+        t.inText !== false &&
+        (t.year == null ||
+          options.targetYear == null ||
+          t.year === options.targetYear) &&
+        targetValues.has(t.value),
+    )
+    .filter((t) => {
+      const key = `${t.label}\t${t.value}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  // Suggest from all printed totals, then cap the list keeping the suggestion.
+  const level =
+    printed.length > 0
+      ? selectLevelTotal(printed, options.inventoryType ?? null)
+      : null;
+  let candidates = printed.slice(0, MAX_TOTAL_CANDIDATES);
+  let suggested = level;
+  if (level != null && level >= MAX_TOTAL_CANDIDATES) {
+    candidates = [
+      ...printed.slice(0, MAX_TOTAL_CANDIDATES - 1),
+      printed[level],
+    ];
+    suggested = MAX_TOTAL_CANDIDATES - 1;
+  }
+  checks.total = {
+    status: "pending",
+    candidates,
+    selected: null,
+    suggested,
+  };
+  return checks;
+}
+
+/**
+ * Groups of the rows printed without a unit, by page, or by page and table
+ * for rows read from a table cell (`unitGroupKey`), sorted by page and then
+ * table order (a page's group without a table first). A group preselects
+ * kt or Mt when every row's printed value was scaled by that factor (the model
+ * read the page's unit); else the caption hint its rows share, else tonnes.
+ * A group whose rows share the hint "kg" and that preselects tonnes is
+ * `kgOnly`.
+ * Rows keep their extracted values until the group is answered.
+ */
+function buildUnitGroups(rows: ExtractedRow[]): UnitGroup[] {
+  const groups = new Map<
+    string,
+    { page: number | null; tableId: string | null; rows: ExtractedRow[] }
+  >();
+  for (const row of rows) {
+    if (row.unitCheck !== "missing") continue;
+    const key = unitGroupKey(row)!;
+    const group = groups.get(key) ?? {
+      page: row.page ?? null,
+      tableId: row.sourceCell?.tableId ?? null,
+      rows: [],
+    };
+    group.rows.push(row);
+    groups.set(key, group);
+  }
+  // By page; on a page the group without a table first, then the table
+  // groups in table order (`compareTableIds`).
+  return [...groups.entries()]
+    .sort(
+      ([, a], [, b]) =>
+        (a.page ?? Infinity) - (b.page ?? Infinity) ||
+        (a.tableId == null ? -1 : 0) - (b.tableId == null ? -1 : 0) ||
+        compareTableIds(a.tableId ?? "", b.tableId ?? ""),
+    )
+    .map(([key, group]) => {
+      const bases = new Set(group.rows.map(baseUnitReading));
+      const hints = new Set(group.rows.map((row) => row.unitHint ?? "t"));
+      const [base] = bases;
+      const [hint] = hints;
+      const preselected: UnitReading =
+        bases.size === 1 && base !== "t"
+          ? base
+          : hints.size === 1 && hint !== "kg"
+            ? hint
+            : "t";
+      // kg is no option: a kg page preselects tonnes and says so, unless the
+      // rows' printed factor already read a larger unit.
+      const kgOnly = hints.size === 1 && hint === "kg" && preselected === "t";
+      return {
+        key,
+        page: group.page,
+        tableId: group.tableId,
+        rowCount: group.rows.length,
+        preselected,
+        options: [...UNIT_GROUP_OPTIONS],
+        status: "pending" as const,
+        reading: null,
+        ...(kgOnly ? { kgOnly: true as const } : {}),
+      };
+    });
+}
+
+/**
+ * Unit a page suggests for rows without a unit, from its scales
+ * (`pageScales`: its captions, or those of a table continued from the previous
+ * page): "kt" when only kt (or Gg), "Mt" when only Mt, "kg" when only kg (no
+ * option reads it; the group may be flagged `kgOnly`), else tonnes (mixed
+ * units, or a page caption naming tonnes).
+ */
+function unitHintForPage(
+  text: string,
+  scales: readonly Scale[],
+): UnitReading | "kg" {
+  if (namesTonneUnit(text)) return "t";
+  if (scales.length !== 1) return "t";
+  if (scales[0] === 1000) return "kt";
+  if (scales[0] === 1_000_000) return "Mt";
+  if (scales[0] === 0.001) return "kg";
+  return "t";
+}
+
 /**
  * Multiplier from the unit written in the document to metric tonnes.
  * Empty unit means tonnes (rows stored before the unit field existed). Returns
@@ -2342,13 +3098,7 @@ export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
  */
 export function tonnesMultiplier(unit?: string | null): number | null {
   if (unit == null) return 1;
-  const raw = unit.trim();
-  if (!raw) return 1;
-  const cleaned = raw
-    .replace(/co[2\u2082]\s*-?\s*(equiv\w*|eq|e)?\.?/gi, "")
-    .replace(/\bmetric\b/gi, "")
-    .replace(/\bof\b/gi, "")
-    .replace(/[()\s]/g, "");
+  const cleaned = cleanUnit(unit);
   if (cleaned === "") return 1;
   // Case matters here: "Mt" is megatonnes, "mt" is a metric tonne.
   if (
@@ -2376,17 +3126,6 @@ function scaleOrNull(
   multiplier: number,
 ): number | null | undefined {
   return value == null ? value : value * multiplier;
-}
-
-/** Sum of imported values in tonnes, without rows left out of totals. */
-export function sumImported(rows: ExtractedRow[]): number {
-  return rows.reduce(
-    (sum, row) =>
-      isOmittedGPCReference(row.gpcRefNo?.trim()) || row.totalCO2e == null
-        ? sum
-        : sum + row.totalCO2e,
-    0,
-  );
 }
 
 /** Sub-sector key of a row: the GPC reference without its scope digit, else the names. */
@@ -2521,6 +3260,16 @@ export type FinalizeOptions = {
   source?: FinalizeSource;
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
   currentYear?: number;
+  /** User choices about the source; sets the number style of the source text. */
+  sourceMetadata?: SourceMetadata | null;
+  /** Inventory level (`gpc_basic`, `gpc_basic_plus`): picks the suggested document total. */
+  inventoryType?: string | null;
+  /**
+   * Number style detected on the whole document. Page extraction passes it so
+   * a page with few numbers of its own does not raise a number check.
+   * Defaults to the style detected on `source`.
+   */
+  documentStyle?: NumberStyle;
   /**
    * Scales a page inherits from a table continued from previous pages
    * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
@@ -2528,6 +3277,24 @@ export type FinalizeOptions = {
    * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
    */
   inheritedScales?: readonly Scale[];
+  /**
+   * The page inherits the `Mt` symbol (`inheritedMtSymbol`) from a table
+   * continued from previous pages: counts as its own `namesMtSymbol` caption
+   * for `mtIsMetricTons`. Ignored without a page source.
+   */
+  inheritedMtSymbol?: boolean;
+  /**
+   * The document defines MT as metric tons (`definesMtAsMetricTons` on the
+   * whole document). "Mt" then reads like "MT": kept as tonnes with
+   * `unitCheck: "MT"`. A value the model scaled by 1,000,000 is restored to
+   * the printed value with the same mark only on a page whose captions spell
+   * the `Mt` symbol (`namesMtSymbol`, or `inheritedMtSymbol`), or on the
+   * chunk path when the document's captions spell it (R28); "million metric
+   * tons" or "megatonnes" captions keep the conversion. When the document also
+   * prints "Mt" for megatonnes, those rows go to the unit card with a tonnes
+   * default; that fails safe, since approval waits for the card's answer.
+   */
+  mtIsMetricTons?: boolean;
   /**
    * Structured path (no `source`): the values were read from table cells. A
    * total read from its cell is printed (`inText`) and records that cell and
@@ -2548,13 +3315,24 @@ export type FinalizeOptions = {
 /**
  * Turn LLM rows into importable rows plus a reconciliation summary:
  * - subtotal and total rows leave the rows and go to reportedTotals;
- * - units are converted to tonnes, rows with an unknown unit are dropped;
- *   unit-less rows on a kt/Mt/kg page (its own captions, or a table continued
- *   from the previous page) are kept and marked (`unitCheck`), and unit-less
- *   totals there are dropped; rows that arrive marked `unitCheck: "missing"`
- *   (structured path) are treated the same;
+ * - units are converted to tonnes, rows with an unknown unit are dropped; "MT"
+ *   rows are kept as tonnes with `unitCheck: "MT"`, and so are "Mt" rows when
+ *   the document defines MT as metric tons (`mtIsMetricTons`); unit-less rows on a
+ *   kt/Mt/kg page (its own captions, or a table continued from the previous
+ *   page) are kept and marked (`unitCheck: "missing"`, with the page's
+ *   `unitHint`), and unit-less totals there are dropped; on a page whose
+ *   captions spell the `Mt` symbol in such a document, unit-less rows and
+ *   totals get `unitCheck: "MT"` with `printedUnit` "Mt" instead, never
+ *   "missing" (R27);
+ * - printed text (`totalCO2eText`) is checked against the value and sets
+ *   `printedFactor` and `numberCheck`;
+ * - rows that arrive marked (structured path: `unitCheck` "MT" or "missing",
+ *   with `unitHint` and `printedFactor` from the cell) keep their marks, and
+ *   "missing" rows and totals are treated like unit-less ones on a kt/Mt/kg
+ *   page;
  * - with a source, line items whose value is not printed there are kept and
  *   marked (`valueCheck`);
+ * - `summary.sourceChecks` lists the checks the review asks (none without rows);
  * - with a target year, rows of another year or without a year are dropped when
  *   any row names a year; only when no row names a year is the target year assumed;
  * - rows repeating the same year, reference, scope and activity are dropped.
@@ -2608,7 +3386,7 @@ function finalizeRows(
       const leadScales = pageScales(options.source.text, options);
       const leadNumbers = numbersInText(
         evidence.leadText,
-        detectNumberStyle(options.source.text),
+        resolveNumberStyle(options.source.text, options.sourceMetadata),
       );
       rows = rows.map((row) => {
         if (row.year != null && row.year !== targetYear) return row;
@@ -2642,7 +3420,7 @@ function finalizeRows(
       : undefined);
   // Every number printed in the source, read once for all the in-text checks.
   const sourceStyle = totalsSource
-    ? detectNumberStyle(totalsSource.text)
+    ? resolveNumberStyle(totalsSource.text, options?.sourceMetadata)
     : "unknown";
   const sourceNumbers = totalsSource
     ? numbersInText(totalsSource.text, sourceStyle)
@@ -2704,6 +3482,44 @@ function finalizeRows(
   // text there judges only totals without a cell.
   const unitUnclear = source != null && pageUnitUnclear;
 
+  // The document's own style decides whether a printed number is ambiguous;
+  // a page alone often prints too few numbers to tell.
+  const documentStyle =
+    options?.documentStyle ?? detectNumberStyle(source?.text ?? "");
+  const metadata = options?.sourceMetadata;
+  const printedContext: PrintedTextContext = {
+    undetected: documentStyle === "unknown",
+    reading:
+      documentStyle !== "unknown" ? documentStyle : ambiguousReading(metadata),
+    // A continued kt or Mt table counts as the page's own caption.
+    largeUnit:
+      !!source &&
+      (namesLargeUnit(source.text) || sourceScales.some((m) => m >= 1000)),
+    tableUnit: source
+      ? (printed) =>
+          tableUnitEvidence(
+            source.text,
+            printed,
+            (options?.inheritedScales ?? []).some((m) => m >= 1000),
+          )
+      : undefined,
+  };
+
+  // A document that defines MT as metric tons, on a page whose captions spell
+  // the `Mt` symbol: a value the model scaled by 1,000,000 is read back.
+  const mtCaption =
+    !!options?.mtIsMetricTons &&
+    source?.kind === "page" &&
+    (namesMtSymbol(source.text) || !!options.inheritedMtSymbol);
+  // The chunk path has no page: the document's captions decide whether a
+  // value the model scaled by 1,000,000 is read back (R28). Unit-less rows
+  // there stay as they are (R27 needs a page).
+  const mtRestore =
+    mtCaption ||
+    (!!options?.mtIsMetricTons &&
+      source?.kind === "document" &&
+      namesMtSymbol(source.text));
+
   // Structured path: a total is printed when it was read from its cell.
   const totalSource = (
     row: ExtractedRow,
@@ -2729,18 +3545,34 @@ function finalizeRows(
     const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
       (v) => v != null,
     );
+    // On a page whose captions spell the `Mt` symbol, in a document that
+    // defines MT as metric tons, a row without a unit is in that column's
+    // "Mt": it goes to the MT card, never to a missing-unit check (R27).
+    const mtUnitless =
+      mtCaption &&
+      !row.unit?.trim() &&
+      row.unitCheck !== "missing" &&
+      hasAmount;
     // A blank unit converts like a missing one (multiplier 1), so mark it too.
+    // "MT" is a unit (its own check below), never a missing one.
     const unitMissing =
       ((unitUnclear && !row.unit?.trim()) || row.unitCheck === "missing") &&
-      hasAmount;
-    if (unitMissing) evidenceDropped = true;
-    const multiplier = tonnesMultiplier(row.unit);
+      hasAmount &&
+      !mtUnitless;
+    if (unitMissing || mtUnitless) evidenceDropped = true;
+    // "MT" stays as printed (tonnes by default) and the review asks which unit.
+    // So does "Mt" in a document that defines MT as metric tons (CC-1233).
+    const ambiguousMt =
+      isAmbiguousMtUnit(row.unit) ||
+      (!!options?.mtIsMetricTons &&
+        row.unit != null &&
+        cleanUnit(row.unit) === "Mt");
+    const multiplier = ambiguousMt ? 1 : tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
       continue;
     }
-    const scaled: ExtractedRow = { ...row };
-    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
+    let scaled: ExtractedRow = { ...row };
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -2748,6 +3580,10 @@ function finalizeRows(
       if (row.n2o != null) scaled.n2o = row.n2o * multiplier;
     }
     if (row.unit) scaled.unit = "t";
+    if (ambiguousMt) {
+      scaled.unitCheck = "MT";
+      scaled.printedUnit = row.unit!.trim();
+    }
     // A huge value in Mt can overflow to Infinity; it is not a usable number.
     if (
       [scaled.totalCO2e, scaled.co2, scaled.ch4, scaled.n2o].some(
@@ -2757,6 +3593,40 @@ function finalizeRows(
       drop("unsupported_unit");
       continue;
     }
+    const checked = withPrintedText(scaled, printedContext, multiplier);
+    // The value as the model printed it, for the in-text checks: re-read when
+    // the printed text moved it to the current reading.
+    const rawTotal =
+      checked.totalCO2e !== scaled.totalCO2e && checked.totalCO2e != null
+        ? checked.totalCO2e / multiplier
+        : row.totalCO2e;
+    scaled = checked;
+    // The model converted a "Mt" column by 1,000,000 in a document that
+    // defines MT as metric tons: back to the printed value, asked like "MT".
+    if (mtRestore && multiplier === 1 && !ambiguousMt) {
+      if (scaled.printedFactor === UNIT_FACTOR.Mt) {
+        scaled = asPrintedMt(scaled);
+      } else if (
+        scaled.totalCO2eText == null &&
+        rawTotal != null &&
+        isValueInNumbers(rawTotal / UNIT_FACTOR.Mt, sourceNumbers) &&
+        !isValueInNumbers(rawTotal, sourceNumbers)
+      ) {
+        // Without the printed text nothing proves the model scaled it: kept.
+        logger.warn(
+          {
+            value: rawTotal,
+            label: row.category ?? row.subsector ?? null,
+            page: row.page ?? null,
+          },
+          "Value looks scaled from Mt in a document defining MT as metric tons; kept as extracted",
+        );
+      }
+    }
+    if (mtUnitless && scaled.unitCheck !== "MT") {
+      scaled = { ...scaled, unitCheck: "MT", printedUnit: "Mt" };
+    }
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
 
     const labelLevel = sumLabelLevel(row);
     const rowType: ExtractedRowType | null | undefined =
@@ -2795,29 +3665,47 @@ function finalizeRows(
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
-          ...totalSource(row, row.totalCO2e, label, scaled.totalCO2e),
+          ...totalSource(row, rawTotal, label, scaled.totalCO2e),
+          ...totalCheckFields(scaled),
         });
       }
       continue;
     }
-    if (unitMissing) scaled.unitCheck = "missing";
-    // Each line item's raw value must be printed in its source text, with the
-    // scales the page's captions allow; otherwise it is kept for review. With
-    // that evidence a short figure on a table line counts too (`| 80.3 |` kt
-    // is 80,300 t).
+    if (unitMissing) {
+      scaled.unitCheck = "missing";
+      // On the Markdown path unitMissing implies a page source, and a continued
+      // table's inherited scales count as the page's own. A structured row
+      // arrives with its table's hint (`readRowCells`).
+      scaled.unitHint =
+        row.unitHint ??
+        (source ? unitHintForPage(source.text, sourceScales) : "t");
+    }
+    // Each line item's raw value (as printed, see rawTotal) must be printed in
+    // its source text, with the scales the page's captions (or a continued
+    // table) allow; otherwise it is kept for review. With that evidence a short
+    // figure in a table cell counts too (`| 80.3 |` kt is 80,300 t). A number
+    // that reads two ways (`numberCheck`) is found under either reading, or as
+    // the model read it: the number card, not this check, decides the reading,
+    // and the page may be parsed in the other one.
+    const candidates = [rawTotal];
+    if (scaled.numberCheck && scaled.totalCO2eText != null) {
+      candidates.push(
+        row.totalCO2e,
+        parseNumberString(scaled.totalCO2eText, "english"),
+        parseNumberString(scaled.totalCO2eText, "european"),
+      );
+    }
+    const printed = candidates.filter((v): v is number => v != null);
     if (
       source &&
-      row.totalCO2e != null &&
-      !isLineItemValueInNumbers(
-        row.totalCO2e,
-        sourceNumbers,
-        cellNumbers,
-        lineItemScales,
+      printed.length > 0 &&
+      !printed.some((v) =>
+        isLineItemValueInNumbers(v, sourceNumbers, cellNumbers, lineItemScales),
       )
     ) {
       scaled.valueCheck = "not_found";
     }
-    rawValues.set(scaled, row.totalCO2e ?? null);
+    rawValues.set(scaled, rawTotal ?? null);
     converted.push(scaled);
   }
 
@@ -2864,6 +3752,7 @@ function finalizeRows(
         subsector: row.subsector,
         level: "subtotal",
         ...totalSource(row, rawValues.get(row), label, value),
+        ...totalCheckFields(row),
       });
     }
   }
@@ -2891,6 +3780,11 @@ function finalizeRows(
   }
 
   const importedSum = sumImported(finalRows);
+  const sourceChecks = buildSourceChecks(finalRows, reportedTotals, {
+    targetYear,
+    inventoryType: options?.inventoryType,
+    reading: ambiguousReading(options?.sourceMetadata),
+  });
 
   return {
     result: {
@@ -2901,6 +3795,7 @@ function finalizeRows(
         importedSum,
         yearAssumed,
         targetYear: targetYear ?? null,
+        ...(sourceChecks ? { sourceChecks } : {}),
       },
     },
     evidenceDropped,

@@ -20,6 +20,15 @@ import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 import ReportingLevelWarning from "./reporting-level-warning";
 import { extractionReviewNotes } from "@/util/GHGI/extraction-summary";
+import type { ExtractedRow } from "@/backend/InventoryExtractionService";
+import {
+  SourceCheckCards,
+  type SourceCheckAnswer,
+} from "@/components/steps/GHGI/import/source-check-card";
+import { UseErrorToast, UseInfoToast } from "@/hooks/Toasts";
+import { getApiErrorMessage } from "@/util/helpers";
+import { hasPendingSourceChecks } from "@/util/GHGI/source-checks";
+import type { ReactNode } from "react";
 import {
   rowImportWarnings,
   translateReviewImportWarning,
@@ -27,22 +36,32 @@ import {
 
 interface ReviewConfirmStepProps {
   t: TFunction;
+  /** App language, for numbers on the source check cards. */
+  lng?: string;
   cityId: string;
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
   mappingOverrides?: Record<string, unknown>;
   onEditMapping?: () => void;
+  /**
+   * Rows that need a decision, rendered right after the source check cards.
+   * `locked` is true while a check is pending: answering a check can change
+   * row values and clears their decisions, so checks come first.
+   */
+  renderRows?: (locked: boolean) => ReactNode;
 }
 
 export default function ReviewConfirmStep({
   t,
+  lng,
   cityId,
   cityName,
   importedFileId,
   onEditMapping,
   inventoryId,
   mappingOverrides,
+  renderRows,
 }: ReviewConfirmStepProps) {
   const { data, isLoading, refetch } = api.useGetImportStatusQuery(
     {
@@ -59,6 +78,53 @@ export default function ReviewConfirmStep({
       skip: !cityId || !inventoryId || !importedFileId,
     },
   );
+  const sourceChecks =
+    data?.mappingConfiguration?.extractionSummary?.sourceChecks;
+  const { data: populationData } = api.useGetInventoryPopulationsQuery(
+    inventoryId,
+    { skip: !inventoryId || !sourceChecks },
+  );
+  const [updateSourceChecks] = api.useUpdateImportSourceChecksMutation();
+
+  /**
+   * Saves one check answer; resolves false when it was not saved, so the card
+   * stays open. A stale write reloads the import and asks again.
+   */
+  const answerSourceCheck = async (
+    answer: SourceCheckAnswer,
+  ): Promise<boolean> => {
+    try {
+      const { clearedDecisions } = await updateSourceChecks({
+        cityId,
+        inventoryId,
+        importedFileId,
+        ...answer,
+      }).unwrap();
+      if (clearedDecisions && clearedDecisions > 0) {
+        UseInfoToast({
+          title: t("import-source-checks-cleared", {
+            count: clearedDecisions,
+          }),
+        }).showInfoToast();
+      }
+      return true;
+    } catch (error: unknown) {
+      const code = (error as { data?: { error?: { code?: string } } })?.data
+        ?.error?.code;
+      if (code === "source-checks-conflict") {
+        refetch();
+        UseInfoToast({
+          title: t("import-source-checks-conflict"),
+        }).showInfoToast();
+        return false;
+      }
+      UseErrorToast({
+        title: t("import-source-checks-save-failed"),
+        description: getApiErrorMessage(error, ""),
+      }).showErrorToast();
+      return false;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -126,6 +192,7 @@ export default function ReviewConfirmStep({
     failedPages,
     droppedReasons,
     removalsWarning,
+    confirmedTotalNote,
   } = extractionReviewNotes(extractionSummary ?? null);
 
   // Fallback to fileInfo and validationResults if reviewData is not available
@@ -243,6 +310,19 @@ export default function ReviewConfirmStep({
           </HStack>
         </HStack>
       </VStack>
+      <SourceCheckCards
+        t={t}
+        locale={lng}
+        checks={sourceChecks}
+        rows={
+          (data?.mappingConfiguration?.rows as ExtractedRow[] | undefined) ?? []
+        }
+        population={populationData?.population ?? null}
+        onConfirm={answerSourceCheck}
+      />
+      {renderRows?.(
+        hasPendingSourceChecks(data?.mappingConfiguration?.extractionSummary),
+      )}
       {reconciliation?.mismatch && (
         <Box
           bg="sentiment.warningOverlay"
@@ -271,17 +351,42 @@ export default function ReviewConfirmStep({
               {t("import-reconciliation-title")}
             </Text>
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
-              {t("import-reconciliation-detail", {
-                imported: Math.round(
-                  reconciliation.importedSum,
-                ).toLocaleString(),
-                reported: Math.round(
-                  reconciliation.reportedTotal,
-                ).toLocaleString(),
-                deviation: (reconciliation.deviation * 100).toFixed(1),
-              })}
+              {t(
+                reconciliation.source === "confirmed"
+                  ? "import-reconciliation-confirmed-detail"
+                  : "import-reconciliation-detail",
+                {
+                  imported: Math.round(
+                    reconciliation.importedSum,
+                  ).toLocaleString(),
+                  reported: Math.round(
+                    reconciliation.reportedTotal,
+                  ).toLocaleString(),
+                  deviation: (reconciliation.deviation * 100).toFixed(1),
+                },
+              )}
             </Text>
           </Box>
+        </Box>
+      )}
+      {confirmedTotalNote && (
+        <Box
+          data-testid="confirmed-total-note"
+          bg="background.neutral"
+          border="1px solid"
+          borderColor="border.default"
+          borderRadius="md"
+          p={4}
+          mb={8}
+        >
+          <Text fontSize="body.sm" color="content.secondary">
+            {t("import-reconciliation-other-total", {
+              matched: Math.round(confirmedTotalNote.matched).toLocaleString(),
+              confirmed: Math.round(
+                confirmedTotalNote.confirmed,
+              ).toLocaleString(),
+            })}
+          </Text>
         </Box>
       )}
       {removalsWarning && (

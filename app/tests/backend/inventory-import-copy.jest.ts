@@ -65,3 +65,28 @@ describe("unit-unconfirmed copy (R25)", () => {
     },
   );
 });
+
+describe("source-check card copy in every locale (R29)", () => {
+  const read = (locale: string): Record<string, string> =>
+    JSON.parse(
+      readFileSync(`src/i18n/locales/${locale}/onboarding.json`, "utf8"),
+    );
+  const en = read("en");
+  const prefix =
+    /^import-(check-|unit-check-|unit-option-|unit-answer-|number-|total-|source-checks-|review-locked-by-checks)/;
+  const keys = Object.keys(en).filter((key) => prefix.test(key));
+  const names = (text: string) =>
+    [...text.matchAll(/{{(\w+)}}/g)].map((m) => m[1]).sort();
+
+  it.each(["de", "es", "fr", "pt"])(
+    "%s has every key with the same interpolation names",
+    (locale) => {
+      const strings = read(locale);
+      expect(keys.length).toBeGreaterThan(40);
+      for (const key of keys) {
+        expect([key, typeof strings[key]]).toEqual([key, "string"]);
+        expect([key, names(strings[key])]).toEqual([key, names(en[key])]);
+      }
+    },
+  );
+});

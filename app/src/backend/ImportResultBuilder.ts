@@ -8,6 +8,8 @@ import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import { db } from "@/models";
 import { scopeFromLabel, taxonomyScope } from "@/util/GHGI/gpc-ref-resolver";
 import { findReviewRows, reviewIssue } from "@/backend/ImportRowPreviewService";
+import type { ExtractionSummary } from "@/util/GHGI/extraction-summary";
+import { unitGroupKey } from "@/util/GHGI/source-checks";
 import { createHash } from "node:crypto";
 
 function reviewToken(fileId: string, rowIndex: number, source: string): string {
@@ -26,6 +28,30 @@ export interface BuiltImportResult {
   importResult: ECRFImportResult;
   /** Stored pre-extracted rows (PDF, AI-reshaped or near-eCRF) when they were the source. */
   extractedRows: ExtractedRow[] | null;
+}
+
+/**
+ * Marks the rows a source-check unit group answers (`review.unitGroup`), so
+ * they ask no row-level unit decision, pending or answered. A kg-only group
+ * offers no fitting reading, so its rows keep keep-or-skip.
+ */
+function markUnitGroupRows(
+  result: ECRFImportResult,
+  storedRows: ExtractedRow[],
+  summary: ExtractionSummary | undefined,
+): void {
+  const keys = new Set(
+    (summary?.sourceChecks?.unitGroups ?? [])
+      .filter((group) => !group.kgOnly)
+      .map((group) => group.key),
+  );
+  if (keys.size === 0) return;
+  for (const row of result.rows) {
+    if (row.review?.unitCheck !== "missing") continue;
+    const stored = storedRows[row.rowIndex];
+    const key = stored ? unitGroupKey(stored) : null;
+    if (key && keys.has(key)) row.review.unitGroup = key;
+  }
 }
 
 /** Applies only decisions bound to the original row, after parsing. */
@@ -347,6 +373,12 @@ export async function buildImportResult(
       }
     }
     importResult.requiresReferenceReview = true;
+    markUnitGroupRows(
+      importResult,
+      storedRows,
+      (mappingConfiguration as { extractionSummary?: ExtractionSummary })
+        .extractionSummary,
+    );
     for (const row of importResult.rows) {
       if (row.review)
         row.review.decisionToken = reviewToken(

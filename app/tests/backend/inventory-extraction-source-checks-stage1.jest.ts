@@ -479,6 +479,247 @@ describe("CC-1163 stage 1: a reported total is a target only next to its rows", 
   });
 });
 
+describe("CC-1163 stage 1 with source checks: ambiguous numbers and MT", () => {
+  // The document style is undetected; this page alone reads european.
+  const europeanPage = {
+    ...page("| Other | 1.234,5 |\n| Natural gas | 6.600 |"),
+    documentStyle: "unknown" as const,
+  };
+
+  it.each([6.6, 6600])(
+    "a value printed as 6.600 is found under either reading (model value %s)",
+    (value) => {
+      const result = finalizeExtractedRows(
+        [lineItem(value, { category: "Natural gas", totalCO2eText: "6.600" })],
+        2021,
+        europeanPage,
+      );
+      expect(result.rows).toHaveLength(1);
+      expect(result.rows[0].numberCheck).toBe(true);
+      expect(result.rows[0].valueCheck).toBeUndefined();
+    },
+  );
+
+  it("an MT row on a kt page is an MT check, not a missing unit", async () => {
+    const result = finalizeExtractedRows(
+      [lineItem(1234, { unit: "MT" })],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].unitCheck).toBe("MT");
+    const { reviewIssue } = await import("@/backend/ImportRowPreviewService");
+    const row = {
+      gpcRefNo: "II.1.1",
+      review: { refSource: "document", unitCheck: result.rows[0].unitCheck },
+    } as unknown as Parameters<typeof reviewIssue>[0];
+    expect(reviewIssue(row)).not.toBe("unit-unconfirmed");
+  });
+});
+
+describe("CC-1163 #3420: unit groups for rows without a printed unit", () => {
+  const unitless = (value: number, page: number, gpcRefNo = "II.1.1") =>
+    lineItem(value, { unit: null, page, gpcRefNo });
+
+  it("groups unit-less rows by page and preselects kt on a kt-only page", () => {
+    const result = finalizeExtractedRows(
+      [
+        unitless(1234, 12),
+        unitless(56, 12, "II.2.1"),
+        unitless(7, 12, "II.3.1"),
+      ],
+      2021,
+      page(
+        "Table 4: Emissions (kt CO2e)\n| Road | 1,234 |\n| Rail | 56 |\n| Water | 7 |",
+      ),
+    );
+    expect(result.rows.map((r) => r.unitHint)).toEqual(["kt", "kt", "kt"]);
+    expect(result.summary.sourceChecks?.unitGroups).toEqual([
+      {
+        key: "p12",
+        page: 12,
+        tableId: null,
+        rowCount: 3,
+        preselected: "kt",
+        options: ["t", "kt", "Mt"],
+        status: "pending",
+        reading: null,
+      },
+    ]);
+    // Rows keep their extracted values until the group is answered.
+    expect(result.rows[0].totalCO2e).toBe(1234);
+  });
+
+  it("preselects kt for a row the model already scaled, with kt and t option totals", async () => {
+    const { optionTotals } = await import("@/util/GHGI/source-checks");
+    const result = finalizeExtractedRows(
+      [{ ...unitless(1_234_000, 12), totalCO2eText: "1,234" }],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.rows[0]).toMatchObject({
+      totalCO2e: 1_234_000,
+      printedFactor: 1000,
+      unitCheck: "missing",
+    });
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p12",
+      preselected: "kt",
+    });
+    const totals = optionTotals(
+      result.rows,
+      { units: {}, numberFormat: null },
+      { unitGroup: "p12" },
+    );
+    expect(totals.find((o) => o.reading === "kt")?.total).toBe(1_234_000);
+    expect(totals.find((o) => o.reading === "t")?.total).toBe(1234);
+  });
+
+  it("preselects kt from the rows' printed factor on a page that also names tonnes", () => {
+    const result = finalizeExtractedRows(
+      [{ ...unitless(1_234_000, 14), totalCO2eText: "1,234" }],
+      2021,
+      page(
+        "Table 4: Emissions (t CO2e)\n| Sector | Total |\n" +
+          "Table 5: Emissions (kt CO2e)\n| Road | 1,234 |",
+      ),
+    );
+    expect(result.rows[0].printedFactor).toBe(1000);
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p14",
+      preselected: "kt",
+    });
+  });
+
+  it("preselects Mt on an Mt-only page", () => {
+    const result = finalizeExtractedRows(
+      [unitless(1.5, 3)],
+      2021,
+      page("Table 2: Emissions (Mt CO2e)\n| Road | 1.5 |"),
+    );
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p3",
+      preselected: "Mt",
+    });
+  });
+
+  it("preselects t on a page naming more than one unit", () => {
+    const result = finalizeExtractedRows(
+      [unitless(1234, 14)],
+      2021,
+      page(
+        "Table 4: Emissions (kt CO2e)\n| Road | 1,234 |\n" +
+          "Table 5: Emissions (Mt CO2e)\n| Rail | 1.2 |",
+      ),
+    );
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p14",
+      preselected: "t",
+    });
+  });
+
+  it("preselects t on a page naming tonnes and kt", () => {
+    const result = finalizeExtractedRows(
+      [unitless(1234, 15)],
+      2021,
+      page(
+        "Table 4: Emissions (t CO2e)\n| Road | 1,234 |\n" +
+          "Table 5: Emissions (kt CO2e)\n| Rail | 12.5 |",
+      ),
+    );
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p15",
+      preselected: "t",
+    });
+  });
+
+  it("preselects kt on a page naming thousand tonnes", () => {
+    const result = finalizeExtractedRows(
+      [unitless(1234, 16)],
+      2021,
+      page("Table 4: Emissions (thousand tonnes CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p16",
+      preselected: "kt",
+    });
+  });
+
+  it("preselects t on a kg-only page (no kg option)", () => {
+    const result = finalizeExtractedRows(
+      [unitless(1234, 5)],
+      2021,
+      page("Tabla 4: Emisiones (kg CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p5",
+      preselected: "t",
+      options: ["t", "kt", "Mt"],
+      kgOnly: true,
+    });
+  });
+
+  it.each([
+    ["kg only", "Tabla 4: Emisiones (kg CO2e)\n| Road | 1,234 |", true],
+    [
+      "kg and kt",
+      "Tabla 4: Emisiones (kg CO2e)\n| Road | 1,234 |\n" +
+        "Tabla 5: Emisiones (kt CO2e)\n| Rail | 7 |",
+      false,
+    ],
+    ["kt only", "Table 4: Emissions (kt CO2e)\n| Road | 1,234 |", false],
+  ])("flags kgOnly on a page naming %s", (_name, text, kgOnly) => {
+    const result = finalizeExtractedRows([unitless(1234, 5)], 2021, page(text));
+    const [group] = result.summary.sourceChecks?.unitGroups ?? [];
+    expect(group.kgOnly ?? false).toBe(kgOnly);
+    // Rebuilt from the stored rows without the page text, the flag stays.
+    const again = finalizeExtractedRows(result.rows, 2021);
+    expect(again.summary.sourceChecks?.unitGroups?.[0].kgOnly ?? false).toBe(
+      kgOnly,
+    );
+  });
+
+  it("does not flag kgOnly when the rows' printed factor read kt", () => {
+    // Rebuilt from stored rows: a kg page, but the model scaled each row by 1000.
+    const stored = [
+      {
+        ...unitless(1_234_000, 5),
+        totalCO2eText: "1,234",
+        printedFactor: 1000,
+        unitCheck: "missing" as const,
+        unitHint: "kg" as const,
+      },
+    ];
+    const result = finalizeExtractedRows(stored, 2021);
+    const [group] = result.summary.sourceChecks?.unitGroups ?? [];
+    expect(group).toMatchObject({ key: "p5", preselected: "kt" });
+    expect(group.kgOnly).toBeUndefined();
+  });
+
+  it("keeps the preselection when the checks are rebuilt without the page text", () => {
+    const first = finalizeExtractedRows(
+      [unitless(1234, 12)],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    const again = finalizeExtractedRows(first.rows, 2021);
+    expect(again.summary.sourceChecks?.unitGroups?.[0]).toMatchObject({
+      key: "p12",
+      preselected: "kt",
+    });
+  });
+
+  it("an MT row is not a page group", () => {
+    const result = finalizeExtractedRows(
+      [lineItem(1234, { unit: "MT", page: 12 })],
+      2021,
+      page("Table 4: Emissions (kt CO2e)\n| Road | 1,234 |"),
+    );
+    expect(result.summary.sourceChecks?.unit).toBeDefined();
+    expect(result.summary.sourceChecks?.unitGroups).toBeUndefined();
+  });
+});
+
 describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => {
   const phoenixPage =
     "Table ES-2. Stationary Energy GHG Emissions (thousand MT CO₂e)\n" +
@@ -563,6 +804,37 @@ describe("CC-1163 task 5c: no false value holds on Phoenix and Santiago", () => 
     const rail = rows.find((r) => r.gpcRefNo === "II.2.1");
     expect(rail).toBeDefined();
     expect(rail?.unitCheck).toBe("missing");
+  });
+
+  it("preselects kt for the group of a page continuing a kt table", async () => {
+    const text = documentOf({
+      20: {
+        text: "Table 3 Emissions (kt CO2e)\n| Sector | 2021 |\n| --- | --- |\n| Residential | 3,190.1 |",
+        rows: [],
+      },
+      21: {
+        text: "| Rail | 1,234.5 |\n| Bus | 2,080.3 |",
+        rows: [
+          { ...item("Rail", "II.2.1", 1234.5), unit: null },
+          // The model applied the continued kt itself.
+          {
+            ...item("Bus", "II.1.1", 2_080_300),
+            unit: null,
+            totalCO2eText: "2,080.3",
+          },
+        ],
+      },
+    });
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    const p21 = rows.filter((r) => r.page === 21);
+    expect(p21.map((r) => r.unitHint)).toEqual(["kt", "kt"]);
+    // The model's own x1000 is read as kt, so a kt answer does not scale twice.
+    expect(p21.find((r) => r.gpcRefNo === "II.1.1")?.printedFactor).toBe(1000);
+    expect(summary.sourceChecks?.unitGroups).toMatchObject([
+      { key: "p21", preselected: "kt", rowCount: 2 },
+    ]);
   });
 
   it("ignores the CO2e header digit and the I.1.1 reference for short matches", () => {

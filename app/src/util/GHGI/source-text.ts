@@ -24,11 +24,21 @@ function countMatches(text: string, patterns: RegExp[]): number {
  * evidence is "unknown".
  */
 export function detectNumberStyle(text: string): NumberStyle {
-  const european = countMatches(text, EUROPEAN_PATTERNS);
-  const english = countMatches(text, ENGLISH_PATTERNS);
+  const { european, english } = countNumberStyles(text);
   if (european > english) return "european";
   if (english > european) return "english";
   return "unknown";
+}
+
+/** Counts of unambiguous european and english numbers in `text`. */
+export function countNumberStyles(text: string): {
+  european: number;
+  english: number;
+} {
+  return {
+    european: countMatches(text, EUROPEAN_PATTERNS),
+    english: countMatches(text, ENGLISH_PATTERNS),
+  };
 }
 
 /** First group 1-3 digits, every following group exactly 3 digits. */
@@ -245,6 +255,77 @@ export function numbersInTableCells(
     )
     .join("\n");
   return readNumbers(cellText, style, [STANDALONE_NUMBER_TOKEN]);
+}
+
+/** Large-unit evidence of the tables that print one value (see `tableUnitEvidence`). */
+export type TableUnitEvidence = "large" | "none" | "mixed" | "unknown";
+
+/**
+ * Whether the Markdown tables that print `printed` in a body cell are in a
+ * large unit (kt, Mt, Gg). A table's own evidence is its header row plus the
+ * lines between the previous table and it (its caption, heading, unit line),
+ * read with the rules of `namesLargeUnit`. A table with no such lines at the
+ * top of the page continues a table from an earlier page and takes
+ * `inheritedLarge`.
+ *
+ * - `"large"`: every table that prints the value names a large unit and no
+ *   tonne unit;
+ * - `"none"`: no table that prints the value names a large unit;
+ * - `"mixed"`: the tables disagree, or one names both a large and a tonne
+ *   unit (columns in different units);
+ * - `"unknown"`: no table prints the value (prose, a chart, a cell that holds
+ *   more than the number).
+ *
+ * A kt caption of another table on the page is not evidence for this value.
+ */
+export function tableUnitEvidence(
+  text: string,
+  printed: string,
+  inheritedLarge = false,
+): TableUnitEvidence {
+  const target = printed.trim();
+  if (!target) return "unknown";
+  const lines = text.split(/\r?\n/);
+  const kinds = new Set<"large" | "none" | "both">();
+  let contextStart = 0;
+  let seenTable = false;
+  let i = 0;
+  while (i < lines.length) {
+    if (!lines[i].includes("|")) {
+      i++;
+      continue;
+    }
+    const start = i;
+    while (i < lines.length && lines[i].includes("|")) i++;
+    const block = lines.slice(start, i);
+    // Page markers (`<!-- page: 3 -->`) are not captions.
+    const above = lines
+      .slice(contextStart, start)
+      .filter((l) => l.trim() && !/^<!--.*-->$/.test(l.trim()));
+    const continued = !seenTable && above.length === 0;
+    seenTable = true;
+    contextStart = i;
+    const separator = block.findIndex((l) => TABLE_SEPARATOR.test(l));
+    // With its separator line, so the caption rules see a header row.
+    const header = separator > 0 ? block.slice(0, separator + 1) : [];
+    const body = block.filter(
+      (l, k) => !TABLE_SEPARATOR.test(l) && (separator < 0 || k > separator),
+    );
+    const prints = body.some((line) =>
+      line
+        .split("|")
+        .map((cell) => cell.trim())
+        .some((cell) => cell === target || cell.split(/\s+/).includes(target)),
+    );
+    if (!prints) continue;
+    const own = [...above, ...header].join("\n");
+    const large = namesLargeUnit(own) || (continued && inheritedLarge);
+    const tonnes = namesTonneUnit(own);
+    kinds.add(large ? (tonnes ? "both" : "large") : "none");
+  }
+  if (kinds.size === 0) return "unknown";
+  if (kinds.size !== 1 || kinds.has("both")) return "mixed";
+  return kinds.has("large") ? "large" : "none";
 }
 
 /**
@@ -563,14 +644,20 @@ export const KILOTONNE_PATTERNS: RegExp[] = [
   ...GIGAGRAM_PATTERNS,
 ];
 
+/**
+ * The `Mt` symbol. Case-sensitive ("Mt Eden" is a place); it counts only
+ * before a CO2 or tonnes word, or alone in parentheses.
+ */
+const MT_SYMBOL_PATTERNS: RegExp[] = [
+  /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
+  /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+];
+
 export const MEGATONNE_PATTERNS: RegExp[] = [
   /\bmillion\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   /\bmegatonnes?\b/i,
   /\bmegatons?\b/i,
-  // `Mt` is case-sensitive ("Mt Eden" is a place) and counts only before a
-  // CO2 or tonnes word, or alone in parentheses.
-  /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
-  /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+  ...MT_SYMBOL_PATTERNS,
 ];
 
 const LARGE_UNIT_PATTERNS: RegExp[] = [
@@ -630,6 +717,26 @@ export function namesMegatonne(line: string): boolean {
   );
 }
 
+/**
+ * True when the page spells the `Mt` symbol on a caption line ("(Mt CO2e)",
+ * "Mt CO2"), with the rules of `namesLargeUnit`. "million tonnes",
+ * "megatonnes" and "thousand Mt" do not count.
+ */
+export function namesMtSymbol(text: string): boolean {
+  return captionsNameUnit(text, lineNamesMtSymbol);
+}
+
+/**
+ * True when one line (a caption, a table header cell) spells the `Mt` symbol.
+ * "thousand Mt" does not count.
+ */
+export function lineNamesMtSymbol(line: string): boolean {
+  return namesUnit(
+    line.replace(new RegExp(THOUSAND_MT.source, "gi"), " "),
+    MT_SYMBOL_PATTERNS,
+  );
+}
+
 /** namesUnit for kg, with per-person kg mentions left out. */
 export function namesKilogram(line: string): boolean {
   return namesUnit(line.replace(PER_PERSON_KG, " "), KILOGRAM_PATTERNS);
@@ -663,6 +770,58 @@ export function namesLargeUnit(text: string): boolean {
   return captionsNameUnit(text, (line) => namesUnit(line, LARGE_UNIT_PATTERNS));
 }
 
+/** `line` with its large-unit phrases blanked ("thousand tonnes", "Mt CO2"). */
+function withoutLargeUnits(line: string): string {
+  return LARGE_UNIT_PATTERNS.reduce(
+    (out, re) => out.replace(new RegExp(re.source, `${re.flags}g`), " "),
+    line,
+  );
+}
+
+/** "metric ton", "metric tons", "metric tonne(s)", in any case. */
+const METRIC_TON = String.raw`metric\s+ton(?:ne)?s?\b`;
+
+/**
+ * A definition of `MT` as metric tons: `MT: metric tons`, `MT = metric
+ * tonnes`, `MT – metric ton`, `MTCO2e: metric tons of CO2e`, `metric tons
+ * (MT)` or `MT (metric tons)`. `million metric tons (MT)` is no such
+ * definition. The `MT` group is checked in capitals by `definesMtAsMetricTons`.
+ */
+const MT_DEFINITIONS: RegExp[] = [
+  new RegExp(
+    String.raw`(?<![\w])(MT)(?:\s*CO(?:2|₂)e?)?\s*[:=–—-]\s*${METRIC_TON}`,
+    "gi",
+  ),
+  new RegExp(String.raw`(?<!million\s+)${METRIC_TON}\s*\(\s*(MT)\s*\)`, "gi"),
+  new RegExp(String.raw`(?<![\w])(MT)\s*\(\s*${METRIC_TON}\s*\)`, "gi"),
+];
+
+/**
+ * True when the document defines MT as metric tons (a glossary line
+ * `MT: metric tons`, `MT = metric tonnes`, `MT – metric ton`,
+ * `MTCO2e: metric tons of carbon dioxide equivalent`, or `metric tons (MT)`,
+ * `MT (metric tons)`). "metric ton(ne)s" matches in any case, `MT` only in
+ * capitals: `Mt: million tonnes` and `million metric tons (MT)` are no such
+ * definition. Read on the whole document: the glossary often sits on another
+ * page than the table.
+ */
+export function definesMtAsMetricTons(text: string): boolean {
+  return MT_DEFINITIONS.some((re) =>
+    [...text.matchAll(re)].some((match) => match[1] === "MT"),
+  );
+}
+
+/**
+ * True when the page names a tonne unit (t, tCO2e, tonnes) on a caption line,
+ * with the rules of `namesLargeUnit`. "thousand tonnes" and "million tonnes"
+ * are large units, not tonnes.
+ */
+export function namesTonneUnit(text: string): boolean {
+  return captionsNameUnit(text, (line) =>
+    namesUnit(withoutLargeUnits(line), TONNE_UNIT_PATTERNS),
+  );
+}
+
 /**
  * True when the page names kg on a caption line, with the rules of
  * `namesLargeUnit`. A per-person kg (`kg/capita`, `kg per person`) does not count.
@@ -688,6 +847,20 @@ export function pageScaleEvidence(text: string): Scale[] {
   }
   if (namesSmallUnit(text)) scales.push(0.001);
   return scales;
+}
+
+/**
+ * True when `text` is one number with a single `.` or `,` followed by exactly
+ * three digits (`6.600`, `1,500`, `-2,345 tCO2e`, `(6.600)`). Such a number
+ * reads two ways: as a group separator or as a decimal mark. Sign, parentheses,
+ * spaces and a trailing unit are ignored.
+ */
+export function isAmbiguousNumberText(text: string): boolean {
+  let t = text.trim().replace(/[ \u00a0\u202f']/g, "");
+  t = t.replace(/^\((.*)\)$/, "$1");
+  t = t.replace(/^[+\-\u2212]/, "");
+  t = t.replace(/(?<=\d)[A-Za-z][A-Za-z0-9\u2082/]*$/, "");
+  return /^\d{1,3}[.,]\d{3}$/.test(t);
 }
 
 /**
@@ -736,18 +909,41 @@ function startsWithTableLine(text: string): boolean {
 export function inheritedPageScales(
   pages: readonly { page: number; text: string }[],
 ): Map<number, Scale[]> {
-  const inherited = new Map<number, Scale[]>();
+  return inheritedEvidence(pages, pageScaleEvidence, () => []);
+}
+
+/**
+ * Pages that inherit the `Mt` symbol (`namesMtSymbol`) from a table continued
+ * from earlier pages, with the continuation rules of `inheritedPageScales`.
+ */
+export function inheritedMtSymbol(
+  pages: readonly { page: number; text: string }[],
+): Map<number, boolean> {
+  return inheritedEvidence(pages, namesMtSymbol, () => false);
+}
+
+/**
+ * Evidence each page inherits from a table continued from earlier pages (see
+ * `inheritedPageScales`): `own` of the page with the unit caption, passed on
+ * through continuation pages; `none()` for every other page.
+ */
+function inheritedEvidence<T>(
+  pages: readonly { page: number; text: string }[],
+  own: (text: string) => T,
+  none: () => T,
+): Map<number, T> {
+  const inherited = new Map<number, T>();
   // Evidence each page passes on to the next: its own, or what it inherited.
-  const passedOn = new Map<number, Scale[]>();
+  const passedOn = new Map<number, T>();
   for (const { page, text } of pages) {
     if (hasOwnUnitCaption(text)) {
-      inherited.set(page, []);
-      passedOn.set(page, pageScaleEvidence(text));
+      inherited.set(page, none());
+      passedOn.set(page, own(text));
     } else if (hasTableCaptionOrHeading(text) || !startsWithTableLine(text)) {
-      inherited.set(page, []);
-      passedOn.set(page, []);
+      inherited.set(page, none());
+      passedOn.set(page, none());
     } else {
-      const fromPrevious = passedOn.get(page - 1) ?? [];
+      const fromPrevious = passedOn.get(page - 1) ?? none();
       inherited.set(page, fromPrevious);
       passedOn.set(page, fromPrevious);
     }

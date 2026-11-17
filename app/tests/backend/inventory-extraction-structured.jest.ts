@@ -41,6 +41,7 @@ const { extractInventoryFromStructured } =
 const { reconciliationTargets } =
   await import("@/util/GHGI/extraction-summary");
 const { buildTableBundles } = await import("@/util/GHGI/table-bundles");
+const { applyReadings } = await import("@/util/GHGI/source-checks");
 
 beforeEach(() => {
   complete.mockReset();
@@ -421,6 +422,75 @@ describe("extractInventoryFromStructured", () => {
     ).toHaveLength(1);
   });
 
+  it("two unit-less tables on one page are two unit groups", async () => {
+    const pages: PageSpec[] = [
+      { tables: [] },
+      {
+        // The unit is page text, linked to neither table.
+        text: "Table 4: Emissions by sector 2021 (kt CO2e)",
+        tables: [
+          {
+            id: "t1",
+            content:
+              "| Sector | Emissions |\n| --- | --- |\n| Residential | 5,000 |",
+          },
+          {
+            id: "t2",
+            content:
+              "| Source | Emissions |\n| --- | --- |\n| Landfill | 700 |\n| Wastewater | 80 |",
+          },
+        ],
+      },
+    ];
+    complete.mockResolvedValue({
+      content: JSON.stringify({
+        rows: [
+          lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000" }),
+          lineItem({
+            sector: "Waste",
+            subsector: "Solid Waste Disposal",
+            category: "Landfill",
+            gpcRefNo: "III.1.1",
+            valueCell: "t2:r1:c1",
+            totalCO2eText: "700",
+          }),
+          lineItem({
+            sector: "Waste",
+            subsector: "Wastewater",
+            category: "Wastewater",
+            gpcRefNo: "III.4.1",
+            valueCell: "t2:r2:c1",
+            totalCO2eText: "80",
+          }),
+        ],
+      }),
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows.map((r) => r.unitCheck)).toEqual([
+      "missing",
+      "missing",
+      "missing",
+    ]);
+    expect(summary.sourceChecks?.unitGroups).toEqual([
+      expect.objectContaining({
+        key: "p2:t1",
+        page: 2,
+        tableId: "t1",
+        rowCount: 1,
+      }),
+      expect.objectContaining({
+        key: "p2:t2",
+        page: 2,
+        tableId: "t2",
+        rowCount: 2,
+      }),
+    ]);
+  });
+
   it.each([
     ["kt", "missing"],
     ["Mt CO2e", "missing"],
@@ -494,10 +564,19 @@ describe("extractInventoryFromStructured", () => {
       markdownOf(pages),
       { targetYear: 2021 },
     );
-    expect(rows[0]).toMatchObject({ totalCO2e: 5000, unitCheck: "missing" });
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 5000,
+      unitCheck: "missing",
+      // The table's evidence names only kt (#3420 unit groups).
+      unitHint: "kt",
+      printedFactor: 1,
+    });
     // A unit-less total there confirms nothing (R4).
     expect(summary.reportedTotals).toEqual([]);
     expect(summary.droppedRows.unsupported_unit).toBe(1);
+    expect(summary.sourceChecks?.unitGroups).toEqual([
+      expect.objectContaining({ page: 2, rowCount: 1, preselected: "kt" }),
+    ]);
   });
 
   it("an MT header marks the rows for the unit check", async () => {
@@ -517,12 +596,245 @@ describe("extractInventoryFromStructured", () => {
     mockRowsByTable({
       t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5,000" })],
     });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    // #3420: capital MT goes to the document unit card, kept as printed.
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 5000,
+      unit: "t",
+      unitCheck: "MT",
+      printedUnit: "MT",
+      printedFactor: 1,
+    });
+    expect(rows[0].unitHint).toBeUndefined();
+    expect(summary.sourceChecks?.unit).toMatchObject({
+      status: "pending",
+      reading: "t",
+    });
+    expect(summary.sourceChecks?.unitGroups).toBeUndefined();
+  });
+
+  /** One table on page 2 (page 1 has no table), with one line item. */
+  const oneTablePage = (caption: string, content: string): PageSpec[] => [
+    { tables: [] },
+    { tables: [{ id: "t1", caption, content }] },
+  ];
+
+  it("a negative cell copied without its sign keeps the sign through a number-format answer", async () => {
+    const pages = oneTablePage(
+      "Table 1: Removals 2021 (t CO2e)",
+      "| Sector | t CO2e |\n| --- | --- |\n| Forestry | (25,639) |",
+    );
+    mockRowsByTable({
+      t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "25,639" })],
+    });
     const { rows } = await extractInventoryFromStructured(
       structuredDoc(pages),
       markdownOf(pages),
       { targetYear: 2021 },
     );
-    expect(rows[0]).toMatchObject({ totalCO2e: 5000, unitCheck: "missing" });
+    expect(rows[0]).toMatchObject({
+      totalCO2e: -25639,
+      totalCO2eText: "-25,639",
+      numberCheck: true,
+    });
+    const [european] = applyReadings(
+      rows,
+      { units: {}, numberFormat: "english" },
+      { units: {}, numberFormat: "european" },
+    );
+    expect(european.totalCO2e).toBeCloseTo(-25.639, 9);
+  });
+
+  it("an ambiguous cell in a document of undetected style gets the number check", async () => {
+    const pages = oneTablePage(
+      "Table 1: Emissions 2021 (t CO2e)",
+      "| Sector | Total | CO2 |\n| --- | --- | --- |\n| Residential | 6.600 | 1.200 |",
+    );
+    mockRowsByTable({
+      t1: [
+        lineItem({
+          valueCell: "t1:r1:c1",
+          totalCO2eText: "6.600",
+          co2Cell: "t1:r1:c2",
+        }),
+      ],
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    // No metadata: the english default reads "6.600" as 6.6.
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 6.6,
+      co2: 1.2,
+      numberCheck: true,
+      extractedGases: { co2: 1.2, numberFormat: "english", unit: "t" },
+    });
+    expect(summary.sourceChecks?.numberFormat).toMatchObject({
+      status: "pending",
+      reading: "english",
+    });
+    // The other reading drops the gases; returning restores them.
+    const english = { units: {}, numberFormat: "english" as const };
+    const european = { units: {}, numberFormat: "european" as const };
+    const [asEuropean] = applyReadings(rows, english, european);
+    expect(asEuropean).toMatchObject({ totalCO2e: 6600, co2: null });
+    const [back] = applyReadings([asEuropean], european, english);
+    expect(back).toMatchObject({ totalCO2e: 6.6, co2: 1.2 });
+  });
+
+  it("a country default parses an ambiguous cell and is the number check's reading", async () => {
+    const pages = oneTablePage(
+      "Table 1: Emissions 2021 (t CO2e)",
+      "| Sector | Total |\n| --- | --- |\n| Residential | 6.600 |",
+    );
+    mockRowsByTable({
+      t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "6.600" })],
+    });
+    const { rows, summary } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      {
+        targetYear: 2021,
+        sourceMetadata: {
+          numberFormat: "european",
+          numberFormatSource: "country_default",
+        },
+      },
+    );
+    expect(rows[0]).toMatchObject({ totalCO2e: 6600, numberCheck: true });
+    expect(summary.sourceChecks?.numberFormat).toMatchObject({
+      reading: "european",
+    });
+  });
+
+  it("a kt value the model gave without a readable cell keeps its text with factor 1000", async () => {
+    const pages = oneTablePage(
+      "Table 1: Emissions 2021",
+      "| Sector | Total |\n| --- | --- |\n| Residential | 5 |",
+    );
+    mockRowsByTable({
+      t1: [
+        lineItem({
+          valueCell: "t9:r1:c1",
+          totalCO2eText: "48",
+          totalCO2e: 48,
+          unit: "kt",
+        }),
+        lineItem({
+          category: "Commercial",
+          subsector: "Commercial and institutional buildings and facilities",
+          gpcRefNo: "I.2.1",
+          valueCell: "t9:r2:c1",
+          totalCO2eText: "47",
+          totalCO2e: 48,
+          unit: "kt",
+        }),
+      ],
+    });
+    const { rows } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 48000,
+      totalCO2eText: "48",
+      printedFactor: 1000,
+      valueCheck: "not_found",
+    });
+    // A text that does not match the value is dropped, as before.
+    expect(rows[1]).toMatchObject({
+      totalCO2e: 48000,
+      valueCheck: "not_found",
+    });
+    expect(rows[1].totalCO2eText).toBeUndefined();
+    expect(rows[1].printedFactor).toBeUndefined();
+  });
+
+  it("the gas cells of an MT row are kept as printed and scale with the MT answer", async () => {
+    const pages = oneTablePage(
+      "Table 1: Emissions 2021",
+      "| Sector | Total (MT CO2e) | CO2 (MT) |\n| --- | --- | --- |\n| Residential | 5000 | 4800 |",
+    );
+    mockRowsByTable({
+      t1: [
+        lineItem({
+          valueCell: "t1:r1:c1",
+          totalCO2eText: "5000",
+          co2Cell: "t1:r1:c2",
+        }),
+      ],
+    });
+    const { rows } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 5000,
+      co2: 4800,
+      unitCheck: "MT",
+    });
+    const [mt] = applyReadings(
+      rows,
+      { units: { doc: "t" }, numberFormat: null },
+      { units: { doc: "Mt" }, numberFormat: null },
+    );
+    expect(mt).toMatchObject({ totalCO2e: 5e9, co2: 4.8e9 });
+  });
+
+  it("printedFactor is the factor of the cell's resolved unit", async () => {
+    mockRowsByTable({
+      t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "1,234" })],
+      t2: [],
+    });
+    const { rows } = await extractInventoryFromStructured(
+      structuredDoc(twoUnitsPage),
+      markdownOf(twoUnitsPage),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 1_234_000,
+      totalCO2eText: "1,234",
+      printedFactor: 1000,
+    });
+    expect(rows[0].unitCheck).toBeUndefined();
+  });
+
+  it("an Mt cell in a document defining MT as metric tons goes to the MT card", async () => {
+    const pages: PageSpec[] = [
+      { text: "Glossary. MT: metric tons", tables: [] },
+      {
+        tables: [
+          {
+            id: "t1",
+            caption: "Table 1: Emissions 2021",
+            content:
+              "| Sector | Mt CO2e |\n| --- | --- |\n| Residential | 5.2 |",
+          },
+        ],
+      },
+    ];
+    mockRowsByTable({
+      t1: [lineItem({ valueCell: "t1:r1:c1", totalCO2eText: "5.2" })],
+    });
+    const { rows } = await extractInventoryFromStructured(
+      structuredDoc(pages),
+      markdownOf(pages),
+      { targetYear: 2021 },
+    );
+    expect(rows[0]).toMatchObject({
+      totalCO2e: 5.2,
+      unitCheck: "MT",
+      printedUnit: "Mt",
+      printedFactor: 1,
+    });
   });
 
   it("a chart caption over a table with no data rows keeps no line item", async () => {

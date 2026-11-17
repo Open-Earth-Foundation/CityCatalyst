@@ -16,6 +16,11 @@ interface ImportReviewRowsProps {
   fileId: string;
   rows: ImportRowReview[];
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
+  /**
+   * Read-only while a review source check is pending: answering a check can
+   * change row values, and the server then clears the decisions on those rows.
+   */
+  disabled?: boolean;
 }
 
 /** Extraction could not confirm the row on its page: keep or skip only. */
@@ -161,6 +166,7 @@ export default function ImportReviewRows({
   fileId,
   rows,
   onDecide,
+  disabled = false,
 }: ImportReviewRowsProps) {
   if (rows.length === 0) return null;
   const pendingCount = rows.filter((row) => !row.decision).length;
@@ -186,6 +192,17 @@ export default function ImportReviewRows({
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
               {t("import-review-description")}
             </Text>
+            {disabled && (
+              <Text
+                fontSize="body.sm"
+                color="sentiment.warningFg"
+                fontWeight="medium"
+                mt={1}
+                data-testid="import-review-locked"
+              >
+                {t("import-review-locked-by-checks")}
+              </Text>
+            )}
           </Box>
         </HStack>
       </Box>
@@ -219,7 +236,7 @@ export default function ImportReviewRows({
             <Button
               size="sm"
               variant={row.decision === "keep" ? "solid" : "outline"}
-              disabled={row.issue === "reference-conflict"}
+              disabled={disabled || row.issue === "reference-conflict"}
               onClick={() =>
                 onDecide(row.rowIndex, {
                   ...seen(row, fileId),
@@ -230,7 +247,7 @@ export default function ImportReviewRows({
               {t("import-review-keep")}
             </Button>
             {!isUnconfirmed(row) && (
-              <NativeSelect.Root size="sm" w="auto">
+              <NativeSelect.Root size="sm" w="auto" disabled={disabled}>
                 <NativeSelect.Field
                   aria-label={t("import-review-reclassify")}
                   value={row.decision === "reclassify" ? row.chosenRefNo : ""}
@@ -260,7 +277,7 @@ export default function ImportReviewRows({
               </NativeSelect.Root>
             )}
             {row.issue === "reference-conflict" && (
-              <NativeSelect.Root size="sm" w="auto">
+              <NativeSelect.Root size="sm" w="auto" disabled={disabled}>
                 <NativeSelect.Field
                   aria-label={t("import-review-change-scope")}
                   value={
@@ -294,6 +311,7 @@ export default function ImportReviewRows({
             <Button
               size="sm"
               variant={row.decision === "skip" ? "solid" : "outline"}
+              disabled={disabled}
               onClick={() =>
                 onDecide(row.rowIndex, {
                   ...seen(row, fileId),

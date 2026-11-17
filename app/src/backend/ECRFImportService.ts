@@ -106,6 +106,12 @@ export interface ECRFRowReviewData {
   valueCheck?: "not_found" | null;
   /** `missing`: no unit on a page that names kt, Mt, Gg or kg. Unset on older imports. */
   unitCheck?: "missing" | null;
+  /**
+   * Key of the source-check unit group (`sourceChecks.unitGroups`) that
+   * answers this row's unit, set by `buildImportResult`. Such a row asks no
+   * row-level unit decision. Unset without a group, or on a kg-only page.
+   */
+  unitGroup?: string | null;
 }
 
 export interface ECRFImportResult {
@@ -975,7 +981,8 @@ export default class ECRFImportService {
           directionEvidenceFound: row.directionEvidenceFound ?? null,
           page: row.page ?? null,
           valueCheck: row.valueCheck ?? null,
-          unitCheck: row.unitCheck ?? null,
+          // "MT" is a source check card, not a row review issue.
+          unitCheck: row.unitCheck === "missing" ? "missing" : null,
           source: row.source ?? null,
           decision: row.reviewDecision ?? null,
           suggestedRefNo: row.suggestedRefNo ?? null,

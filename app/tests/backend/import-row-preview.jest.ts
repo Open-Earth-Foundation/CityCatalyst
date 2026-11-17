@@ -16,6 +16,7 @@ import { importRowSkipReason } from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import {
   findPendingRows,
+  findReviewRows,
   previewImportRows,
 } from "@/backend/ImportRowPreviewService";
 import { applyReviewedRows } from "@/backend/ImportResultBuilder";
@@ -964,6 +965,30 @@ describe("decisions on held rows (applyReviewedRows)", () => {
       );
       expect(pending).toHaveLength(1);
       expect(pending[0].issue).toBe("unit-unconfirmed");
+    });
+
+    it("a row in a unit group is not a row-level unit review row", () => {
+      // The group card asks the unit, pending or answered.
+      const result = held("I.1.1", {
+        ...document,
+        unitCheck: "missing",
+        unitGroup: "p1",
+      });
+      expect(findPendingRows(result)).toHaveLength(0);
+      expect(findReviewRows(result)).toHaveLength(0);
+    });
+
+    it("a row in a unit group still asks an unconfirmed value", () => {
+      const pending = findPendingRows(
+        held("I.1.1", {
+          ...document,
+          valueCheck: "not_found",
+          unitCheck: "missing",
+          unitGroup: "p1",
+        }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0].issue).toBe("value-unconfirmed");
     });
 
     it("a reference conflict wins over an unconfirmed unit", () => {

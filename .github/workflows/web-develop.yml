@@ -160,12 +160,15 @@ jobs:
           pattern: coverage-shard-*
           path: app/coverage/shards
 
+      # The baseline is always develop's latest coverage: develop compares against its previous push,
+      # and a PR against the develop it targets. Caches are immutable, so each develop run saves a new
+      # key and the prefix restores the newest one.
       - name: Restore previous coverage
-        uses: actions/cache@v4
-        id: coverage_cache
+        uses: actions/cache/restore@v4
         with:
           path: app/coverage/previous-coverage.json
-          key: coverage-${{ github.ref }}
+          key: coverage-refs/heads/develop-${{ github.run_id }}
+          restore-keys: coverage-refs/heads/develop-
 
       - name: Merge coverage and check thresholds
         run: npx tsx scripts/merge-coverage.ts coverage/shards/*/coverage-final.json
@@ -185,12 +188,13 @@ jobs:
             echo "**Lines:** ${LINES}% | **Branches:** ${BRANCHES}% | **Functions:** ${FUNCTIONS}%" >> $GITHUB_STEP_SUMMARY
           fi
 
+      # The regression check rewrites previous-coverage.json only when coverage did not regress.
       - name: Save coverage for next run
-        if: always()
-        uses: actions/cache@v4
+        if: always() && github.ref == 'refs/heads/develop' && hashFiles('app/coverage/previous-coverage.json') != ''
+        uses: actions/cache/save@v4
         with:
           path: app/coverage/previous-coverage.json
-          key: coverage-${{ github.ref }}
+          key: coverage-refs/heads/develop-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload coverage reports to Coveralls
         continue-on-error: true
@@ -341,8 +345,8 @@ jobs:
           path: app/playwright-report/
           retention-days: 30
 
-  # Keeps the repo under GitHub's 10 GB cache limit: each develop push saves a new Next.js build cache,
-  # and a lockfile change saves new node_modules caches. Only the newest of each is ever restored.
+  # Keeps the repo under GitHub's 10 GB cache limit: each develop push saves a new Next.js build cache
+  # and coverage baseline, and a lockfile change saves new node_modules caches. Only the newest of each is ever restored.
   pruneCaches:
     needs: e2eTests
     runs-on: ubuntu-latest
@@ -355,7 +359,7 @@ jobs:
     steps:
       - name: Delete all but the newest develop cache per prefix
         run: |
-          for prefix in nextjs- node-modules-host- node-modules-playwright-; do
+          for prefix in nextjs- node-modules-host- node-modules-playwright- coverage-refs/heads/develop-; do
             gh cache list --ref refs/heads/develop --key "$prefix" --sort created_at --order desc \
               --limit 100 --json id --jq '.[1:][].id' | xargs -r -n1 gh cache delete
           done

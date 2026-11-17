@@ -227,16 +227,16 @@ test("treats a stream that ends without completing as a failure", async ({
 test("times out a stalled stream instead of thinking forever", async ({
   page,
 }) => {
-  // The chat waits 45 s for any byte, heartbeats included.
-  test.setTimeout(120_000);
+  // The chat waits 45 s for any byte, heartbeats included. Jump the page clock
+  // past that instead of waiting it out in real time.
+  await page.clock.install();
   await openWorkspace(page, [stalled]);
 
   await ask(page, "Summarise the financing plan.");
   await expect(badge(page)).toHaveAttribute("data-state", "connected");
 
-  await expect(badge(page)).toHaveAttribute("data-state", "error", {
-    timeout: 60_000,
-  });
+  await page.clock.fastForward(45_000);
+  await expect(badge(page)).toHaveAttribute("data-state", "error");
   await expect(chatError(page)).toContainText("stopped responding");
 });
 

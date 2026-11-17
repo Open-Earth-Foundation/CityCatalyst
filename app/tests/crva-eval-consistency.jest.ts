@@ -25,6 +25,8 @@ function row(partial: Partial<ScoredRow>): ScoredRow {
     notes: "",
     reason: "",
     uncertain: false,
+    partialReason: null,
+    cause: null,
     ...partial,
   };
 }

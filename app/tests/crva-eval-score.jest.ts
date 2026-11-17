@@ -54,6 +54,8 @@ function judgment(overrides: Partial<Judgment>): Judgment {
     uncertain: false,
     goldGap: false,
     misattributedTo: null,
+    partialReason: null,
+    cause: null,
     ...overrides,
   };
 }
@@ -377,6 +379,71 @@ describe("scoreRun extras", () => {
   });
 });
 
+describe("partial reason and cause", () => {
+  it("a matched value carries the judge's partial reason and cause", () => {
+    const [row] = score([goldRow({})], [sourceValue("El Río")], {
+      "A1.2a": [
+        judgment({
+          verdict: "Partial",
+          modelStatus: "PARTIAL",
+          partialReason: "less_detail",
+          cause: "prompt",
+        }),
+      ],
+    });
+    expect(row).toMatchObject({
+      kind: "gold",
+      partialReason: "less_detail",
+      cause: "prompt",
+    });
+  });
+
+  it("an extra carries the judge's cause", () => {
+    const [row] = score([], [sourceValue("x")], {
+      "A1.2a": [
+        judgment({
+          itemKey: null,
+          modelStatus: "NOT_FOUND",
+          verdict: "Hallucination",
+          cause: "ocr_text_extraction",
+        }),
+      ],
+    });
+    expect(row).toMatchObject({
+      kind: "extra",
+      partialReason: null,
+      cause: "ocr_text_extraction",
+    });
+  });
+
+  it("non-v0 Omission rows carry field_outside_v0; v0 Omission rows no cause", () => {
+    const rows = score(
+      [goldRow({}), goldRow({ rowNumber: 3, fieldId: "X.5", itemKey: "k" })],
+      [],
+      {},
+    );
+    expect(rows.map((r) => [r.fieldId, r.verdict, r.cause])).toEqual([
+      ["A1.2a", "Omission", null],
+      ["X.5", "Omission", "field_outside_v0"],
+    ]);
+  });
+
+  it("rows with no verdict carry neither", () => {
+    const rows = score([goldRow({})], [sourceValue("a"), sourceValue("b")], {
+      "A1.2a": [
+        judgment({ valueIndex: 0 }),
+        judgment({ valueIndex: 1, verdict: "Wrong content", cause: "scope" }),
+      ],
+    });
+    expect(rows[1]).toMatchObject({
+      kind: "duplicate",
+      verdict: null,
+      partialReason: null,
+      cause: null,
+    });
+  });
+});
+
 describe("trap flag", () => {
   it("is set by trapNote or a Traps page, ignoring 'all'", () => {
     const rows = score(
@@ -559,6 +626,8 @@ describe("reviewSample", () => {
     notes: "",
     reason: "",
     uncertain: false,
+    partialReason: null,
+    cause: null,
     ...extra,
   });
 

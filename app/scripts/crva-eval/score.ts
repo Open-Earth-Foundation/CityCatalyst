@@ -70,6 +70,16 @@ function withAdapterField(notes: string, adapterFieldId: string): string {
   return [notes, `adapter field ${adapterFieldId}`].filter(Boolean).join("; ");
 }
 
+/** Judgments cached before partial reasons and causes existed lack both. */
+function explanationOf(judgment: Judgment) {
+  return {
+    partialReason: judgment.partialReason ?? null,
+    cause: judgment.cause ?? null,
+  };
+}
+
+const NO_EXPLANATION = { partialReason: null, cause: null };
+
 function goldOf(row: GoldRow | undefined) {
   return {
     goldValue: row?.goldValue ?? "",
@@ -205,6 +215,7 @@ export function scoreRun(input: {
             notes: withAdapterField(`duplicate of ${key}`, value.fieldId),
             reason: judgment.reason,
             uncertain: judgment.uncertain,
+            ...NO_EXPLANATION,
           },
         });
       });
@@ -232,6 +243,7 @@ export function scoreRun(input: {
           notes: match.judgment.reason,
           reason: match.judgment.reason,
           uncertain: match.judgment.uncertain,
+          ...explanationOf(match.judgment),
         });
         continue;
       }
@@ -242,6 +254,7 @@ export function scoreRun(input: {
         notes: "",
         reason: "",
         uncertain: false,
+        ...NO_EXPLANATION,
       };
       if (row.status === "N/A") {
         goldScored.push({ ...empty, modelStatus: "NOT_FOUND", verdict: null });
@@ -269,6 +282,8 @@ export function scoreRun(input: {
         ...empty,
         modelStatus: figurePage === undefined ? "NOT_FOUND" : "PARTIAL",
         verdict: "Omission",
+        // A field the adapter never extracts is missed by design.
+        cause: isV0Field ? null : "field_outside_v0",
         notes:
           figurePage === undefined
             ? ""
@@ -323,6 +338,7 @@ function extraRow(
     notes: withAdapterField(notes, value.fieldId),
     reason: judgment.reason,
     uncertain,
+    ...(verdict === null ? NO_EXPLANATION : explanationOf(judgment)),
   };
 }
 
@@ -348,6 +364,7 @@ function unjudgedRow(
     notes: withAdapterField(NOT_JUDGED, value.fieldId),
     reason: "",
     uncertain: true,
+    ...NO_EXPLANATION,
   };
 }
 

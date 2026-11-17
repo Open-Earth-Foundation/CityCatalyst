@@ -11,6 +11,33 @@ export const VERDICTS = [
 ] as const;
 export type Verdict = (typeof VERDICTS)[number];
 
+/** What a Partial value is missing, against its gold row. */
+export const PARTIAL_REASONS = [
+  "less_detail",
+  "incomplete_list",
+  "merged_items",
+] as const;
+export type PartialReason = (typeof PARTIAL_REASONS)[number];
+
+/** Likely cause of an error verdict, for the causes analysis. */
+export const ERROR_CAUSES = [
+  "ocr_text_extraction",
+  "chunking",
+  "prompt",
+  "figure_or_map",
+  "field_outside_v0",
+  "scope",
+  "gold_issue",
+] as const;
+export type ErrorCause = (typeof ERROR_CAUSES)[number];
+
+/** Verdicts that are not errors, so they carry no cause. */
+export const NO_CAUSE_VERDICTS: readonly Verdict[] = [
+  "Correct",
+  "Correct (NOT_FOUND)",
+  "Normalisation",
+];
+
 export const MODEL_STATUSES = ["FOUND", "PARTIAL", "NOT_FOUND"] as const;
 export type ModelStatus = (typeof MODEL_STATUSES)[number];
 export type GoldStatus = ModelStatus | "N/A";
@@ -80,6 +107,10 @@ export interface Judgment {
   goldGap: boolean;
   /** `<fieldId>/<item_key>` of the row the value belongs in, for Misattribution. */
   misattributedTo: string | null;
+  /** Set exactly when the verdict is Partial. */
+  partialReason: PartialReason | null;
+  /** Set exactly when the verdict is an error (not Correct, Correct (NOT_FOUND) or Normalisation). */
+  cause: ErrorCause | null;
 }
 
 /** One scored line: a gold row, an extra model value, or a duplicate match. */
@@ -105,6 +136,10 @@ export interface ScoredRow {
   /** The judge's reason. */
   reason: string;
   uncertain: boolean;
+  /** From the judgment that gives this row its verdict. */
+  partialReason: PartialReason | null;
+  /** From that judgment; rule-scored Omission rows of non-v0 fields get field_outside_v0. */
+  cause: ErrorCause | null;
 }
 
 /** Adapter field ids whose gold answer key uses another id for the same requirement. */

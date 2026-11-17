@@ -36,12 +36,12 @@ Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (def
 | --------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `run-<n>.json`, `runs.md`   | Adapter output and run statistics, including the part page ranges and dropped values per reason               |
 | `score-run-<n>/scored.csv`  | Columns to paste into the Sheet                                                                               |
-| `score-run-<n>/scored.json` | The same rows with the judge's reasons and the gold side                                                      |
+| `score-run-<n>/scored.json` | The same rows with the judge's reasons, partial reason, error cause and the gold side                         |
 | `score-run-<n>/judge.jsonl` | One line per judge call (request, response, judgments or error)                                               |
 | `score-run-<n>/review.csv`  | Uncertain rows plus a seeded sample of confident verdicts, gold and model side by side, for a person to check |
 | `score-run-<n>/report.md`   | Share correct, value-level share, verdict counts, status matrix, traps per entry, thresholds, run details     |
 
-Verdict definitions are provisional (from the xlsx and the ticket) until the answer key doc is available. The 80% threshold is evaluated on the v0 fields; `report.md` shows the overall share beside it.
+Verdict, partial reason and error cause definitions are provisional (from the xlsx, the ticket and the first Buenos Aires run) until the answer key doc is available; they live in `judge.ts`. A `judge.jsonl` written before partial reasons and causes existed scores with both empty, so rerun with `--rejudge` to fill them. The 80% threshold is evaluated on the v0 fields; `report.md` shows the overall share beside it.
 
 ## Paste into the Sheet
 

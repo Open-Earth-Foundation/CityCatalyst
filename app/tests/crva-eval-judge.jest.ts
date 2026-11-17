@@ -8,9 +8,16 @@ import {
   judgeClientConfig,
   judgeField,
   JudgeCallError,
+  ERROR_CAUSE_DEFINITIONS,
+  PARTIAL_REASON_DEFINITIONS,
   VERDICT_DEFINITIONS,
 } from "../scripts/crva-eval/judge";
-import { VERDICTS, type GoldRow } from "../scripts/crva-eval/types";
+import {
+  ERROR_CAUSES,
+  PARTIAL_REASONS,
+  VERDICTS,
+  type GoldRow,
+} from "../scripts/crva-eval/types";
 
 const MODEL = "judge-model";
 
@@ -60,6 +67,8 @@ function judgment(overrides: Record<string, unknown>) {
     uncertain: false,
     goldGap: false,
     misattributedTo: null,
+    partialReason: null,
+    cause: null,
     ...overrides,
   };
 }
@@ -103,7 +112,12 @@ function rawClient(content: string, finishReason = "stop") {
 
 /** A judgment for a value that fills no gold row. */
 function unmatchedJudgment(overrides: Record<string, unknown>) {
-  return judgment({ itemKey: null, modelStatus: "NOT_FOUND", ...overrides });
+  return judgment({
+    itemKey: null,
+    modelStatus: "NOT_FOUND",
+    cause: "prompt",
+    ...overrides,
+  });
 }
 
 /** Judges one value with one raw judgment and returns the checked result. */
@@ -135,9 +149,33 @@ describe("judgeField", () => {
       }
     ).properties.judgments.items.properties.verdict;
     expect(verdictSchema.enum).toEqual([...VERDICTS, null]);
+    const items = (
+      call.jsonSchema?.schema as {
+        properties: {
+          judgments: {
+            items: {
+              required: string[];
+              properties: Record<string, { enum?: unknown[] }>;
+            };
+          };
+        };
+      }
+    ).properties.judgments.items;
+    expect(items.properties.partialReason.enum).toEqual([
+      ...PARTIAL_REASONS,
+      null,
+    ]);
+    expect(items.properties.cause.enum).toEqual([...ERROR_CAUSES, null]);
+    expect(items.required).toEqual(
+      expect.arrayContaining(["partialReason", "cause"]),
+    );
 
     const system = call.messages[0].content;
-    for (const definition of Object.values(VERDICT_DEFINITIONS)) {
+    for (const definition of [
+      ...Object.values(VERDICT_DEFINITIONS),
+      ...Object.values(PARTIAL_REASON_DEFINITIONS),
+      ...Object.values(ERROR_CAUSE_DEFINITIONS),
+    ]) {
       expect(system).toContain(definition);
     }
     const user = call.messages[1].content;
@@ -255,6 +293,7 @@ describe("judgeField", () => {
     const result = await judgeOne({
       itemKey: "INDEC (2010)",
       verdict: "Hallucination",
+      cause: "gold_issue",
     });
     expect(result).toMatchObject({
       itemKey: "INDEC (2010)",
@@ -292,6 +331,7 @@ describe("judgeField", () => {
       itemKey: null,
       verdict: null,
       modelStatus: "NOT_FOUND",
+      cause: null,
     });
     expect(result).toMatchObject({
       goldGap: true,
@@ -372,6 +412,75 @@ describe("judgeField", () => {
       "unmatched value has model status FOUND",
     );
     expect(judgments.every((j) => j.uncertain)).toBe(true);
+  });
+
+  it("a Partial with its reason and cause is kept", async () => {
+    const result = await judgeOne({
+      verdict: "Partial",
+      modelStatus: "PARTIAL",
+      partialReason: "less_detail",
+      cause: "prompt",
+    });
+    expect(result).toMatchObject({
+      verdict: "Partial",
+      partialReason: "less_detail",
+      cause: "prompt",
+      uncertain: false,
+    });
+  });
+
+  it("a Partial without a partial reason is flagged", async () => {
+    const result = await judgeOne({
+      verdict: "Partial",
+      modelStatus: "PARTIAL",
+      cause: "prompt",
+    });
+    expect(result.uncertain).toBe(true);
+    expect(result.reason).toContain(
+      "judge check: Partial needs a partialReason",
+    );
+  });
+
+  it("a partial reason on another verdict is cleared and flagged", async () => {
+    const result = await judgeOne({ partialReason: "less_detail" });
+    expect(result.partialReason).toBeNull();
+    expect(result.uncertain).toBe(true);
+    expect(result.reason).toContain(
+      'judge check: partialReason "less_detail" on verdict "Correct"',
+    );
+  });
+
+  it.each(["Correct", "Normalisation"])(
+    "a %s with a cause is cleared and flagged",
+    async (verdict) => {
+      const result = await judgeOne({ verdict, cause: "chunking" });
+      expect(result.cause).toBeNull();
+      expect(result.uncertain).toBe(true);
+      expect(result.reason).toContain(
+        `judge check: cause "chunking" on verdict "${verdict}"`,
+      );
+    },
+  );
+
+  it("an error verdict without a cause is flagged", async () => {
+    const result = await judgeOne({ verdict: "Wrong content" });
+    expect(result.uncertain).toBe(true);
+    expect(result.reason).toContain(
+      'judge check: verdict "Wrong content" needs a cause',
+    );
+  });
+
+  it("a partial reason or cause outside the list becomes null and flagged", async () => {
+    const result = await judgeOne({
+      verdict: "Partial",
+      modelStatus: "PARTIAL",
+      partialReason: "too_short",
+      cause: "bad_luck",
+    });
+    expect(result).toMatchObject({ partialReason: null, cause: null });
+    expect(result.uncertain).toBe(true);
+    expect(result.reason).toContain('partialReason "too_short"');
+    expect(result.reason).toContain('cause "bad_luck"');
   });
 
   it("no call when the field has no model values", async () => {

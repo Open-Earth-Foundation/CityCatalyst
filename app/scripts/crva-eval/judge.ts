@@ -4,12 +4,17 @@ import type {
   CrvaFigure,
 } from "@/backend/ingest/plugins/ccra/draft-schema";
 import {
+  ERROR_CAUSES,
   MODEL_STATUSES,
+  NO_CAUSE_VERDICTS,
+  PARTIAL_REASONS,
   VERDICTS,
+  type ErrorCause,
   type GoldRow,
   type GoldStatus,
   type Judgment,
   type ModelStatus,
+  type PartialReason,
   type Verdict,
 } from "./types";
 
@@ -39,6 +44,39 @@ export const VERDICT_DEFINITIONS: Record<Verdict, string> = {
     'Same meaning as the gold value in a converted form: scale, unit, category label or rating word. Example: gold "Muy Alto", model "High". A plain translation of a title, name or sentence is Correct, not Normalisation.',
 };
 
+/** Provisional, like the verdicts: what a Partial value is missing. */
+export const PARTIAL_REASON_DEFINITIONS: Record<PartialReason, string> = {
+  less_detail:
+    'The right item with less detail than the gold, for example a reference given as "DesInventar, 2020" without its full title.',
+  incomplete_list:
+    "A list value that covers only some of the gold list's items.",
+  merged_items: "One model value merges two or more gold items.",
+};
+
+/** Provisional, like the verdicts: the likely cause of an error verdict. */
+export const ERROR_CAUSE_DEFINITIONS: Record<ErrorCause, string> = {
+  ocr_text_extraction:
+    "The text is garbled or missing in the OCR text the model read.",
+  chunking:
+    "The passage was split, or its context lost, across the excerpts the model read.",
+  prompt:
+    "The extraction instruction led the model astray, for example the wrong field or the wrong granularity.",
+  figure_or_map:
+    "The content is only in a figure, map or table image, not in the text.",
+  field_outside_v0:
+    "The content belongs to a requirement the v0 adapter does not extract.",
+  scope:
+    "The value is about another area than the city: the metropolitan area, the province or the country.",
+  gold_issue: "The gold row looks wrong or incomplete.",
+};
+
+/** One `- name: definition` line per entry, for the prompt. */
+function definitionLines(definitions: Record<string, string>): string {
+  return Object.entries(definitions)
+    .map(([name, definition]) => `- ${name}: ${definition}`)
+    .join("\n");
+}
+
 /**
  * Verdicts a value matched to a row never gets: the scorer gives the
  * row-level ones, and Misattribution means the value belongs to another field.
@@ -61,6 +99,11 @@ const JUDGMENT_PROPERTIES = {
   uncertain: { type: "boolean" },
   goldGap: { type: "boolean" },
   misattributedTo: { type: ["string", "null"] },
+  partialReason: {
+    type: ["string", "null"],
+    enum: [...PARTIAL_REASONS, null],
+  },
+  cause: { type: ["string", "null"], enum: [...ERROR_CAUSES, null] },
 };
 
 const RESPONSE_SCHEMA = {
@@ -99,9 +142,15 @@ For every model value return exactly one judgment, with its valueIndex.
 Matching. A gold row is identified by the field and its item_key; you only see this field's rows. Set itemKey to the item_key of the gold row the value fills, copied exactly as given, or null when it fills none. Match on meaning, not on wording: the gold may be in Spanish and the model in English, a reference may be cited by author and year in the gold and by title in the model. A translation alone does not change the verdict: the same content in another language is Correct. If a value's content fills a row of this field, match it to that row whatever its verdict (Wrong content, Partial and so on). Several values may match the same row; give each its own verdict and the scorer keeps the best one.
 
 Verdicts. Use exactly one of these names:
-${(Object.entries(VERDICT_DEFINITIONS) as [Verdict, string][])
-  .map(([name, definition]) => `- ${name}: ${definition}`)
-  .join("\n")}
+${definitionLines(VERDICT_DEFINITIONS)}
+
+partialReason: set it exactly when the verdict is Partial, to one of:
+${definitionLines(PARTIAL_REASON_DEFINITIONS)}
+For every other verdict partialReason is null.
+
+cause: set it exactly when the verdict is an error (any verdict but Correct and Normalisation), to the most likely cause from what you can see, and say why in reason:
+${definitionLines(ERROR_CAUSE_DEFINITIONS)}
+cause is null for Correct, Normalisation and a gold gap.
 
 Rules:
 - A value matched to a FOUND or PARTIAL gold row gets Correct, Partial, Wrong content, Unsupported inference or Normalisation.
@@ -183,6 +232,8 @@ function unmatched(valueIndex: number, reason: string): Judgment {
     uncertain: true,
     goldGap: false,
     misattributedTo: null,
+    partialReason: null,
+    cause: null,
   };
 }
 
@@ -205,6 +256,8 @@ function validate(
   let verdict = stringOrNull(raw.verdict);
   let modelStatus = stringOrNull(raw.modelStatus);
   let misattributedTo = stringOrNull(raw.misattributedTo);
+  let partialReason = stringOrNull(raw.partialReason);
+  let cause = stringOrNull(raw.cause);
 
   if (itemKey !== null && !rowStatus.has(itemKey)) {
     problems.push(`unknown item_key "${itemKey}"`);
@@ -264,6 +317,39 @@ function validate(
     );
   }
 
+  if (
+    partialReason !== null &&
+    !(PARTIAL_REASONS as readonly string[]).includes(partialReason)
+  ) {
+    problems.push(`partialReason "${partialReason}" is outside the list`);
+    partialReason = null;
+  }
+  if (cause !== null && !(ERROR_CAUSES as readonly string[]).includes(cause)) {
+    problems.push(`cause "${cause}" is outside the list`);
+    cause = null;
+  }
+  if (verdict === null) {
+    // No verdict (gold gap, or one the checks above removed): nothing to explain.
+    partialReason = null;
+    cause = null;
+  } else {
+    if (verdict === "Partial") {
+      if (partialReason === null)
+        problems.push("Partial needs a partialReason");
+    } else if (partialReason !== null) {
+      problems.push(`partialReason "${partialReason}" on verdict "${verdict}"`);
+      partialReason = null;
+    }
+    if (NO_CAUSE_VERDICTS.includes(verdict as Verdict)) {
+      if (cause !== null) {
+        problems.push(`cause "${cause}" on verdict "${verdict}"`);
+        cause = null;
+      }
+    } else if (cause === null) {
+      problems.push(`verdict "${verdict}" needs a cause`);
+    }
+  }
+
   if (itemKey !== null && modelStatus === "NOT_FOUND") {
     problems.push("matched value has model status NOT_FOUND");
   } else if (itemKey === null && modelStatus !== "NOT_FOUND") {
@@ -285,6 +371,8 @@ function validate(
     uncertain: goldGap || raw.uncertain === true || problems.length > 0,
     goldGap,
     misattributedTo,
+    partialReason: partialReason as PartialReason | null,
+    cause: cause as ErrorCause | null,
   };
 }
 

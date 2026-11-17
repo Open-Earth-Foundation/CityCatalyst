@@ -41,6 +41,8 @@ function row(overrides: Partial<ScoredRow>): ScoredRow {
     notes: "",
     reason: "",
     uncertain: false,
+    partialReason: null,
+    cause: null,
     ...overrides,
   };
 }

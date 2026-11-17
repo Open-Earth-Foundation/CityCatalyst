@@ -1,0 +1,391 @@
+import { describe, expect, it } from "@jest/globals";
+import type {
+  CrvaDraftBundle,
+  CrvaDraftValue,
+} from "@/backend/ingest/plugins/ccra/draft-schema";
+import {
+  formatEvidence,
+  formatModelValue,
+  reviewSample,
+  scoreRun,
+  sheetCsv,
+} from "../scripts/crva-eval/score";
+import type {
+  GoldRow,
+  GoldWorkbook,
+  Judgment,
+  ScoredRow,
+} from "../scripts/crva-eval/types";
+
+function goldRow(partial: Partial<GoldRow>): GoldRow {
+  return {
+    rowNumber: 2,
+    fieldId: "A1.2a",
+    itemKey: "Balay (1961)",
+    goldValue: "Balay M. 1961",
+    pages: [179],
+    evidence: "",
+    status: "FOUND",
+    notes: "gold note",
+    trapNote: false,
+    ...partial,
+  };
+}
+
+function sourceValue(name: string, page = 179): CrvaDraftValue {
+  return {
+    fieldId: "A1.2a",
+    value: { name, year: 1961 },
+    source: { file: "ba.pdf", page, quote: "2 Balay M. 1961…" },
+    origin: "ai_draft",
+    confirmed: false,
+  };
+}
+
+function judgment(overrides: Partial<Judgment>): Judgment {
+  return {
+    valueIndex: 0,
+    itemKey: "Balay (1961)",
+    verdict: "Correct",
+    modelStatus: "FOUND",
+    reason: "Same reference.",
+    uncertain: false,
+    goldGap: false,
+    misattributedTo: null,
+    ...overrides,
+  };
+}
+
+interface Extra {
+  traps?: GoldWorkbook["traps"];
+  figures?: CrvaDraftBundle["figures"];
+}
+
+function score(
+  rows: GoldRow[],
+  values: CrvaDraftValue[],
+  judgments: Record<string, Judgment[]>,
+  extra: Extra = {},
+) {
+  return scoreRun({
+    gold: {
+      pdfFileName: "ba.pdf",
+      pageCount: 185,
+      rows,
+      traps: extra.traps ?? [],
+    },
+    bundle: {
+      file: "ba.pdf",
+      pageCount: 185,
+      ocrModel: "ocr",
+      extractionModel: "ext",
+      values,
+      uncoveredFields: [],
+      figures: extra.figures ?? [],
+      dropped: [],
+    },
+    judgments,
+  });
+}
+
+describe("scoreRun without matches", () => {
+  it("gold FOUND with no match is Omission", () => {
+    const [row] = score([goldRow({})], [], {});
+    expect(row).toMatchObject({
+      kind: "gold",
+      verdict: "Omission",
+      modelStatus: "NOT_FOUND",
+      goldStatus: "FOUND",
+      isV0Field: true,
+    });
+  });
+
+  it("gold PARTIAL with no match is Omission", () => {
+    const [row] = score([goldRow({ status: "PARTIAL" })], [], {});
+    expect(row.verdict).toBe("Omission");
+  });
+
+  it("gold NOT_FOUND with no match is Correct (NOT_FOUND)", () => {
+    const [row] = score([goldRow({ status: "NOT_FOUND" })], [], {});
+    expect(row.verdict).toBe("Correct (NOT_FOUND)");
+    expect(row.modelStatus).toBe("NOT_FOUND");
+  });
+
+  it("N/A rows have no verdict and a blank status in the CSV", () => {
+    const rows = score([goldRow({ status: "N/A" })], [], {});
+    expect(rows[0].verdict).toBeNull();
+    expect(sheetCsv(rows).split("\n")[1]).toBe("2,A1.2a,Balay (1961),,,,,");
+  });
+
+  it("a non-v0 field is scored by rule with no judgment", () => {
+    const [row] = score([goldRow({ fieldId: "X.5", itemKey: "k" })], [], {});
+    expect(row).toMatchObject({ isV0Field: false, verdict: "Omission" });
+    expect(row.uncertain).toBe(false);
+  });
+
+  it("a figure on a FOUND row page makes the row PARTIAL for review", () => {
+    const [row] = score(
+      [goldRow({})],
+      [],
+      {},
+      { figures: [{ page: 179, imageId: "i", caption: null }] },
+    );
+    expect(row).toMatchObject({
+      verdict: "Omission",
+      modelStatus: "PARTIAL",
+      notes: "figure listed on p. 179 for review",
+    });
+  });
+
+  it("a v0 field with values but no judgments is uncertain", () => {
+    const [row] = score([goldRow({})], [sourceValue("x")], {});
+    expect(row).toMatchObject({
+      verdict: "Omission",
+      uncertain: true,
+      reason: "field not judged",
+    });
+  });
+});
+
+describe("scoreRun with matches", () => {
+  it("matched value fills its gold row", () => {
+    const [row] = score([goldRow({})], [sourceValue("El Río")], {
+      "A1.2a": [judgment({ verdict: "Partial", reason: "close" })],
+    });
+    expect(row).toMatchObject({
+      modelValue: "El Río — 1961",
+      modelEvidence: 'p. 179 — "2 Balay M. 1961…"',
+      verdict: "Partial",
+      modelStatus: "FOUND",
+      notes: "close",
+    });
+  });
+
+  it("second match to the same row is a duplicate; the best verdict fills the row", () => {
+    const rows = score(
+      [goldRow({})],
+      [sourceValue("first"), sourceValue("second")],
+      {
+        "A1.2a": [
+          judgment({ valueIndex: 0, verdict: "Partial" }),
+          judgment({ valueIndex: 1, verdict: "Correct" }),
+        ],
+      },
+    );
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({ kind: "gold", verdict: "Correct" });
+    expect(rows[0].modelValue).toContain("second");
+    expect(rows[1]).toMatchObject({
+      kind: "duplicate",
+      rowNumber: null,
+      verdict: null,
+      notes: "duplicate of Balay (1961)",
+    });
+  });
+
+  it("duplicate item_key in gold gives one value per row", () => {
+    const rows = score(
+      [
+        goldRow({ rowNumber: 2, itemKey: "K" }),
+        goldRow({ rowNumber: 3, itemKey: "K" }),
+      ],
+      [sourceValue("a"), sourceValue("b")],
+      {
+        "A1.2a": [
+          judgment({ valueIndex: 0, itemKey: "K" }),
+          judgment({ valueIndex: 1, itemKey: "K" }),
+        ],
+      },
+    );
+    expect(rows.map((r) => r.kind)).toEqual(["gold", "gold"]);
+    expect(rows[0].modelValue).toContain("a");
+    expect(rows[1].modelValue).toContain("b");
+  });
+
+  it("a value matched to a NOT_FOUND row fills it as Hallucination", () => {
+    const [row] = score(
+      [goldRow({ status: "NOT_FOUND" })],
+      [sourceValue("x")],
+      { "A1.2a": [judgment({ verdict: "Hallucination" })] },
+    );
+    expect(row).toMatchObject({ kind: "gold", verdict: "Hallucination" });
+  });
+});
+
+describe("scoreRun extras", () => {
+  const unmatched = { itemKey: null, modelStatus: "NOT_FOUND" as const };
+
+  it("unmatched value becomes a Hallucination extra", () => {
+    const rows = score([], [sourceValue("x")], {
+      "A1.2a": [judgment({ ...unmatched, verdict: "Hallucination" })],
+    });
+    expect(rows[0]).toMatchObject({
+      kind: "extra",
+      rowNumber: null,
+      verdict: "Hallucination",
+    });
+  });
+
+  it("Misattribution extra notes where it belongs", () => {
+    const rows = score([], [sourceValue("x")], {
+      "A1.2a": [
+        judgment({
+          ...unmatched,
+          verdict: "Misattribution",
+          misattributedTo: "B1.2a/Heat",
+        }),
+      ],
+    });
+    expect(rows[0].notes).toBe("belongs in B1.2a/Heat");
+  });
+
+  it("GOLD GAP extra has no verdict", () => {
+    const rows = score([], [sourceValue("x")], {
+      "A1.2a": [
+        judgment({
+          ...unmatched,
+          verdict: null,
+          goldGap: true,
+          uncertain: true,
+        }),
+      ],
+    });
+    expect(rows[0]).toMatchObject({
+      kind: "extra",
+      notes: "GOLD GAP",
+      verdict: null,
+      uncertain: true,
+    });
+  });
+});
+
+describe("trap flag", () => {
+  it("is set by trapNote or a Traps page, ignoring 'all'", () => {
+    const rows = score(
+      [
+        goldRow({ rowNumber: 2, itemKey: "a", trapNote: true, pages: [1] }),
+        goldRow({ rowNumber: 3, itemKey: "b", pages: [40] }),
+        goldRow({ rowNumber: 4, itemKey: "c", pages: [7] }),
+      ],
+      [],
+      {},
+      {
+        traps: [
+          { pages: [40], what: "w", why: "y" },
+          { pages: "all", what: "w", why: "y" },
+        ],
+      },
+    );
+    expect(rows.map((r) => r.trap)).toEqual([true, true, false]);
+  });
+
+  it("flags an extra cited on a trap page", () => {
+    const rows = score(
+      [],
+      [sourceValue("x", 40)],
+      {
+        "A1.2a": [
+          judgment({
+            itemKey: null,
+            verdict: "Hallucination",
+            modelStatus: "NOT_FOUND",
+          }),
+        ],
+      },
+      { traps: [{ pages: [40], what: "w", why: "y" }] },
+    );
+    expect(rows[0].trap).toBe(true);
+  });
+});
+
+describe("formatters and sheetCsv", () => {
+  it("formats values and evidence", () => {
+    expect(
+      formatModelValue({
+        fieldId: "E1.1a",
+        value: {
+          title: "T",
+          description: "D",
+          hazards: ["a", "b"],
+          affected: ["c"],
+        },
+        source: { file: "f", page: 1, quote: "q" },
+        origin: "ai_draft",
+        confirmed: false,
+      }),
+    ).toBe("T — D — a, b — c");
+    expect(formatEvidence({ file: "f", page: 3, quote: "q" })).toBe(
+      'p. 3 — "q"',
+    );
+  });
+
+  it("writes the exact header, gold rows in order, then extras; no gold notes", () => {
+    const rows = score(
+      [
+        goldRow({ rowNumber: 5, itemKey: "b" }),
+        goldRow({ rowNumber: 3, itemKey: "a, x" }),
+      ],
+      [sourceValue("v")],
+      {
+        "A1.2a": [
+          judgment({
+            itemKey: null,
+            verdict: "Hallucination",
+            modelStatus: "NOT_FOUND",
+            reason: 'said "no"',
+          }),
+        ],
+      },
+    );
+    const csv = sheetCsv(rows);
+    const lines = csv.trimEnd().split("\n");
+    expect(lines[0]).toBe(
+      "gold_row,field_id,item_key,model value,model evidence,model status,verdict,eval notes",
+    );
+    expect(lines[1].startsWith('3,A1.2a,"a, x",')).toBe(true);
+    expect(lines[2].startsWith("5,A1.2a,b,")).toBe(true);
+    expect(lines[3].startsWith(",A1.2a,,")).toBe(true);
+    expect(lines[3]).toContain('"said ""no"""');
+    expect(csv).not.toContain("gold note");
+  });
+});
+
+describe("reviewSample", () => {
+  const row = (i: number, extra: Partial<ScoredRow> = {}): ScoredRow => ({
+    kind: "gold",
+    rowNumber: i,
+    fieldId: "A1.1",
+    itemKey: `k${i}`,
+    goldStatus: "FOUND",
+    isV0Field: true,
+    trap: false,
+    modelValue: "",
+    modelEvidence: "",
+    modelStatus: "FOUND",
+    verdict: "Correct",
+    notes: "",
+    reason: "",
+    uncertain: false,
+    ...extra,
+  });
+
+  it("returns uncertain rows plus 30 others, deterministically", () => {
+    const rows = [
+      ...Array.from({ length: 100 }, (_, i) => row(i)),
+      row(200, { uncertain: true }),
+      row(201, { verdict: "Omission" }),
+    ];
+    const a = reviewSample(rows, 7);
+    expect(reviewSample(rows, 7)).toEqual(a);
+    expect(a[0].rowNumber).toBe(200);
+    expect(a).toHaveLength(31);
+    expect(new Set(a).size).toBe(a.length);
+    expect(a.some((r) => r.verdict === "Omission")).toBe(false);
+    expect(reviewSample(rows, 8)).not.toEqual(a);
+  });
+
+  it("scales to 10% for large populations", () => {
+    const rows = Array.from({ length: 500 }, (_, i) => row(i));
+    expect(reviewSample(rows, 1)).toHaveLength(50);
+  });
+});

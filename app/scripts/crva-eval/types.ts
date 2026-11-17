@@ -67,3 +67,24 @@ export interface Judgment {
   /** `<fieldId>/<item_key>` of the row the value belongs in, for Misattribution. */
   misattributedTo: string | null;
 }
+
+/** One scored line: a gold row, an extra model value, or a duplicate match. */
+export interface ScoredRow {
+  kind: "gold" | "extra" | "duplicate";
+  /** Sheet row of the gold row; null for extras and duplicates. */
+  rowNumber: number | null;
+  fieldId: string;
+  itemKey: string;
+  goldStatus: GoldStatus | null;
+  isV0Field: boolean;
+  trap: boolean;
+  modelValue: string;
+  modelEvidence: string;
+  modelStatus: ModelStatus;
+  verdict: Verdict | null;
+  /** Eval note for the Sheet's `eval notes` column (never the gold notes). */
+  notes: string;
+  /** The judge's reason. */
+  reason: string;
+  uncertain: boolean;
+}

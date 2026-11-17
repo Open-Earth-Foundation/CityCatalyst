@@ -44,6 +44,7 @@ const SAMPLE_HEADER: string[] = [
   "judge cause",
   "judge reason",
   "row id",
+  "blind id",
   "reviewer verdict",
   "reviewer partial reason",
   "reviewer cause",
@@ -125,6 +126,7 @@ const JUDGE_COLUMNS = [
   "judge cause",
   "judge reason",
 ];
+const HIDDEN_FROM_REVIEWER = [...JUDGE_COLUMNS, "row id", "gold_row"];
 const REVIEWER_COLUMNS = [
   "reviewer verdict",
   "reviewer partial reason",
@@ -137,7 +139,7 @@ function sampleRecords(
   sample: ScoredRow[],
 ): Record<string, string>[] {
   const ids = rowIds(allRows);
-  return sample.map((r) => ({
+  return sample.map((r, i) => ({
     gold_row: String(r.rowNumber ?? ""),
     field_id: r.fieldId,
     item_key: r.itemKey,
@@ -152,6 +154,7 @@ function sampleRecords(
     "judge cause": r.cause ?? "",
     "judge reason": r.reason,
     "row id": ids[allRows.indexOf(r)],
+    "blind id": `r${i + 1}`,
     ...Object.fromEntries(REVIEWER_COLUMNS.map((c) => [c, ""])),
   }));
 }
@@ -164,21 +167,25 @@ export function sampleCsv(allRows: ScoredRow[], sample: ScoredRow[]): string {
   });
 }
 
-/** Same rows and order as the key, without the judge columns, so the reviewer is not anchored. */
+/** Same rows and order as the key, without the judge columns or anything that reveals the row kind (row id, gold_row), so the reviewer is not anchored. */
 export function reviewerCsv(allRows: ScoredRow[], sample: ScoredRow[]): string {
   return stringify(sampleRecords(allRows, sample), {
     header: true,
-    columns: SAMPLE_HEADER.filter((c) => !JUDGE_COLUMNS.includes(c)),
+    columns: SAMPLE_HEADER.filter((c) => !HIDDEN_FROM_REVIEWER.includes(c)),
   });
 }
 
-/** Puts the reviewer's columns onto the key rows by row id; unknown or missing ids are errors. */
+/** Puts the reviewer's columns onto the key rows by blind id; unknown, missing or duplicate ids are errors. */
 export function joinReviewer(
   key: Record<string, string>[],
   reviewer: Record<string, string>[],
 ): Record<string, string>[] {
-  const byId = new Map(reviewer.map((r) => [r["row id"], r]));
-  const keyIds = new Set(key.map((k) => k["row id"]));
+  const ids = reviewer.map((r) => r["blind id"]);
+  const dup = ids.filter((id, i) => ids.indexOf(id) !== i);
+  if (dup.length)
+    throw new Error(`Duplicate ids in reviewer file: ${dup.join(", ")}`);
+  const byId = new Map(reviewer.map((r) => [r["blind id"], r]));
+  const keyIds = new Set(key.map((k) => k["blind id"]));
   const unknown = [...byId.keys()].filter((id) => !keyIds.has(id));
   if (unknown.length)
     throw new Error(`Reviewer rows not in the sample: ${unknown.join(", ")}`);
@@ -190,7 +197,7 @@ export function joinReviewer(
   return key.map((k) => ({
     ...k,
     ...Object.fromEntries(
-      REVIEWER_COLUMNS.map((c) => [c, byId.get(k["row id"])?.[c] ?? ""]),
+      REVIEWER_COLUMNS.map((c) => [c, byId.get(k["blind id"])?.[c] ?? ""]),
     ),
   }));
 }
@@ -317,7 +324,7 @@ export function calibrationMarkdown(a: Agreement, blind = false): string {
     "The reviewer is also an LLM (Claude); this measures agreement between models, not human truth.",
     "",
     blind
-      ? "Review mode: blind (the reviewer did not see the judge columns)."
+      ? "Review mode: verdict-blind (judge verdict, reasons, partial reason and cause hidden; alignment visible)."
       : "Review mode: not blind (the reviewer saw the judge columns, so agreement may be inflated).",
     "",
     `Target: at least ${AGREEMENT_TARGET * 100}% agreement. Result: **${passed ? "PASS" : "FAIL"}**.`,

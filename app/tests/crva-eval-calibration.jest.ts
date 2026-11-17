@@ -217,24 +217,33 @@ describe("blind reviewer copy", () => {
   const parseCsv = (csv: string) =>
     parse(csv, { columns: true }) as Record<string, string>[];
 
-  it("has the same rows and order but no judge columns", () => {
+  it("has the same rows and order, opaque ids and no judge columns", () => {
     const key = parseCsv(sampleCsv(rows, s));
     const blind = parseCsv(reviewerCsv(rows, s));
-    expect(blind.map((r) => r["row id"])).toEqual(key.map((r) => r["row id"]));
+    expect(blind.map((r) => r["blind id"])).toEqual(
+      key.map((r) => r["blind id"]),
+    );
+    expect(blind.map((r) => r["blind id"])).toEqual(
+      s.map((_, i) => `r${i + 1}`),
+    );
     const columns = Object.keys(blind[0]);
     expect(columns.some((c) => c.startsWith("judge"))).toBe(false);
+    expect(columns).not.toContain("row id");
+    expect(columns).not.toContain("gold_row");
     expect(columns).toEqual(
       expect.arrayContaining([
-        "row id",
+        "blind id",
         "gold value",
         "model value",
         "reviewer verdict",
         "reviewer note",
       ]),
     );
+    // No g/e/d ids anywhere in the blind file.
+    expect(reviewerCsv(rows, s)).not.toMatch(/(^|,)[ged]\d+(,|$)/m);
   });
 
-  it("joins the filled reviewer columns onto the key by row id", () => {
+  it("joins the filled reviewer columns onto the key by blind id", () => {
     const key = parseCsv(sampleCsv(rows, s));
     const blind = parseCsv(reviewerCsv(rows, s)).reverse();
     blind[0]["reviewer verdict"] = "Omission";
@@ -243,17 +252,21 @@ describe("blind reviewer copy", () => {
     const last = joined[joined.length - 1];
     expect(last["reviewer verdict"]).toBe("Omission");
     expect(last["reviewer note"]).toBe("n");
+    expect(last["row id"]).toBe(key[key.length - 1]["row id"]);
     expect(last["judge verdict"]).toBe(key[key.length - 1]["judge verdict"]);
   });
 
-  it("errors on unknown or missing row ids", () => {
+  it("errors on unknown, missing or duplicate ids", () => {
     const key = parseCsv(sampleCsv(rows, s));
     const blind = parseCsv(reviewerCsv(rows, s));
     expect(() =>
-      joinReviewer(key, [...blind, { ...blind[0], "row id": "zzz" }]),
+      joinReviewer(key, [...blind, { ...blind[0], "blind id": "zzz" }]),
     ).toThrow(/zzz/);
     expect(() => joinReviewer(key, blind.slice(1))).toThrow(
-      new RegExp(blind[0]["row id"]),
+      /missing from reviewer file: r1$/,
+    );
+    expect(() => joinReviewer(key, [...blind, blind[2]])).toThrow(
+      /Duplicate ids.*r3/,
     );
   });
 });
@@ -301,7 +314,7 @@ describe("reviewer value normalisation", () => {
     const md = calibrationMarkdown(a, true);
     expect(md).toContain("Totally wrong");
     expect(md).toContain("vibes");
-    expect(md).toContain("Review mode: blind");
+    expect(md).toContain("Review mode: verdict-blind");
     expect(calibrationMarkdown(a)).toContain("Review mode: not blind");
   });
 });

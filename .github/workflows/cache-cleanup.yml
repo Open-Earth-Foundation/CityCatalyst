@@ -13,6 +13,8 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    # A fork's read-only token cannot delete caches, so the job would fail on every closed fork PR
+    if: github.event.pull_request.head.repo.full_name == github.repository
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}

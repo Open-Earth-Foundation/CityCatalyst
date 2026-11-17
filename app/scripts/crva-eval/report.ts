@@ -18,7 +18,7 @@ export type ReportRunStats = RunStats;
 
 export interface ScoreSummary {
   scored: number;
-  /** The ticket formula (full detail), the DoD measure. */
+  /** The ticket formula (full detail). */
   shareCorrect: number;
   /** The accepted rule: also counts Partial with trimmed wording. */
   shareCorrectAccepted: number;
@@ -117,17 +117,23 @@ export function coverage(rows: ScoredRow[]): Views {
  * Precision: of every value the adapter returned (gold-filling rows, extras,
  * duplicates, values the judge never covered), how many are right. Full
  * detail counts Correct and Normalisation; the accepted rule adds Partial
- * with trimmed wording.
+ * with trimmed wording. A duplicate is graded by the judge's own verdict
+ * (`judgeVerdict`) and partial reason: it is a real value the judge rated,
+ * and only its published verdict is null. `duplicates` counts them.
  */
-export function precision(rows: ScoredRow[]): Views {
+export function precision(rows: ScoredRow[]): Views & { duplicates: number } {
   const bundle = rows.filter((r) => r.modelValue !== "");
-  const full = bundle.filter(
+  const graded = bundle.map((r) =>
+    r.kind === "duplicate" ? { ...r, verdict: r.judgeVerdict } : r,
+  );
+  const full = graded.filter(
     (r) => r.verdict === "Correct" || r.verdict === "Normalisation",
   ).length;
   const total = bundle.length;
   return {
-    accepted: { hits: full + bundle.filter(trimmedWording).length, total },
+    accepted: { hits: full + graded.filter(trimmedWording).length, total },
     fullDetail: { hits: full, total },
+    duplicates: bundle.filter((r) => r.kind === "duplicate").length,
   };
 }
 
@@ -138,7 +144,8 @@ function measuresBlock(rows: ScoredRow[]): string {
     `Coverage, ${ACCEPTED}: ${rate(c.accepted)} gold rows found.`,
     `Coverage, full detail: ${rate(c.fullDetail)} gold rows found.`,
     `Precision, ${ACCEPTED}: ${rate(p.accepted)} model values right.`,
-    `Precision, full detail: ${rate(p.fullDetail)} model values right (Correct or Normalisation); comparable to the Madrid hand review (71%).`,
+    `Precision, full detail: ${rate(p.fullDetail)} model values right (Correct or Normalisation).`,
+    `Of the ${p.fullDetail.total} model values, ${p.duplicates === 1 ? "1 is a duplicate" : `${p.duplicates} are duplicates`} of a value already on the same gold row, graded by the judge's own verdict.`,
   ].join("\n\n");
 }
 
@@ -226,7 +233,7 @@ function summaryBlock(s: ScoreSummary, warning?: string): string {
       `| ${g} | ${MODEL_STATUSES.map((m) => s.statusMatrix[g][m]).join(" | ")} |`,
   );
   return [
-    `Scored rows: ${s.scored}. Share correct, ${ACCEPTED}: ${pct(s.shareCorrectAccepted)}. Share correct, full detail (ticket formula, the DoD measure): ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
+    `Scored rows: ${s.scored}. Share correct, ${ACCEPTED}: ${pct(s.shareCorrectAccepted)}. Share correct, full detail (ticket formula): ${pct(s.shareCorrect)}. Status match rate: ${pct(s.statusMatchRate)}.`,
     ...(warning ? ["", warning] : []),
     "",
     "| Verdict | Rows |",

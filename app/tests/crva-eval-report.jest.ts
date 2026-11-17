@@ -612,7 +612,7 @@ describe("thresholds and measures", () => {
       inOrder(
         overall,
         `Precision, ${A}: 4 of 12 (33.3%) model values right.`,
-        "Precision, full detail: 3 of 12 (25.0%) model values right (Correct or Normalisation); comparable to the Madrid hand review (71%)",
+        "Precision, full detail: 3 of 12 (25.0%) model values right (Correct or Normalisation).",
       );
       inOrder(
         v0,
@@ -625,17 +625,61 @@ describe("thresholds and measures", () => {
       inOrder(
         overall,
         `Share correct, ${A}: 33.3%.`,
-        "Share correct, full detail (ticket formula, the DoD measure): 25.0%.",
+        "Share correct, full detail (ticket formula): 25.0%.",
       );
       inOrder(
         v0,
         `Share correct, ${A}: 40.0%.`,
-        "Share correct, full detail (ticket formula, the DoD measure): 30.0%.",
+        "Share correct, full detail (ticket formula): 30.0%.",
       );
     });
 
     it("drops the old tolerant and strict labels", () => {
       expect(r).not.toMatch(/tolerant|strict/);
+    });
+
+    it("drops the Madrid comparison and the DoD label (R28)", () => {
+      expect(r).not.toMatch(/Madrid|DoD/);
+    });
+
+    it("states how many model values are duplicates", () => {
+      expect(overall).toContain(
+        "Of the 12 model values, 1 is a duplicate of a value already on the same gold row, graded by the judge's own verdict.",
+      );
+    });
+
+    it("precision grades duplicates by the judge's own verdict (R28)", () => {
+      const dup = (o: Partial<ScoredRow>) =>
+        row({ kind: "duplicate", rowNumber: null, verdict: null, ...o });
+      const p = buildReport({
+        city: "x",
+        rows: [
+          row({ modelValue: "a", verdict: "Correct" }),
+          dup({ modelValue: "b", judgeVerdict: "Correct" }),
+          dup({
+            modelValue: "c",
+            judgeVerdict: "Partial",
+            partialReason: "trimmed_wording",
+          }),
+          dup({ modelValue: "d", judgeVerdict: "Wrong content" }),
+          // The published verdict of a duplicate is ignored.
+          dup({ modelValue: "e", verdict: "Correct", judgeVerdict: null }),
+        ],
+        gold,
+        stats,
+      })
+        .split("## Overall")[1]
+        .split("\n## ")[0];
+      inOrder(
+        p,
+        `Precision, ${A}: 3 of 5 (60.0%) model values right.`,
+        "Precision, full detail: 2 of 5 (40.0%) model values right",
+      );
+      expect(p).toContain(
+        "Of the 5 model values, 4 are duplicates of a value already on the same gold row, graded by the judge's own verdict.",
+      );
+      // Share correct and coverage still give duplicates no verdict.
+      expect(p).toContain("Coverage, full detail: 1 of 1 (100.0%)");
     });
 
     it("partial reasons count Partial rows, with none and not recorded", () => {

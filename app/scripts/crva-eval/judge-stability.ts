@@ -178,7 +178,7 @@ export function judgeStabilityMarkdown(
     "",
     `Judge model, run A: ${names(models.a)}. Run B: ${names(models.b)}.`,
     "",
-    "gpt-5.6-sol does not accept temperature 0; no seed is sent; differences are judge randomness.",
+    `Judge models in the logs: ${names([...new Set([...models.a, ...models.b])])}. No temperature 0 and no seed are sent; differences are judge randomness.`,
     "",
     "## Headline numbers",
     "",

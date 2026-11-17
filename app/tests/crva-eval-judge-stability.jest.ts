@@ -113,13 +113,14 @@ describe("judgeStability", () => {
 describe("judgeStabilityMarkdown", () => {
   it("names the models and states the randomness caveat", () => {
     const md = judgeStabilityMarkdown(a, b, {
-      a: ["gpt-5.6-sol"],
-      b: ["gpt-5.6-sol"],
+      a: ["judge-a"],
+      b: ["judge-a", "judge-b"],
     });
-    expect(md).toContain("gpt-5.6-sol");
     expect(md).toContain(
-      "gpt-5.6-sol does not accept temperature 0; no seed is sent; differences are judge randomness.",
+      "Judge models in the logs: judge-a, judge-b. No temperature 0 and no seed are sent; differences are judge randomness.",
     );
+    // The model name comes from the logs, never from the code (R28).
+    expect(md).not.toContain("gpt-5.6-sol");
     expect(md).toContain("Share correct");
     expect(md).toContain("Correct -> Wrong content");
   });

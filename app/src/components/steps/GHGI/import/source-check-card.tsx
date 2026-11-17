@@ -834,6 +834,17 @@ function candidateLocation(t: TFunction, candidate: ReportedTotal): string {
     .join(", ");
 }
 
+/**
+ * Number reading of a locale: european when it writes a decimal comma
+ * (de, es, fr, pt), else english. Undefined: the browser's locale.
+ */
+export function localeNumberReading(locale?: string): NumberReading {
+  const decimal = new Intl.NumberFormat(locale)
+    .formatToParts(1.5)
+    .find((part) => part.type === "decimal")?.value;
+  return decimal === "," ? "european" : "english";
+}
+
 export function TotalCheckCard({
   t,
   check,
@@ -856,11 +867,14 @@ export function TotalCheckCard({
         )
       : -1;
     if (fromSelected >= 0) return fromSelected;
-    return check.suggested ?? 0;
+    // No qualifying total (e.g. only net totals for BASIC): the user picks.
+    return check.suggested ?? null;
   })();
-  const [selected, setSelected] = useState(initial);
+  const [selected, setSelected] = useState<number | null>(initial);
   const [typed, setTyped] = useState("");
-  const typedValue = typed.trim() ? parseNumberString(typed, "unknown") : null;
+  const typedValue = typed.trim()
+    ? parseNumberString(typed, localeNumberReading(locale))
+    : null;
   const typedValid =
     typedValue != null && Number.isFinite(typedValue) && typedValue > 0;
 
@@ -871,7 +885,11 @@ export function TotalCheckCard({
       : t("import-total-none"),
   });
 
-  const single = candidates.length === 1 ? candidates[0] : null;
+  // A single total is shown as evidence only when it is the suggestion;
+  // otherwise it is an option the user has to pick.
+  const single =
+    candidates.length === 1 && selected === 0 ? candidates[0] : null;
+  const listed = candidates.length >= 2 || (candidates.length === 1 && !single);
 
   return (
     <SaveContext.Provider value={saveState}>
@@ -886,12 +904,14 @@ export function TotalCheckCard({
             <NoSourceBadge t={t} />
           ) : undefined
         }
-        confirmDisabled={candidates.length === 0 && !typedValid}
+        confirmDisabled={
+          candidates.length === 0 ? !typedValid : selected == null
+        }
         onConfirm={() =>
           onConfirm(
             candidates.length === 0
               ? { total: { value: typedValue as number } }
-              : { total: { candidate: selected } },
+              : { total: { candidate: selected as number } },
           )
         }
       >
@@ -916,9 +936,9 @@ export function TotalCheckCard({
             </Flex>
           </EvidenceBox>
         )}
-        {candidates.length >= 2 && (
+        {listed && (
           <OptionList
-            selected={String(selected)}
+            selected={selected == null ? "" : String(selected)}
             onSelect={(value) => setSelected(Number(value))}
             options={candidates.map((candidate, index) => ({
               value: String(index),
@@ -948,6 +968,15 @@ export function TotalCheckCard({
               onChange={(e) => setTyped(e.target.value)}
               maxW="320px"
             />
+            {typedValid && (
+              <Text
+                data-testid="import-total-parsed"
+                fontSize="body.sm"
+                color="content.secondary"
+              >
+                = {formatTonnes(t, typedValue as number, locale)}
+              </Text>
+            )}
             <Box>
               <Button
                 variant="ghost"

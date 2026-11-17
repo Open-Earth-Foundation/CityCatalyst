@@ -301,6 +301,101 @@ describe("SourceCheckCards", () => {
     });
   });
 
+  it("reads a typed total in the app language and shows the parsed value", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [],
+          selected: null,
+          suggested: null,
+        },
+      },
+      onConfirm,
+      locale: "de",
+    });
+    const input = c.querySelector(
+      "input[inputmode='decimal']",
+    ) as HTMLInputElement;
+    await act(async () => setInput(input, "250.000"));
+    expect(byTestId(c, "import-total-parsed")?.textContent).toContain(
+      (250000).toLocaleString("de"),
+    );
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { value: 250000 },
+      expected: { units: {}, numberFormat: null },
+    });
+  });
+
+  it("reads a typed total in english as english", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [],
+          selected: null,
+          suggested: null,
+        },
+      },
+      onConfirm,
+    });
+    const input = c.querySelector(
+      "input[inputmode='decimal']",
+    ) as HTMLInputElement;
+    await act(async () => setInput(input, "250.5"));
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { value: 250.5 },
+      expected: { units: {}, numberFormat: null },
+    });
+  });
+
+  it("preselects no total when none qualifies, and waits for a pick", async () => {
+    const onConfirm = jest.fn();
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [
+            candidate({ label: "Net emissions", value: 300000 }),
+            candidate({ label: "Net total incl. forestry", value: 280000 }),
+          ],
+          selected: null,
+          suggested: null,
+        },
+      },
+      onConfirm,
+    });
+    expect(radio(c, "0").checked).toBe(false);
+    expect(radio(c, "1").checked).toBe(false);
+    expect(button(c, "Confirm").disabled).toBe(true);
+    await act(async () => radio(c, "1").click());
+    expect(button(c, "Confirm").disabled).toBe(false);
+    await act(async () => button(c, "Confirm").click());
+    expect(onConfirm).toHaveBeenCalledWith({
+      total: { candidate: 1 },
+      expected: { units: {}, numberFormat: null },
+    });
+  });
+
+  it("a single total that does not qualify is offered, not preselected", async () => {
+    const c = await render({
+      checks: {
+        total: {
+          status: "pending",
+          candidates: [candidate({ label: "Net emissions", value: 300000 })],
+          selected: null,
+          suggested: null,
+        },
+      },
+    });
+    expect(radio(c, "0").checked).toBe(false);
+    expect(button(c, "Confirm").disabled).toBe(true);
+  });
+
   it("sends the readings the totals were computed under", async () => {
     const onConfirm = jest.fn();
     const c = await render({

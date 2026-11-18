@@ -37,6 +37,23 @@ export function locateEdits(
   return located;
 }
 
+/**
+ * True when a pending proposal was planned on chapter revisions the loaded draft does not
+ * have yet, for example after a source re-check rewrote chapters while the page was open.
+ */
+export function draftBehindProposal(
+  proposal: EditProposal,
+  chapters: ConceptNoteDraftChapter[],
+): boolean {
+  return (
+    proposal.status === "proposed" &&
+    Object.entries(proposal.base_revisions).some(([id, revision]) => {
+      const chapter = chapters.find((item) => item.chapter_id === id);
+      return !chapter || (chapter.revision_number ?? 0) < revision;
+    })
+  );
+}
+
 export function proposalMatchesDraft(
   proposal: EditProposal,
   chapters: ConceptNoteDraftChapter[],

@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import json
 import logging
+from collections import Counter
 from typing import Any
 from uuid import UUID
 
 from agents import function_tool
 from app.models.cnb.concept_note_edits import EditProposalRequest
+from app.persistence.concept_notes.edits import EditOperationError
 from app.services.cnb.edits import get_edit_service
 from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.citycatalyst_client import CityCatalystClient
@@ -43,6 +45,11 @@ def build_concept_note_edit_tools(
         already bound by the UI.
         When status is "proposed", tell the user to review the inline document
         changes, or the structural before/after preview when proposal_kind is structure.
+        Describe a text proposal only by the returned chapters (title and
+        change_count); never claim it covers a topic the request mentioned but
+        those chapters do not show. Say the proposal is not applied yet, not that
+        the draft or its gaps are unchanged: other updates may have changed them.
+        Call concept_note_gaps before stating which gaps remain.
         Structural proposals cover chapter titles, descriptions, insertion, removal and order.
         When status is "clarification_required", ask the returned
         clarification directly in chat. Never refer to a proposal or clarification
@@ -51,7 +58,12 @@ def build_concept_note_edit_tools(
         An unsupported_edit error means independent semantic review still rejected
         the candidate after the configured repair attempts. Explain that the
         proposal could not pass review and the draft is unchanged; it does not
-        mean bulk edits are unavailable. Do not invent the reviewer's objections.
+        mean bulk edits are unavailable. Summarize the returned review_objections
+        (chapter_title and explanation): they name the claims that lacked support.
+        Offer a narrower retry that leaves out those claims, or ask the user for
+        the missing evidence. Never add objections that were not returned.
+        A sources_updating error means a newly added source is still updating
+        chapters: say so and ask the user to send the request again in a minute.
         This tool NEVER applies, undoes or restores text, even if asked to do so.
         Do not promise that the draft changed. Do not fabricate proposal IDs.
         """
@@ -81,6 +93,7 @@ def build_concept_note_edit_tools(
                     proposal = await service.propose(
                         run,
                         request,
+                        token=token,
                         recent_messages=recent_messages,
                     )
                 finally:
@@ -97,14 +110,27 @@ def build_concept_note_edit_tools(
                 "change_count": len(proposal.changes),
                 "proposal_kind": "structure" if proposal.structure else "text",
                 "notices": [notice.model_dump() for notice in proposal.notices],
+                # Server-counted scope, so chat can describe only what was proposed.
+                "chapters": [
+                    {"title": title, "change_count": count}
+                    for title, count in Counter(
+                        change.chapter_title for change in proposal.changes
+                    ).items()
+                ],
             }
             if proposal.status == "clarification_required" and proposal.clarification:
                 data["clarification"] = proposal.clarification
+            if proposal.review_objections:
+                data["review_objections"] = [
+                    objection.model_dump() for objection in proposal.review_objections
+                ]
             return tool_result(
                 success,
                 data=data,
                 code=None if success else proposal.error_code or "not_edit_request",
             )
+        except EditOperationError as error:
+            return tool_result(False, code=error.code)
         except HTTPException as error:
             return tool_result(
                 False,

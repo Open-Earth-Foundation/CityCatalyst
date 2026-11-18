@@ -54,6 +54,7 @@ import {
   editFeedbackKey,
   selectReviewProposal,
 } from "@/components/ConceptNoteWorkspace/document-review";
+import { draftBehindProposal } from "@/components/ConceptNoteWorkspace/inline-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
 import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
@@ -328,6 +329,25 @@ export function ConceptNoteWorkspace({
     : reviewChanges[0]?.change_id;
   const shownReview = useRef<string | null>(null);
   const reviewIdentity = reviewProposal?.proposal_id;
+  // A source re-check can rewrite chapters while this page is open, and a proposal
+  // planned afterwards would look stale against the loaded draft. Load the saved draft
+  // once per proposal so it can be reviewed and accepted.
+  const draftBehind = Boolean(
+    reviewProposal &&
+    draft &&
+    draftBehindProposal(reviewProposal, draft.chapters),
+  );
+  const draftSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (
+      !draftBehind ||
+      !reviewIdentity ||
+      draftSyncedFor.current === reviewIdentity
+    )
+      return;
+    draftSyncedFor.current = reviewIdentity;
+    void refetchDraft();
+  }, [draftBehind, reviewIdentity, refetchDraft]);
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {

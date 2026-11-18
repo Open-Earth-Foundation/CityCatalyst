@@ -71,119 +71,163 @@ def build_concept_note_source_tools(
         source Markdown; obtain an independently validated accepted source before
         any exact quantitative claim.
         """
-        # Validate the run-bound credential and requested source identity.
-        token = token_ref.get("value")
-        if not token:
-            return error_payload(
-                "missing_token", "CityCatalyst access token is required"
-            )
-        # Resolve names inside the authorized run, then verify its backend artifact.
-        try:
-            selected = await load_query_source_fn(
-                session_factory=session_factory,
-                user_id=user_id,
-                run_id=run_uuid,
-                source_index=source_index,
-            )
-            upload = selected.upload
-            if (
-                upload.markdown_s3_key is None
-                or upload.markdown_sha256 is None
-                or (upload.source_format == "pdf" and upload.page_count is None)
-            ):
-                return error_payload(
-                    "concept_note_source_unavailable",
-                    "Selected source is missing immutable metadata",
-                )
+        return await query_concept_note_source(
+            session_factory=session_factory,
+            run_id=run_uuid,
+            user_id=user_id,
+            token=token_ref.get("value"),
+            source_index=source_index,
+            question=question,
+            client_factory=client_factory,
+            load_query_source_fn=load_query_source_fn,
+            query_document_fn=query_document_fn,
+            verify_source_artifact_fn=verify_source_artifact_fn,
+        )
 
-            client = client_factory()
-            try:
-                artifact = await client.get_concept_note_markdown(
+    return [concept_note_sources_query]
+
+
+async def query_concept_note_source(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+    user_id: str,
+    token: str | None,
+    source_index: int,
+    question: str,
+    expected_source: tuple[str, str] | None = None,
+    include_visual_context: bool = True,
+    client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
+    load_query_source_fn: Callable[..., Awaitable[ContextBundleQuerySource]] = (
+        load_query_source
+    ),
+    query_document_fn: Callable[..., Awaitable[SourceQueryResult]] = query_document,
+    verify_source_artifact_fn: Callable[..., list[SourceUnit]] = verify_source_artifact,
+) -> str:
+    """Re-fetch, verify and query one selected source of an authorized run.
+
+    Returns the serialized capability envelope; failures are envelopes too, never
+    exceptions. ``expected_source`` is the ``(upload_id, sha256)`` a caller's
+    snapshot saw at ``source_index``; a different current source fails with
+    ``concept_note_source_changed`` instead of answering from another document.
+    ``include_visual_context=False`` skips the unverified image annotations.
+    """
+    # Validate the run-bound credential and requested source identity.
+    if not token:
+        return error_payload("missing_token", "CityCatalyst access token is required")
+    # Resolve names inside the authorized run, then verify its backend artifact.
+    try:
+        selected = await load_query_source_fn(
+            session_factory=session_factory,
+            user_id=user_id,
+            run_id=run_id,
+            source_index=source_index,
+        )
+        if expected_source is not None and expected_source != (
+            str(selected.source.upload_id),
+            selected.source.sha256,
+        ):
+            return error_payload(
+                "concept_note_source_changed",
+                "The selected source changed after this request started",
+            )
+        upload = selected.upload
+        if (
+            upload.markdown_s3_key is None
+            or upload.markdown_sha256 is None
+            or (upload.source_format == "pdf" and upload.page_count is None)
+        ):
+            return error_payload(
+                "concept_note_source_unavailable",
+                "Selected source is missing immutable metadata",
+            )
+
+        client = client_factory()
+        try:
+            artifact = await client.get_concept_note_markdown(
+                upload_id=str(upload.upload_id),
+                token=token,
+            )
+            source_units = verify_source_artifact_fn(
+                artifact=artifact,
+                markdown_s3_key=upload.markdown_s3_key,
+                sha256=upload.markdown_sha256,
+                source_format=upload.source_format,
+                page_count=upload.page_count,
+            )
+            visual_context = []
+            if include_visual_context and upload.structured_s3_key is not None:
+                structured = await client.get_concept_note_structured(
                     upload_id=str(upload.upload_id),
                     token=token,
                 )
-                source_units = verify_source_artifact_fn(
-                    artifact=artifact,
-                    markdown_s3_key=upload.markdown_s3_key,
-                    sha256=upload.markdown_sha256,
-                    source_format=upload.source_format,
-                    page_count=upload.page_count,
-                )
-                visual_context = []
-                if upload.structured_s3_key is not None:
-                    structured = await client.get_concept_note_structured(
-                        upload_id=str(upload.upload_id),
-                        token=token,
-                    )
-                    structured_error = _structured_query_error(upload, structured)
-                    if structured_error:
-                        return structured_error
-                    try:
-                        visual_context = project_visual_context(structured.body)
-                    except VisualContextContractError as exc:
-                        return error_payload(exc.code, str(exc))
-                result = await query_document_fn(
-                    upload_id=upload.upload_id,
-                    source_label=selected.source.source_label,
-                    question=question,
-                    source_format=upload.source_format,
-                    pages=source_units,
-                )
-            finally:
-                await client.close()
-            data = omit_context_identifiers(
-                result.model_copy(update={"visual_context": visual_context}).model_dump(
-                    mode="json"
-                )
+                structured_error = _structured_query_error(upload, structured)
+                if structured_error:
+                    return structured_error
+                try:
+                    visual_context = project_visual_context(structured.body)
+                except VisualContextContractError as exc:
+                    return error_payload(exc.code, str(exc))
+            result = await query_document_fn(
+                upload_id=upload.upload_id,
+                source_label=selected.source.source_label,
+                question=question,
+                source_format=upload.source_format,
+                pages=source_units,
             )
-            data["source_index"] = source_index
-            return json.dumps(
-                {
-                    "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
-                    "success": True,
-                    "data": data,
-                },
-                ensure_ascii=False,
+        finally:
+            await client.close()
+        data = omit_context_identifiers(
+            result.model_copy(update={"visual_context": visual_context}).model_dump(
+                mode="json"
             )
-        except ContextBundlePersistenceError as exc:
-            logger.info(
-                "Concept Note source query rejected run_id=%s code=%s",
-                run_uuid,
-                exc.code,
-            )
-            return error_payload(exc.code, str(exc))
-        except CityCatalystClientError as exc:
-            logger.warning(
-                "Concept Note source fetch failed run_id=%s status=%s",
-                run_uuid,
-                exc.status_code,
-            )
-            return error_payload(
-                "concept_note_source_fetch_failed",
-                "Selected source could not be fetched",
-            )
-        except SourceAnalysisError as exc:
-            logger.warning(
-                "Concept Note source analysis failed run_id=%s code=%s reason=%s details=%s",
-                run_uuid,
-                exc.code,
-                exc.reason,
-                exc.details,
-            )
-            return error_payload(
-                exc.code,
-                "The selected document could not be completely analyzed. Please retry.",
-                reason=exc.reason,
-                details=exc.details,
-            )
-        except Exception:
-            logger.exception("Concept Note source tool failed run_id=%s", run_uuid)
-            return error_payload(
-                "concept_note_source_query_failed",
-                "Selected source query failed",
-            )
-
-    return [concept_note_sources_query]
+        )
+        data["source_index"] = source_index
+        return json.dumps(
+            {
+                "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
+                "success": True,
+                "data": data,
+            },
+            ensure_ascii=False,
+        )
+    except ContextBundlePersistenceError as exc:
+        logger.info(
+            "Concept Note source query rejected run_id=%s code=%s",
+            run_id,
+            exc.code,
+        )
+        return error_payload(exc.code, str(exc))
+    except CityCatalystClientError as exc:
+        logger.warning(
+            "Concept Note source fetch failed run_id=%s status=%s",
+            run_id,
+            exc.status_code,
+        )
+        return error_payload(
+            "concept_note_source_fetch_failed",
+            "Selected source could not be fetched",
+        )
+    except SourceAnalysisError as exc:
+        logger.warning(
+            "Concept Note source analysis failed run_id=%s code=%s reason=%s details=%s",
+            run_id,
+            exc.code,
+            exc.reason,
+            exc.details,
+        )
+        return error_payload(
+            exc.code,
+            "The selected document could not be completely analyzed. Please retry.",
+            reason=exc.reason,
+            details=exc.details,
+        )
+    except Exception:
+        logger.exception("Concept Note source tool failed run_id=%s", run_id)
+        return error_payload(
+            "concept_note_source_query_failed",
+            "Selected source query failed",
+        )
 
 
 def _structured_query_error(upload: Any, structured: Any) -> str | None:

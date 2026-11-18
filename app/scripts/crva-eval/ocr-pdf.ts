@@ -1,5 +1,5 @@
-// Usage: npx tsx scripts/crva-eval/ocr-pdf.ts --pdf <path> --city <slug> [--max-part-mib 15]
-// Paid: calls Mistral OCR once per PDF part. Writes reports/crva-eval/<city>/ocr/.
+// Usage: npx tsx scripts/crva-eval/ocr-pdf.ts --pdf <path> --city <slug> [--max-part-mib 15] [--out <dir>]
+// Paid: calls Mistral OCR once per PDF part. Writes reports/crva-eval/<city>/ocr/, or --out.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import env from "@next/env";
@@ -22,7 +22,10 @@ async function main() {
   const cache = await ocrPdf(await readFile(pdfPath), path.basename(pdfPath), {
     maxPartBytes,
   });
-  const dir = path.join(APP_DIR, "reports", "crva-eval", city, "ocr");
+  const dir = argValue(
+    "--out",
+    path.join(APP_DIR, "reports", "crva-eval", city, "ocr"),
+  );
   await writeOcrCache(dir, cache);
   console.log(
     `OCR cache: ${cache.pages.size} pages, ${cache.figures.length} figures, model ${cache.ocrModel} -> ${dir}`,

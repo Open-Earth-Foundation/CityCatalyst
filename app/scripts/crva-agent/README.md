@@ -20,8 +20,8 @@ Verified against the installed types: `@openai/agents@0.22.0` (`@openai/agents-c
 ### Imports
 
 - Core: `import { Agent, run, Usage, MaxTurnsExceededError } from '@openai/agents'` (re-exports `@openai/agents-core` and `@openai/agents-openai`).
-- Sandbox: `import { SandboxAgent, Manifest, localDir, dir, file, filesystem, shell, Capabilities, addSandboxEventSink, DockerSandboxClient } from '@openai/agents/sandbox'` (re-exports `@openai/agents-core/sandbox`, which includes the Docker client).
-- `@openai/agents/sandbox/local` is a separate export for the Unix-local client. Not used (Windows).
+- Sandbox: `import { SandboxAgent, Manifest, localDir, dir, file, filesystem, shell, Capabilities, addSandboxEventSink } from '@openai/agents/sandbox'` (re-exports `@openai/agents-core/sandbox`).
+- Docker client: `import { DockerSandboxClient } from '@openai/agents/sandbox/local'`. The `local` export holds both the Docker and the Unix-local clients (the latter is not used on Windows); `@openai/agents/sandbox` does not export `DockerSandboxClient`.
 
 ### SandboxAgent
 
@@ -35,7 +35,7 @@ Verified against the installed types: `@openai/agents@0.22.0` (`@openai/agents-c
 
 - `new Manifest({ root?, entries?, environment?, users?, groups?, extraPathGrants? })`. Default `root` is `/workspace` (container path, bind-mounted from a host temp dir; also the container working dir).
 - `entries` maps a workspace-relative path to an entry. Factories: `localDir({ src })` copies a host directory into the workspace (`{ type: 'local_dir', src }`), `localFile({ src })`, `file({ content })`, `dir({ children })`, `gitRepo(...)`, mounts. Entry options: `description`, `ephemeral`, `permissions`, `group`.
-- Example: `new Manifest({ entries: { pages: localDir({ src: '/abs/host/pages' }), output: dir() } })`.
+- `localDir` and `localFile` only accept a `src` under `process.cwd()` or under a `manifest.extraPathGrants` entry (which the Docker client bind-mounts into the container); anything else fails in `create()` with `local_dir source must stay within the local source base directory`. `agent.ts` therefore reads the host workspace itself and passes inline `dir({ children })` and `file({ content })` entries (content may be a `Uint8Array`); an empty `dir({ children: {} })` gives the empty `output/`.
 - `environment` entries become container env vars (`-e`). Never put API keys there.
 
 ### DockerSandboxClient
@@ -56,7 +56,7 @@ new DockerSandboxClient({
 - Image: the `image` option. A different image invalidates resumed session state.
 - `networkMode: 'none'` removes network access. The agent needs none, so set it.
 - The container starts with `docker run -d ... /bin/sh -c "sleep loop"`. The user is host uid:gid when `process.getuid` exists; on Windows it is undefined, so the container runs as the image default (root). File APIs run via `docker exec` with `/bin/sh -lc`, GNU tar and `realpath`.
-- Methods: `create({ manifest, options? })` or `create(manifest, options?)` returns a `DockerSandboxSession`; `resume(state)`; `delete(state)`.
+- Methods: `create({ manifest, options? })` or `create(manifest, options?)` returns a `DockerSandboxSession`; `resume(state)`. The Docker client has no `delete`; `session.close()` (also reached by `session.delete()` and `shutdown()`) removes the container, its volumes and the host workspace copy.
 
 ### run()
 
@@ -82,12 +82,16 @@ const result = await run(agent, 'user prompt', {
 
 ### Reading output back from the workspace
 
-`DockerSandboxSession.readFile({ path, maxBytes? })` returns `Promise<Uint8Array>` (the generic interface types it `string | Uint8Array`). Other session methods: `listDir({ path })`, `pathExists(path)`, `exec(...)`, `persistWorkspace()` (tar of the workspace), `close()`, `delete()`.
+`DockerSandboxSession.readFile({ path, maxBytes? })` returns `Promise<Uint8Array>` (the generic interface types it `string | Uint8Array`). Other session methods: `listDir({ path })`, `pathExists(path)`, `directoryExists(path)`, `exec(...)`, `persistWorkspace()` (tar of the workspace), `close()`, `delete()`.
+
+Confirmed in the Task 5 smoke run (2026-11-18):
+
+- An injected session (`sandbox: { session }`) is not owned by the run: the SDK applies only an additive manifest delta and does not close it, so `pathExists` and `readFile` work after `run()` returns. We close it in `finally`.
+- `readFile` and `pathExists` accept workspace-relative paths (`output/values.jsonl`) as well as `/workspace/...`. A missing file makes `pathExists` return `false`; `readFile` throws `SandboxWorkspaceReadNotFoundError`.
+- Usage: `agent.ts` passes its own `context: new RunContext()` to `run()` and reads `context.usage` afterwards, so the counts survive a throw (from `run.mjs`: a passed `RunContext` is used as is; `MaxTurnsExceededError.state` exists, but an abort error has no state). Tool calls are counted with `agent.on('agent_tool_start', ...)` for the same reason. The throw path was not exercised by the smoke run.
 
 ### Not settled by the types
 
-- When the SDK creates the session from `sandbox.client`, it owns and closes it at the end of the run, so the workspace is gone. Plan: create the session ourselves (`await client.create({ manifest })`), pass `sandbox: { session }`, read `output/values.jsonl` with `session.readFile` after `run()` returns or throws, then `await client.delete(session.state)` in `finally`. That the SDK leaves an injected session untouched is inferred from the "owned session" wording, not stated; confirm in the Task 5 smoke run.
-- Whether `readFile` accepts a relative path or needs `/workspace/output/values.jsonl`, and the error for a missing file. Check with `pathExists` first.
 - The exact keys of `TokenDetails` (cached and reasoning tokens).
 - Whether a container survives a killed host process. The SDK labels its containers; clean up stragglers with `docker ps -a --filter label=<ownership label>`.
 - Pointing the SDK at a non-default base URL: the default client reads `OPENAI_API_KEY`; a custom one needs `setDefaultOpenAIClient`.

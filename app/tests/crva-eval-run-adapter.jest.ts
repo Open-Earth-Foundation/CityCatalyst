@@ -280,4 +280,14 @@ describe("CLI inputs", () => {
       path.resolve(fileURLToPath(new URL("..", import.meta.url))),
     );
   });
+
+  it("shows Model turns and Tool calls only when a run carries them", () => {
+    expect(runsTableMarkdown([base])).not.toContain("Model turns");
+    const table = runsTableMarkdown([
+      base,
+      { ...base, modelTurns: 9, toolCalls: 30 },
+    ]);
+    expect(table).toContain("| Model turns | n/a | 9 |");
+    expect(table).toContain("| Tool calls | n/a | 30 |");
+  });
 });

@@ -52,6 +52,9 @@ export interface RunStats {
   fieldsWithValue: number;
   figures: number;
   warnings: number;
+  /** Agent runs only: model turns and tool calls (the adapter has neither). */
+  modelTurns?: number;
+  toolCalls?: number;
   error?: string;
 }
 
@@ -190,7 +193,8 @@ function droppedByReason(s: RunStats): string {
 
 /** Same rows as the Madrid table in docs/CrvaIngestAdapter.md, one column per run. */
 export function runsTableMarkdown(stats: RunStats[]): string {
-  const rows: [string, (s: RunStats) => string | number][] = [
+  type Row = [string, (s: RunStats) => string | number];
+  const rows: Row[] = [
     ["Final state", (s) => (s.status === "ok" ? "review" : "failed")],
     [
       `Fields with at least one value (of ${CRVA_FIELD_IDS.length})`,
@@ -203,6 +207,12 @@ export function runsTableMarkdown(stats: RunStats[]): string {
     ["Warnings", (s) => s.warnings],
     ["LLM calls", (s) => s.llmCalls],
     ["Calls not finished with stop", (s) => s.nonStopFinishes],
+    ...(stats.some((s) => s.modelTurns !== undefined)
+      ? ([["Model turns", (s) => s.modelTurns ?? "n/a"]] as Row[])
+      : []),
+    ...(stats.some((s) => s.toolCalls !== undefined)
+      ? ([["Tool calls", (s) => s.toolCalls ?? "n/a"]] as Row[])
+      : []),
     ["Prompt tokens", (s) => s.promptTokens],
     ["Completion tokens", (s) => s.completionTokens],
     ["OCR pages", (s) => s.ocrPages],

@@ -13,7 +13,9 @@
  * the run incomplete.
  *
  * Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error,
- * 130 interrupted.
+ * 3 incomplete (an --all run with missing or unfinished cases, or a precomputed
+ * run with a case that has no envelope; no regression or error), 130
+ * interrupted.
  */
 import env from "@next/env";
 import { execFileSync } from "node:child_process";
@@ -67,6 +69,7 @@ import {
   ZERO_TOKENS,
   appendIndexLine,
   caseMetrics,
+  incompleteRun,
   gitInfo,
   renderIndexLine,
   runFolderName,
@@ -189,7 +192,7 @@ function printList(
 
 /**
  * Who produced the rows: study and stage come from the folder manifest, mode
- * and version from the first envelope that can be read.
+ * and version from the first envelope that can be read (null when none can).
  */
 function pipelineInfo(
   rows: RowsDir,
@@ -205,13 +208,7 @@ function pipelineInfo(
       }
     }
   }
-  return {
-    id: "precomputed",
-    study: null,
-    stage: null,
-    mode: null,
-    version: null,
-  };
+  return { id: "precomputed", ...rows.info, mode: null, version: null };
 }
 
 function missingInputs(
@@ -426,13 +423,10 @@ export async function main(argv: string[]): Promise<number> {
     }
   }
 
-  const {
-    createContext,
-    disposeContext,
-    pdfPathFor,
-    runAttempt,
-    runPrecomputedAttempt,
-  } = await import("./pdf-benchmark/run-case");
+  const { createContext, disposeContext, pdfPathFor, runAttempt } =
+    await import("./pdf-benchmark/run-case");
+  const { runPrecomputedAttempt } =
+    await import("./pdf-benchmark/precomputed-attempt");
   const missing = missingInputs(selected, config, keys, pdfPathFor);
   // A full-set run goes on without the cases whose inputs are missing here and
   // marks itself incomplete; an explicit selection stops before any paid call.
@@ -664,26 +658,12 @@ export async function main(argv: string[]): Promise<number> {
           options.runs,
       )
       .map((entry) => entry.id);
-    // A rows folder that has no envelope for a case leaves the run incomplete,
-    // whatever the selection.
-    const noEnvelope = results
-      .filter(
-        (result) =>
-          rowsDir &&
-          result.runs.some((run) => run.message?.startsWith("missing_entry")),
-      )
-      .map((result) => ({
-        id: result.id,
-        reason: "no envelope in the rows folder",
-      }));
-    const incomplete =
-      (options.all && (missingCases.length > 0 || unfinished.length > 0)) ||
-      noEnvelope.length > 0
-        ? {
-            missing: [...missingCases, ...noEnvelope],
-            unfinished: options.all ? unfinished : [],
-          }
-        : undefined;
+    const incomplete = incompleteRun({
+      all: !!options.all,
+      missing: missingCases,
+      unfinished,
+      results,
+    });
     const baselineNotRecorded =
       options.updateBaseline &&
       options.runs === 3 &&

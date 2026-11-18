@@ -60,6 +60,8 @@ export class RowsDirError extends Error {
 }
 
 export type RowsDir = {
+  /** Study and stage from manifest.json, known even when no envelope can be read. */
+  info: { study: string | null; stage: string | null };
   get(caseId: string, attempt: number): ReadEnvelope;
 };
 
@@ -207,6 +209,7 @@ export function readRowsDir(
   const stage = strOrNull(manifest.stage);
 
   return {
+    info: { study, stage },
     get(caseId, attempt) {
       const where = `case ${caseId} attempt ${attempt}`;
       const matches = entries.filter(

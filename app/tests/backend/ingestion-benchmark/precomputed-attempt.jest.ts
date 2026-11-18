@@ -9,14 +9,19 @@ import {
   type ReadEnvelope,
   type RowsDir,
 } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
+import {
+  incompleteRun,
+  type CaseResult,
+} from "@/backend/ingestion-benchmark/report";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import { ImportStatusEnum } from "@/util/enums";
 import {
   lostRowsByIssue,
   markExtracted,
+  reconcileLostRows,
   runPrecomputedAttempt,
-  type RunContext,
-} from "../../../scripts/pdf-benchmark/run-case";
+} from "../../../scripts/pdf-benchmark/precomputed-attempt";
+import type { RunContext } from "../../../scripts/pdf-benchmark/run-case";
 
 const row = (over: Partial<EnvelopeRow> = {}): EnvelopeRow => ({
   source_label: "Synthetic label",
@@ -58,7 +63,10 @@ const envelope = (
   ...over,
 });
 
-const rowsDirOf = (get: RowsDir["get"]): RowsDir => ({ get });
+const rowsDirOf = (get: RowsDir["get"]): RowsDir => ({
+  info: { study: "s", stage: "t" },
+  get,
+});
 
 type Update = {
   values: Record<string, unknown>;
@@ -109,8 +117,10 @@ beforeAll(() => {
 afterAll(() => fs.rmSync(pdfDir, { recursive: true, force: true }));
 
 /** A context whose city, inventory and upload are fakes; the file starts pending extraction. */
-function fakeContext() {
-  const file = fakeFileModel(ImportStatusEnum.PENDING_AI_EXTRACTION);
+function fakeContext(
+  fileStatus: string = ImportStatusEnum.PENDING_AI_EXTRACTION,
+) {
+  const file = fakeFileModel(fileStatus);
   const seen = { cityCreates: 0, uploads: 0, cityIdsAtUpload: [] as string[] };
   const ctx = {
     db: {
@@ -190,8 +200,33 @@ describe("runPrecomputedAttempt", () => {
     const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
     expect(run.failureMode).toBe("setup_error");
     expect(run.message).toContain("missing_entry");
+    expect(run.missingEnvelope).toBe(true);
     expect(seen.cityCreates).toBe(0);
     expect(seen.uploads).toBe(0);
+  });
+
+  it("marks only a missing envelope, not other rows-folder errors", async () => {
+    const { ctx } = fakeContext();
+    const rows = rowsDirOf(() => {
+      throw new RowsDirError("hash_mismatch", "case C-T1 attempt 1");
+    });
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    expect(run.failureMode).toBe("setup_error");
+    expect(run.missingEnvelope).toBeUndefined();
+  });
+
+  it("gives setup_error when the rows cannot be stored on the file", async () => {
+    const { ctx, file } = fakeContext(ImportStatusEnum.WAITING_FOR_APPROVAL);
+    const run = await runPrecomputedAttempt(
+      ctx,
+      entry,
+      key,
+      1,
+      rowsDirOf(() => envelope([row()])),
+    );
+    expect(run.failureMode).toBe("setup_error");
+    expect(run.message).toContain("no longer pending_ai_extraction");
+    expect(file.state.importStatus).toBe(ImportStatusEnum.WAITING_FOR_APPROVAL);
   });
 
   it("maps a mapping failure to extraction_error and fails the file", async () => {
@@ -219,6 +254,7 @@ describe("runPrecomputedAttempt", () => {
     );
     const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
     expect(run.failureMode).toBe("zero_rows");
+    expect(run.zeroRowsReason).toBe("no-importable-rows");
     expect(run.extractedRows).toBe(0);
     expect(file.state.importStatus).toBe(ImportStatusEnum.FAILED);
     expect(file.updates.at(-1)?.where).toEqual({
@@ -257,5 +293,72 @@ describe("lostRowsByIssue", () => {
         { errors: [] },
       ]),
     ).toEqual({ "gpc-reference-unknown": 2, unknown: 1 });
+  });
+});
+
+describe("reconcileLostRows", () => {
+  const lost = { "gpc-reference-unknown": 2 };
+  it("keeps the counts when approve skipped the same number", () => {
+    expect(reconcileLostRows(lost, 2)).toEqual(lost);
+  });
+  it("flags rows approve skipped beyond the counted ones", () => {
+    expect(reconcileLostRows(lost, 3)).toEqual({ ...lost, unexplained: 1 });
+  });
+  it("flags counted rows approve did not skip", () => {
+    expect(reconcileLostRows(lost, 1)).toEqual({ ...lost, notSkipped: 1 });
+  });
+  it("leaves the counts alone without a skipped count", () => {
+    expect(reconcileLostRows(lost, undefined)).toEqual(lost);
+  });
+});
+
+describe("incompleteRun", () => {
+  const result = (id: string, missingEnvelope?: true) =>
+    ({
+      id,
+      runs: [
+        {
+          run: 1,
+          failureMode: missingEnvelope ? "setup_error" : "scored",
+          ...(missingEnvelope ? { missingEnvelope } : {}),
+        },
+      ],
+    }) as unknown as CaseResult;
+
+  it("marks a run with a missing envelope incomplete, without --all", () => {
+    expect(
+      incompleteRun({
+        all: false,
+        missing: [],
+        unfinished: [],
+        results: [result("C-T1"), result("C-T2", true)],
+      }),
+    ).toEqual({
+      missing: [{ id: "C-T2", reason: "no envelope in the rows folder" }],
+      unfinished: [],
+    });
+  });
+
+  it("leaves a complete run, and a built-in run outside --all, unmarked", () => {
+    expect(
+      incompleteRun({
+        all: false,
+        missing: [],
+        unfinished: ["C-T1"],
+        results: [result("C-T1")],
+      }),
+    ).toBeUndefined();
+  });
+
+  it("keeps the --all rule for missing inputs and unfinished cases", () => {
+    const missing = [{ id: "C-T3", reason: "PDF not found" }];
+    expect(
+      incompleteRun({
+        all: true,
+        missing,
+        unfinished: ["C-T1"],
+        results: [result("C-T1")],
+      }),
+    ).toEqual({ missing, unfinished: ["C-T1"] });
   });
 });

@@ -5,9 +5,8 @@
  * settles, then reads the stored values back and scores them. Ported from
  * measure-ghgi-import.jest.ts (CC-1132).
  *
- * A precomputed attempt (CC-1295) skips OCR and extraction: it stores the rows
- * of an external pipeline's envelope on the uploaded file, then approves, reads
- * back and scores the same way.
+ * The setup, approve and read-back helpers are shared with the precomputed
+ * attempt (precomputed-attempt.ts, CC-1295).
  */
 import env from "@next/env";
 import { NextRequest } from "next/server";
@@ -15,23 +14,14 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { QueryTypes } from "sequelize";
-import type { ExtractedRow } from "@/backend/InventoryExtractionService";
+import type { ECRFRowData } from "@/backend/ECRFImportService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {
   heldRowDecisions,
   type HeldRowDecisions,
 } from "@/backend/ingestion-benchmark/held-rows";
-import {
-  mapEnvelope,
-  type MappedEnvelope,
-} from "@/backend/ingestion-benchmark/pipelines/map-envelope";
-import type {
-  ReadEnvelope,
-  RowsDir,
-} from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type {
   FailureMode,
-  PipelineAttempt,
   RunEntry,
   Tokens,
 } from "@/backend/ingestion-benchmark/report";
@@ -49,7 +39,6 @@ import {
 import { Auth, type AppSession } from "@/lib/auth";
 import {
   GlobalWarmingPotentialTypeEnum,
-  ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
 import { toCanonical } from "@/util/notation-keys";
@@ -243,7 +232,7 @@ type ReadBackRow = {
 };
 
 // InventoryValue.co2eq is stored in kg; the report is in tonnes.
-async function readBack(ctx: RunContext, inventoryId: string) {
+export async function readBack(ctx: RunContext, inventoryId: string) {
   const rows = await ctx.db.sequelize!.query<ReadBackRow>(
     `SELECT iv.gpc_reference_number AS gpc,
             COALESCE(sc.scope_name, ss.scope_name) AS scope,
@@ -277,6 +266,19 @@ async function readBack(ctx: RunContext, inventoryId: string) {
   };
 }
 
+/** One call of the import status route. */
+export async function getStatus(
+  ctx: RunContext,
+  ids: { city: string; inventory: string },
+  importedFileId: string,
+) {
+  const response = await ctx.routes.status.GET(mockRequest(), {
+    params: Promise.resolve({ ...ids, importedFileId }),
+  });
+  const json = await response.json();
+  return { importStatus: json?.data?.importStatus as string, json };
+}
+
 async function pollStatus(
   ctx: RunContext,
   ids: { city: string; inventory: string },
@@ -286,13 +288,9 @@ async function pollStatus(
 ) {
   const start = Date.now();
   for (;;) {
-    const response = await ctx.routes.status.GET(mockRequest(), {
-      params: Promise.resolve({ ...ids, importedFileId }),
-    });
-    const json = await response.json();
-    const importStatus = json?.data?.importStatus as string;
-    if (until.includes(importStatus) || Date.now() - start > maxMs) {
-      return { importStatus, json };
+    const state = await getStatus(ctx, ids, importedFileId);
+    if (until.includes(state.importStatus) || Date.now() - start > maxMs) {
+      return state;
     }
     await sleep(1500);
   }
@@ -376,43 +374,28 @@ async function ingestItemWarnings(
 }
 
 /**
- * Rows approve will skip, by issue code. Approve imports only rows without
- * errors (InventoryImportService), so these never reach the inventory.
- */
-export function lostRowsByIssue(
-  rows: { issue?: string; errors?: string[] }[],
-): Record<string, number> {
-  const lost: Record<string, number> = {};
-  for (const row of rows) {
-    if (!row.errors?.length) continue;
-    const issue = row.issue ?? "unknown";
-    lost[issue] = (lost[issue] ?? 0) + 1;
-  }
-  return lost;
-}
-
-/**
  * Include decisions for the rows the review would hold back, built the way the
- * review screen sends them, and the rows approve will skip.
+ * review screen sends them, and the import rows they were built from.
  */
-async function includeHeldRows(
+export async function includeHeldRows(
   ctx: RunContext,
   importedFileId: string,
-): Promise<HeldRowDecisions & { lostRows: Record<string, number> }> {
+): Promise<HeldRowDecisions & { importRows: ECRFRowData[] }> {
   const { buildImportResult } = await import("@/backend/ImportResultBuilder");
   const { findPendingRows } = await import("@/backend/ImportRowPreviewService");
   const file =
     await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
-  if (!file) return { decisions: {}, included: 0, unresolved: 0, lostRows: {} };
+  if (!file)
+    return { decisions: {}, included: 0, unresolved: 0, importRows: [] };
   const { importResult } = await buildImportResult(file);
   return {
     ...heldRowDecisions(findPendingRows(importResult), importedFileId),
-    lostRows: lostRowsByIssue(importResult.rows),
+    importRows: importResult.rows,
   };
 }
 
 /** Creates the test city and inventory, then uploads the PDF. The city is registered for cleanup before the upload. */
-async function setUpImport(
+export async function setUpImport(
   ctx: RunContext,
   entry: CaseManifestEntry,
   attempt: number,
@@ -458,7 +441,7 @@ async function setUpImport(
 }
 
 /** Calls approve with the held-row decisions and polls until the import settles. */
-async function approveImport(
+export async function approveImport(
   ctx: RunContext,
   ids: { city: string; inventory: string },
   importedFileId: string,
@@ -487,14 +470,12 @@ async function approveImport(
   return pollStatus(ctx, ids, importedFileId, ["completed", "failed"]);
 }
 
-type Stage = "setup" | "job" | "approve" | "readback";
-
-export async function runAttempt(
-  ctx: RunContext,
-  entry: CaseManifestEntry,
-  key: KeyFile,
-  attempt: number,
-): Promise<RunEntry> {
+/**
+ * Stage times and LLM usage of one attempt. `usage()` measures since the start
+ * the first time it is called and returns that value after; `finish` builds
+ * the run entry.
+ */
+export function attemptClock(attempt: number) {
   const started = Date.now();
   const beforeRun = snapshot();
   const stageMs: RunEntry["stageMs"] = {
@@ -503,22 +484,34 @@ export async function runAttempt(
     import: null,
     total: 0,
   };
-  let usage: Tokens | null = null;
+  let measured: Tokens | null = null;
+  const usage = (): Tokens => (measured ??= since(beforeRun));
   const finish = (
     partial: Partial<RunEntry> & { failureMode: FailureMode },
   ): RunEntry => {
     stageMs.total = Date.now() - started;
-    usage ??= since(beforeRun);
     return {
       run: attempt,
       warnings: [],
       ok: partial.failureMode === "scored",
       ms: stageMs.total,
       stageMs,
-      usage,
+      usage: usage(),
       ...partial,
     };
   };
+  return { stageMs, usage, finish };
+}
+
+type Stage = "setup" | "job" | "approve" | "readback";
+
+export async function runAttempt(
+  ctx: RunContext,
+  entry: CaseManifestEntry,
+  key: KeyFile,
+  attempt: number,
+): Promise<RunEntry> {
+  const { stageMs, usage: measureUsage, finish } = attemptClock(attempt);
 
   const pdfPath = pdfPathFor(ctx.config, entry);
   if (!pdfPath) {
@@ -603,7 +596,7 @@ export async function runAttempt(
     }
     stageMs.ocr = ocrMs;
     stageMs.extraction = Math.max(0, jobMs - (ocrMs ?? 0));
-    usage = since(beforeRun);
+    const usage = measureUsage();
     warnings = [
       ...collectWarnings(state.json?.data),
       ...(await ingestItemWarnings(ctx, importedFileId)),
@@ -694,251 +687,6 @@ export async function runAttempt(
       failedPages,
       extractedRows,
       heldRowsIncluded,
-      message: (error as Error).message,
-    });
-  }
-}
-
-type FileDb = {
-  models: Pick<RunContext["db"]["models"], "ImportedInventoryFile">;
-};
-
-/**
- * Stores precomputed rows on an uploaded PDF the way the extraction worker
- * does (PdfOcrService), so approve reads them as extracted rows. Returns false
- * when the file is no longer pending extraction.
- */
-export async function markExtracted(
-  db: FileDb,
-  importedFileId: string,
-  rows: ExtractedRow[],
-): Promise<boolean> {
-  const file = await db.models.ImportedInventoryFile.findByPk(importedFileId);
-  const [updated] = await db.models.ImportedInventoryFile.update(
-    {
-      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-      mappingConfiguration: { ...(file?.mappingConfiguration || {}), rows },
-      rowCount: rows.length,
-      errorLog: null,
-      lastUpdated: new Date(),
-    },
-    {
-      where: {
-        id: importedFileId,
-        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
-      },
-    },
-  );
-  return updated === 1;
-}
-
-/** Fails a pending file the way a failed extraction does. */
-async function markFailed(
-  db: FileDb,
-  importedFileId: string,
-  errorLog: string,
-) {
-  await db.models.ImportedInventoryFile.update(
-    {
-      importStatus: ImportStatusEnum.FAILED,
-      errorLog,
-      lastUpdated: new Date(),
-    },
-    {
-      where: {
-        id: importedFileId,
-        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
-      },
-    },
-  );
-}
-
-/** What the run entry records about the envelope; tallies stay empty when its rows were not mapped. */
-function pipelineAttempt(
-  envelope: ReadEnvelope,
-  mapped: MappedEnvelope,
-  lostRows: Record<string, number>,
-): PipelineAttempt {
-  const { data } = envelope;
-  const counts =
-    "failure" in mapped
-      ? {
-          executionStatus: envelope.executionStatus,
-          rowsInEnvelope: data.rows.length,
-          unknownRowRoles: {},
-          droppedRows: {},
-          rowRoles: {},
-          scopeBasis: {},
-          totalInclusion: {},
-          reported: {
-            totalT: data.reported_total_tco2e,
-            grossT: data.reported_gross_total_tco2e,
-            netT: data.reported_net_total_tco2e,
-            removalsT: data.reported_removals_tco2e,
-            totalBasis: data.total_basis,
-            totalKind: data.total_kind,
-          },
-        }
-      : mapped.attempt;
-  return {
-    ...counts,
-    costUsd: envelope.costUsd ?? null,
-    costSource: envelope.costUsd != null ? "envelope" : "none",
-    usage: envelope.usage,
-    lostRows,
-  };
-}
-
-/**
- * One attempt with rows from a precomputed envelope: upload (no OCR, no
- * extraction), store the rows, approve, read back and score.
- */
-export async function runPrecomputedAttempt(
-  ctx: RunContext,
-  entry: CaseManifestEntry,
-  key: KeyFile,
-  attempt: number,
-  rowsDir: RowsDir,
-): Promise<RunEntry> {
-  const started = Date.now();
-  const beforeRun = snapshot();
-  const stageMs: RunEntry["stageMs"] = {
-    ocr: null,
-    extraction: null,
-    import: null,
-    total: 0,
-  };
-  const finish = (
-    partial: Partial<RunEntry> & { failureMode: FailureMode },
-  ): RunEntry => {
-    stageMs.total = Date.now() - started;
-    return {
-      run: attempt,
-      warnings: [],
-      ok: partial.failureMode === "scored",
-      ms: stageMs.total,
-      stageMs,
-      usage: since(beforeRun),
-      ...partial,
-    };
-  };
-
-  // A missing or invalid envelope fails the attempt before anything is uploaded.
-  let envelope: ReadEnvelope;
-  try {
-    envelope = rowsDir.get(entry.id, attempt);
-  } catch (error) {
-    return finish({
-      failureMode: "setup_error",
-      message: (error as Error).message,
-    });
-  }
-  const pdfPath = pdfPathFor(ctx.config, entry);
-  if (!pdfPath) {
-    return finish({
-      failureMode: "setup_error",
-      message: `PDF not found: ${entry.fileName}`,
-    });
-  }
-  const buffer = readFileSync(pdfPath);
-  const mapped = mapEnvelope(envelope);
-
-  let stage: "setup" | "approve" | "readback" = "setup";
-  let warnings: string[] = [];
-  let extractedRows = 0;
-  let heldRowsIncluded = 0;
-  let lostRows: Record<string, number> = {};
-  const base = () => ({
-    warnings,
-    extractedRows,
-    heldRowsIncluded,
-    pipeline: pipelineAttempt(envelope, mapped, lostRows),
-  });
-  try {
-    const { ids, importedFileId } = await setUpImport(ctx, entry, attempt, {
-      buffer,
-      path: pdfPath,
-    });
-    const uploaded =
-      await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
-    if (uploaded?.s3Key) ctx.uploadedKeys.push(uploaded.s3Key);
-
-    if ("failure" in mapped) {
-      await markFailed(ctx.db, importedFileId, mapped.message);
-      return finish({
-        ...base(),
-        failureMode: mapped.failure,
-        message: mapped.message,
-      });
-    }
-    if (mapped.rows.length === 0) {
-      const reason =
-        envelope.data.rows.length === 0
-          ? "envelope-without-rows"
-          : "no-importable-rows";
-      await markFailed(ctx.db, importedFileId, reason);
-      return finish({
-        ...base(),
-        failureMode: "zero_rows",
-        zeroRowsReason: reason,
-        message: reason,
-      });
-    }
-    if (!(await markExtracted(ctx.db, importedFileId, mapped.rows))) {
-      throw new Error("imported file is no longer pending_ai_extraction");
-    }
-    extractedRows = mapped.rows.length;
-    const state = await pollStatus(
-      ctx,
-      ids,
-      importedFileId,
-      [ImportStatusEnum.WAITING_FOR_APPROVAL, ImportStatusEnum.FAILED],
-      -1,
-    );
-    warnings = collectWarnings(state.json?.data);
-
-    stage = "approve";
-    const importStarted = Date.now();
-    const held = await includeHeldRows(ctx, importedFileId);
-    heldRowsIncluded = held.included;
-    lostRows = held.lostRows;
-    const done = await approveImport(ctx, ids, importedFileId, held);
-    stageMs.import = Date.now() - importStarted;
-    // Approve's own count of skipped rows; any it skipped beyond the issue
-    // codes above is counted as unexplained rather than hidden.
-    const skipped = Number(
-      done.json?.data?.validationResults_legacy?.importSummary?.skippedRows ??
-        0,
-    );
-    const explained = Object.values(lostRows).reduce((a, b) => a + b, 0);
-    if (skipped > explained) lostRows.unexplained = skipped - explained;
-    if (done.importStatus !== ImportStatusEnum.COMPLETED) {
-      const errorLog = done.json?.data?.errorLog as string | null | undefined;
-      return finish({
-        ...base(),
-        failureMode: "approve_error",
-        message: `import ended ${done.importStatus}${errorLog ? `: ${errorLog.slice(0, 160)}` : ""}`,
-      });
-    }
-
-    stage = "readback";
-    const back = await readBack(ctx, ids.inventory);
-    return finish({
-      ...base(),
-      failureMode: "scored",
-      stored: back.stored,
-      score: scoreFile(scoringKey(key, entry.totalOnly), back.stored),
-      total: back.total,
-    });
-  } catch (error) {
-    return finish({
-      ...base(),
-      failureMode:
-        stage === "approve"
-          ? "approve_error"
-          : stage === "readback"
-            ? "readback_error"
-            : "setup_error",
       message: (error as Error).message,
     });
   }

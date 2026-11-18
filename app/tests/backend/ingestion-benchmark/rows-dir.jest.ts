@@ -100,6 +100,13 @@ describe("readRowsDir", () => {
     });
   });
 
+  it("exposes study and stage even when no envelope can be read", () => {
+    writeFixture(envelope(), { skipFile: true });
+    const rows = readRowsDir(dir);
+    expect(rows.info).toEqual({ study: "study-x", stage: "stage-y" });
+    expect(codeOf(() => rows.get("C-015", 1))).toBe("missing_file");
+  });
+
   it("rejects a tampered file", () => {
     writeFixture(envelope());
     fs.appendFileSync(path.join(dir, "results/a.json"), " ");

@@ -118,6 +118,8 @@ export type RunEntry = {
   failedPages?: number[];
   /** Set when the rows came from a precomputed pipeline. */
   pipeline?: PipelineAttempt;
+  /** Set when the precomputed rows folder has no envelope for this attempt. */
+  missingEnvelope?: true;
 };
 
 export type CaseResult = {
@@ -183,6 +185,32 @@ export type RunSummary = {
   /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
   rescoredFrom?: { measuredAt: string; commit: string };
 };
+
+/**
+ * Whether a run is incomplete: a full-set run (--all) with cases left out or
+ * unfinished, or any run with a case the precomputed rows folder has no
+ * envelope for.
+ */
+export function incompleteRun(input: {
+  all: boolean;
+  missing: { id: string; reason: string }[];
+  unfinished: string[];
+  results: CaseResult[];
+}): RunSummary["incomplete"] {
+  const noEnvelope = input.results
+    .filter((result) => result.runs.some((run) => run.missingEnvelope))
+    .map((result) => ({
+      id: result.id,
+      reason: "no envelope in the rows folder",
+    }));
+  const fullSetGap =
+    input.all && (input.missing.length > 0 || input.unfinished.length > 0);
+  if (!fullSetGap && noEnvelope.length === 0) return undefined;
+  return {
+    missing: [...input.missing, ...noEnvelope],
+    unfinished: input.all ? input.unfinished : [],
+  };
+}
 
 export type CaseMetrics = {
   ocrOk: boolean | null;

@@ -5,6 +5,12 @@
  *
  *   npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010
  *   npx tsx scripts/pdf-benchmark.ts --list
+ *   npx tsx scripts/pdf-benchmark.ts --cases C-015 --pipeline precomputed --rows-dir <folder>
+ *
+ * With --pipeline precomputed the rows come from an external pipeline's
+ * envelope folder (manifest.json + one file per case and attempt) instead of
+ * OCR and extraction; a case with no envelope fails as setup_error and marks
+ * the run incomplete.
  *
  * Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error,
  * 130 interrupted.
@@ -47,6 +53,10 @@ import {
   adaptLegacySummary,
   type LegacySummary,
 } from "@/backend/ingestion-benchmark/legacy-results";
+import {
+  readRowsDir,
+  type RowsDir,
+} from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
 import {
   pdfExtractionModel,
@@ -63,6 +73,7 @@ import {
   writeRunArtifact,
   type Block,
   type CaseResult,
+  type PipelineInfo,
   type Prices,
   type RunEntry,
   type RunSummary,
@@ -174,6 +185,33 @@ function printList(
     );
   }
   console.log(`${manifest.length} cases`);
+}
+
+/**
+ * Who produced the rows: study and stage come from the folder manifest, mode
+ * and version from the first envelope that can be read.
+ */
+function pipelineInfo(
+  rows: RowsDir,
+  selected: CaseManifestEntry[],
+  runs: number,
+): PipelineInfo {
+  for (const entry of selected) {
+    for (let attempt = 1; attempt <= runs; attempt++) {
+      try {
+        return rows.get(entry.id, attempt).info;
+      } catch {
+        // that attempt fails on its own; try the next one
+      }
+    }
+  }
+  return {
+    id: "precomputed",
+    study: null,
+    stage: null,
+    mode: null,
+    version: null,
+  };
 }
 
 function missingInputs(
@@ -377,8 +415,24 @@ export async function main(argv: string[]): Promise<number> {
     throw error;
   }
 
-  const { createContext, disposeContext, pdfPathFor, runAttempt } =
-    await import("./pdf-benchmark/run-case");
+  // Read once per run; an attempt without an envelope fails on its own.
+  let rowsDir: RowsDir | undefined;
+  if (options.pipeline) {
+    try {
+      rowsDir = readRowsDir(resolve(options.rowsDir!));
+    } catch (error) {
+      console.error((error as Error).message);
+      return 2;
+    }
+  }
+
+  const {
+    createContext,
+    disposeContext,
+    pdfPathFor,
+    runAttempt,
+    runPrecomputedAttempt,
+  } = await import("./pdf-benchmark/run-case");
   const missing = missingInputs(selected, config, keys, pdfPathFor);
   // A full-set run goes on without the cases whose inputs are missing here and
   // marks itself incomplete; an explicit selection stops before any paid call.
@@ -422,9 +476,12 @@ export async function main(argv: string[]): Promise<number> {
   console.log(
     `Selected ${selected.length} case(s) x ${options.runs} attempt(s): ${selected.map((c) => c.id).join(", ")}`,
   );
-  console.log(
-    `Forecast: ${money(forecastTotal)}, about ${minutes(forecastSeconds)} (from the baseline usage; model ${extractionModel ?? "unknown"}${prices ? "" : ", no prices for this model"})`,
-  );
+  // A precomputed run calls no OCR or LLM, so the built-in forecast does not apply.
+  if (!options.pipeline) {
+    console.log(
+      `Forecast: ${money(forecastTotal)}, about ${minutes(forecastSeconds)} (from the baseline usage; model ${extractionModel ?? "unknown"}${prices ? "" : ", no prices for this model"})`,
+    );
+  }
   if (options.dryRun) return 0;
 
   const { promptHash } = await import("./pdf-benchmark/prompt-hash");
@@ -497,7 +554,9 @@ export async function main(argv: string[]): Promise<number> {
         for (let attempt = 1; attempt <= options.runs; attempt++) {
           if (interrupted) break;
           console.log(`[${entry.id}] attempt ${attempt}/${options.runs}`);
-          const run = await runAttempt(ctx, entry, key, attempt);
+          const run = rowsDir
+            ? await runPrecomputedAttempt(ctx, entry, key, attempt, rowsDir)
+            : await runAttempt(ctx, entry, key, attempt);
           console.log(
             `[${entry.id}] attempt ${attempt}: ${run.failureMode}${run.message ? ` (${run.message})` : ""}`,
           );
@@ -605,9 +664,25 @@ export async function main(argv: string[]): Promise<number> {
           options.runs,
       )
       .map((entry) => entry.id);
+    // A rows folder that has no envelope for a case leaves the run incomplete,
+    // whatever the selection.
+    const noEnvelope = results
+      .filter(
+        (result) =>
+          rowsDir &&
+          result.runs.some((run) => run.message?.startsWith("missing_entry")),
+      )
+      .map((result) => ({
+        id: result.id,
+        reason: "no envelope in the rows folder",
+      }));
     const incomplete =
-      options.all && (missingCases.length > 0 || unfinished.length > 0)
-        ? { missing: missingCases, unfinished }
+      (options.all && (missingCases.length > 0 || unfinished.length > 0)) ||
+      noEnvelope.length > 0
+        ? {
+            missing: [...missingCases, ...noEnvelope],
+            unfinished: options.all ? unfinished : [],
+          }
         : undefined;
     const baselineNotRecorded =
       options.updateBaseline &&
@@ -633,6 +708,9 @@ export async function main(argv: string[]): Promise<number> {
         : options.runs !== 3
           ? "attempts"
           : undefined,
+      ...(rowsDir
+        ? { pipeline: pipelineInfo(rowsDir, selected, options.runs) }
+        : {}),
       interrupted,
       promptHash: promptHash(),
       inputRepresentation:

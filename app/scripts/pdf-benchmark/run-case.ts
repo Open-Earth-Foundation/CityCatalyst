@@ -4,6 +4,10 @@
  * queue worker (what the scheduler runs in production) until the import
  * settles, then reads the stored values back and scores them. Ported from
  * measure-ghgi-import.jest.ts (CC-1132).
+ *
+ * A precomputed attempt (CC-1295) skips OCR and extraction: it stores the rows
+ * of an external pipeline's envelope on the uploaded file, then approves, reads
+ * back and scores the same way.
  */
 import env from "@next/env";
 import { NextRequest } from "next/server";
@@ -11,10 +15,23 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { QueryTypes } from "sequelize";
+import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
-import { heldRowDecisions } from "@/backend/ingestion-benchmark/held-rows";
+import {
+  heldRowDecisions,
+  type HeldRowDecisions,
+} from "@/backend/ingestion-benchmark/held-rows";
+import {
+  mapEnvelope,
+  type MappedEnvelope,
+} from "@/backend/ingestion-benchmark/pipelines/map-envelope";
+import type {
+  ReadEnvelope,
+  RowsDir,
+} from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type {
   FailureMode,
+  PipelineAttempt,
   RunEntry,
   Tokens,
 } from "@/backend/ingestion-benchmark/report";
@@ -32,6 +49,7 @@ import {
 import { Auth, type AppSession } from "@/lib/auth";
 import {
   GlobalWarmingPotentialTypeEnum,
+  ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
 import { toCanonical } from "@/util/notation-keys";
@@ -357,18 +375,119 @@ async function ingestItemWarnings(
   }
 }
 
-/** Include decisions for the rows the review would hold back, built the way the review screen sends them. */
-async function includeHeldRows(ctx: RunContext, importedFileId: string) {
+/**
+ * Rows approve will skip, by issue code. Approve imports only rows without
+ * errors (InventoryImportService), so these never reach the inventory.
+ */
+export function lostRowsByIssue(
+  rows: { issue?: string; errors?: string[] }[],
+): Record<string, number> {
+  const lost: Record<string, number> = {};
+  for (const row of rows) {
+    if (!row.errors?.length) continue;
+    const issue = row.issue ?? "unknown";
+    lost[issue] = (lost[issue] ?? 0) + 1;
+  }
+  return lost;
+}
+
+/**
+ * Include decisions for the rows the review would hold back, built the way the
+ * review screen sends them, and the rows approve will skip.
+ */
+async function includeHeldRows(
+  ctx: RunContext,
+  importedFileId: string,
+): Promise<HeldRowDecisions & { lostRows: Record<string, number> }> {
   const { buildImportResult } = await import("@/backend/ImportResultBuilder");
   const { findPendingRows } = await import("@/backend/ImportRowPreviewService");
   const file =
     await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
-  if (!file) return { decisions: {}, included: 0, unresolved: 0 };
+  if (!file) return { decisions: {}, included: 0, unresolved: 0, lostRows: {} };
   const { importResult } = await buildImportResult(file);
-  return heldRowDecisions(findPendingRows(importResult), importedFileId);
+  return {
+    ...heldRowDecisions(findPendingRows(importResult), importedFileId),
+    lostRows: lostRowsByIssue(importResult.rows),
+  };
 }
 
-type Stage = "setup" | "upload" | "job" | "approve" | "readback";
+/** Creates the test city and inventory, then uploads the PDF. The city is registered for cleanup before the upload. */
+async function setUpImport(
+  ctx: RunContext,
+  entry: CaseManifestEntry,
+  attempt: number,
+  pdf: { buffer: Buffer<ArrayBuffer>; path: string },
+) {
+  const city = await ctx.db.models.City.create({
+    cityId: randomUUID(),
+    name: `Ingestion accuracy ${entry.id} r${attempt}`,
+    country: "Test",
+    locode: `XX_IA_${entry.id}_${attempt}_${randomUUID().slice(0, 6)}`.slice(
+      0,
+      32,
+    ),
+  });
+  ctx.cityIds.push(city.cityId);
+  await city.addUser(TEST_USER_ID);
+  const inventory = await ctx.db.models.Inventory.create({
+    inventoryId: randomUUID(),
+    cityId: city.cityId,
+    inventoryName: `IA_${entry.id}_${attempt}`,
+    year: entry.year,
+    totalEmissions: 0,
+    inventoryType: InventoryTypeEnum.GPC_BASIC,
+    globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  });
+  const ids = { city: city.cityId, inventory: inventory.inventoryId };
+  const form = new FormData();
+  form.append("file", new File([pdf.buffer], basename(pdf.path)));
+  const request = mockRequest();
+  request.formData = async () => form;
+  const uploaded = await ctx.routes.upload.POST(request, {
+    params: Promise.resolve(ids),
+  });
+  const uploadedJson = await uploaded.json();
+  if (uploaded.status >= 300) {
+    throw new Error(
+      `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
+    );
+  }
+  const importedFileId: string = uploadedJson.data.id;
+  ctx.importedFileIds.push(importedFileId);
+  return { ids, importedFileId };
+}
+
+/** Calls approve with the held-row decisions and polls until the import settles. */
+async function approveImport(
+  ctx: RunContext,
+  ids: { city: string; inventory: string },
+  importedFileId: string,
+  held: HeldRowDecisions,
+) {
+  const approved = await ctx.routes.approve.POST(
+    mockRequest({
+      importedFileId,
+      ...(held.included > 0
+        ? {
+            mappingOverrides: {
+              columnMappings: {},
+              rowDecisions: held.decisions,
+            },
+          }
+        : {}),
+    }),
+    { params: Promise.resolve(ids) },
+  );
+  if (approved.status >= 300) {
+    const detail = await approved.json().catch(() => null);
+    throw new Error(
+      `approve ${approved.status}${(detail?.error?.message ?? detail?.message) ? `: ${String(detail?.error?.message ?? detail.message).slice(0, 160)}` : ""}${held.unresolved ? ` (${held.unresolved} held row(s) cannot be included)` : ""}`,
+    );
+  }
+  return pollStatus(ctx, ids, importedFileId, ["completed", "failed"]);
+}
+
+type Stage = "setup" | "job" | "approve" | "readback";
 
 export async function runAttempt(
   ctx: RunContext,
@@ -413,50 +532,18 @@ export async function runAttempt(
   ctx.ocrRuns.set(entry.id, ocrRuns);
 
   let stage: Stage = "setup";
-  let ids = { city: "", inventory: "" };
   let ocrOk = false;
   let warnings: string[] = [];
   let extractedRows = 0;
   let heldRowsIncluded = 0;
   let failedPages: number[] = [];
   try {
-    const city = await ctx.db.models.City.create({
-      cityId: randomUUID(),
-      name: `Ingestion accuracy ${entry.id} r${attempt}`,
-      country: "Test",
-      locode: `XX_IA_${entry.id}_${attempt}_${randomUUID().slice(0, 6)}`.slice(
-        0,
-        32,
-      ),
+    const setup = await setUpImport(ctx, entry, attempt, {
+      buffer,
+      path: pdfPath,
     });
-    ctx.cityIds.push(city.cityId);
-    await city.addUser(TEST_USER_ID);
-    const inventory = await ctx.db.models.Inventory.create({
-      inventoryId: randomUUID(),
-      cityId: city.cityId,
-      inventoryName: `IA_${entry.id}_${attempt}`,
-      year: entry.year,
-      totalEmissions: 0,
-      inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-    });
-    ids = { city: city.cityId, inventory: inventory.inventoryId };
-    stage = "upload";
-    const form = new FormData();
-    form.append("file", new File([buffer], basename(pdfPath)));
-    const request = mockRequest();
-    request.formData = async () => form;
-    const uploaded = await ctx.routes.upload.POST(request, {
-      params: Promise.resolve(ids),
-    });
-    const uploadedJson = await uploaded.json();
-    if (uploaded.status >= 300) {
-      throw new Error(
-        `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
-      );
-    }
-    const importedFileId: string = uploadedJson.data.id;
-    ctx.importedFileIds.push(importedFileId);
+    const ids = setup.ids;
+    const importedFileId = setup.importedFileId;
 
     stage = "job";
     const jobStarted = Date.now();
@@ -558,30 +645,7 @@ export async function runAttempt(
     // measures what the model extracted, so every held row is included.
     const held = await includeHeldRows(ctx, importedFileId);
     heldRowsIncluded = held.included;
-    const approved = await ctx.routes.approve.POST(
-      mockRequest({
-        importedFileId,
-        ...(held.included > 0
-          ? {
-              mappingOverrides: {
-                columnMappings: {},
-                rowDecisions: held.decisions,
-              },
-            }
-          : {}),
-      }),
-      { params: Promise.resolve(ids) },
-    );
-    if (approved.status >= 300) {
-      const detail = await approved.json().catch(() => null);
-      throw new Error(
-        `approve ${approved.status}${(detail?.error?.message ?? detail?.message) ? `: ${String(detail?.error?.message ?? detail.message).slice(0, 160)}` : ""}${held.unresolved ? ` (${held.unresolved} held row(s) cannot be included)` : ""}`,
-      );
-    }
-    const done = await pollStatus(ctx, ids, importedFileId, [
-      "completed",
-      "failed",
-    ]);
+    const done = await approveImport(ctx, ids, importedFileId, held);
     stageMs.import = Date.now() - importStarted;
     if (done.importStatus !== "completed") {
       return finish({
@@ -617,7 +681,7 @@ export async function runAttempt(
         ? "approve_error"
         : stage === "readback"
           ? "readback_error"
-          : stage === "setup" || stage === "upload"
+          : stage === "setup"
             ? "setup_error"
             : stage === "job" &&
                 !ocrOk &&
@@ -630,6 +694,251 @@ export async function runAttempt(
       failedPages,
       extractedRows,
       heldRowsIncluded,
+      message: (error as Error).message,
+    });
+  }
+}
+
+type FileDb = {
+  models: Pick<RunContext["db"]["models"], "ImportedInventoryFile">;
+};
+
+/**
+ * Stores precomputed rows on an uploaded PDF the way the extraction worker
+ * does (PdfOcrService), so approve reads them as extracted rows. Returns false
+ * when the file is no longer pending extraction.
+ */
+export async function markExtracted(
+  db: FileDb,
+  importedFileId: string,
+  rows: ExtractedRow[],
+): Promise<boolean> {
+  const file = await db.models.ImportedInventoryFile.findByPk(importedFileId);
+  const [updated] = await db.models.ImportedInventoryFile.update(
+    {
+      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+      mappingConfiguration: { ...(file?.mappingConfiguration || {}), rows },
+      rowCount: rows.length,
+      errorLog: null,
+      lastUpdated: new Date(),
+    },
+    {
+      where: {
+        id: importedFileId,
+        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
+      },
+    },
+  );
+  return updated === 1;
+}
+
+/** Fails a pending file the way a failed extraction does. */
+async function markFailed(
+  db: FileDb,
+  importedFileId: string,
+  errorLog: string,
+) {
+  await db.models.ImportedInventoryFile.update(
+    {
+      importStatus: ImportStatusEnum.FAILED,
+      errorLog,
+      lastUpdated: new Date(),
+    },
+    {
+      where: {
+        id: importedFileId,
+        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
+      },
+    },
+  );
+}
+
+/** What the run entry records about the envelope; tallies stay empty when its rows were not mapped. */
+function pipelineAttempt(
+  envelope: ReadEnvelope,
+  mapped: MappedEnvelope,
+  lostRows: Record<string, number>,
+): PipelineAttempt {
+  const { data } = envelope;
+  const counts =
+    "failure" in mapped
+      ? {
+          executionStatus: envelope.executionStatus,
+          rowsInEnvelope: data.rows.length,
+          unknownRowRoles: {},
+          droppedRows: {},
+          rowRoles: {},
+          scopeBasis: {},
+          totalInclusion: {},
+          reported: {
+            totalT: data.reported_total_tco2e,
+            grossT: data.reported_gross_total_tco2e,
+            netT: data.reported_net_total_tco2e,
+            removalsT: data.reported_removals_tco2e,
+            totalBasis: data.total_basis,
+            totalKind: data.total_kind,
+          },
+        }
+      : mapped.attempt;
+  return {
+    ...counts,
+    costUsd: envelope.costUsd ?? null,
+    costSource: envelope.costUsd != null ? "envelope" : "none",
+    usage: envelope.usage,
+    lostRows,
+  };
+}
+
+/**
+ * One attempt with rows from a precomputed envelope: upload (no OCR, no
+ * extraction), store the rows, approve, read back and score.
+ */
+export async function runPrecomputedAttempt(
+  ctx: RunContext,
+  entry: CaseManifestEntry,
+  key: KeyFile,
+  attempt: number,
+  rowsDir: RowsDir,
+): Promise<RunEntry> {
+  const started = Date.now();
+  const beforeRun = snapshot();
+  const stageMs: RunEntry["stageMs"] = {
+    ocr: null,
+    extraction: null,
+    import: null,
+    total: 0,
+  };
+  const finish = (
+    partial: Partial<RunEntry> & { failureMode: FailureMode },
+  ): RunEntry => {
+    stageMs.total = Date.now() - started;
+    return {
+      run: attempt,
+      warnings: [],
+      ok: partial.failureMode === "scored",
+      ms: stageMs.total,
+      stageMs,
+      usage: since(beforeRun),
+      ...partial,
+    };
+  };
+
+  // A missing or invalid envelope fails the attempt before anything is uploaded.
+  let envelope: ReadEnvelope;
+  try {
+    envelope = rowsDir.get(entry.id, attempt);
+  } catch (error) {
+    return finish({
+      failureMode: "setup_error",
+      message: (error as Error).message,
+    });
+  }
+  const pdfPath = pdfPathFor(ctx.config, entry);
+  if (!pdfPath) {
+    return finish({
+      failureMode: "setup_error",
+      message: `PDF not found: ${entry.fileName}`,
+    });
+  }
+  const buffer = readFileSync(pdfPath);
+  const mapped = mapEnvelope(envelope);
+
+  let stage: "setup" | "approve" | "readback" = "setup";
+  let warnings: string[] = [];
+  let extractedRows = 0;
+  let heldRowsIncluded = 0;
+  let lostRows: Record<string, number> = {};
+  const base = () => ({
+    warnings,
+    extractedRows,
+    heldRowsIncluded,
+    pipeline: pipelineAttempt(envelope, mapped, lostRows),
+  });
+  try {
+    const { ids, importedFileId } = await setUpImport(ctx, entry, attempt, {
+      buffer,
+      path: pdfPath,
+    });
+    const uploaded =
+      await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
+    if (uploaded?.s3Key) ctx.uploadedKeys.push(uploaded.s3Key);
+
+    if ("failure" in mapped) {
+      await markFailed(ctx.db, importedFileId, mapped.message);
+      return finish({
+        ...base(),
+        failureMode: mapped.failure,
+        message: mapped.message,
+      });
+    }
+    if (mapped.rows.length === 0) {
+      const reason =
+        envelope.data.rows.length === 0
+          ? "envelope-without-rows"
+          : "no-importable-rows";
+      await markFailed(ctx.db, importedFileId, reason);
+      return finish({
+        ...base(),
+        failureMode: "zero_rows",
+        zeroRowsReason: reason,
+        message: reason,
+      });
+    }
+    if (!(await markExtracted(ctx.db, importedFileId, mapped.rows))) {
+      throw new Error("imported file is no longer pending_ai_extraction");
+    }
+    extractedRows = mapped.rows.length;
+    const state = await pollStatus(
+      ctx,
+      ids,
+      importedFileId,
+      [ImportStatusEnum.WAITING_FOR_APPROVAL, ImportStatusEnum.FAILED],
+      -1,
+    );
+    warnings = collectWarnings(state.json?.data);
+
+    stage = "approve";
+    const importStarted = Date.now();
+    const held = await includeHeldRows(ctx, importedFileId);
+    heldRowsIncluded = held.included;
+    lostRows = held.lostRows;
+    const done = await approveImport(ctx, ids, importedFileId, held);
+    stageMs.import = Date.now() - importStarted;
+    // Approve's own count of skipped rows; any it skipped beyond the issue
+    // codes above is counted as unexplained rather than hidden.
+    const skipped = Number(
+      done.json?.data?.validationResults_legacy?.importSummary?.skippedRows ??
+        0,
+    );
+    const explained = Object.values(lostRows).reduce((a, b) => a + b, 0);
+    if (skipped > explained) lostRows.unexplained = skipped - explained;
+    if (done.importStatus !== ImportStatusEnum.COMPLETED) {
+      const errorLog = done.json?.data?.errorLog as string | null | undefined;
+      return finish({
+        ...base(),
+        failureMode: "approve_error",
+        message: `import ended ${done.importStatus}${errorLog ? `: ${errorLog.slice(0, 160)}` : ""}`,
+      });
+    }
+
+    stage = "readback";
+    const back = await readBack(ctx, ids.inventory);
+    return finish({
+      ...base(),
+      failureMode: "scored",
+      stored: back.stored,
+      score: scoreFile(scoringKey(key, entry.totalOnly), back.stored),
+      total: back.total,
+    });
+  } catch (error) {
+    return finish({
+      ...base(),
+      failureMode:
+        stage === "approve"
+          ? "approve_error"
+          : stage === "readback"
+            ? "readback_error"
+            : "setup_error",
       message: (error as Error).message,
     });
   }

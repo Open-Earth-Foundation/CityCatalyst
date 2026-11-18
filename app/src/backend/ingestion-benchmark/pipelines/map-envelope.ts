@@ -17,7 +17,10 @@ import { toCanonical } from "@/util/notation-keys";
 export type MappedEnvelope =
   | {
       rows: ExtractedRow[];
-      attempt: Omit<PipelineAttempt, "costUsd" | "costSource" | "usage">;
+      attempt: Omit<
+        PipelineAttempt,
+        "costUsd" | "costSource" | "usage" | "lostRows"
+      >;
     }
   | { failure: "extraction_error"; message: string };
 

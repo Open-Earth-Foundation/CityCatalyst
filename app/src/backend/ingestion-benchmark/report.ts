@@ -93,6 +93,8 @@ export type PipelineAttempt = {
   costUsd: number | null;
   costSource: "envelope" | "tokens" | "none";
   usage: Record<string, number>;
+  /** Rows approve skipped, by import issue code (e.g. gpc-reference-unknown). */
+  lostRows: Record<string, number>;
 };
 
 export type RunEntry = {

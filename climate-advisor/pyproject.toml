@@ -66,7 +66,7 @@ dependencies = [
     "SQLAlchemy==2.0.45",
     "sse-starlette==3.0.3",
     "starlette==1.7.0",
-    "tenacity==9.1.4",
+    "tenacity==9.2.1",
     "tiktoken==0.12.0",
     "tqdm==4.67.1",
     "types-requests==2.33.0.20260518",

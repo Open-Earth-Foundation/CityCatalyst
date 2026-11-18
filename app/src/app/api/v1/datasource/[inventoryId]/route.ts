@@ -7,7 +7,7 @@
  *       - sources
  *     operationId: getDatasourceInventoryId
  *     summary: List applicable data sources and fetched data for an inventory.
- *     description: "Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). No explicit authentication is enforced here in code; adjust middleware if needed. Returns { data: successfulSources[], removedSources, failedSources }."
+ *     description: "Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). Requires read access to the inventory (members, or anyone for public inventories). Returns { data: successfulSources[], removedSources, failedSources }."
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -83,6 +83,10 @@
  *                         type: string
  *                         description: Error message describing why the source failed
  *                     description: Data sources that failed to fetch data
+ *       401:
+ *         description: Authentication required for a private inventory.
+ *       403:
+ *         description: No access to the inventory.
  *       404:
  *         description: Inventory not found.
  */
@@ -97,7 +101,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { PermissionService } from "@/backend/permissions";
 
-export const GET = apiHandler(async (_req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req, { params, session }) => {
+  await PermissionService.canAccessInventory(session, params.inventoryId);
+
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },
     include: [{ model: City, as: "city" }],

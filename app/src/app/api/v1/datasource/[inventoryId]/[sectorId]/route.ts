@@ -7,7 +7,7 @@
  *       - sources
  *     operationId: getDatasourceInventoryIdSectorId
  *     summary: List applicable data sources and data for a specific sector.
- *     description: "Retrieves the sector with its data sources, filters them by applicability to the inventory, and fetches data. No explicit authentication is enforced in this handler. Returns { data: successfulSources[], removedSources, failedSources }."
+ *     description: "Retrieves the sector with its data sources, filters them by applicability to the inventory, and fetches data. Requires read access to the inventory (members, or anyone for public inventories). Returns { data: successfulSources[], removedSources, failedSources }."
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -83,6 +83,10 @@
  *                         type: string
  *                         nullable: true
  *                         description: Error message if data fetch failed
+ *       401:
+ *         description: Authentication required for a private inventory.
+ *       403:
+ *         description: No access to the inventory.
  *       404:
  *         description: Inventory or sector not found.
  */
@@ -92,9 +96,12 @@ import { City } from "@/models/City";
 import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { PermissionService } from "@/backend/permissions";
 
-export const GET = apiHandler(async (_req: NextRequest, { params }) => {
+export const GET = apiHandler(async (_req, { params, session }) => {
+  await PermissionService.canAccessInventory(session, params.inventoryId);
+
   const inventory = await db.models.Inventory.findOne({
     where: { inventoryId: params.inventoryId },
     include: [{ model: City, as: "city" }],

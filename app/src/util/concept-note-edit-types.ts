@@ -102,7 +102,7 @@ export interface EditProposal {
   }>;
   clarification: string | null;
   error_code: string | null;
-  /** Why independent review rejected the final candidate, one entry per change. */
+  /** Why independent review rejected the final candidate, one entry per unsupported review decision. */
   review_objections?: Array<{ chapter_title: string; explanation: string }>;
   result: EditApplicationResult | null;
   created_at: string;

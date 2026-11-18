@@ -64,6 +64,37 @@ export type StageMs = {
   total: number;
 };
 
+/** Who produced the rows of a precomputed run. */
+export type PipelineInfo = {
+  id: string;
+  study: string | null;
+  stage: string | null;
+  mode: string | null;
+  version: string | null;
+};
+
+/** What a precomputed pipeline reported for one attempt. */
+export type PipelineAttempt = {
+  executionStatus: string;
+  rowsInEnvelope: number;
+  unknownRowRoles: Record<string, number>;
+  droppedRows: Record<string, number>;
+  rowRoles: Record<string, number>;
+  scopeBasis: Record<string, number>;
+  totalInclusion: Record<string, number>;
+  reported: {
+    totalT: number | null;
+    grossT: number | null;
+    netT: number | null;
+    removalsT: number | null;
+    totalBasis: string | null;
+    totalKind: string | null;
+  };
+  costUsd: number | null;
+  costSource: "envelope" | "tokens" | "none";
+  usage: Record<string, number>;
+};
+
 export type RunEntry = {
   run: number;
   failureMode: FailureMode;
@@ -83,6 +114,8 @@ export type RunEntry = {
   usage?: Tokens;
   /** Pages whose extraction failed twice and were skipped. */
   failedPages?: number[];
+  /** Set when the rows came from a precomputed pipeline. */
+  pipeline?: PipelineAttempt;
 };
 
 export type CaseResult = {
@@ -121,8 +154,11 @@ export type RunSummary = {
   heldOut?: string[];
   results: CaseResult[];
   selection: string[];
-  /** Attempts other than 3 per case. */
+  /** Attempts other than 3 per case, or a precomputed pipeline. */
   exploratory: boolean;
+  exploratoryReason?: "attempts" | "pipeline";
+  /** Set when the rows came from a precomputed pipeline. */
+  pipeline?: PipelineInfo;
   interrupted: boolean;
   promptHash: string | null;
   inputRepresentation: string | null;

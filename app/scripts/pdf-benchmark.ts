@@ -610,7 +610,10 @@ export async function main(argv: string[]): Promise<number> {
         ? { missing: missingCases, unfinished }
         : undefined;
     const baselineNotRecorded =
-      options.updateBaseline && options.runs === 3 && !interrupted
+      options.updateBaseline &&
+      options.runs === 3 &&
+      !options.pipeline &&
+      !interrupted
         ? runnerFailedCases(baselineEntries)
         : [];
     const summary: RunSummary = {
@@ -624,7 +627,12 @@ export async function main(argv: string[]): Promise<number> {
       heldOut: manifest.filter((e) => e.block === "held-out").map((e) => e.id),
       results,
       selection: selected.map((entry) => entry.id),
-      exploratory: options.runs !== 3,
+      exploratory: options.runs !== 3 || !!options.pipeline,
+      exploratoryReason: options.pipeline
+        ? "pipeline"
+        : options.runs !== 3
+          ? "attempts"
+          : undefined,
       interrupted,
       promptHash: promptHash(),
       inputRepresentation:
@@ -678,7 +686,7 @@ export async function main(argv: string[]): Promise<number> {
       renderIndexLine(summary, blocks, folderName),
     );
 
-    if (options.updateBaseline) {
+    if (options.updateBaseline && !options.pipeline) {
       const updated = updateBaseline({
         baseline,
         entries: baselineEntries,

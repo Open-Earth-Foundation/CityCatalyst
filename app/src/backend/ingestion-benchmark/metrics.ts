@@ -139,7 +139,8 @@ export function caseVerdict(
     attemptsPassed,
     casePasses:
       runs.length === REQUIRED_ATTEMPTS && attemptsPassed === REQUIRED_ATTEMPTS,
-    exploratory: runs.length !== REQUIRED_ATTEMPTS,
+    exploratory:
+      runs.length !== REQUIRED_ATTEMPTS || runs.some((run) => run.pipeline),
     recallFailedAsZero: hasRows ? mean(runs.map(recallOf)) : null,
     attemptRecalls: hasRows ? runs.map(recallOf) : null,
     attemptTotalFactors: runs.map((run) => {

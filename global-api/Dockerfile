@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir --upgrade -r /opt/app/requirements.txt
 
 COPY . /opt/app
 
-CMD ["python", "/opt/app/main.py"]
+CMD ["ddtrace-run", "python", "/opt/app/main.py"]

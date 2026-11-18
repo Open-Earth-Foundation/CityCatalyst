@@ -16,6 +16,8 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "uvicorn>=0.52.1",
     "langdetect>=1.0.9",
+    # Installed so the Datadog injector on the cluster skips its own ddtrace, whose bundled opentelemetry breaks subprocess children; start with ddtrace-run.
+    "ddtrace==4.17.0",
 ]
 
 [dependency-groups]

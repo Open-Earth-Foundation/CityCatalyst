@@ -1,1 +1,3 @@
 config.local.json
+# Envelope folders written by the pipeline generators (vendor answers, third-party text)
+generated/

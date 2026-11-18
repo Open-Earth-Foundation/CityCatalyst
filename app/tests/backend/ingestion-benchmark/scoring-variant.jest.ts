@@ -8,6 +8,7 @@ import {
   type StoredValue,
 } from "@/backend/ingestion-benchmark/score";
 import {
+  parentRefOverlap,
   scoreWithVariant,
   scoringReference,
 } from "@/backend/ingestion-benchmark/scoring-variant";
@@ -126,5 +127,27 @@ describe("scoreWithVariant", () => {
     expect(scoreWithVariant(key, stored).parentRefs).toEqual(
       scoreFile(key, stored),
     );
+  });
+});
+
+describe("parentRefOverlap", () => {
+  it("counts the parent-reference rows whose children approve stored, which the variant counts twice", () => {
+    const parents = [
+      value("I.3", null, 40),
+      value("II.1", null, 5),
+      value("III.2", "1", 7),
+    ];
+    const stored = [
+      value("I.3.1", "1", 30),
+      value("I.3.2", "1", 10),
+      value("III.2.1", "1", 7),
+      value("II.10.1", "1", 5),
+    ];
+    expect(parentRefOverlap(parents, stored)).toBe(2);
+  });
+
+  it("is 0 without stored children", () => {
+    expect(parentRefOverlap([value("I.3", null, 40)], [])).toBe(0);
+    expect(parentRefOverlap([], [value("I.3.1", "1", 40)])).toBe(0);
   });
 });

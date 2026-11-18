@@ -26,6 +26,7 @@ import { scoringKey } from "@/backend/ingestion-benchmark/rescore";
 import type { StoredValue } from "@/backend/ingestion-benchmark/score";
 import {
   isParentReference,
+  parentRefOverlap,
   scoreWithVariant,
 } from "@/backend/ingestion-benchmark/scoring-variant";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
@@ -312,6 +313,7 @@ export async function runPrecomputedAttempt(
       pipeline: {
         ...recorded.pipeline,
         parentRefRows,
+        parentRefOverlap: parentRefOverlap(parentRefRows, back.stored),
         variantScore: scores.parentRefs,
       },
       failureMode: "scored",

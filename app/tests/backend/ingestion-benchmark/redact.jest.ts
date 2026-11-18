@@ -260,6 +260,7 @@ describe("publishableSummary", () => {
         usage: {},
         lostRows: {},
         parentRefRows,
+        parentRefOverlap: 1,
         variantScore: scoreFile(key, [...stored, ...parentRefRows]),
       },
     });
@@ -269,6 +270,7 @@ describe("publishableSummary", () => {
     expect(leaks(JSON.stringify(out))).toEqual([]);
     const pipeline = out.results[0].runs[0].pipeline;
     expect(pipeline?.parentRefRows).toEqual(parentRefRows);
+    expect(pipeline?.parentRefOverlap).toBe(1);
     expect(pipeline?.variantScore).toMatchObject({ missingRowCount: 1 });
   });
 

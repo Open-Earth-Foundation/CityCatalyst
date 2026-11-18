@@ -35,6 +35,20 @@ export function scoringReference(ref: string): string {
   return isParentReference(ref) ? `${ref}.x` : ref;
 }
 
+/**
+ * Parent-reference rows whose children approve stored too (a stored gpc
+ * starting with `<ref>.`). The variant counts their amount twice: once in the
+ * stored children, once as `<ref>.x`.
+ */
+export function parentRefOverlap(
+  parentRefRows: StoredValue[],
+  stored: StoredValue[],
+): number {
+  return parentRefRows.filter((row) =>
+    stored.some((value) => value.gpc.startsWith(`${row.gpc}.`)),
+  ).length;
+}
+
 export function scoreWithVariant(
   key: KeyFile,
   stored: StoredValue[],

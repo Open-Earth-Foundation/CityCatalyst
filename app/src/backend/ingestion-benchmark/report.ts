@@ -147,6 +147,8 @@ export type PipelineAttempt = {
    * on scored attempts.
    */
   parentRefRows?: StoredValue[];
+  /** Of parentRefRows, those whose children approve stored too: the variant counts them twice. */
+  parentRefOverlap?: number;
   /** The "parent refs (Mirco)" variant score (scoring-variant.ts); the standard one is RunEntry.score. */
   variantScore?: FileScore | null;
 };
@@ -665,6 +667,10 @@ function variantOfCase(result: CaseResult, verdict: CaseVerdict | undefined) {
       (sum, run) => sum + (run.pipeline?.parentRefRows?.length ?? 0),
       0,
     ),
+    overlap: result.runs.reduce(
+      (sum, run) => sum + (run.pipeline?.parentRefOverlap ?? 0),
+      0,
+    ),
   };
 }
 
@@ -701,17 +707,17 @@ function renderScoreVariant(
     "",
     "## Score variant: parent references",
     "",
-    "The standard score is the headline. The parent refs (Mirco) variant also scores the rows the pipeline gave as an unsplit I, II or III subsector (such as I.3) that approve dropped, and writes every such reference as `<ref>.x` (Mirco's `scoringReference`): it can match a key row written as that subsector or as `<ref>.x`, never an exact child row with a scope such as I.3.1. Recall counts failed attempts as 0; precision is the mean over the scored attempts; parent-reference rows added are summed over the attempts.",
+    "The standard score is the headline. The parent refs (Mirco) variant also scores the rows the pipeline gave as an unsplit I, II or III subsector (such as I.3) that approve dropped, and writes every such reference as `<ref>.x` (Mirco's `scoringReference`): it can match a key row written as that subsector or as `<ref>.x`, never an exact child row with a scope such as I.3.1. When the pipeline also gave the children of a parent reference and approve stored them, the variant counts that amount twice (see the last column); the standard score is unaffected. Recall counts failed attempts as 0; precision is the mean over the scored attempts; parent-reference rows are summed over the attempts.",
     "",
     "| Block | Headline recall: standard | Headline recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) |",
     "| --- | --- | --- | --- | --- |",
     ...blockRows,
     "",
-    "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added | Of which children were stored too |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ...cases.map(
       ({ result, verdict, variant }) =>
-        `| ${cell(result.id)} | ${result.block} | ${pct(verdict?.recallFailedAsZero ?? null)} | ${pct(variant.recall)} | ${pct(verdict?.rowPrecision ?? null)} | ${pct(variant.precision)} | ${yesNo(verdict?.totalWithinToleranceAll ?? null)} | ${yesNo(variant.totalsWithin)} | ${variant.parentRefRows} |`,
+        `| ${cell(result.id)} | ${result.block} | ${pct(verdict?.recallFailedAsZero ?? null)} | ${pct(variant.recall)} | ${pct(verdict?.rowPrecision ?? null)} | ${pct(variant.precision)} | ${yesNo(verdict?.totalWithinToleranceAll ?? null)} | ${yesNo(variant.totalsWithin)} | ${variant.parentRefRows} | ${variant.overlap} |`,
     ),
   ];
 }

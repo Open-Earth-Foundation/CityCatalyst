@@ -61,6 +61,7 @@ const PIPELINE_ATTEMPT_FIELDS = [
   "usage",
   "lostRows",
   "parentRefRows",
+  "parentRefOverlap",
   "variantScore",
 ] as const;
 

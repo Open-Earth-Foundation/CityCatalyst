@@ -962,6 +962,7 @@ describe("parent-reference score variant", () => {
         parentRefRows: [
           { gpc: "I.3", scope: null, valueT: 40, omit: false, notation: null },
         ],
+        parentRefOverlap: 1,
         variantScore: score({
           rowRecall: 0.9,
           rowPrecision: 0.95,
@@ -988,10 +989,16 @@ describe("parent-reference score variant", () => {
   it("shows both scores per case, standard first", () => {
     const text = section(render(variantSummary()));
     expect(text).toContain(
-      "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added |",
+      "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added | Of which children were stored too |",
     );
     expect(text).toContain(
-      "| A | validated | 50% | 90% | 50% | 95% | no | yes | 1 |",
+      "| A | validated | 50% | 90% | 50% | 95% | no | yes | 1 | 1 |",
+    );
+  });
+
+  it("warns that the variant counts a parent twice when its children were stored too", () => {
+    expect(section(render(variantSummary()))).toContain(
+      "When the pipeline also gave the children of a parent reference and approve stored them, the variant counts that amount twice (see the last column); the standard score is unaffected.",
     );
   });
 
@@ -1007,7 +1014,7 @@ describe("parent-reference score variant", () => {
     const text = section(render(pipelineSummary()));
     expect(text).toContain("| validated | 68% | n/a | 50% | n/a |");
     expect(text).toContain(
-      "| A | validated | 50% | n/a | 50% | n/a | no | n/a | 0 |",
+      "| A | validated | 50% | n/a | 50% | n/a | no | n/a | 0 | 0 |",
     );
   });
 

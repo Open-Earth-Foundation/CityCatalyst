@@ -28,6 +28,24 @@ Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (def
 
 `score-run.ts` refuses a failed run (`bundle` null) and a gold file whose `PDF pages` differs from the run's page count. It warns when the Header's PDF file name differs from the run's file (case and an `_escaneado` suffix are ignored). Only the 12 v0 fields with at least one value are judged; a field whose judge call fails twice is listed in `report.md` under Run and shown as `field not judged`.
 
+## OCR once, compare extractors
+
+`ocr-pdf.ts` runs Mistral OCR on a PDF once (paid) and saves it, so the agentic extractor ([`../crva-agent/README.md`](../crva-agent/README.md)) can reuse it:
+
+```
+npx tsx scripts/crva-eval/ocr-pdf.ts --pdf <path-to-pdf> --city buenos-aires [--max-part-mib 15] [--out <dir>]
+```
+
+It writes `reports/crva-eval/<city>/ocr/` (or `--out`): the page texts and figures. Agent runs are saved in the run-file shape, so `score-run.ts` scores them like adapter runs.
+
+`compare.ts` puts run directories side by side (v0, agent A, agent B) in one markdown table:
+
+```
+npx tsx scripts/crva-eval/compare.ts --label v0 --dir <run dir> --label A --dir <run dir> --label B --dir <run dir> [--out <file>]
+```
+
+It reads `run-<n>.json` and `score-run-<n>/scored.json` of each directory. A run without a score is skipped and counted as failed in the `Runs` column. One row per label: runs; share correct in the v0 fields under the accepted rule (min-max over runs); v0 coverage and precision under the accepted rule (mean over runs; same functions and v0-field filter as `report.md`, so a single run matches it); values kept; dropped share; minutes; prompt and completion tokens; model turns (agent runs only, `—` for v0). Failed runs are left out of the means.
+
 ## Output
 
 `app/reports/crva-eval/<city>/<timestamp>/` (under `app/` whatever the working directory):

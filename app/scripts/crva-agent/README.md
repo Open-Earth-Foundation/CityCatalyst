@@ -13,6 +13,24 @@ docker run --rm crva-agent-sandbox:1 tesseract --list-langs   # expect eng and s
 
 The image is `python:3.12-slim` plus tesseract (eng, spa), poppler-utils and pymupdf 1.24. The SDK Docker client needs only `/bin/sh`, GNU tar and coreutils (`realpath`) in the image; the base image has them, so nothing extra is installed. No `bash`, user or sudo is required.
 
+## Running
+
+Needs Docker Desktop running, the image `crva-agent-sandbox:1` built (above), `npm install` done in this directory, `OPENAI_API_KEY` in `app/.env`, and `LLM_BASE_URL=""`. Paid: OpenAI calls for each run. OCR the PDF once first (paid, Mistral; see [`../crva-eval/README.md`](../crva-eval/README.md)):
+
+```bash
+cd app
+npx tsx scripts/crva-eval/ocr-pdf.ts --pdf <path-to-pdf> --city buenos-aires
+LLM_BASE_URL="" npx tsx scripts/crva-agent/run-agent.ts --variant A --city buenos-aires --ocr reports/crva-eval/buenos-aires/ocr [--pdf <path-to-pdf>] [--runs 1] [--max-turns 150] [--timeout-min 30]
+```
+
+- `--variant A|B`: the two instruction variants. `--pdf` is needed for B (it gives the agent the PDF).
+- A run that hits `--max-turns` or `--timeout-min` is `failed` with the cap in `error` and has no bundle.
+- Output: `reports/crva-eval/<city>/agent-<a|b>/<timestamp>/run-<n>.json` and `runs.md`. Score with `score-run.ts` as for adapter runs, then compare with `compare.ts`:
+
+```bash
+npx tsx scripts/crva-eval/compare.ts --label v0 --dir <v0 run dir> --label A --dir <agent-a run dir> --label B --dir <agent-b run dir>
+```
+
 ## SDK notes
 
 Verified against the installed types: `@openai/agents@0.22.0` (`@openai/agents-core@0.22.0`, `openai@7.59.0`, deduped, own lockfile).

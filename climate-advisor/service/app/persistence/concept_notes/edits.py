@@ -111,20 +111,24 @@ class ConceptNoteEditRepository:
                 )
                 .returning(ConceptNoteEditProposal.proposal_id)
             )
-            row = await session.scalar(
-                select(ConceptNoteEditProposal).where(
-                    ConceptNoteEditProposal.run_id == run_id,
-                    ConceptNoteEditProposal.actor_user_id == user_id,
-                    ConceptNoteEditProposal.idempotency_key == request.idempotency_key,
-                )
-            )
+            row = await stored_proposal_request(session, run_id, user_id, request)
             assert row is not None
-            if row.request_fingerprint != fingerprint:
-                raise EditOperationError(
-                    "idempotency_key_reused",
-                    "This request key was already used for different edit instructions.",
-                )
             return to_response(row), proposal_id is not None
+
+    async def replay(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        request: EditProposalRequest,
+    ) -> EditProposalResponse | None:
+        """Return the proposal stored for this request key, or None for a new key.
+
+        Raises ``idempotency_key_reused`` when the key belongs to other instructions.
+        """
+        async with self._sessions() as session:
+            row = await stored_proposal_request(session, run_id, user_id, request)
+            return to_response(row) if row is not None else None
 
     async def finish(
         self,
@@ -752,6 +756,25 @@ def replace_anchors(body: str, changes: Sequence[PlannedTextChange]) -> str:
             "The proposed chapter is empty or exceeds its content limit.",
         )
     return result
+
+
+async def stored_proposal_request(
+    session: AsyncSession, run_id: UUID, user_id: str, request: EditProposalRequest
+) -> ConceptNoteEditProposal | None:
+    """Load the proposal stored under a request key, rejecting reuse for other instructions."""
+    row = await session.scalar(
+        select(ConceptNoteEditProposal).where(
+            ConceptNoteEditProposal.run_id == run_id,
+            ConceptNoteEditProposal.actor_user_id == user_id,
+            ConceptNoteEditProposal.idempotency_key == request.idempotency_key,
+        )
+    )
+    if row is not None and row.request_fingerprint != request_fingerprint(request):
+        raise EditOperationError(
+            "idempotency_key_reused",
+            "This request key was already used for different edit instructions.",
+        )
+    return row
 
 
 async def edit_planning_in_progress(

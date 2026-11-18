@@ -173,9 +173,15 @@ class ConceptNoteEditService:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
         async with self.locked_context(run) as (current, run_context):
-            # A new source still rewriting chapters would make this proposal stale.
+            # A new source still rewriting chapters would make a new proposal stale;
+            # a replayed request still returns the proposal it already stored.
             job = (current.context_summary or {}).get(SOURCE_REVALIDATION_KEY) or {}
             if job.get("status") in {"pending", "running"}:
+                stored = await self.repository.replay(
+                    run_id=run.run_id, user_id=run.user_id, request=request
+                )
+                if stored is not None:
+                    return stored
                 raise EditOperationError(
                     "sources_updating",
                     "New sources are still updating the draft. Ask again in a moment.",

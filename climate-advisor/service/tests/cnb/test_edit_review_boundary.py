@@ -22,7 +22,7 @@ from app.persistence.concept_notes.edits import (
     edit_planning_in_progress,
 )
 from app.routes import concept_note_edits as edit_routes
-from sqlalchemy import update
+from sqlalchemy import select, update
 from tests.test_concept_note_lifecycle import _workspace_repository
 from app.services.cnb.edits import ConceptNoteEditService
 from app.tools import concept_note_edit_tools as edit_tools
@@ -647,7 +647,9 @@ def test_a_large_rewrite_trims_review_quotations_instead_of_failing():
 @pytest.mark.asyncio
 @pytest.mark.parametrize("status", ["pending", "running"])
 async def test_no_edit_is_planned_while_a_new_source_rewrites_chapters(status):
-    repository = SimpleNamespace(start=AsyncMock())
+    repository = SimpleNamespace(
+        start=AsyncMock(), replay=AsyncMock(return_value=None)
+    )
     service = ConceptNoteEditService(
         repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
     )
@@ -669,6 +671,51 @@ async def test_no_edit_is_planned_while_a_new_source_rewrites_chapters(status):
 
     assert error.value.code == "sources_updating"
     repository.start.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_a_replayed_request_returns_its_proposal_while_sources_update():
+    async with _workspace_repository() as (_, sessions):
+        repository = ConceptNoteEditRepository(sessions)
+        run = SimpleNamespace(run_id=uuid4(), user_id="owner")
+        request = EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+        stored, _ = await repository.start(
+            run_id=run.run_id, user_id="owner", request=request
+        )
+        service = ConceptNoteEditService(
+            repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
+        )
+
+        @asynccontextmanager
+        async def locked(run):
+            yield SimpleNamespace(
+                context_summary={"source_revalidation": {"status": "pending"}}
+            ), {}
+
+        service.locked_context = locked
+
+        # A replay resolves to the stored proposal instead of the source guard.
+        replayed = await service._propose(
+            run, request, token="token", recent_messages=None
+        )
+        assert replayed.proposal_id == stored.proposal_id
+
+        # A new request still waits for the sources and stores nothing.
+        with pytest.raises(EditOperationError) as error:
+            await service._propose(
+                run,
+                EditProposalRequest(
+                    instruction="Fill the gaps.", idempotency_key=uuid4()
+                ),
+                token="token",
+                recent_messages=None,
+            )
+        assert error.value.code == "sources_updating"
+        async with sessions() as session:
+            stored_ids = (
+                await session.scalars(select(ConceptNoteEditProposal.proposal_id))
+            ).all()
+        assert stored_ids == [stored.proposal_id]
 
 
 @pytest.mark.asyncio

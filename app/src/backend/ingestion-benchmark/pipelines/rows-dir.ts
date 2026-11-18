@@ -70,7 +70,7 @@ type ManifestEntry = {
   sha256: string;
 };
 
-const SCHEMA_PATH = path.join(
+const DEFAULT_SCHEMA_PATH = path.join(
   process.cwd(),
   "benchmarks/pdf/schemas/ghgi-envelope.schema.json",
 );
@@ -84,14 +84,11 @@ type Enums = {
   total_kind: string[];
 };
 
-let enums: Enums | undefined;
-
 /** Enums come from the copied schema at runtime so they cannot drift. */
-function loadEnums(): Enums {
-  if (enums) return enums;
-  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+function loadEnums(schemaPath: string): Enums {
+  const schema = JSON.parse(fs.readFileSync(schemaPath, "utf8"));
   const rowProps = schema.properties.rows.items.properties;
-  enums = {
+  return {
     scope: rowProps.scope.enum,
     row_role: rowProps.row_role.enum,
     total_inclusion: rowProps.total_inclusion.enum,
@@ -99,7 +96,6 @@ function loadEnums(): Enums {
     gpc_ref: rowProps.gpc_ref.enum,
     total_kind: schema.properties.total_kind.enum,
   };
-  return enums;
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> =>
@@ -109,8 +105,7 @@ const isNumOrNull = (v: unknown) => v === null || isNum(v);
 const isStrOrNull = (v: unknown) => v === null || typeof v === "string";
 
 /** Returns the name of the first invalid field, or null when valid. */
-function firstInvalidField(data: unknown): string | null {
-  const e = loadEnums();
+function firstInvalidField(data: unknown, e: Enums): string | null {
   if (!isObj(data)) return "data";
   const d = data;
   if (!(d.reporting_year === null || Number.isInteger(d.reporting_year)))
@@ -145,15 +140,69 @@ function firstInvalidField(data: unknown): string | null {
   return null;
 }
 
+const DATA_KEYS = [
+  "reporting_year",
+  "reported_total_tco2e",
+  "total_basis",
+  "reported_gross_total_tco2e",
+  "reported_net_total_tco2e",
+  "reported_removals_tco2e",
+  "total_kind",
+  "reconciliation_tolerance_tco2e",
+] as const;
+const ROW_KEYS = [
+  "source_label",
+  "gpc_ref",
+  "scope",
+  "emissions_tco2e",
+  "notation_key",
+  "row_role",
+  "total_inclusion",
+  "scope_basis",
+] as const;
+
+/** Copies only the known keys so unknown ones never flow on. */
+function pickKnown(
+  src: Record<string, unknown>,
+  keys: readonly string[],
+): Record<string, unknown> {
+  return Object.fromEntries(keys.map((k) => [k, src[k]]));
+}
+
+/** Numeric usage counts, plus numeric children of nested objects as parent.child. */
+function flattenUsage(usage: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!isObj(usage)) return out;
+  for (const [k, v] of Object.entries(usage)) {
+    if (isNum(v)) out[k] = v as number;
+    else if (isObj(v))
+      for (const [ck, cv] of Object.entries(v))
+        if (isNum(cv)) out[`${k}.${ck}`] = cv as number;
+  }
+  return out;
+}
+
 const strOrNull = (v: unknown) => (typeof v === "string" ? v : null);
 
-export function readRowsDir(dir: string): RowsDir {
-  const manifest = JSON.parse(
-    fs.readFileSync(path.join(dir, "manifest.json"), "utf8"),
-  );
-  const entries: ManifestEntry[] = Array.isArray(manifest.entries)
-    ? manifest.entries
-    : [];
+export function readRowsDir(
+  dir: string,
+  options: { schemaPath?: string } = {},
+): RowsDir {
+  const e = loadEnums(options.schemaPath ?? DEFAULT_SCHEMA_PATH);
+  // A fixed message: manifest text must never be echoed.
+  const invalidManifest = () => new Error(`invalid manifest.json in ${dir}`);
+  let manifest: Record<string, unknown>;
+  try {
+    const parsed = JSON.parse(
+      fs.readFileSync(path.join(dir, "manifest.json"), "utf8"),
+    );
+    if (!isObj(parsed) || !Array.isArray(parsed.entries))
+      throw invalidManifest();
+    manifest = parsed;
+  } catch {
+    throw invalidManifest();
+  }
+  const entries = manifest.entries as ManifestEntry[];
   const study = strOrNull(manifest.study);
   const stage = strOrNull(manifest.stage);
 
@@ -161,13 +210,16 @@ export function readRowsDir(dir: string): RowsDir {
     get(caseId, attempt) {
       const where = `case ${caseId} attempt ${attempt}`;
       const matches = entries.filter(
-        (e) => e.case_id === caseId && e.attempt === attempt,
+        (m) => m?.case_id === caseId && m?.attempt === attempt,
       );
       if (matches.length === 0) throw new RowsDirError("missing_entry", where);
       if (matches.length > 1) throw new RowsDirError("duplicate_entry", where);
       const entry = matches[0];
       const file = path.resolve(dir, entry.file);
-      if (!fs.existsSync(file))
+      const rel = path.relative(path.resolve(dir), file);
+      const inside =
+        rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel);
+      if (!inside || !fs.existsSync(file))
         throw new RowsDirError("missing_file", `${where}, file ${entry.file}`);
       const bytes = fs.readFileSync(file);
       const actual = createHash("sha256").update(bytes).digest("hex");
@@ -188,7 +240,7 @@ export function readRowsDir(dir: string): RowsDir {
 
       // Pick only the allow-listed fields; the rest is never touched again.
       const data = isObj(parsed.result) ? parsed.result.data : undefined;
-      const bad = firstInvalidField(data);
+      const bad = firstInvalidField(data, e);
       if (bad)
         throw new RowsDirError(
           "invalid_envelope",
@@ -199,14 +251,15 @@ export function readRowsDir(dir: string): RowsDir {
           "invalid_envelope",
           `${where}, file ${entry.file}, invalid field execution_status`,
         );
-      const usage: Record<string, number> = {};
-      if (isObj(parsed.usage))
-        for (const [k, v] of Object.entries(parsed.usage))
-          if (isNum(v)) usage[k] = v as number;
+      const raw = data as Record<string, unknown>;
+      const picked = pickKnown(raw, DATA_KEYS);
+      picked.rows = (raw.rows as Record<string, unknown>[]).map((r) =>
+        pickKnown(r, ROW_KEYS),
+      );
 
       return {
-        data: data as EnvelopeData,
-        usage,
+        data: picked as EnvelopeData,
+        usage: flattenUsage(parsed.usage),
         executionStatus: parsed.execution_status,
         costUsd: isNum(parsed.cost_usd) ? (parsed.cost_usd as number) : null,
         info: {

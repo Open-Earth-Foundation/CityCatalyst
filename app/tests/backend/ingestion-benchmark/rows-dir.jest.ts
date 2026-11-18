@@ -170,4 +170,106 @@ describe("readRowsDir", () => {
     expect(got.info.mode).toBe("fast");
     expect(got.info.version).toBe("v2");
   });
+
+  it("rejects an invalid-JSON envelope", () => {
+    writeFixture(envelope());
+    const text = "{not json";
+    fs.writeFileSync(path.join(dir, "results/a.json"), text);
+    const m = JSON.parse(
+      fs.readFileSync(path.join(dir, "manifest.json"), "utf8"),
+    );
+    m.entries[0].sha256 = sha(text);
+    fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify(m));
+    expect(codeOf(() => readRowsDir(dir).get("C-015", 1))).toBe(
+      "invalid_envelope",
+    );
+  });
+
+  it("rejects missing result.data, bad execution_status, missing tolerance", () => {
+    const cases: Record<string, unknown>[] = [];
+    cases.push({ ...envelope(), result: {} });
+    cases.push({ ...envelope(), execution_status: 3 });
+    const noTol = envelope();
+    delete (noTol.result.data as Record<string, unknown>)
+      .reconciliation_tolerance_tco2e;
+    cases.push(noTol);
+    for (const env of cases) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      dir = fs.mkdtempSync(path.join(os.tmpdir(), "rows-dir-"));
+      writeFixture(env);
+      expect(codeOf(() => readRowsDir(dir).get("C-015", 1))).toBe(
+        "invalid_envelope",
+      );
+    }
+  });
+
+  it("fails with a fixed message on a bad manifest", () => {
+    const expected = `invalid manifest.json in ${dir}`;
+    fs.writeFileSync(path.join(dir, "manifest.json"), "SECRETTEXT {");
+    expect(() => readRowsDir(dir)).toThrow(expected);
+    fs.writeFileSync(
+      path.join(dir, "manifest.json"),
+      JSON.stringify({ entries: "SECRETTEXT" }),
+    );
+    try {
+      readRowsDir(dir);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect((e as Error).message).toBe(expected);
+    }
+  });
+
+  it("fails at open time when the schema is missing", () => {
+    writeFixture(envelope());
+    expect(() =>
+      readRowsDir(dir, { schemaPath: path.join(dir, "nope.json") }),
+    ).toThrow();
+  });
+
+  it("drops unknown keys from data and rows", () => {
+    const env = envelope([row({ extra_row: "x" })]);
+    (env.result.data as Record<string, unknown>).extra_data = "y";
+    writeFixture(env);
+    const got = readRowsDir(dir).get("C-015", 1);
+    expect(JSON.stringify(got)).not.toContain("extra_");
+    expect(got.data.rows[0].source_label).toBe("Residential fuel");
+  });
+
+  it("flattens nested numeric usage one level deep", () => {
+    const env = {
+      ...envelope(),
+      usage: {
+        input_tokens: 10,
+        input_tokens_details: { cached_tokens: 4, label: "x", deep: { a: 1 } },
+      },
+    };
+    writeFixture(env);
+    expect(readRowsDir(dir).get("C-015", 1).usage).toEqual({
+      input_tokens: 10,
+      "input_tokens_details.cached_tokens": 4,
+    });
+  });
+
+  it("treats an entry file outside the folder as missing_file", () => {
+    const outside = path.join(os.tmpdir(), `outside-${process.pid}.json`);
+    const text = JSON.stringify(envelope());
+    fs.writeFileSync(outside, text);
+    try {
+      writeFixture(envelope(), {
+        entries: [
+          {
+            case_id: "C-015",
+            attempt: 1,
+            file: path.relative(dir, outside),
+            sha256: sha(text),
+          },
+        ],
+      });
+      expect(codeOf(() => readRowsDir(dir).get("C-015", 1))).toBe(
+        "missing_file",
+      );
+    } finally {
+      fs.rmSync(outside, { force: true });
+    }
+  });
 });

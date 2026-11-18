@@ -65,9 +65,12 @@ export async function applyReviewedRows(
       review.decision = "skip";
       continue;
     }
-    // A value or unit extraction could not confirm is kept or skipped, never moved.
+    // A value, unit or year extraction could not confirm is kept or skipped,
+    // never moved.
     const allowed =
-      issue === "value-unconfirmed" || issue === "unit-unconfirmed"
+      issue === "value-unconfirmed" ||
+      issue === "unit-unconfirmed" ||
+      issue === "year-unconfirmed"
         ? ["keep"]
         : ["keep", "reclassify", "correct-scope"];
     if (!allowed.includes(String(decision.reviewDecision))) continue;

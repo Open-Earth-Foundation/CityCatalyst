@@ -354,6 +354,8 @@
   "import-row-issue-outside-inventory-type": "Nur ein Teil von GPC BASIC+. Es wird importiert, zählt aber nicht zur Vollendung von GPC BASIC.",
   "import-row-issue-unit-unconfirmed": "Einheit auf Seite {{page}} nicht bestätigt. Beim Behalten wird der Wert in Tonnen importiert; verwendet die Tabelle eine andere Einheit wie kt oder kg, weicht der Wert um den Faktor 1.000 ab.",
   "import-row-issue-unit-unconfirmed-no-page": "Einheit nicht bestätigt. Beim Behalten wird der Wert in Tonnen importiert; verwendet die Tabelle eine andere Einheit wie kt oder kg, weicht der Wert um den Faktor 1.000 ab.",
+  "import-row-issue-year-unconfirmed": "Seite {{page}}: Die Tabellenüberschrift nennt ein anderes Jahr. Prüfen Sie, ob dieser Wert für das Inventarjahr gilt, bevor Sie ihn behalten.",
+  "import-row-issue-year-unconfirmed-no-page": "Die Tabellenüberschrift nennt ein anderes Jahr. Prüfen Sie, ob dieser Wert für das Inventarjahr gilt, bevor Sie ihn behalten.",
   "import-row-issue-value-unconfirmed": "Wert auf Seite {{page}} nicht wie gedruckt gefunden. Prüfen Sie ihn anhand des Dokuments, bevor Sie ihn behalten.",
   "import-row-issue-value-unconfirmed-no-page": "Wert nicht wie gedruckt gefunden. Prüfen Sie ihn anhand des Dokuments, bevor Sie ihn behalten.",
   "import-rows-skipped-unknown-notation_one": "{{count}} Zeile mit unbekanntem Notationsschlüssel.",

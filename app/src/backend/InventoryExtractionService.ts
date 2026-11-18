@@ -197,6 +197,12 @@ export type ExtractedRow = {
    */
   unitCheck?: "missing" | null;
   /**
+   * `caption_other`: the model labeled the row with the target year, but the
+   * page's table captions name only other years. The row keeps its year and
+   * goes to review.
+   */
+  yearCheck?: "caption_other" | null;
+  /**
    * Structured path: the value as printed in its cell, as the model copied it
    * (normalized by `readCell` when the read succeeded).
    */
@@ -471,7 +477,9 @@ function selectPages(
     sorted
       .filter((p) =>
         p.result.rows.some(
-          (row) => targetYear == null || row.year === targetYear,
+          (row) =>
+            (targetYear == null || row.year === targetYear) &&
+            row.yearCheck !== "caption_other",
         ),
       )
       .map((p) => p.page),
@@ -553,7 +561,11 @@ function selectPages(
     ) {
       // A run must be consecutive pages of the document.
       if (end > start && sorted[end].page !== sorted[end - 1].page + 1) break;
-      const { rows } = sorted[end].result;
+      // A row held because its table's caption names another year
+      // (`yearCheck`) does not help a run reach a total of the target year.
+      const rows = sorted[end].result.rows.filter(
+        (r) => r.yearCheck !== "caption_other",
+      );
       // Notation keys of the same GPC table carry no value but belong to the run.
       const notationOnly =
         rows.length > 0 &&
@@ -666,9 +678,14 @@ function selectPages(
   }
 
   if (best) {
-    // Pages without rows (another year's table, dropped) lead no run.
+    // A run reached a total without the rows held for another caption year
+    // (`yearCheck`): they are another year's table, so they are dropped.
+    const heldYear = (row: ExtractedRow) => row.yearCheck === "caption_other";
+    const countable = (p: PageResult) =>
+      p.result.rows.filter((row) => !heldYear(row)).length;
+    // Pages without such rows (another year's table) lead no run.
     let first = best.start;
-    while (first < best.end && sorted[first].result.rows.length === 0) first++;
+    while (first < best.end && countable(sorted[first]) === 0) first++;
     const chosen = sorted.slice(first, best.end + 1);
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
@@ -677,6 +694,10 @@ function selectPages(
     const keys = new Set<string>();
     const rows: ExtractedRow[] = [];
     for (const row of chosen.flatMap((p) => p.result.rows)) {
+      if (heldYear(row)) {
+        droppedRows.caption_year = (droppedRows.caption_year ?? 0) + 1;
+        continue;
+      }
       const key = repeatKey(row);
       if (keys.has(key)) {
         droppedRows.duplicate = (droppedRows.duplicate ?? 0) + 1;
@@ -1063,6 +1084,8 @@ async function extractRowsFromDocument(
   // Unit evidence of a table continued from previous pages, read from the page
   // text of every page before the concurrent page calls.
   const inheritedScales = inheritedPageScales(allPages);
+  // The document's number style, for pages without evidence of their own.
+  const documentStyle = detectNumberStyle(documentContent);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -1082,6 +1105,7 @@ async function extractRowsFromDocument(
               yearInstruction,
               false,
               schemaState,
+              pageNumberStyle(page.text, documentStyle),
             ),
           ).map((row) => ({ ...row, page: page.page })),
           year,
@@ -1089,6 +1113,7 @@ async function extractRowsFromDocument(
             deferYearAssumption: true,
             source: { text: page.text, kind: "page" },
             inheritedScales: inheritedScales.get(page.page) ?? [],
+            fallbackNumberStyle: documentStyle,
           },
         ),
       onProgress
@@ -1536,6 +1561,7 @@ export async function extractInventoryFromStructured(
               yearInstruction,
               false,
               schemaState,
+              pageNumberStyle(item.text, style),
             ),
           ).map((row) => ({ ...row, page })),
           year,
@@ -1544,6 +1570,7 @@ export async function extractInventoryFromStructured(
             source: { text: item.text, kind: "page" },
             inheritedScales: inheritedScales.get(page) ?? [],
             currentYear,
+            fallbackNumberStyle: style,
           },
         );
       }
@@ -1568,6 +1595,7 @@ export async function extractInventoryFromStructured(
         currentYear,
         totalsPageText: markdownByPage.get(page),
         inheritedScales: inheritedScales.get(page) ?? [],
+        fallbackNumberStyle: style,
       });
     },
     onProgress
@@ -2522,6 +2550,12 @@ export type FinalizeOptions = {
   /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
   currentYear?: number;
   /**
+   * The document's number style (`detectNumberStyle` of the whole text), used
+   * for a page whose own style is `unknown`: a page whose numbers all have one
+   * group (`245.300`) is otherwise read with a decimal dot.
+   */
+  fallbackNumberStyle?: NumberStyle;
+  /**
    * Scales a page inherits from a table continued from previous pages
    * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
    * in-text checks. A non-empty list also makes the page a kt/Mt/kg page for
@@ -2567,6 +2601,19 @@ export function finalizeExtractedRows(
   return finalizeRows(inputRows, targetYear, options).result;
 }
 
+/**
+ * The number style of a page: its own (`detectNumberStyle`), or `fallback`
+ * (the document's) when the page has no evidence. A Spanish small-city page
+ * printing only `245.300` is otherwise read with a decimal dot.
+ */
+export function pageNumberStyle(
+  text: string,
+  fallback?: NumberStyle,
+): NumberStyle {
+  const style = detectNumberStyle(text);
+  return style === "unknown" ? (fallback ?? style) : style;
+}
+
 /** A page's own scale evidence plus the scales it inherits (`inheritedScales`). */
 function pageScales(text: string, options?: FinalizeOptions): Scale[] {
   const scales = pageScaleEvidence(text);
@@ -2591,10 +2638,17 @@ function finalizeRows(
   let evidenceDropped = false;
   // Rows a caption year moved to another year, counted as caption_year drops.
   const captionRelabeled = new Set<ExtractedRow>();
+  // A page with no number-style evidence of its own (every number has one
+  // group, `245.300`) is read with the document's style.
+  const styleOf = (text: string): NumberStyle =>
+    pageNumberStyle(text, options?.fallbackNumberStyle);
   // Year evidence from the page's table captions: when they name only other
-  // years, rows the model labeled with the target year (or none) belong to that
-  // table's year. The year filter then drops them, and their totals stop being
-  // targets. Runs before hidden row totals are found so those inherit the year.
+  // years, rows without a year belong to that table's year; the year filter
+  // then drops them. A row the model labeled with the target year keeps it and
+  // is held for review (`yearCheck`), since the caption wording ("Variación
+  // respecto a 2015", a report-year heading) may not be the table's year.
+  // Totals of either kind stop being targets. Runs before hidden row totals are
+  // found so those inherit the year.
   if (options?.source?.kind === "page" && targetYear != null) {
     const evidence = yearEvidence(
       options.source.text,
@@ -2608,7 +2662,7 @@ function finalizeRows(
       const leadScales = pageScales(options.source.text, options);
       const leadNumbers = numbersInText(
         evidence.leadText,
-        detectNumberStyle(options.source.text),
+        styleOf(options.source.text),
       );
       rows = rows.map((row) => {
         if (row.year != null && row.year !== targetYear) return row;
@@ -2620,6 +2674,9 @@ function finalizeRows(
           return row;
         }
         evidenceDropped = true;
+        if (row.year === targetYear) {
+          return { ...row, yearCheck: "caption_other" as const };
+        }
         const moved = { ...row, year: relabel };
         captionRelabeled.add(moved);
         return moved;
@@ -2641,9 +2698,7 @@ function finalizeRows(
       ? { text: options.totalsPageText, kind: "page" }
       : undefined);
   // Every number printed in the source, read once for all the in-text checks.
-  const sourceStyle = totalsSource
-    ? detectNumberStyle(totalsSource.text)
-    : "unknown";
+  const sourceStyle = totalsSource ? styleOf(totalsSource.text) : "unknown";
   const sourceNumbers = totalsSource
     ? numbersInText(totalsSource.text, sourceStyle)
     : [];
@@ -2777,6 +2832,11 @@ function finalizeRows(
         drop("unsupported_unit");
         continue;
       }
+      // A total of a table whose caption names another year confirms nothing.
+      if (row.yearCheck === "caption_other") {
+        drop("caption_year");
+        continue;
+      }
       drop("subtotal_or_total");
       if (
         scaled.totalCO2e != null &&
@@ -2851,7 +2911,9 @@ function finalizeRows(
     drop("subtotal_or_total");
     // Like a printed total without a unit, a sum of unit-less rows on such a
     // page confirms nothing: it is no target.
-    if (row.unitCheck === "missing") continue;
+    if (row.unitCheck === "missing" || row.yearCheck === "caption_other") {
+      continue;
+    }
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
       const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
       const value = row.totalCO2e as number;

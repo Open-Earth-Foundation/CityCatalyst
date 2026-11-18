@@ -189,7 +189,11 @@ describe("ImportReviewRows", () => {
     expect(html).toContain("import-review-change-scope");
   });
 
-  it.each(["value-unconfirmed", "unit-unconfirmed"] as const)(
+  it.each([
+    "value-unconfirmed",
+    "unit-unconfirmed",
+    "year-unconfirmed",
+  ] as const)(
     "offers only keep and skip on a %s row, with its page",
     (issue) => {
       const html = render([{ ...row, issue, page: 7 }]);

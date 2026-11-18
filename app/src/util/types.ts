@@ -1045,6 +1045,7 @@ export type ImportRowIssue =
   | "reference-conflict"
   | "value-unconfirmed"
   | "unit-unconfirmed"
+  | "year-unconfirmed"
   | "skipped-in-review";
 
 export interface ImportRowOutcome {

@@ -20,7 +20,9 @@ interface ImportReviewRowsProps {
 
 /** Extraction could not confirm the row on its page: keep or skip only. */
 const isUnconfirmed = (row: ImportRowReview) =>
-  row.issue === "value-unconfirmed" || row.issue === "unit-unconfirmed";
+  row.issue === "value-unconfirmed" ||
+  row.issue === "unit-unconfirmed" ||
+  row.issue === "year-unconfirmed";
 
 /** A value in tonnes CO2e, formatted in the UI language. */
 function formatTonnes(lng: string, value: number): string {

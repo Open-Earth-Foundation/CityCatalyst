@@ -65,3 +65,21 @@ describe("unit-unconfirmed copy (R25)", () => {
     },
   );
 });
+
+describe("year-unconfirmed copy", () => {
+  it.each(["en", "de", "es", "fr", "pt"] as const)(
+    "%s has both messages, the page only in the first",
+    (locale) => {
+      const strings = JSON.parse(
+        readFileSync(`src/i18n/locales/${locale}/onboarding.json`, "utf8"),
+      );
+      expect(strings["import-row-issue-year-unconfirmed"]).toContain(
+        "{{page}}",
+      );
+      expect(strings["import-row-issue-year-unconfirmed-no-page"]).toBeTruthy();
+      expect(
+        strings["import-row-issue-year-unconfirmed-no-page"],
+      ).not.toContain("{{page}}");
+    },
+  );
+});

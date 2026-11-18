@@ -21,6 +21,7 @@ jest.unstable_mockModule("@/backend/llm", () => ({
 const {
   extractInventoryFromDocument,
   finalizeExtractedRows,
+  pageNumberStyle,
   selectReconciledPages,
 } = await import("@/backend/InventoryExtractionService");
 const { extractionReviewNotes, reconcileExtraction, reconciliationTargets } =
@@ -297,12 +298,16 @@ describe("CC-1163 check 2: year evidence", () => {
         kind: "page",
       },
     });
-    expect(result.rows.map((r) => r.gpcRefNo)).toEqual(["V.1"]);
-    expect(result.summary.droppedRows.caption_year).toBe(1);
+    // The row below the 2021 caption was labeled 2022: held, not dropped.
+    expect(result.rows.map((r) => [r.gpcRefNo, r.yearCheck])).toEqual([
+      ["V.1", undefined],
+      ["I.1.1", "caption_other"],
+    ]);
+    expect(result.summary.droppedRows.caption_year).toBeUndefined();
     expect(result.summary.droppedRows.other_year).toBeUndefined();
   });
 
-  it("rows of a 2019 table labeled 2021 are dropped", () => {
+  it("holds rows of a 2019 table labeled 2021; their total is no target", () => {
     const rows = fiveMillionRows();
     const result = finalizeExtractedRows(rows, 2021, {
       deferYearAssumption: true,
@@ -312,13 +317,49 @@ describe("CC-1163 check 2: year evidence", () => {
         kind: "page",
       },
     });
+    expect(result.rows.map((r) => [r.year, r.yearCheck])).toEqual([
+      [2021, "caption_other"],
+      [2021, "caption_other"],
+    ]);
+    expect(result.summary.droppedRows.caption_year).toBe(1);
+    expect(result.summary.reportedTotals).toEqual([]);
+  });
+
+  it("year-less rows of a 2019 table are still moved to 2019 and dropped", () => {
+    const rows = fiveMillionRows().map((r) => ({ ...r, year: null }));
+    const result = finalizeExtractedRows(rows as ExtractedRow[], 2021, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: {
+        text: page("Table A-3 GHG emissions for 2019"),
+        kind: "page",
+      },
+    });
     expect(result.rows).toEqual([]);
     expect(result.summary.droppedRows.caption_year).toBe(2);
-    expect(result.summary.droppedRows.other_year).toBeUndefined();
     expect(result.summary.reportedTotals[0].year).toBe(2019);
     expect(
       reconciliationTargets(result.summary.reportedTotals, 2021).grand,
     ).toEqual([]);
+  });
+
+  it.each([
+    "| Sector | Variación respecto a 2015 |",
+    "## Sustainability Report 2023",
+    "Table 4 Emissions gegenüber 1990",
+  ])("keeps rows labeled with the target year under %s", (caption) => {
+    const result = finalizeExtractedRows(fiveMillionRows(), 2021, {
+      deferYearAssumption: true,
+      currentYear: 2026,
+      source: {
+        text: `${caption}
+| --- | --- |
+${body}`,
+        kind: "page",
+      },
+    });
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows.every((r) => r.year === 2021)).toBe(true);
   });
 
   it("selection takes the 2021 page", () => {
@@ -496,8 +537,26 @@ describe("CC-1163 page evidence survives the chunk fallback", () => {
     },
   );
 
-  it("2019 table labeled 2021: no 2021 rows imported", async () => {
+  it("2019 table labeled 2021: rows held for review, total no target", async () => {
     mockRows(ktRows("t"));
+    const text =
+      "<!-- page: 1 -->\nTable A-3 GHG emissions for 2019 (t CO2e)\n" +
+      "| Sector | Emissions |\n| --- | --- |\n" +
+      tail;
+    const { rows, summary } = await extractInventoryFromDocument(text, {
+      targetYear: 2021,
+    });
+    expect(rows.map((r) => [r.year, r.yearCheck])).toEqual([
+      [2021, "caption_other"],
+      [2021, "caption_other"],
+    ]);
+    expect(summary.reportedTotals).toEqual([]);
+    // The page call only: no whole-document re-extraction.
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  it("year-less rows of a 2019 table: no 2021 rows imported", async () => {
+    mockRows(ktRows("t").map((r) => ({ ...r, year: null })));
     const text =
       "<!-- page: 1 -->\nTable A-3 GHG emissions for 2019 (t CO2e)\n" +
       "| Sector | Emissions |\n| --- | --- |\n" +
@@ -539,5 +598,42 @@ describe("CC-1163 number style on the chunk path", () => {
       targetYear: 2021,
     });
     expect(rows[0].totalCO2e).toBe(1500);
+  });
+});
+
+describe("Piotr's #3414 review: number style of a page without evidence", () => {
+  const rows = (): ExtractedRow[] =>
+    [
+      {
+        year: 2021,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        scope: "1",
+        gpcRefNo: "I.1.1",
+        totalCO2e: 245300,
+        rowType: "line_item",
+      },
+    ] as ExtractedRow[];
+  const text = "Tabla 2 Emisiones (tCO2e)\n| Residencial | 245.300 |\n";
+
+  it("marks the value not found without a document style", () => {
+    const result = finalizeExtractedRows(rows(), 2021, {
+      source: { text, kind: "page" },
+    });
+    expect(result.rows[0].valueCheck).toBe("not_found");
+  });
+
+  it("reads the page with the document's style", () => {
+    const result = finalizeExtractedRows(rows(), 2021, {
+      source: { text, kind: "page" },
+      fallbackNumberStyle: "european",
+    });
+    expect(result.rows[0].valueCheck).toBeUndefined();
+  });
+
+  it("a page's own style wins over the document's", () => {
+    expect(pageNumberStyle("1,234,567 and 2,000", "european")).toBe("english");
+    expect(pageNumberStyle("245.300", "european")).toBe("european");
+    expect(pageNumberStyle("245.300")).toBe("unknown");
   });
 });

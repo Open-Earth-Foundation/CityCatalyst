@@ -42,7 +42,7 @@ function isGroupedInteger(s: string, sep: string): boolean {
  * Parses a number string with decimal and thousands separators.
  *
  * 1. Trim. Remove spaces, NBSP, narrow NBSP and `'` used as group separators.
- * 2. Sign: a leading `-` or `−`, or a value in parentheses, is negative; a
+ * 2. Sign: a leading `-`, `−` or `–`, or a value in parentheses, is negative; a
  *    leading `+` is dropped. A trailing unit (`1234 tCO2e`) or `%` is dropped.
  * 3. Both `.` and `,` present: the rightmost is the decimal separator and the
  *    other is the group separator (`1.234,5` and `1,234.5` are 1234.5),
@@ -73,7 +73,11 @@ export function parseNumberString(
   }
   if (t.startsWith("+")) {
     t = t.slice(1);
-  } else if (t.startsWith("-") || t.startsWith("\u2212")) {
+  } else if (
+    t.startsWith("-") ||
+    t.startsWith("\u2212") ||
+    t.startsWith("\u2013")
+  ) {
     negative = true;
     t = t.slice(1);
   }
@@ -148,8 +152,10 @@ function lastDigitStep(token: string, value: number): number {
 
 /**
  * True when the number printed at `text[start, end)` is negative: a Unicode
- * minus right before it, a `-` right before it that does not join two words or
- * numbers (`2019-2021`, `CO2-e`), or parentheses around it alone (`(811,512)`).
+ * minus right before it; a `-` or an en dash (`–`, common in typeset PDFs)
+ * right before it that does not join two words or numbers (`2019-2021`,
+ * `2019–2021`, `CO2-e`); a `-` or en dash then spaces at the start of a table
+ * cell or line (`| - 25,639 |`); or parentheses around it alone (`(811,512)`).
  */
 export function isNegativeAt(
   text: string,
@@ -159,7 +165,18 @@ export function isNegativeAt(
   const before = text.slice(0, start).replace(/[   ]+$/, "");
   const after = text.slice(end).replace(/^[   ]+/, "");
   if (before.endsWith("−")) return true;
-  if (text[start - 1] === "-" && !/[\p{L}\d]/u.test(text[start - 2] ?? "")) {
+  const adjacent = text[start - 1];
+  if (
+    (adjacent === "-" || adjacent === "–") &&
+    !/[\p{L}\d]/u.test(text[start - 2] ?? "")
+  ) {
+    return true;
+  }
+  // A spaced dash opening a cell: only a `|` or a line start precedes it.
+  if (
+    (before.endsWith("-") || before.endsWith("–")) &&
+    /(?:^|\n|\|)[   ]*$/.test(before.slice(0, -1))
+  ) {
     return true;
   }
   return before.endsWith("(") && after.startsWith(")");
@@ -321,6 +338,16 @@ export function isLineItemValueInNumbers(
   );
 }
 
+/**
+ * How far a model value may be from a printed figure and still match it
+ * unscaled: half the figure's last digit (`2.3` allows 2.25 to 2.35). A
+ * figure of 1,000 or more also allows 0.5, since the model may round
+ * `9,559,215.4` to an integer; a small one does not (0.5 Mt is 500,000 t).
+ */
+function unscaledTolerance(value: number, step: number): number {
+  return Math.abs(value) >= 1000 ? Math.max(0.5, step / 2) : step / 2;
+}
+
 function matchesPrinted(
   raw: number,
   numbers: { value: number; step: number }[],
@@ -330,7 +357,7 @@ function matchesPrinted(
   return numbers.some(
     ({ value, step }) =>
       Math.sign(raw) * Math.sign(value) >= 0 &&
-      (Math.abs(raw - value) <= Math.max(0.5, step / 2) ||
+      (Math.abs(raw - value) <= unscaledTolerance(value, step) ||
         (significantDigits(Math.abs(value), step) >= minScaledDigits &&
           scales.some((m) => Math.abs(raw - value * m) <= (step * m) / 2))),
   );
@@ -549,7 +576,13 @@ export function yearEvidence(
 export const THOUSAND_MT = /\bthousand\s+mt(?:\b|(?=co))/i;
 
 /** Gg and gigagrams: the scale of kt. */
-export const GIGAGRAM_PATTERNS: RegExp[] = [/\bGg\b/, /\bgigagrams?\b/i];
+export const GIGAGRAM_PATTERNS: RegExp[] = [
+  /\bGg(?:\b|(?=CO))/,
+  /\bgigagrams?\b/i,
+];
+
+/** A tonne word after a scale word: `t`, `tCO2e`, tonnes, toneladas, Tonnen. */
+const TONNE_AFTER = String.raw`(?:t(?=\b|CO)|tonnes?\b|tons?\b|toneladas?\b|tonnen\b)`;
 
 /** kt and its equivalents, Gg included (`GIGAGRAM_PATTERNS`). */
 export const KILOTONNE_PATTERNS: RegExp[] = [
@@ -560,6 +593,16 @@ export const KILOTONNE_PATTERNS: RegExp[] = [
   /\bthousand\s+(?:metric\s+)?(?:tonnes?|tons?)\b/i,
   // "thousand MT CO2e" (Phoenix 2022): MT is metric tonnes, so this is kt.
   THOUSAND_MT,
+  // es/pt/de/fr and German grouping: "mil tCO2e" (Santo André, Tabela 3),
+  // "miles de toneladas", "milhares de toneladas", "milliers de tonnes",
+  // "Tsd. t", "Tausend Tonnen", "in 1.000 t CO2e".
+  new RegExp(String.raw`\bmil\s+${TONNE_AFTER}`, "i"),
+  new RegExp(
+    String.raw`\b(?:miles|milhares|milliers)\s+de\s+${TONNE_AFTER}`,
+    "i",
+  ),
+  new RegExp(String.raw`\b(?:Tsd\.?|tausend)\s*${TONNE_AFTER}`, "i"),
+  new RegExp(String.raw`(?<![\d.,])1[.,   ]?000\s*${TONNE_AFTER}`, "i"),
   ...GIGAGRAM_PATTERNS,
 ];
 
@@ -571,6 +614,15 @@ export const MEGATONNE_PATTERNS: RegExp[] = [
   // CO2 or tonnes word, or alone in parentheses.
   /\bMt[\s-]*(?:CO2|CO₂|tonnes?\b|tons?\b)/,
   /\(\s*Mt(?:[\s-]*CO(?:2|₂)[^)]*)?\s*\)/,
+  // MMTCO2e, million metric tonnes; case-sensitive like `Mt`.
+  /\bMMT(?:\b|(?=CO))/,
+  // es/pt/fr/de: "millones de toneladas", "milhões de toneladas",
+  // "millions de tonnes", "Mio. t", "Millionen Tonnen".
+  new RegExp(
+    String.raw`\b(?:millones|milhões|millions)\s+de\s+${TONNE_AFTER}`,
+    "i",
+  ),
+  new RegExp(String.raw`\b(?:Mio\.?|millionen)\s*${TONNE_AFTER}`, "i"),
 ];
 
 const LARGE_UNIT_PATTERNS: RegExp[] = [

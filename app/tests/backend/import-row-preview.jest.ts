@@ -695,11 +695,7 @@ describe("scope notes", () => {
 
   it("gives a notation-key row with a total of 0 no value", async () => {
     const result = await notes([
-      noted(
-        "I.1.1",
-        { finalScope: "1" },
-        { totalCO2e: 0, notationKey: "NO" },
-      ),
+      noted("I.1.1", { finalScope: "1" }, { totalCO2e: 0, notationKey: "NO" }),
     ]);
     expect(result.inferredScopeRows?.[0]).toMatchObject({
       gpcRefNo: "I.1.1",
@@ -973,9 +969,18 @@ describe("decisions on held rows (applyReviewedRows)", () => {
       expect(pending[0].issue).toBe("reference-conflict");
     });
 
+    it("a row with yearCheck caption_other is a year-unconfirmed review row", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, yearCheck: "caption_other", page: 3 }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0]).toMatchObject({ issue: "year-unconfirmed", page: 3 });
+    });
+
     it.each([
       ["valueCheck", { valueCheck: "not_found" }],
       ["unitCheck", { unitCheck: "missing" }],
+      ["yearCheck", { yearCheck: "caption_other" }],
     ])("a %s row is pending until kept or skipped", async (_name, check) => {
       for (const kind of ["keep", "skip"]) {
         const result = held("I.1.1", { ...document, ...check });

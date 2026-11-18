@@ -57,7 +57,7 @@
  *         description: |
  *           The inventory already has data and replaceExisting was not set (error code inventory-has-data),
  *           or rows held for review have no decision yet (error code import-rows-pending). A
- *           value-unconfirmed or unit-unconfirmed row accepts only keep or skip.
+ *           value-unconfirmed, unit-unconfirmed or year-unconfirmed row accepts only keep or skip.
  *       401:
  *         description: Unauthorized.
  */

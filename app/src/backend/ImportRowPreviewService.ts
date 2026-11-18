@@ -95,6 +95,7 @@ export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   if (finalPairConflict(row)) return "reference-conflict";
   if (row.review?.unitCheck === "missing") return "unit-unconfirmed";
   if (row.review?.valueCheck === "not_found") return "value-unconfirmed";
+  if (row.review?.yearCheck === "caption_other") return "year-unconfirmed";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))
     return "excluded-reference-unconfirmed";

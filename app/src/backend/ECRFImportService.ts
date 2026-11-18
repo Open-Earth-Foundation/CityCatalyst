@@ -106,6 +106,8 @@ export interface ECRFRowReviewData {
   valueCheck?: "not_found" | null;
   /** `missing`: no unit on a page that names kt, Mt, Gg or kg. Unset on older imports. */
   unitCheck?: "missing" | null;
+  /** `caption_other`: the page's captions name only other years. Unset on older imports. */
+  yearCheck?: "caption_other" | null;
 }
 
 export interface ECRFImportResult {
@@ -976,6 +978,7 @@ export default class ECRFImportService {
           page: row.page ?? null,
           valueCheck: row.valueCheck ?? null,
           unitCheck: row.unitCheck ?? null,
+          yearCheck: row.yearCheck ?? null,
           source: row.source ?? null,
           decision: row.reviewDecision ?? null,
           suggestedRefNo: row.suggestedRefNo ?? null,

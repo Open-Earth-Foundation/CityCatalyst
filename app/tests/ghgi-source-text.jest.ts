@@ -686,3 +686,69 @@ describe("inheritedPageScales: tables continued from the previous page", () => {
     expect(inherited.get(22)).toEqual([]);
   });
 });
+
+describe("Piotr's #3414 review: tolerance, minus forms, unit wording", () => {
+  it("a small printed figure allows only half its last digit", () => {
+    const mt = numbersInText("| Energy | 2.3 |\n| Waste | 3.4 |", "english");
+    expect(isValueInNumbers(1.8, mt)).toBe(false);
+    expect(isValueInNumbers(3.8, mt)).toBe(false);
+    expect(isValueInNumbers(2.3, mt)).toBe(true);
+    expect(isValueInNumbers(2.34, mt)).toBe(true);
+    const kt = numbersInText("| Energy | 12.4 |", "english");
+    expect(isValueInNumbers(12.0, kt)).toBe(false);
+  });
+
+  it("a large figure still allows the model to round to an integer", () => {
+    const n = numbersInText("Total 9,559,215.4", "english");
+    expect(isValueInNumbers(9559215, n)).toBe(true);
+  });
+
+  it.each([
+    "| Forestry | –25,639 |",
+    "| Forestry | - 25,639 |",
+    "| Forestry | – 25,639 |",
+    "- 25,639",
+  ])("reads %s as negative", (text) => {
+    const n = numbersInText(text, "english");
+    expect(isValueInNumbers(-25639, n)).toBe(true);
+    expect(isValueInNumbers(25639, n)).toBe(false);
+  });
+
+  it.each(["2019–2021", "2019 - 2021 change", "CO2–e 25,639"])(
+    "does not read a joining dash in %s as a minus",
+    (text) => {
+      const values = numbersInText(text, "english").map((n) => n.value);
+      expect(values.every((v) => v >= 0)).toBe(true);
+    },
+  );
+
+  it("parses a leading en dash as a minus", () => {
+    expect(parseNumberString("–25,639", "english")).toBe(-25639);
+  });
+
+  it.each<[string, Scale]>([
+    ["Table 3 Emissions (GgCO2e)", 1000],
+    ["Table 3 Emissions (Gg CO2e)", 1000],
+    ["Tabela 3 Emissões (mil tCO2e)", 1000],
+    ["Tabla 2 Emisiones (miles de toneladas de CO2e)", 1000],
+    ["Tabela 2 Emissões (milhares de toneladas CO2e)", 1000],
+    ["Tableau 2 Émissions (milliers de tonnes CO2e)", 1000],
+    ["Tabelle 2 Emissionen (Tsd. t CO2e)", 1000],
+    ["| Sektor | Emissionen in 1.000 t CO2e |\n| --- | --- |", 1000],
+    ["Table 2 Emissions (MMTCO2e)", 1000000],
+    ["Tabla 2 Emisiones (millones de toneladas de CO2e)", 1000000],
+    ["Tableau 2 Émissions (millions de tonnes CO2e)", 1000000],
+    ["Tabelle 2 Emissionen (Mio. t CO2e)", 1000000],
+  ])("%s names scale %d", (caption, scale) => {
+    const text = `${caption}\n| Energy | 686 |`;
+    expect(pageScaleEvidence(text)).toContain(scale);
+    expect(namesLargeUnit(text)).toBe(true);
+  });
+
+  it.each([
+    "Table 2 Emissions (t CO2e)",
+    "Tabla 2 Emisiones (toneladas de CO2e)",
+  ])("%s names no large unit", (caption) => {
+    expect(namesLargeUnit(`${caption}\n| Energy | 686 |`)).toBe(false);
+  });
+});

@@ -355,6 +355,8 @@
   "import-row-issue-outside-inventory-type": "Solo una parte de GPC BASIC+. Se importa, pero no cuenta para la finalización de GPC BASIC.",
   "import-row-issue-unit-unconfirmed": "Unidad no confirmada en la página {{page}}. Si conserva la fila, el valor se importa en toneladas; si la tabla usa otra unidad, como kt o kg, el valor estará desviado por un factor de 1.000.",
   "import-row-issue-unit-unconfirmed-no-page": "Unidad no confirmada. Si conserva la fila, el valor se importa en toneladas; si la tabla usa otra unidad, como kt o kg, el valor estará desviado por un factor de 1.000.",
+  "import-row-issue-year-unconfirmed": "Página {{page}}: el título de la tabla indica otro año. Compruebe que este valor corresponde al año del inventario antes de conservarlo.",
+  "import-row-issue-year-unconfirmed-no-page": "El título de la tabla indica otro año. Compruebe que este valor corresponde al año del inventario antes de conservarlo.",
   "import-row-issue-value-unconfirmed": "Valor no encontrado tal como aparece impreso en la página {{page}}. Compárelo con el documento antes de conservarlo.",
   "import-row-issue-value-unconfirmed-no-page": "Valor no encontrado tal como aparece impreso. Compárelo con el documento antes de conservarlo.",
   "import-rows-skipped-unknown-notation_one": "{{count}} fila de notación clave desconocida.",

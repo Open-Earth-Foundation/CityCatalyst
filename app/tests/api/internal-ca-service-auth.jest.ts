@@ -24,6 +24,10 @@ import { Roles, UserRole } from "@/util/types";
 import { WhereOptions } from "sequelize";
 import { randomUUID } from "node:crypto";
 import { setupTests } from "../helpers";
+import {
+  cleanupTestData,
+  createTestData,
+} from "../helpers/testDataCreationHelper";
 
 const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
@@ -261,7 +265,7 @@ describe("internal CA service auth contract", () => {
             userId: options?.where?.userId ?? "",
           }),
       );
-    jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
+    jest.spyOn(PermissionService, "canAccessInventory").mockResolvedValue({
       hasAccess: true,
       organizationId: randomUUID(),
       userRole: UserRole.COLLABORATOR,
@@ -366,12 +370,12 @@ describe("internal CA service auth contract", () => {
       );
     expect((await request()).status).toBe(200);
     expect(
-      jest.mocked(PermissionService.canEditInventory).mock.calls.at(-1)?.[0]
+      jest.mocked(PermissionService.canAccessInventory).mock.calls.at(-1)?.[0]
         .user.role,
     ).toBe(Roles.User);
 
     jest
-      .mocked(PermissionService.canEditInventory)
+      .mocked(PermissionService.canAccessInventory)
       .mockRejectedValueOnce(new createHttpError.Forbidden("Access revoked"));
     expect((await request()).status).toBe(403);
     jest.mocked(db.models.User.findOne).mockResolvedValueOnce(null);
@@ -497,7 +501,7 @@ describe("internal CA service auth contract", () => {
     await expectJsonStatus(validResponse, 200);
 
     jest
-      .spyOn(PermissionService, "canEditInventory")
+      .spyOn(PermissionService, "canAccessInventory")
       .mockRejectedValueOnce(
         new createHttpError.Forbidden("No inventory access"),
       );
@@ -510,6 +514,80 @@ describe("internal CA service auth contract", () => {
       { params: Promise.resolve({}) },
     );
     expect(inaccessibleResponse.status).toBe(403);
+  });
+
+  it("requires current inventory membership for draft capabilities and commits", async () => {
+    jest.mocked(PermissionService.canAccessInventory).mockRestore();
+    jest.mocked(db.models.User.findOne).mockRestore();
+    const fixture = await createTestData();
+    const headers = serviceHeaders(serviceToken(fixture.userId));
+    const context = { params: Promise.resolve({}) };
+
+    try {
+      const inventory = await db.models.Inventory.create({
+        inventoryId: randomUUID(),
+        cityId: fixture.cityId,
+        inventoryName: "Stationary Energy test inventory",
+        year: 2024,
+        isPublic: false,
+      });
+      const scope = {
+        city_id: fixture.cityId,
+        inventory_id: inventory.inventoryId,
+        user_id: fixture.userId,
+      };
+      const capabilities = (workflowStep: "draft" | "review") =>
+        postAllowedCapabilities(
+          makeRequest(
+            "/api/v1/internal/ca/capabilities/allowed-capabilities",
+            { ...allowedBody(), ...scope, workflow_step: workflowStep },
+            headers,
+          ),
+          context,
+        );
+      const commitAccepted = () =>
+        postCommitAccepted(
+          makeRequest(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+            { ...commitAcceptedBody(), ...scope },
+            headers,
+          ),
+          context,
+        );
+      const commitNotationKeys = () =>
+        postCommitNotationKeys(
+          makeRequest(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+            { ...commitNotationKeysBody(), ...scope },
+            headers,
+          ),
+          context,
+        );
+
+      expect((await capabilities("draft")).status).toBe(403);
+      expect((await commitAccepted()).status).toBe(403);
+      expect((await commitNotationKeys()).status).toBe(403);
+      expect(mockCommitAcceptedStationaryEnergyRows).not.toHaveBeenCalled();
+      expect(mockCommitStationaryEnergyNotationKeys).not.toHaveBeenCalled();
+
+      const city = await db.models.City.findByPk(fixture.cityId);
+      await city!.addUser(fixture.userId);
+      expect((await capabilities("draft")).status).toBe(200);
+      await inventory.update({ isPublic: true });
+      expect((await capabilities("review")).status).toBe(200);
+      expect((await commitAccepted()).status).toBe(200);
+      expect((await commitNotationKeys()).status).toBe(200);
+
+      await city!.removeUser(fixture.userId);
+      expect((await capabilities("draft")).status).toBe(403);
+      expect((await capabilities("review")).status).toBe(403);
+      expect((await commitAccepted()).status).toBe(403);
+      expect((await commitNotationKeys()).status).toBe(403);
+      expect(mockCommitAcceptedStationaryEnergyRows).toHaveBeenCalledTimes(1);
+      expect(mockCommitStationaryEnergyNotationKeys).toHaveBeenCalledTimes(1);
+    } finally {
+      await cleanupTestData(fixture);
+    }
   });
 
   it("applies subject-binding checks to Stationary Energy internal routes", async () => {
@@ -618,8 +696,8 @@ describe("internal CA service auth contract", () => {
   it("rejects inaccessible inventories on Stationary Energy notation routes", async () => {
     const token = serviceToken(USER_ID);
     (
-      PermissionService.canEditInventory as jest.MockedFunction<
-        typeof PermissionService.canEditInventory
+      PermissionService.canAccessInventory as jest.MockedFunction<
+        typeof PermissionService.canAccessInventory
       >
     ).mockRejectedValueOnce(
       new createHttpError.Forbidden("No inventory access"),
@@ -635,8 +713,8 @@ describe("internal CA service auth contract", () => {
     );
 
     (
-      PermissionService.canEditInventory as jest.MockedFunction<
-        typeof PermissionService.canEditInventory
+      PermissionService.canAccessInventory as jest.MockedFunction<
+        typeof PermissionService.canAccessInventory
       >
     ).mockRejectedValueOnce(
       new createHttpError.Forbidden("No inventory access"),

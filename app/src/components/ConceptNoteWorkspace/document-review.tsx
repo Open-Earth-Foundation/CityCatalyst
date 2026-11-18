@@ -20,19 +20,32 @@ export function editFeedbackKey(edits: EditController): string | null {
     : "edit-request-error";
 }
 
-/** Keep the latest actionable response visible, including questions and recoverable failures. */
+/**
+ * Keep the latest actionable response visible, including questions and recoverable failures.
+ * Proposals arrive newest first. Once a newer proposal was applied or dismissed, older
+ * questions and failures are history; an older pending proposal still needs a decision.
+ */
 export function selectReviewProposal(
   proposals: EditProposal[],
 ): EditProposal | undefined {
-  return proposals.find((proposal) =>
-    [
-      "processing",
-      "proposed",
-      "clarification_required",
-      "failed",
-      "stale",
-    ].includes(proposal.status),
-  );
+  let superseded = false;
+  for (const proposal of proposals) {
+    if (
+      ["applied", "partially_applied", "rejected"].includes(proposal.status)
+    ) {
+      superseded = true;
+    } else if (proposal.status === "proposed") {
+      return proposal;
+    } else if (
+      !superseded &&
+      ["processing", "clarification_required", "failed", "stale"].includes(
+        proposal.status,
+      )
+    ) {
+      return proposal;
+    }
+  }
+  return undefined;
 }
 
 export function documentReviewChanges(

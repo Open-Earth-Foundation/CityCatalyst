@@ -168,7 +168,7 @@ def test_chapter_requests_over_the_window_fall_back_to_summaries(settings, monke
     assert payload["source_documents"]  # the caller's payload is unchanged
 
 
-def test_edit_planner_reads_each_chapters_own_quotations():
+def test_edit_planner_shares_every_chapters_quotations_once():
     current = WorkspaceChapterSnapshot(
         chapter_id=uuid4(),
         chapter_ref="budget",
@@ -190,13 +190,18 @@ def test_edit_planner_reads_each_chapters_own_quotations():
         "chapter_excerpts": [
             {"chapter_ref": "scope", "excerpts": [{"text": PLACE, "page": 1}]},
             {"chapter_ref": "budget", "excerpts": [{"text": COST, "page": None, "anchor": "costs/block-ab12"}]},
+            # The same quotation kept for a second chapter is listed once.
+            {"chapter_ref": "summary", "excerpts": [{"text": PLACE, "page": 1}]},
         ],
     }
     request = EditProposalRequest(instruction="Add the cost.", idempotency_key=uuid4())
     payload = build_planner_input(request, current, {"selected_sources": [source]})
-    assert payload["chapter"]["source_excerpts"] == [
-        {"source_index": "1", "text": COST, "page": None, "heading": "costs"}
+    # A quotation kept for another chapter is evidence for this one too.
+    assert payload["run_context"]["source_excerpts"] == [
+        {"source_index": "1", "text": PLACE, "page": 1},
+        {"source_index": "1", "text": COST, "page": None, "heading": "costs"},
     ]
+    assert "source_excerpts" not in payload["chapter"]
     assert "chapter_excerpts" not in json.dumps(payload["run_context"])
 
 

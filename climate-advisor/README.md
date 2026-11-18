@@ -654,17 +654,45 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer,
 chat-edit planner, and partition/prompt/concurrency limits. Chat-edit planning
-uses one document agent with `search_draft`, `read_chapter`, and `propose_edits`.
+uses one document agent with `search_draft`, `read_chapter`, `propose_edits`, and
+`query_source`.
 Each proposal permits up to 100 draft searches, shared across repair attempts,
 configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. Rejections feed
+only affected chapters, with at most five reviews concurrently. The planner and
+the reviewers draw on the same evidence: `run_context.source_excerpts` lists every
+quotation the selected sources keep for any template chapter, deduplicated (each
+reviewer receives the quotations of the sources its changes cite; when a large
+rewrite leaves no room for all of them, trailing quotations are left out and
+counted in `source_excerpts_omitted`), and both may
+call `query_source`, which re-reads one selected source in full and returns
+verified quotations. Lookups are pinned to the proposal's context snapshot: a
+source index the snapshot did not hold, or one now holding a different document,
+fails instead of answering. Each planner run and each chapter review may make
+`generation.prompt_budget.cnb_edits.max_source_queries` (default 4) uncached
+lookups; the same question asked again, or concurrently by several reviewers, is
+read once per proposal. An answer keeps whole quotations up to
+`max_source_answer_chars` (default 12,000) and says how many it left out, so
+lookups add at most `max_source_queries × max_source_answer_chars` characters to
+one agent's context beyond `max_prompt_tokens`. A failed lookup is never
+evidence, and text from another chapter is drafting context, not evidence.
+Rejections feed
 the indexed review explanations and complete candidate back to the editor for
 up to two repair attempts (`generation.prompt_budget.cnb_edits.max_review_repairs`).
 Each attempt must submit a complete proposal against the unchanged snapshot;
 every revised candidate receives a fresh independent review. Unsupported edits
-still fail after exhaustion, and no draft changes are applied before acceptance.
+still fail after exhaustion; the final rejection's per-change explanations are
+stored on the failed proposal as `review_objections` (apply CNB migration
+`20261111_120000`), shown in the proposal card, and returned to chat, so
+the assistant can say which claims lacked support. The chat tool also returns the
+proposal's chapters and change counts, and the assistant describes a proposal only
+by those. Edits and new-source chapter revalidation never overlap: while a
+revalidation job is pending or running, a new edit request fails with
+`sources_updating` (retry in a moment), and a revalidation job waits while an edit
+is being planned (planning older than 10 minutes counts as interrupted; the
+reconciler retries the waiting job). No draft changes are applied before
+acceptance.
 Each editor attempt is limited to 12 model turns, while the complete operation,
 including repairs and reviews, shares one 300-second deadline configured by
 `generation.prompt_budget.cnb_edits.max_agent_turns` and `timeout_seconds`.
@@ -727,7 +755,8 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.cnb_chat_edit_review` independently compares each proposed chapter edit
   with its original text and the user instruction using the edit planner model.
   Meaning-preserving rewrites need no uploaded evidence; explicit user facts are
-  editing authority, not independent factual verification.
+  editing authority, not independent factual verification. Its only tool is
+  `query_source`, used to verify a cited claim the shared quotations do not settle.
 
 CNB document mapping and question-focused source readers use
 `models.cnb_source_reader`: `openai/gpt-5.6-terra` with medium reasoning. Document

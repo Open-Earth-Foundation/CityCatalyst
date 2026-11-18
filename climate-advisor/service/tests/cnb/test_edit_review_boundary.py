@@ -583,6 +583,35 @@ async def test_concurrent_reviewers_share_one_in_flight_source_read():
     assert all(result["success"] for result in results)
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failure", [RuntimeError("source store down"), "not json"])
+async def test_a_lookup_that_raises_or_returns_non_json_stays_retryable(failure):
+    calls = []
+
+    async def lookup(source_index, question):
+        calls.append(question)
+        if len(calls) > 1:
+            return json.dumps({"success": True, "data": {"excerpts": []}})
+        if isinstance(failure, Exception):
+            raise failure
+        return failure
+
+    tool = build_source_query_tool(
+        lookup, stage="planning", max_queries=2, max_answer_chars=1000, cache={}
+    )
+    context = ToolContext(
+        context=None, tool_name="query_source", tool_call_id="q", tool_arguments="{}"
+    )
+    arguments = json.dumps({"source_index": 1, "question": "Is the tranche drawn?"})
+
+    # The SDK turns the raised error into a tool message; the retry must read again.
+    await tool.on_invoke_tool(context, arguments)
+    retried = json.loads(await tool.on_invoke_tool(context, arguments))
+
+    assert len(calls) == 2
+    assert retried["success"] is True
+
+
 def test_long_source_answers_keep_whole_quotations_and_say_what_was_left_out():
     answer = json.dumps(
         {

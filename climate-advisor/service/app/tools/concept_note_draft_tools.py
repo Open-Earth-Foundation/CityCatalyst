@@ -130,8 +130,15 @@ def build_source_query_tool(
 
     async def read(source_index: int, question: str, key: tuple[int, str]) -> str:
         """Run one lookup, bound its answer, and keep it cached only on success."""
-        result = bound_source_answer(await lookup(source_index, question), max_answer_chars)
-        succeeded = json.loads(result).get("success") is True
+        try:
+            result = bound_source_answer(
+                await lookup(source_index, question), max_answer_chars
+            )
+            succeeded = json.loads(result).get("success") is True
+        except Exception:
+            # An unexpected failure must stay retryable, like a failed envelope.
+            cache.pop(key, None)
+            raise
         if not succeeded:
             cache.pop(key, None)
         # Log outcomes only; questions and answers may contain document text.

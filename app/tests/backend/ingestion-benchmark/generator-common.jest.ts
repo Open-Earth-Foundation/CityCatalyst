@@ -8,12 +8,15 @@ import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
 import { readRowsDir } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import {
+  asEnvelopeData,
   emptyData,
   envelopeInstructions,
   envelopeSchema,
   mergeChunkData,
   pageRanges,
+  parseGeneratorArgs,
   pdfPageCount,
+  pinnedModel,
   prepareGeneration,
   writeEnvelope,
 } from "../../../scripts/pdf-benchmark/generators/common";
@@ -174,6 +177,86 @@ describe("prepareGeneration", () => {
         manifest,
       }),
     ).toThrow(/runs/);
+  });
+});
+
+describe("generator arguments and model", () => {
+  it("parses the flags, with --model optional at parse time", () => {
+    expect(
+      parseGeneratorArgs([
+        "--cases",
+        "C-009",
+        "--out",
+        "o",
+        "--model",
+        "mistral-ocr-4-1",
+        "--runs",
+        "2",
+      ]),
+    ).toEqual({
+      cases: "C-009",
+      out: "o",
+      model: "mistral-ocr-4-1",
+      runs: 2,
+      configPath: "benchmarks/pdf/config.local.json",
+    });
+    expect(parseGeneratorArgs(["--cases", "C-009", "--out", "o"]).model).toBe(
+      undefined,
+    );
+    expect(() => parseGeneratorArgs(["--cases", "C-009"])).toThrow(/Usage/);
+    expect(() =>
+      parseGeneratorArgs(["--cases", "C-009", "--out", "o", "--model"]),
+    ).toThrow(/--model needs a value/);
+    expect(() =>
+      parseGeneratorArgs(["--cases", "C-009", "--out", "o", "--x", "1"]),
+    ).toThrow(/Unknown argument --x/);
+  });
+
+  it("requires an exact model id and refuses a -latest alias", () => {
+    expect(pinnedModel("mistral-ocr-4-1")).toBe("mistral-ocr-4-1");
+    expect(() => pinnedModel(undefined)).toThrow(/--model .* is required/);
+    expect(() => pinnedModel("")).toThrow(/required/);
+    expect(() => pinnedModel("mistral-ocr-latest")).toThrow(/alias/);
+  });
+
+  it("records the model in the folder manifest and refuses another model", () => {
+    const opts = {
+      vendor: "mistral" as const,
+      cases: "C-901",
+      runs: 1,
+      out,
+      config: config(["mistral"]),
+      manifest,
+    };
+    prepareGeneration({ ...opts, model: "mistral-ocr-4-1" });
+    const written = JSON.parse(
+      fs.readFileSync(path.join(out, "manifest.json"), "utf8"),
+    );
+    expect(written.model).toBe("mistral-ocr-4-1");
+    expect(() =>
+      prepareGeneration({ ...opts, model: "mistral-ocr-4-2" }),
+    ).toThrow(/mistral-ocr-4-1/);
+    expect(() =>
+      prepareGeneration({ ...opts, model: "mistral-ocr-4-1" }),
+    ).not.toThrow();
+  });
+});
+
+describe("asEnvelopeData", () => {
+  it("throws unless the answer is an object with a rows array", () => {
+    for (const bad of [
+      null,
+      {},
+      [],
+      "text",
+      3,
+      { rows: "x" },
+      { rows: null },
+    ]) {
+      expect(() => asEnvelopeData(bad)).toThrow(/rows array/);
+    }
+    const ok = { ...emptyData(), rows: [] };
+    expect(asEnvelopeData(ok)).toBe(ok);
   });
 });
 

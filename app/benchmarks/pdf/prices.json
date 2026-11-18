@@ -6,10 +6,11 @@
   },
   "models": {},
   "vendors": {
-    "mistral/annotations": {
+    "mistral/annotations/mistral-ocr-4-1": {
       "perPage": 0.005,
       "source": "https://docs.mistral.ai/models/ocr-4-1",
-      "date": "2026-11-18"
+      "date": "2026-11-18",
+      "note": "OCR 4.1 card: $5 per 1000 annotated pages. Not confirmed whether this includes the $4 per 1000 OCR pages."
     }
   }
 }

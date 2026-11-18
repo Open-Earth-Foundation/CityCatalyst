@@ -22,6 +22,7 @@ import {
   selectCases,
   type CaseManifestEntry,
 } from "@/backend/ingestion-benchmark/selection";
+import { DEFAULT_CONFIG_PATH } from "../args";
 import { pdfPathFor, type LocalConfig } from "../run-case";
 
 export type Vendor = "mistral" | "reducto" | "llamacloud";
@@ -35,6 +36,8 @@ export const PRICES_PATH = "benchmarks/pdf/prices.json";
 type FolderManifest = {
   study: string;
   stage: string;
+  /** The exact vendor model id every envelope of the folder was made with. */
+  model?: string;
   entries: {
     case_id: string;
     attempt: number;
@@ -70,6 +73,8 @@ export function prepareGeneration(opts: {
   manifest?: CaseManifestEntry[];
   /** Run label for the folder manifest; defaults to today's date (YYYY-MM-DD). */
   stage?: string;
+  /** Pinned vendor model id, recorded in the folder manifest. */
+  model?: string;
 }): CaseManifestEntry[] {
   const { vendor, config, out } = opts;
   if (!config.allowedVendors?.includes(vendor)) {
@@ -103,14 +108,91 @@ export function prepareGeneration(opts: {
       `${out} holds envelopes of "${existing.study}"; use another --out folder.`,
     );
   }
+  if (existing && existing.model !== opts.model) {
+    throw new Error(
+      `${out} holds envelopes of model "${existing.model ?? "none"}"; use another --out folder.`,
+    );
+  }
 
   fs.mkdirSync(path.join(out, "results"), { recursive: true });
   fs.mkdirSync(path.join(out, "raw"), { recursive: true });
   if (!existing) {
     const stage = opts.stage ?? new Date().toISOString().slice(0, 10);
-    writeJson(manifestFile(out), { study: vendor, stage, entries: [] });
+    writeJson(manifestFile(out), {
+      study: vendor,
+      stage,
+      ...(opts.model ? { model: opts.model } : {}),
+      entries: [],
+    });
   }
   return selected;
+}
+
+export type GeneratorArgs = {
+  cases: string;
+  runs: number;
+  out: string;
+  configPath: string;
+  model?: string;
+};
+
+/** `--cases <ids> --out <folder> [--runs n] [--config path] [--model id]`. */
+export function parseGeneratorArgs(argv: string[]): GeneratorArgs {
+  const args: Partial<GeneratorArgs> = {
+    runs: 1,
+    configPath: DEFAULT_CONFIG_PATH,
+  };
+  for (let i = 0; i < argv.length; i += 2) {
+    const flag = argv[i];
+    const value = argv[i + 1];
+    if (value === undefined || value.startsWith("--")) {
+      throw new Error(`${flag} needs a value`);
+    }
+    if (flag === "--cases") args.cases = value;
+    else if (flag === "--runs") args.runs = Number(value);
+    else if (flag === "--out") args.out = value;
+    else if (flag === "--config") args.configPath = value;
+    else if (flag === "--model") args.model = value;
+    else throw new Error(`Unknown argument ${flag}`);
+  }
+  if (!args.cases || !args.out) {
+    throw new Error(
+      "Usage: --cases <ids> --out <folder> [--runs n] [--config path] [--model id]",
+    );
+  }
+  return args as GeneratorArgs;
+}
+
+/**
+ * The model id a generator calls: required, and never a `-latest` alias, which
+ * can change model and price silently; the price and the envelopes must name
+ * the model that actually ran.
+ */
+export function pinnedModel(model: string | undefined): string {
+  if (!model) throw new Error("--model <exact model id> is required");
+  if (model.endsWith("-latest")) {
+    throw new Error(
+      `--model ${model} is an alias; pass an exact model id so price and envelopes name the model that ran`,
+    );
+  }
+  return model;
+}
+
+/**
+ * A vendor's parsed answer as envelope data, or an error when it is not an
+ * object with a rows array. Field values are left to the rows folder reader,
+ * which rejects an invalid field when the run scores the envelope.
+ */
+export function asEnvelopeData(value: unknown): EnvelopeData {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    Array.isArray(value) ||
+    !Array.isArray((value as { rows?: unknown }).rows)
+  ) {
+    throw new Error("answer is not an object with a rows array");
+  }
+  return value as EnvelopeData;
 }
 
 /** Data of an envelope with no answer: what a failed vendor call writes. */

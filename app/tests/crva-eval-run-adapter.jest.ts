@@ -232,6 +232,13 @@ describe("runsTableMarkdown", () => {
     expect(table).toContain("| Dropped by reason | quote_not_on_page 1 |");
   });
 
+  it("shows cached input tokens only when a run has them", () => {
+    expect(runsTableMarkdown([base])).not.toContain("Cached input tokens");
+    expect(runsTableMarkdown([{ ...base, cachedInputTokens: 640 }])).toContain(
+      "| Cached input tokens | 640 |",
+    );
+  });
+
   it("lists part pages and every drop reason", () => {
     const table = runsTableMarkdown([
       {

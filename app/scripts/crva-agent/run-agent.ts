@@ -27,7 +27,9 @@ import { runAgent } from "./agent";
 import { assembleBundle, parseValuesJsonl } from "./assemble";
 import type { Variant } from "./instructions";
 import {
+  agentFailure,
   prepareWorkspace,
+  redactSecrets,
   statsFromAgent,
   type AgentRunResult,
 } from "./run-stats";
@@ -78,7 +80,7 @@ async function runOnce(input: {
       usage: { promptTokens: 0, completionTokens: 0 },
       modelTurns: 0,
       toolCalls: 0,
-      error: err instanceof Error ? err.message : String(err),
+      error: redactSecrets(err instanceof Error ? err.message : String(err)),
     };
   } finally {
     // A cleanup failure (EBUSY/EPERM on Windows) must not abort the remaining paid runs.
@@ -91,14 +93,14 @@ async function runOnce(input: {
       });
     } catch (err) {
       console.warn(
-        `could not remove ${workspaceDir}: ${err instanceof Error ? err.message : String(err)}`,
+        `could not remove ${workspaceDir}: ${redactSecrets(err instanceof Error ? err.message : String(err))}`,
       );
     }
   }
 
-  // A capped or failed run never becomes a bundle, even if the agent wrote output.
+  // A failed run (cap, missing or empty output) never becomes a bundle.
   let bundle: CrvaDraftBundle | null = null;
-  if (!result.error && result.outputText !== null) {
+  if (!agentFailure(result) && result.outputText !== null) {
     const { candidates, badLines } = parseValuesJsonl(result.outputText);
     bundle = assembleBundle({
       file: input.ocr.file,
@@ -192,7 +194,11 @@ if (
   pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url
 ) {
   main().catch((err) => {
-    console.error(err);
+    console.error(
+      redactSecrets(
+        err instanceof Error ? (err.stack ?? err.message) : String(err),
+      ),
+    );
     process.exitCode = 1;
   });
 }

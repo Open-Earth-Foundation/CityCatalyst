@@ -139,4 +139,22 @@ describe("compareRows", () => {
     // Not the all-rows share: the non-v0 row must stay out.
     expect(cells[2]).not.toBe(pct(summarize(rows).shareCorrectAccepted));
   });
+
+  it("shows the mean cached input tokens, and a dash when no run has them", () => {
+    const lines = compareRows([
+      {
+        label: "a",
+        scored: [all, all],
+        stats: [
+          stats(1, { cachedInputTokens: 100 }),
+          stats(2, { cachedInputTokens: 300 }),
+        ],
+      },
+      { label: "b", scored: [all], stats: [stats(1)] },
+    ]).split("\n");
+    const col = lines[0].split(" | ").indexOf("Cached input tokens (mean)");
+    expect(col).toBeGreaterThan(0);
+    expect(lines[2].split(" | ")[col]).toBe("200");
+    expect(lines[3].split(" | ")[col]).toBe("\u2014");
+  });
 });

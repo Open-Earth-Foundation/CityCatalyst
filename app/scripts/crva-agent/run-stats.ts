@@ -16,7 +16,12 @@ import type { Variant } from "./instructions";
 export interface AgentRunResult {
   /** Content of output/values.jsonl, or null when the agent never wrote it. */
   outputText: string | null;
-  usage: { promptTokens: number; completionTokens: number };
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    /** Part of promptTokens served from the prompt cache, when the SDK reports it. */
+    cachedInputTokens?: number;
+  };
   /** Model calls (one per turn). */
   modelTurns: number;
   toolCalls: number;
@@ -46,10 +51,35 @@ export async function prepareWorkspace(
   }
 }
 
+/** Sum of `cached_tokens` over the SDK's per-request input token details; 0 when absent. */
+export function cachedInputTokens(
+  details: Array<Record<string, unknown>>,
+): number {
+  return details.reduce((sum, d) => {
+    const n = d?.cached_tokens ?? d?.cachedTokens;
+    return sum + (typeof n === "number" ? n : 0);
+  }, 0);
+}
+
+/** API errors can echo a (masked) key; keep any "sk-..." fragment out of files and logs. */
+export function redactSecrets(text: string): string {
+  return text.replace(/sk-[A-Za-z0-9_-]+/g, "sk-***");
+}
+
 /**
- * Harness-shaped stats for one agent run. A capped run (`error`) or a missing output file
- * fails the run; a run with an output file but no values is ok. `warnings` is left at 0:
- * the caller sets it from the plugin's validate().
+ * Why a run failed, or undefined when its output is usable: a cap, a missing output file,
+ * or an empty/whitespace-only one (a whole CRVA with zero values is an agent failure).
+ */
+export function agentFailure(result: AgentRunResult): string | undefined {
+  if (result.error) return result.error;
+  if (result.outputText === null) return "no output file";
+  if (result.outputText.trim() === "") return "empty output file";
+  return undefined;
+}
+
+/**
+ * Harness-shaped stats for one agent run. A failed run (see agentFailure) has no bundle.
+ * `warnings` is left at 0: the caller sets it from the plugin's validate().
  */
 export function statsFromAgent(
   run: number,
@@ -58,8 +88,7 @@ export function statsFromAgent(
   minutes: number,
   ocr: OcrCache,
 ): RunStats {
-  const error =
-    result.error ?? (result.outputText === null ? "no output file" : undefined);
+  const error = agentFailure(result);
   const kept = error ? null : bundle;
   const droppedByReason: Record<string, number> = {};
   for (const d of kept?.dropped ?? []) {
@@ -75,6 +104,9 @@ export function statsFromAgent(
     ocrPages: ocr.pageCount,
     promptTokens: result.usage.promptTokens,
     completionTokens: result.usage.completionTokens,
+    ...(result.usage.cachedInputTokens !== undefined
+      ? { cachedInputTokens: result.usage.cachedInputTokens }
+      : {}),
     llmCalls: result.modelTurns,
     nonStopFinishes: 0,
     modelTurns: result.modelTurns,

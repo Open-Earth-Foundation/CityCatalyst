@@ -113,6 +113,11 @@ Confirmed in the Task 5 smoke run (2026-11-18):
 - `readFile` and `pathExists` accept workspace-relative paths (`output/values.jsonl`) as well as `/workspace/...`. A missing file makes `pathExists` return `false`; `readFile` throws `SandboxWorkspaceReadNotFoundError`.
 - Usage: `agent.ts` passes its own `context: new RunContext()` to `run()` and reads `context.usage` afterwards, so the counts survive a throw (from `run.mjs`: a passed `RunContext` is used as is; `MaxTurnsExceededError.state` exists, but an abort error has no state). Tool calls are counted with `agent.on('agent_tool_start', ...)` for the same reason. Confirmed for the max-turns cap (maxTurns 1): `error: "max turns 1"` with usage and the tool call kept and the container removed. The timeout path is not exercised.
 
+### Capabilities and base URL
+
+- The agent uses `Capabilities.default()`: filesystem, shell and compaction.
+- The SDK reads `OPENAI_BASE_URL` from the environment, so it must be unset or point at api.openai.com (the CLI instructions already set `LLM_BASE_URL=""`).
+
 ### Not settled by the types
 
 - The exact keys of `TokenDetails` (cached and reasoning tokens).

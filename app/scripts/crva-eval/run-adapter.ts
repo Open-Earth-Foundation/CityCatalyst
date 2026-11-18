@@ -44,6 +44,8 @@ export interface RunStats {
   ocrPages: number;
   promptTokens: number;
   completionTokens: number;
+  /** Agent runs only: part of promptTokens served from the prompt cache. */
+  cachedInputTokens?: number;
   llmCalls: number;
   nonStopFinishes: number;
   valuesKept: number;
@@ -214,6 +216,11 @@ export function runsTableMarkdown(stats: RunStats[]): string {
       ? ([["Tool calls", (s) => s.toolCalls ?? "n/a"]] as Row[])
       : []),
     ["Prompt tokens", (s) => s.promptTokens],
+    ...(stats.some((s) => s.cachedInputTokens !== undefined)
+      ? ([
+          ["Cached input tokens", (s) => s.cachedInputTokens ?? "n/a"],
+        ] as Row[])
+      : []),
     ["Completion tokens", (s) => s.completionTokens],
     ["OCR pages", (s) => s.ocrPages],
     ["Parts", (s) => s.parts],

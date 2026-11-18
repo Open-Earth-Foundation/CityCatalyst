@@ -47,6 +47,7 @@ const HEADER = [
   "Dropped % (mean)",
   "Minutes (mean)",
   "Prompt tokens (mean)",
+  "Cached input tokens (mean)",
   "Completion tokens (mean)",
   "Model turns (mean)",
 ];
@@ -82,6 +83,9 @@ export function compareRows(inputs: CompareInput[]): string {
     const turns = used
       .map((u) => u.stats.modelTurns)
       .filter((t): t is number => t !== undefined);
+    const cached = used
+      .map((u) => u.stats.cachedInputTokens)
+      .filter((t): t is number => t !== undefined);
     const avg = (f: (s: RunStats) => number, fmt: (x: number) => string) =>
       used.length ? fmt(mean(used.map((u) => f(u.stats)))) : "—";
     const cells = [
@@ -108,6 +112,7 @@ export function compareRows(inputs: CompareInput[]): string {
         (s) => s.promptTokens,
         (x) => String(Math.round(x)),
       ),
+      cached.length ? String(Math.round(mean(cached))) : "—",
       avg(
         (s) => s.completionTokens,
         (x) => String(Math.round(x)),

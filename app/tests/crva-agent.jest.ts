@@ -21,7 +21,10 @@ import {
 } from "@/backend/ingest/plugins/ccra/extract-crva-fields";
 import type { OcrCache } from "../scripts/crva-eval/ocr-cache";
 import {
+  agentFailure,
+  cachedInputTokens,
   prepareWorkspace,
+  redactSecrets,
   statsFromAgent,
   type AgentRunResult,
 } from "../scripts/crva-agent/run-stats";
@@ -105,6 +108,58 @@ describe("assembleBundle", () => {
     expect(bundle.figures).toEqual(ocr.figures);
     expect(() => CrvaDraftBundleSchema.parse(bundle)).not.toThrow();
   });
+
+  const assemble = (text: string) => {
+    const { candidates, badLines } = parseValuesJsonl(text);
+    return assembleBundle({
+      file: "plan.pdf",
+      candidates,
+      badLines,
+      ocr,
+      extractionModel: "gpt-test",
+    });
+  };
+
+  // v0 parity (ruling R7): these pin behaviour shared with extract-crva-fields.ts.
+  it("keeps a value whose line has an extra top-level key", () => {
+    const bundle = assemble(JSON.stringify({ ...good, note: "extra" }));
+    expect(bundle.values).toHaveLength(1);
+    expect(bundle.values[0]).not.toHaveProperty("note");
+    expect(bundle.dropped).toEqual([]);
+  });
+
+  it("drops lines that are not objects as invalid_value", () => {
+    const bundle = assemble('42\n[]\n"x"');
+    expect(bundle.values).toEqual([]);
+    expect(bundle.dropped.map((d) => d.reason)).toEqual([
+      "invalid_value",
+      "invalid_value",
+      "invalid_value",
+    ]);
+  });
+
+  it("parses a CRLF file", () => {
+    const text = [JSON.stringify(good), JSON.stringify(good)].join("\r\n");
+    const bundle = assemble(text + "\r\n");
+    expect(bundle.values).toHaveLength(1);
+    expect(bundle.dropped).toEqual([]);
+  });
+
+  it("drops a too-short quote as quote_too_short", () => {
+    const bundle = assemble(JSON.stringify({ ...good, quote: "El plan" }));
+    expect(bundle.values).toEqual([]);
+    expect(bundle.dropped.map((d) => d.reason)).toEqual(["quote_too_short"]);
+  });
+
+  it("dedupes after verify: an unverified duplicate listed first does not hide the verified one", () => {
+    const bad = { ...good, quote: "texto que no aparece en la pagina" };
+    const bundle = assemble(
+      [bad, good].map((v) => JSON.stringify(v)).join("\n"),
+    );
+    expect(bundle.values).toHaveLength(1);
+    expect(bundle.values[0].fieldId).toBe("A1.1");
+    expect(bundle.dropped.map((d) => d.reason)).toEqual(["quote_not_on_page"]);
+  });
 });
 
 describe("prepareWorkspace", () => {
@@ -173,7 +228,25 @@ describe("statsFromAgent", () => {
     toolCalls: 12,
   };
 
-  it("an empty output file is an ok run with 0 values", () => {
+  it("an empty or whitespace-only output file is a failed run", () => {
+    for (const outputText of ["", " \n\r\n\t"]) {
+      const stats = statsFromAgent(
+        2,
+        { ...result, outputText },
+        null,
+        1.5,
+        ocr,
+      );
+      expect(stats.status).toBe("failed");
+      expect(stats.error).toBe("empty output file");
+      expect(stats.valuesKept).toBe(0);
+    }
+    expect(agentFailure({ ...result, outputText: "\n" })).toBe(
+      "empty output file",
+    );
+  });
+
+  it("an output file with content is an ok run", () => {
     const bundle = assembleBundle({
       file: "plan.pdf",
       candidates: [],
@@ -181,7 +254,13 @@ describe("statsFromAgent", () => {
       ocr,
       extractionModel: "gpt-test",
     });
-    const stats = statsFromAgent(2, result, bundle, 1.5, ocr);
+    const stats = statsFromAgent(
+      2,
+      { ...result, outputText: '{"a":1}' },
+      bundle,
+      1.5,
+      ocr,
+    );
     expect(stats).toMatchObject({
       run: 2,
       status: "ok",
@@ -221,7 +300,13 @@ describe("statsFromAgent", () => {
       ocr,
       extractionModel: "gpt-test",
     });
-    const stats = statsFromAgent(1, result, bundle, 1, ocr);
+    const stats = statsFromAgent(
+      1,
+      { ...result, outputText: "x" },
+      bundle,
+      1,
+      ocr,
+    );
     expect(stats.valuesKept).toBe(1);
     expect(stats.valuesDropped).toBe(1);
     expect(stats.droppedByReason).toEqual({ quote_not_on_page: 1 });
@@ -251,5 +336,50 @@ describe("statsFromAgent", () => {
     );
     expect(stats.status).toBe("failed");
     expect(stats.error).toBe("max turns 150");
+  });
+});
+
+describe("cachedInputTokens", () => {
+  it("sums cached tokens across requests and tolerates missing keys", () => {
+    expect(
+      cachedInputTokens([{ cached_tokens: 10 }, { cachedTokens: 5 }, {}]),
+    ).toBe(15);
+    expect(cachedInputTokens([])).toBe(0);
+  });
+
+  it("statsFromAgent carries it only when present", () => {
+    const base: AgentRunResult = {
+      outputText: "{}",
+      usage: { promptTokens: 1, completionTokens: 1 },
+      modelTurns: 1,
+      toolCalls: 0,
+    };
+    const ocr = {
+      file: "p.pdf",
+      pageCount: 1,
+      ocrModel: "m",
+      partRanges: [],
+      pages: new Map(),
+      figures: [],
+    } as OcrCache;
+    expect(statsFromAgent(1, base, null, 1, ocr)).not.toHaveProperty(
+      "cachedInputTokens",
+    );
+    const withCache = {
+      ...base,
+      usage: { ...base.usage, cachedInputTokens: 7 },
+    };
+    expect(statsFromAgent(1, withCache, null, 1, ocr).cachedInputTokens).toBe(
+      7,
+    );
+  });
+});
+
+describe("redactSecrets", () => {
+  it("masks key-shaped fragments", () => {
+    expect(
+      redactSecrets("Incorrect API key: sk-proj-abc_123-XYZ. See docs"),
+    ).toBe("Incorrect API key: sk-***. See docs");
+    expect(redactSecrets("no key here")).toBe("no key here");
   });
 });

@@ -17,7 +17,7 @@ import {
 // The Docker client ships in the "local" export, next to the Unix-local one (unused).
 import { DockerSandboxClient } from "@openai/agents/sandbox/local";
 import { agentInstructions, type Variant } from "./instructions";
-import type { AgentRunResult } from "./run-stats";
+import { cachedInputTokens, type AgentRunResult } from "./run-stats";
 
 export const SANDBOX_IMAGE = "crva-agent-sandbox:1";
 const OUTPUT_PATH = "output/values.jsonl";
@@ -55,6 +55,9 @@ export async function runAgent(input: {
   // No trace upload: run content (report text, tool output) stays off the OpenAI platform.
   setTracingDisabled(true);
   // The manifest lives on the session; the agent gets none, so the SDK applies no delta.
+  // Only the model name is passed: role crva_extraction sets no temperature or reasoning
+  // settings in app/llm_config.yaml. If one is added, map it into modelSettings to keep
+  // parity with v0.
   const agent = new SandboxAgent({
     name: "crva-extractor",
     model: input.model,
@@ -108,6 +111,7 @@ export async function runAgent(input: {
       usage: {
         promptTokens: context.usage.inputTokens,
         completionTokens: context.usage.outputTokens,
+        cachedInputTokens: cachedInputTokens(context.usage.inputTokensDetails),
       },
       modelTurns: context.usage.requests,
       toolCalls,

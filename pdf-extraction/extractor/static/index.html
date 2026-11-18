@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Document lab · PDF extraction</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Document lab home"><span class="brand-mark" aria-hidden="true">D<span>·</span></span>Document lab</a>
+    <span class="connection" id="connection"><span class="dot"></span>Connecting</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow">PDF → STRUCTURED DATA</p><h1>Your document.<br>Your data model.</h1><p class="lede">Give the agent a report and define what to find.<br>Review the values, their source pages, and what is still missing.</p></div>
+      <div class="intro-note"><span class="note-icon" aria-hidden="true">↗</span><p>Powered by an<br><strong>OpenAI hosted agent</strong></p><span class="muted">Reads, searches, and checks the document using its built-in tools.</span></div>
+    </section>
+    <div id="setup-notice" class="notice" hidden></div>
+    <div id="error" class="notice error" role="alert" hidden></div>
+    <div class="workspace">
+      <form id="extraction-form" class="input-panel">
+        <section class="card benchmark-card">
+          <div class="section-title"><span class="step">↳</span><h2>Try a benchmark</h2></div>
+          <p class="helper">Load a test PDF, GHGI schema, and extraction guidance together. Expected answers are checked only after extraction.</p>
+          <button type="button" id="refresh-benchmarks" class="text-button">Refresh test cases</button>
+          <label class="field-label" for="benchmark-case">Test case</label><select id="benchmark-case"><option value="">Refresh to see available tests</option></select>
+          <div class="prompt-actions"><button type="button" id="load-benchmark" class="secondary">Load case</button><button type="button" id="clear-benchmark" class="text-button">Clear test mode</button></div>
+          <p id="benchmark-status" class="helper small" role="status">Choose an original city report. Masterton C-032 is the development case.</p>
+          <p class="helper small">Only the supplied Drive originals are active. Paris is excluded. Missing inputs stay visible; loading a case does not start a paid run.</p>
+        </section>
+        <section class="card">
+          <div class="section-title"><span class="step">01</span><h2>Source document</h2></div>
+          <label class="dropzone" id="report-drop" for="report-file"><span class="file-icon" aria-hidden="true">↑</span><strong id="report-name">Choose a report PDF</strong><span id="report-meta">or drop it here · up to 45 MiB</span><input id="report-file" type="file" accept=".pdf,application/pdf" required></label>
+          <label class="field-label" for="report-label">Report label <span>optional</span></label>
+          <input id="report-label" type="text" maxlength="200" placeholder="e.g. Bogotá climate report 2025">
+          <div class="ocr-option"><label class="ocr-toggle" for="mistral-ocr"><input id="mistral-ocr" type="checkbox" disabled><span>Use Mistral OCR <small>optional preprocessing</small></span></label><p class="helper small" id="ocr-help">Off by default. Adds extracted text and tables alongside the original PDFs.</p></div>
+          <button type="button" id="preview-report" class="text-button" hidden>Open PDF preview ↗</button>
+          <a href="#how-to" class="text-button how-to-link">How context and repair work ↓</a>
+        </section>
+        <section class="card model-card">
+          <div class="section-title"><span class="step">02</span><h2>What should we extract?</h2></div>
+          <fieldset class="mode-switch"><legend class="sr-only">Data model format</legend><label><input type="radio" name="mode" value="json_schema" checked><span>JSON Schema</span></label><label><input type="radio" name="mode" value="taxonomy_pdf"><span>Taxonomy PDF</span></label></fieldset>
+          <div id="json-mode">
+            <p class="helper">Define fields, types, and descriptions. Use <code>null</code> for values that may be missing.</p>
+            <div class="editor-toolbar"><label class="text-button" for="schema-file">Upload .json<input id="schema-file" type="file" accept=".json,application/json" class="sr-only"></label><button type="button" class="text-button" id="format-schema">Format</button></div>
+            <label for="schema-editor" class="sr-only">JSON data schema</label><textarea id="schema-editor" spellcheck="false" aria-describedby="schema-help"></textarea>
+            <p class="helper small" id="schema-help">Standard JSON Schema · root type: object · nested fields and local references supported</p>
+          </div>
+          <div id="pdf-mode" hidden>
+            <p class="helper">Upload a PDF describing the fields, categories, units, and rules to use.</p>
+            <label class="dropzone compact" id="taxonomy-drop" for="taxonomy-file"><span class="file-icon" aria-hidden="true">↑</span><strong id="taxonomy-name">Choose a taxonomy PDF</strong><span id="taxonomy-meta">or drop it here · up to 45 MiB</span><input id="taxonomy-file" type="file" accept=".pdf,application/pdf"></label>
+            <p class="helper small">The agent will read this definition and map the report to its fields.</p>
+          </div>
+        </section>
+        <section class="card prompt-card">
+          <div class="section-title"><span class="step">03</span><h2>Guide the extraction</h2></div>
+          <details class="system-prompt-details"><summary>System prompt · agent instructions</summary><label class="sr-only" for="system-prompt">System prompt</label><textarea id="system-prompt" maxlength="65536" spellcheck="false" aria-describedby="system-prompt-help"></textarea><p class="helper small" id="system-prompt-help">Edit the extraction procedure and matching rules. The app always adds its required result schema and file contract.</p></details>
+          <label class="field-label" for="user-prompt">User prompt <span>this extraction</span></label>
+          <textarea id="user-prompt" maxlength="65536" spellcheck="false" placeholder="e.g. Extract 2023 data only. Prefer city-wide totals and flag estimates."></textarea>
+          <div class="prompt-actions"><button type="button" id="save-prompts" class="text-button">Save in this browser</button><button type="button" id="reset-prompts" class="text-button">Reset defaults</button></div>
+          <p class="helper small" id="prompt-status" aria-live="polite">Changes apply to new jobs. Save to reuse them after reloading.</p>
+        </section>
+        <section class="card run-card">
+          <label class="ocr-toggle" for="auto-repair"><input id="auto-repair" type="checkbox"><span>Automatically repair issues</span></label>
+          <p class="helper small">Off: extract and flag issues. On: send validation feedback to the same agent for another source check and corrected output. Each repair uses API billing.</p>
+          <label class="field-label" for="max-repairs">Maximum repair turns after the initial extraction</label><input id="max-repairs" type="number" min="1" max="5" value="3" disabled>
+          <div id="auth-settings" hidden><label for="service-token" class="field-label">Demo access token</label><input id="service-token" type="password" autocomplete="off" placeholder="EXTRACTION_API_KEY"><p class="helper small">Your OpenAI key stays on the server. This is the demo's access token.</p></div>
+          <button id="run" class="primary" type="submit" disabled>Extract data <span aria-hidden="true">↗</span></button>
+          <p class="helper small centered">Uses your OpenAI API account. Long reports can take several minutes.</p>
+          <details class="resume"><summary>Resume an existing job</summary><div class="resume-row"><label class="sr-only" for="resume-id">Job ID</label><input id="resume-id" placeholder="Paste job ID"><button type="button" id="resume-job" class="secondary">Resume</button></div></details>
+        </section>
+      </form>
+      <section class="output-panel" aria-label="Extraction results">
+        <div class="output-heading"><div><p class="eyebrow">EXTRACTION WORKSPACE</p><h2>Results & evidence</h2></div><button type="button" id="sample" class="secondary">Preview example</button></div>
+        <div id="empty-state" class="empty-state"><div class="document-stack" aria-hidden="true"><div></div><div></div><div><span>↳</span><i></i><i></i><i></i></div></div><h3>A clearer view of your report.</h3><p>Extracted values will appear here, with page references<br>and an explicit status for missing or uncertain fields.</p><div class="empty-tags"><span>Typed JSON</span><span>Source evidence</span><span>Coverage notes</span></div></div>
+        <section id="job-panel" class="job-panel" hidden aria-live="polite"><div class="job-top"><span id="job-status" class="status-badge">Submitted</span><button type="button" id="cancel" class="text-button">Cancel job</button></div><p id="job-message"></p><div class="job-id-row"><code id="job-id"></code><button type="button" id="copy-job" class="text-button">Copy ID</button></div></section>
+        <section id="activity-panel" class="activity-panel" hidden>
+          <div class="job-top"><h3>Agent activity</h3><button type="button" id="download-debug" class="text-button">Download debug JSON ↓</button></div>
+          <p id="loop-summary" class="helper small"></p><p id="usage" class="helper small"></p>
+          <p id="activity-error" class="helper small" role="status"></p>
+          <details open><summary>Validation & repair history</summary><ol id="controller-log" class="activity-log"></ol></details>
+          <details open><summary>Agent messages & tool activity</summary><div id="agent-log" class="activity-log"></div></details>
+          <p class="helper small">Updates about every 3 seconds. Public messages and tool records only; private reasoning is not shown. Latest 100 session items, with long text shortened. Debug output may contain report text.</p>
+        </section>
+        <section id="results" hidden>
+          <div id="benchmark-score" class="validation" hidden></div>
+          <div id="sample-notice" class="notice" hidden>Example output only. These values were not extracted from your document.</div>
+          <div class="result-summary"><div><span id="result-count" class="result-count"></span><p id="result-caption"></p></div><button type="button" id="download" class="secondary">Download JSON ↓</button></div>
+          <div id="validation" class="validation"></div>
+          <div id="warnings" class="warnings" hidden></div>
+          <div class="result-tabs" role="tablist" aria-label="Result view"><button type="button" id="evidence-tab" role="tab" aria-selected="true" aria-controls="evidence-view">Fields & evidence</button><button type="button" id="json-tab" role="tab" aria-selected="false" aria-controls="json-view">JSON output</button></div>
+          <div id="evidence-view" role="tabpanel" aria-labelledby="evidence-tab"><div id="field-list"></div></div>
+          <div id="json-view" role="tabpanel" aria-labelledby="json-tab" hidden><pre id="json-output"></pre></div>
+          <p class="review-note">Check the source before using these values. Schema validation checks structure; it does not prove the extraction is correct.</p>
+        </section>
+      </section>
+    </div>
+    <section class="card how-to" id="how-to" aria-labelledby="how-to-title">
+      <p class="eyebrow">HOW TO</p><h2 id="how-to-title">How the agent uses your documents</h2>
+      <p>Upload a report and either a taxonomy PDF or JSON Schema. Add guidance in the system and user prompts, choose optional OCR and automatic repair, then start. The result includes candidate values, field outcomes, quotes, and physical PDF page numbers.</p>
+      <div class="pipeline" role="img" aria-label="Report PDF and taxonomy PDF or JSON Schema enter the pipeline. Optional Mistral OCR processes PDFs in parallel. The OpenAI agent reads original files, optional OCR context, and prompts; extracts and checks; server validation either flags issues or loops back for bounded repairs; results go to human review.">
+        <div class="pipeline-inputs"><div class="flow-node"><strong>Report PDF</strong><span>Original source pages</span></div><div class="flow-node"><strong>Taxonomy PDF or JSON Schema</strong><span>Fields, types, definitions, units</span></div><div class="flow-node"><strong>Your prompts</strong><span>Extraction procedure + report guidance</span></div></div>
+        <div class="flow-arrow" aria-hidden="true">↓</div>
+        <div class="flow-node optional"><strong>Optional Mistral OCR · PDFs only</strong><span>Report + taxonomy OCR requests run in parallel. Wait for both to finish.</span><span>Structured page text, blocks, bounding boxes, HTML tables, dimensions, confidence</span></div>
+        <div class="flow-arrow" aria-hidden="true">↓ <small>Original files always included · OCR adds context</small></div>
+        <div class="flow-node agent"><strong>One OpenAI hosted agent session</strong><span>Read → search → inspect page images → extract → check → revisit</span><span>Built-in execution tools · original PDFs + definition + prompts + optional OCR file</span></div>
+        <div class="flow-arrow" aria-hidden="true">↓</div>
+        <div class="flow-node"><strong>Server validation</strong><span>Result contract · JSON Schema · page bounds · field accounting · reported coverage</span></div>
+        <div class="pipeline-branches"><div class="flow-node"><strong>Repair off → flag issues</strong><span>Keep the candidate and review notes.</span></div><div class="flow-node optional"><strong>Repair on ↺ same agent session</strong><span>Send issues → inspect sources → publish corrected JSON → validate again.</span><span>Stop when checks pass or the repair limit is reached (1–5 turns).</span></div></div>
+        <div class="flow-arrow" aria-hidden="true">↓</div><div class="flow-node"><strong>Review results & evidence → download JSON</strong><span>Unresolved issues stay visible. Schema checks do not prove source accuracy.</span></div>
+      </div>
+      <div class="how-to-notes"><div><h3>Two views of the same source</h3><p>With OCR on, PDFs are sent to Mistral before OpenAI starts. If you upload two PDFs, those OCR requests run in parallel with each other. OpenAI starts after preprocessing finishes. With JSON Schema, only the report needs OCR.</p><p>The original PDFs and the structured OCR JSON are available side by side in the agent workspace. The agent can search extracted text and tables, then inspect original pages to check units, headers, and ambiguous values. OCR supplements the PDFs; it does not replace them or dictate which tool the agent must use.</p></div><div><h3>Context, loops, and debugging</h3><p>The agent receives file paths, page counts, the data definition, your prompts, and a required output contract. It reads context files as needed using its tools. Even with repair off, the agent can make many tool calls within its initial turn.</p><p>Automatic repair adds a separate server-controlled loop after each completed turn. Invalid output, schema errors, missing reported coverage, and ambiguous, unreadable, or unsearched fields trigger feedback. A field marked “not found after search” remains an honest missing result. No repair may invent values to pass validation.</p><p>Watch messages, commands, tool results, validation errors, repair counts, and reported usage in Agent activity. The server keeps looping while the browser is closed. OCR uses Mistral billing; agent work and repairs use OpenAI billing. OCR boxes stay in context; final evidence currently uses page numbers and quotes.</p></div></div>
+    </section>
+    <footer><span>Document lab / local demo</span><span>One report. Your schema. Traceable results.</span></footer>
+  </main>
+</body>
+</html>

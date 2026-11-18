@@ -1,0 +1,230 @@
+{
+  "fixture_id": "cc-771-structured-benchmark-v2",
+  "fixture_version": "v2",
+  "pdf_filename": "cc-771-structured-benchmark-v2.pdf",
+  "language": "en",
+  "page_size": "A4",
+  "synthetic": true,
+  "page_header": "CityCatalyst OCR Benchmark — Synthetic Fixture v2",
+  "page_footer_template": "CC-771-STRUCTURED-V2 | Page {page} | Synthetic data only",
+  "expected_page_count": 3,
+  "chart_ground_truth_ref": "chart-ground-truth.md",
+  "pages": [
+    {
+      "page_index": 1,
+      "blocks": [
+        {
+          "role": "page_header",
+          "content_hint": "CityCatalyst OCR Benchmark — Synthetic Fixture v2"
+        },
+        {
+          "role": "heading",
+          "level": 1,
+          "content_hint": "Synthetic Climate Inventory Report",
+          "reading_order": 1
+        },
+        {
+          "role": "heading",
+          "level": 2,
+          "content_hint": "Scope and Methodology",
+          "reading_order": 2
+        },
+        {
+          "role": "heading",
+          "level": 3,
+          "content_hint": "Data boundaries",
+          "reading_order": 3
+        },
+        {
+          "role": "narrative",
+          "reading_order": 4,
+          "content_hint": "Synthetic fixture introduction paragraphs"
+        },
+        {
+          "role": "narrative",
+          "reading_order": 5,
+          "split_sentence": {
+            "part": 1,
+            "full_text": "This inventory aggregates sector-level estimates using a consistent boundary definition so that year-over-year comparisons remain meaningful when municipal policy shifts the operational scope of reporting agencies, and the resulting totals reflect only activities occurring within the synthetic metropolitan boundary rather than extrapolated regional transport corridors that lie outside municipal jurisdiction.",
+            "ends_with": "rather than "
+          }
+        },
+        {
+          "role": "table_title",
+          "reading_order": 6,
+          "content_hint": "Table 1. Synthetic municipal activity indicators (illustrative)"
+        },
+        {
+          "role": "table",
+          "reading_order": 7,
+          "table_id": "table-1",
+          "columns": ["Indicator", "2020", "2023", "2025", "Unit"]
+        },
+        {
+          "role": "table_caption",
+          "reading_order": 8,
+          "related_table": "table-1",
+          "content_hint": "Table 1 caption: Illustrative non-emissions indicators..."
+        },
+        {
+          "role": "table_note",
+          "reading_order": 9,
+          "related_table": "table-1",
+          "content_hint": "Note: This table exercises title-above, caption-below, and footnote placement."
+        },
+        {
+          "role": "page_footer",
+          "content_hint": "CC-771-STRUCTURED-V2 | Page 1 | Synthetic data only"
+        }
+      ]
+    },
+    {
+      "page_index": 2,
+      "blocks": [
+        {
+          "role": "page_header",
+          "content_hint": "CityCatalyst OCR Benchmark — Synthetic Fixture v2"
+        },
+        {
+          "role": "narrative",
+          "reading_order": 1,
+          "split_sentence": {
+            "part": 2,
+            "continues_from_page": 1,
+            "starts_with": "extrapolated regional transport corridors"
+          }
+        },
+        {
+          "role": "narrative",
+          "reading_order": 2,
+          "content_hint": "Discussion of figure interpretation without chart-only numeric facts"
+        },
+        {
+          "role": "figure",
+          "figure_id": "figure-1",
+          "reading_order": 3,
+          "kind": "chart",
+          "title": "Synthetic sector emissions trend",
+          "chart_facts_ref": "chart-ground-truth.md#chart-data"
+        },
+        {
+          "role": "figure_caption",
+          "reading_order": 4,
+          "related_figure": "figure-1",
+          "content_hint": "Figure 1. Synthetic sector emissions (ktCO2e), 2020–2025."
+        },
+        {
+          "role": "narrative",
+          "reading_order": 5,
+          "related_figure": "figure-1",
+          "content_hint": "Explanatory text about caption association; must not restate five chart-only facts"
+        },
+        {
+          "role": "page_footer",
+          "content_hint": "CC-771-STRUCTURED-V2 | Page 2 | Synthetic data only"
+        }
+      ]
+    },
+    {
+      "page_index": 3,
+      "blocks": [
+        {
+          "role": "page_header",
+          "content_hint": "CityCatalyst OCR Benchmark — Synthetic Fixture v2"
+        },
+        {
+          "role": "heading",
+          "level": 2,
+          "content_hint": "Layout and Reading Order Checks",
+          "reading_order": 1
+        },
+        {
+          "role": "heading",
+          "level": 3,
+          "content_hint": "Multi-column annex",
+          "reading_order": 2
+        },
+        {
+          "role": "narrative",
+          "reading_order": 3,
+          "content_hint": "Introductory paragraph for multi-column test"
+        },
+        {
+          "role": "column",
+          "column_id": "column-a",
+          "reading_order": 4,
+          "content_hint": "Column A: Primary reading order begins here."
+        },
+        {
+          "role": "column",
+          "column_id": "column-b",
+          "reading_order": 5,
+          "content_hint": "Column B: Secondary reading order follows column A."
+        },
+        {
+          "role": "narrative",
+          "reading_order": 6,
+          "content_hint": "End of synthetic fixture"
+        },
+        {
+          "role": "page_footer",
+          "content_hint": "CC-771-STRUCTURED-V2 | Page 3 | Synthetic data only"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "type": "caption_for",
+      "source": "table-1",
+      "target_role": "table_caption"
+    },
+    {
+      "type": "note_for",
+      "source": "table-1",
+      "target_role": "table_note"
+    },
+    {
+      "type": "caption_for",
+      "source": "figure-1",
+      "target_role": "figure_caption"
+    },
+    {
+      "type": "explained_by",
+      "source": "figure-1",
+      "target_role": "narrative",
+      "page_index": 2
+    }
+  ],
+  "reading_order_intent": {
+    "two_column_page": 3,
+    "column_order": ["column-a", "column-b"]
+  },
+  "chart_facts": {
+    "title": "Synthetic sector emissions trend",
+    "unit": "ktCO2e",
+    "years": [2020, 2021, 2022, 2023, 2024, 2025],
+    "series": {
+      "Transport": [48, 46, 43, 39, 34, 30],
+      "Buildings": [31, 30, 29, 27, 25, 23],
+      "Waste": [16, 16, 15, 14, 13, 12]
+    },
+    "target_line": {
+      "value": 50,
+      "year_label": 2030,
+      "style": "dashed"
+    },
+    "callout": "Transport falls below 35 ktCO2e in 2024",
+    "expected_answers_ref": "chart-ground-truth.md#expected-answers-five-chart-only-facts"
+  },
+  "layout_cases": [
+    "repeated_page_header",
+    "repeated_page_footer",
+    "sentence_split_across_pages",
+    "heading_hierarchy_h1_h2_h3",
+    "table_title_caption_note",
+    "image_chart_with_callout_and_target",
+    "figure_caption_and_surrounding_text",
+    "two_column_known_reading_order"
+  ]
+}

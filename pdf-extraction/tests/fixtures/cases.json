@@ -1,0 +1,14 @@
+[
+  {
+    "id": "small-ghgi",
+    "group": "fixture",
+    "label": "Small GHGI sample \u00b7 2022",
+    "city": "Sample inventory",
+    "year": 2022,
+    "pdf": ".local/pdfs/small-ghgi.pdf",
+    "schema": "schemas/ghgi.schema.json",
+    "prompt": "prompts/ghgi.md",
+    "expected": "expected/small-ghgi.json",
+    "source": "app/tests/fixtures/path-c-sample-inventory.pdf"
+  }
+]

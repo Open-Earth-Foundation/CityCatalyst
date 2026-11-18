@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object","additionalProperties":false,
+  "properties":{
+    "highest_sector_2020":{"type":["string","null"],"description":"Sector with the highest chart emissions in 2020."},
+    "transport_2020_ktco2e":{"type":["number","null"],"description":"Transport emissions in 2020, in ktCO2e, read from the chart."},
+    "first_transport_below_35_year":{"type":["integer","null"],"description":"First chart year when transport emissions are below 35 ktCO2e."},
+    "target_ktco2e":{"type":["number","null"],"description":"Emissions value of the dashed target line, in ktCO2e."},
+    "combined_2025_ktco2e":{"type":["number","null"],"description":"Sum of all three chart series in 2025, in ktCO2e. Explain the source values and calculation."},
+    "smallest_reduction_sector":{"type":["string","null"],"description":"Sector with the smallest absolute reduction between 2020 and 2025."},
+    "smallest_reduction_ktco2e":{"type":["number","null"],"description":"Magnitude of that smallest absolute reduction, in ktCO2e."}
+  },
+  "required":["highest_sector_2020","transport_2020_ktco2e","first_transport_below_35_year","target_ktco2e","combined_2025_ktco2e","smallest_reduction_sector","smallest_reduction_ktco2e"]
+}

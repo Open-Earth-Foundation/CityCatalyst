@@ -1,0 +1,11 @@
+*
+!Dockerfile
+!requirements.txt
+!extractor/
+!extractor/**
+!benchmarks/
+!benchmarks/**
+benchmarks/.local/
+benchmarks/runs/
+**/__pycache__
+**/*.pyc

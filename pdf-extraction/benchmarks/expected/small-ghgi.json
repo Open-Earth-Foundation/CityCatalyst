@@ -1,0 +1,8 @@
+{"provenance":"Manually transcribed from the one-page repository sample; synthetic, not Product answer keys.","checks":[
+  {"path":"/reporting_year","value":2022},
+  {"path":"/reported_total_tco2e","value":null},
+  {"row":{"description_contains":"Residential","scope":1},"value":1200.5,"tolerance":0.05},
+  {"row":{"description_contains":"Commercial","scope":1},"value":850.2,"tolerance":0.05},
+  {"row":{"description_contains":"On-road","scope":1},"value":3400.0,"tolerance":0.05},
+  {"row":{"description_contains":"Solid waste","scope":1},"value":410.8,"tolerance":0.05}
+]}

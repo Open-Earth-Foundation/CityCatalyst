@@ -90,6 +90,8 @@ _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
 _BACKGROUND_REVALIDATIONS: set[asyncio.Task[bool]] = set()
 CONTEXT_BUNDLE_RECONCILE_INTERVAL_SECONDS = 300
 CONTEXT_BUNDLE_STALE_AFTER = timedelta(hours=1)
+# How often a queued revalidation checks whether the blocking chat edit finished.
+EDIT_WAIT_POLL_SECONDS = 5
 
 
 class ContextBundleService:
@@ -432,21 +434,29 @@ class ContextBundleService:
 
         ``preloaded`` holds verified source text from the build that queued the
         job; any other queued upload is re-fetched with a service-minted token
-        for the run owner. The lease is always released, and a failed pass
-        stays queued for the reconciler to retry.
+        for the run owner. A chat edit being planned is awaited for at most the
+        edit planning deadline. The lease is always released, and a failed or
+        deferred pass stays queued for the reconciler to retry.
         """
         if self.revalidate_fn is None:
             return False
-        # Rewriting chapters mid-plan would make that edit stale; the pending job
-        # stays queued and the reconciler retries it.
-        if self.edit_in_progress_fn is not None and await self.edit_in_progress_fn(
-            run_id
-        ):
-            logger.info(
-                "Deferred Concept Note source revalidation during an edit run_id=%s",
-                run_id,
+        # Rewriting chapters mid-plan would make that edit stale, so wait for it.
+        # New edits are refused while this job is pending, so the wait ends with
+        # the current edit; past the planning deadline the reconciler retries.
+        if self.edit_in_progress_fn is not None:
+            loop = asyncio.get_running_loop()
+            deadline = (
+                loop.time()
+                + get_settings().llm.generation.prompt_budget.cnb_edits.timeout_seconds
             )
-            return False
+            while await self.edit_in_progress_fn(run_id):
+                if loop.time() >= deadline:
+                    logger.info(
+                        "Deferred Concept Note source revalidation during an edit run_id=%s",
+                        run_id,
+                    )
+                    return False
+                await asyncio.sleep(EDIT_WAIT_POLL_SECONDS)
         claim = await claim_source_revalidation(
             session_factory=self.session_factory,
             run_id=run_id,

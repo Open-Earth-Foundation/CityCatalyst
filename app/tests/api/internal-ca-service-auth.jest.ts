@@ -570,10 +570,12 @@ describe("internal CA service auth contract", () => {
       expect(mockCommitAcceptedStationaryEnergyRows).not.toHaveBeenCalled();
       expect(mockCommitStationaryEnergyNotationKeys).not.toHaveBeenCalled();
 
+      await inventory.update({ isPublic: true });
+      expect((await capabilities("draft")).status).toBe(403);
+
       const city = await db.models.City.findByPk(fixture.cityId);
       await city!.addUser(fixture.userId);
       expect((await capabilities("draft")).status).toBe(200);
-      await inventory.update({ isPublic: true });
       expect((await capabilities("review")).status).toBe(200);
       expect((await commitAccepted()).status).toBe(200);
       expect((await commitNotationKeys()).status).toBe(200);
@@ -583,6 +585,26 @@ describe("internal CA service auth contract", () => {
       expect((await capabilities("review")).status).toBe(403);
       expect((await commitAccepted()).status).toBe(403);
       expect((await commitNotationKeys()).status).toBe(403);
+      const loadContext = await postLoadContext(
+        makeRequest(
+          "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context",
+          { ...loadContextBody(), ...scope },
+          headers,
+        ),
+        context,
+      );
+      const listNotationKeys = await postListNotationKeys(
+        makeRequest(
+          "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+          { ...listNotationKeysBody(), ...scope },
+          headers,
+        ),
+        context,
+      );
+      expect(loadContext.status).toBe(403);
+      expect(listNotationKeys.status).toBe(403);
+      expect(mockBuildStationaryEnergyContext).not.toHaveBeenCalled();
+      expect(mockListStationaryEnergyNotationKeyTargets).not.toHaveBeenCalled();
       expect(mockCommitAcceptedStationaryEnergyRows).toHaveBeenCalledTimes(1);
       expect(mockCommitStationaryEnergyNotationKeys).toHaveBeenCalledTimes(1);
     } finally {

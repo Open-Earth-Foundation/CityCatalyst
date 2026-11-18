@@ -4,8 +4,8 @@
  *   npx tsx scripts/crva-eval/compare.ts --label v0 --dir <run dir> --label A --dir <run dir> \
  *     --label B --dir <run dir> [--out <file>]
  *
- * Reads run-<n>.json and score-run-<n>/scored.json of each directory. A run
- * without a score (failed or not scored) is counted as failed in the table.
+ * Reads run-<n>.json and score-run-<n>/scored.json of each directory. Failed
+ * runs and ok runs without a score are counted apart and left out of the numbers.
  */
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -16,10 +16,10 @@ import type { ScoredRow } from "./types";
 
 export interface CompareInput {
   label: string;
-  /** Rows of each scored run. */
-  scored: ScoredRow[][];
-  /** Stats of every run in the directory, scored or not. */
+  /** Stats of every run in the directory. */
   stats: RunStats[];
+  /** Rows of each run, aligned with `stats`; null when the run is not scored. */
+  scored: (ScoredRow[] | null)[];
 }
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
@@ -61,38 +61,45 @@ export function compareRows(inputs: CompareInput[]): string {
     `| ${HEADER.map(() => "---").join(" | ")} |`,
   ];
   for (const { label, scored, stats } of inputs) {
-    const v0 = scored.map((rows) => rows.filter((r) => r.isV0Field));
-    const ok = stats.filter((s) => s.status === "ok");
-    const failed = stats.length - scored.length;
-    const dropped = ok.map((s) => {
+    // Every number comes from the same runs: ok and scored.
+    const used = stats.flatMap((s, i) => {
+      const rows = scored[i];
+      return s.status === "ok" && rows ? [{ stats: s, rows }] : [];
+    });
+    const failed = stats.filter((s) => s.status !== "ok").length;
+    const unscored = stats.filter(
+      (s, i) => s.status === "ok" && !scored[i],
+    ).length;
+    const extra = [
+      ...(failed ? [`${failed} failed`] : []),
+      ...(unscored ? [`${unscored} unscored`] : []),
+    ];
+    const v0 = used.map((u) => u.rows.filter((r) => r.isV0Field));
+    const dropped = used.map(({ stats: s }) => {
       const total = s.valuesKept + s.valuesDropped;
       return total === 0 ? 0 : s.valuesDropped / total;
     });
-    const turns = stats
-      .map((s) => s.modelTurns)
+    const turns = used
+      .map((u) => u.stats.modelTurns)
       .filter((t): t is number => t !== undefined);
     const avg = (f: (s: RunStats) => number, fmt: (x: number) => string) =>
-      ok.length ? fmt(mean(ok.map(f))) : "—";
+      used.length ? fmt(mean(used.map((u) => f(u.stats)))) : "—";
     const cells = [
       label,
-      failed > 0 ? `${scored.length} (${failed} failed)` : `${scored.length}`,
+      extra.length ? `${used.length} (${extra.join(", ")})` : `${used.length}`,
       range(
-        scored.map(
-          (rows) => summarize(rows, (r) => r.isV0Field).shareCorrectAccepted,
+        used.map(
+          (u) => summarize(u.rows, (r) => r.isV0Field).shareCorrectAccepted,
         ),
         pct,
       ),
-      scored.length
-        ? pct(mean(v0.map((r) => rate(coverage(r).accepted))))
-        : "—",
-      scored.length
-        ? pct(mean(v0.map((r) => rate(precision(r).accepted))))
-        : "—",
+      used.length ? pct(mean(v0.map((r) => rate(coverage(r).accepted)))) : "—",
+      used.length ? pct(mean(v0.map((r) => rate(precision(r).accepted)))) : "—",
       avg(
         (s) => s.valuesKept,
         (x) => x.toFixed(1),
       ),
-      ok.length ? pct(mean(dropped)) : "—",
+      used.length ? pct(mean(dropped)) : "—",
       avg(
         (s) => s.minutes,
         (x) => x.toFixed(1),
@@ -118,7 +125,7 @@ async function readDir(label: string, dir: string): Promise<CompareInput> {
     .filter((m): m is RegExpExecArray => m !== null)
     .map((m) => Number(m[1]))
     .sort((a, b) => a - b);
-  const scored: ScoredRow[][] = [];
+  const scored: (ScoredRow[] | null)[] = [];
   const stats: RunStats[] = [];
   for (const n of numbers) {
     const run = JSON.parse(
@@ -135,7 +142,7 @@ async function readDir(label: string, dir: string): Promise<CompareInput> {
         ) as ScoredRow[],
       );
     } catch {
-      // Failed or not scored: counted as failed in the table.
+      scored.push(null);
     }
   }
   return { label, scored, stats };

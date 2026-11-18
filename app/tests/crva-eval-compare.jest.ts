@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import { coverage, precision, summarize } from "../scripts/crva-eval/report";
 import { compareRows } from "../scripts/crva-eval/compare";
 import type { RunStats } from "../scripts/crva-eval/run-adapter";
 import type { ScoredRow } from "../scripts/crva-eval/types";
@@ -95,5 +96,47 @@ describe("compareRows", () => {
       },
     ]).split("\n");
     expect(line).toContain("| 1 (1 failed) |");
+  });
+
+  it("takes every mean over ok and scored runs only", () => {
+    const [, , line] = compareRows([
+      {
+        label: "A",
+        scored: [all, null, null],
+        stats: [
+          stats(1, { modelTurns: 40, minutes: 20 }),
+          stats(2, { status: "failed", modelTurns: 150, minutes: 30 }),
+          stats(3, { modelTurns: 90, minutes: 50 }),
+        ],
+      },
+    ]).split("\n");
+    expect(line).toContain("| 1 (1 failed, 1 unscored) |");
+    expect(line).toContain("| 20.0 |");
+    expect(line).toMatch(/\| 40 \|$/);
+  });
+
+  it("gives the same numbers as report.ts on the v0 rows", () => {
+    const rows = [
+      row({ rowNumber: 2 }),
+      row({
+        rowNumber: 3,
+        verdict: "Partial",
+        partialReason: "trimmed_wording",
+      }),
+      row({ rowNumber: 4, verdict: "Wrong content" }),
+      row({ rowNumber: 5, isV0Field: false, verdict: "Omission" }),
+    ];
+    const v0 = rows.filter((r) => r.isV0Field);
+    const rate = (v: { hits: number; total: number }) => v.hits / v.total;
+    const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
+    const [, , line] = compareRows([
+      { label: "v0", scored: [rows], stats: [stats(1)] },
+    ]).split("\n");
+    const cells = line.split(" | ");
+    expect(cells[2]).toBe(pct(summarize(v0).shareCorrectAccepted));
+    expect(cells[3]).toBe(pct(rate(coverage(v0).accepted)));
+    expect(cells[4]).toBe(pct(rate(precision(v0).accepted)));
+    // Not the all-rows share: the non-v0 row must stay out.
+    expect(cells[2]).not.toBe(pct(summarize(rows).shareCorrectAccepted));
   });
 });

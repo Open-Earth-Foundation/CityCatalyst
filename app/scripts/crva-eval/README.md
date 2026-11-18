@@ -44,7 +44,7 @@ It writes `reports/crva-eval/<city>/ocr/` (or `--out`): the page texts and figur
 npx tsx scripts/crva-eval/compare.ts --label v0 --dir <run dir> --label A --dir <run dir> --label B --dir <run dir> [--out <file>]
 ```
 
-It reads `run-<n>.json` and `score-run-<n>/scored.json` of each directory. A run without a score is skipped and counted as failed in the `Runs` column. One row per label: runs; share correct in the v0 fields under the accepted rule (min-max over runs); v0 coverage and precision under the accepted rule (mean over runs; same functions and v0-field filter as `report.md`, so a single run matches it); values kept; dropped share; minutes; prompt and completion tokens; model turns (agent runs only, `—` for v0). Failed runs are left out of the means.
+It reads `run-<n>.json` and `score-run-<n>/scored.json` of each directory. Only runs that are ok and scored are used, for every number. The `Runs` column shows how many, plus failed runs and ok runs without a score (`2 (1 failed, 1 unscored)`). One row per label: runs; share correct in the v0 fields under the accepted rule (min-max over runs); v0 coverage and precision under the accepted rule (the mean of the per-run rates; same functions and v0-field filter as `report.md`, so a single run matches it); values kept, dropped share, minutes, prompt and completion tokens, and model turns (means; model turns for agent runs only, `—` for v0).
 
 ## Output
 

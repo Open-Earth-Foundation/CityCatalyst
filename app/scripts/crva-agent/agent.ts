@@ -54,17 +54,6 @@ export async function runAgent(input: {
 }): Promise<AgentRunResult> {
   // No trace upload: run content (report text, tool output) stays off the OpenAI platform.
   setTracingDisabled(true);
-  // Default archiveLimits (1 GiB input, 4 GiB extracted, 100k members) already accept the
-  // 41.2 MiB variant B PDF, so none are set.
-  const client = new DockerSandboxClient({
-    image: SANDBOX_IMAGE,
-    networkMode: "none",
-  });
-  // We own the session so the workspace outlives run() and we can read the output.
-  const session = await client.create({
-    manifest: new Manifest({ entries: await readEntries(input.workspaceDir) }),
-  });
-
   // The manifest lives on the session; the agent gets none, so the SDK applies no delta.
   const agent = new SandboxAgent({
     name: "crva-extractor",
@@ -76,12 +65,24 @@ export async function runAgent(input: {
   agent.on("agent_tool_start", () => {
     toolCalls += 1;
   });
-
   // A RunContext we hold keeps the usage even when run() throws.
   const context = new RunContext();
-  const signal = AbortSignal.timeout(input.timeoutMs);
+  // Everything that can throw is built before the container exists, so nothing leaks it.
+  const workspace = new Manifest({
+    entries: await readEntries(input.workspaceDir),
+  });
+
+  // Default archiveLimits (1 GiB input, 4 GiB extracted, 100k members) already accept the
+  // 41.2 MiB variant B PDF, so none are set.
+  const client = new DockerSandboxClient({
+    image: SANDBOX_IMAGE,
+    networkMode: "none",
+  });
+  // We own the session so the workspace outlives run() and we can read the output.
+  const session = await client.create({ manifest: workspace });
   let error: string | undefined;
   try {
+    const signal = AbortSignal.timeout(input.timeoutMs);
     try {
       await run(agent, "Extract the CRVA fields from the report.", {
         maxTurns: input.maxTurns,
@@ -113,7 +114,12 @@ export async function runAgent(input: {
       ...(error ? { error } : {}),
     };
   } finally {
-    // Removes the container and its host workspace copy.
-    await session.close();
+    // Removes the container and its host workspace copy. A close failure is logged, never
+    // thrown, so it cannot mask the run's result or error.
+    try {
+      await session.close();
+    } catch (closeErr) {
+      console.error("crva-agent: sandbox close failed", closeErr);
+    }
   }
 }

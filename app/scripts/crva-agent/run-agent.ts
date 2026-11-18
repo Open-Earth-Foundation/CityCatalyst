@@ -7,6 +7,7 @@
  *
  * Output: app/reports/crva-eval/<city>/agent-<a|b>/<timestamp>/run-<n>.json and runs.md.
  */
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -80,7 +81,19 @@ async function runOnce(input: {
       error: err instanceof Error ? err.message : String(err),
     };
   } finally {
-    await rm(workspaceDir, { recursive: true, force: true });
+    // A cleanup failure (EBUSY/EPERM on Windows) must not abort the remaining paid runs.
+    try {
+      await rm(workspaceDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 3,
+        retryDelay: 200,
+      });
+    } catch (err) {
+      console.warn(
+        `could not remove ${workspaceDir}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   }
 
   // A capped or failed run never becomes a bundle, even if the agent wrote output.
@@ -117,7 +130,8 @@ async function main() {
   }
   const variant: Variant = variantArg;
   const city = argValue("--city");
-  const pdfPath = argValue("--pdf");
+  // Only variant B copies the PDF into the workspace; A works from the OCR pages.
+  const pdfPath = variant === "B" ? argValue("--pdf") : "";
   const runs = parseRunCount(argValue("--runs", "1"));
   const maxTurns = parseRunCount(argValue("--max-turns", "150"));
   const timeoutMin = Number(argValue("--timeout-min", "30"));
@@ -125,6 +139,12 @@ async function main() {
     console.error(
       "--runs and --max-turns must be positive integers, --timeout-min a positive number",
     );
+    process.exitCode = 1;
+    return;
+  }
+
+  if (variant === "B" && !existsSync(pdfPath)) {
+    console.error(`--pdf not found: ${pdfPath}`);
     process.exitCode = 1;
     return;
   }

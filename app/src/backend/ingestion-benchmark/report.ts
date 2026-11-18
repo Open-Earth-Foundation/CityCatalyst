@@ -186,6 +186,29 @@ export type RunSummary = {
   rescoredFrom?: { measuredAt: string; commit: string };
 };
 
+/** Reason recorded for a case the precomputed rows folder has no envelope for. */
+export const NO_ENVELOPE_REASON = "no envelope in the rows folder";
+
+/**
+ * Exploratory flags of a rescore: the rescored run keeps the pipeline of the
+ * run it rescores, and a pipeline run stays exploratory.
+ */
+export function rescoredRunFlags(old: {
+  runsPerFile?: number;
+  pipeline?: PipelineInfo;
+}): Pick<RunSummary, "exploratory" | "exploratoryReason" | "pipeline"> {
+  if (old.pipeline) {
+    return {
+      exploratory: true,
+      exploratoryReason: "pipeline",
+      pipeline: old.pipeline,
+    };
+  }
+  return (old.runsPerFile ?? 3) !== 3
+    ? { exploratory: true, exploratoryReason: "attempts" }
+    : { exploratory: false };
+}
+
 /**
  * Whether a run is incomplete: a full-set run (--all) with cases left out or
  * unfinished, or any run with a case the precomputed rows folder has no
@@ -201,7 +224,7 @@ export function incompleteRun(input: {
     .filter((result) => result.runs.some((run) => run.missingEnvelope))
     .map((result) => ({
       id: result.id,
-      reason: "no envelope in the rows folder",
+      reason: NO_ENVELOPE_REASON,
     }));
   const fullSetGap =
     input.all && (input.missing.length > 0 || input.unfinished.length > 0);
@@ -412,6 +435,56 @@ function failureModesText(verdict: CaseVerdict | undefined): string {
   return parts.length ? parts.join(", ") : "none";
 }
 
+const NOT_BUILT_IN = "n/a (precomputed pipeline)";
+
+function pipelineText(pipeline: PipelineInfo): string {
+  const where = [pipeline.study, pipeline.stage].filter(Boolean).join("/");
+  const how = [pipeline.mode, pipeline.version].filter(Boolean).join(" ");
+  const detail = [where, how].filter(Boolean).join(", ");
+  return `${pipeline.id}${detail ? ` (${detail})` : ""}`;
+}
+
+const tally = (counts: Record<string, number>) => {
+  const parts = Object.entries(counts).map(([key, n]) => `${key} ${n}`);
+  return parts.length ? cell(parts.join(", ")) : "none";
+};
+
+const reportedText = (reported: PipelineAttempt["reported"]) =>
+  `total ${reported.totalT ?? "n/a"}, gross ${reported.grossT ?? "n/a"}, net ${reported.netT ?? "n/a"}, removals ${reported.removalsT ?? "n/a"}`;
+
+/**
+ * What the pipeline reported per attempt: facts about the envelope, never
+ * scored. Empty for a built-in run.
+ */
+function renderPipelineNotes(summary: RunSummary): string[] {
+  const rows = summary.results.flatMap((result) =>
+    result.runs.flatMap((run) => {
+      if (run.pipeline) {
+        const p = run.pipeline;
+        return [
+          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(p.reported.totalBasis ?? "n/a")} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${p.costSource}) |`,
+        ];
+      }
+      return run.missingEnvelope
+        ? [
+            `| ${cell(result.id)} | ${run.run} | no envelope | - | - | - | - | - | - | - | - | - |`,
+          ]
+        : [];
+    }),
+  );
+  if (rows.length === 0) return [];
+  return [
+    "",
+    "## Pipeline notes",
+    "",
+    "What the pipeline reported for each attempt: facts about the envelope, not scored. Lost rows are the rows approve skipped, by import issue code; `unexplained` and `notSkipped` mark a mismatch between the rows approve skipped and the issues it reported.",
+    "",
+    "| Case | Attempt | Execution status | Rows in envelope | Unknown row roles | Dropped rows | Lost rows | Reported totals (t) | Total basis / kind | Scope basis | Total inclusion | Cost |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...rows,
+  ];
+}
+
 export function renderReport(
   summary: RunSummary,
   verdicts: CaseVerdict[],
@@ -427,9 +500,19 @@ export function renderReport(
     title,
     "",
     `- Commit: \`${summary.commit}\` on \`${summary.branch}\`${summary.dirty ? " (dirty working tree)" : ""}`,
-    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
-    `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
-    `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+    ...(summary.pipeline
+      ? [
+          `- Pipeline: ${pipelineText(summary.pipeline)}`,
+          "- Exploratory: pipeline",
+          `- Extraction model: ${NOT_BUILT_IN}`,
+          `- Prompt hash: ${NOT_BUILT_IN}`,
+          `- Input representation: ${NOT_BUILT_IN}`,
+        ]
+      : [
+          `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+          `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
+          `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+        ]),
     `- Test-set version: ${summary.testSetVersion}; scorer version: ${summary.scorerVersion ?? "n/a"}`,
     `- Attempts per case: ${summary.runsPerFile}`,
     ...(summary.rescoredFrom
@@ -448,9 +531,25 @@ export function renderReport(
     );
   }
   if (summary.incomplete) {
-    const { missing, unfinished } = summary.incomplete;
+    const { unfinished } = summary.incomplete;
+    // A precomputed run runs a case without an envelope as a failed attempt.
+    const noEnvelope = summary.pipeline
+      ? summary.incomplete.missing.filter(
+          (m) => m.reason === NO_ENVELOPE_REASON,
+        )
+      : [];
+    const missing = summary.incomplete.missing.filter(
+      (m) => !noEnvelope.includes(m),
+    );
     lines.push(
-      "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      summary.pipeline
+        ? "**INCOMPLETE**: this run does not cover every case; numbers cover the cases listed under Selection only."
+        : "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      ...(noEnvelope.length
+        ? [
+            `- No envelope in the rows folder: ${noEnvelope.map((m) => m.id).join(", ")}`,
+          ]
+        : []),
       ...(missing.length
         ? [
             `- Missing inputs (not run): ${missing.map((m) => `${m.id} (${cell(m.reason)})`).join(", ")}`,
@@ -557,6 +656,8 @@ export function renderReport(
     );
   }
 
+  lines.push(...renderPipelineNotes(summary));
+
   const legacy = summary.results
     .filter((result) => toleranceSourceOf(result) === "legacy")
     .map((result) => result.id);
@@ -616,7 +717,7 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}`;
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${summary.pipeline.id}:${summary.pipeline.study ?? "unknown"}` : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }

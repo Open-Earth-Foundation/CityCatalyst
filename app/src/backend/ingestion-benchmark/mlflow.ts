@@ -103,6 +103,9 @@ function attemptMetrics(
       ["attempt.seconds", run.stageMs?.total / 1000],
       ["attempt.prompt_tokens", run.usage?.promptTokens],
       ["attempt.completion_tokens", run.usage?.completionTokens],
+      // Only counts and cost of an envelope; its totals and usage stay in results.json.
+      ["attempt.rows_in_envelope", run.pipeline?.rowsInEnvelope],
+      ["attempt.cost_usd", run.pipeline?.costUsd],
     ];
     return values.flatMap(([key, raw]) => {
       const value = asNumber(raw);
@@ -257,6 +260,13 @@ export async function logBenchmarkRun(args: {
       test_set_version: none(summary.testSetVersion),
       scorer_version: none(summary.scorerVersion),
       selection: summary.selection.join(",") || "none",
+      ...(summary.pipeline
+        ? {
+            pipeline: summary.pipeline.id,
+            pipeline_study: none(summary.pipeline.study),
+            pipeline_stage: none(summary.pipeline.stage),
+          }
+        : {}),
       exploratory: String(summary.exploratory),
       interrupted: String(summary.interrupted),
       "mlflow.runName": basename(runFolder),

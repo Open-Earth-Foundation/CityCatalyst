@@ -107,7 +107,7 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 
 Open `report.md` in the run folder. It has:
 
-- **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
+- **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged. A precomputed pipeline run shows its `Pipeline:` line and `Exploratory: pipeline` instead of the model, prompt hash and input representation, and adds a `Pipeline notes` table per attempt (unknown row roles, dropped rows, lost rows, reported totals, scope basis; unscored). Its INDEX line carries `pipeline=precomputed:<study>`.
 - **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, a provisional recall over the row-scored cases whose `textTables` is still unknown (until Product classifies them), share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
 - **Change from the baseline:** per block, the baseline score, the new score and the difference (headline recall, provisional recall, attempts passing, cases with every total within tolerance), then one row per case. Only cases with a baseline count, on both sides; the section says which cases and attempts each score uses.
@@ -135,7 +135,7 @@ An attempt passes when it is `scored`, its total is within tolerance and it is n
 
 Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` are set and `--no-mlflow` is absent, each run is logged to the experiment `ghgi-pdf-benchmark` (created on first use) with the non-admin service account:
 
-- One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection; metrics per block; `report.md` and `results.json` as artifacts.
+- One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection (a precomputed run adds `pipeline`, `pipeline_study` and `pipeline_stage`); metrics per block; `report.md` and `results.json` as artifacts.
 - One child run per case: case metrics, per-attempt metrics (step = attempt number), verdict, and `extracted-values.json` per attempt.
 - PDFs, OCR text and answer keys are never uploaded. Metrics and `results.json` pass through the same redaction as the run folder, so no expected value (key row, expected total, difference to it, distractor) reaches MLflow.
 

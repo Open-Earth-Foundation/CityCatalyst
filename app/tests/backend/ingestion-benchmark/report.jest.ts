@@ -20,9 +20,11 @@ import {
   renderIndexLine,
   renderBaselineChange,
   renderReport,
+  rescoredRunFlags,
   runFolderName,
   writeRunArtifact,
   type CaseResult,
+  type PipelineAttempt,
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
 import type {
@@ -625,5 +627,168 @@ describe("change from the baseline and incomplete runs", () => {
     expect(report).toContain("C-004 (PDF not found in pdfDir)");
     expect(report).toContain("Did not finish every attempt: C-010");
     expect(renderIndexLine(s, [], "f")).toContain("(incomplete)");
+  });
+});
+
+const GOLDEN = join(
+  process.cwd(),
+  "tests",
+  "backend",
+  "ingestion-benchmark",
+  "fixtures",
+  "builtin-report.golden.md",
+);
+
+const pipelineInfo = {
+  id: "precomputed",
+  study: "study-a",
+  stage: "stage-2",
+  mode: "batch",
+  version: "v3",
+};
+
+const pipelineAttempt = (partial: Partial<PipelineAttempt> = {}) => ({
+  executionStatus: "ok",
+  rowsInEnvelope: 12,
+  unknownRowRoles: { mystery: 2 },
+  droppedRows: { no_value: 1 },
+  rowRoles: { value: 9 },
+  scopeBasis: { stated: 7, inferred: 2 },
+  totalInclusion: { included: 9 },
+  reported: {
+    totalT: 5000,
+    grossT: 5200,
+    netT: 4800,
+    removalsT: 400,
+    totalBasis: "gpc",
+    totalKind: "net",
+  },
+  costUsd: 0.25,
+  costSource: "envelope" as const,
+  usage: {},
+  lostRows: { "gpc-reference-unknown": 3, unexplained: 1 },
+  ...partial,
+});
+
+const pipelineSummary = (): RunSummary => {
+  const r = result("A", 0.8);
+  r.runs[0] = { ...r.runs[0], pipeline: pipelineAttempt() };
+  return {
+    ...summary([r]),
+    exploratory: true,
+    exploratoryReason: "pipeline",
+    pipeline: pipelineInfo,
+  };
+};
+
+describe("built-in report is unchanged without a pipeline", () => {
+  it("matches the report written before CC-1295", () => {
+    const s = {
+      ...summary([result("A", 0.8)]),
+      extractionModel: "gpt-x",
+      reasoningEffort: null,
+      incomplete: {
+        missing: [{ id: "C-004", reason: "PDF not found in pdfDir" }],
+        unfinished: ["C-010"],
+      },
+    } as RunSummary;
+    const out = [
+      render(s),
+      "---INDEX---",
+      renderIndexLine(s, [block({})], "f"),
+    ].join(String.fromCharCode(10));
+    const golden = readFileSync(GOLDEN, "utf8")
+      .split(String.fromCharCode(13))
+      .join("");
+    expect(out).toBe(golden);
+  });
+});
+
+describe("precomputed pipeline report", () => {
+  it("names the pipeline and does not claim a built-in model, prompt or input", () => {
+    const report = render(pipelineSummary());
+    expect(report).toContain(
+      "- Pipeline: precomputed (study-a/stage-2, batch v3)",
+    );
+    expect(report).toContain("- Exploratory: pipeline");
+    expect(report).toContain("(exploratory)");
+    expect(report).toContain("- Extraction model: n/a (precomputed pipeline)");
+    expect(report).toContain("- Prompt hash: n/a (precomputed pipeline)");
+    expect(report).toContain(
+      "- Input representation: n/a (precomputed pipeline)",
+    );
+    expect(report).not.toContain("hash123");
+    expect(report).not.toContain("ocr-text");
+    expect(report).not.toContain("OCR model");
+  });
+
+  it("puts the pipeline in the INDEX line", () => {
+    expect(renderIndexLine(pipelineSummary(), [block({})], "f")).toContain(
+      "pipeline=precomputed:study-a",
+    );
+  });
+
+  it("lists pipeline notes per case, unscored, with lost rows", () => {
+    const report = render(pipelineSummary());
+    const notes = report.slice(report.indexOf("## Pipeline notes"));
+    expect(notes).toContain("| A | 1 |");
+    expect(notes).toContain("mystery 2");
+    expect(notes).toContain("no_value 1");
+    expect(notes).toContain("gpc-reference-unknown 3, unexplained 1");
+    expect(notes).toContain("stated 7, inferred 2");
+    expect(notes).toContain("total 5000");
+    expect(notes).toContain("gross 5200");
+    expect(notes).toContain("net 4800");
+    expect(notes).toContain("removals 400");
+    expect(notes).toContain("gpc");
+    expect(notes).toContain("$0.250");
+  });
+
+  it("has no pipeline notes section for a built-in run", () => {
+    expect(render(summary([result("A", 0.8)]))).not.toContain("Pipeline notes");
+  });
+
+  it("words the incomplete text as no envelope for a precomputed run", () => {
+    const s = {
+      ...pipelineSummary(),
+      incomplete: {
+        missing: [
+          { id: "C-004", reason: "no envelope in the rows folder" },
+          { id: "C-005", reason: "PDF not found in pdfDir" },
+        ],
+        unfinished: [],
+      },
+    };
+    const report = render(s);
+    expect(report).toContain("No envelope in the rows folder: C-004");
+    expect(report).toContain("Missing inputs (not run): C-005");
+    expect(report).not.toContain("C-004 (no envelope");
+  });
+});
+
+describe("rescore of a pipeline run", () => {
+  it("keeps the pipeline and stays exploratory", () => {
+    const old = {
+      ...pipelineSummary(),
+      measuredAt: "2026-11-01T00:00:00.000Z",
+      commit: "old1234",
+    };
+    expect(rescoredRunFlags(old)).toEqual({
+      exploratory: true,
+      exploratoryReason: "pipeline",
+      pipeline: pipelineInfo,
+    });
+    expect(rescoredRunFlags({ ...old, runsPerFile: 3 }).exploratory).toBe(true);
+  });
+
+  it("keeps the old attempts rule for a built-in run", () => {
+    const old = { ...summary([]), runsPerFile: 1 };
+    expect(rescoredRunFlags(old)).toEqual({
+      exploratory: true,
+      exploratoryReason: "attempts",
+    });
+    expect(rescoredRunFlags({ ...old, runsPerFile: 3 })).toEqual({
+      exploratory: false,
+    });
   });
 });

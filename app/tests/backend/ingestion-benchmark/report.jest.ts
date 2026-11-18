@@ -722,6 +722,29 @@ describe("precomputed pipeline report", () => {
     expect(report).not.toContain("OCR model");
   });
 
+  it("keeps the estimated cost line above the pipeline notes", () => {
+    const report = render(pipelineSummary());
+    expect(report.indexOf("Estimated cost of this run")).toBeGreaterThan(
+      report.indexOf("## Per case"),
+    );
+    expect(report.indexOf("Estimated cost of this run")).toBeLessThan(
+      report.indexOf("## Pipeline notes"),
+    );
+    expect(report.indexOf("## Pipeline notes")).toBeLessThan(
+      report.indexOf("## Notes"),
+    );
+  });
+
+  it("escapes the pipeline names in the INDEX line", () => {
+    const s = {
+      ...pipelineSummary(),
+      pipeline: { ...pipelineInfo, study: "a|b" },
+    };
+    expect(renderIndexLine(s, [block({})], "f")).toContain(
+      "pipeline=precomputed:a\\|b",
+    );
+  });
+
   it("puts the pipeline in the INDEX line", () => {
     expect(renderIndexLine(pipelineSummary(), [block({})], "f")).toContain(
       "pipeline=precomputed:study-a",
@@ -783,10 +806,8 @@ describe("rescore of a pipeline run", () => {
 
   it("keeps the old attempts rule for a built-in run", () => {
     const old = { ...summary([]), runsPerFile: 1 };
-    expect(rescoredRunFlags(old)).toEqual({
-      exploratory: true,
-      exploratoryReason: "attempts",
-    });
+    // A built-in run writes no exploratoryReason, as before.
+    expect(rescoredRunFlags(old)).toEqual({ exploratory: true });
     expect(rescoredRunFlags({ ...old, runsPerFile: 3 })).toEqual({
       exploratory: false,
     });

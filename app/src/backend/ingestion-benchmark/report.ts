@@ -204,9 +204,7 @@ export function rescoredRunFlags(old: {
       pipeline: old.pipeline,
     };
   }
-  return (old.runsPerFile ?? 3) !== 3
-    ? { exploratory: true, exploratoryReason: "attempts" }
-    : { exploratory: false };
+  return { exploratory: (old.runsPerFile ?? 3) !== 3 };
 }
 
 /**
@@ -462,7 +460,7 @@ function renderPipelineNotes(summary: RunSummary): string[] {
       if (run.pipeline) {
         const p = run.pipeline;
         return [
-          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(p.reported.totalBasis ?? "n/a")} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${p.costSource}) |`,
+          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(p.reported.totalBasis ?? "n/a")} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) |`,
         ];
       }
       return run.missingEnvelope
@@ -502,7 +500,7 @@ export function renderReport(
     `- Commit: \`${summary.commit}\` on \`${summary.branch}\`${summary.dirty ? " (dirty working tree)" : ""}`,
     ...(summary.pipeline
       ? [
-          `- Pipeline: ${pipelineText(summary.pipeline)}`,
+          `- Pipeline: ${cell(pipelineText(summary.pipeline))}`,
           "- Exploratory: pipeline",
           `- Extraction model: ${NOT_BUILT_IN}`,
           `- Prompt hash: ${NOT_BUILT_IN}`,
@@ -656,8 +654,6 @@ export function renderReport(
     );
   }
 
-  lines.push(...renderPipelineNotes(summary));
-
   const legacy = summary.results
     .filter((result) => toleranceSourceOf(result) === "legacy")
     .map((result) => result.id);
@@ -685,9 +681,9 @@ export function renderReport(
       ),
     )
     .map((result) => result.id);
+  lines.push("", `Estimated cost of this run: ${money(cost)}`);
+  lines.push(...renderPipelineNotes(summary));
   lines.push(
-    "",
-    `Estimated cost of this run: ${money(cost)}`,
     "",
     "## Notes",
     "",
@@ -717,7 +713,7 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${summary.pipeline.id}:${summary.pipeline.study ?? "unknown"}` : ""}`;
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${cell(summary.pipeline.id)}:${cell(summary.pipeline.study ?? "unknown")}` : ""}`;
   const cost = costUsd(totalUsage(summary.results), summary.prices);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }

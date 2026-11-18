@@ -298,7 +298,7 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     measuredAt: new Date().toISOString(),
     ...gitInfo(),
     llmModel: old.llmModel,
-    extractionModel: old.extractionModel,
+    extractionModel: old.pipeline ? undefined : old.extractionModel,
     reasoningEffort: old.reasoningEffort,
     ocrModel: old.ocrModel,
     prices,
@@ -307,9 +307,18 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     results,
     selection: results.map((result) => result.id),
     ...rescoredRunFlags(old),
+    // A pipeline run that had no envelope for a case stays incomplete.
+    incomplete: incompleteRun({
+      all: false,
+      missing: [],
+      unfinished: [],
+      results,
+    }),
     interrupted: false,
-    promptHash: old.promptHash ?? null,
-    inputRepresentation: old.inputRepresentation ?? null,
+    promptHash: old.pipeline ? null : (old.promptHash ?? null),
+    inputRepresentation: old.pipeline
+      ? null
+      : (old.inputRepresentation ?? null),
     testSetVersion: combinedTestSetVersion(caseVersions),
     scorerVersion: SCORER_VERSION,
     dirty: dirty(),
@@ -675,7 +684,8 @@ export async function main(argv: string[]): Promise<number> {
     const summary: RunSummary = {
       measuredAt,
       ...git,
-      extractionModel,
+      // A precomputed run used no built-in extraction: claim no model, prompt or input.
+      extractionModel: rowsDir ? undefined : extractionModel,
       reasoningEffort: extraction.reasoningEffort,
       ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
       prices,
@@ -684,18 +694,15 @@ export async function main(argv: string[]): Promise<number> {
       results,
       selection: selected.map((entry) => entry.id),
       exploratory: options.runs !== 3 || !!options.pipeline,
-      exploratoryReason: options.pipeline
-        ? "pipeline"
-        : options.runs !== 3
-          ? "attempts"
-          : undefined,
+      exploratoryReason: options.pipeline ? "pipeline" : undefined,
       ...(rowsDir
         ? { pipeline: pipelineInfo(rowsDir, selected, options.runs) }
         : {}),
       interrupted,
-      promptHash: promptHash(),
-      inputRepresentation:
-        process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown",
+      promptHash: rowsDir ? null : promptHash(),
+      inputRepresentation: rowsDir
+        ? null
+        : (process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown"),
       testSetVersion: combinedTestSetVersion([...caseVersions.values()]),
       scorerVersion: SCORER_VERSION,
       dirty: dirty(),

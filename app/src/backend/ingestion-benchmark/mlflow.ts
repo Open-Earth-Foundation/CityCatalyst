@@ -252,11 +252,17 @@ export async function logBenchmarkRun(args: {
       commit: none(summary.commit),
       branch: none(summary.branch),
       dirty: String(summary.dirty),
-      extraction_model: none(summary.extractionModel),
+      ...(summary.pipeline
+        ? {}
+        : { extraction_model: none(summary.extractionModel) }),
       ocr_model: none(summary.ocrModel),
       reasoning_effort: none(summary.reasoningEffort),
-      prompt_hash: none(summary.promptHash),
-      input_representation: none(summary.inputRepresentation),
+      ...(summary.pipeline
+        ? {}
+        : {
+            prompt_hash: none(summary.promptHash),
+            input_representation: none(summary.inputRepresentation),
+          }),
       test_set_version: none(summary.testSetVersion),
       scorer_version: none(summary.scorerVersion),
       selection: summary.selection.join(",") || "none",

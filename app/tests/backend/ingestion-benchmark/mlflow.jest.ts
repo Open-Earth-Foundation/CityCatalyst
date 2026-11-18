@@ -380,6 +380,10 @@ describe("logBenchmarkRun", () => {
     const tags = Object.fromEntries(
       parent.body.tags.map((t: any) => [t.key, t.value]),
     );
+    // No built-in model, prompt or input is claimed for a precomputed run.
+    expect(Object.keys(tags)).not.toContain("extraction_model");
+    expect(Object.keys(tags)).not.toContain("prompt_hash");
+    expect(Object.keys(tags)).not.toContain("input_representation");
     expect(tags).toMatchObject({
       pipeline: "precomputed",
       pipeline_study: "study-a",

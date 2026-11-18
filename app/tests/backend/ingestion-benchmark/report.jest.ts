@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   aggregate,
+  caseCostUsd,
   caseMetrics,
   caseUsage,
   costUsd,
@@ -19,14 +20,18 @@ import {
   INDEX_HEADER,
   renderIndexLine,
   renderBaselineChange,
+  pipelineCostUsd,
+  pricesFor,
   renderReport,
   rescoredRunFlags,
   runFolderName,
   writeRunArtifact,
   type CaseResult,
   type PipelineAttempt,
+  type Prices,
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
+import type { ReadEnvelope } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type {
   BlockSummary,
   CaseVerdict,
@@ -811,5 +816,202 @@ describe("rescore of a pipeline run", () => {
     expect(rescoredRunFlags({ ...old, runsPerFile: 3 })).toEqual({
       exploratory: false,
     });
+  });
+});
+
+describe("pipeline cost", () => {
+  // A fixture price, not a real one.
+  const prices: Prices = {
+    models: {
+      "fixture/model": {
+        inputPerMTok: 1,
+        cachedInputPerMTok: 0.1,
+        outputPerMTok: 4,
+        source: "https://example.test/prices",
+        date: "2026-11-18",
+      },
+    },
+    vendors: {},
+  };
+  const envelope = (
+    over: Partial<Pick<ReadEnvelope, "costUsd" | "usage">> = {},
+    version: string | null = "fixture/model",
+  ) => ({
+    costUsd: null,
+    usage: {
+      input_tokens: 2_000_000,
+      "input_tokens_details.cached_tokens": 1_000_000,
+      output_tokens: 500_000,
+    },
+    info: { ...pipelineInfo, version },
+    ...over,
+  });
+
+  it("takes the envelope's own cost first", () => {
+    expect(pipelineCostUsd(envelope({ costUsd: 0.42 }), prices)).toEqual({
+      costUsd: 0.42,
+      costSource: "envelope",
+    });
+  });
+
+  it("prices the tokens with the model named by the envelope version, cached input at its own price", () => {
+    const cost = pipelineCostUsd(envelope(), prices);
+    expect(cost.costSource).toBe("tokens");
+    expect(cost.costUsd).toBeCloseTo(1 * 1 + 1 * 0.1 + 0.5 * 4);
+  });
+
+  it("prices the tokens of a model named in the usage keys", () => {
+    const cost = pipelineCostUsd(
+      envelope(
+        {
+          usage: {
+            "fixture/model.input_tokens": 1_000_000,
+            "fixture/model.output_tokens": 1_000_000,
+          },
+        },
+        null,
+      ),
+      prices,
+    );
+    expect(cost).toEqual({ costUsd: 5, costSource: "tokens" });
+  });
+
+  it("gives no cost without a price for the model or without token counts", () => {
+    const none = { costUsd: null, costSource: "none" };
+    expect(pipelineCostUsd(envelope({}, "other/model"), prices)).toEqual(none);
+    expect(pipelineCostUsd(envelope({}, null), prices)).toEqual(none);
+    expect(pipelineCostUsd(envelope(), { vendors: {} })).toEqual(none);
+    expect(pipelineCostUsd(envelope(), undefined)).toEqual(none);
+    expect(
+      pipelineCostUsd(envelope({ usage: { input_tokens: 5 } }), prices),
+    ).toEqual(none);
+  });
+
+  it("keeps the built-in prices of prices.json and gives a pipeline run only its models and vendors", () => {
+    const file = {
+      "openai/gpt-x": {
+        llmInputPerMTok: 1,
+        llmOutputPerMTok: 2,
+        ocrPerPage: 3,
+      },
+      models: prices.models,
+      vendors: {},
+    };
+    expect(pricesFor(file, { pipeline: false, model: "openai/gpt-x" })).toBe(
+      file["openai/gpt-x"],
+    );
+    expect(pricesFor(file, { pipeline: false })).toBeUndefined();
+    expect(pricesFor(file, { pipeline: true, model: "openai/gpt-x" })).toEqual({
+      models: prices.models,
+      vendors: {},
+    });
+    expect(pricesFor({}, { pipeline: true })).toEqual({
+      models: {},
+      vendors: {},
+    });
+  });
+
+  it("sums the envelope costs of a pipeline case, and gives n/a when one is unknown", () => {
+    const priced = pipelineSummary().results[0];
+    const twice = {
+      ...priced,
+      runs: [priced.runs[0], { ...priced.runs[0], run: 2 }],
+    };
+    expect(caseCostUsd(twice, undefined)).toBeCloseTo(0.5);
+    const unknown = {
+      ...twice,
+      runs: [
+        twice.runs[0],
+        {
+          ...twice.runs[1],
+          pipeline: pipelineAttempt({ costUsd: null, costSource: "none" }),
+        },
+      ],
+    };
+    expect(caseCostUsd(unknown, undefined)).toBeNull();
+    // A built-in case keeps its OCR and LLM cost.
+    expect(caseCostUsd(result("B", 0.5), undefined)).toBeNull();
+  });
+
+  it("renders the run cost of a pipeline run from its envelopes", () => {
+    const s = pipelineSummary();
+    expect(render(s)).toContain("Estimated cost of this run: $0.250");
+    expect(renderIndexLine(s, [block({})], "f")).toContain("| $0.250 |");
+  });
+
+  it("shows n/a for a pipeline attempt without a price", () => {
+    const s = pipelineSummary();
+    s.results[0].runs[0].pipeline = pipelineAttempt({
+      costUsd: null,
+      costSource: "none",
+    });
+    const report = render(s);
+    expect(report).toContain("| n/a (none) |");
+    expect(report).toContain("Estimated cost of this run: n/a");
+  });
+});
+
+describe("parent-reference score variant", () => {
+  const variantSummary = (): RunSummary => {
+    const s = pipelineSummary();
+    const run = s.results[0].runs[0];
+    s.results[0].runs[0] = {
+      ...run,
+      pipeline: {
+        ...run.pipeline!,
+        parentRefRows: [
+          { gpc: "I.3", scope: null, valueT: 40, omit: false, notation: null },
+        ],
+        variantScore: score({
+          rowRecall: 0.9,
+          rowPrecision: 0.95,
+          totalWithinTolerance: true,
+        }),
+      },
+    };
+    return s;
+  };
+  const section = (report: string) =>
+    report.slice(
+      report.indexOf("## Score variant"),
+      report.indexOf("## Notes"),
+    );
+
+  it("shows both scores per block, standard first and labelled, the variant labelled parent refs (Mirco)", () => {
+    const text = section(render(variantSummary()));
+    expect(text).toContain(
+      "| Block | Headline recall: standard | Headline recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) |",
+    );
+    expect(text).toContain("| validated | 68% | 90% | 50% | 95% |");
+  });
+
+  it("shows both scores per case, standard first", () => {
+    const text = section(render(variantSummary()));
+    expect(text).toContain(
+      "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added |",
+    );
+    expect(text).toContain(
+      "| A | validated | 50% | 90% | 50% | 95% | no | yes | 1 |",
+    );
+  });
+
+  it("says the standard score stays the headline", () => {
+    const report = render(variantSummary());
+    expect(section(report)).toContain("The standard score is the headline");
+    expect(report.indexOf("## Pipeline notes")).toBeLessThan(
+      report.indexOf("## Score variant"),
+    );
+  });
+
+  it("shows n/a for a scored attempt without a variant score", () => {
+    const text = section(render(pipelineSummary()));
+    expect(text).toContain("| validated | 68% | n/a | 50% | n/a |");
+    expect(text).toContain(
+      "| A | validated | 50% | n/a | 50% | n/a | no | n/a | 0 |",
+    );
+  });
+
+  it("has no variant section for a built-in run", () => {
+    expect(render(summary([result("A", 0.8)]))).not.toContain("Score variant");
   });
 });

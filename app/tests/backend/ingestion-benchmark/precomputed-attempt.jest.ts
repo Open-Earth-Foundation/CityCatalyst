@@ -16,6 +16,7 @@ import {
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import { ImportStatusEnum } from "@/util/enums";
 import {
+  droppedParentRefRows,
   lostRowsByIssue,
   markExtracted,
   reconcileLostRows,
@@ -197,7 +198,7 @@ describe("runPrecomputedAttempt", () => {
     const rows = rowsDirOf(() => {
       throw new RowsDirError("missing_entry", "case C-T1 attempt 1");
     });
-    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(run.failureMode).toBe("setup_error");
     expect(run.message).toContain("missing_entry");
     expect(run.missingEnvelope).toBe(true);
@@ -210,7 +211,7 @@ describe("runPrecomputedAttempt", () => {
     const rows = rowsDirOf(() => {
       throw new RowsDirError("hash_mismatch", "case C-T1 attempt 1");
     });
-    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(run.failureMode).toBe("setup_error");
     expect(run.missingEnvelope).toBeUndefined();
   });
@@ -223,6 +224,7 @@ describe("runPrecomputedAttempt", () => {
       key,
       1,
       rowsDirOf(() => envelope([row()])),
+      {},
     );
     expect(run.failureMode).toBe("setup_error");
     expect(run.message).toContain("no longer pending_ai_extraction");
@@ -234,7 +236,7 @@ describe("runPrecomputedAttempt", () => {
     const rows = rowsDirOf(() =>
       envelope([row()], { executionStatus: "failed" }),
     );
-    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(run.failureMode).toBe("extraction_error");
     expect(run.message).toContain("execution status failed");
     expect(run.stageMs.ocr).toBeNull();
@@ -252,7 +254,7 @@ describe("runPrecomputedAttempt", () => {
     const rows = rowsDirOf(() =>
       envelope([row({ row_role: "information" })], { costUsd: null }),
     );
-    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(run.failureMode).toBe("zero_rows");
     expect(run.zeroRowsReason).toBe("no-importable-rows");
     expect(run.extractedRows).toBe(0);
@@ -271,14 +273,92 @@ describe("runPrecomputedAttempt", () => {
     });
   });
 
+  it("prices the envelope tokens when the envelope has no cost", async () => {
+    const { ctx } = fakeContext();
+    const rows = rowsDirOf(() =>
+      envelope([row({ row_role: "information" })], {
+        costUsd: null,
+        usage: { input_tokens: 1_000_000, output_tokens: 1_000_000 },
+        info: {
+          id: "precomputed",
+          study: "s",
+          stage: "t",
+          mode: null,
+          version: "fixture/model",
+        },
+      }),
+    );
+    // A fixture price, not a real one.
+    const prices = {
+      models: {
+        "fixture/model": {
+          inputPerMTok: 1,
+          outputPerMTok: 2,
+          source: "https://example.test/prices",
+          date: "2026-11-18",
+        },
+      },
+    };
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, prices);
+    expect(run.pipeline).toMatchObject({ costUsd: 3, costSource: "tokens" });
+  });
+
   it("registers its test city before the upload", async () => {
     const { ctx, raw, seen } = fakeContext();
     const rows = rowsDirOf(() => envelope([]));
-    await runPrecomputedAttempt(ctx, entry, key, 1, rows);
+    await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(seen.uploads).toBe(1);
     expect(seen.cityIdsAtUpload).toHaveLength(1);
     expect(seen.cityIdsAtUpload).toEqual(raw.cityIds);
     expect(raw.importedFileIds).toEqual(["file-1"]);
+  });
+});
+
+describe("droppedParentRefRows", () => {
+  const mapped = (over: Record<string, unknown>) =>
+    ({
+      year: 2020,
+      sector: null,
+      subsector: null,
+      category: "Synthetic label",
+      totalCO2e: 10,
+      unit: "tCO2e",
+      gpcRefNo: "I.3",
+      scope: null,
+      notationKey: null,
+      rowType: "line_item",
+      ...over,
+    }) as never;
+
+  it("keeps the unsplit I, II and III subsector rows that approve did not store", () => {
+    const rows = [
+      mapped({ gpcRefNo: "I.3", totalCO2e: 40 }),
+      mapped({ gpcRefNo: "II.1", scope: "1", totalCO2e: 5 }),
+      mapped({ gpcRefNo: "III.2", totalCO2e: null, notationKey: "NO" }),
+      mapped({ gpcRefNo: "I.1.1", scope: "1" }),
+      mapped({ gpcRefNo: "IV.1" }),
+      mapped({ gpcRefNo: null }),
+    ];
+    expect(droppedParentRefRows(rows, [])).toEqual([
+      { gpc: "I.3", scope: null, valueT: 40, omit: false, notation: null },
+      { gpc: "II.1", scope: "1", valueT: 5, omit: false, notation: null },
+      { gpc: "III.2", scope: null, valueT: 0, omit: false, notation: "NO" },
+    ]);
+  });
+
+  it("leaves out a parent reference approve stored, and a row with neither value nor notation key", () => {
+    const stored = [
+      { gpc: "I.3", scope: null, valueT: 40, omit: false, notation: null },
+    ];
+    expect(
+      droppedParentRefRows(
+        [
+          mapped({ gpcRefNo: "I.3" }),
+          mapped({ gpcRefNo: "I.4", totalCO2e: null }),
+        ],
+        stored,
+      ),
+    ).toEqual([]);
   });
 });
 

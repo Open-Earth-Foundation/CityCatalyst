@@ -234,6 +234,44 @@ describe("publishableSummary", () => {
     expect(out.pipeline?.study).toBe("s");
   });
 
+  it("keeps the parent-reference rows and redacts the variant score of a pipeline run", () => {
+    const parentRefRows: StoredValue[] = [
+      { gpc: "I.3", scope: null, valueT: 12, omit: false, notation: null },
+    ];
+    const withVariant = run(1, {
+      pipeline: {
+        executionStatus: "completed",
+        rowsInEnvelope: 3,
+        unknownRowRoles: {},
+        droppedRows: {},
+        rowRoles: {},
+        scopeBasis: {},
+        totalInclusion: {},
+        reported: {
+          totalT: null,
+          grossT: null,
+          netT: null,
+          removalsT: null,
+          totalBasis: null,
+          totalKind: null,
+        },
+        costUsd: null,
+        costSource: "none",
+        usage: {},
+        lostRows: {},
+        parentRefRows,
+        variantScore: scoreFile(key, [...stored, ...parentRefRows]),
+      },
+    });
+    const out = publishableSummary(
+      summaryOf([{ ...caseResult(), runs: [withVariant] }]),
+    );
+    expect(leaks(JSON.stringify(out))).toEqual([]);
+    const pipeline = out.results[0].runs[0].pipeline;
+    expect(pipeline?.parentRefRows).toEqual(parentRefRows);
+    expect(pipeline?.variantScore).toMatchObject({ missingRowCount: 1 });
+  });
+
   it("accepts a file without results", () => {
     expect(publishableSummary({})).toEqual({});
   });

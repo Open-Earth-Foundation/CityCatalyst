@@ -21,6 +21,7 @@ import type {
   BlockSummary,
   CaseVerdict,
 } from "@/backend/ingestion-benchmark/metrics";
+import type { ReadEnvelope } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type {
   FileScore,
   StoredValue,
@@ -38,12 +39,57 @@ export type Tokens = {
   maxCompletionTokens?: number;
 };
 
-/** Unit prices in USD. Any missing price makes the cost "n/a" instead of a guess. */
+/** USD per million tokens of a model a precomputed pipeline used, with where the price was read. */
+export type ModelPrice = {
+  inputPerMTok: number;
+  outputPerMTok: number;
+  /** Cached input tokens; without it they cost inputPerMTok. */
+  cachedInputPerMTok?: number;
+  /** URL of the price page. */
+  source: string;
+  date: string;
+};
+
+/** USD per page of a document-extraction API, with where the price was read. */
+export type VendorPrice = {
+  perPage: number;
+  source: string;
+  date: string;
+};
+
+/**
+ * Unit prices in USD. Any missing price makes the cost "n/a" instead of a
+ * guess. The llm and ocr prices are those of the built-in extraction; `models`
+ * and `vendors` price the envelopes of a precomputed pipeline.
+ */
 export type Prices = {
   llmInputPerMTok?: number;
   llmOutputPerMTok?: number;
   ocrPerPage?: number;
+  models?: Record<string, ModelPrice>;
+  vendors?: Record<string, VendorPrice>;
 };
+
+/** prices.json: built-in prices by model name, plus `models` and `vendors` for precomputed pipelines. */
+export type PricesFile = {
+  models?: Record<string, ModelPrice>;
+  vendors?: Record<string, VendorPrice>;
+  [builtInModel: string]: unknown;
+};
+
+/**
+ * The prices of one run: the built-in model's entry, or for a precomputed
+ * pipeline only `models` and `vendors` (it used no built-in OCR or LLM).
+ */
+export function pricesFor(
+  file: PricesFile,
+  run: { pipeline: boolean; model?: string },
+): Prices | undefined {
+  if (run.pipeline) {
+    return { models: file.models ?? {}, vendors: file.vendors ?? {} };
+  }
+  return run.model ? (file[run.model] as Prices | undefined) : undefined;
+}
 
 export type FailureMode =
   | "scored"
@@ -95,6 +141,14 @@ export type PipelineAttempt = {
   usage: Record<string, number>;
   /** Rows approve skipped, by import issue code (e.g. gpc-reference-unknown). */
   lostRows: Record<string, number>;
+  /**
+   * Unsplit I/II/III subsector rows of the envelope that approve did not store,
+   * as the pipeline gave them (pipeline output, not answer-key content). Set
+   * on scored attempts.
+   */
+  parentRefRows?: StoredValue[];
+  /** The "parent refs (Mirco)" variant score (scoring-variant.ts); the standard one is RunEntry.score. */
+  variantScore?: FileScore | null;
 };
 
 export type RunEntry = {
@@ -386,6 +440,97 @@ export function costUsd(usage: CaseUsage, prices?: Prices): number | null {
   );
 }
 
+/**
+ * Tokens of a model at its price. Cached input tokens are part of the input
+ * tokens (OpenAI usage); reasoning tokens are part of the output tokens.
+ */
+function tokenCost(
+  usage: Record<string, number>,
+  prefix: string,
+  price: ModelPrice,
+): number | null {
+  const input =
+    usage[`${prefix}input_tokens`] ?? usage[`${prefix}prompt_tokens`];
+  const output =
+    usage[`${prefix}output_tokens`] ?? usage[`${prefix}completion_tokens`];
+  if (input === undefined || output === undefined) return null;
+  const cached =
+    usage[`${prefix}input_tokens_details.cached_tokens`] ??
+    usage[`${prefix}prompt_tokens_details.cached_tokens`] ??
+    0;
+  return (
+    ((input - cached) / 1e6) * price.inputPerMTok +
+    (cached / 1e6) * (price.cachedInputPerMTok ?? price.inputPerMTok) +
+    (output / 1e6) * price.outputPerMTok
+  );
+}
+
+/**
+ * Cost of one envelope: its own `cost_usd` first; else its tokens at
+ * `prices.models` for the model the envelope version names, or for models
+ * named in its usage keys (`<model>.input_tokens`); else none.
+ */
+export function pipelineCostUsd(
+  envelope: Pick<ReadEnvelope, "costUsd" | "usage" | "info">,
+  prices: Prices | undefined,
+): Pick<PipelineAttempt, "costUsd" | "costSource"> {
+  if (envelope.costUsd !== null) {
+    return { costUsd: envelope.costUsd, costSource: "envelope" };
+  }
+  const none = { costUsd: null, costSource: "none" as const };
+  const models = prices?.models ?? {};
+  const version = envelope.info.version;
+  if (version && models[version]) {
+    const cost = tokenCost(envelope.usage, "", models[version]);
+    return cost === null ? none : { costUsd: cost, costSource: "tokens" };
+  }
+  const named = Object.keys(models).filter(
+    (model) => `${model}.input_tokens` in envelope.usage,
+  );
+  const costs = named.map((model) =>
+    tokenCost(envelope.usage, `${model}.`, models[model]),
+  );
+  if (costs.length === 0 || costs.some((cost) => cost === null)) return none;
+  return {
+    costUsd: (costs as number[]).reduce((sum, cost) => sum + cost, 0),
+    costSource: "tokens",
+  };
+}
+
+const sumOrNull = (values: (number | null)[]): number | null =>
+  values.some((value) => value === null)
+    ? null
+    : (values as number[]).reduce((sum, value) => sum + value, 0);
+
+/**
+ * What a case cost: a precomputed case its envelopes (null when one has no
+ * cost), a built-in case its OCR and LLM usage at `prices`.
+ */
+export function caseCostUsd(
+  result: CaseResult,
+  prices: Prices | undefined,
+): number | null {
+  const envelopes = result.runs.flatMap((run) =>
+    run.pipeline ? [run.pipeline] : [],
+  );
+  return envelopes.length
+    ? sumOrNull(envelopes.map((pipeline) => pipeline.costUsd))
+    : costUsd(caseUsage(result), prices);
+}
+
+/** What the run cost: every envelope of a precomputed run, or the built-in usage at its prices. */
+export function runCostUsd(summary: RunSummary): number | null {
+  return summary.pipeline
+    ? sumOrNull(
+        summary.results.flatMap((result) =>
+          result.runs.flatMap((run) =>
+            run.pipeline ? [run.pipeline.costUsd] : [],
+          ),
+        ),
+      )
+    : costUsd(totalUsage(summary.results), summary.prices);
+}
+
 const money = (value: number | null) =>
   value === null ? "n/a" : `$${value.toFixed(value < 1 ? 3 : 2)}`;
 
@@ -483,6 +628,94 @@ function renderPipelineNotes(summary: RunSummary): string[] {
   ];
 }
 
+const yesNo = (flag: boolean | null) =>
+  flag === null ? "n/a" : flag ? "yes" : "no";
+
+/** Variant figures of one case, the same way the standard ones are taken; null where an attempt has no variant score. */
+function variantOfCase(result: CaseResult, verdict: CaseVerdict | undefined) {
+  const scored = result.runs.filter((run) => run.failureMode === "scored");
+  const missing = scored.some((run) => !run.pipeline?.variantScore);
+  const variant = (run: RunEntry) => run.pipeline?.variantScore ?? null;
+  const precisions = result.runs
+    .filter((run) => run.ok)
+    .map((run) => variant(run)?.rowPrecision);
+  const withTotal = result.runs.filter(
+    (run) => variant(run)?.expectedTotal != null,
+  );
+  return {
+    // Recall counts failed attempts as 0, over cases that have a row recall.
+    recall:
+      missing || verdict?.recallFailedAsZero == null
+        ? null
+        : mean(
+            result.runs.map((run) =>
+              run.failureMode === "scored" ? (variant(run)?.rowRecall ?? 0) : 0,
+            ),
+          ),
+    precision: missing ? null : mean(precisions),
+    totalsWithin:
+      missing || withTotal.length === 0
+        ? null
+        : result.runs.every(
+            (run) =>
+              run.failureMode === "scored" &&
+              variant(run)?.totalWithinTolerance === true,
+          ),
+    parentRefRows: result.runs.reduce(
+      (sum, run) => sum + (run.pipeline?.parentRefRows?.length ?? 0),
+      0,
+    ),
+  };
+}
+
+/**
+ * The standard score beside the "parent refs (Mirco)" variant, per block and
+ * per case, for a precomputed run. The standard score stays the headline.
+ */
+function renderScoreVariant(
+  summary: RunSummary,
+  verdicts: CaseVerdict[],
+  blocks: BlockSummary[],
+): string[] {
+  const verdictById = new Map(verdicts.map((v) => [v.id, v]));
+  const cases = summary.results.map((result) => ({
+    result,
+    verdict: verdictById.get(result.id),
+    variant: variantOfCase(result, verdictById.get(result.id)),
+  }));
+  // Any case without a variant figure makes the block figure n/a, as a missing price does for cost.
+  const meanAll = (values: (number | null)[]) =>
+    values.some((v) => v === null) ? null : mean(values);
+  const blockRows = blocks.map((block) => {
+    const inBlock = cases.filter((c) => c.result.block === block.block);
+    const headline = inBlock.filter(
+      (c) =>
+        c.result.eligible === true && c.verdict?.recallFailedAsZero != null,
+    );
+    const precisionOf = inBlock.filter(
+      (c) => caseMetrics(c.result).rowPrecision !== null,
+    );
+    return `| ${block.block} | ${pct(block.headlineRecall)} | ${pct(headline.length ? meanAll(headline.map((c) => c.variant.recall)) : null)} | ${pct(aggregate(inBlock.map((c) => c.result)).rowPrecision)} | ${pct(precisionOf.length ? meanAll(precisionOf.map((c) => c.variant.precision)) : null)} |`;
+  });
+  return [
+    "",
+    "## Score variant: parent references",
+    "",
+    "The standard score is the headline. The parent refs (Mirco) variant also scores the rows the pipeline gave as an unsplit I, II or III subsector (such as I.3) that approve dropped, and writes every such reference as `<ref>.x` (Mirco's `scoringReference`): it can match a key row written as that subsector or as `<ref>.x`, never an exact child row with a scope such as I.3.1. Recall counts failed attempts as 0; precision is the mean over the scored attempts; parent-reference rows added are summed over the attempts.",
+    "",
+    "| Block | Headline recall: standard | Headline recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) |",
+    "| --- | --- | --- | --- | --- |",
+    ...blockRows,
+    "",
+    "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...cases.map(
+      ({ result, verdict, variant }) =>
+        `| ${cell(result.id)} | ${result.block} | ${pct(verdict?.recallFailedAsZero ?? null)} | ${pct(variant.recall)} | ${pct(verdict?.rowPrecision ?? null)} | ${pct(variant.precision)} | ${yesNo(verdict?.totalWithinToleranceAll ?? null)} | ${yesNo(variant.totalsWithin)} | ${variant.parentRefRows} |`,
+    ),
+  ];
+}
+
 export function renderReport(
   summary: RunSummary,
   verdicts: CaseVerdict[],
@@ -491,8 +724,7 @@ export function renderReport(
 ): string {
   const verdictById = new Map(verdicts.map((v) => [v.id, v]));
   const gateById = new Map(gates.map((g) => [g.id, g]));
-  const usage = totalUsage(summary.results);
-  const cost = costUsd(usage, summary.prices);
+  const cost = runCostUsd(summary);
   const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.incomplete ? " - INCOMPLETE" : ""}`;
   const lines: string[] = [
     title,
@@ -683,6 +915,9 @@ export function renderReport(
     .map((result) => result.id);
   lines.push("", `Estimated cost of this run: ${money(cost)}`);
   lines.push(...renderPipelineNotes(summary));
+  if (summary.pipeline) {
+    lines.push(...renderScoreVariant(summary, verdicts, blocks));
+  }
   lines.push(
     "",
     "## Notes",
@@ -714,7 +949,7 @@ export function renderIndexLine(
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
   const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${cell(summary.pipeline.id)}:${cell(summary.pipeline.study ?? "unknown")}` : ""}`;
-  const cost = costUsd(totalUsage(summary.results), summary.prices);
+  const cost = runCostUsd(summary);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }
 

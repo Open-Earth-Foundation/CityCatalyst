@@ -16,12 +16,18 @@ import {
   type ReadEnvelope,
   type RowsDir,
 } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
-import type {
-  PipelineAttempt,
-  RunEntry,
+import {
+  pipelineCostUsd,
+  type PipelineAttempt,
+  type Prices,
+  type RunEntry,
 } from "@/backend/ingestion-benchmark/report";
 import { scoringKey } from "@/backend/ingestion-benchmark/rescore";
-import { scoreFile } from "@/backend/ingestion-benchmark/score";
+import type { StoredValue } from "@/backend/ingestion-benchmark/score";
+import {
+  isParentReference,
+  scoreWithVariant,
+} from "@/backend/ingestion-benchmark/scoring-variant";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import { ImportStatusEnum } from "@/util/enums";
 import {
@@ -125,11 +131,38 @@ export function reconcileLostRows(
   return lost;
 }
 
+/**
+ * The mapped rows with an unsplit I/II/III subsector reference that approve did
+ * not store (it drops them as gpc-reference-unknown), as stored values for the
+ * score variant. A row with neither a value nor a notation key is left out.
+ */
+export function droppedParentRefRows(
+  rows: ExtractedRow[],
+  stored: StoredValue[],
+): StoredValue[] {
+  const storedRefs = new Set(stored.map((value) => value.gpc));
+  return rows.flatMap((row) => {
+    const ref = row.gpcRefNo;
+    if (!ref || !isParentReference(ref) || storedRefs.has(ref)) return [];
+    if (row.totalCO2e === null && !row.notationKey) return [];
+    return [
+      {
+        gpc: ref,
+        scope: row.scope ?? null,
+        valueT: row.totalCO2e ?? 0,
+        omit: false,
+        notation: row.notationKey ?? null,
+      },
+    ];
+  });
+}
+
 /** What the run entry records about the envelope; tallies stay empty when its rows were not mapped. */
 function pipelineAttempt(
   envelope: ReadEnvelope,
   mapped: MappedEnvelope,
   lostRows: Record<string, number>,
+  prices: Prices,
 ): PipelineAttempt {
   const { data } = envelope;
   const counts =
@@ -154,8 +187,7 @@ function pipelineAttempt(
       : mapped.attempt;
   return {
     ...counts,
-    costUsd: envelope.costUsd ?? null,
-    costSource: envelope.costUsd != null ? "envelope" : "none",
+    ...pipelineCostUsd(envelope, prices),
     usage: envelope.usage,
     lostRows,
   };
@@ -171,6 +203,7 @@ export async function runPrecomputedAttempt(
   key: KeyFile,
   attempt: number,
   rowsDir: RowsDir,
+  prices: Prices,
 ): Promise<RunEntry> {
   const { stageMs, finish } = attemptClock(attempt);
 
@@ -206,7 +239,7 @@ export async function runPrecomputedAttempt(
     warnings,
     extractedRows,
     heldRowsIncluded,
-    pipeline: pipelineAttempt(envelope, mapped, lostRows),
+    pipeline: pipelineAttempt(envelope, mapped, lostRows, prices),
   });
   try {
     const { ids, importedFileId } = await setUpImport(ctx, entry, attempt, {
@@ -267,11 +300,23 @@ export async function runPrecomputedAttempt(
 
     stage = "readback";
     const back = await readBack(ctx, ids.inventory);
+    const parentRefRows = droppedParentRefRows(mapped.rows, back.stored);
+    const scores = scoreWithVariant(
+      scoringKey(key, entry.totalOnly),
+      back.stored,
+      parentRefRows,
+    );
+    const recorded = base();
     return finish({
-      ...base(),
+      ...recorded,
+      pipeline: {
+        ...recorded.pipeline,
+        parentRefRows,
+        variantScore: scores.parentRefs,
+      },
       failureMode: "scored",
       stored: back.stored,
-      score: scoreFile(scoringKey(key, entry.totalOnly), back.stored),
+      score: scores.standard,
       total: back.total,
     });
   } catch (error) {

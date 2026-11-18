@@ -4,9 +4,8 @@
  */
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {
+  caseCostUsd,
   caseMetrics,
-  caseUsage,
-  costUsd,
   type Block,
   type CaseResult,
   type FailureMode,
@@ -186,7 +185,7 @@ export function caseVerdict(
       (run) => run.warnings.length > 0,
     ).length,
     failureModes,
-    costUsd: costUsd(caseUsage(result), prices),
+    costUsd: caseCostUsd(result, prices),
     seconds: runs.reduce((sum, run) => sum + run.stageMs.total, 0) / 1000,
   };
 }

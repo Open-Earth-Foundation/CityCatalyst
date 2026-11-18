@@ -71,6 +71,7 @@ import {
   caseMetrics,
   incompleteRun,
   gitInfo,
+  pricesFor,
   renderIndexLine,
   rescoredRunFlags,
   runFolderName,
@@ -79,6 +80,7 @@ import {
   type CaseResult,
   type PipelineInfo,
   type Prices,
+  type PricesFile,
   type RunEntry,
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
@@ -241,13 +243,13 @@ async function rescoreRun(options: CliOptions): Promise<number> {
   let config: LocalConfig;
   let manifest: CaseManifestEntry[];
   let keys: Record<string, KeyFile>;
-  let allPrices: Record<string, Prices>;
+  let allPrices: PricesFile;
   let old: LegacySummary;
   try {
     config = loadConfig(resolve(options.configPath), false);
     manifest = loadManifest(MANIFEST_PATH);
     keys = loadAnswerKeys(config.answerKeys);
-    allPrices = readJson<Record<string, Prices>>(PRICES_PATH, "Prices file");
+    allPrices = readJson<PricesFile>(PRICES_PATH, "Prices file");
     old = readJson<LegacySummary>(resolve(options.rescore!), "Results file");
     if (!Array.isArray(old.results)) {
       throw new ConfigError(
@@ -275,7 +277,8 @@ async function rescoreRun(options: CliOptions): Promise<number> {
   const results = before.map((result) => rescoreCase(result, keys[result.id]));
   const extractionModel = old.extractionModel ?? old.llmModel;
   const prices =
-    old.prices ?? (extractionModel ? allPrices[extractionModel] : undefined);
+    old.prices ??
+    pricesFor(allPrices, { pipeline: !!old.pipeline, model: extractionModel });
 
   const caseVersions = results.map((result) =>
     caseTestSetVersion(
@@ -374,13 +377,13 @@ export async function main(argv: string[]): Promise<number> {
   let manifest: CaseManifestEntry[];
   let keys: Record<string, KeyFile>;
   let baseline: Baseline;
-  let allPrices: Record<string, Prices>;
+  let allPrices: PricesFile;
   try {
     config = loadConfig(resolve(options.configPath));
     manifest = loadManifest(MANIFEST_PATH);
     keys = loadAnswerKeys(config.answerKeys);
     baseline = loadBaseline(BASELINE_PATH);
-    allPrices = readJson<Record<string, Prices>>(PRICES_PATH, "Prices file");
+    allPrices = readJson<PricesFile>(PRICES_PATH, "Prices file");
   } catch (error) {
     console.error((error as Error).message);
     return 2;
@@ -399,7 +402,11 @@ export async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const extractionModel = extraction.model;
-  const prices = allPrices[extractionModel];
+  // A precomputed run used no built-in OCR or LLM: only its envelopes cost.
+  const prices = pricesFor(allPrices, {
+    pipeline: !!options.pipeline,
+    model: extractionModel,
+  });
 
   if (options.list) {
     printList(manifest, baseline, outRoot, prices);
@@ -559,7 +566,14 @@ export async function main(argv: string[]): Promise<number> {
           if (interrupted) break;
           console.log(`[${entry.id}] attempt ${attempt}/${options.runs}`);
           const run = rowsDir
-            ? await runPrecomputedAttempt(ctx, entry, key, attempt, rowsDir)
+            ? await runPrecomputedAttempt(
+                ctx,
+                entry,
+                key,
+                attempt,
+                rowsDir,
+                prices ?? {},
+              )
             : await runAttempt(ctx, entry, key, attempt);
           console.log(
             `[${entry.id}] attempt ${attempt}: ${run.failureMode}${run.message ? ` (${run.message})` : ""}`,

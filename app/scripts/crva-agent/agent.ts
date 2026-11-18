@@ -1,7 +1,12 @@
 // The only file that imports the Agents SDK (installed in this folder only).
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { MaxTurnsExceededError, RunContext, run } from "@openai/agents";
+import {
+  MaxTurnsExceededError,
+  RunContext,
+  run,
+  setTracingDisabled,
+} from "@openai/agents";
 import {
   Capabilities,
   Manifest,
@@ -47,6 +52,10 @@ export async function runAgent(input: {
   maxTurns: number;
   timeoutMs: number;
 }): Promise<AgentRunResult> {
+  // No trace upload: run content (report text, tool output) stays off the OpenAI platform.
+  setTracingDisabled(true);
+  // Default archiveLimits (1 GiB input, 4 GiB extracted, 100k members) already accept the
+  // 41.2 MiB variant B PDF, so none are set.
   const client = new DockerSandboxClient({
     image: SANDBOX_IMAGE,
     networkMode: "none",
@@ -86,6 +95,7 @@ export async function runAgent(input: {
       } else if (signal.aborted) {
         error = `timeout ${input.timeoutMs / 60_000} min`;
       } else {
+        // Any other failure (API, sandbox) throws; the caller marks the run failed.
         throw err;
       }
     }

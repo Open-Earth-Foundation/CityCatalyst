@@ -56,6 +56,7 @@ new DockerSandboxClient({
 - Image: the `image` option. A different image invalidates resumed session state.
 - `networkMode: 'none'` removes network access. The agent needs none, so set it.
 - The container starts with `docker run -d ... /bin/sh -c "sleep loop"`. The user is host uid:gid when `process.getuid` exists; on Windows it is undefined, so the container runs as the image default (root). File APIs run via `docker exec` with `/bin/sh -lc`, GNU tar and `realpath`.
+- Archive limits: `archiveLimits` (client option, create arg or `sandbox.archiveLimits`) takes `{ maxInputBytes, maxExtractedBytes, maxMembers }`. The defaults (`DEFAULT_SANDBOX_ARCHIVE_LIMITS`: 1 GiB input, 4 GiB extracted, 100,000 members) already accept the full 41.2 MiB Buenos Aires PDF as an inline `file` entry (checked: created in about 3 s, 43,219,534 bytes and 185 pages inside the container), so `agent.ts` sets none.
 - Methods: `create({ manifest, options? })` or `create(manifest, options?)` returns a `DockerSandboxSession`; `resume(state)`. The Docker client has no `delete`; `session.close()` (also reached by `session.delete()` and `shutdown()`) removes the container, its volumes and the host workspace copy.
 
 ### run()
@@ -72,6 +73,10 @@ const result = await run(agent, 'user prompt', {
 - `sandbox.session`: inject a session we created with `client.create(...)`.
 - `sandbox.cwd`: workspace-relative working dir for the shell tool.
 - Also: `context`, `session` (conversation memory), `stream: true`, `errorHandlers`, `callModelInputFilter`, `toolErrorFormatter`.
+
+### Tracing
+
+The SDK exports traces of every run to the OpenAI platform by default. `agent.ts` calls `setTracingDisabled(true)` (from `@openai/agents`) before each run, so report text and tool output are not uploaded. `new Runner({ tracingDisabled: true })` is the per-runner alternative; the global switch also covers sandbox spans outside the runner.
 
 ### Token usage and tool calls
 

@@ -152,6 +152,8 @@ export function EditProposalCard({
             <VStack
               align="start"
               gap={0.5}
+              maxH="160px"
+              overflowY="auto"
               data-testid="concept-note-review-objections"
             >
               <Text fontSize="label.sm" fontWeight="semibold">

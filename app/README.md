@@ -170,6 +170,32 @@ After deployment, compare token issuance volume and exhausted-retry logs during
 workspace refreshes, including after a pod restart. Rollback requires only a code
 revert, with no database migration.
 
+### OAuth signing key
+
+OAuth 2.0 (the `OAUTH_ENABLED` feature flag) signs authorization codes, access tokens
+and refresh tokens with its own RS256 key pair in `OAUTH_SIGNING_KEY`. It is separate
+from `VERIFICATION_TOKEN_SECRET`, which still signs invites, email verification and
+Climate Advisor user tokens. The code is in `src/lib/auth/oauth-signing.ts`.
+
+`OAUTH_SIGNING_KEY` is a PEM private key of 2048 bits or more. Line breaks may be
+written as `\n` so the key fits on one line, for example in a GitHub secret. Make one with:
+
+```bash
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
+```
+
+- Only needed when `OAUTH_ENABLED` is on. Nothing checks it at startup. If it is
+  missing or invalid, `/api/v1/auth/code` and `/api/v1/token` answer 500 and log why.
+- The `kid` token header is derived from the public key (RFC 7638), so there is no
+  key id to set.
+- Bearer tokens are told apart by their signature algorithm. An RS256 token is checked
+  against this key. An HS256 token is checked against the shared secret and is never
+  accepted as an OAuth token. Each path accepts only its own kind.
+- Tokens issued before this key existed were signed with the shared secret and stop
+  working. Clients must authorize again.
+- Never commit a real key. Tests create a throwaway key in memory
+  (`setupOAuthSigningKey` in `tests/helpers.ts`).
+
 ## Running
 
 ### Development

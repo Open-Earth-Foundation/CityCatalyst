@@ -7,9 +7,11 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import jwt from "jsonwebtoken";
 import { createHash, randomBytes } from "node:crypto";
 import { v4 } from "uuid";
+import { signOAuthToken, verifyOAuthToken } from "@/lib/auth/oauth-signing";
 import {
   expectStatusCode,
   mockRequestFormData,
+  setupOAuthSigningKey,
   setupTests,
   testUserID,
 } from "../helpers";
@@ -24,24 +26,25 @@ const codeChallenge = createHash("sha256")
   .update(codeVerifier, "ascii")
   .digest("base64url");
 
-function createCode(jwtid: string): string {
+/** Signs a code. Pass `secret` to sign it with the shared secret instead of the OAuth key. */
+function createCode(jwtid: string, secret?: string): string {
   const origin = process.env.HOST || "http://localhost:3000";
-  return jwt.sign(
-    {
-      client_id: testClient.clientId,
-      redirect_uri: testClient.redirectURI,
-      scope: "read",
-      code_challenge: codeChallenge,
-    },
-    process.env.VERIFICATION_TOKEN_SECRET!,
-    {
-      expiresIn: "5m",
-      issuer: origin,
-      audience: origin,
-      subject: testUserID,
-      jwtid,
-    },
-  );
+  const payload = {
+    client_id: testClient.clientId,
+    redirect_uri: testClient.redirectURI,
+    scope: "read",
+    code_challenge: codeChallenge,
+  };
+  const options = {
+    expiresIn: "5m" as const,
+    issuer: origin,
+    audience: origin,
+    subject: testUserID,
+    jwtid,
+  };
+  return secret
+    ? jwt.sign(payload, secret, options)
+    : signOAuthToken(payload, options);
 }
 
 function tokenRequest(code: string) {
@@ -62,6 +65,7 @@ describe("OAuth token API", () => {
 
   beforeAll(async () => {
     setupTests();
+    setupOAuthSigningKey();
     await db.initialize();
     oldFeatureFlag = setFeatureFlag(FeatureFlags.OAUTH_ENABLED, true);
     await OAuthClient.destroy({ where: { clientId: testClient.clientId } });
@@ -99,6 +103,44 @@ describe("OAuth token API", () => {
     await expectStatusCode(replay, 400);
     const replayBody = await replay.json();
     expect(replayBody.error.message).toEqual("Single-use code.");
+  });
+
+  it("signs access and refresh tokens with the OAuth key, not the shared secret", async () => {
+    const jwtId = v4();
+    usedJwtIds.push(jwtId);
+
+    const res = await postToken(tokenRequest(createCode(jwtId)), {
+      params: Promise.resolve({}),
+    });
+    await expectStatusCode(res, 200);
+    const body = await res.json();
+
+    for (const token of [body.access_token, body.refresh_token]) {
+      const decoded = jwt.decode(token, { complete: true });
+      expect(decoded?.header.alg).toBe("RS256");
+      expect(decoded?.header.kid).toBeTruthy();
+      // Verifies with the OAuth key and carries the user and client.
+      const payload = verifyOAuthToken(token);
+      expect(payload.sub).toBe(testUserID);
+      expect(payload.client_id).toBe(testClient.clientId);
+      // The shared secret must not verify it.
+      expect(() =>
+        jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET ?? "unset"),
+      ).toThrow();
+    }
+  });
+
+  it("rejects a code signed with the shared secret", async () => {
+    const jwtId = v4();
+    usedJwtIds.push(jwtId);
+    const secret = process.env.VERIFICATION_TOKEN_SECRET ?? "test-secret";
+
+    const res = await postToken(tokenRequest(createCode(jwtId, secret)), {
+      params: Promise.resolve({}),
+    });
+    await expectStatusCode(res, 400);
+    // The code was never accepted, so it was not recorded as used.
+    expect(await UsedAuthorizationCode.findByPk(jwtId)).toBeNull();
   });
 
   it("rejects a code already recorded as used by another instance", async () => {

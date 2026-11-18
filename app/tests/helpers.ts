@@ -15,6 +15,7 @@ import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 import { expect } from "@jest/globals";
 import { Roles } from "@/util/types";
 import { fileURLToPath } from "node:url";
+import { generateKeyPairSync } from "node:crypto";
 
 const mockUrl = "http://localhost:3000/api/v1";
 
@@ -132,6 +133,22 @@ export function setupTests() {
 export function teardownTests() {
   sessionSpy?.mockRestore();
   sessionSpy = undefined;
+}
+
+/**
+ * Makes sure OAUTH_SIGNING_KEY is set for tests that issue or verify OAuth
+ * tokens. If the environment has none, an RSA key is created in memory for
+ * this test run. It is never written to disk and no real key is needed in
+ * .env or in CI secrets.
+ */
+export function setupOAuthSigningKey(): string {
+  if (!process.env.OAUTH_SIGNING_KEY) {
+    const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+    process.env.OAUTH_SIGNING_KEY = privateKey
+      .export({ type: "pkcs8", format: "pem" })
+      .toString();
+  }
+  return process.env.OAUTH_SIGNING_KEY;
 }
 
 export async function expectStatusCode(

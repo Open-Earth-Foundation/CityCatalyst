@@ -60,7 +60,7 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { getOAuthSigningKey, signOAuthToken } from "@/lib/auth/oauth-signing";
 import { logger } from "@/services/logger";
 import { v4 } from "uuid";
 import { OAuthClient } from "@/models/OAuthClient";
@@ -75,10 +75,9 @@ export const POST = apiHandler(async (req, { session }) => {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
 
-  if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
-    throw createHttpError.InternalServerError("Configuration error");
-  }
+  // Fails with a 500 if OAUTH_SIGNING_KEY is missing or invalid, before any
+  // consent is recorded.
+  getOAuthSigningKey();
 
   if (!session) {
     throw new createHttpError.Unauthorized(
@@ -121,14 +120,13 @@ export const POST = apiHandler(async (req, { session }) => {
 
   logger.debug({ jwtid }, "Creating JWT");
 
-  const code = jwt.sign(
+  const code = signOAuthToken(
     {
       client_id: clientId,
       redirect_uri: redirectUri,
       scope,
       code_challenge: codeChallenge,
     },
-    process.env.VERIFICATION_TOKEN_SECRET,
     {
       expiresIn: "5m",
       issuer: origin,

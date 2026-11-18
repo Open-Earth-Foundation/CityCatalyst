@@ -65,7 +65,12 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
-import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import {
+  getOAuthSigningKey,
+  signOAuthToken,
+  verifyOAuthToken,
+} from "@/lib/auth/oauth-signing";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -106,12 +111,11 @@ export const POST = apiHandler(async (_req) => {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
 
-  if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
-    throw createHttpError.InternalServerError("Configuration error");
-  }
+  // Fails with a 500 if OAUTH_SIGNING_KEY is missing or invalid. Checked here,
+  // outside the try blocks below, so a configuration problem is not reported
+  // to the client as an invalid code.
+  getOAuthSigningKey();
 
-  const key = process.env.VERIFICATION_TOKEN_SECRET;
   const contentType = _req.headers.get("content-type") || "";
 
   if (!contentType.includes("application/x-www-form-urlencoded")) {
@@ -131,11 +135,11 @@ export const POST = apiHandler(async (_req) => {
   switch (formObj.grant_type) {
     case "authorization_code": {
       const tr = authorizationCodeRequest.parse(formObj);
-      return await handleAuthorizationCodeRequest(_req, tr, key);
+      return await handleAuthorizationCodeRequest(_req, tr);
     }
     case "refresh_token": {
       const rtr = refreshTokenRequest.parse(formObj);
-      return await handleRefreshTokenRequest(_req, rtr, key);
+      return await handleRefreshTokenRequest(_req, rtr);
     }
     default: {
       throw createHttpError.BadRequest(
@@ -148,7 +152,6 @@ export const POST = apiHandler(async (_req) => {
 async function handleAuthorizationCodeRequest(
   _req: NextRequest,
   tr: z.infer<typeof authorizationCodeRequest>,
-  key: string,
 ) {
   const client = await OAuthClient.findByPk(tr.client_id);
 
@@ -163,7 +166,7 @@ async function handleAuthorizationCodeRequest(
   let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(tr.code, key) as JwtPayload;
+    decoded = verifyOAuthToken(tr.code);
   } catch (error: unknown) {
     if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
@@ -215,12 +218,11 @@ async function handleAuthorizationCodeRequest(
 
   const scope = decoded.scope;
 
-  const accessToken = jwt.sign(
+  const accessToken = signOAuthToken(
     {
       client_id: tr.client_id,
       scope,
     },
-    key,
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,
@@ -229,12 +231,11 @@ async function handleAuthorizationCodeRequest(
     },
   );
 
-  const refreshToken = jwt.sign(
+  const refreshToken = signOAuthToken(
     {
       client_id: tr.client_id,
       scope,
     },
-    key,
     {
       expiresIn: REFRESH_TOKEN_EXPIRY,
       issuer: origin,
@@ -279,12 +280,11 @@ async function markCodeUsed(jwtid: string, exp: number | undefined) {
 async function handleRefreshTokenRequest(
   _req: NextRequest,
   rtr: z.infer<typeof refreshTokenRequest>,
-  key: string,
 ) {
   let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(rtr.refresh_token, key) as JwtPayload;
+    decoded = verifyOAuthToken(rtr.refresh_token);
   } catch (error: unknown) {
     if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
@@ -324,12 +324,11 @@ async function handleRefreshTokenRequest(
 
   const scope = decoded.scope;
 
-  const accessToken = jwt.sign(
+  const accessToken = signOAuthToken(
     {
       client_id: decoded.client_id,
       scope,
     },
-    key,
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,

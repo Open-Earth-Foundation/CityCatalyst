@@ -16,6 +16,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "uvicorn>=0.52.1",
     "langdetect>=1.0.9",
+    "ddtrace==4.17.0",
 ]
 
 [dependency-groups]

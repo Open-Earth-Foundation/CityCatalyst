@@ -481,6 +481,38 @@ describe("crvaUserPrompt", () => {
     }
   });
 
+  // Wave 1.5: wave 1's granularity rule over-split items (E1.1a per scenario,
+  // caption-only rows, one system split into its units, hazards the report groups).
+  it("keeps scenarios and horizons inside one hazard × receptor item", () => {
+    const rules = CRVA_GRANULARITY_RULES.join("\n");
+    expect(rules).toMatch(/scenario/i);
+    expect(rules).toMatch(/horizon/i);
+    expect(rules).toMatch(/caption/i);
+    expect(rules).toMatch(/grouping the report uses/i);
+    expect(rules).toMatch(/components/i);
+    expect(rules).not.toMatch(/Never merge two hazards/);
+  });
+
+  it("limits 'return every item' to real lists", () => {
+    const rule = CRVA_DETAIL_RULES.find((r) => /every item/i.test(r));
+    expect(rule).toMatch(/references/);
+    expect(rule).toMatch(/hazards/);
+  });
+
+  it("asks for one table cell per quote", () => {
+    const rules = CRVA_DETAIL_RULES.join("\n");
+    expect(rules).toMatch(/one cell/i);
+    expect(crvaUserPrompt("x")).toMatch(/one cell/i);
+  });
+
+  it("scopes capacity fields to the adaptive capacity findings and B1.2a to every hazard", () => {
+    for (const id of ["D1.1a", "D1.2a"] as const) {
+      expect(CRVA_FIELD_GUIDE[id].definition).toMatch(/adaptive capacity/i);
+      expect(CRVA_FIELD_GUIDE[id].notThis).toMatch(/baseline/i);
+    }
+    expect(CRVA_FIELD_GUIDE["B1.2a"].definition).toMatch(/secondary/i);
+  });
+
   it("says what does not belong in E1.1a and D1.2a", () => {
     expect(CRVA_FIELD_GUIDE["E1.1a"].definition).toMatch(/risk level/i);
     expect(CRVA_FIELD_GUIDE["E1.1a"].notThis).toMatch(/impact/i);

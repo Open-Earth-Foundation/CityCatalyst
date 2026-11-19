@@ -103,12 +103,21 @@ export const CRVA_DETAIL_RULES: string[] = [
   `- Never shorten a value to a name only. Write the name, then what the report says about it.`,
   `- Citing a figure or table by its number and title ("Figura 6. Encuadre geográfico") is required where the report points to one; describing what the figure shows is not.`,
   `- Copy risk levels, scores and categories the report assigns. Do not assign your own.`,
-  `- Return every item the report lists. For long lists, such as the reference list, keep going until the last entry.`,
+  `- Return every item of the report's real lists: references, receptors, vulnerable groups, hazards, capacity factors and limits. For long lists, such as the reference list, keep going until the last entry.`,
+  // Wave 1: quotes that joined a table's name cell and description cell failed the quote check.
+  `- In a table, the quote is the text of one cell. Put the row's name in the value, not in the quote.`,
 ];
 
-/** Round 2 merged items that the gold keeps apart. */
+/**
+ * Round 2 merged items that the gold keeps apart; wave 1 then over-split them
+ * (one item per scenario, caption-only rows, a system split into its units).
+ */
 export const CRVA_GRANULARITY_RULES: string[] = [
-  `- One item per hazard × group, hazard × sector or hazard × area combination. Never merge two hazards, two groups or two sectors into one item.`,
+  `- An item is one hazard × group, hazard × sector or hazard × area combination. Do not merge different combinations into one item.`,
+  `- Scenarios, time horizons and the levels per scenario go inside that item's text, never as separate items.`,
+  `- Keep the grouping the report uses: hazards, groups or sectors the report treats as one (one heading, one section, one table row) are one item.`,
+  `- An item is the unit the report presents. A system, plan or programme described through its components is one item, with the components listed in its text.`,
+  `- A table row, caption or heading with no content of its own is not an item. A table summarised by the report is one fact, citing the table.`,
   `- One item per reference, receptor, capacity factor or limit. Do not merge list entries.`,
 ];
 
@@ -183,7 +192,7 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "B1.2a": {
     definition:
-      "Each hazard the assessment covers, with its definition, thresholds, season or period, and causes as the report states them.",
+      "Each hazard the report describes, including secondary hazards it mentions but does not assess in depth, with its definition, thresholds, season or period, and causes as the report states them.",
     notThis: "Impacts of the hazard (C1) or its assessed risk level (E1.1a).",
     example: {
       name: "Olas de calor e isla de calor urbana",
@@ -217,9 +226,9 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "D1.1a": {
     definition:
-      "Existing adaptive capacity: institutions, plans, systems, works or resources that help the city respond to hazards.",
+      "Existing adaptive capacity, as the report's adaptive capacity analysis presents it: institutions, plans, systems, works or resources that help the city respond to hazards.",
     notThis:
-      "A weakness or gap (D1.2a), or a future measure the report only recommends.",
+      "A weakness or gap (D1.2a), a future measure the report only recommends, or a baseline description of services or infrastructure that the report does not present as adaptive capacity.",
     example: {
       category: "governmental",
       factor: "Centro Único de Coordinación y Control (CUCC)",
@@ -229,9 +238,9 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "D1.2a": {
     definition:
-      "Limits to adaptive capacity: what reduces the city's or a group's ability to cope or adapt (social gaps, strained infrastructure, missing data or resources).",
+      "Limits to adaptive capacity, as the report's adaptive capacity analysis presents them: what reduces the city's or a group's ability to cope or adapt (social gaps, strained infrastructure, missing data or resources).",
     notThis:
-      "Causes of the hazard (rain, wind, sea level, temperature), or the hazard's impacts.",
+      "Causes of the hazard (rain, wind, sea level, temperature), the hazard's impacts, or a baseline description of the city that the report does not present as a limit to adaptive capacity.",
     example: {
       category: "socio_economic",
       factor: "Brecha social",

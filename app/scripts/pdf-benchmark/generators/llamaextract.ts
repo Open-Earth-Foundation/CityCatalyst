@@ -12,6 +12,7 @@
  */
 import { exitWith, runGenerator } from "./common";
 import {
+  LLAMA_INSTRUCTIONS,
   LLAMA_MODE,
   LLAMA_MODEL,
   LLAMA_PIPELINE,
@@ -25,6 +26,7 @@ exitWith(
       pipeline: LLAMA_PIPELINE,
       mode: LLAMA_MODE,
       model: LLAMA_MODEL,
+      instructions: LLAMA_INSTRUCTIONS,
       keyName: "LLAMA_CLOUD_API_KEY",
       attempt: (ctx) => llamaExtractAttempt(ctx),
     },

@@ -45,6 +45,8 @@ type FolderManifest = {
   model?: string;
   /** The envelope mode every envelope of the folder was made with. */
   mode?: string;
+  /** How the instructions were laid out when a vendor could not take them whole. */
+  instructions?: string;
   entries: {
     case_id: string;
     attempt: number;
@@ -84,6 +86,8 @@ export function prepareGeneration(opts: {
   model?: string;
   /** Envelope mode (for example how pages are split), recorded in the folder manifest. */
   mode?: string;
+  /** Instruction layout when not the whole envelopeInstructions(), recorded in the folder manifest. */
+  instructions?: string;
 }): CaseManifestEntry[] {
   const { vendor, config, out } = opts;
   if (!config.allowedVendors?.includes(vendor)) {
@@ -127,6 +131,11 @@ export function prepareGeneration(opts: {
       `${out} holds envelopes of mode "${existing.mode ?? "none"}"; use another --out folder.`,
     );
   }
+  if (existing && existing.instructions !== opts.instructions) {
+    throw new Error(
+      `${out} holds envelopes of instruction layout "${existing.instructions ?? "whole"}"; use another --out folder.`,
+    );
+  }
 
   fs.mkdirSync(path.join(out, "results"), { recursive: true });
   fs.mkdirSync(path.join(out, "raw"), { recursive: true });
@@ -137,6 +146,7 @@ export function prepareGeneration(opts: {
       stage,
       ...(opts.model ? { model: opts.model } : {}),
       ...(opts.mode ? { mode: opts.mode } : {}),
+      ...(opts.instructions ? { instructions: opts.instructions } : {}),
       entries: [],
     });
   }
@@ -286,20 +296,29 @@ export class CallError extends Error {
 /** Per-call timeout of a vendor call: extraction runs an LLM over many pages. */
 export const CALL_TIMEOUT_MS = 600_000;
 
-const retryable = (status: number) => status === 429 || status >= 500;
-
 /**
- * One vendor call that answers JSON, retried once on HTTP 429, a 5xx or a
- * timeout (each try with its own `timeoutMs`). Throws CallError on a network
- * error, a non-2xx answer or an answer that is not a JSON object.
+ * One vendor call that answers JSON, each try with its own `timeoutMs`.
+ * Throws CallError on a network error, a non-2xx answer or an answer that is
+ * not a JSON object.
+ *
+ * Retry (ruling R11 as amended): an upload or a GET is retried once on HTTP
+ * 429, any 5xx or a timeout. A `billing` call (one that starts a paid job or
+ * is billed itself: Reducto POST /extract_async, LlamaExtract POST
+ * /api/v2/extract, Mistral POST /v1/ocr) is retried once only on 429 and 503,
+ * which say the request was not taken; a timeout or another 5xx may come after
+ * the vendor accepted it, and a second request would be billed again.
  */
 export async function requestJson(
   url: string,
   init: RequestInit,
-  opts: { timeoutMs?: number; retryDelayMs?: number } = {},
+  opts: { timeoutMs?: number; retryDelayMs?: number; billing?: boolean } = {},
 ): Promise<{ status: number; body: Record<string, unknown> }> {
   const timeoutMs = opts.timeoutMs ?? CALL_TIMEOUT_MS;
   const retryDelayMs = opts.retryDelayMs ?? 5_000;
+  const retryable = (status: number) =>
+    opts.billing
+      ? status === 429 || status === 503
+      : status === 429 || status >= 500;
   for (let attempt = 1; ; attempt++) {
     const last = attempt === 2;
     let response: Response;
@@ -310,7 +329,7 @@ export async function requestJson(
       });
     } catch (error) {
       const name = (error as Error).name;
-      if (!last && name === "TimeoutError") {
+      if (!last && !opts.billing && name === "TimeoutError") {
         await sleep(retryDelayMs);
         continue;
       }
@@ -407,11 +426,18 @@ export function envelopeInstructions(targetYear: number): string {
   return [SYSTEM_PROMPT, ...envelopeYearLines(targetYear)].join("\n\n");
 }
 
-/** The lines envelopeInstructions adds after the built-in prompt. */
-export function envelopeYearLines(targetYear: number): string[] {
+/**
+ * The lines envelopeInstructions adds after the built-in prompt. `formatAt`
+ * names where the built-in output format is, for a vendor that gets it
+ * elsewhere than above these lines.
+ */
+export function envelopeYearLines(
+  targetYear: number,
+  formatAt = "the output format above",
+): string[] {
   return [
     `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.`,
-    `Answer in the JSON schema you are given, not in the output format above: one row per distinct emissions or notation row, with the field meanings the schema describes. reporting_year is ${targetYear}.`,
+    `Answer in the JSON schema you are given, not in ${formatAt}: one row per distinct emissions or notation row, with the field meanings the schema describes. reporting_year is ${targetYear}.`,
   ];
 }
 
@@ -603,6 +629,8 @@ export async function runGenerator(
     mode: string;
     /** Pinned vendor model or tier, recorded in the folder manifest. */
     model: string;
+    /** Instruction layout when not the whole envelopeInstructions(), recorded in the folder manifest. */
+    instructions?: string;
     /** Environment variable of the API key (from app/.env). */
     keyName: string;
     attempt: VendorAttempt;
@@ -631,6 +659,7 @@ export async function runGenerator(
       config,
       model: opts.model,
       mode: opts.mode,
+      instructions: opts.instructions,
       manifest: opts.manifest,
     });
   } catch (error) {

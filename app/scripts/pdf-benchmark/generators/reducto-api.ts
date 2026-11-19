@@ -21,8 +21,10 @@
  * - GET /version: the API build, recorded in the envelope version,
  *   https://docs.reducto.ai/api-reference/get-version.md
  *
- * Each HTTP call has a 10-minute timeout and one retry on 429, 5xx or timeout
- * (common.ts requestJson); the job is polled every 10 s for at most 30 minutes.
+ * Each HTTP call has a 10-minute timeout. The upload and the polls are retried
+ * once on 429, 5xx or timeout; POST /extract_async starts a paid job, so it is
+ * retried only on 429 or 503 (common.ts requestJson). The job is polled every
+ * 10 s for at most 30 minutes.
  *
  * Deep Extract model: pinned to `v3`, the default on
  * https://docs.reducto.ai/reference/model-versions (read 2026-11-18), through
@@ -165,7 +167,7 @@ export async function reductoAttempt(
         },
       }),
     },
-    call,
+    { ...call, billing: true },
   );
   record.raw.create = created.body;
   const jobId = created.body.job_id;

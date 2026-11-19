@@ -22,8 +22,8 @@
  * text; needs the format) and `pages` (zero-based). The answer comes back as a
  * JSON string in `document_annotation`, pages billed in `usage_info`. A local
  * PDF is sent as a base64 data URL (basic OCR docs). Each call has a
- * 10-minute timeout and one retry on HTTP 429, a 5xx or a timeout
- * (common.ts requestJson).
+ * 10-minute timeout; it is billed, so it is retried once only on HTTP 429 or
+ * 503 (common.ts requestJson).
  *
  * `--ranges` (envelope `mode` and folder manifest `mode`):
  * - `whole` (`annotations/whole`, default): one call over the whole document,
@@ -85,7 +85,7 @@ type Call = {
   response: unknown;
 };
 
-/** One annotation call (one retry on 429, 5xx or timeout); throws CallError. */
+/** One annotation call (billed: one retry on 429 or 503 only); throws CallError. */
 async function annotate(
   apiKey: string,
   model: string,
@@ -93,28 +93,32 @@ async function annotate(
   pages: number[] | null,
   targetYear: number,
 ): Promise<{ status: number; response: Record<string, unknown> }> {
-  const { status, body } = await requestJson(OCR_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      document: { type: "document_url", document_url: documentUrl },
-      ...(pages ? { pages } : {}),
-      document_annotation_format: {
-        type: "json_schema",
-        json_schema: {
-          name: "ghgi_envelope",
-          schema: envelopeSchema(),
-          strict: true,
-        },
+  const { status, body } = await requestJson(
+    OCR_URL,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-      document_annotation_prompt: envelopeInstructions(targetYear),
-      include_image_base64: false,
-    }),
-  });
+      body: JSON.stringify({
+        model,
+        document: { type: "document_url", document_url: documentUrl },
+        ...(pages ? { pages } : {}),
+        document_annotation_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "ghgi_envelope",
+            schema: envelopeSchema(),
+            strict: true,
+          },
+        },
+        document_annotation_prompt: envelopeInstructions(targetYear),
+        include_image_base64: false,
+      }),
+    },
+    { billing: true },
+  );
   return { status, response: body };
 }
 

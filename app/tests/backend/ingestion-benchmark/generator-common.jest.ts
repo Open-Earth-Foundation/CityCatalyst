@@ -271,6 +271,31 @@ describe("generator arguments and model", () => {
     ).not.toThrow();
   });
 
+  it("records the instruction layout in the folder manifest and refuses another", () => {
+    const opts = {
+      vendor: "llamacloud" as const,
+      cases: "C-901",
+      runs: 1,
+      out,
+      config: config(["llamacloud"]),
+      manifest,
+      model: "tier agentic_plus",
+      mode: "llamaextract/agentic-plus",
+    };
+    prepareGeneration({ ...opts, instructions: "layout A" });
+    const written = JSON.parse(
+      fs.readFileSync(path.join(out, "manifest.json"), "utf8"),
+    );
+    expect(written.instructions).toBe("layout A");
+    expect(() =>
+      prepareGeneration({ ...opts, instructions: "layout B" }),
+    ).toThrow(/instruction layout "layout A"/);
+    expect(() => prepareGeneration(opts)).toThrow(/layout A/);
+    expect(() =>
+      prepareGeneration({ ...opts, instructions: "layout A" }),
+    ).not.toThrow();
+  });
+
   it("records the model in the folder manifest and refuses another model", () => {
     const opts = {
       vendor: "mistral" as const,
@@ -566,6 +591,36 @@ describe("requestJson", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it("retries a billing call only on 429 and 503", async () => {
+    const billing = () =>
+      requestJson(
+        "https://vendor.test/job",
+        { method: "POST" },
+        { retryDelayMs: 0, billing: true },
+      );
+    for (const status of [429, 503]) {
+      fetchMock.mockReset();
+      fetchMock
+        .mockResolvedValueOnce(json(status, { error: "busy" }))
+        .mockResolvedValueOnce(json(200, { ok: 4 }));
+      await expect(billing()).resolves.toEqual({
+        status: 200,
+        body: { ok: 4 },
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    }
+    for (const status of [500, 502, 504]) {
+      fetchMock.mockReset();
+      fetchMock.mockResolvedValue(json(status, { error: "maybe accepted" }));
+      await expect(billing()).rejects.toMatchObject({ status });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    }
+    fetchMock.mockReset();
+    fetchMock.mockRejectedValue(timeout());
+    await expect(billing()).rejects.toThrow("request failed (TimeoutError)");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("refuses an answer that is not a JSON object", async () => {
     fetchMock.mockResolvedValueOnce(new Response("<html>", { status: 200 }));
     await expect(call()).rejects.toMatchObject({
@@ -626,6 +681,7 @@ describe("runGenerator", () => {
         pipeline: "reducto/extract",
         mode: "reducto/deep-extract",
         model: "deep-extract-test",
+        instructions: "layout T",
         keyName: KEY_NAME,
         attempt,
         manifest,
@@ -693,6 +749,7 @@ describe("runGenerator", () => {
       study: "reducto",
       model: "deep-extract-test",
       mode: "reducto/deep-extract",
+      instructions: "layout T",
     });
   });
 

@@ -13,6 +13,7 @@ import {
   emptyData,
   envelopeInstructions,
   envelopeSchema,
+  envelopeYearLines,
   type AttemptRecord,
 } from "../../../scripts/pdf-benchmark/generators/common";
 import {
@@ -21,6 +22,7 @@ import {
   unwrapCitations,
 } from "../../../scripts/pdf-benchmark/generators/reducto-api";
 import {
+  LLAMA_INSTRUCTIONS,
   LLAMA_MODEL,
   llamaExtractAttempt,
   llamaInstructions,
@@ -259,6 +261,22 @@ describe("reductoAttempt", () => {
     expect(record.costUsd).toBeCloseTo(26 * 0.04);
   });
 
+  it("does not resend the paid extract request on a 502", async () => {
+    serve({
+      ...routes([]),
+      "POST /extract_async": () => new Response("bad gateway", { status: 502 }),
+    });
+    await expect(
+      reductoAttempt(
+        { entry, pdf, apiKey: KEY, price: perPage, record: newRecord() },
+        fast,
+      ),
+    ).rejects.toMatchObject({ status: 502 });
+    expect(
+      requests.filter((r) => r.url.pathname === "/extract_async"),
+    ).toHaveLength(1);
+  });
+
   it("throws CallError with the status of a refused upload", async () => {
     serve({
       "GET /version": () => "v1",
@@ -280,23 +298,36 @@ describe("llamaInstructions", () => {
       SYSTEM_PROMPT.indexOf(`</${tag}>`) + `</${tag}>`.length,
     );
 
-  it("fits the prompt in LlamaExtract's limits, the taxonomy as the schema description", () => {
-    const { systemPrompt, schema } = llamaInstructions(2022);
+  it("fits every section but the example in LlamaExtract's limits and lists the layout", () => {
+    const { systemPrompt, schema, layout } = llamaInstructions(2022);
     expect(systemPrompt.length).toBeLessThanOrEqual(10_000);
-    for (const tag of ["role", "task", "input"]) {
-      expect(systemPrompt).toContain(section(tag));
-    }
-    expect(systemPrompt).toContain(
-      "Extract only emissions data for the year 2022.",
+    expect(systemPrompt).toBe(
+      [
+        section("role"),
+        section("task"),
+        section("input"),
+        ...envelopeYearLines(
+          2022,
+          "the output format in the schema description",
+        ),
+      ].join("\n\n"),
     );
-    expect(systemPrompt).toContain("reporting_year is 2022.");
-    for (const tag of ["taxonomy", "output", "example_output"]) {
-      expect(systemPrompt).not.toContain(`<${tag}>`);
-    }
+    expect(systemPrompt).toContain(
+      "not in the output format in the schema description:",
+    );
+    expect(systemPrompt).not.toContain("output format above");
     const { description, ...rest } = schema as Record<string, unknown>;
-    expect(description).toBe(section("taxonomy"));
+    expect(description).toBe(`${section("output")}\n\n${section("taxonomy")}`);
     expect((description as string).length).toBeLessThanOrEqual(16_000);
     expect(rest).toEqual(envelopeSchema());
+    expect(layout).toEqual({
+      systemPrompt: ["role", "task", "input", "year lines"],
+      schemaDescription: ["output", "taxonomy"],
+      omitted: ["example_output"],
+    });
+    expect(LLAMA_INSTRUCTIONS).toBe(
+      "system_prompt: role, task, input, year lines; schema description: output, taxonomy; omitted: example_output",
+    );
   });
 });
 
@@ -372,6 +403,7 @@ describe("llamaExtractAttempt", () => {
     expect(record.raw).toMatchObject({
       upload: { id: "dfl-1" },
       job: { status: "COMPLETED" },
+      instructions: llamaInstructions(2022).layout,
     });
   });
 
@@ -390,6 +422,28 @@ describe("llamaExtractAttempt", () => {
     );
     expect(none.costUsd).toBeNull();
     expect(none.pages).toBeNull();
+  });
+
+  it("does not resend the paid job request on a 502, but retries the upload", async () => {
+    let uploads = 0;
+    serve({
+      "POST /api/v1/beta/files": () =>
+        ++uploads === 1
+          ? new Response("busy", { status: 502 })
+          : { id: "dfl-1" },
+      "POST /api/v2/extract": () =>
+        new Response("bad gateway", { status: 502 }),
+    });
+    await expect(
+      llamaExtractAttempt(
+        { entry, pdf, apiKey: KEY, price, record: newRecord() },
+        fast,
+      ),
+    ).rejects.toMatchObject({ status: 502 });
+    expect(uploads).toBe(2);
+    expect(
+      requests.filter((r) => r.url.pathname === "/api/v2/extract"),
+    ).toHaveLength(1);
   });
 
   it("throws with the error message of a failed job", async () => {

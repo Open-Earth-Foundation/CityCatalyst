@@ -18,9 +18,11 @@
  *   credits in `usage` (null until billing records them),
  *   https://developers.llamaindex.ai/reference/resources/extract/methods/get
  *
- * Each HTTP call has a 10-minute timeout and one retry on 429, 5xx or timeout
- * (common.ts requestJson); the job is polled every 10 s for at most 30 minutes,
- * then up to 6 more times while its credits are still null.
+ * Each HTTP call has a 10-minute timeout. The upload and the polls are retried
+ * once on 429, 5xx or timeout; POST /api/v2/extract starts a paid job, so it
+ * is retried only on 429 or 503 (common.ts requestJson). The job is polled
+ * every 10 s for at most 30 minutes, then up to 6 more times while its credits
+ * are still null.
  *
  * Version: Extract v2 `version: "latest"`; the docs publish no list of version
  * names to pin (changelog, Oct 2026: the `continuous` versions were retired in
@@ -29,14 +31,21 @@
  *
  * Instructions: LlamaExtract refuses a `system_prompt` over 10,000 characters
  * (422, 2026-11-18) and a schema root description over 16,000 (schema
- * validation, same day); envelopeInstructions() is about 26,000. So
- * llamaInstructions() sends the <role>, <task> and <input> sections of the
- * built-in prompt plus the year lines as `system_prompt`, the <taxonomy>
- * section as the schema root description, and leaves out <output> and
- * <example_output>: the built-in model's own answer format, which the year
- * lines tell every vendor to ignore for the JSON schema. Every schema field is
- * kept: POST /api/v2/extract/schema/validation returned the envelope schema
- * unchanged (2026-11-18).
+ * validation, same day); envelopeInstructions() is about 26,000, so it cannot
+ * go whole. llamaInstructions() (layout LLAMA_INSTRUCTIONS) sends:
+ * - `system_prompt`: the <role>, <task> and <input> sections of the built-in
+ *   prompt and the year lines, which point to the output format in the schema
+ *   description instead of "above";
+ * - schema root description: the <output> section (the built-in answer
+ *   format together with its mapping and number rules: waste direction, VI.1,
+ *   manure on pasture, evidence wording, separators, no "N/A" strings) and the
+ *   <taxonomy> section;
+ * - left out: <example_output> only, a worked example in the built-in answer
+ *   format, which fits in neither limit beside the rest.
+ * The layout is recorded in the folder manifest (`instructions`, so a folder
+ * made with another layout is refused) and in each raw answer. Every schema
+ * field is kept: POST /api/v2/extract/schema/validation returned the envelope
+ * schema unchanged (2026-11-18).
  *
  * Cost: credits reported by the job x prices.json
  * `vendors["llamaextract/agentic-plus"].perCredit` ($1.50 per 1,000 credits,
@@ -74,6 +83,14 @@ const CREDIT_POLLS = 6;
 const MAX_SYSTEM_PROMPT = 10_000;
 const MAX_ROOT_DESCRIPTION = 16_000;
 
+/** Which built-in prompt sections go where (see above). */
+const LAYOUT = {
+  systemPrompt: ["role", "task", "input", "year lines"],
+  schemaDescription: ["output", "taxonomy"],
+  omitted: ["example_output"],
+};
+export const LLAMA_INSTRUCTIONS = `system_prompt: ${LAYOUT.systemPrompt.join(", ")}; schema description: ${LAYOUT.schemaDescription.join(", ")}; omitted: ${LAYOUT.omitted.join(", ")}`;
+
 const num = (value: unknown) => (typeof value === "number" ? value : null);
 
 function promptSection(tag: string): string {
@@ -89,19 +106,27 @@ function promptSection(tag: string): string {
 export function llamaInstructions(targetYear: number): {
   systemPrompt: string;
   schema: object;
+  layout: typeof LAYOUT;
 } {
   const systemPrompt = [
     ...["role", "task", "input"].map(promptSection),
-    ...envelopeYearLines(targetYear),
+    ...envelopeYearLines(
+      targetYear,
+      "the output format in the schema description",
+    ),
   ].join("\n\n");
-  const description = promptSection("taxonomy");
+  const description = LAYOUT.schemaDescription.map(promptSection).join("\n\n");
   if (
     systemPrompt.length > MAX_SYSTEM_PROMPT ||
     description.length > MAX_ROOT_DESCRIPTION
   ) {
     throw new Error("instructions exceed LlamaExtract's length limits");
   }
-  return { systemPrompt, schema: { ...envelopeSchema(), description } };
+  return {
+    systemPrompt,
+    schema: { ...envelopeSchema(), description },
+    layout: LAYOUT,
+  };
 }
 
 export async function llamaExtractAttempt(
@@ -113,6 +138,7 @@ export async function llamaExtractAttempt(
   const pollMs = opts.pollMs ?? 10_000;
   record.version = `${LLAMA_MODEL} version ${VERSION}`;
   const instructions = llamaInstructions(entry.year);
+  record.raw.instructions = instructions.layout;
 
   const upload = await requestJson(
     `${BASE_URL}/api/v1/beta/files`,
@@ -146,7 +172,7 @@ export async function llamaExtractAttempt(
         },
       }),
     },
-    call,
+    { ...call, billing: true },
   );
   record.raw.create = created.body;
   const jobId = created.body.id;

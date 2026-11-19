@@ -18,6 +18,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import {
   OAUTH_SIGNING_ALGORITHM,
+  OAuthTokenType,
   getOAuthSigningKey,
   signOAuthToken,
   verifyOAuthToken,
@@ -59,13 +60,17 @@ describe("OAuth signing key", () => {
   const originalKey = process.env.OAUTH_SIGNING_KEY;
 
   afterEach(() => {
-    process.env.OAUTH_SIGNING_KEY = originalKey;
+    // Assigning undefined would store the text "undefined", not remove it.
+    if (originalKey === undefined) delete process.env.OAUTH_SIGNING_KEY;
+    else process.env.OAUTH_SIGNING_KEY = originalKey;
   });
 
   it("fails with a 500 when the key is missing", () => {
     delete process.env.OAUTH_SIGNING_KEY;
     expect(errorStatus(() => getOAuthSigningKey())).toBe(500);
-    expect(errorStatus(() => signOAuthToken({}))).toBe(500);
+    expect(errorStatus(() => signOAuthToken(OAuthTokenType.Access, {}))).toBe(
+      500,
+    );
   });
 
   it.each([
@@ -83,10 +88,10 @@ describe("OAuth signing key", () => {
   it("accepts a key written on one line with escaped line breaks", () => {
     const pem = toPem(primaryKey);
     process.env.OAUTH_SIGNING_KEY = pem.trim().replace(/\n/g, "\\n");
-    const token = signOAuthToken({ hello: "world" });
+    const token = signOAuthToken(OAuthTokenType.Access, { hello: "world" });
 
     process.env.OAUTH_SIGNING_KEY = pem;
-    expect(verifyOAuthToken(token).hello).toBe("world");
+    expect(verifyOAuthToken(token, OAuthTokenType.Access).hello).toBe("world");
   });
 
   it("derives a stable key id that changes with the key", () => {
@@ -101,12 +106,42 @@ describe("OAuth signing key", () => {
 
   it("signs with RS256 and the key id, and verifies with the same key", () => {
     process.env.OAUTH_SIGNING_KEY = toPem(primaryKey);
-    const token = signOAuthToken({ sub: USER_ID }, { expiresIn: "5m" });
+    const token = signOAuthToken(
+      OAuthTokenType.Access,
+      { sub: USER_ID },
+      { expiresIn: "5m" },
+    );
 
     const decoded = jwt.decode(token, { complete: true });
     expect(decoded?.header.alg).toBe(OAUTH_SIGNING_ALGORITHM);
     expect(decoded?.header.kid).toBe(getOAuthSigningKey().kid);
-    expect(verifyOAuthToken(token).sub).toBe(USER_ID);
+    expect(decoded?.header.typ).toBe("at+jwt");
+    expect(verifyOAuthToken(token, OAuthTokenType.Access).sub).toBe(USER_ID);
+  });
+
+  it.each([
+    [OAuthTokenType.Id, OAuthTokenType.Refresh],
+    [OAuthTokenType.Id, OAuthTokenType.Access],
+    [OAuthTokenType.Access, OAuthTokenType.Refresh],
+    [OAuthTokenType.Refresh, OAuthTokenType.Access],
+  ])("does not verify a %s token as %s", (issued, expected) => {
+    process.env.OAUTH_SIGNING_KEY = toPem(primaryKey);
+    const token = signOAuthToken(issued, { sub: USER_ID });
+    expect(() => verifyOAuthToken(token, expected)).toThrow(
+      jwt.JsonWebTokenError,
+    );
+    // The right type still works.
+    expect(verifyOAuthToken(token, issued).sub).toBe(USER_ID);
+  });
+
+  it("does not verify a token that carries no type", () => {
+    process.env.OAUTH_SIGNING_KEY = toPem(primaryKey);
+    const untyped = jwt.sign({ sub: USER_ID }, primaryKey, {
+      algorithm: "RS256",
+    });
+    expect(() => verifyOAuthToken(untyped, OAuthTokenType.Access)).toThrow(
+      jwt.JsonWebTokenError,
+    );
   });
 
   it("rejects tokens signed with another key, expired tokens and tampered tokens", () => {
@@ -115,16 +150,26 @@ describe("OAuth signing key", () => {
     const foreign = jwt.sign({ sub: USER_ID }, otherKey, {
       algorithm: "RS256",
     });
-    expect(() => verifyOAuthToken(foreign)).toThrow();
+    expect(() => verifyOAuthToken(foreign, OAuthTokenType.Access)).toThrow();
 
-    const expired = signOAuthToken({ sub: USER_ID }, { expiresIn: -10 });
-    expect(() => verifyOAuthToken(expired)).toThrow(jwt.TokenExpiredError);
+    const expired = signOAuthToken(
+      OAuthTokenType.Access,
+      { sub: USER_ID },
+      { expiresIn: -10 },
+    );
+    expect(() => verifyOAuthToken(expired, OAuthTokenType.Access)).toThrow(
+      jwt.TokenExpiredError,
+    );
 
-    const [head, , sig] = signOAuthToken({ sub: USER_ID }).split(".");
+    const [head, , sig] = signOAuthToken(OAuthTokenType.Access, {
+      sub: USER_ID,
+    }).split(".");
     const forgedBody = Buffer.from(
       JSON.stringify({ sub: "someone-else" }),
     ).toString("base64url");
-    expect(() => verifyOAuthToken(`${head}.${forgedBody}.${sig}`)).toThrow();
+    expect(() =>
+      verifyOAuthToken(`${head}.${forgedBody}.${sig}`, OAuthTokenType.Access),
+    ).toThrow();
   });
 });
 
@@ -224,10 +269,22 @@ describe("Bearer tokens in apiHandler", () => {
   });
 
   it("accepts an access token signed with the OAuth key", async () => {
-    const res = await call(signOAuthToken(accessClaims, accessOptions));
+    const res = await call(
+      signOAuthToken(OAuthTokenType.Access, accessClaims, accessOptions),
+    );
     await expectStatusCode(res, 200);
     expect((await res.json()).userId).toBe(USER_ID);
   });
+
+  it.each([OAuthTokenType.Refresh, OAuthTokenType.Id])(
+    "rejects a %s token used as a bearer token",
+    async (type) => {
+      // Same key, same claims, same audience: only the type differs.
+      const token = signOAuthToken(type, accessClaims, accessOptions);
+      await expectStatusCode(await call(token), 401);
+      expect(findClient).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects an HS256 token with OAuth-shaped claims signed with the shared secret", async () => {
     // Before the key split this was a valid access token.
@@ -291,6 +348,7 @@ describe("Bearer tokens in apiHandler", () => {
 
   it("rejects an OAuth token on the service-to-service path", async () => {
     const token = signOAuthToken(
+      OAuthTokenType.Access,
       { sub: USER_ID, issued_by: "climate-advisor-service" },
       {
         issuer: "climate-advisor-service",
@@ -313,13 +371,21 @@ describe("Bearer tokens in apiHandler", () => {
   });
 
   it("answers 401, not 500, for an RS256 token when no OAuth key is configured", async () => {
-    const token = signOAuthToken(accessClaims, accessOptions);
+    const token = signOAuthToken(
+      OAuthTokenType.Access,
+      accessClaims,
+      accessOptions,
+    );
     delete process.env.OAUTH_SIGNING_KEY;
     await expectStatusCode(await call(token), 401);
   });
 
   it("answers 500 when the OAuth key is set but unusable", async () => {
-    const token = signOAuthToken(accessClaims, accessOptions);
+    const token = signOAuthToken(
+      OAuthTokenType.Access,
+      accessClaims,
+      accessOptions,
+    );
     process.env.OAUTH_SIGNING_KEY = "not a key";
     await expectStatusCode(await call(token), 500);
   });

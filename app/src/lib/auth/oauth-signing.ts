@@ -123,8 +123,31 @@ export function getPublicJwk() {
   };
 }
 
-/** Signs an OAuth token with RS256 and the current key id. */
+/**
+ * The kind of an OAuth token, written in the JWT `typ` header (explicit typing,
+ * RFC 8725). All kinds share one key and similar claims, so without a type a
+ * token of one kind would verify as another: a refresh token as an access
+ * token, or an id_token as a bearer token.
+ *
+ * Authorization codes are not JWTs (they are opaque database rows), so they
+ * have no type here. The id_token keeps the conventional `JWT`, which OpenID
+ * Connect client libraries expect, and still cannot pass as an access or
+ * refresh token because those require their own type.
+ */
+export const OAuthTokenType = {
+  Access: "at+jwt", // RFC 9068
+  Refresh: "oauth-refresh+jwt",
+  Id: "JWT",
+} as const;
+export type OAuthTokenType =
+  (typeof OAuthTokenType)[keyof typeof OAuthTokenType];
+
+/**
+ * Signs an OAuth token of the given type with RS256 and the current key id.
+ * The type is required, so every call site has to say what it is issuing.
+ */
 export function signOAuthToken(
+  type: OAuthTokenType,
   payload: object,
   options: SignOptions = {},
 ): string {
@@ -133,22 +156,32 @@ export function signOAuthToken(
     ...options,
     algorithm: OAUTH_SIGNING_ALGORITHM,
     keyid: kid,
+    header: { alg: OAUTH_SIGNING_ALGORITHM, typ: type },
   });
 }
 
 /**
- * Verifies an OAuth token. Only RS256 is accepted, so a token signed with an
- * HMAC secret (even one that equals the public key) or with `alg: none` fails.
+ * Verifies an OAuth token and checks that it is of the expected type. Only
+ * RS256 is accepted, so a token signed with an HMAC secret (even one that
+ * equals the public key) or with `alg: none` fails.
  * @throws the `jsonwebtoken` error (for example `TokenExpiredError`) if the
- * token is invalid, and a 500 error if the signing key is misconfigured.
+ * token is invalid or of another type (`JsonWebTokenError`, so callers that
+ * already map these errors answer 400 or 401), and a 500 error if the signing
+ * key is misconfigured.
  */
 export function verifyOAuthToken(
   token: string,
+  type: OAuthTokenType,
   options: VerifyOptions = {},
 ): JwtPayload {
   const { publicKey } = getOAuthSigningKey();
-  return jwt.verify(token, publicKey, {
+  const { header, payload } = jwt.verify(token, publicKey, {
     ...options,
     algorithms: [OAUTH_SIGNING_ALGORITHM],
-  }) as JwtPayload;
+    complete: true,
+  });
+  if (header.typ !== type) {
+    throw new jwt.JsonWebTokenError(`expected token type ${type}`);
+  }
+  return payload as JwtPayload;
 }

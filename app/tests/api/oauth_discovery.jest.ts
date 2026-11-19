@@ -13,7 +13,7 @@ import {
   teardownTests,
 } from "../helpers";
 import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { signOAuthToken } from "@/lib/auth/oauth-signing";
+import { OAuthTokenType, signOAuthToken } from "@/lib/auth/oauth-signing";
 import {
   LEGACY_METADATA_SUNSET,
   buildDiscoveryDocument,
@@ -169,7 +169,11 @@ describe("OpenID Connect discovery and JWKS", () => {
       }
 
       // A relying party holds nothing but this JWK.
-      const token = signOAuthToken({ hello: "world" }, { expiresIn: 60 });
+      const token = signOAuthToken(
+        OAuthTokenType.Id,
+        { hello: "world" },
+        { expiresIn: 60 },
+      );
       expect(jwt.decode(token, { complete: true })!.header.kid).toBe(jwk.kid);
       const publicKey = createPublicKey({ key: jwk, format: "jwk" });
       const payload = jwt.verify(token, publicKey, {

@@ -14,7 +14,11 @@ import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import jwt from "jsonwebtoken";
 import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
-import { signOAuthToken, verifyOAuthToken } from "@/lib/auth/oauth-signing";
+import {
+  OAuthTokenType,
+  signOAuthToken,
+  verifyOAuthToken,
+} from "@/lib/auth/oauth-signing";
 import {
   expectStatusCode,
   mockRequest,
@@ -295,6 +299,7 @@ describe("OAuth authorization code and token API", () => {
     it("rejects a JWT passed as a code", async () => {
       const origin = process.env.HOST || "http://localhost:3000";
       const forged = signOAuthToken(
+        OAuthTokenType.Access,
         { client_id: testClient.clientId, scope: "read" },
         { expiresIn: "5m", issuer: origin, audience: origin, subject: userId },
       );
@@ -308,7 +313,12 @@ describe("OAuth authorization code and token API", () => {
         const decoded = jwt.decode(token, { complete: true });
         expect(decoded?.header.alg).toBe("RS256");
         expect(decoded?.header.kid).toBeTruthy();
-        const payload = verifyOAuthToken(token);
+        const payload = verifyOAuthToken(
+          token,
+          token === body.access_token
+            ? OAuthTokenType.Access
+            : OAuthTokenType.Refresh,
+        );
         expect(payload.sub).toBe(userId);
         expect(payload.client_id).toBe(testClient.clientId);
         expect(() =>
@@ -329,7 +339,7 @@ describe("OAuth authorization code and token API", () => {
       const header = jwt.decode(body.id_token, { complete: true })!.header;
       expect(header.alg).toBe("RS256");
 
-      const claims = verifyOAuthToken(body.id_token);
+      const claims = verifyOAuthToken(body.id_token, OAuthTokenType.Id);
       const origin = process.env.HOST || "http://localhost:3000";
       expect(claims.iss).toBe(origin);
       expect(claims.aud).toBe(testClient.clientId);
@@ -346,7 +356,9 @@ describe("OAuth authorization code and token API", () => {
 
     it("omits the nonce claim when none was sent", async () => {
       const body = await exchange("openid");
-      expect(verifyOAuthToken(body.id_token).nonce).toBeUndefined();
+      expect(
+        verifyOAuthToken(body.id_token, OAuthTokenType.Id).nonce,
+      ).toBeUndefined();
     });
 
     it("reports a second factor in amr", async () => {
@@ -356,7 +368,10 @@ describe("OAuth authorization code and token API", () => {
       );
       try {
         const body = await exchange("openid");
-        expect(verifyOAuthToken(body.id_token).amr).toEqual(["pwd", "otp"]);
+        expect(verifyOAuthToken(body.id_token, OAuthTokenType.Id).amr).toEqual([
+          "pwd",
+          "otp",
+        ]);
       } finally {
         await db.models.User.update(
           { twoFactorEnabled: false, twoFactorSecret: null },
@@ -401,6 +416,56 @@ describe("OAuth authorization code and token API", () => {
         scope: "read",
       });
       expect(await AuthorizationCode.findByPk(staleHash)).toBeNull();
+    });
+  });
+
+  describe("token types", () => {
+    it("rejects an access token or an id_token as a refresh token", async () => {
+      const body = await exchange("openid read");
+      for (const token of [body.access_token, body.id_token]) {
+        const res = await postToken(refreshRequest(token), noParams);
+        await expectStatusCode(res, 400);
+      }
+    });
+
+    it("rejects an unused authorization code as a refresh token", async () => {
+      const code = await issueCodeValue();
+      await expectStatusCode(
+        await postToken(refreshRequest(code), noParams),
+        400,
+      );
+      // The attempt did not spend the code.
+      await expectStatusCode(
+        await postToken(tokenRequest(code), noParams),
+        200,
+      );
+    });
+
+    it("rejects a refresh token as a bearer token", async () => {
+      const body = await exchange("openid read");
+      await expectStatusCode(
+        await getUserinfo(bearer(body.refresh_token), noParams),
+        401,
+      );
+    });
+
+    it("rejects an access token or a refresh token as an authorization code", async () => {
+      const body = await exchange("read");
+      for (const token of [body.access_token, body.refresh_token]) {
+        await expectStatusCode(
+          await postToken(tokenRequest(token), noParams),
+          400,
+        );
+      }
+    });
+
+    it("types the tokens it issues", async () => {
+      const body = await exchange("openid read");
+      const typ = (token: string) =>
+        jwt.decode(token, { complete: true })!.header.typ;
+      expect(typ(body.access_token)).toBe(OAuthTokenType.Access);
+      expect(typ(body.refresh_token)).toBe(OAuthTokenType.Refresh);
+      expect(typ(body.id_token)).toBe(OAuthTokenType.Id);
     });
   });
 

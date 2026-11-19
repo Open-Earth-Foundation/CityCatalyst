@@ -7,6 +7,9 @@
  *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
  *     --ocr-mode on|off [--base-url http://127.0.0.1:8080]
  *
+ * Recovery, no submission: add --result <saved /result JSON> [--job-id <id>]
+ * [--minutes <wall time>] instead of --mirco-dir to convert a result saved by hand.
+ *
  * Needs Mirco's service running (run-demo.cmd) with gpt-6.1-sol and medium effort,
  * and the inputs from scripts/crva-mirco/inputs.ts.
  * Output: app/reports/crva-eval/<city>/mirco-ocr-<on|off>/<timestamp>/ with
@@ -14,11 +17,16 @@
  */
 import { spawn } from "node:child_process";
 import { createWriteStream, existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { readOcrCache } from "../crva-eval/ocr-cache";
-import { APP_DIR, runsTableMarkdown } from "../crva-eval/run-adapter";
+import type { CrvaDraftBundle } from "@/backend/ingest/plugins/ccra/draft-schema";
+import { readOcrCache, type OcrCache } from "../crva-eval/ocr-cache";
+import {
+  APP_DIR,
+  runsTableMarkdown,
+  type RunStats,
+} from "../crva-eval/run-adapter";
 import { redactSecrets } from "../crva-agent/run-stats";
 import { assembleMircoBundle, mircoItems, mircoRunStats } from "./convert";
 
@@ -98,85 +106,35 @@ async function checkService(baseUrl: string, ocrOn: boolean) {
   return config;
 }
 
-async function main() {
-  const city = argValue("--city");
-  const pdf = path.resolve(argValue("--pdf"));
-  const mircoDir = path.resolve(argValue("--mirco-dir"));
-  const mode = argValue("--ocr-mode");
-  const baseUrl = argValue("--base-url", "http://127.0.0.1:8080");
-  if (mode !== "on" && mode !== "off")
-    throw new Error("--ocr-mode must be on or off");
-  const ocrOn = mode === "on";
-  const inputs = path.join(APP_DIR, "reports", "crva-eval", "mirco-inputs");
-  const schema = path.join(inputs, "crva-v0.schema.json");
-  const userPrompt = path.join(inputs, "crva-user-prompt.md");
-  const python = path.join(mircoDir, ".venv", "Scripts", "python.exe");
-  for (const file of [pdf, schema, userPrompt, python]) {
-    if (!existsSync(file)) throw new Error(`Not found: ${file}`);
-  }
-  const ocr = await readOcrCache(argValue("--ocr"));
-  const config = await checkService(baseUrl, ocrOn);
+/** Null when the OCR cache was made from this PDF; else why the quote check would fail. */
+export function ocrMismatch(pdf: string, ocr: OcrCache): string | null {
+  const name = path.basename(pdf);
+  return name === ocr.file
+    ? null
+    : `--ocr cache is for ${ocr.file}, not ${name}: every quote check would fail`;
+}
 
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const outDir = path.join(
-    APP_DIR,
-    "reports",
-    "crva-eval",
-    city,
-    `mirco-ocr-${mode}`,
-    stamp,
-  );
-  await mkdir(outDir, { recursive: true });
-  const resultPath = path.join(outDir, "result.json");
-  const logPath = path.join(outDir, "client.log");
+/** What to do after the client failed; a missing job ID never proves nothing was submitted. */
+export function failureNote(jobId: string | null): string {
+  return jobId
+    ? `Job ${jobId} was submitted. Do not resubmit: poll GET /v1/extractions/${jobId}, save /result, then convert it with --result.`
+    : "No job ID in client.log, but the submission is uncertain: with OCR on, the server keeps working after the client's 600 s upload timeout. Check the service log and /v1/extractions before rerunning.";
+}
 
-  const started = Date.now();
-  const log = createWriteStream(logPath);
-  const exitCode = await new Promise<number | null>((resolve, reject) => {
-    const child = spawn(
-      python,
-      clientArgs({
-        mircoDir,
-        city,
-        pdf,
-        schema,
-        userPrompt,
-        ocrOn,
-        output: resultPath,
-        baseUrl,
-      }),
-      {
-        cwd: mircoDir,
-        stdio: ["ignore", "inherit", "pipe"],
-      },
-    );
-    child.stderr.on("data", (chunk: Buffer) => {
-      log.write(chunk);
-      process.stderr.write(chunk);
-    });
-    child.on("error", reject);
-    child.on("close", resolve);
-  });
-  await new Promise<void>((resolve) => log.end(resolve));
-  const minutes = Math.round(((Date.now() - started) / 60_000) * 10) / 10;
-  const jobId = parseJobId(await readFile(logPath, "utf8"));
-
-  if (exitCode !== 0 || !existsSync(resultPath)) {
-    console.error(
-      `Client exited with ${exitCode}. Job ID: ${jobId ?? "none (not submitted)"}. ` +
-        "Do not resubmit: recover with GET /v1/extractions/<id> and /result.",
-    );
-    process.exitCode = 1;
-    return;
-  }
-
-  const envelope: unknown = JSON.parse(await readFile(resultPath, "utf8"));
-  const { result, usage, repair } = (envelope ?? {}) as {
-    result?: unknown;
-    usage?: unknown;
-    repair?: Record<string, unknown>;
-  };
-  const { items, badPointers } = mircoItems(result);
+/** Fresh and recovered runs share this, so a saved result converts the same way. */
+export function convertEnvelope(input: {
+  envelope: unknown;
+  ocr: OcrCache;
+  ocrOn: boolean;
+  minutes: number;
+}): {
+  stats: RunStats;
+  bundle: CrvaDraftBundle | null;
+  ambiguousItems: number;
+} {
+  const { envelope, ocr, ocrOn, minutes } = input;
+  const result = (envelope as { result?: unknown } | null)?.result;
+  const { items, badPointers, ambiguousItems } = mircoItems(result);
   const bundle =
     result == null
       ? null
@@ -195,6 +153,116 @@ async function main() {
     ocr,
     ocrOn,
   });
+  return { stats, bundle, ambiguousItems };
+}
+
+async function runClient(input: {
+  python: string;
+  args: string[];
+  cwd: string;
+  logPath: string;
+}): Promise<number | null> {
+  const log = createWriteStream(input.logPath);
+  const exitCode = await new Promise<number | null>((resolve, reject) => {
+    const child = spawn(input.python, input.args, {
+      cwd: input.cwd,
+      stdio: ["ignore", "inherit", "pipe"],
+    });
+    child.stderr.on("data", (chunk: Buffer) => {
+      log.write(chunk);
+      process.stderr.write(chunk);
+    });
+    child.on("error", reject);
+    child.on("close", resolve);
+  });
+  await new Promise<void>((resolve) => log.end(resolve));
+  return exitCode;
+}
+
+async function main() {
+  const city = argValue("--city");
+  const pdf = path.resolve(argValue("--pdf"));
+  const mode = argValue("--ocr-mode");
+  if (mode !== "on" && mode !== "off")
+    throw new Error("--ocr-mode must be on or off");
+  const ocrOn = mode === "on";
+  const ocr = await readOcrCache(argValue("--ocr"));
+  const mismatch = ocrMismatch(pdf, ocr);
+  if (mismatch) throw new Error(mismatch);
+  // --result converts a result saved after a client failure; nothing is submitted.
+  const savedResult = process.argv.includes("--result")
+    ? path.resolve(argValue("--result"))
+    : null;
+
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const outDir = path.join(
+    APP_DIR,
+    "reports",
+    "crva-eval",
+    city,
+    `mirco-ocr-${mode}`,
+    stamp,
+  );
+  const resultPath = path.join(outDir, "result.json");
+  let jobId: string | null;
+  let minutes: number;
+  let config: Awaited<ReturnType<typeof checkService>> | null = null;
+
+  if (savedResult) {
+    if (!existsSync(savedResult)) throw new Error(`Not found: ${savedResult}`);
+    jobId = process.argv.includes("--job-id") ? argValue("--job-id") : null;
+    minutes = Number(argValue("--minutes", "0"));
+    await mkdir(outDir, { recursive: true });
+    await copyFile(savedResult, resultPath);
+  } else {
+    const mircoDir = path.resolve(argValue("--mirco-dir"));
+    const baseUrl = argValue("--base-url", "http://127.0.0.1:8080");
+    const inputs = path.join(APP_DIR, "reports", "crva-eval", "mirco-inputs");
+    const schema = path.join(inputs, "crva-v0.schema.json");
+    const userPrompt = path.join(inputs, "crva-user-prompt.md");
+    const python = path.join(mircoDir, ".venv", "Scripts", "python.exe");
+    for (const file of [pdf, schema, userPrompt, python]) {
+      if (!existsSync(file)) throw new Error(`Not found: ${file}`);
+    }
+    config = await checkService(baseUrl, ocrOn);
+    await mkdir(outDir, { recursive: true });
+    const logPath = path.join(outDir, "client.log");
+    const started = Date.now();
+    const exitCode = await runClient({
+      python,
+      args: clientArgs({
+        mircoDir,
+        city,
+        pdf,
+        schema,
+        userPrompt,
+        ocrOn,
+        output: resultPath,
+        baseUrl,
+      }),
+      cwd: mircoDir,
+      logPath,
+    });
+    minutes = Math.round(((Date.now() - started) / 60_000) * 10) / 10;
+    jobId = parseJobId(await readFile(logPath, "utf8"));
+    if (exitCode !== 0 || !existsSync(resultPath)) {
+      console.error(`Client exited with ${exitCode}. ${failureNote(jobId)}`);
+      process.exitCode = 1;
+      return;
+    }
+  }
+
+  const envelope: unknown = JSON.parse(await readFile(resultPath, "utf8"));
+  const { usage, repair } = (envelope ?? {}) as {
+    usage?: unknown;
+    repair?: Record<string, unknown>;
+  };
+  const { stats, bundle, ambiguousItems } = convertEnvelope({
+    envelope,
+    ocr,
+    ocrOn,
+    minutes,
+  });
   const { rounds: _rounds, ...repairSummary } = repair ?? {};
   await writeFile(
     path.join(outDir, "run-1.json"),
@@ -206,9 +274,11 @@ async function main() {
         mirco: {
           jobId,
           ocrOn,
-          model: config.model,
-          reasoningEffort: config.reasoning_effort,
-          fingerprint: config.implementation_fingerprint,
+          recovered: savedResult !== null,
+          model: config?.model ?? MODEL,
+          reasoningEffort: config?.reasoning_effort ?? EFFORT,
+          fingerprint: config?.implementation_fingerprint ?? null,
+          ambiguousItems,
           usage,
           repair: repairSummary,
         },

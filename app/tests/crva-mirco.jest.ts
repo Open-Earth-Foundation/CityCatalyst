@@ -14,7 +14,13 @@ import {
   mircoUsage,
   type MircoItem,
 } from "../scripts/crva-mirco/convert";
-import { clientArgs, parseJobId } from "../scripts/crva-mirco/run-mirco";
+import {
+  clientArgs,
+  convertEnvelope,
+  failureNote,
+  ocrMismatch,
+  parseJobId,
+} from "../scripts/crva-mirco/run-mirco";
 import {
   CRVA_VALUE_RULES,
   CRVA_VALUE_SHAPES,
@@ -174,12 +180,24 @@ describe("mircoItems", () => {
         field("/A1.1/5", [[1, "q"]]),
       ],
     };
-    expect(mircoItems(result)).toEqual({ items: [], badPointers: 3 });
+    expect(mircoItems(result)).toEqual({
+      items: [],
+      badPointers: 3,
+      ambiguousItems: 0,
+    });
   });
 
   it("returns nothing for a missing result", () => {
-    expect(mircoItems(null)).toEqual({ items: [], badPointers: 0 });
-    expect(mircoItems({})).toEqual({ items: [], badPointers: 0 });
+    expect(mircoItems(null)).toEqual({
+      items: [],
+      badPointers: 0,
+      ambiguousItems: 0,
+    });
+    expect(mircoItems({})).toEqual({
+      items: [],
+      badPointers: 0,
+      ambiguousItems: 0,
+    });
   });
 });
 
@@ -392,5 +410,96 @@ describe("parseJobId", () => {
       ),
     ).toBe("abc_123");
     expect(parseJobId("INFO nothing here")).toBeNull();
+  });
+});
+
+describe("review fixes", () => {
+  it("keeps the longest passing quote of an item", () => {
+    const bundle = assembleMircoBundle({
+      file: OCR.file,
+      items: [
+        {
+          fieldId: "C1.1a",
+          index: 0,
+          value: HEAT,
+          evidence: [
+            { page: 2, quote: "Las olas de calor" },
+            {
+              page: 2,
+              quote: "Las olas de calor afectan a las personas mayores",
+            },
+          ],
+        },
+      ],
+      badPointers: 0,
+      ocr: OCR,
+      extractionModel: "gpt-6.1-sol",
+    });
+    expect(bundle.values[0].source.quote).toBe(
+      "Las olas de calor afectan a las personas mayores",
+    );
+  });
+
+  it("skips a found outcome on an empty field array without a drop", () => {
+    const result = {
+      data: { "A2.1a": [] },
+      fields: [field("/A2.1a", [[1, "La ciudad limita con el Río"]])],
+    };
+    expect(mircoItems(result)).toEqual({
+      items: [],
+      badPointers: 0,
+      ambiguousItems: 0,
+    });
+  });
+
+  it("counts populated items whose outcomes are all ambiguous", () => {
+    const result = {
+      data: { "A1.1": ["a", "b"] },
+      fields: [
+        { ...field("/A1.1/0", [[1, "q"]]), status: "ambiguous" },
+        { ...field("/A1.1/1", [[1, "q"]]), status: "ambiguous" },
+        field("/A1.1/1", [[1, "La ciudad limita con el Río"]]),
+      ],
+    };
+    const { items, ambiguousItems } = mircoItems(result);
+    expect(items.map((i) => i.index)).toEqual([1]);
+    expect(ambiguousItems).toBe(1);
+  });
+
+  it("flags an OCR cache made from another PDF", () => {
+    expect(ocrMismatch("C:/x/report.pdf", OCR)).toBeNull();
+    expect(ocrMismatch("C:/x/other.pdf", OCR)).toContain("report.pdf");
+  });
+
+  it("converts a saved envelope the same way as a fresh run", () => {
+    const failed = convertEnvelope({
+      envelope: { result: null, execution_status: "failed" },
+      ocr: OCR,
+      ocrOn: false,
+      minutes: 0,
+    });
+    expect(failed.bundle).toBeNull();
+    expect(failed.stats.status).toBe("failed");
+    const ok = convertEnvelope({
+      envelope: {
+        result: {
+          data: { "A1.1": ["Río de la Plata"] },
+          fields: [field("/A1.1/0", [[1, "limita con el Río de la Plata"]])],
+        },
+        execution_status: "completed",
+      },
+      ocr: OCR,
+      ocrOn: true,
+      minutes: 4,
+    });
+    expect(ok.stats.status).toBe("ok");
+    expect(ok.bundle?.values).toHaveLength(1);
+    expect(ok.ambiguousItems).toBe(0);
+  });
+
+  it("never tells David a failed submission is safe to repeat", () => {
+    expect(failureNote(null)).toContain("uncertain");
+    expect(failureNote(null)).not.toContain("not submitted");
+    expect(failureNote("job_1")).toContain("job_1");
   });
 });

@@ -74,29 +74,44 @@ function pointerSegments(pointer: string): string[] {
 
 /**
  * Mirco's validator wants an outcome per data leaf (`/C1.1a/0/hazard`), while v0
- * has one value per item, so `found` leaves are grouped by item.
+ * has one value per item, so `found` leaves are grouped by item. Items whose
+ * outcomes are all `ambiguous` are not v0 values; they are only counted.
  */
 export function mircoItems(result: unknown): {
   items: MircoItem[];
   badPointers: number;
+  ambiguousItems: number;
 } {
   const parsed = ResultSchema.safeParse(result);
-  if (!parsed.success) return { items: [], badPointers: 0 };
+  if (!parsed.success) return { items: [], badPointers: 0, ambiguousItems: 0 };
   const { data } = parsed.data;
   const items = new Map<string, MircoItem>();
+  const ambiguous = new Set<string>();
   let badPointers = 0;
   for (const raw of parsed.data.fields) {
     const outcome = OutcomeSchema.safeParse(raw);
-    if (!outcome.success || outcome.data.status !== "found") continue;
-    const [fieldId, indexText] = pointerSegments(outcome.data.field_id);
+    if (!outcome.success) continue;
+    const { status } = outcome.data;
+    if (status !== "found" && status !== "ambiguous") continue;
+    const segments = pointerSegments(outcome.data.field_id);
+    const [fieldId, indexText] = segments;
     const index = Number(indexText);
     const list = data[fieldId];
-    if (
-      !CRVA_FIELD_IDS.includes(fieldId) ||
-      !/^\d+$/.test(indexText ?? "") ||
-      !Array.isArray(list) ||
-      list[index] === undefined
-    ) {
+    // Mirco's validator counts an empty array as a leaf, so an empty field still
+    // gets an outcome; it holds no value and is not a v0 drop.
+    if (segments.length === 1 && Array.isArray(list) && list.length === 0) {
+      continue;
+    }
+    const valid =
+      CRVA_FIELD_IDS.includes(fieldId) &&
+      /^\d+$/.test(indexText ?? "") &&
+      Array.isArray(list) &&
+      list[index] !== undefined;
+    if (status === "ambiguous") {
+      if (valid) ambiguous.add(`${fieldId}/${index}`);
+      continue;
+    }
+    if (!valid) {
       badPointers += 1;
       continue;
     }
@@ -119,7 +134,8 @@ export function mircoItems(result: unknown): {
       }
     }
   }
-  return { items: [...items.values()], badPointers };
+  const ambiguousItems = [...ambiguous].filter((key) => !items.has(key)).length;
+  return { items: [...items.values()], badPointers, ambiguousItems };
 }
 
 const INVALID: CrvaDroppedValue = {
@@ -129,7 +145,11 @@ const INVALID: CrvaDroppedValue = {
   reason: "invalid_value",
 };
 
-/** Like assembleBundle, but an item may try each of its quotes; one drop per failed item. */
+/**
+ * Like assembleBundle, but an item tries each of its quotes and keeps the longest
+ * that passes (a short leaf quote, like a hazard name, supports less of the value
+ * the judge reads); one drop per failed item.
+ */
 export function assembleMircoBundle(input: {
   file: string;
   items: MircoItem[];
@@ -159,11 +179,16 @@ export function assembleMircoBundle(input: {
         CRVA_FIELD_IDS,
       );
       const checked = verifyQuotes(extracted.values, ocr.pages);
-      if (checked.verified.length > 0) {
-        found = checked.verified[0];
-        break;
+      const passed = checked.verified[0];
+      if (
+        passed &&
+        (!found || passed.source.quote.length > found.source.quote.length)
+      ) {
+        found = passed;
       }
-      firstDrop ??= [...extracted.dropped, ...checked.dropped][0] ?? null;
+      if (!passed) {
+        firstDrop ??= [...extracted.dropped, ...checked.dropped][0] ?? null;
+      }
     }
     if (found) kept.push(found);
     else dropped.push(firstDrop ?? { ...INVALID, fieldId: item.fieldId });

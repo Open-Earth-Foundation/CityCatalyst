@@ -1,12 +1,13 @@
 # Human-labelled judge calibration
 
-`cases.json` contains 28 proposed extraction labels across nine held-out
+`cases.json` contains 28 human-reviewed extraction labels across nine held-out
 requirement families. Six families include correct, partial, incorrect and missing
 examples. Every missing candidate contains text, including a true fact routed to
 another chapter. The seventh family tests a source discrepancy in Richfield
-Table 5-7, including a silently recomputed upper bound. Two further candidates swap concept costs or turn a plan estimate into a grant request. The current labels
-await human sign-off against the revised fixtures. A development family can be added
-separately, but all variants of a source fact must remain in one split.
+Table 5-7, including a silently recomputed upper bound. Two further candidates swap concept costs or turn a plan estimate into a grant request.
+Piotr Nowakowski reviewed the labels on 2026-11-19 against the revised fixtures.
+A development family can be added separately, but all variants of a source fact
+must remain in one split.
 
 The command loads the frozen source, receiving-chapter requirement and candidate
 into the existing extraction judge. It withholds case identifiers, human

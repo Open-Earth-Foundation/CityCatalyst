@@ -12,7 +12,12 @@
     "tags": [
       "currency",
       "funding-status"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "a32566e0abf4e21f468d7c27415ae18b398223214e5cc9f88db0bbbed01a579d"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-partly_correct",
@@ -27,7 +32,12 @@
     "tags": [
       "currency",
       "funding-status"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "2f20dd41690ce6a80162695acd47701558552ce22edd02e9cdfd241187e799ba"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-incorrect",
@@ -42,7 +52,12 @@
     "tags": [
       "currency",
       "funding-status"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "de73dda09cbc18d81f0e65999be234f858d5be31ef4c9b5704e404c48ea813b8"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-missing",
@@ -58,7 +73,12 @@
       "currency",
       "funding-status"
     ],
-    "candidate_chapter_ref": "project_summary"
+    "candidate_chapter_ref": "project_summary",
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "d603b923791a747e2b7e73a076e6b44e53313bfc40d9dbce765253d46b2c386c"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-correct",
@@ -73,7 +93,12 @@
     "tags": [
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "55f7c9390f7adccb41579d474d7ff4fbbc198fb54021468cbfb5914c9316abca"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-partly_correct",
@@ -88,7 +113,12 @@
     "tags": [
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "0958bce6ff7569d8894d5b5c3496f4b94c381081c3b70c06c95f83f0308ea93e"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-incorrect",
@@ -103,7 +133,12 @@
     "tags": [
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "a1de7ca57aa4a32ee45b0d9af2fd89a6ed329a58a7c86edb8564eb911499f566"
+    }
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-missing",
@@ -118,7 +153,12 @@
     "tags": [
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "265d1fc80370bf10ffa8e1f956c716160202a27f36923798484a62021cdc8c8b"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-correct",
@@ -135,7 +175,12 @@
       "currency",
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "ab0c2f1172f698d68f9ab3125b78a5e4d127ccf307015eac940c045e8e933ea1"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-partly_correct",
@@ -152,7 +197,12 @@
       "currency",
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "4cd328b54995745b2a36645470b0064535090663b66d3c88189be3a57bca5052"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-incorrect",
@@ -169,7 +219,12 @@
       "currency",
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "df8af36c01ae4480f81162fdb73cdc7b7880e19863a03af9e1a9150e032dfb7c"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-missing",
@@ -186,7 +241,12 @@
       "currency",
       "dates",
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "c6eebae2f90ef5b6edb0543c3e53a774218b6cf72289df584a8c4fc1f77c9abe"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-correct",
@@ -200,7 +260,12 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "b940a2f1c2527b800d2aaa2911e0600bc93f91b79de26553d08689d4d1217680"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-partly_correct",
@@ -214,7 +279,12 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "7b9d6a26bf5d5a5d40938872945014aa00156ffb7f7f637f590898080e8a357c"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-incorrect",
@@ -228,7 +298,12 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "4066572b71096f03bee5fc030a25ddcb5dddadf1cd3f2d1f9428eaba72955fef"
+    }
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-missing",
@@ -242,7 +317,12 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "ca22d60d2f7c7bea01d4fe5f0ed9c733f5a48888f91cc7472a5d865e4c20eb16"
+    }
   },
   {
     "id": "richfield-flood-risk-cost-basis-correct",
@@ -257,7 +337,12 @@
     "tags": [
       "units",
       "currency"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "a3feb0f8a27a67c3826dca483bdddccb29f2d861321b3666e0c5f5108ad71539"
+    }
   },
   {
     "id": "richfield-flood-risk-cost-basis-partly_correct",
@@ -272,7 +357,12 @@
     "tags": [
       "units",
       "currency"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "8b27bee8ded00b9ae68ea37dda5f59d5ed6ad1aa191f82568a0ab07885796824"
+    }
   },
   {
     "id": "richfield-flood-risk-cost-basis-incorrect",
@@ -287,7 +377,12 @@
     "tags": [
       "units",
       "currency"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "fdf078d2b9ac2e983ef80472576b238b21b4a1ca5c1e24ad43adf7ddcc55d906"
+    }
   },
   {
     "id": "richfield-flood-risk-cost-basis-missing",
@@ -302,7 +397,12 @@
     "tags": [
       "units",
       "currency"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "8830d6fb241c213bf49cc7f217ab0f73b1f657042c7ea2eb9724b0ccdd440104"
+    }
   },
   {
     "id": "richfield-flood-risk-study-area-size-correct",
@@ -316,7 +416,12 @@
     "split": "held_out",
     "tags": [
       "units"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "7af87dd6be64273df799836050256c64269c04ecf931f5840ab1fff86446c0d1"
+    }
   },
   {
     "id": "richfield-flood-risk-study-area-size-partly_correct",
@@ -330,7 +435,12 @@
     "split": "held_out",
     "tags": [
       "units"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "07d615616c88395e383bf39a53d23122298059488860123f2b425d1843bb3082"
+    }
   },
   {
     "id": "richfield-flood-risk-study-area-size-incorrect",
@@ -344,7 +454,12 @@
     "split": "held_out",
     "tags": [
       "units"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "f3c708459bb8a6eacdea646dfc3c9af2f0751f07ca8ee3fa55e19d3d090081a6"
+    }
   },
   {
     "id": "richfield-flood-risk-study-area-size-missing",
@@ -358,7 +473,12 @@
     "split": "held_out",
     "tags": [
       "units"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "124e5c2fbc366484b02f3e4c1b95fc17ba85b6ca33da3e418bb3969982b66c19"
+    }
   },
   {
     "id": "richfield-woodlawn-bound-as-printed",
@@ -373,7 +493,12 @@
     "tags": [
       "table-amount",
       "source-discrepancy"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "2cb956ec7f673b9c83f4ef09127586061f04ab6ac4d6db888fa8330fcdf41f10"
+    }
   },
   {
     "id": "richfield-woodlawn-bound-silently-recomputed",
@@ -388,7 +513,12 @@
     "tags": [
       "table-amount",
       "source-discrepancy"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "2ac8ca41291edf7f07f69b36071c3e385f1dffb6094ffbb2ffce7072a97b0473"
+    }
   },
   {
     "id": "richfield-concept-cost-wrong-site",
@@ -402,7 +532,12 @@
     "split": "held_out",
     "tags": [
       "amount-attribution"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "16a2e3552d8a0a803d8572fd2adb41dfb59c1dc38e7d1e942bcb70192f4e7287"
+    }
   },
   {
     "id": "krakow-table-one-as-grant-request",
@@ -416,6 +551,11 @@
     "split": "held_out",
     "tags": [
       "amount-attribution"
-    ]
+    ],
+    "approval": {
+      "reviewer": "Piotr Nowakowski",
+      "reviewed_at": "2026-11-19",
+      "case_sha256": "ea6964b16bc932454f7f1b5440512a84ba8c64f8949df89e6bc54e067325c841"
+    }
   }
 ]

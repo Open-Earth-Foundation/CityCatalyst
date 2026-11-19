@@ -22,7 +22,8 @@ export interface ImportReviewHistory {
 
 export interface ImportedInventoryFileAttributes {
   id: string;
-  userId: string;
+  /** Null once the user who uploaded the file has been deleted. */
+  userId: string | null;
   cityId: string;
   inventoryId: string;
   fileName: string;
@@ -75,7 +76,7 @@ export class ImportedInventoryFile
   implements Partial<ImportedInventoryFileAttributes>
 {
   declare id: string;
-  declare userId: string;
+  declare userId: string | null;
   declare cityId: string;
   declare inventoryId: string;
   declare fileName: string;
@@ -96,8 +97,8 @@ export class ImportedInventoryFile
   declare lastUpdated?: Date;
   declare completedAt?: Date | null;
 
-  // ImportedInventoryFile belongsTo User via userId
-  declare user: User;
+  // ImportedInventoryFile belongsTo User via userId. Null once the user is deleted.
+  declare user: User | null;
   declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
@@ -130,11 +131,13 @@ export class ImportedInventoryFile
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           references: {
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "user_id",
         },
         cityId: {

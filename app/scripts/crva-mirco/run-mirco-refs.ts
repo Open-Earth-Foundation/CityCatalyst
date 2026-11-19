@@ -4,13 +4,15 @@
  * Paid: OpenAI (the agent job(s) and the reference mapping). Never resubmits a job.
  *
  * Default (wave 2.5): one job with the full 12-field schema and prompt from
- * inputs.ts, unchanged from wave 1.5; A1.2a comes from the reference pass only.
+ * inputs.ts, unchanged from wave 1.5. A1.2a: the reference pass plus the job's own
+ * A1.2a items no reference item covers (--reference-mode union, wave 2.6), or the
+ * reference pass only (replace, wave 2.5).
  * --groups (wave 2): five jobs, one per field group (groups.ts), in parallel; the
  * A1 job keeps A1.2a for non-reference sources, and E1 adds risk table rows.
  *
  *   npx tsx scripts/crva-mirco/run-mirco-refs.ts --city <slug> --pdf <report.pdf> \
  *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
- *     [--groups] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
+ *     [--groups] [--reference-mode union|replace] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
  *
  * Recovery, no new jobs: --results-dir <run folder> converts the result-<job>.json
  * files there again (after a usage refresh, say), reusing its references.json.
@@ -37,6 +39,7 @@ import {
   mergeEnvelopes,
   mergeGroupResults,
   mircoRunStats,
+  unionReferenceItems,
   withReferenceItems,
 } from "./convert";
 import { CRVA_GROUPS, groupJsonSchema, groupUserPrompt } from "./groups";
@@ -265,11 +268,17 @@ async function main() {
         captionSources(ocr.pages),
       )
     : null;
-  // Groups: the A1 job already left the reference list out. Single job: its own
-  // A1.2a items are dropped in favour of the reference pass.
+  // Groups: the A1 job already left the reference list out. Single job: union
+  // (wave 2.6, default) keeps the job's A1.2a items no reference item covers;
+  // replace (wave 2.5) drops them.
+  const referenceMode = argValue("--reference-mode", "union");
+  if (referenceMode !== "union" && referenceMode !== "replace")
+    throw new Error("--reference-mode must be union or replace");
   const items = groupsMode
     ? [...merged.items, ...(fromReferences ?? [])]
-    : withReferenceItems(merged.items, fromReferences);
+    : referenceMode === "union"
+      ? unionReferenceItems(merged.items, fromReferences)
+      : withReferenceItems(merged.items, fromReferences);
   const bundle = assembleMircoBundle({
     file: ocr.file,
     items,
@@ -308,6 +317,7 @@ async function main() {
         bundle,
         mirco: {
           mode: groupsMode ? "groups" : SINGLE,
+          referenceMode: groupsMode ? null : referenceMode,
           recovered: resultsDir !== null,
           model: config?.model ?? MODEL,
           reasoningEffort: config?.reasoning_effort ?? "medium",

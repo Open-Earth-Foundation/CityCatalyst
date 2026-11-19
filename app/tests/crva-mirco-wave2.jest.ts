@@ -14,6 +14,7 @@ import {
   mergeEnvelopes,
   mergeGroupResults,
   riskRowItems,
+  unionReferenceItems,
   withReferenceItems,
 } from "../scripts/crva-mirco/convert";
 
@@ -345,5 +346,39 @@ describe("withReferenceItems", () => {
 
   it("keeps the job's A1.2a items when no reference list was found", () => {
     expect(withReferenceItems(job, null)).toEqual(job);
+  });
+});
+
+// Wave 2.6: union of the reference pass and the job's non-duplicate A1.2a items.
+describe("unionReferenceItems", () => {
+  const ref = (author: string, title: string, year: number | null) => ({
+    fieldId: "A1.2a",
+    index: 0,
+    value: { author, title, year, used_for: null },
+    evidence: [],
+  });
+  const refs = [
+    ref("Balay, M.", "El Río de la Plata entre la atmósfera y el mar", 1961),
+    ref("INDEC-Censo 2010", "", 2010),
+  ];
+
+  it("keeps every reference item and only the job items they do not cover", () => {
+    const job = [
+      { fieldId: "A1.1", index: 0, value: "x", evidence: [] },
+      ref("Balay M.", "El Rio de la Plata entre la atmosfera y el mar.", 1961),
+      ref("INDEC", "Censo Nacional 2010", 2010),
+      ref("SMN", "Registros de la estación OCBA", null),
+      ref("Balay, M.", "Otro trabajo distinto", 1961),
+    ];
+    const out = unionReferenceItems(job, refs);
+    expect(
+      out.map((i) => (i.value as { author?: string }).author ?? i.value),
+    ).toEqual(["x", "SMN", "Balay, M.", "Balay, M.", "INDEC-Censo 2010"]);
+    expect(out.filter((i) => i.fieldId === "A1.2a")).toHaveLength(4);
+  });
+
+  it("keeps the job's items when no reference list was found", () => {
+    const job = [ref("SMN", "OCBA", null)];
+    expect(unionReferenceItems(job, null)).toEqual(job);
   });
 });

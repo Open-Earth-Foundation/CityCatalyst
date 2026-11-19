@@ -547,3 +547,46 @@ export function withReferenceItems(
     ...referenceItems,
   ];
 }
+
+const A12aParts = z.object({
+  author: z.string().catch(""),
+  title: z.string().catch(""),
+  year: z.number().nullable().catch(null),
+});
+const compact = (s: string) => fold(s).replace(/[^\p{L}\p{N}]/gu, "");
+const overlaps = (a: string, b: string) =>
+  a.length > 0 && b.length > 0 && (a.includes(b) || b.includes(a));
+
+/** Same source: same year, and matching titles, or matching authors when a title is empty. */
+function sameSource(a: unknown, b: unknown): boolean {
+  const x = A12aParts.parse(a ?? {});
+  const y = A12aParts.parse(b ?? {});
+  if (x.year !== y.year) return false;
+  const [tx, ty] = [compact(x.title), compact(y.title)];
+  if (tx && ty) return tx.length >= 8 && ty.length >= 8 && overlaps(tx, ty);
+  return overlaps(compact(x.author), compact(y.author));
+}
+
+/**
+ * Wave 2.6: A1.2a = every reference-pass item plus the job's own A1.2a items
+ * that no reference item covers. A report can cite sources outside its
+ * reference list (text, tables, figures), which the job finds and the
+ * reference pass does not. With no reference list found (null), the job's
+ * items stay.
+ */
+export function unionReferenceItems(
+  jobItems: MircoItem[],
+  referenceItems: MircoItem[] | null,
+): MircoItem[] {
+  if (!referenceItems) return jobItems;
+  const extra = jobItems.filter(
+    (item) =>
+      item.fieldId === "A1.2a" &&
+      !referenceItems.some((ref) => sameSource(item.value, ref.value)),
+  );
+  return [
+    ...jobItems.filter((item) => item.fieldId !== "A1.2a"),
+    ...extra,
+    ...referenceItems,
+  ];
+}

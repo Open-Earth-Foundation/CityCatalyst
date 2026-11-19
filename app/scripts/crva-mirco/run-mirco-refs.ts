@@ -6,13 +6,14 @@
  * Default (wave 2.5): one job with the full 12-field schema and prompt from
  * inputs.ts, unchanged from wave 1.5. A1.2a: the reference pass plus the job's own
  * A1.2a items no reference item covers (--reference-mode union, wave 2.6), or the
- * reference pass only (replace, wave 2.5).
+ * reference pass only (replace, wave 2.5). --c1-split adds the wave 2.7 C1 split
+ * rules (inputs.ts PromptOptions), off by default.
  * --groups (wave 2): five jobs, one per field group (groups.ts), in parallel; the
  * A1 job keeps A1.2a for non-reference sources, and E1 adds risk table rows.
  *
  *   npx tsx scripts/crva-mirco/run-mirco-refs.ts --city <slug> --pdf <report.pdf> \
  *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
- *     [--groups] [--reference-mode union|replace] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
+ *     [--groups] [--reference-mode union|replace] [--c1-split] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
  *
  * Recovery, no new jobs: --results-dir <run folder> converts the result-<job>.json
  * files there again (after a usage refresh, say), reusing its references.json.
@@ -179,7 +180,9 @@ async function main() {
           userPrompt,
           spec
             ? groupUserPrompt(defaultPrompt, spec, options)
-            : crvaUserPrompt(defaultPrompt),
+            : crvaUserPrompt(defaultPrompt, {
+                c1Split: process.argv.includes("--c1-split"),
+              }),
         );
         const logPath = path.join(outDir, `client-${group.id}.log`);
         const exitCode = await runClient({

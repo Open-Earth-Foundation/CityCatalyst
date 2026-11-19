@@ -115,13 +115,44 @@ export const CRVA_DETAIL_RULES: string[] = [
 export const CRVA_GRANULARITY_RULES: string[] = [
   `- An item is one hazard × group, hazard × sector or hazard × area combination. Do not merge different combinations into one item.`,
   `- Scenarios, time horizons and the levels per scenario go inside that item's text, never as separate items.`,
-  // Wave 2.7: the wider version of this rule kept sectors listed in one table row together.
-  `- Keep the grouping the report uses for hazards: hazards the report treats as one stay one item (one heading, one section).`,
-  `- When one passage or table row names several sectors or groups for the same impact, return one item per sector or group, each with the same quote.`,
+  `- Keep the grouping the report uses: hazards, groups or sectors the report treats as one (one heading, one section, one table row) are one item.`,
   `- An item is the unit the report presents. A system, plan or programme described through its components is one item, with the components listed in its text.`,
   `- A table row, caption or heading with no content of its own is not an item. A table summarised by the report is one fact, citing the table.`,
   `- One item per reference, receptor, capacity factor or limit. Do not merge list entries.`,
 ];
+
+/** Prompt variants. */
+export interface PromptOptions {
+  /**
+   * Wave 2.7 C1 split (off by default; wave 2.6 is the baseline): the grouping rule
+   * keeps only hazards together, and sectors or groups named together become one
+   * item each. It fixed merged C1.2a sectors in BA but split groups the BA gold
+   * keeps together (A2.5a, C1.1a); the golds differ on that convention.
+   */
+  c1Split?: boolean;
+}
+
+const GROUPING_RULE = CRVA_GRANULARITY_RULES.findIndex((r) =>
+  r.startsWith("- Keep the grouping the report uses:"),
+);
+
+/** The granularity rules for the given options. */
+export function granularityRules(options: PromptOptions = {}): string[] {
+  if (!options.c1Split) return CRVA_GRANULARITY_RULES;
+  return CRVA_GRANULARITY_RULES.flatMap((rule, i) =>
+    i === GROUPING_RULE
+      ? [
+          `- Keep the grouping the report uses for hazards: hazards the report treats as one stay one item (one heading, one section).`,
+          `- When one passage or table row names several sectors or groups for the same impact, return one item per sector or group, each with the same quote.`,
+        ]
+      : [rule],
+  );
+}
+
+const C1_SINGLE: Partial<Record<CrvaFieldId, string>> = {
+  "C1.1a": "The group is a single group, never a list.",
+  "C1.2a": "The sector is a single sector, never a list.",
+};
 
 export interface CrvaFieldGuide {
   definition: string;
@@ -204,7 +235,7 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "C1.1a": {
     definition:
-      "An observed (past) impact of a hazard on a vulnerable group of people (age, gender, income, health), with the event, date and figures. The group is a single group, never a list.",
+      "An observed (past) impact of a hazard on a vulnerable group of people (age, gender, income, health), with the event, date and figures.",
     notThis:
       "An impact on a sector, service or the population as a whole (C1.2a), or a projected risk (E1.1a).",
     example: {
@@ -216,7 +247,7 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "C1.2a": {
     definition:
-      "An observed (past) impact of a hazard on a sector or receptor (population as a whole, energy, transport, housing, economy), with the event, date and figures. The sector is a single sector, never a list.",
+      "An observed (past) impact of a hazard on a sector or receptor (population as a whole, energy, transport, housing, economy), with the event, date and figures.",
     notThis:
       "An impact on a specific vulnerable group (C1.1a), or a projected risk level (E1.1a).",
     example: {
@@ -268,13 +299,14 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
 /** The field guide for the given fields (all 12 by default). */
 export function fieldGuideMarkdown(
   ids: readonly CrvaFieldId[] = CRVA_FIELD_IDS as CrvaFieldId[],
+  options: PromptOptions = {},
 ): string {
   return ids
     .map((id) => {
       const guide = CRVA_FIELD_GUIDE[id];
       return [
         `### ${id} (${CRVA_FIELD_LABELS[id]})`,
-        `Belongs: ${guide.definition}`,
+        `Belongs: ${guide.definition}${options.c1Split && C1_SINGLE[id] ? ` ${C1_SINGLE[id]}` : ""}`,
         `Does not belong: ${guide.notThis}`,
         `Example item (from another report): ${JSON.stringify(guide.example)}`,
       ].join("\n");
@@ -286,14 +318,17 @@ export function fieldGuideMarkdown(
  * Mirco's default user prompt plus the v0 value rules (so the v0 quote check is
  * fair), the detail and granularity rules, and the field guide.
  */
-export function crvaUserPrompt(defaultUserPrompt: string): string {
+export function crvaUserPrompt(
+  defaultUserPrompt: string,
+  options: PromptOptions = {},
+): string {
   return (
     [
       defaultUserPrompt.trimEnd(),
       `<value_rules>\n${CRVA_VALUE_RULES.join("\n")}\n</value_rules>`,
       `<detail_rules>\n${CRVA_DETAIL_RULES.join("\n")}\n</detail_rules>`,
-      `<granularity_rules>\n${CRVA_GRANULARITY_RULES.join("\n")}\n</granularity_rules>`,
-      `<field_guide>\n${fieldGuideMarkdown()}\n</field_guide>`,
+      `<granularity_rules>\n${granularityRules(options).join("\n")}\n</granularity_rules>`,
+      `<field_guide>\n${fieldGuideMarkdown(undefined, options)}\n</field_guide>`,
     ].join("\n\n") + "\n"
   );
 }

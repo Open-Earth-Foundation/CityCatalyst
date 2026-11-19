@@ -513,23 +513,32 @@ describe("crvaUserPrompt", () => {
     expect(CRVA_FIELD_GUIDE["B1.2a"].definition).toMatch(/secondary/i);
   });
 
-  // Wave 2.7: the grouping rule merged sectors listed in one table row (C1.2a).
-  it("keeps only hazards grouped and splits sectors or groups named together", () => {
+  // Wave 2.6 is the baseline; the wave 2.7 C1 split is behind c1Split (off).
+  it("keeps the wave 2.6 grouping rule by default", () => {
     const rules = CRVA_GRANULARITY_RULES.join(" ");
-    expect(rules).toMatch(/hazards the report treats as one stay one item/i);
-    expect(rules).not.toMatch(/groups or sectors the report treats as one/i);
     expect(rules).toMatch(
-      /several sectors or groups for the same impact, return one item per sector or group, each with the same quote/i,
+      /hazards, groups or sectors the report treats as one/i,
+    );
+    expect(rules).not.toMatch(/several sectors or groups for the same impact/i);
+    const prompt = crvaUserPrompt("x");
+    expect(prompt).toContain(rules.split(" - ")[0]);
+    expect(prompt).not.toMatch(/never a list/i);
+    expect(prompt).not.toMatch(
+      /several sectors or groups for the same impact/i,
     );
   });
 
-  it("says the C1 group and sector are single, never a list", () => {
-    expect(CRVA_FIELD_GUIDE["C1.1a"].definition).toMatch(
-      /single group, never a list/i,
+  it("splits sectors or groups named together only with c1Split", () => {
+    const prompt = crvaUserPrompt("x", { c1Split: true });
+    expect(prompt).toMatch(/hazards the report treats as one stay one item/i);
+    expect(prompt).not.toMatch(
+      /hazards, groups or sectors the report treats as one/i,
     );
-    expect(CRVA_FIELD_GUIDE["C1.2a"].definition).toMatch(
-      /single sector, never a list/i,
+    expect(prompt).toMatch(
+      /several sectors or groups for the same impact, return one item per sector or group, each with the same quote/i,
     );
+    expect(prompt).toMatch(/single group, never a list/i);
+    expect(prompt).toMatch(/single sector, never a list/i);
   });
 
   it("says what does not belong in E1.1a and D1.2a", () => {

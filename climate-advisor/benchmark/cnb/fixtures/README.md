@@ -51,16 +51,23 @@ targets, not evidence**: the original source and authoritative context establish
 truth. There are no keyword lists or reference answers. Statements may be in
 English for a Polish source; the judge compares meaning across languages.
 
+The Kraków edit uses a fictional 75% request for call FENX.01.02-IW.01-001/24.
+The published cap is 77%. The source plan gives separate amounts for Table 1,
+Tables 1 and 2 combined, and broader needs. These amounts have different scopes.
+[Call conditions](https://www.gov.pl/web/nfosigw/fenx0102-iw01-00124-adaptacja-terenow-zurbanizowanych-do-zmian-klimatu) · [Adopted plan, section 7.2](https://www.bip.krakow.pl/_inc/rada/uchwaly/show_pdf.php?id=134027)
+
+Richfield Table 5-7 reports an upper estimate greater than its stated +50% range.
+The fixture preserves the printed amount and attributes the percentage to the table note.
+[Barr report, Table 5-7](https://cms9files.revize.com/richfieldmn/Richfield_FloodRiskPrioritization.pdf)
+
 ### golden.json sections
 
 - `approval`: review status, reviewer/date, and source/template/requirements
   fingerprints. Approved
-  records require an actual review date, never a future date. The shipped
-  requirements carry an engineering approval (Piotr Nowakowski); a Product
-  review has not happened yet. Each fixture's `approval` block names the current
-  reviewer and date.
+  records require an actual human review date. The revised fixtures are pending human
+  sign-off. Historical approvals belong to the archived run.
 - `extraction`: facts defined once (stable ID, statement, exact evidence with
-  allowed page or heading locators), explicit `requirements` entries containing
+  allowed page or heading locators, with optional alternative sufficient evidence groups), explicit `requirements` entries containing
   `chapter_ref` and `priority` (`mandatory` or `desirable`), topics and the topic
   threshold. One judge expectation is emitted for every `<fact_id>::<chapter_ref>`
   pair. All mandatory pairs must be fully covered; there is no fractional pass gate.
@@ -78,17 +85,15 @@ English for a Polish source; the judge compares meaning across languages.
 
 ## Human approval and requirement consistency
 
-The requirement rows were first derived from the chapter-writing links and the
-template descriptions, then reviewed by engineering. Product should still check
-placement and priority. `fixture_problems` keeps the two stages consistent: an
+The proposed requirement rows use the chapter-writing links and template descriptions. Human review covers placement and priority. `fixture_problems` keeps the two stages consistent: an
 extraction pair is mandatory only when a required drafting fact links that fact
-to that chapter, and a required drafting fact needs its extraction fact
+to that chapter, and a required document fact needs a link or a written drafting-only reason. A linked required fact needs its extraction fact
 mandatory in one of its chapters. A fact is therefore mandatory only where a
 correct application chapter would be wrong without it.
 
 `ground_truth_fingerprints(loaded)` hashes the actual source Markdown, normalized
-complete drafting input, and normalized four-stage requirements. Changing source,
-template, fact meaning/evidence, chapter assignment, priority, or scoring policy
+complete drafting input, reference draft, and normalized four-stage requirements. Changing the source,
+template, reference draft, fact meaning/evidence, chapter assignment, or priority
 invalidates prior approval. Pending or stale approvals prevent the fixture and
 run from passing as approved, while individual stage metrics and raw judgments
 remain inspectable. Source/candidate OCR differences do not replace reference

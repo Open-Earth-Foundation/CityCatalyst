@@ -143,7 +143,7 @@ def golden_evidence_problems(loaded: LoadedFixture) -> list[str]:
     """Return extraction evidence that is not exact text at an allowed locator."""
     problems: list[str] = []
     for fact in loaded.fixture.extraction.facts:
-        for evidence in fact.evidence:
+        for evidence in (e for group in fact.evidence_groups() for e in group):
             units = [
                 unit
                 for locator in evidence.locators
@@ -166,6 +166,8 @@ def ground_truth_fingerprints(loaded: LoadedFixture) -> dict[str, str]:
         for stage in ("extraction", "chapter_writing", "verification", "editing")
         if getattr(loaded.fixture, stage) is not None
     }
+    if loaded.reference_draft:
+        requirements["reference_draft"] = loaded.reference_draft.model_dump(mode="json")
     fingerprints = {
         "source_sha256": hashlib.sha256(loaded.markdown.encode("utf-8")).hexdigest(),
         "template_sha256": hashlib.sha256(
@@ -238,6 +240,9 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
             f"{item.id}: unknown chapter {ref}" for ref in item.chapters if ref not in refs
         ]
     for fact in writing.facts:
+        if fact.origin == "document" and fact.required:
+            if bool(fact.extraction_fact) == bool((fact.drafting_only_reason or "").strip()):
+                problems.append(f"{fact.id}: specify an extraction link or a drafting-only reason")
         if fact.extraction_fact and fact.extraction_fact not in extraction_ids:
             problems.append(f"{fact.id}: unknown extraction fact {fact.extraction_fact}")
     # A chapter cannot need a fact from extraction that the draft does not need.
@@ -557,6 +562,11 @@ def score_facts_and_claims(
         report.semantic_failures.append(f"contradictory output: {conflict.reason}")
 
 
+def _retained_anchor(unit: TextUnit) -> str:
+    """Read the source anchor emitted by verify_excerpts, including nested Markdown paths."""
+    return unit.id.split("/", 3 if unit.chapter_ref else 2)[-1]
+
+
 def score_evidence_retention(
     loaded: LoadedFixture, retained: Sequence[TextUnit], report: StageReport
 ) -> None:
@@ -564,19 +574,29 @@ def score_evidence_retention(
 
     Deterministic and judge-free, so these numbers change only when the producer's
     output changes. A fact's evidence counts as held in a place only when every
-    golden evidence passage sits verbatim inside a retained quotation there;
+    passage of one sufficient evidence group is retained there at an allowed locator;
     document-level quotations are a place of their own (``document``).
     """
     # Step 1: where each evidence passage survives verbatim
     rows = []
     facts_with_mandatory = retained_facts = 0
     for fact in loaded.fixture.extraction.facts:
-        places = [
-            {unit.chapter_ref or "document" for unit in retained if evidence.text in unit.text}
-            for evidence in fact.evidence
-        ]
-        anywhere = all(places)
-        complete_in = set.intersection(*places)
+        anywhere = False
+        complete_in: set[str] = set()
+        for group in fact.evidence_groups():
+            places = []
+            for evidence in group:
+                anchors = {
+                    source_unit_anchor(unit)
+                    for locator in evidence.locators for unit in _units_at(loaded.units, locator)
+                }
+                places.append({
+                    unit.chapter_ref or "document" for unit in retained
+                    if evidence.text in unit.text
+                    and _retained_anchor(unit) in anchors
+                })
+            anywhere |= all(places)
+            complete_in.update(set.intersection(*places))
         mandatory = [r for r in fact.requirements if r.priority == "mandatory"]
         if mandatory:
             facts_with_mandatory += 1

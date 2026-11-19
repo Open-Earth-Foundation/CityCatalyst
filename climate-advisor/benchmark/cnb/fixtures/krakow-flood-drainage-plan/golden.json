@@ -870,7 +870,7 @@
         "recent_messages": [
           {
             "role": "user",
-            "content": "Wnioskujemy o 42 500 000 zł dofinansowania z NFOŚiGW, czyli 85% kosztów kwalifikowalnych."
+            "content": "Wnioskujemy o 37 500 000 zł dofinansowania z NFOŚiGW, czyli 75% kosztów kwalifikowalnych."
           },
           {
             "role": "assistant",
@@ -884,11 +884,11 @@
         "expected_changes": [
           {
             "id": "cofinancing-stated",
-            "statement": "The budget chapter states the requested NFOŚiGW co-financing of PLN 42,500,000, equal to 85% of eligible costs, as the user gave it in an earlier message, instead of asking for it."
+            "statement": "The budget chapter states the requested NFOŚiGW co-financing of PLN 37,500,000, equal to 75% of eligible costs, as the user gave it in an earlier message, instead of asking for it."
           },
           {
             "id": "table-updated",
-            "statement": "The financing summary table shows PLN 42,500,000 and 85% in the requested NFOŚiGW co-financing row instead of 'Do potwierdzenia'."
+            "statement": "The financing summary table shows PLN 37,500,000 and 75% in the requested NFOŚiGW co-financing row instead of 'Do potwierdzenia'."
           }
         ],
         "must_preserve": [
@@ -902,7 +902,7 @@
           },
           {
             "id": "plan-cost",
-            "statement": "The Plan's estimated cost of PLN 1,275,867,730 is still described as the cost of the whole Plan, not the budget of this project."
+            "statement": "PLN 1,275,867,730 remains the estimate for the measures costed in Table 1 of the Plan. The application project budget is still open."
           }
         ]
       },
@@ -945,11 +945,6 @@
     ]
   },
   "approval": {
-    "status": "approved",
-    "reviewer": "Piotr Nowakowski",
-    "reviewed_at": "2026-11-17",
-    "source_sha256": "524d1a70bfaaca436e545998f315cb9f20f720b35e6d8abd02f04c217fee6c28",
-    "template_sha256": "ff4acfabce5077cdb0bc6f7edf390a90c18a0d1f7fe9b5df73241044313f3d3a",
-    "requirements_sha256": "3388d83391fdb116e5d361ceee4f940ee8e7cdd2e87daa9abef0aa49e8aba58a"
+    "status": "pending"
   }
 }

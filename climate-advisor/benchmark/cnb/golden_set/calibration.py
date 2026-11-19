@@ -152,7 +152,7 @@ def load_calibration_cases(
             )
             passages = [
                 fact.statement,
-                *(e.text for e in fact.evidence),
+                *(e.text for group in fact.evidence_groups() for e in group),
                 case.candidate,
             ]
             if any(

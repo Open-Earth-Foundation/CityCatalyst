@@ -185,7 +185,12 @@
   }
   const quotes = (f, stage, refs, kind, empty = "None cited") =>
     refs?.length ? refs.map((r) => quote(f, stage, r, kind)).join("") : `<div class="empty">${esc(empty)}</div>`;
-  const unitForText = (f, text) => f.units.find((u) => u.text.includes(text));
+  const evidenceGroups = (fact) => [fact.evidence || [], ...(fact.alternative_evidence || [])];
+  const renderEvidence = (fact, render) =>
+    evidenceGroups(fact).map((group) => group.map(render).join("")).join('<div class="muted">or</div>');
+  const unitForEvidence = (f, e) => f.units.find((u) => u.text.includes(e.text)
+    && e.locators.some((l) => l.page ? u.anchor === `page-${l.page}`
+      : u.anchor === l.heading || u.anchor.startsWith(l.heading + "/")));
 
   // ---------- highlighting ----------
   function segments(text, spans) {
@@ -558,7 +563,7 @@
         const raised = cj.flagged_gaps || [];
         const bad = cj.claims.filter((c) => claimStatus(c, "chapter_writing") !== "good").length;
         items.chapter_writing.push(`<b>${city}</b>${stageStatus(f.stages.chapter_writing) === "error" ? " <span class='muted'>(unofficial: judgment rejected)</span>" : ""}: `
-          + `${transfer.length ? `${count("transferred")} facts transferred, ${count("recovered")} recovered from full text after extraction missed them, ${count("lost_in_extraction")} lost in extraction, ${count("lost_in_drafting")} lost in drafting; ` : ""}`
+          + `${transfer.length ? `${count("transferred")} transfers covered, ${count("recovered")} recovered from full text after extraction missed them, ${count("lost_in_extraction")} lost in extraction, ${count("lost_in_drafting")} lost in drafting; ` : ""}`
           + `${raised.filter((g) => g.verdict === "valid").length}/${raised.length} raised gaps genuine; ${bad} of ${cj.claims.length} claims not fully supported.`);
       }
       const vj = judgmentOf(f, "verification");
@@ -861,7 +866,7 @@
     const g = f.golden;
     const fid = g.fixture_id;
     const ev = (e) => {
-      const u = unitForText(f, e.text);
+      const u = unitForEvidence(f, e);
       const loc = e.locators.map((l) => (l.page ? `page ${l.page}` : l.heading)).join(" or ");
       const href = u ? `#/f/${fid}/source/${enc("u-" + u.anchor)}` : null;
       const inner = `${esc(e.text)}<span class="where">allowed locator: ${esc(loc)}${href ? " →" : ""}</span>`;
@@ -877,7 +882,7 @@
       ${approvalNote(f)}
       <p class="sub">What the retained quotations must preserve in each receiving chapter. Gate: ${pct(extractionGate(f))} of mandatory requirements fully covered; topics ≥ ${pct(g.extraction.thresholds.min_topic_coverage)}. Desirable coverage is reported separately.</p>
       ${g.extraction.facts.map((x) => `<div class="item"><div class="item-head"><div class="stmt">${esc(x.statement)}</div>${x.requirements ? x.requirements.map((r) => `<span class="pill ${r.priority === "mandatory" ? "req" : ""}">${esc(chapterTitle(f, r.chapter_ref))}: ${esc(r.priority)}</span>`).join("") : req(x.required)}</div>
-        <div class="fid">${esc(x.id)}</div><div style="margin-top:10px">${x.evidence.map(ev).join("")}</div></div>`).join("")}
+        <div class="fid">${esc(x.id)}</div><div style="margin-top:10px">${renderEvidence(x, ev)}</div></div>`).join("")}
       <h3 style="margin-top:22px">Topics</h3>
       <div class="grid g3" style="margin-top:10px">${g.extraction.topics.map((t) => `<div class="item" style="margin:0"><div class="stmt">${esc(t.statement)}</div><div class="fid">${esc(t.id)}</div></div>`).join("")}</div>
       ${w ? `
@@ -949,7 +954,7 @@
         return `<div class="item ${v.verdict === "covered" ? "ok" : ""}" id="${esc(v.id)}">
           <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gf.statement || v.id)}</div><span class="pill ${gf.required ? "req" : ""}">${gf.chapter_ref ? (gf.required ? "mandatory" : "desirable") : (gf.required ? "required" : "optional")}</span></div>
           <div class="fid">${esc(v.id)}${gf.chapter_ref ? ` · ${esc(chapterTitle(f, gf.chapter_ref))}` : ""}</div>
-          <div class="cols"><div><div class="colhead">Golden evidence in source</div>${(gf.evidence || []).map((e) => `<div class="quote gold">${esc(e.text)}</div>`).join("")}</div>
+          <div class="cols"><div><div class="colhead">Golden evidence in source</div>${renderEvidence(gf, (e) => `<div class="quote gold">${esc(e.text)}</div>`)}</div>
           <div><div class="colhead">What the LLM retained (cited by judge)</div>${quotes(f, stage, v.output_refs, "out", "Nothing retained")}</div></div>
           <div class="reason">${esc(v.reason)}</div></div>`;
       }).join("")}</div>
@@ -1035,10 +1040,10 @@
       ${jump(fid, stage, [["sec-transfer", "Transfer"], ["sec-gaps", "Expected gaps"], ["sec-raised", "Raised gaps"], ["sec-facts", "Facts"], ["sec-chapters", "Chapters"], ["sec-claims", "Claims"], ["sec-output", "Generated application"]])}
       ${j ? `
       <h2 id="sec-transfer">Extraction → draft: where facts survive or are lost</h2>
-      <p class="sub">Once per linked drafting fact: did extraction keep it in any receiving chapter, and did the drafter carry it into an allowed draft chapter? <b>Recovered</b> means the drafter used the full source text.</p>
+      <p class="sub">Each receiving chapter has its own extraction verdict. The draft verdict covers all allowed draft chapters together. <b>Recovered</b> means the draft covered a fact that this extraction route missed.</p>
       <div class="card" style="padding:0"><table>
         <thead><tr><th>Draft fact</th><th>1 · Extraction</th><th>2 · Draft</th><th>Outcome</th></tr></thead>
-        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))}` : ""}</div></td>
+        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))} · ${esc(r.priority || "")}` : ""}</div></td>
           <td>${r.extraction_verdict ? badge(r.extraction_verdict) : "–"}</td><td>${r.draft_verdict ? badge(r.draft_verdict) : "–"}</td><td>${badge(r.outcome)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No transfer data (extraction judgment unavailable).</td></tr>`}</tbody>
       </table></div>
 
@@ -1238,8 +1243,8 @@
     const tally = { full: 0, part: 0, none: 0 };
     const passages = {}; // fact id -> [{ n, status }] for the facts list
     for (const x of f.golden.extraction.facts)
-      x.evidence.forEach((e, n) => {
-        const u = unitForText(f, e.text);
+      evidenceGroups(x).flat().forEach((e, n) => {
+        const u = unitForEvidence(f, e);
         (passages[x.id] ||= []).push({ n, status: u ? null : "unlocated" });
         if (!u) return;
         const kept = (spans[u.anchor] || []).filter((s) => s.cls === "kept");
@@ -1569,7 +1574,7 @@
     const noise = reviewed
       ? (REVIEW.noise_measured ? `<p class="sub">Changes inside the spread of ${REVIEW.baseline_run_ids.length} baseline runs show as ≈ (within noise).</p>`
         : `<p class="sub"><b>Noise not measured:</b> the baseline has one run, so small changes may be model variation. Add baseline repeats to confirm them.</p>`)
-      : `<p class="sub">Open the review written by compare or evaluate to see which changes are within noise.</p>`;
+      : `<p class="sub">These are raw metric differences. Open the review written by compare or evaluate for the baseline verdict and measured noise range.</p>`;
     return `<h2>Stage results, A → B</h2>${reasons.length ? "" : noise}
       ${reasons.length ? `<div class="callout bad" style="margin-bottom:14px"><b>Not comparable: ${esc(reasons.join("; "))}.</b>
         <div class="small muted" style="margin-top:4px">Both results are shown side by side, but a higher or lower score here does not mean the producer got better or worse.</div></div>` : ""}

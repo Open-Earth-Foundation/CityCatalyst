@@ -86,9 +86,9 @@ of evidence:
 One run of each configuration cannot tell a change from model variation: two
 runs of the same code on 2026-11-09 and 2026-11-10 differed by 10–17 points on
 several metrics. The approved baseline therefore lists **repeats**, which are
-other runs of the same configuration. A metric inside the spread of the
-baseline runs is `within_noise`, and an item whose verdict differs between them
-is `flaky`. Neither counts as better or worse. Without repeats the report says
+independent runs with the same producer revision, model and prompt settings, dependency lock, fixtures and stages. A candidate requesting a stage absent from the baseline gets an unavailable comparison. A metric inside the spread of the
+baseline runs is `within_noise`, and an item inside a varying baseline verdict range
+is `flaky`. Changes beyond every observed rank still count. Added or resolved integrity failures are also compared by item. Neither counts as better or worse. Without repeats the report says
 "noise not measured", and every change counts. Treat a small change as
 unconfirmed until it holds in a second run.
 
@@ -99,8 +99,8 @@ Routing it to the right chapter is a second, diagnostic question. Chapter
 writing also receives the full source text, so a misrouted fact can still reach
 the draft. `required_fact_coverage` is the judge's share of mandatory
 chapter-fact pairs fully covered in their receiving chapter. Python adds
-judge-free metrics from whether every golden evidence passage of a fact survives
-verbatim in a retained quotation. They change only when the producer's output
+judge-free metrics from whether all passages in any one sufficient evidence group survive
+verbatim at allowed source locations. Evidence from different groups cannot be combined. They change only when the producer's output
 changes:
 
 - `fact_evidence_retained`: share of facts with a mandatory pair whose evidence
@@ -123,7 +123,7 @@ extracted here, while the judge may still accept it.
   its worst claim. `claim_support_rate` is the share of fully supported units,
   so the way the judge splits text into claims does not move the score.
 - **Chapter writing**: `chapters_satisfied_rate` is the share of required chapters
-  the judge marks satisfied. Transfer is traced once per linked drafting fact.
+  the judge marks satisfied. Transfer is traced per linked fact and receiving chapter. Its draft verdict covers the allowed chapters together.
   Every claim must carry a verdict against the drafter's own input.
 - **Verification**: the gate is `min_defect_recall`; a single missed defect shows
   as a regressed item, not as an automatic failure. `false_alarm_rate` counts
@@ -208,8 +208,7 @@ It copies the run's durable files (report, outputs, `llm_config.json`,
 writes `baseline.json` with the report and artifact hashes, the fingerprints and
 the reviewer, and checks them with the evaluator's own baseline loader before
 writing anything. Add `--repeat <run>` for each extra run of the same commit,
-run with `evaluate --label baseline-repeat`. Two repeats are the minimum for a
-noise range, and they are committed beside the baseline. Commit everything in a
+run with `evaluate --label baseline-repeat`. One independent repeat establishes an observed range across two runs. Commit each repeat beside the baseline. Commit everything in a
 PR; that review is the approval. A JSON field does not prove a review happened.
 
 The loader accepts a baseline only when the saved run matches its report and
@@ -248,7 +247,7 @@ uv run python -m benchmark.cnb.scripts.calibrate
 ```
 
 Scores the judge against human-labelled candidates; see
-[calibration/README.md](calibration/README.md). The 24 cases cover only the
+[calibration/README.md](calibration/README.md). The 28 proposed cases cover only the
 extraction judge. The chapter, gap, defect and edit judgments have no
 calibration yet.
 

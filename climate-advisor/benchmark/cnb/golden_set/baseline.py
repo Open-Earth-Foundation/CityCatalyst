@@ -65,7 +65,7 @@ def evaluation_fingerprints(
             {
                 "prompts": judge_prompts,
                 "judge": judge,
-                "comparison_policy": 2,
+                "comparison_policy": 3,
                 # Scoring, judge invocation and input-building code, and the judge's
                 # structured-output schemas; not report contracts. A scorer-only change
                 # can be applied to saved runs with scripts/rescore.py.
@@ -98,6 +98,42 @@ def incompatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> list
     if baseline["evaluator_fingerprint"] != candidate["evaluator_fingerprint"]:
         reasons.append("judge model, prompts or scoring changed")
     return reasons
+
+
+def _validate_baseline_scope(report: dict[str, Any]) -> None:
+    """Require a complete, approved judgment for every declared baseline fixture and stage."""
+    if report.get("completed") is not True or report.get("run_errors"):
+        raise ValueError("An incomplete evaluation cannot be an approved baseline")
+    fixtures = report.get("fixtures", [])
+    if not isinstance(fixtures, list) or not all(
+        isinstance(item, dict) for item in fixtures
+    ):
+        raise ValueError("Baseline fixture reports must be JSON objects")
+    expected = report.get("expected_fixture_ids", [])
+    actual = [item["fixture_id"] for item in fixtures]
+    stages = report.get("requested_stages", [])
+    if (
+        not expected
+        or len(set(actual)) != len(actual)
+        or set(actual) != set(expected)
+        or not stages
+        or set(stages) - set(STAGES)
+    ):
+        raise ValueError("Baseline report scope is incomplete")
+    if not fixtures:
+        raise ValueError("Baseline has no fixtures")
+    for fixture in fixtures:
+        if fixture.get("approval_status") != "approved" or fixture.get(
+            "approval_errors"
+        ):
+            raise ValueError("Baseline ground truth is not approved")
+        if any(
+            not isinstance(fixture.get(stage), dict)
+            or not fixture[stage].get("judgment")
+            or fixture[stage].get("evaluation_errors")
+            for stage in stages
+        ):
+            raise ValueError("Baseline contains unavailable judgments")
 
 
 def load_approved_baseline(
@@ -161,38 +197,7 @@ def load_approved_baseline(
             for value in recorded.values()
         ):
             raise ValueError("Baseline lacks evaluation fingerprints")
-        if report.get("completed") is not True or report.get("run_errors"):
-            raise ValueError("An incomplete evaluation cannot be an approved baseline")
-        fixtures = report.get("fixtures", [])
-        if not isinstance(fixtures, list) or not all(
-            isinstance(item, dict) for item in fixtures
-        ):
-            raise ValueError("Baseline fixture reports must be JSON objects")
-        expected = report.get("expected_fixture_ids", [])
-        actual = [item["fixture_id"] for item in fixtures]
-        stages = report.get("requested_stages", [])
-        if (
-            not expected
-            or len(set(actual)) != len(actual)
-            or set(actual) != set(expected)
-            or not stages
-            or set(stages) - set(STAGES)
-        ):
-            raise ValueError("Baseline report scope is incomplete")
-        if not fixtures:
-            raise ValueError("Baseline has no fixtures")
-        for fixture in fixtures:
-            if fixture.get("approval_status") != "approved" or fixture.get(
-                "approval_errors"
-            ):
-                raise ValueError("Baseline ground truth is not approved")
-            if any(
-                not isinstance(fixture.get(stage), dict)
-                or not fixture[stage].get("judgment")
-                or fixture[stage].get("evaluation_errors")
-                for stage in stages
-            ):
-                raise ValueError("Baseline contains unavailable judgments")
+        _validate_baseline_scope(report)
         if manifest.get("fingerprints") != fingerprints:
             return None, {
                 "status": "incompatible",
@@ -202,9 +207,11 @@ def load_approved_baseline(
         if not (directory / "viewer.js").is_file():
             raise ValueError("Approved run has no immutable viewer snapshot")
         repeat_ids = [
-            _checked_repeat(results_dir, entry, manifest["fingerprints"])
+            _checked_repeat(results_dir, entry, report)
             for entry in manifest.get("repeats", [])
         ]
+        if len(set([run_id, *repeat_ids])) != 1 + len(repeat_ids):
+            raise ValueError("Baseline repeats must be distinct runs")
         return directory, {
             "status": "comparable",
             "baseline_run_id": run_id,
@@ -219,16 +226,16 @@ def load_approved_baseline(
 
 # Verdict quality per judge vocabulary; an item regresses when its rank drops.
 VERDICT_RANK = {
-    "covered": 2, "partially_covered": 1, "missing": 0, "contradicted": 0,
+    "covered": 2, "partially_covered": 1, "missing": 0, "contradicted": -1,
     "satisfied": 2, "partially_satisfied": 1, "not_satisfied": 0,
-    "flagged": 2, "partially_flagged": 1, "not_flagged": 0, "fabricated": 0,
+    "flagged": 2, "partially_flagged": 1, "not_flagged": 0, "fabricated": -1,
     "detected": 2, "partially_detected": 1, "missed": 0,
     "in_chapter": 2, "misrouted": 1, "not_extracted": 0,
     "passed": 1, "failed": 0,
 }
 LOWER_IS_BETTER = {
     "false_alarm_rate", "clean_false_alarm_rate", "false_alarms", "clean_false_alarms",
-    "duplicate_findings", "pairs_misrouted", "pairs_not_extracted",
+    "duplicate_findings",
     "unsupported_changes", "collateral_edits",
 }
 HIGHER_IS_BETTER_SUFFIXES = (
@@ -271,6 +278,14 @@ def verdict_items(stage: dict[str, Any]) -> dict[str, str]:
     return items
 
 
+def _include_integrity(stages: list[dict[str, Any]], items: list[dict[str, str]]) -> None:
+    """Track the presence of each observed deterministic integrity failure across all runs."""
+    failures = [set(stage.get("integrity_failures", [])) for stage in stages]
+    for failure in set.union(*failures):
+        for verdicts, present in zip(items, failures, strict=True):
+            verdicts[f"integrity:{failure}"] = "failed" if failure in present else "passed"
+
+
 def _metric_change(key: str, values: list[float], candidate: float | None) -> dict[str, Any]:
     """Delta against the baseline, and a status against the baseline runs' spread."""
     baseline = values[0] if values else None
@@ -297,7 +312,26 @@ def _metric_change(key: str, values: list[float], candidate: float | None) -> di
     return change
 
 
-def _checked_repeat(results_dir: Path, entry: Any, fingerprints: dict[str, str]) -> str:
+def repeat_problems(baseline: dict[str, Any], repeat: dict[str, Any]) -> list[str]:
+    """Only independent runs of the same producer and scope can measure noise."""
+    reasons = incompatibility(baseline, repeat)
+    if not repeat.get("run_id") or repeat.get("run_id") == baseline.get("run_id"):
+        reasons.append("repeat must have its own run ID")
+    for key in ("code_version", "analysis_contract_version", "producer_prompt_versions",
+                "models", "llm_config_sha256", "dependency_lock_sha256"):
+        if not baseline.get(key) or baseline[key] != repeat.get(key):
+            reasons.append(f"repeat producer identity differs or is unknown: {key}")
+    for key in ("expected_fixture_ids", "requested_stages"):
+        if set(baseline.get(key, [])) != set(repeat.get(key, [])):
+            reasons.append(f"repeat scope differs: {key}")
+    try:
+        _validate_baseline_scope(repeat)
+    except (ValueError, KeyError, TypeError) as exc:
+        reasons.append(str(exc))
+    return reasons
+
+
+def _checked_repeat(results_dir: Path, entry: Any, baseline: dict[str, Any]) -> str:
     """Validate one repeat run of the baseline configuration and return its run ID.
 
     A repeat must be committed unchanged, complete, and scored under the same
@@ -313,12 +347,11 @@ def _checked_repeat(results_dir: Path, entry: Any, fingerprints: dict[str, str])
     if artifact_digest(directory) != entry["artifact_sha256"]:
         raise ValueError(f"Baseline repeat {run_id} artifacts changed")
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    recorded = {
-        "corpus": report.get("corpus_fingerprint"),
-        "judge_policy": report.get("evaluator_fingerprint"),
-    }
-    if recorded != fingerprints or report.get("completed") is not True or report.get("run_errors"):
-        raise ValueError(f"Baseline repeat {run_id} is incomplete or scored differently")
+    if report.get("run_id") != run_id:
+        raise ValueError(f"Baseline repeat {run_id} report identity differs")
+    problems = repeat_problems(baseline, report)
+    if problems:
+        raise ValueError(f"Baseline repeat {run_id}: {', '.join(problems)}")
     return run_id
 
 
@@ -358,23 +391,31 @@ def compare_reports(
             if not after.get("judgment"):
                 errors.append("Stage or valid judgment unavailable")
             usable = [a for a in before if a.get("judgment") and not a.get("evaluation_errors")]
-            comparable = bool(before) and len(usable) == len(before) and not errors
+            if len(usable) < len(before):
+                errors.append(f"Baseline or repeat lacks a valid {fid}/{stage} judgment")
+            comparable = bool(before) and not errors
 
-            # Step 1: item verdicts, flaky when the baseline runs disagree.
+            # A missing expected item makes the comparison incomplete.
             regressed, improved, flaky = [], [], []
             if comparable:
                 base_items = [verdict_items(a) for a in usable]
-                for item, verdict in sorted(verdict_items(after).items()):
-                    first = base_items[0].get(item)
-                    if first is None or first == verdict:
-                        continue
-                    record = {"id": item, "before": first, "after": verdict}
-                    if len({items.get(item) for items in base_items}) > 1:
-                        flaky.append(record)
-                    elif VERDICT_RANK.get(verdict, 0) < VERDICT_RANK.get(first, 0):
-                        regressed.append(record)
-                    elif VERDICT_RANK.get(verdict, 0) > VERDICT_RANK.get(first, 0):
-                        improved.append(record)
+                candidate_items = verdict_items(after)
+                if any(previous.keys() != candidate_items.keys() for previous in base_items):
+                    errors.append("Golden item IDs differ within the same fixture and stage")
+                    comparable = False
+                else:
+                    _include_integrity([*usable, after], [*base_items, candidate_items])
+                    for item, verdict in sorted(candidate_items.items()):
+                        previous = [items[item] for items in base_items]
+                        ranks = [VERDICT_RANK[v] for v in previous]
+                        rank = VERDICT_RANK[verdict]
+                        record = {"id": item, "before": previous[0], "after": verdict}
+                        if rank < min(ranks):
+                            regressed.append(record)
+                        elif rank > max(ranks):
+                            improved.append(record)
+                        elif len(set(previous)) > 1:
+                            flaky.append(record)
 
             # Step 2: metrics with direction and noise status.
             keys = sorted(

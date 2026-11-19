@@ -140,14 +140,6 @@
                 "page": 49
               }
             ]
-          },
-          {
-            "text": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation.",
-            "locators": [
-              {
-                "page": 32
-              }
-            ]
           }
         ],
         "requirements": [
@@ -195,6 +187,42 @@
             "chapter_ref": "project_activities",
             "priority": "mandatory"
           }
+        ],
+        "alternative_evidence": [
+          [
+            {
+              "text": "Table 5-1 Wilson Pond Flood Mitigation Concepts - Cost Estimate Comparison",
+              "locators": [
+                {
+                  "page": 33
+                }
+              ]
+            },
+            {
+              "text": "**Table 5-5 Northwest of Roosevelt Park Flood Mitigation - Cost Estimate**",
+              "locators": [
+                {
+                  "page": 40
+                }
+              ]
+            },
+            {
+              "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
+              "locators": [
+                {
+                  "page": 43
+                }
+              ]
+            },
+            {
+              "text": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model.",
+              "locators": [
+                {
+                  "page": 49
+                }
+              ]
+            }
+          ]
         ]
       },
       {
@@ -227,7 +255,7 @@
       },
       {
         "id": "cost-basis",
-        "statement": "All costs are presented in 2025 US dollars with an accuracy range of -30% to +50%.",
+        "statement": "The report gives costs in 2025 US dollars and states a -30% to +50% accuracy range.",
         "evidence": [
           {
             "text": "All costs are presented in 2025 US dollars.",
@@ -265,6 +293,26 @@
             "chapter_ref": "project_analysis",
             "priority": "desirable"
           }
+        ],
+        "alternative_evidence": [
+          [
+            {
+              "text": "All costs are presented in 2025 US dollars.",
+              "locators": [
+                {
+                  "page": 52
+                }
+              ]
+            },
+            {
+              "text": "The estimated accuracy range for this point estimate is -30% to +50%.",
+              "locators": [
+                {
+                  "page": 53
+                }
+              ]
+            }
+          ]
         ]
       },
       {
@@ -272,7 +320,7 @@
         "statement": "Concept cost estimates range from $1,540,000 near Woodlawn Terrace to $17,333,000 for Wilson Pond Concept C.",
         "evidence": [
           {
-            "text": "$8,853,000",
+            "text": "Table 5-1 Wilson Pond Flood Mitigation Concepts - Cost Estimate Comparison",
             "locators": [
               {
                 "page": 33
@@ -280,7 +328,7 @@
             ]
           },
           {
-            "text": "$17,333,000",
+            "text": "C | Increase storm sewer capacity and number of pipes | **$17,333,000**",
             "locators": [
               {
                 "page": 33
@@ -288,15 +336,15 @@
             ]
           },
           {
-            "text": "$15,491,000",
+            "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
             "locators": [
               {
-                "page": 40
+                "page": 43
               }
             ]
           },
           {
-            "text": "$1,540,000",
+            "text": "A | Add underground storage chamber | **$1,540,000**",
             "locators": [
               {
                 "page": 43
@@ -336,6 +384,126 @@
           {
             "chapter_ref": "flood_damages",
             "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "wilson-pond-damages",
+        "statement": "At Wilson Pond the lowest structures are affected during the 2-year 24-hour rainfall event.",
+        "evidence": [
+          {
+            "text": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city. This area impacts the most residential structures in a single location, the lowest structures are affected during the 2-year 24-hour rainfall event",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "flood_damages",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "alternatives-not-pursued",
+        "statement": "Surface storage and underground storage near Wilson Pond were ruled out because of space and shallow groundwater.",
+        "evidence": [
+          {
+            "text": "Options that were considered but not pursued for the area near Wilson Pond include adding surface storage areas, underground storage, and a pump to lower the water level in Wilson Pond ahead of a storm event. Surface storage was not considered due to a lack of undeveloped space near the flood-risk area and the city's direction to not consider property acquisition for flood-risk reduction. Underground storage was not considered due to the expected shallow groundwater in the area.",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_analysis",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "social-vulnerability",
+        "statement": "The selected areas lie in parts of the city with a high social vulnerability index.",
+        "evidence": [
+          {
+            "text": "Wilson Pond is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          },
+          {
+            "text": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 10-year 24-hour duration rainfall event, the flood-risk area is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 40
+              }
+            ]
+          },
+          {
+            "text": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "flood_damages",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_analysis",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "project_description",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "woodlawn-cost-range",
+        "statement": "Table 5-7 lists Woodlawn Terrace Concept A at $1,540,000 with an upper estimate of $2,695,000, above the table note's stated +50% range.",
+        "evidence": [
+          {
+            "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          },
+          {
+            "text": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          },
+          {
+            "text": "Note: Total project cost accuracy range is -30% to +50%.",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_financing",
+            "priority": "mandatory"
           }
         ]
       }
@@ -434,7 +602,8 @@
         "origin": "document",
         "chapters": [
           "flood_damages"
-        ]
+        ],
+        "extraction_fact": "wilson-pond-damages"
       },
       {
         "id": "concept-level-costs",
@@ -468,7 +637,7 @@
       },
       {
         "id": "cost-accuracy",
-        "statement": "Cost estimates carry a -30% to +50% accuracy range.",
+        "statement": "The report states a -30% to +50% accuracy range for its estimates.",
         "origin": "document",
         "chapters": [
           "funding_breakout",
@@ -483,7 +652,8 @@
         "origin": "document",
         "chapters": [
           "project_analysis"
-        ]
+        ],
+        "extraction_fact": "alternatives-not-pursued"
       },
       {
         "id": "social-vulnerability",
@@ -493,7 +663,17 @@
           "flood_damages",
           "project_analysis",
           "project_description"
-        ]
+        ],
+        "extraction_fact": "social-vulnerability"
+      },
+      {
+        "id": "woodlawn-cost-range",
+        "statement": "Table 5-7 lists Woodlawn Terrace Concept A at $1,540,000 with an upper estimate of $2,695,000, above the table note's stated +50% range.",
+        "origin": "document",
+        "chapters": [
+          "project_financing"
+        ],
+        "extraction_fact": "woodlawn-cost-range"
       }
     ],
     "gaps": [
@@ -604,8 +784,8 @@
         "edits": [
           {
             "chapter_ref": "funding_breakout",
-            "find": "These estimates have an accuracy range of -30% to +50%",
-            "replace": "These estimates have an accuracy range of -10% to +15%"
+            "find": "The report states an accuracy range of -30% to +50%",
+            "replace": "The report states an accuracy range of -10% to +15%"
           }
         ],
         "expected_chapters": [
@@ -762,7 +942,7 @@
           },
           {
             "id": "accuracy",
-            "statement": "Cost estimates keep the 2025-dollar basis and the -30% to +50% accuracy range."
+            "statement": "The report's 2025-dollar basis and stated -30% to +50% range are preserved, along with the larger upper bound printed for Woodlawn Terrace Concept A in Table 5-7."
           },
           {
             "id": "dnr-request",
@@ -791,7 +971,7 @@
           },
           {
             "id": "accuracy",
-            "statement": "The estimates are in 2025 dollars with a -30% to +50% accuracy range."
+            "statement": "The report's 2025-dollar basis and stated -30% to +50% range are preserved, along with the larger upper bound printed for Woodlawn Terrace Concept A in Table 5-7."
           },
           {
             "id": "not-pursued",
@@ -947,11 +1127,6 @@
     ]
   },
   "approval": {
-    "status": "approved",
-    "reviewer": "Piotr Nowakowski",
-    "reviewed_at": "2026-11-17",
-    "source_sha256": "4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977",
-    "template_sha256": "19140e268b6e598577547e101657b407cf3b24d9c75d0bb226faa6123a43cbe5",
-    "requirements_sha256": "6bfa6fc8a3ab5c00f3031d2628c5d8cf837faf822f502be433ed190904ef5153"
+    "status": "pending"
   }
 }

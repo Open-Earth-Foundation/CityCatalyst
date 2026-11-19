@@ -1,12 +1,11 @@
 # Human-labelled judge calibration
 
-`cases.json` contains 24 labels with an engineering approval (Piotr Nowakowski,
-2026-11-09), each bound to its `case_sha256`. They cover the extraction judge
-only; the chapter, gap, defect and edit judgments are not calibrated yet. Each of six requirement families has a
-correct, partly correct, materially incorrect and missing candidate. Families
-cover English/Polish, funding status, dates, institutional responsibilities,
-table amounts, currencies and units. All currently belong to the held-out split;
-none may be copied into judge prompt examples. A development family can be added
+`cases.json` contains 28 proposed extraction labels across nine held-out
+requirement families. Six families include correct, partial, incorrect and missing
+examples. Every missing candidate contains text, including a true fact routed to
+another chapter. The seventh family tests a source discrepancy in Richfield
+Table 5-7, including a silently recomputed upper bound. Two further candidates swap concept costs or turn a plan estimate into a grant request. The current labels
+await human sign-off against the revised fixtures. A development family can be added
 separately, but all variants of a source fact must remain in one split.
 
 The command loads the frozen source, receiving-chapter requirement and candidate

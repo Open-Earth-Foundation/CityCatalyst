@@ -41,6 +41,7 @@ from benchmark.cnb.golden_set.baseline import (
     compare_reports,
     incompatibility,
     render_comparison,
+    repeat_problems,
 )
 from benchmark.cnb.golden_set.viewer import write_review_site
 
@@ -87,11 +88,13 @@ def main(argv: list[str] | None = None) -> int:
         json.loads((run / "report.json").read_text(encoding="utf-8"))
         for run in args.baseline_repeat
     ]
-    reasons += [
-        f"repeat {report.get('run_id')} is not comparable with run A"
-        for report in repeats
-        if incompatibility(baseline, report)
-    ]
+    seen = {baseline.get("run_id"), candidate.get("run_id")}
+    for repeat in repeats:
+        run_id = repeat.get("run_id")
+        if run_id in seen:
+            reasons.append(f"repeat {run_id} must be independent of the compared runs and other repeats")
+        seen.add(run_id)
+        reasons.extend(f"repeat {run_id}: {reason}" for reason in repeat_problems(baseline, repeat))
     comparison = compare_reports(candidate, None if reasons else baseline, repeats)
     selection = {
         "status": "incompatible" if reasons else "comparable",

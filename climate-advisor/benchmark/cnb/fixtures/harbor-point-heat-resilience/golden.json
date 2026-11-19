@@ -204,6 +204,134 @@
             "priority": "desirable"
           }
         ]
+      },
+      {
+        "id": "lead-agency",
+        "statement": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_summary",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "delivery-period",
+        "statement": "The measures are delivered between 2027 and 2032.",
+        "evidence": [
+          {
+            "text": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_summary",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_components",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "expected_results",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "canopy-target",
+        "statement": "The tree canopy target for Eastside and Millbrook is 25 percent by 2032.",
+        "evidence": [
+          {
+            "text": "in Eastside and Millbrook.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"
+              }
+            ]
+          },
+          {
+            "text": "The tree canopy target for both neighbourhoods is 25 percent by 2032.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "expected_results",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_components",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "partners",
+        "statement": "Public Works delivers green stormwater infrastructure, the Unified School District hosts schoolyard conversions, and Millbrook Neighbours Alliance co-designs cool corridor routes.",
+        "evidence": [
+          {
+            "text": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/governance/partners"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "monitoring",
+        "statement": "The Office of Climate Resilience publishes an annual progress report tracking canopy cover, flooded intersections and heat-related emergency visits.",
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/monitoring"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "expected_results",
+            "priority": "desirable"
+          }
+        ]
       }
     ],
     "topics": [
@@ -244,7 +372,8 @@
         "chapters": [
           "project_summary",
           "implementation"
-        ]
+        ],
+        "extraction_fact": "lead-agency"
       },
       {
         "id": "delivery-period",
@@ -254,7 +383,8 @@
           "project_summary",
           "project_components",
           "expected_results"
-        ]
+        ],
+        "extraction_fact": "delivery-period"
       },
       {
         "id": "population",
@@ -310,7 +440,8 @@
         "chapters": [
           "expected_results",
           "project_components"
-        ]
+        ],
+        "extraction_fact": "canopy-target"
       },
       {
         "id": "programme-financing",
@@ -338,7 +469,8 @@
         "origin": "document",
         "chapters": [
           "implementation"
-        ]
+        ],
+        "extraction_fact": "partners"
       },
       {
         "id": "monitoring",
@@ -347,7 +479,8 @@
         "chapters": [
           "implementation",
           "expected_results"
-        ]
+        ],
+        "extraction_fact": "monitoring"
       }
     ],
     "gaps": [
@@ -724,11 +857,6 @@
     ]
   },
   "approval": {
-    "status": "approved",
-    "reviewer": "Piotr Nowakowski",
-    "reviewed_at": "2026-11-17",
-    "source_sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
-    "template_sha256": "096b99db207606ba322afefa2ad3ad97bb117b8c2d3e4b7bf16217cc9cb2bc02",
-    "requirements_sha256": "9d47777bdd4260d7b88bb4e14bceead85f6b84d09af0d9c7e403e00875394806"
+    "status": "pending"
   }
 }

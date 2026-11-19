@@ -684,8 +684,10 @@ def _render_stage(name: str, stage: StageReport) -> list[str]:
     ):
         lines += [f"- **{label}:** {_snippet(item)}" for item in findings]
     for record in stage.details.get("transfer", []):
+        route = record.get("extraction_pair", record["fact"])
+        priority = f" ({record['priority']})" if record.get("priority") else ""
         lines.append(
-            f"- Transfer `{record['fact']}`: extraction **{record['extraction_verdict']}**"
+            f"- Transfer `{record['fact']}` via `{route}`{priority}: extraction **{record['extraction_verdict']}**"
             f" → draft **{record['draft_verdict']}** ({record['outcome']})"
         )
     if stage.judgment is not None:

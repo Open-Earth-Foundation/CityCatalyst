@@ -12,12 +12,7 @@
     "tags": [
       "currency",
       "funding-status"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "dfce194ef8cb95348faae758a56d0af47bcb55e227ea9015cfe941a330431889"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-partly_correct",
@@ -32,12 +27,7 @@
     "tags": [
       "currency",
       "funding-status"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "deb7f906b1aa6c606bf5eb8b69689b7a41b958a0eb8b74d86e336b45abfc56f3"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-incorrect",
@@ -52,32 +42,23 @@
     "tags": [
       "currency",
       "funding-status"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "b40fe8ac6b94c0f646673ddd3acf965332c5e04b55919a7229208e5271ca41ba"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-programme-financing-missing",
     "fixture_id": "harbor-point-heat-resilience",
     "fact_id": "programme-financing",
     "chapter_ref": "financing",
-    "candidate": "",
+    "candidate": "The total programme cost is USD 26.5 million. Harbor Point will contribute USD 7.9 million from its capital budget, and the plan seeks USD 18.6 million in external grant funding.",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "The full financing fact appears only in the project summary. The financing chapter contains no evidence.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
       "currency",
       "funding-status"
     ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "63366e2eecf9c0d3f1f2212eb3633b861eaeb44160e80ac11540893b5641f6f2"
-    }
+    "candidate_chapter_ref": "project_summary"
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-correct",
@@ -92,12 +73,7 @@
     "tags": [
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "b438a3db7ccbe1c482e37ae00fa6adf678b56615d6e69ee9fb54ceb40fd540fc"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-partly_correct",
@@ -112,12 +88,7 @@
     "tags": [
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "fac5160b8eee83042459ccb6541c11d64023a043097a28652389ffc499ce83fa"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-incorrect",
@@ -132,32 +103,22 @@
     "tags": [
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "a741444b7226214d63c11098a85de897054f36730daf6511952bdec52b00dbfe"
-    }
+    ]
   },
   {
     "id": "harbor-point-heat-resilience-plan-adoption-missing",
     "fixture_id": "harbor-point-heat-resilience",
     "fact_id": "plan-adoption",
     "chapter_ref": "project_summary",
-    "candidate": "",
+    "candidate": "The Office of Climate Resilience will publish an annual progress report.",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "This source passage supplies none of the requested fact in the receiving chapter.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "c8ebc0c078f21f7ef6fe7e1516662334333ebbf505d23de083db5e2a8a48d7c5"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-correct",
@@ -174,12 +135,7 @@
       "currency",
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "65c2e53be5fa9ec3e0acf3145172ff29ededeb54a2e72b39101cb0868bfea553"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-partly_correct",
@@ -196,12 +152,7 @@
       "currency",
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "536e173b5df4e1c3cf9f3b2f03baa74f1f00793b9f9d1f5284b9f07d1190bac8"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-incorrect",
@@ -218,21 +169,16 @@
       "currency",
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "83a361de71832d045bcd8f63c01d9716fc1bb45322b90b75b07ab74817572e6c"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-small-retention-programme-missing",
     "fixture_id": "krakow-flood-drainage-plan",
     "fact_id": "small-retention-programme",
     "chapter_ref": "budzet",
-    "candidate": "",
+    "candidate": "Realizacja planu będzie finansowana z budżetu miasta oraz w miarę możliwości z funduszy zewnętrznych.",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "This source passage supplies none of the requested fact in the receiving chapter.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
@@ -240,12 +186,7 @@
       "currency",
       "dates",
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "6797ff3f158a209aa478e722a91a1175c1124359cf1a558e49a7a1bd99d6d800"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-correct",
@@ -259,12 +200,7 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "6da7ebbce5052303e080ebddcafd6a50fc6dfd56a14730b2e0fa4de0ec39dc2d"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-partly_correct",
@@ -278,12 +214,7 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "7e37f0c269ea4bcc847969afbb0a3e307e28a55bc1f7073ce19df451fe7af3e6"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-incorrect",
@@ -297,31 +228,21 @@
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "a5a3d78e91869e1719b421ace73fcca33defd4f704a02e3aa65d116fea80fe8c"
-    }
+    ]
   },
   {
     "id": "krakow-flood-drainage-plan-coordinator-missing",
     "fixture_id": "krakow-flood-drainage-plan",
     "fact_id": "coordinator",
     "chapter_ref": "wnioskodawca",
-    "candidate": "",
+    "candidate": "Wartość bazowa = 0, kierunek zmian = wzrost",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "This source passage supplies none of the requested fact in the receiving chapter.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
       "responsibilities"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "f76e9359f916f71b5098c9dcfd0c92129ffe022712865ce65239f7b47279ded5"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-cost-basis-correct",
@@ -336,12 +257,7 @@
     "tags": [
       "units",
       "currency"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "08e1641ce2d31ffd64aedb07ebf3d03de5934f9ac9669f88479bf8d72acd0a8a"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-cost-basis-partly_correct",
@@ -356,12 +272,7 @@
     "tags": [
       "units",
       "currency"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "6682baee387d5dba6d44645b17657ece993c025c224f39b25caf77a6ec59f180"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-cost-basis-incorrect",
@@ -376,32 +287,22 @@
     "tags": [
       "units",
       "currency"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "5984d2259090ac679cce09b26c05579828f976a520049856baacb7b26590a95d"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-cost-basis-missing",
     "fixture_id": "richfield-flood-risk",
     "fact_id": "cost-basis",
     "chapter_ref": "project_financing",
-    "candidate": "",
+    "candidate": "Unit costs are based on recent bid prices, published construction cost index resources, and similar stormwater BMP projects.",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "This source passage supplies none of the requested fact in the receiving chapter.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
       "units",
       "currency"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "16daf3c95a0d2b94c42c6e2d087c4e0935607326b391872606bb41051b98df33"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-study-area-size-correct",
@@ -415,12 +316,7 @@
     "split": "held_out",
     "tags": [
       "units"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "2da5c5185fe4c28241371d0cb0cbbcdf017bfa4bba8d8c3f2f459fd130525c9c"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-study-area-size-partly_correct",
@@ -434,12 +330,7 @@
     "split": "held_out",
     "tags": [
       "units"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "c2c6515ae5db062852b0dace2a113897e2aaedc22272f6ca43a8d1cc113c44cf"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-study-area-size-incorrect",
@@ -453,30 +344,78 @@
     "split": "held_out",
     "tags": [
       "units"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "51bc76774f73fec2a46328704319ad5e7132abb5eee42c43b0bf8f113f224c0d"
-    }
+    ]
   },
   {
     "id": "richfield-flood-risk-study-area-size-missing",
     "fixture_id": "richfield-flood-risk",
     "fact_id": "study-area-size",
     "chapter_ref": "flood_damages",
-    "candidate": "",
+    "candidate": "The four design storm events use the Midwest Southeast 3 (MSE3) rainfall distribution",
     "human_verdict": "missing",
-    "rationale": "No candidate passage supplies the requirement.",
+    "rationale": "This source passage supplies none of the requested fact in the receiving chapter.",
     "serious_error": false,
     "split": "held_out",
     "tags": [
       "units"
-    ],
-    "approval": {
-      "reviewer": "Piotr Nowakowski",
-      "reviewed_at": "2026-11-17",
-      "case_sha256": "a51a45658becc0af7951dd659a2dac174d2d8c71b0c26f633e638b35d323afab"
-    }
+    ]
+  },
+  {
+    "id": "richfield-woodlawn-bound-as-printed",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "woodlawn-cost-range",
+    "chapter_ref": "project_financing",
+    "candidate": "The Woodlawn Terrace Concept A row of Table 5-7 gives a $1,540,000 point estimate and an upper bound of $2,695,000, even though its note states +50%.",
+    "human_verdict": "correct",
+    "rationale": "The printed upper endpoint conflicts with the stated percentage.",
+    "serious_error": false,
+    "split": "held_out",
+    "tags": [
+      "table-amount",
+      "source-discrepancy"
+    ]
+  },
+  {
+    "id": "richfield-woodlawn-bound-silently-recomputed",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "woodlawn-cost-range",
+    "chapter_ref": "project_financing",
+    "candidate": "Table 5-7 prints a $1,540,000 point estimate and a $2,310,000 upper bound for Woodlawn Terrace Concept A, consistent with its +50% note.",
+    "human_verdict": "incorrect",
+    "rationale": "Applying the stated percentage silently replaces the printed upper endpoint.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "table-amount",
+      "source-discrepancy"
+    ]
+  },
+  {
+    "id": "richfield-concept-cost-wrong-site",
+    "fixture_id": "richfield-flood-risk",
+    "fact_id": "concept-cost-figures",
+    "chapter_ref": "project_financing",
+    "candidate": "The highest concept estimate is $17,333,000 for Woodlawn Terrace Concept A, while Wilson Pond Concept C costs $1,540,000.",
+    "human_verdict": "incorrect",
+    "rationale": "The candidate swaps the two real amounts between alternatives.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "amount-attribution"
+    ]
+  },
+  {
+    "id": "krakow-table-one-as-grant-request",
+    "fixture_id": "krakow-flood-drainage-plan",
+    "fact_id": "total-cost-city",
+    "chapter_ref": "budzet",
+    "candidate": "Kwota 1 275 867 730 zł to wnioskowane dofinansowanie tego projektu.",
+    "human_verdict": "incorrect",
+    "rationale": "The city plan gives a Table 1 cost estimate. The grant request for this project is unknown.",
+    "serious_error": true,
+    "split": "held_out",
+    "tags": [
+      "amount-attribution"
+    ]
   }
 ]

@@ -8,7 +8,7 @@ contracts; a model judges meaning, support, and consistency using cited text.
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationFindingCategory,
@@ -65,6 +65,11 @@ class GoldenFact(GoldenContract):
     statement: str = Field(min_length=1)
     requirements: list[FactRequirement] = Field(min_length=1)
     evidence: list[GoldenEvidence] = Field(min_length=1)
+    alternative_evidence: list[Annotated[list[GoldenEvidence], Field(min_length=1)]] = Field(default_factory=list)
+
+    def evidence_groups(self) -> list[list[GoldenEvidence]]:
+        """Each group independently proves the fact. Every passage in a group is required."""
+        return [self.evidence, *self.alternative_evidence]
 
     @model_validator(mode="after")
     def unique_chapters(self) -> GoldenFact:
@@ -122,6 +127,7 @@ class DraftFact(GoldenContract):
     required: bool = True
     chapters: list[str] = Field(default_factory=list)
     extraction_fact: str | None = None
+    drafting_only_reason: str | None = Field(default=None, min_length=1)
 
 
 class ExpectedGap(GoldenContract):

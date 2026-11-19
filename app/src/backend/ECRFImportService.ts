@@ -642,7 +642,7 @@ export default class ECRFImportService {
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
-        scopeId: gpcMapping.scopeId,
+        scopeId: gpcMapping.scopeId ?? "",
         review: {
           sector: hasSectorColumn
             ? (row[headers[detectedColumns.sector!]]?.toString() ?? null)
@@ -652,11 +652,11 @@ export default class ECRFImportService {
             : null,
           category: activityType ?? null,
           scope: statedScope || null,
-          catalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+          catalogueScope: catalogueScopes.has(gpcMapping.scopeId ?? "")
+            ? (catalogueScopes.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
-          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId ?? "")
+            ? (catalogueScopes.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
           refSource: statedReference
             ? ("document" as const)
@@ -726,13 +726,15 @@ export default class ECRFImportService {
   /**
    * Look up GPC reference number in database
    * For sectors I-III: looks up SubCategory by referenceNumber
-   * For sectors IV-V (IPPU and AFOLU): looks up SubSector by referenceNumber (no subcategories)
+   * Otherwise looks up SubSector by referenceNumber: sectors IV-V (no
+   * subcategories), and sectors I-III reported at subsector level
    */
   public static async lookupGPCReference(gpcRefNo: string): Promise<{
     sectorId: string;
     subsectorId: string;
     subcategoryId: string | null;
-    scopeId: string;
+    // Null for a subsector of sectors I-III reported without a scope split.
+    scopeId: string | null;
   } | null> {
     // First try to find SubCategory (for sectors I-III)
     const subcategory = await db.models.SubCategory.findOne({
@@ -800,17 +802,14 @@ export default class ECRFImportService {
       return null;
     }
 
-    // Scope is on SubSector for sectors IV-V
-    const scopeId = subsector.scopeId;
-    if (!scopeId) {
-      return null;
-    }
-
+    // Sectors IV-V keep their scope on the subsector. A subsector of sectors
+    // I-III has none: the value is stored at subsector level, and approve never
+    // invents a scope for it (CC-1311).
     return {
       sectorId: sector.sectorId,
       subsectorId: subsector.subsectorId,
-      subcategoryId: null, // Sectors IV-V don't have subcategories
-      scopeId,
+      subcategoryId: null,
+      scopeId: subsector.scopeId ?? null,
     };
   }
 
@@ -927,7 +926,7 @@ export default class ECRFImportService {
       const resolvedScopeId =
         scopeFromFile && scopeByName.has(scopeFromFile)
           ? scopeByName.get(scopeFromFile)!
-          : gpcMapping.scopeId;
+          : (gpcMapping.scopeId ?? "");
 
       const num = (v: number | null | undefined): number | undefined =>
         v != null && Number.isFinite(v) ? Number(v) : undefined;
@@ -960,11 +959,11 @@ export default class ECRFImportService {
           finalScope: scopeById.has(resolvedScopeId)
             ? String(scopeById.get(resolvedScopeId))
             : null,
-          catalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+          catalogueScope: scopeById.has(gpcMapping.scopeId ?? "")
+            ? (scopeById.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
-          finalCatalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+          finalCatalogueScope: scopeById.has(gpcMapping.scopeId ?? "")
+            ? (scopeById.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
           refSource: row.refSource ?? null,
           directionEvidence: row.directionEvidence ?? null,

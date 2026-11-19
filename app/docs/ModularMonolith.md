@@ -297,20 +297,24 @@ Code outside `src/modules/` is not checked against the dependency table, because
 
 ## 7. Execution order
 
-Tickets under CC-1184, in order. Each one lists the paths it moves, ends with zero boundary warnings for its package, and keeps tests green.
+Sub-issues of [CC-1184](https://linear.app/openearth/issue/CC-1184), in order. Each one lists the paths it moves, ends with zero boundary warnings for its package, and keeps tests green. The "blocked by" links in Linear give the exact dependencies. Tickets that an open decision affects say so.
 
-1. **shared:** split `util/types.ts` and `models/init-models.ts` per package, and move the kernel into `src/modules/shared`.
-2. **identity:** front door for login and session reading, and replace `makeOAuthUserSession` with token verification. Unblocks the core-identity steps.
-3. **tenancy:** front door for `PermissionService`, membership, and city, project and organization lookups. Removes the largest import group.
-4. **events:** in-process bus with the v1 envelope, and route webhook emission through it.
-5. **registry:** move NativeInputCatalog. Producer adapters (`GHGINativeInputCatalogService`, `HiapNativeInputCatalogService`, `MeedNativeInputCatalogService`, ingest `document-pool`) move to their producers and call the registry front door.
-6. **records:** move version history behind a `recordChange(...)` front door, and migrate its writers (`ActivityService`, `DataSourceService`, `InventoryImportService`, `InventoryReplaceService`, `HiapService`, `ingest/delete-imported-data`).
-7. **ingestion.**
-8. **ghgi**, including its RTK Query endpoints.
-9. **plan.**
-10. **shell** and **ui-kit.**
-11. **Enforce:** switch the lint rule to `error`.
-12. **Database slices,** one ticket per schema, `sys_identity` first: create the role, run the `ALTER TABLE … SET SCHEMA` migrations (each with `down()`), add transitional views, and drop the cross-package FKs listed above.
+| #   | Ticket                                                | What                                                                                                                                    | Blocked by     |
+| --- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 1   | [CC-1312](https://linear.app/openearth/issue/CC-1312) | **shared:** split `util/types.ts` and `models/init-models.ts` per package, and move the kernel into `src/modules/shared`                | —              |
+| 2   | [CC-1313](https://linear.app/openearth/issue/CC-1313) | **identity:** front door for login and session reading, and replace `makeOAuthUserSession` with token verification. Related to CC-1185. | 1              |
+| 3   | [CC-1314](https://linear.app/openearth/issue/CC-1314) | **tenancy:** front door for `PermissionService`, membership, and city, project and organization lookups                                 | 1, 2           |
+| 4   | [CC-1315](https://linear.app/openearth/issue/CC-1315) | **events:** in-process bus with the v1 envelope, and webhook emission routed through it                                                 | 1              |
+| 5   | [CC-1316](https://linear.app/openearth/issue/CC-1316) | **registry:** move NativeInputCatalog. Producer adapters move to their producers.                                                       | 1, 3           |
+| 6   | [CC-1317](https://linear.app/openearth/issue/CC-1317) | **records:** version history behind `recordChange(...)`, and migrate its 6 writers                                                      | 1, 3           |
+| 7   | [CC-1318](https://linear.app/openearth/issue/CC-1318) | **ingestion:** the ingest spine, imports, and the import routes under `city/[city]/inventory/...`                                       | 1, 3           |
+| 8   | [CC-1319](https://linear.app/openearth/issue/CC-1319) | **ghgi**, including its RTK Query endpoints                                                                                             | 5, 6, 7        |
+| 9   | [CC-1320](https://linear.app/openearth/issue/CC-1320) | **plan**                                                                                                                                | 8              |
+| 10  | [CC-1321](https://linear.app/openearth/issue/CC-1321) | **shell** and **ui-kit**                                                                                                                | 9              |
+| 11  | [CC-1322](https://linear.app/openearth/issue/CC-1322) | **Enforce:** switch the lint rule to `error`                                                                                            | 2–10           |
+| 12  | [CC-1323](https://linear.app/openearth/issue/CC-1323) | **DB groundwork:** per-schema roles, the `SET SCHEMA` migration pattern, and `sys_identity`                                             | 2              |
+| 13  | [CC-1324](https://linear.app/openearth/issue/CC-1324) | **DB:** the `sys_tenancy`, `sys_registry`, `sys_records` and `sys_events` schemas                                                       | 3, 4, 5, 6, 12 |
+| 14  | [CC-1325](https://linear.app/openearth/issue/CC-1325) | **DB:** the `app_ingestion`, `app_ghgi` and `app_plan` schemas, and drop the 40 cross-package FKs                                       | 7, 8, 9, 13    |
 
 ## 8. Open decisions
 

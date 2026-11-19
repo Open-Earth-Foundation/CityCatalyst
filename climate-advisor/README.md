@@ -71,16 +71,23 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      chapter, question, reason, severity, and state, filtered by
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
-   - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
-     chart, diagram, or table (title at most 200 characters, HTML at most
-     200,000) and returns `concept_note.visual.render` with the title and size;
-     the HTML stays only in the call arguments. CityCatalyst strips scripts,
-     links, forms and external resources with DOMPurify and renders the rest in
-     a script-free sandboxed iframe, so a visual cannot send note context out.
-     The SSE `done` event and the stored message keep one copy of the HTML,
-     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
-     replayed history replaces it with a short placeholder. A visual-only turn
-     is saved with empty text.
+   - `concept_note_render_visual(title, html, data)` shows a static HTML document.
+     Charts can use inline SVG, tables use HTML, and independent sections can
+     use native disclosures. Optional data metadata describes the values,
+     units, sources, missing observations, conflicts and calculations.
+     The tool rejects obviously empty documents and limits titles to 200
+     characters and HTML to 200,000 characters.
+   - `concept_note_render_panels(title, panels)` accepts two to six named HTML
+     fragments with distinct labels up to 40 characters and the same combined HTML
+     size limit. The response uses `concept_note.visual.render` with
+     `data.kind = "panels"`. CityCatalyst renders the
+     tab controls and shares the selected panel between the card and Expand.
+     Each body is sanitized and displayed in a script-free sandbox. An empty
+     result has a text fallback. Calculators and linked filters remain experimental.
+   - Successful tool calls are included in the SSE `done` event and restored
+     by `GET /v1/threads/{thread_id}/messages` as `visuals`. HTML is retained
+     in the call arguments and compacted for model-facing replay. A visual-only
+     turn is saved with empty text.
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list

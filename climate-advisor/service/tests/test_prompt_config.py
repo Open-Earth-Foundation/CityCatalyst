@@ -275,6 +275,27 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "general CityCatalyst climate and inventory chat" not in composed
 
 
+def test_cnb_chat_prompt_routes_answer_forms_and_states_visual_limits() -> None:
+    """The CNB prompt separates panels, visuals and choices and is honest about scripts."""
+    composed = _load_llm_config().prompts.compose_prompt("cnb_chat")
+
+    # Routing: named formats render, capability questions do not, cards are not choices.
+    assert "Choose the answer form before replying" in composed
+    assert "A named format wins" in composed
+    assert "is a help question: answer it in text and do not render" in composed
+    assert "Switchable cards present content; they are not choices." in composed
+    # The panel contract matches `concept_note_render_panels(title, panels)`.
+    assert "`concept_note_render_panels` requires:" in composed
+    assert "`panels` (array of 2-6 objects)" in composed
+    assert "at most 40 characters" in composed
+    # Static-only truth, data fidelity and layout rules.
+    assert "live controls are not\navailable in chat" in composed
+    assert 'never as zero' in composed
+    assert "show each one with its own source side by side" in composed
+    assert '<div style="overflow-x:auto">' in composed
+    assert "Never paste HTML, SVG, or CSS into the text" in composed
+
+
 def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources

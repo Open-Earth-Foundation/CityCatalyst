@@ -109,7 +109,7 @@ describe("ChatVisualFrame", () => {
           <ChatVisualFrame
             lng="en"
             title={title}
-            html="<svg></svg><script>alert(1)</script>"
+            html='<svg><rect width="5" height="5"></rect></svg><script>alert(1)</script>'
           />
         </ChakraProvider>,
       ),
@@ -120,7 +120,9 @@ describe("ChatVisualFrame", () => {
     const frame = frames[0];
     expect(frame.getAttribute("sandbox")).toBe("allow-same-origin");
     expect(frame.getAttribute("title")).toBe(title);
-    expect(frame.getAttribute("srcdoc")).toContain("<svg></svg>");
+    expect(frame.getAttribute("srcdoc")).toContain(
+      '<svg><rect width="5" height="5"></rect></svg>',
+    );
     expect(frame.getAttribute("srcdoc")).not.toContain("script");
     expect(container.textContent).toContain("chat-visual-label");
     // The accessible name must carry the raw title, not HTML entities.
@@ -139,7 +141,7 @@ describe("ChatVisualFrame", () => {
           <ChatVisualFrame
             lng="en"
             title="Chart"
-            html="<svg></svg>"
+            html='<svg><rect width="5" height="5"></rect></svg>'
             onHeightChange={onHeightChange}
           />
         </ChakraProvider>,

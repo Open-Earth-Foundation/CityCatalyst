@@ -25,6 +25,24 @@ from app.utils.concept_note_context import omit_visual_html
 
 logger = logging.getLogger(__name__)
 
+# The chat still shows older messages and their visuals after the model's
+# window drops them; without this notice the model has answered "the same
+# data" with unrelated values from the current context.
+OMITTED_HISTORY_NOTICE: Dict[str, str] = {
+    "role": "system",
+    "content": (
+        "EARLIER_CHAT_MESSAGES_OMITTED\n"
+        "Only the most recent messages of this chat follow. Older messages, "
+        "including any visuals and the values they showed, are not included, "
+        "although the user can still see them. If the user refers to earlier "
+        "content that is not in the messages below, such as an earlier chart or "
+        '"the same data", say that you cannot see it. Ask the user to paste the '
+        "values or name their source; you may suggest a matching dataset from "
+        "the authorized context, but chart it only after the user confirms. "
+        "Never substitute other data for it."
+    ),
+}
+
 
 class HistoryManager:
     """Manages conversation history loading and pruning."""
@@ -46,6 +64,8 @@ class HistoryManager:
         self.user_id = user_id
         self.session_factory = session_factory
         self.settings = get_settings()
+        # Set by load_messages when the thread has messages older than the window.
+        self.older_messages_omitted = False
 
     async def load_messages(
         self,
@@ -75,10 +95,14 @@ class HistoryManager:
         try:
             async with self.session_factory() as session:
                 message_service = MessageService(session)
+                # One extra row tells whether older messages fall outside the window.
                 messages = await message_service.get_thread_messages(
                     thread_id=self.thread_id,
-                    limit=limit,
+                    limit=limit + 1 if limit else limit,
                 )
+                if limit and len(messages) > limit:
+                    self.older_messages_omitted = True
+                    messages = messages[-limit:]
                 logger.info(
                     "Loaded %d messages for thread_id=%s, user_id=%s",
                     len(messages),
@@ -304,6 +328,7 @@ async def load_conversation_history(
     thread_id: Any,
     user_id: str,
     session_factory: Optional[async_sessionmaker[AsyncSession]],
+    note_omitted_messages: bool = False,
 ) -> List[Dict[str, Any]]:
     """Load and prune conversation history for LLM context.
 
@@ -314,6 +339,8 @@ async def load_conversation_history(
         thread_id: Thread ID to load history for
         user_id: User ID (for authorization)
         session_factory: Optional database session factory
+        note_omitted_messages: Start the history with OMITTED_HISTORY_NOTICE when
+            older messages fall outside the loaded window (used by CNB chat)
 
     Returns:
         List of message dicts ready for LLM, with pruning applied
@@ -334,6 +361,8 @@ async def load_conversation_history(
 
     # Build pruned context for LLM
     context, preserved_count, discarded_count = manager.build_context(messages)
+    if note_omitted_messages and manager.older_messages_omitted:
+        context = [OMITTED_HISTORY_NOTICE, *context]
 
     logger.info(
         "Conversation history ready: total_messages=%d, preserved=%d, pruned=%d, context_items=%d",

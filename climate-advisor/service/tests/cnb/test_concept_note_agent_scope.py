@@ -70,6 +70,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         "concept_note_help",
         "concept_note_gaps",
         "concept_note_render_visual",
+        "concept_note_render_panels",
         "concept_note_sources_query",
     ]
     if edit_enabled:
@@ -159,6 +160,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
             "concept_note_help",
             "concept_note_gaps",
             "concept_note_render_visual",
+            "concept_note_render_panels",
         ]
         await service.close()
     finally:
@@ -189,6 +191,7 @@ async def test_render_visual_is_always_registered_for_cnb_chat(monkeypatch):
         "concept_note_help",
         "concept_note_gaps",
         "concept_note_render_visual",
+        "concept_note_render_panels",
     ]
 
 

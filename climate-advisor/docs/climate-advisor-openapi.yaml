@@ -209,18 +209,34 @@ components:
           format: date-time
         visuals:
           type: array
-          description: Successful CNB `concept_note_render_visual` results stored with this message.
+          description: Successful CNB visual and panel results stored with this message.
           items:
             $ref: '#/components/schemas/ThreadMessageVisual'
     ThreadMessageVisual:
       type: object
-      required: [title, html]
+      required: [title]
+      description: A static visual has html. A switchable visual has panels.
       properties:
         title:
           type: string
         html:
           type: string
-          description: Model-authored static HTML/SVG document; sanitize it and render only in a script-free sandboxed iframe.
+          nullable: true
+          description: Sanitized by the client and displayed in a script-free sandbox.
+        panels:
+          type: array
+          nullable: true
+          minItems: 2
+          maxItems: 6
+          items:
+            type: object
+            required: [label, html]
+            properties:
+              label:
+                type: string
+              html:
+                type: string
+                description: Static HTML for this panel, sanitized like a single visual.
     MessageCreateRequest:
       type: object
       required: [user_id, content]

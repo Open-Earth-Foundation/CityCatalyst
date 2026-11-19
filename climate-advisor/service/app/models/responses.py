@@ -10,9 +10,17 @@ class ThreadCreateResponse(BaseModel):
     context: Optional[Any] = None
 
 
-class ThreadMessageVisual(BaseModel):
-    title: str
+class ThreadMessageVisualPanel(BaseModel):
+    label: str
     html: str
+
+
+class ThreadMessageVisual(BaseModel):
+    """A single visual has `html`; switchable panels have `panels` instead."""
+
+    title: str
+    html: str | None = None
+    panels: list[ThreadMessageVisualPanel] | None = None
 
 
 class ThreadMessageResponse(BaseModel):

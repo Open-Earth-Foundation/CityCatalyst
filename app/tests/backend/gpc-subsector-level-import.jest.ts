@@ -5,7 +5,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
 import env from "@next/env";
-import ECRFImportService from "@/backend/ECRFImportService";
+import ECRFImportService, {
+  supersedeParentsWithChildren,
+} from "@/backend/ECRFImportService";
+import type { ParsedFileData } from "@/backend/FileParserService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import {
   getEmissionResults,
@@ -179,5 +182,49 @@ describe("subsector-level GPC references", () => {
     expect(
       Object.keys(unsplit.scopes).filter((k) => /^[123]$/.test(k)),
     ).toEqual([]);
+  });
+
+  it("an eCRF sheet with a subsector subtotal keeps only its children", async () => {
+    const headers = ["GPC ref. no.", "Total CO2e"];
+    const data = [
+      ["I.3", 500],
+      ["I.3.1", 300],
+      ["I.3.2", 200],
+    ] as const;
+    const sheet = {
+      name: "Inventory",
+      headers,
+      rows: data.map(([ref, t]) => ({ [headers[0]]: ref, [headers[1]]: t })),
+      rowNumbers: data.map((_, i) => i + 2),
+    };
+    const processed = await ECRFImportService.processECRFFile(
+      { primarySheet: sheet, sheets: [sheet] } as unknown as ParsedFileData,
+      { gpcRefNo: 0, totalCO2e: 1 },
+    );
+    const parent = processed.rows.find((r) => r.gpcRefNo === "I.3")!;
+    expect(parent.issue).toBe("gpc-parent-superseded");
+    expect(processed.validRowCount).toBe(2);
+  });
+
+  it("re-running the rule restores a parent whose children moved away", async () => {
+    const extracted = await ECRFImportService.fromExtractedRows([
+      row("I.3", 500),
+      row("I.3.1", 500),
+    ]);
+    const parent = extracted.rows.find((r) => r.gpcRefNo === "I.3")!;
+    expect(parent.issue).toBe("gpc-parent-superseded");
+
+    // A review decision moves the only child to another subsector.
+    const moved = await ECRFImportService.lookupGPCReference("I.4.1");
+    const child = extracted.rows.find((r) => r.gpcRefNo === "I.3.1")!;
+    Object.assign(child, {
+      gpcRefNo: "I.4.1",
+      subsectorId: moved!.subsectorId,
+      subcategoryId: moved!.subcategoryId,
+    });
+    supersedeParentsWithChildren(extracted.rows, extracted.warnings);
+    expect(parent.issue).toBeUndefined();
+    expect(parent.errors).toBeUndefined();
+    expect(parent.parentSuperseded).toBeUndefined();
   });
 });

@@ -47,12 +47,19 @@ function isBlankParsedRow(
 /**
  * CC-1311: keep the child rows (`I.3.x`) and drop a subsector-level row
  * (`I.3`) of the same subsector, so the amount is not counted twice. The gap
- * is reported on the dropped row, never stored.
+ * is reported on the dropped row, never stored. Safe to run again after review
+ * decisions change references: earlier results are cleared first.
  */
-function supersedeParentsWithChildren(
+export function supersedeParentsWithChildren(
   rows: ECRFRowData[],
   warnings: string[],
 ): void {
+  for (const row of rows) {
+    if (!row.parentSuperseded) continue;
+    delete row.parentSuperseded;
+    delete row.issue;
+    delete row.errors;
+  }
   const candidates = rows
     .map((row, index) => ({ row, index }))
     .filter(({ row }) => !row.errors?.length && row.subsectorId);
@@ -737,6 +744,7 @@ export default class ECRFImportService {
       });
     }
 
+    supersedeParentsWithChildren(rows, warnings);
     const validRows = rows.filter((r) => !r.errors || r.errors.length === 0);
     if (validRows.length === 0) {
       errors.push("No valid rows found in file");

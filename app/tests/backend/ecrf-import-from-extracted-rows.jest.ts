@@ -287,6 +287,17 @@ describe("manual override of a row with an inferred scope", () => {
       expect(parent.parentSuperseded?.gap).toBe(200);
     });
 
+    it("an excluded child does not replace an included parent", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        { ...row("I.3.1", 300), omitFromTotal: true },
+      ]);
+      const parent = result.rows.find((r) => r.gpcRefNo === "I.3")!;
+      expect(parent.issue).toBeUndefined();
+      expect(parent.errors).toBeUndefined();
+    });
+
     it("carries omitFromTotal", async () => {
       mockSubsectorCatalogue();
       const result = await ECRFImportService.fromExtractedRows([

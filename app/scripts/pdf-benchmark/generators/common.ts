@@ -38,6 +38,8 @@ type FolderManifest = {
   stage: string;
   /** The exact vendor model id every envelope of the folder was made with. */
   model?: string;
+  /** The envelope mode every envelope of the folder was made with. */
+  mode?: string;
   entries: {
     case_id: string;
     attempt: number;
@@ -75,6 +77,8 @@ export function prepareGeneration(opts: {
   stage?: string;
   /** Pinned vendor model id, recorded in the folder manifest. */
   model?: string;
+  /** Envelope mode (for example how pages are split), recorded in the folder manifest. */
+  mode?: string;
 }): CaseManifestEntry[] {
   const { vendor, config, out } = opts;
   if (!config.allowedVendors?.includes(vendor)) {
@@ -113,6 +117,11 @@ export function prepareGeneration(opts: {
       `${out} holds envelopes of model "${existing.model ?? "none"}"; use another --out folder.`,
     );
   }
+  if (existing && existing.mode !== opts.mode) {
+    throw new Error(
+      `${out} holds envelopes of mode "${existing.mode ?? "none"}"; use another --out folder.`,
+    );
+  }
 
   fs.mkdirSync(path.join(out, "results"), { recursive: true });
   fs.mkdirSync(path.join(out, "raw"), { recursive: true });
@@ -122,6 +131,7 @@ export function prepareGeneration(opts: {
       study: vendor,
       stage,
       ...(opts.model ? { model: opts.model } : {}),
+      ...(opts.mode ? { mode: opts.mode } : {}),
       entries: [],
     });
   }
@@ -134,13 +144,19 @@ export type GeneratorArgs = {
   out: string;
   configPath: string;
   model?: string;
+  /** One call over the whole document, or one call per range of 8 pages. */
+  ranges: PageRanges;
 };
 
-/** `--cases <ids> --out <folder> [--runs n] [--config path] [--model id]`. */
+export type PageRanges = "whole" | "8";
+export const DEFAULT_PAGE_RANGES: PageRanges = "whole";
+
+/** `--cases <ids> --out <folder> [--runs n] [--config path] [--model id] [--ranges whole|8]`. */
 export function parseGeneratorArgs(argv: string[]): GeneratorArgs {
   const args: Partial<GeneratorArgs> = {
     runs: 1,
     configPath: DEFAULT_CONFIG_PATH,
+    ranges: DEFAULT_PAGE_RANGES,
   };
   for (let i = 0; i < argv.length; i += 2) {
     const flag = argv[i];
@@ -153,11 +169,16 @@ export function parseGeneratorArgs(argv: string[]): GeneratorArgs {
     else if (flag === "--out") args.out = value;
     else if (flag === "--config") args.configPath = value;
     else if (flag === "--model") args.model = value;
-    else throw new Error(`Unknown argument ${flag}`);
+    else if (flag === "--ranges") {
+      if (value !== "whole" && value !== "8") {
+        throw new Error("--ranges must be whole or 8");
+      }
+      args.ranges = value;
+    } else throw new Error(`Unknown argument ${flag}`);
   }
   if (!args.cases || !args.out) {
     throw new Error(
-      "Usage: --cases <ids> --out <folder> [--runs n] [--config path] [--model id]",
+      "Usage: --cases <ids> --out <folder> [--runs n] [--config path] [--model id] [--ranges whole|8]",
     );
   }
   return args as GeneratorArgs;

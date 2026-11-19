@@ -8,6 +8,7 @@ import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
 import { readRowsDir } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import {
+  DEFAULT_PAGE_RANGES,
   asEnvelopeData,
   emptyData,
   envelopeInstructions,
@@ -199,6 +200,7 @@ describe("generator arguments and model", () => {
       model: "mistral-ocr-4-1",
       runs: 2,
       configPath: "benchmarks/pdf/config.local.json",
+      ranges: DEFAULT_PAGE_RANGES,
     });
     expect(parseGeneratorArgs(["--cases", "C-009", "--out", "o"]).model).toBe(
       undefined,
@@ -217,6 +219,43 @@ describe("generator arguments and model", () => {
     expect(() => pinnedModel(undefined)).toThrow(/--model .* is required/);
     expect(() => pinnedModel("")).toThrow(/required/);
     expect(() => pinnedModel("mistral-ocr-latest")).toThrow(/alias/);
+  });
+
+  it("parses --ranges whole or 8 and refuses anything else", () => {
+    const base = ["--cases", "C-009", "--out", "o"];
+    expect(parseGeneratorArgs([...base, "--ranges", "whole"]).ranges).toBe(
+      "whole",
+    );
+    expect(parseGeneratorArgs([...base, "--ranges", "8"]).ranges).toBe("8");
+    for (const bad of ["4", "all", "Whole"]) {
+      expect(() => parseGeneratorArgs([...base, "--ranges", bad])).toThrow(
+        /--ranges must be whole or 8/,
+      );
+    }
+  });
+
+  it("records the mode in the folder manifest and refuses another mode", () => {
+    const opts = {
+      vendor: "mistral" as const,
+      cases: "C-901",
+      runs: 1,
+      out,
+      config: config(["mistral"]),
+      manifest,
+      model: "mistral-ocr-4-1",
+    };
+    prepareGeneration({ ...opts, mode: "annotations/whole" });
+    const written = JSON.parse(
+      fs.readFileSync(path.join(out, "manifest.json"), "utf8"),
+    );
+    expect(written.mode).toBe("annotations/whole");
+    expect(() =>
+      prepareGeneration({ ...opts, mode: "annotations/8-page" }),
+    ).toThrow(/annotations\/whole/);
+    expect(() => prepareGeneration(opts)).toThrow(/annotations\/whole/);
+    expect(() =>
+      prepareGeneration({ ...opts, mode: "annotations/whole" }),
+    ).not.toThrow();
   });
 
   it("records the model in the folder manifest and refuses another model", () => {

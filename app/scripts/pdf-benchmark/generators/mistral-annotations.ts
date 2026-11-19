@@ -4,7 +4,7 @@
  * writes the answers as an envelope folder for `--pipeline precomputed`.
  *
  *   npx tsx scripts/pdf-benchmark/generators/mistral-annotations.ts \
- *     --model mistral-ocr-4-1 --cases C-015,C-016 --runs 3 \
+ *     --model mistral-ocr-4-1 --cases C-015,C-016 --runs 3 [--ranges whole|8] \
  *     --out benchmarks/pdf/generated/mistral-<date>
  *
  * `--model` is required and must be an exact model id, never a `-latest`
@@ -20,10 +20,18 @@
  * POST /v1/ocr with `document_annotation_format` ({ type: "json_schema",
  * json_schema: { name, schema, strict } }), `document_annotation_prompt` (free
  * text; needs the format) and `pages` (zero-based). The answer comes back as a
- * JSON string in `document_annotation`, pages billed in `usage_info`. The docs'
- * annotation examples use ranges of 8 pages, the limit earlier docs gave for
- * document annotations, so each call covers at most 8 pages and the rows of the
- * calls are joined. A local PDF is sent as a base64 data URL (basic OCR docs).
+ * JSON string in `document_annotation`, pages billed in `usage_info`. A local
+ * PDF is sent as a base64 data URL (basic OCR docs).
+ *
+ * `--ranges` (envelope `mode` and folder manifest `mode`):
+ * - `whole` (`annotations/whole`, default): one call over the whole document,
+ *   no `pages`. Accepted for a 26-page PDF (C-018, mistral-ocr-4-1,
+ *   2026-11-18), so the 8-page limit of earlier docs no longer holds.
+ * - `8` (`annotations/8-page`, explicit fallback for a document the API
+ *   refuses whole): one call per range of 8 pages, the limit earlier
+ *   docs gave for document annotations (the docs' examples still use pages
+ *   0-7); the rows of the calls are joined without dedupe, so a table that two
+ *   ranges both read is counted twice.
  *
  * The response has no dollar cost, so cost = pages processed x
  * prices.json `vendors["mistral/annotations/<model id>"].perPage`: the price
@@ -55,13 +63,17 @@ import {
   writeEnvelope,
   type GeneratorArgs,
   type GeneratorConfig,
+  type PageRanges,
 } from "./common";
 
 const OCR_URL = "https://api.mistral.ai/v1/ocr";
 const PIPELINE = "mistral/annotations";
-const MODE = "document_annotation";
+const MODES: Record<PageRanges, string> = {
+  whole: "annotations/whole",
+  "8": "annotations/8-page",
+};
 const PAGES_PER_CALL = 8;
-/** Annotation calls run an LLM over 8 pages; longer than the app's plain OCR timeout. */
+/** Annotation calls run an LLM over many pages; longer than the app's plain OCR timeout. */
 const CALL_TIMEOUT_MS = 600_000;
 
 class CallError extends Error {
@@ -75,7 +87,8 @@ class CallError extends Error {
 }
 
 type Call = {
-  pages: number[];
+  /** Null: the whole document. */
+  pages: number[] | null;
   status: number | null;
   response: unknown;
 };
@@ -85,7 +98,7 @@ async function annotate(
   apiKey: string,
   model: string,
   documentUrl: string,
-  pages: number[],
+  pages: number[] | null,
   targetYear: number,
 ): Promise<{ status: number; response: Record<string, unknown> }> {
   let response: Response;
@@ -99,7 +112,7 @@ async function annotate(
       body: JSON.stringify({
         model,
         document: { type: "document_url", document_url: documentUrl },
-        pages,
+        ...(pages ? { pages } : {}),
         document_annotation_format: {
           type: "json_schema",
           json_schema: {
@@ -177,6 +190,7 @@ async function main(argv: string[]): Promise<number> {
       out,
       config,
       model,
+      mode: MODES[args.ranges],
     });
   } catch (error) {
     console.error((error as Error).message);
@@ -207,8 +221,14 @@ async function main(argv: string[]): Promise<number> {
       let data = emptyData();
       let error: string | null = null;
       try {
-        if (pageCount === null) throw new CallError("page count not found");
-        for (const pages of pageRanges(pageCount, PAGES_PER_CALL)) {
+        let ranges: (number[] | null)[] = [null];
+        if (args.ranges === "8") {
+          if (pageCount === null) {
+            throw new CallError("page count not found");
+          }
+          ranges = pageRanges(pageCount, PAGES_PER_CALL);
+        }
+        for (const pages of ranges) {
           const call: Call = { pages, status: null, response: null };
           calls.push(call);
           try {
@@ -254,7 +274,7 @@ async function main(argv: string[]): Promise<number> {
           usage: { pages_processed: pages, calls: calls.length },
           costUsd,
           pipeline: PIPELINE,
-          mode: MODE,
+          mode: MODES[args.ranges],
           version: model,
           executionStatus: error ? "failed" : "completed",
         },

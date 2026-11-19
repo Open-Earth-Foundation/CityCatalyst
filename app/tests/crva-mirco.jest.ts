@@ -12,6 +12,7 @@ import {
   mircoItems,
   mircoRunStats,
   mircoUsage,
+  toV0Value,
   type MircoItem,
 } from "../scripts/crva-mirco/convert";
 import {
@@ -26,7 +27,11 @@ import {
   CRVA_VALUE_SHAPES,
 } from "@/backend/ingest/plugins/ccra/extract-crva-fields";
 import {
+  CRVA_DETAIL_RULES,
+  CRVA_FIELD_GUIDE,
+  CRVA_GRANULARITY_RULES,
   CRVA_ITEM_SCHEMAS,
+  CRVA_MIRCO_SHAPES,
   crvaJsonSchema,
   crvaUserPrompt,
 } from "../scripts/crva-mirco/inputs";
@@ -60,8 +65,27 @@ describe("crvaJsonSchema", () => {
     );
   });
 
-  it.each(ids)("%s item keys match CRVA_VALUE_SHAPES", (id) => {
-    const shape = CRVA_VALUE_SHAPES[id];
+  it("A1.2a asks for author, title, year and an optional use", () => {
+    const item = CRVA_ITEM_SCHEMAS["A1.2a"] as JsonObject;
+    expect(Object.keys(item.properties)).toEqual([
+      "author",
+      "title",
+      "year",
+      "used_for",
+    ]);
+    expect(item.properties.used_for).toEqual({ type: ["string", "null"] });
+    expect(schema.properties["A1.2a"].description).toContain('"title"');
+    expect(CRVA_MIRCO_SHAPES["A1.2a"]).not.toBe(CRVA_VALUE_SHAPES["A1.2a"]);
+  });
+
+  it("only A1.2a differs from the v0 shapes", () => {
+    for (const id of ids.filter((x) => x !== "A1.2a")) {
+      expect(CRVA_MIRCO_SHAPES[id]).toBe(CRVA_VALUE_SHAPES[id]);
+    }
+  });
+
+  it.each(ids)("%s item keys match CRVA_MIRCO_SHAPES", (id) => {
+    const shape = CRVA_MIRCO_SHAPES[id];
     const item = CRVA_ITEM_SCHEMAS[id] as JsonObject;
     if (!shape.startsWith("{")) {
       expect(item).toEqual({ type: "string" });
@@ -267,6 +291,61 @@ describe("assembleMircoBundle", () => {
   });
 });
 
+describe("toV0Value", () => {
+  it("joins A1.2a author and title into the v0 name and keeps the year", () => {
+    expect(
+      toV0Value("A1.2a", {
+        author: "Balay, M.",
+        title: "El Río de la Plata entre la atmósfera y el mar",
+        year: 1961,
+        used_for: "hidrografía",
+      }),
+    ).toEqual({
+      name: "Balay, M. — El Río de la Plata entre la atmósfera y el mar",
+      year: 1961,
+    });
+  });
+
+  it("uses the title alone when the author is empty", () => {
+    expect(
+      toV0Value("A1.2a", { author: " ", title: "Censo 2010", year: null }),
+    ).toEqual({ name: "Censo 2010", year: null });
+  });
+
+  it("passes the old A1.2a shape and other fields through", () => {
+    const old = { name: "INDEC", year: 2010 };
+    expect(toV0Value("A1.2a", old)).toBe(old);
+    expect(toV0Value("C1.1a", HEAT)).toBe(HEAT);
+  });
+
+  it("lets an A1.2a item in the new shape pass the v0 checks", () => {
+    const bundle = assembleMircoBundle({
+      file: OCR.file,
+      items: [
+        {
+          fieldId: "A1.2a",
+          index: 0,
+          value: {
+            author: "Ciudad",
+            title: "Río de la Plata",
+            year: 2020,
+            used_for: null,
+          },
+          evidence: [{ page: 1, quote: "limita con el Río de la Plata" }],
+        },
+      ],
+      badPointers: 0,
+      ocr: OCR,
+      extractionModel: "gpt-6.1-sol",
+    });
+    expect(bundle.dropped).toEqual([]);
+    expect(bundle.values[0]).toMatchObject({
+      fieldId: "A1.2a",
+      value: { name: "Ciudad — Río de la Plata", year: 2020 },
+    });
+  });
+});
+
 describe("mircoUsage", () => {
   it("maps Agents API usage keys", () => {
     expect(
@@ -369,6 +448,45 @@ describe("crvaUserPrompt", () => {
     const prompt = crvaUserPrompt("<role>Default</role>");
     expect(prompt.startsWith("<role>Default</role>")).toBe(true);
     for (const rule of CRVA_VALUE_RULES) expect(prompt).toContain(rule);
+  });
+
+  it("adds the detail and granularity rules", () => {
+    const prompt = crvaUserPrompt("<role>Default</role>");
+    expect(CRVA_DETAIL_RULES.length).toBeGreaterThan(0);
+    expect(CRVA_GRANULARITY_RULES.length).toBeGreaterThan(0);
+    for (const rule of [...CRVA_DETAIL_RULES, ...CRVA_GRANULARITY_RULES]) {
+      expect(prompt).toContain(rule);
+    }
+    expect(prompt).toContain("<detail_rules>");
+    expect(prompt).toContain("<granularity_rules>");
+  });
+
+  it("has a field guide entry with an example in its item shape for every field", () => {
+    const prompt = crvaUserPrompt("<role>Default</role>");
+    expect(prompt).toContain("<field_guide>");
+    for (const id of CRVA_FIELD_IDS as CrvaFieldId[]) {
+      const guide = CRVA_FIELD_GUIDE[id];
+      expect(guide.definition.length).toBeGreaterThan(20);
+      expect(guide.notThis.length).toBeGreaterThan(10);
+      const item = CRVA_ITEM_SCHEMAS[id] as JsonObject;
+      if (item.type === "string") {
+        expect(typeof guide.example).toBe("string");
+      } else {
+        expect(Object.keys(guide.example as object)).toEqual(
+          Object.keys(item.properties),
+        );
+      }
+      expect(prompt).toContain(`### ${id}`);
+      expect(prompt).toContain(JSON.stringify(guide.example));
+    }
+  });
+
+  it("says what does not belong in E1.1a and D1.2a", () => {
+    expect(CRVA_FIELD_GUIDE["E1.1a"].definition).toMatch(/risk level/i);
+    expect(CRVA_FIELD_GUIDE["E1.1a"].notThis).toMatch(/impact/i);
+    expect(CRVA_FIELD_GUIDE["D1.2a"].notThis).toMatch(/cause/i);
+    expect(CRVA_FIELD_GUIDE["A1.1"].definition).toMatch(/map/i);
+    expect(CRVA_FIELD_GUIDE["A2.1a"].definition).toMatch(/map/i);
   });
 });
 

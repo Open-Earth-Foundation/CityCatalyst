@@ -138,6 +138,29 @@ export function mircoItems(result: unknown): {
   return { items: [...items.values()], badPointers, ambiguousItems };
 }
 
+const A12aSchema = z.object({
+  author: z.string(),
+  title: z.string(),
+  year: z.number().nullable(),
+});
+
+/**
+ * The pipeline's A1.2a item is `{author, title, year, used_for}`; v0 holds
+ * `{name, year}`, so author and title go into `name` for the judge. Any other
+ * value, and the old `{name, year}` shape, passes through.
+ */
+export function toV0Value(fieldId: string, value: unknown): unknown {
+  if (fieldId !== "A1.2a") return value;
+  const parsed = A12aSchema.safeParse(value);
+  if (!parsed.success) return value;
+  const { author, title, year } = parsed.data;
+  const name = [author, title]
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(" — ");
+  return { name, year };
+}
+
 const INVALID: CrvaDroppedValue = {
   fieldId: "unknown",
   page: null,
@@ -169,7 +192,7 @@ export function assembleMircoBundle(input: {
     for (const e of item.evidence) {
       const candidate = {
         fieldId: item.fieldId,
-        value: item.value,
+        value: toV0Value(item.fieldId, item.value),
         page: e.page,
         quote: e.quote,
       };

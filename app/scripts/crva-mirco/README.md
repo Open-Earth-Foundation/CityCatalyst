@@ -6,8 +6,10 @@ The comparison mixes model and pipeline: the pipeline uses agentic `gpt-6.1-sol`
 
 ## Files
 
-- `inputs.ts`: builds the CRVA JSON Schema (Draft 2020-12, the 12 v0 fields, one array of items per field) and the user prompt (Mirco's default user prompt plus the v0 value rules) from the constants in `src/backend/ingest/plugins/ccra/extract-crva-fields.ts`.
-- `convert.ts`: turns the pipeline's result into a CRVA draft bundle. The pipeline reports evidence per data leaf (`/C1.1a/0/hazard`); the converter groups leaves into one v0 value per item, keeps the longest quote that passes the v0 quote check against the harness OCR cache, then dedupes as v0 does. An item gets several quote tries and at most one drop, so its drop rate is not directly comparable with v0. Items whose outcomes are all `ambiguous` are not values; their count is saved as `mirco.ambiguousItems`. A `found` outcome on an empty field array (Mirco's validator requires one) is skipped, not dropped.
+- `inputs.ts`: builds the CRVA JSON Schema (Draft 2020-12, the 12 v0 fields, one array of items per field) and the user prompt from the constants in `src/backend/ingest/plugins/ccra/extract-crva-fields.ts`.
+  - The item shapes are the v0 shapes, except A1.2a: `{author, title, year, used_for}`, because the gold keeps the title and v0's `{name, year}` lost it.
+  - The user prompt is Mirco's default user prompt plus the v0 value rules, detail rules (keep the numbers, dates, causes and figure references the quote supports), granularity rules (one item per hazard × group or sector) and a field guide with what belongs in each field, what does not, and one example item. The examples come from the Buenos Aires gold, so Seattle is the hold-out.
+- `convert.ts`: turns the pipeline's result into a CRVA draft bundle. The pipeline reports evidence per data leaf (`/C1.1a/0/hazard`); the converter groups leaves into one v0 value per item, keeps the longest quote that passes the v0 quote check against the harness OCR cache, then dedupes as v0 does. An A1.2a item becomes the v0 value `{name: "<author> — <title>", year}`; `used_for` is not kept. An item gets several quote tries and at most one drop, so its drop rate is not directly comparable with v0. Items whose outcomes are all `ambiguous` are not values; their count is saved as `mirco.ambiguousItems`. A `found` outcome on an empty field array (Mirco's validator requires one) is skipped, not dropped.
 - `run-mirco.ts`: runs Mirco's Python client once and writes a harness run folder.
 
 ## Setup

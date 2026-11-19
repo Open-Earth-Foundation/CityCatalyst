@@ -5,8 +5,8 @@ Inputs: log RUN_DIR [--draft]; or download MLFLOW_RUN_ID
 from the process environment, falling back to climate-advisor/.env for
 MLFLOW_TRACKING_* values without overriding existing variables.
 Inputs on log: report.json, optional delivery.json and comparison.json in RUN_DIR.
-Outputs: parent quality/mean metrics and fixture runs with provenance and local
-stage status in Clima-CNB-Benchmark, or verified files in
+Outputs: readable run descriptions, parent quality/mean metrics, and fixture runs
+with provenance and stage status in Clima-CNB-Benchmark, or verified files in
 DIR/runs/<original-run-id>. Logs the parent ID. No benchmark providers are called.
 
 Usage from climate-advisor/:
@@ -38,6 +38,25 @@ RATE_METRICS = {
     "desirable_fact_coverage", "claim_support_rate", "topic_coverage", "gap_recall",
     "flagged_gap_validity", "transfer_rate", "defect_recall", "strict_defect_recall",
     "false_alarm_rate", "case_pass_rate", "expected_change_rate", "preservation_rate",
+}
+RUN_DESCRIPTION = "mlflow.note.content"
+FIXTURE_NAMES = {
+    "harbor-point-heat-resilience": "Harbor Point",
+    "krakow-flood-drainage-plan": "Kraków",
+    "richfield-flood-risk": "Richfield",
+}
+CHECK_LABELS = {"passed": "Passed", "failed": "Issues found", "unavailable": "Unavailable"}
+SUMMARY_METRICS = {
+    "extraction": (
+        ("fact_evidence_retained", "required facts retained"),
+        ("pair_evidence_in_chapter", "required evidence in the intended chapter"),
+    ),
+    "chapter_writing": (("required_fact_coverage", "required facts fully covered"),),
+    "verification": (
+        ("defect_recall", "planted defects caught"),
+        ("false_alarm_rate", "false-alarm rate"),
+    ),
+    "editing": (("case_pass_rate", "edit cases passed"),),
 }
 
 
@@ -82,6 +101,55 @@ def _fixture_tags(fixture: dict[str, Any], stages: list[str]) -> dict[str, str]:
     tags["quality_failures"] = str(quality).lower()
     tags["evaluation_unavailable"] = str(unavailable).lower()
     return tags
+
+
+def review_tags(
+    report: dict[str, Any], stages: list[str]
+) -> tuple[str, dict[str, dict[str, str]]]:
+    """Describe fixture quality from the same stage statuses exported as tags."""
+    summaries = []
+    children = {}
+    for fixture in report.get("fixtures", []):
+        fixture_id = fixture["fixture_id"]
+        tags = _fixture_tags(fixture, stages)
+        statuses = [tags[f"{stage}.status"] for stage in stages]
+        if not statuses or "unavailable" in statuses:
+            result = "unavailable"
+        elif "failed" in statuses:
+            result = "failed"
+        else:
+            result = "passed"
+
+        name = FIXTURE_NAMES.get(fixture_id, fixture_id.replace("-", " ").title())
+        rows = [f"### {name} ({CHECK_LABELS[result]})", ""]
+        for stage, status in zip(stages, statuses, strict=True):
+            label = stage.replace("_", " ").capitalize()
+            row = f"- **{label} ({CHECK_LABELS[status]})**"
+            if status != "unavailable":
+                metrics = fixture[stage].get("metrics", {})
+                scores = []
+                for key, explanation in SUMMARY_METRICS.get(stage, ()):
+                    value = metrics.get(key)
+                    if isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 1:
+                        scores.append(f"{value:.1%} {explanation}")
+                if scores:
+                    row += " · " + " · ".join(scores)
+            rows.append(row)
+        summary = "\n".join(rows)
+        tags.update({"fixture_result": CHECK_LABELS[result], RUN_DESCRIPTION: summary})
+        children[fixture_id] = tags
+        summaries.append(summary)
+
+    missing = set(report.get("expected_fixture_ids") or []) - children.keys()
+    for fixture_id in sorted(missing):
+        name = FIXTURE_NAMES.get(fixture_id, fixture_id.replace("-", " ").title())
+        summaries.append(f"### {name} (Unavailable)\n\nNo results were recorded for this fixture.")
+    description = "\n\n".join([
+        "**Benchmark quality checks**",
+        *summaries,
+        "Open **Artifacts → run → report.md** for the detailed checks and reasons.",
+    ])
+    return description, children
 
 
 def _payload(report: dict[str, Any]) -> tuple[
@@ -187,8 +255,7 @@ def log_run_dir(run_dir: Path, *, draft: bool = False) -> str | None:
             regression = comparison.get("quality_regression")
             tags["quality_regression"] = (str(regression).lower()
                                           if isinstance(regression, bool) else "unavailable")
-        child_tags = {fixture["fixture_id"]: _fixture_tags(fixture, params["requested_stages"])
-                      for fixture in report.get("fixtures", [])}
+        tags[RUN_DESCRIPTION], child_tags = review_tags(report, params["requested_stages"])
         if draft:
             tags["draft"] = "true"
         run_id = export_run_dir(run_dir, experiment_name=EXPERIMENT, metrics=metrics,

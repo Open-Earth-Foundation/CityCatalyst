@@ -17,8 +17,31 @@ from benchmark.cnb.golden_set.judge import judge_example_problems
 from benchmark.cnb.golden_set.models import StageReport, TextUnit
 from benchmark.cnb.golden_set.verification import seed_defects
 from benchmark.cnb.scripts.compare import main as compare_main
+from benchmark.cnb.scripts.mlflow_log import RUN_DESCRIPTION, review_tags
 
 ROOT = Path(__file__).resolve().parents[2] / "benchmark/cnb"
+
+
+def test_mlflow_description_distinguishes_quality_failures_from_unavailable_scores():
+    score = {"judgment": {"facts": []}, "metrics": {"fact_evidence_retained": 1.0}}
+    fixtures = [
+        {"fixture_id": "harbor-point-heat-resilience", "extraction": score},
+        {"fixture_id": "krakow-flood-drainage-plan", "extraction": {
+            **score, "semantic_failures": ["A fact reached the wrong chapter"],
+        }},
+        {"fixture_id": "richfield-flood-risk", "extraction": {
+            **score, "evaluation_errors": ["Judgment unavailable"],
+        }},
+    ]
+    note, tags = review_tags({"fixtures": fixtures, "expected_fixture_ids": ["absent"]}, ["extraction"])
+    assert "Harbor Point (Passed)" in note
+    assert "Kraków (Issues found)" in note
+    assert "Richfield (Unavailable)" in note
+    assert "Absent (Unavailable)" in note
+    assert note.count("100.0% required facts retained") == 2
+    assert "\n- **Extraction (Unavailable)**" in tags["richfield-flood-risk"][RUN_DESCRIPTION]
+    assert tags["krakow-flood-drainage-plan"]["fixture_result"] == "Issues found"
+    assert tags["harbor-point-heat-resilience"]["approval_state"] == "unapproved"
 
 
 def test_current_answer_key_is_executable_offline():

@@ -150,6 +150,11 @@ uv run python -m benchmark.cnb.scripts.mlflow_log log output/cnb_golden_set/runs
 come from the environment or `climate-advisor/.env`; existing environment values
 take precedence.
 
+The run description shows each fixture's quality checks with plain-language
+percentages. **Passed** means every requested check passed, **Issues found**
+means at least one check failed, and **Unavailable** means a requested stage
+lacked a valid judgment. Fixture runs also expose this result as `fixture_result`.
+
 To compare runs, select two parent runs in the experiment and click **Compare**:
 
 - `mean.<stage>.<metric>` is the average rate across fixtures, and

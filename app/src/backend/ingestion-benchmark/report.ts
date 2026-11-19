@@ -999,13 +999,52 @@ export function gitInfo(): { commit: string; branch: string } {
   };
 }
 
-export function runFolderName(measuredAt: string, commit: string): string {
+/**
+ * `<date>-<HHMM>-<commit>`, plus `-<study>` (slugged) for a precomputed
+ * pipeline run so two pipelines finishing in the same minute stay apart.
+ */
+export function runFolderName(
+  measuredAt: string,
+  commit: string,
+  study?: string | null,
+): string {
   const stamp = measuredAt.slice(0, 16).replace("T", "-").replace(":", "");
-  return `${stamp}-${commit}`;
+  const slug = (study ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40)
+    .replace(/-+$/, "");
+  return slug ? `${stamp}-${commit}-${slug}` : `${stamp}-${commit}`;
 }
 
 /**
- * Writes the run folder under `outRoot` and returns its path. Holds the report,
+ * Creates the run folder under `outRoot` and returns its name. Never reuses an
+ * existing folder: on a clash it appends `-2`, `-3`, and so on. Creating the
+ * folder is what reserves the name.
+ */
+export function reserveRunFolder(
+  outRoot: string,
+  measuredAt: string,
+  commit: string,
+  study?: string | null,
+): string {
+  mkdirSync(outRoot, { recursive: true });
+  const base = runFolderName(measuredAt, commit, study);
+  for (let n = 1; ; n++) {
+    const name = n === 1 ? base : `${base}-${n}`;
+    try {
+      mkdirSync(join(outRoot, name));
+      return name;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+  }
+}
+
+/**
+ * Writes the run folder under `outRoot` (a new one unless `folder` is given)
+ * and returns its path. Holds the report,
  * the results (including the stored values a later baseline rescore needs,
  * with the answer-key content of each score redacted) and each attempt's
  * extracted values. Never copies inputs, answer keys or OCR text.
@@ -1016,9 +1055,19 @@ export function writeRunArtifact(args: {
   verdicts: CaseVerdict[];
   blocks: BlockSummary[];
   gates: CaseGate[];
+  /** Folder name from `reserveRunFolder`; a rewrite of the same run passes it. */
+  folder?: string;
 }): string {
   const { outRoot, summary, verdicts, blocks, gates } = args;
-  const dir = join(outRoot, runFolderName(summary.measuredAt, summary.commit));
+  const folder =
+    args.folder ??
+    reserveRunFolder(
+      outRoot,
+      summary.measuredAt,
+      summary.commit,
+      summary.pipeline?.study,
+    );
+  const dir = join(outRoot, folder);
   mkdirSync(dir, { recursive: true });
   writeFileSync(
     join(dir, "results.json"),

@@ -74,7 +74,7 @@ import {
   pricesFor,
   renderIndexLine,
   rescoredRunFlags,
-  runFolderName,
+  reserveRunFolder,
   writeRunArtifact,
   type Block,
   type CaseResult,
@@ -329,20 +329,23 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     mlflowNote: "not logged (rescore)",
     rescoredFrom: { measuredAt: old.measuredAt, commit: old.commit },
   };
+  const rescoreFolder = reserveRunFolder(
+    outRoot,
+    summary.measuredAt,
+    summary.commit,
+    summary.pipeline?.study,
+  );
   const runFolder = writeRunArtifact({
     outRoot,
     summary,
     verdicts,
     blocks,
     gates: [],
+    folder: rescoreFolder,
   });
   appendIndexLine(
     join(outRoot, "INDEX.md"),
-    renderIndexLine(
-      summary,
-      blocks,
-      runFolderName(summary.measuredAt, summary.commit),
-    ),
+    renderIndexLine(summary, blocks, rescoreFolder),
   );
 
   const pct = (value: number | null) =>
@@ -658,7 +661,16 @@ export async function main(argv: string[]): Promise<number> {
     const blocks = blockSummaries(verdicts, manifestCounts);
 
     const git = gitInfo();
-    const folderName = runFolderName(measuredAt, git.commit);
+    const pipeline = rowsDir
+      ? pipelineInfo(rowsDir, selected, options.runs)
+      : undefined;
+    // Reserved now so a baseline entry, the index and the folder agree on the name.
+    const folderName = reserveRunFolder(
+      outRoot,
+      measuredAt,
+      git.commit,
+      pipeline?.study,
+    );
     const baselineEntries: Record<string, BaselineEntry> = Object.fromEntries(
       verdicts.map((verdict) => [
         verdict.id,
@@ -709,9 +721,7 @@ export async function main(argv: string[]): Promise<number> {
       selection: selected.map((entry) => entry.id),
       exploratory: options.runs !== 3 || !!options.pipeline,
       exploratoryReason: options.pipeline ? "pipeline" : undefined,
-      ...(rowsDir
-        ? { pipeline: pipelineInfo(rowsDir, selected, options.runs) }
-        : {}),
+      ...(pipeline ? { pipeline } : {}),
       interrupted,
       promptHash: rowsDir ? null : promptHash(),
       inputRepresentation: rowsDir
@@ -732,6 +742,7 @@ export async function main(argv: string[]): Promise<number> {
       verdicts,
       blocks,
       gates,
+      folder: folderName,
     });
 
     const mlflowConfig = mlflowConfigFromEnv(process.env, options.noMlflow);
@@ -751,7 +762,14 @@ export async function main(argv: string[]): Promise<number> {
       else summary.mlflowNote = `MLflow logging failed: ${logged.reason}`;
     }
     // Rewrite so the report carries the MLflow URL or note.
-    writeRunArtifact({ outRoot, summary, verdicts, blocks, gates });
+    writeRunArtifact({
+      outRoot,
+      summary,
+      verdicts,
+      blocks,
+      gates,
+      folder: folderName,
+    });
 
     // OCR text is third-party document text: written locally only, git-ignored.
     for (const [attemptKey, text] of ocrTexts) {

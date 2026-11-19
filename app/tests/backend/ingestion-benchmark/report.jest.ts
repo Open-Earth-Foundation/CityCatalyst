@@ -24,6 +24,7 @@ import {
   pricesFor,
   renderReport,
   rescoredRunFlags,
+  reserveRunFolder,
   runFolderName,
   writeRunArtifact,
   type CaseResult,
@@ -484,6 +485,51 @@ describe("report", () => {
     expect(runFolderName("2026-10-27T15:30:00.000Z", "abc1234")).toBe(
       "2026-10-27-1530-abc1234",
     );
+  });
+
+  it("adds a slugged pipeline study to the folder name", () => {
+    expect(
+      runFolderName("2026-10-27T15:30:00.000Z", "abc1234", " Mistral/OCR 3! "),
+    ).toBe("2026-10-27-1530-abc1234-mistral-ocr-3");
+    expect(runFolderName("2026-10-27T15:30:00.000Z", "abc1234", null)).toBe(
+      "2026-10-27-1530-abc1234",
+    );
+  });
+
+  it("never reuses a run folder: it appends -2, -3", () => {
+    const outRoot = tmp();
+    const at = "2026-10-27T15:30:00.000Z";
+    expect(reserveRunFolder(outRoot, at, "abc1234")).toBe(
+      "2026-10-27-1530-abc1234",
+    );
+    expect(reserveRunFolder(outRoot, at, "abc1234")).toBe(
+      "2026-10-27-1530-abc1234-2",
+    );
+    expect(reserveRunFolder(outRoot, at, "abc1234")).toBe(
+      "2026-10-27-1530-abc1234-3",
+    );
+    expect(reserveRunFolder(outRoot, at, "abc1234", "pipe")).toBe(
+      "2026-10-27-1530-abc1234-pipe",
+    );
+  });
+
+  it("two runs in the same minute write two folders", () => {
+    const outRoot = tmp();
+    const r = result("A", 0.5);
+    const write = () =>
+      writeRunArtifact({
+        outRoot,
+        summary: summary([r]),
+        verdicts: [verdict(r)],
+        blocks: [block({})],
+        gates: [],
+      });
+    const first = write();
+    const second = write();
+    expect(second).not.toBe(first);
+    expect(second).toBe(`${first}-2`);
+    expect(existsSync(join(first, "report.md"))).toBe(true);
+    expect(existsSync(join(second, "report.md"))).toBe(true);
   });
 
   it("writeRunArtifact writes no answer-key.json and no ocr text", () => {

@@ -6,8 +6,9 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
 
 - Command: `npx tsx scripts/pdf-benchmark.ts` from `app/`.
 - Code: `app/src/backend/ingestion-benchmark/` (scoring, metrics, baseline, report, MLflow) and `app/scripts/pdf-benchmark/` (runner).
-- Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`).
-- Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`.
+- Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`, `schemas/`).
+- `prices.json` holds the built-in model prices (by model name), plus `models` (USD per million tokens, with `source` and `date`) and `vendors` (USD per page or credit, with `source` and `date`) that price the envelopes of an external pipeline.
+- Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`. The folder is named `<date>-<HHMM>-<commit>`, with `-<study>` added for an [external pipeline](#external-pipelines) run. A run never overwrites a folder: if the name exists (two runs finishing in the same minute), it adds `-2`, `-3` and so on.
 
 ## Prerequisites
 
@@ -25,6 +26,7 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
    - `pdfDir`: one folder, or a list of folders searched in order.
    - `answerKeys`: path to `answer-keys.json` (see [Add a PDF and its key](#add-a-pdf-and-its-key)).
    - `outRoot`: where run folders go (default `../docs/ingestion-accuracy-runs`).
+   - `allowedVendors`: vendors the generators may send PDFs to (`mistral`, `reducto`, `llamacloud`). Empty by default; see [Generators](#generators).
 4. Optional, for MLflow: `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD` (see [MLflow](#mlflow)).
 
 Never commit PDFs, OCR text, answer-key JSON, `app/.env` or `config.local.json`.
@@ -70,10 +72,12 @@ npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-
 | `--dry-run`                      | Resolve the selection, print the forecast, exit.                                                                                                                                                                |
 | `--update-baseline`              | After a run with 3 attempts per case, write the baseline entries for the cases in this run.                                                                                                                     |
 | `--rescore <results.json>`       | Rescore a stored run. Writes a run folder marked `rescore`; never changes the baseline.                                                                                                                         |
+| `--pipeline precomputed`         | Score rows made by an external pipeline instead of running the built-in one. Needs `--rows-dir`. Always `exploratory`. See [External pipelines](#external-pipelines).                                           |
+| `--rows-dir <folder>`            | The folder with the pipeline's `manifest.json` and result files. Only with `--pipeline precomputed`.                                                                                                            |
 | `--no-mlflow`                    | Skip MLflow even when it is configured.                                                                                                                                                                         |
 | `--config path`                  | Use another local config.                                                                                                                                                                                       |
 
-Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 3 incomplete `--all` run (missing inputs or unfinished cases, no regression or error), 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
+Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error (also `--update-baseline` with `--pipeline`), 3 incomplete run (an `--all` run with missing inputs or unfinished cases, or a `--pipeline precomputed` run with a case that has no envelope; no regression or error), 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
 
 With `--all`, a missing PDF or key does not stop the run: the case is left out and the report and INDEX line are marked `incomplete`, with the missing and unfinished cases listed. Otherwise, a run fails before any paid call when the selection is empty (for example `--eligible` while no case has `textTables: true`), when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
 
@@ -130,6 +134,84 @@ An attempt passes when it is `scored`, its total is within tolerance and it is n
 `results.json` is the result of every attempt and the source for comparison and rescore. `cases/<id>/attempt-<n>/extracted-values.json` holds the values the import stored. OCR text is written to `cases/<id>/attempt-<n>/ocr.md` for local reading only; it is git-ignored.
 
 `results.json` holds no answer-key content. In each score the key rows that were not found become `missingRowCount`, the stored distractors `distractorsStoredCount` and the stored groups that match no key row `unexpectedStoredCount`; the expected total and the difference to it (`expectedTotal`, `totalDiffPct`) are not written. Recall, precision, accuracies, counts, the stored total and `totalWithinTolerance` stay. Comparison and rescore recompute every score from the stored values and the local keys, so they never need those fields. To clean a run folder written before this rule: `npx tsx scripts/pdf-benchmark/redact-results.ts <run>/results.json <run>/report.md` (rewrites in place; no DB, LLM or OCR call).
+
+## External pipelines
+
+Purpose: score the output of a whole extraction pipeline that is not the built-in one (a vendor API, another team's pipeline) with the same key and the same scorer. The rows go through the real approve step, so the result is what the app would store. Only approve, read-back and scoring are shared: no OCR and no LLM call of the built-in import run.
+
+```bash
+npx tsx scripts/pdf-benchmark.ts --cases C-015,C-016 --pipeline precomputed --rows-dir <folder> --dry-run
+npx tsx scripts/pdf-benchmark.ts --cases C-015,C-016 --pipeline precomputed --rows-dir <folder>
+```
+
+`--pipeline precomputed` needs `--rows-dir`. The run reads one envelope per case and attempt, uploads the PDF, stores the mapped rows on the imported file, approves, reads back and scores. A pipeline run is always `exploratory` (reason `pipeline`), never updates the baseline and is not compared with it. `--update-baseline` with `--pipeline` exits 2. A case with no envelope runs as `setup_error`, and the run is marked `incomplete` and exits 3, even without `--all`. An envelope that cannot be read (bad hash, invalid field, status other than `completed`) fails only that attempt.
+
+### Folder layout
+
+```text
+<rows-dir>/
+  manifest.json                         study, stage, entries[]
+  results/<caseId>-attempt-<n>.json     one envelope per case and attempt
+```
+
+Each entry of `manifest.json` has `case_id`, `attempt`, `file` (relative to the folder) and `sha256` of the file. A file that is missing, outside the folder or whose hash differs fails the attempt. `study` and `stage` label the run (`Pipeline:` line, INDEX `pipeline=precomputed:<study>`).
+
+### What the runner reads
+
+From each envelope the runner reads only: `result.data`, `usage`, `execution_status`, `cost_usd`, `pipeline`, `mode` and `version`. `result.data` is checked against `app/benchmarks/pdf/schemas/ghgi-envelope.schema.json` (reporting year, reported totals, `total_kind`, and per row `source_label`, `gpc_ref`, `scope`, `emissions_tco2e`, `notation_key`, `row_role`, `total_inclusion`, `scope_basis`). Everything else is never read, copied or written. That includes `benchmark` and `repair`, which can hold expected values, and any other field. Error messages name the case, attempt, file and field, never a value.
+
+### How rows are mapped
+
+The mapping is field by field, with no repair or guessing.
+
+- `row_role` `emission`, `removal` and `notation` become rows. `information` rows are dropped and counted. Any other role is skipped and counted under `unknownRowRoles`.
+- A `notation` row has no value; its `notation_key` is kept in canonical form.
+- `total_inclusion: excluded` is counted as `excludedNotCarried`. Approve cannot carry it (the omit-from-total flag comes only from fixed GPC references), so the row is still imported and counts in the application total.
+- Approve drops some mapped rows. A parent reference such as `I.3` with `scope: null` is dropped as `gpc-reference-unknown`; a row with neither a value nor a notation key is dropped too. The report lists them as lost rows, by import issue code, in the Pipeline notes. `unexplained` or `notSkipped` marks a mismatch between the rows approve skipped and the issues it reported.
+
+The Pipeline notes table shows these counts per attempt, with the reported totals, scope basis and cost. It is not scored.
+
+### Cost
+
+In order: the envelope's `cost_usd` (`envelope`); else its tokens at the price of a model in `prices.json` `models` (`tokens`), found by the envelope `version` or by `<model>.input_tokens` keys in `usage`; else `n/a`. The built-in `prices.json` entries are not used for a pipeline run. The generators write `cost_usd` from `prices.json` `vendors`: a price per page (and per credit for LlamaExtract) with the `source` URL and `date` it was read. A missing price gives `n/a`, never a guess.
+
+### Score variant
+
+The standard score is the headline. A pipeline can report an unsplit subsector (`I.3`, no scope) where the key has children; approve drops that row, so the standard score never sees it. The report adds a labelled variant, "parent refs (Mirco)", beside the standard score, per block and per case. It adds back the parent rows approve dropped, written as `<ref>.x` (Mirco's `scoringReference`). `I.3.x` matches a key row written `I.3` or `I.3.x` only, never a scoped child such as `I.3.1`. If the pipeline gave the children too and approve stored them, the variant counts that amount twice: see the "Of which children were stored too" column. Read the variant as an upper bound for that pipeline, not as a result. `SCORER_VERSION` is unchanged.
+
+### Generators
+
+Three scripts create a rows folder from a vendor API. Each sends the case PDFs to the vendor, writes the envelopes and `manifest.json`, and prints a line per attempt (rows, pages, cost).
+
+```bash
+# Mistral OCR with a document annotation. --model is an exact id; "-latest" aliases are refused.
+npx tsx scripts/pdf-benchmark/generators/mistral-annotations.ts --model mistral-ocr-4-1 --cases C-015,C-016 --runs 3 [--ranges whole|8] --out benchmarks/pdf/generated/mistral-<date>
+
+# Reducto Deep Extract with citations.
+npx tsx scripts/pdf-benchmark/generators/reducto.ts --cases C-018 --runs 1 --out benchmarks/pdf/generated/reducto-<date>
+
+# LlamaExtract Agentic Plus.
+npx tsx scripts/pdf-benchmark/generators/llamaextract.ts --cases C-018 --runs 1 --out benchmarks/pdf/generated/llamaextract-<date>
+```
+
+Then score the folder with `--pipeline precomputed --rows-dir <out>`.
+
+- `--cases` and `--out` are required; `--runs` defaults to 1; `--config` selects another local config. Reducto and LlamaExtract have a fixed model and mode and refuse `--model` and `--ranges`.
+- Mistral `--ranges whole` (default) makes one call over the whole document. `--ranges 8` makes one call per 8 pages and joins the rows without removing duplicates, so a table that two ranges both read counts twice. It is a fallback for a document the API refuses whole.
+- Sending a PDF to a vendor needs clearance: the vendor (`mistral`, `reducto` or `llamacloud`) must be in `allowedVendors` of `config.local.json`. The example config has `"allowedVendors": []`, so nothing is sent until you add one. Held-out cases are never sent.
+- The keys are `MISTRAL_API_KEY`, `REDUCTO_API_KEY` and `LLAMA_CLOUD_API_KEY`, read only from `app/.env`. A key goes only into a request header and is removed from the saved raw answers.
+- The raw vendor answers go to `<out>/raw/` and contain document text. Use a folder under `app/benchmarks/pdf/generated/`: it is git-ignored. Do not commit them.
+- Retries: an upload or a GET is retried once on 429, 5xx or timeout. A call that starts a paid job (Mistral `POST /v1/ocr`, Reducto `POST /extract_async`, LlamaExtract `POST /api/v2/extract`) is retried once, only on 429 or 503, because a timeout or another 5xx may come after the vendor accepted it and a second request would be billed again.
+- LlamaExtract refuses a `system_prompt` over 10,000 characters and a schema description over 16,000; the built-in instructions are about 26,000. The generator sends the role, task and input sections as the `system_prompt`, and the output rules and taxonomy in the schema description. It leaves out `<example_output>` only. This layout is recorded in `manifest.json` (`instructions`) and in each raw answer.
+- A folder holds one vendor, model, mode and instruction layout. The generator refuses to add to a folder made with another one; use another `--out`. Running it again for a case and attempt replaces that envelope.
+- A failed vendor call writes an envelope with `execution_status: failed` and no rows, with whatever usage and cost the call recorded, so the attempt is scored as `extraction_error`. The generator exits 1 if any attempt failed.
+
+### Limits
+
+- Vendor calls are paid and slow (minutes per document). Check `prices.json` and run a small selection first.
+- The result depends on the instructions the generator sends and on a vendor model that can change; the envelope `version` records what ran.
+- Approve cannot carry `total_inclusion` or scope for parent references, so some correct pipeline output is lost (see the Pipeline notes and the score variant).
+- No baseline, no regression verdict and no comparison with the built-in import: read the report side by side.
 
 ## MLflow
 

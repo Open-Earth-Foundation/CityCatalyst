@@ -125,9 +125,9 @@
     "fixture_id": "krakow-flood-drainage-plan",
     "fact_id": "small-retention-programme",
     "chapter_ref": "budzet",
-    "candidate": "Krakowski Program Małej Retencji Wód Opadowych | 30 000 000 | JP | 2023-2030",
+    "candidate": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy\nKrakowski Program Małej Retencji Wód Opadowych | 30 000 000 | JP | 2023-2030\nJP – Wydział ds. Jakości Powietrza",
     "human_verdict": "correct",
-    "rationale": "Preserves the required meaning and material qualifiers.",
+    "rationale": "The header supplies the PLN unit, the row gives the programme, amount and dates, and the legend identifies the implementing department.",
     "serious_error": false,
     "split": "held_out",
     "tags": [

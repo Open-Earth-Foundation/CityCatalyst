@@ -206,10 +206,26 @@
         "statement": "The Kraków Small Rainwater Retention Programme is budgeted at PLN 30,000,000 for 2023-2030 and implemented by the Air Quality Department (JP).",
         "evidence": [
           {
+            "text": "Nakłady finansowe [PLN] | Jednostka realizująca | Horyzont czasowy",
+            "locators": [
+              {
+                "page": 9
+              }
+            ]
+          },
+          {
             "text": "Krakowski Program Małej Retencji Wód Opadowych | 30 000 000 | JP | 2023-2030",
             "locators": [
               {
                 "page": 9
+              }
+            ]
+          },
+          {
+            "text": "JP – Wydział ds. Jakości Powietrza",
+            "locators": [
+              {
+                "page": 11
               }
             ]
           }

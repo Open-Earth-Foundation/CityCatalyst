@@ -1428,6 +1428,9 @@
   // Same rule as the baseline loader: scores are only comparable under identical corpus and judge policy.
   function incompatibility(a, b) {
     const reasons = [];
+    const reference = INDEX.find((run) => run.id === a.id) || a;
+    if (reference.baseline_execution_problem) reasons.push(reference.baseline_execution_problem);
+    else if (a.completed === false || a.run_errors?.length) reasons.push("Baseline evaluation is incomplete");
     if (!a.corpus_fingerprint || !b.corpus_fingerprint || !a.evaluator_fingerprint || !b.evaluator_fingerprint)
       reasons.push("a run predates evaluation fingerprints");
     else {

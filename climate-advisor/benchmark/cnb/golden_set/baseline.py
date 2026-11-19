@@ -65,7 +65,7 @@ def evaluation_fingerprints(
             {
                 "prompts": judge_prompts,
                 "judge": judge,
-                "comparison_policy": 3,
+                "comparison_policy": 4,
                 # Scoring, judge invocation and input-building code, and the judge's
                 # structured-output schemas; not report contracts. A scorer-only change
                 # can be applied to saved runs with scripts/rescore.py.
@@ -93,6 +93,8 @@ def incompatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> list
     if not all(report.get(key) for report in (baseline, candidate) for key in keys):
         return ["a run predates evaluation fingerprints"]
     reasons = []
+    if problem := baseline_execution_problem(baseline):
+        reasons.append(problem)
     if baseline["corpus_fingerprint"] != candidate["corpus_fingerprint"]:
         reasons.append("fixtures or golden expectations changed")
     if baseline["evaluator_fingerprint"] != candidate["evaluator_fingerprint"]:
@@ -100,10 +102,10 @@ def incompatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> list
     return reasons
 
 
-def _validate_baseline_scope(report: dict[str, Any]) -> None:
-    """Require a complete, approved judgment for every declared baseline fixture and stage."""
+def _validate_baseline_scope(report: dict[str, Any], *, require_approval: bool = True) -> None:
+    """Check execution and declared coverage. Promotion also requires human approval."""
     if report.get("completed") is not True or report.get("run_errors"):
-        raise ValueError("An incomplete evaluation cannot be an approved baseline")
+        raise ValueError("Baseline evaluation is incomplete or contains run errors")
     fixtures = report.get("fixtures", [])
     if not isinstance(fixtures, list) or not all(
         isinstance(item, dict) for item in fixtures
@@ -120,12 +122,8 @@ def _validate_baseline_scope(report: dict[str, Any]) -> None:
         or set(stages) - set(STAGES)
     ):
         raise ValueError("Baseline report scope is incomplete")
-    if not fixtures:
-        raise ValueError("Baseline has no fixtures")
     for fixture in fixtures:
-        if fixture.get("approval_status") != "approved" or fixture.get(
-            "approval_errors"
-        ):
+        if require_approval and (fixture.get("approval_status") != "approved" or fixture.get("approval_errors")):
             raise ValueError("Baseline ground truth is not approved")
         if any(
             not isinstance(fixture.get(stage), dict)
@@ -134,6 +132,15 @@ def _validate_baseline_scope(report: dict[str, Any]) -> None:
             for stage in stages
         ):
             raise ValueError("Baseline contains unavailable judgments")
+
+
+def baseline_execution_problem(report: dict[str, Any]) -> str | None:
+    """Explain an unusable reference run independently of its promotion status."""
+    try:
+        _validate_baseline_scope(report, require_approval=False)
+    except (ValueError, KeyError, TypeError) as exc:
+        return str(exc)
+    return None
 
 
 def load_approved_baseline(
@@ -232,6 +239,7 @@ VERDICT_RANK = {
     "detected": 2, "partially_detected": 1, "missed": 0,
     "in_chapter": 2, "misrouted": 1, "not_extracted": 0,
     "passed": 1, "failed": 0,
+    "supported": 2, "partially_supported": 1, "uncertain": 0, "unsupported": 0,
 }
 LOWER_IS_BETTER = {
     "false_alarm_rate", "clean_false_alarm_rate", "false_alarms", "clean_false_alarms",
@@ -278,12 +286,49 @@ def verdict_items(stage: dict[str, Any]) -> dict[str, str]:
     return items
 
 
-def _include_integrity(stages: list[dict[str, Any]], items: list[dict[str, str]]) -> None:
-    """Track the presence of each observed deterministic integrity failure across all runs."""
-    failures = [set(stage.get("integrity_failures", [])) for stage in stages]
-    for failure in set.union(*failures):
-        for verdicts, present in zip(items, failures, strict=True):
-            verdicts[f"integrity:{failure}"] = "failed" if failure in present else "passed"
+def _output_location(unit_id: str) -> str:
+    """Use the receiving chapter and source anchor independently of quotation order."""
+    return re.sub(r"^(retained/(?:[^/]+/)?)\d+/", r"\1", unit_id)
+
+
+def _observed_failures(stage: dict[str, Any]) -> dict[str, str]:
+    """Group structured quality failures by output location. Explanatory prose is ignored."""
+    items = {f"integrity:{failure}": "failed" for failure in stage.get("integrity_failures", [])}
+    judgment = stage.get("judgment") or {}
+    for claim in judgment.get("claims", []):
+        location = _output_location(claim["output"]["unit_id"])
+        if not claim["self_contained"]:
+            items[f"claim-context:{location}"] = "failed"
+        for field in ("verdict", "supplied_verdict"):
+            verdict = claim.get(field)
+            if verdict is None or verdict == "supported":
+                continue
+            key = f"claim-{field}:{location}"
+            if VERDICT_RANK[verdict] < VERDICT_RANK[items.get(key, "supported")]:
+                items[key] = verdict
+
+    # Multiple distinct conflicts can involve the same output locations. Count each
+    # distinct set of cited spans once and compare the counts, ignoring wording/order.
+    groups = [("", judgment), *((f"{case['case_id']}:", case) for case in judgment.get("cases", []))]
+    for prefix, group in groups:
+        conflicts: dict[tuple[str, ...], set[tuple[tuple[str, str], ...]]] = {}
+        for conflict in group.get("contradictions", []):
+            spans = {(_output_location(ref["unit_id"]), ref["quote"]) for ref in conflict["output_refs"]}
+            locations = tuple(sorted({location for location, _ in spans}))
+            conflicts.setdefault(locations, set()).add(tuple(sorted(spans)))
+        for locations, instances in conflicts.items():
+            for index in range(1, len(instances) + 1):
+                items[f"contradiction:{prefix}{' + '.join(locations)}#{index}"] = "failed"
+    return items
+
+
+def _include_observed_failures(stages: list[dict[str, Any]], items: list[dict[str, str]]) -> None:
+    """Compare the union of observed issues, using a healthy verdict for an absent issue."""
+    observations = [_observed_failures(stage) for stage in stages]
+    for key in set().union(*(mapping.keys() for mapping in observations)):
+        healthy = "supported" if key.startswith(("claim-verdict:", "claim-supplied_verdict:")) else "passed"
+        for verdicts, observed in zip(items, observations, strict=True):
+            verdicts[key] = observed.get(key, healthy)
 
 
 def _metric_change(key: str, values: list[float], candidate: float | None) -> dict[str, Any]:
@@ -377,6 +422,7 @@ def compare_reports(
     ``outcome`` is improved, regressed, mixed, unchanged or unavailable.
     """
     baselines = [baseline, *(repeats or [])] if baseline else []
+    execution_problem = baseline_execution_problem(baseline) if baseline else None
     old = [{f["fixture_id"]: f for f in report.get("fixtures", [])} for report in baselines]
     new = {f["fixture_id"]: f for f in candidate.get("fixtures", [])}
     rows = []
@@ -388,6 +434,8 @@ def compare_reports(
             before = [report.get(fid, {}).get(stage) or {} for report in old]
             after = new.get(fid, {}).get(stage) or {}
             errors = list(after.get("evaluation_errors", []))
+            if execution_problem:
+                errors.append(execution_problem)
             if not after.get("judgment"):
                 errors.append("Stage or valid judgment unavailable")
             usable = [a for a in before if a.get("judgment") and not a.get("evaluation_errors")]
@@ -404,7 +452,7 @@ def compare_reports(
                     errors.append("Golden item IDs differ within the same fixture and stage")
                     comparable = False
                 else:
-                    _include_integrity([*usable, after], [*base_items, candidate_items])
+                    _include_observed_failures([*usable, after], [*base_items, candidate_items])
                     for item, verdict in sorted(candidate_items.items()):
                         previous = [items[item] for items in base_items]
                         ranks = [VERDICT_RANK[v] for v in previous]
@@ -453,7 +501,8 @@ def compare_reports(
 
     # Step 3: one outcome for the whole run.
     unavailable = (
-        candidate.get("completed") is False
+        not baseline
+        or candidate.get("completed") is False
         or bool(candidate.get("run_errors"))
         or not rows
         or any(row["evaluation_errors"] for row in rows)

@@ -22,6 +22,7 @@ from typing import Any
 
 from app.config import get_settings
 
+from benchmark.cnb.golden_set.baseline import baseline_execution_problem
 from benchmark.cnb.golden_set.core import load_golden_fixtures
 from benchmark.cnb.golden_set.judge import PROMPT_KEYS
 from benchmark.cnb.golden_set.models import STAGES
@@ -173,6 +174,7 @@ def run_summary(run_dir: Path) -> dict[str, Any] | None:
         "analysis_contract_version": report.get("analysis_contract_version"),
         "corpus_fingerprint": report.get("corpus_fingerprint"),
         "evaluator_fingerprint": report.get("evaluator_fingerprint"),
+        "baseline_execution_problem": baseline_execution_problem(report),
         "has_viewer": (run_dir / "viewer.js").exists(),
         "wall_seconds": report.get("wall_seconds"),
         "fixtures": {

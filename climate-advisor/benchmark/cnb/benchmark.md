@@ -88,7 +88,7 @@ runs of the same code on 2026-11-09 and 2026-11-10 differed by 10–17 points on
 several metrics. The approved baseline therefore lists **repeats**, which are
 independent runs with the same producer revision, model and prompt settings, dependency lock, fixtures and stages. A candidate requesting a stage absent from the baseline gets an unavailable comparison. A metric inside the spread of the
 baseline runs is `within_noise`, and an item inside a varying baseline verdict range
-is `flaky`. Changes beyond every observed rank still count. Added or resolved integrity failures are also compared by item. Neither counts as better or worse. Without repeats the report says
+is `flaky`. Changes beyond every observed rank still count. Added or resolved integrity failures, cited contradictions and claim-support failures also affect the outcome. Claims are grouped by source location and receiving chapter. Contradictions use their cited output locations. Interrupted or incomplete reference runs make the comparison unavailable, including for standalone comparisons of unapproved runs. Neither counts as better or worse. Without repeats the report says
 "noise not measured", and every change counts. Treat a small change as
 unconfirmed until it holds in a second run.
 

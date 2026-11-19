@@ -105,6 +105,24 @@ export function getOAuthSigningKey(): OAuthSigningKey {
   return key;
 }
 
+/**
+ * The public half of the signing key as a JSON Web Key, for the JWKS endpoint.
+ * Resource servers and relying parties verify tokens with it, so it must never
+ * contain private key members. Only the modulus and exponent are exported.
+ */
+export function getPublicJwk() {
+  const { publicKey, kid } = getOAuthSigningKey();
+  const { n, e } = publicKey.export({ format: "jwk" });
+  return {
+    kty: "RSA",
+    use: "sig",
+    alg: OAUTH_SIGNING_ALGORITHM,
+    kid,
+    n,
+    e,
+  };
+}
+
 /** Signs an OAuth token with RS256 and the current key id. */
 export function signOAuthToken(
   payload: object,

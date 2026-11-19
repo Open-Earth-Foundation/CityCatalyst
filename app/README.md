@@ -172,8 +172,9 @@ revert, with no database migration.
 
 ### OAuth signing key
 
-OAuth 2.0 (the `OAUTH_ENABLED` feature flag) signs authorization codes, access tokens
-and refresh tokens with its own RS256 key pair in `OAUTH_SIGNING_KEY`. It is separate
+OAuth 2.0 (the `OAUTH_ENABLED` feature flag) signs access tokens, refresh tokens and
+OpenID Connect id_tokens with its own RS256 key pair in `OAUTH_SIGNING_KEY`. (Authorization
+codes are opaque random values stored in the database, not signed.) It is separate
 from `VERIFICATION_TOKEN_SECRET`, which still signs invites, email verification and
 Climate Advisor user tokens. The code is in `src/lib/auth/oauth-signing.ts`.
 
@@ -185,7 +186,7 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
 ```
 
 - Only needed when `OAUTH_ENABLED` is on. Nothing checks it at startup. If it is
-  missing or invalid, `/api/v1/auth/code` and `/api/v1/token` answer 500 and log why.
+  missing or invalid, `/api/v1/token` and `/.well-known/jwks.json` answer 500 and log why.
 - The `kid` token header is derived from the public key (RFC 7638), so there is no
   key id to set.
 - Bearer tokens are told apart by their signature algorithm. An RS256 token is checked
@@ -195,6 +196,33 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
   working. Clients must authorize again.
 - Never commit a real key. Tests create a throwaway key in memory
   (`setupOAuthSigningKey` in `tests/helpers.ts`).
+
+### OpenID Connect
+
+The OAuth server also acts as an OpenID Connect provider (code flow with PKCE S256,
+public clients). When a client asks for the `openid` scope, `/api/v1/token` returns an
+`id_token` next to the access token. All endpoints need `OAUTH_ENABLED`.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `/.well-known/openid-configuration` | Discovery document. Also served at `/.well-known/oauth-authorization-server` (RFC 8414). |
+| `/.well-known/jwks.json` | Public key (JWK) that verifies id_tokens and access tokens. |
+| `/api/v1/oauth/userinfo` | Claims for the access token's user. GET and POST. Needs the `openid` scope. |
+| `/api/v1/auth/code` | Issues the authorization code. Accepts an optional `nonce`. |
+
+- **Authorization codes** are 256 random bits, valid for 60 seconds, usable once. Only
+  the SHA-256 hash is stored (table `AuthorizationCode`). A code is spent by its first
+  exchange attempt, even a failed one. Codes that are in flight during a deploy stop
+  working.
+- **id_token** (RS256, 15 minutes): `iss`, `sub` (the CityCatalyst user id), `aud` (the
+  client id), `email`, `name`, `org_ids`, `amr` (`["pwd"]`, or `["pwd","otp"]` when the
+  user has two-factor authentication on) and the `nonce` from the request. It is for the
+  client and cannot be used to call the API. `email_verified` is left out because
+  CityCatalyst does not record it. No id_token is issued when a token is refreshed.
+- `/api/v1/oauth/metadata` is **deprecated**. It returns the same document with
+  `Deprecation`, `Sunset` and `Link` headers. It stays until the sunset date
+  (`LEGACY_METADATA_SUNSET` in `src/backend/oauth/discovery.ts`) because the public
+  API contract only allows removing an endpoint after a deprecation window.
 
 ## Running
 

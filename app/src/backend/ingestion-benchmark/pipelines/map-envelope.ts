@@ -3,11 +3,11 @@
  * field, with no repair or inference. The runner stores the rows and calls the
  * real approve step.
  *
- * Approve cannot carry `total_inclusion` (`omitFromTotal` is set only by the
- * InventoryValue model hook from fixed references), so an `excluded` row is
- * mapped as included and counted in `droppedRows.excludedNotCarried`. Approve
- * also ignores rowType, unit, scope and category; a subsector reference with a
- * null scope is mapped as given and dropped by approve later.
+ * An `excluded` row maps to `omitFromTotal: true`, so approve stores it out of
+ * the total. Approve ignores rowType, unit and category. A subsector reference
+ * with a null scope is mapped as given: approve stores it at subsector level,
+ * or drops it as `gpc-parent-superseded` / `gpc-parent-gap` when its child
+ * rows came too (CC-1311); `lostRows` counts those by issue code.
  */
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { PipelineAttempt } from "@/backend/ingestion-benchmark/report";
@@ -56,9 +56,6 @@ export function mapEnvelope(envelope: ReadEnvelope): MappedEnvelope {
       bump(unknownRowRoles, r.row_role);
       continue;
     }
-    if (r.total_inclusion === "excluded")
-      bump(droppedRows, "excludedNotCarried");
-
     rows.push({
       year: data.reporting_year,
       sector: null,
@@ -70,6 +67,7 @@ export function mapEnvelope(envelope: ReadEnvelope): MappedEnvelope {
       scope: r.scope === null ? null : String(r.scope),
       notationKey: toCanonical(r.notation_key),
       rowType: "line_item",
+      ...(r.total_inclusion === "excluded" ? { omitFromTotal: true } : {}),
     });
   }
 

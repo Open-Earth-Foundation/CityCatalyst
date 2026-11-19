@@ -40,6 +40,10 @@ const config: JestConfigWithTsJest = {
   // enable worker threads feature to fix BigInt serialization issue
   workerThreads: true,
 
+  // Default per test and hook (Jest's own is 5 s). A file's first DB connection can take
+  // 3-7 s on a loaded CI worker, which failed fast DB setup hooks such as inventory-replace's.
+  testTimeout: 15000,
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 

@@ -21,6 +21,7 @@ import {
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { AppSession, Auth } from "@/lib/auth";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSourceI18n } from "@/models/DataSourceI18n";
@@ -33,7 +34,7 @@ import {
   expectStatusCode,
   mockRequest,
   setupTests,
-  testUserID,
+  testUserData,
 } from "./helpers";
 import {
   baseInventory,
@@ -56,6 +57,8 @@ const priorYearInventoryId = "58830000-0000-4000-8000-000000000502";
 const projectAdminOnlyCityId = "58830000-0000-4000-8000-000000000503";
 const projectAdminOnlyInventoryId = "58830000-0000-4000-8000-000000000504";
 const projectAdminId = "58830000-0000-4000-8000-000000000505";
+// Own user: other suites make the shared testUserID a system admin, which turns access_scope into "platform".
+const capabilityUserId = "58830000-0000-4000-8000-000000000506";
 
 const serviceHeaders = {
   "X-Service-Name": "climate-advisor",
@@ -87,8 +90,8 @@ describe("GHGI inventory internal CA capability routes", () => {
       country: "United States of America",
       locode: `US AIC ${randomUUID().slice(0, 8)}`,
     });
-    await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
-    await city.addUser(testUserID);
+    await db.models.User.upsert({ userId: capabilityUserId, name: "TEST_USER" });
+    await city.addUser(capabilityUserId);
 
     thirdPartySource = await db.models.DataSource.create({
       datasourceId: randomUUID(),
@@ -138,7 +141,7 @@ describe("GHGI inventory internal CA capability routes", () => {
     await db.models.ProjectAdmin.create({
       projectAdminId,
       projectId: testData.projectId,
-      userId: testUserID,
+      userId: capabilityUserId,
     });
     siblingProjectId = randomUUID();
     siblingProjectCityId = randomUUID();
@@ -179,6 +182,10 @@ describe("GHGI inventory internal CA capability routes", () => {
 
   beforeEach(() => {
     setupTests();
+    jest.spyOn(Auth, "getServerSession").mockResolvedValue({
+      user: { ...testUserData, id: capabilityUserId },
+      expires: "1h",
+    } as AppSession);
     process.env.CC_SERVICE_API_KEY = serviceKey;
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = "CA_SERVICE_INTEGRATION";
   });
@@ -221,6 +228,7 @@ describe("GHGI inventory internal CA capability routes", () => {
       });
     }
     await cleanupTestData(testData);
+    await db.models.User.destroy({ where: { userId: capabilityUserId } });
     if (db.sequelize) {
       await db.sequelize.close();
     }
@@ -355,7 +363,7 @@ describe("GHGI inventory internal CA capability routes", () => {
 
   it("lists project-admin inventories without direct city membership", async () => {
     const directAssignmentCount = await db.models.CityUser.count({
-      where: { cityId: projectAdminOnlyCity.cityId, userId: testUserID },
+      where: { cityId: projectAdminOnlyCity.cityId, userId: capabilityUserId },
     });
 
     const res = await listAccessibleRoute(listAccessibleRequest(), {
@@ -608,7 +616,7 @@ describe("GHGI inventory internal CA capability routes", () => {
 function capabilityRequest(cityId: string) {
   return mockRequest(
     {
-      user_id: testUserID,
+      user_id: capabilityUserId,
       city_id: cityId,
       inventory_id: inventoryId,
     },
@@ -620,7 +628,7 @@ function capabilityRequest(cityId: string) {
 function listAccessibleRequest(overrides: Record<string, unknown> = {}) {
   return mockRequest(
     {
-      user_id: testUserID,
+      user_id: capabilityUserId,
       ...overrides,
     },
     undefined,

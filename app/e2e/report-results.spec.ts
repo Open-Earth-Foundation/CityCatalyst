@@ -2,6 +2,7 @@ import { expect, Locator, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryViaApi,
   dismissCookieConsent,
+  skipCookieConsent,
   navigateToDataPage,
   openAddEmissionModal,
 } from "./helpers";
@@ -249,9 +250,10 @@ test.describe.serial("Report Results", () => {
     await context.close();
   });
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Pre-decline consent so no banner renders; waiting for an absent one costs 2 s per test.
+    await skipCookieConsent(context);
     await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
-    await dismissCookieConsent(page);
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });

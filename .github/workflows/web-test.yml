@@ -254,11 +254,13 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev
             NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev
+          # web-develop.yml no longer exports a GHA cache; its `latest` images carry an inline cache instead
           cache-from: |
             type=gha,scope=citycatalyst-shared
             type=gha,scope=${{ github.ref_name }}
             type=gha,scope=main
             type=gha,scope=develop
+            type=registry,ref=ghcr.io/open-earth-foundation/citycatalyst:latest
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
       - name: Build and push web image
@@ -279,6 +281,7 @@ jobs:
             type=gha,scope=${{ github.ref_name }}
             type=gha,scope=main
             type=gha,scope=develop
+            type=registry,ref=ghcr.io/open-earth-foundation/citycatalyst-web:latest
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
   deployToEKS:

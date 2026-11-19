@@ -1,4 +1,5 @@
 import ECRFImportService, {
+  supersedeParentsWithChildren,
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
 import FileParserService from "@/backend/FileParserService";
@@ -141,6 +142,8 @@ export async function applyReviewedRows(
     review.decision = decision.reviewDecision as
       "keep" | "reclassify" | "correct-scope";
   }
+  // A reclassify can move a child into or out of a subsector (CC-1311).
+  supersedeParentsWithChildren(result.rows, result.warnings);
 }
 
 // Fields a user may correct per row on PDF/AI-extracted imports.

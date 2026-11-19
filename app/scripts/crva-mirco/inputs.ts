@@ -115,7 +115,9 @@ export const CRVA_DETAIL_RULES: string[] = [
 export const CRVA_GRANULARITY_RULES: string[] = [
   `- An item is one hazard × group, hazard × sector or hazard × area combination. Do not merge different combinations into one item.`,
   `- Scenarios, time horizons and the levels per scenario go inside that item's text, never as separate items.`,
-  `- Keep the grouping the report uses: hazards, groups or sectors the report treats as one (one heading, one section, one table row) are one item.`,
+  // Wave 2.7: the wider version of this rule kept sectors listed in one table row together.
+  `- Keep the grouping the report uses for hazards: hazards the report treats as one stay one item (one heading, one section).`,
+  `- When one passage or table row names several sectors or groups for the same impact, return one item per sector or group, each with the same quote.`,
   `- An item is the unit the report presents. A system, plan or programme described through its components is one item, with the components listed in its text.`,
   `- A table row, caption or heading with no content of its own is not an item. A table summarised by the report is one fact, citing the table.`,
   `- One item per reference, receptor, capacity factor or limit. Do not merge list entries.`,
@@ -202,7 +204,7 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "C1.1a": {
     definition:
-      "An observed (past) impact of a hazard on a vulnerable group of people (age, gender, income, health), with the event, date and figures.",
+      "An observed (past) impact of a hazard on a vulnerable group of people (age, gender, income, health), with the event, date and figures. The group is a single group, never a list.",
     notThis:
       "An impact on a sector, service or the population as a whole (C1.2a), or a projected risk (E1.1a).",
     example: {
@@ -214,7 +216,7 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
   "C1.2a": {
     definition:
-      "An observed (past) impact of a hazard on a sector or receptor (population as a whole, energy, transport, housing, economy), with the event, date and figures.",
+      "An observed (past) impact of a hazard on a sector or receptor (population as a whole, energy, transport, housing, economy), with the event, date and figures. The sector is a single sector, never a list.",
     notThis:
       "An impact on a specific vulnerable group (C1.1a), or a projected risk level (E1.1a).",
     example: {

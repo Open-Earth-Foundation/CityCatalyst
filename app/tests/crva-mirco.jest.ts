@@ -513,6 +513,25 @@ describe("crvaUserPrompt", () => {
     expect(CRVA_FIELD_GUIDE["B1.2a"].definition).toMatch(/secondary/i);
   });
 
+  // Wave 2.7: the grouping rule merged sectors listed in one table row (C1.2a).
+  it("keeps only hazards grouped and splits sectors or groups named together", () => {
+    const rules = CRVA_GRANULARITY_RULES.join(" ");
+    expect(rules).toMatch(/hazards the report treats as one stay one item/i);
+    expect(rules).not.toMatch(/groups or sectors the report treats as one/i);
+    expect(rules).toMatch(
+      /several sectors or groups for the same impact, return one item per sector or group, each with the same quote/i,
+    );
+  });
+
+  it("says the C1 group and sector are single, never a list", () => {
+    expect(CRVA_FIELD_GUIDE["C1.1a"].definition).toMatch(
+      /single group, never a list/i,
+    );
+    expect(CRVA_FIELD_GUIDE["C1.2a"].definition).toMatch(
+      /single sector, never a list/i,
+    );
+  });
+
   it("says what does not belong in E1.1a and D1.2a", () => {
     expect(CRVA_FIELD_GUIDE["E1.1a"].definition).toMatch(/risk level/i);
     expect(CRVA_FIELD_GUIDE["E1.1a"].notThis).toMatch(/impact/i);

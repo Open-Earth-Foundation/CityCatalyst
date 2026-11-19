@@ -267,7 +267,7 @@
   "chat-visual-label": "AI-generated visual",
   "chat-visual-expand": "Expand",
   "chat-visual-expand-label": "Expand visual: {{title}}",
-  "chat-visual-empty": "This visual has nothing to show once unsupported content such as scripts is removed. The reply text has the answer.",
+  "chat-visual-empty": "This visualization couldn't be displayed. Ask Clima to show it again.",
   "chat-visual-show-all": "Show all {{count}} entries",
   "chat-visual-show-first": "Show first {{count}} entries",
   "chat-generating": "Generating response",

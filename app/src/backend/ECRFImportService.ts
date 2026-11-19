@@ -12,7 +12,9 @@ import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
-import type { ImportRowIssue } from "@/util/types";
+import type { ImportRowIssue, ParentSupersededDetail } from "@/util/types";
+import { supersedeParentRows } from "./import/parent-child-rows";
+import { resolveImportedTotalCO2e } from "./InventoryImportService";
 import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
 import { excelRowNumber } from "@/util/excel-row-number";
 
@@ -40,6 +42,43 @@ function isBlankParsedRow(
   return !Object.values(row).some(
     (value) => value != null && String(value).trim() !== "",
   );
+}
+
+/**
+ * CC-1311: keep the child rows (`I.3.x`) and drop a subsector-level row
+ * (`I.3`) of the same subsector, so the amount is not counted twice. The gap
+ * is reported on the dropped row, never stored.
+ */
+function supersedeParentsWithChildren(
+  rows: ECRFRowData[],
+  warnings: string[],
+): void {
+  const candidates = rows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => !row.errors?.length && row.subsectorId);
+  const superseded = supersedeParentRows(
+    candidates.map(({ row, index }) => ({
+      index,
+      subsectorId: row.subsectorId,
+      subcategoryId: row.subcategoryId,
+      co2eq: resolveImportedTotalCO2e(row) ?? null,
+      notationKey: row.notationKey ?? null,
+    })),
+  );
+  for (const { index, severity, ...detail } of superseded) {
+    const row = rows[index];
+    row.issue =
+      severity === "warning" ? "gpc-parent-gap" : "gpc-parent-superseded";
+    row.parentSuperseded = detail;
+    row.errors = [
+      `Replaced by ${detail.childrenCount} child rows of the same subsector`,
+    ];
+    if (severity === "warning") {
+      warnings.push(
+        `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`,
+      );
+    }
+  }
 }
 
 export interface ECRFRowData {
@@ -75,6 +114,10 @@ export interface ECRFRowData {
   sourceLabel?: string;
   /** Why the row is rejected; set together with `errors`. */
   issue?: ImportRowIssue;
+  /** Stored but left out of the inventory total. */
+  omitFromTotal?: boolean;
+  /** Set when a subsector-level row is replaced by its child rows. */
+  parentSuperseded?: ParentSupersededDetail;
   errors?: string[];
   warnings?: string[];
   /** What the import review needs; extracted rows only. */
@@ -1011,8 +1054,11 @@ export default class ECRFImportService {
         emissionFactorCH4: num(row.emissionFactorCH4),
         emissionFactorN2O: num(row.emissionFactorN2O),
         emissionFactorTotalCO2e: num(row.emissionFactorTotalCO2e),
+        ...(row.omitFromTotal === true ? { omitFromTotal: true } : {}),
       });
     }
+
+    supersedeParentsWithChildren(rows, warnings);
 
     return {
       rows,

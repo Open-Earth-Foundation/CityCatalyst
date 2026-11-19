@@ -253,6 +253,9 @@ export async function previewImportRows(
         ...outcome,
         status: "skipped",
         issue: row.issue ?? "invalid-row",
+        ...(row.parentSuperseded
+          ? { parentSuperseded: row.parentSuperseded }
+          : {}),
       });
       continue;
     }
@@ -288,7 +291,7 @@ export async function previewImportRows(
     // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
     const issue = isImportedWasteRef(row.gpcRefNo)
       ? "omitted-from-total"
-      : isOmittedGPCReference(row.gpcRefNo)
+      : isOmittedGPCReference(row.gpcRefNo) || row.omitFromTotal
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"

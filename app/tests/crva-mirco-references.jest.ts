@@ -234,3 +234,52 @@ describe("referenceItems", () => {
     ]);
   });
 });
+
+// Final review fixes (wave 2).
+describe("findReferenceEntries edge cases", () => {
+  it("skips a repeated heading and stops at a bold annex title", () => {
+    const entries = findReferenceEntries(
+      pages({
+        40: "## Referencias\n\nSmith, J. (2020). Uno.\n",
+        41: "## Referencias\n\nZhou, X. (2021). Dos.\n\n**Anexo 1. Tabla de peligros**\n\n| Peligro | Nivel |",
+      }),
+    );
+    expect(entries.map((e) => e.text)).toEqual([
+      "Smith, J. (2020). Uno.",
+      "Zhou, X. (2021). Dos.",
+    ]);
+  });
+
+  it("uses a later section when the first reference heading has no entries", () => {
+    const entries = findReferenceEntries(
+      pages({
+        2: "## References\n\n## Chapter 1",
+        40: "## References\n\nSmith, J. (2020). Uno.\n",
+      }),
+    );
+    expect(entries.map((e) => e.page)).toEqual([40]);
+  });
+
+  it("keeps an entry whose author starts with a lowercase particle", () => {
+    const entries = findReferenceEntries(
+      pages({
+        5: "# References\n\nSmith, J. (2020). Uno. Pub.\n\nde la Cruz, M. (2018). Dos.\n",
+      }),
+    );
+    expect(entries.map((e) => e.text)).toEqual([
+      "Smith, J. (2020). Uno. Pub.",
+      "de la Cruz, M. (2018). Dos.",
+    ]);
+  });
+});
+
+describe("captionSources noise", () => {
+  it("skips units, bracketed self-made sources and years before 1900", () => {
+    const sources = captionSources(
+      pages({
+        1: "Tabla 4. Población por sexo (porcentaje)\nSource: (Own elaboration)\nFigura 2. Censo (INE 1895)",
+      }),
+    );
+    expect(sources.map((s) => [s.text, s.year])).toEqual([["INE 1895", null]]);
+  });
+});

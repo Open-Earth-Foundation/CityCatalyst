@@ -33,31 +33,44 @@ const REFERENCE_HEADING =
 const ANY_HEADING = /^#{1,3}\s+\S/;
 const NUMBERED_ENTRY = /^\d{1,3}[.)]?\s+[A-ZÁÉÍÓÚÑÜ]/;
 const CONTINUATION = /^(https?:|doi|www\.|[a-z(&,;:])/;
+/** A lowercase particle author ("de la Cruz, M. (2018)") starts an entry. */
+const PARTICLE_AUTHOR = /^\p{Ll}[^()]{0,80}\((?:\d{4}[a-z]?|n\.d\.)\)/u;
+/** A bold annex or appendix title ends the list without a markdown heading. */
+const SECTION_END = /^\**\s*(anexo|annex|appendix|ap[eé]ndice)\b/i;
 const ENTRY_END = /([.)]|https?:\/\/\S+)\s*$/;
 const YEAR = /\b(1[89]\d\d|20\d\d)\b/;
 const APA_YEAR = /\((?:\d{4}[a-z]?|n\.d\.)\)\./g;
 
-/** Text of the pages from the reference heading to the next heading. */
-function referenceLines(
+type SectionLine = { page: number; line: string; pageStart: boolean };
+
+/**
+ * Each section from a reference heading to the next other heading (or a bold
+ * annex title). A repeated reference heading (a running header) is skipped.
+ */
+function referenceSections(
   pages: ReadonlyMap<number, string>,
-): { page: number; line: string; pageStart: boolean }[] {
-  const lines: { page: number; line: string; pageStart: boolean }[] = [];
-  let inSection = false;
+): SectionLine[][] {
+  const sections: SectionLine[][] = [];
+  let lines: SectionLine[] | null = null;
   for (const page of [...pages.keys()].sort((a, b) => a - b)) {
     let pageStart = true;
     for (const raw of (pages.get(page) ?? "").split("\n")) {
       const line = raw.trim();
-      if (!inSection) {
-        inSection = REFERENCE_HEADING.test(line);
+      if (REFERENCE_HEADING.test(line)) {
+        if (!lines) sections.push((lines = []));
         continue;
       }
-      if (ANY_HEADING.test(line) && !REFERENCE_HEADING.test(line)) return lines;
+      if (!lines) continue;
+      if (ANY_HEADING.test(line) || SECTION_END.test(line)) {
+        lines = null;
+        continue;
+      }
       lines.push({ page, line, pageStart });
       if (line) pageStart = false;
     }
-    if (inSection) lines.push({ page, line: "", pageStart: false });
+    lines?.push({ page, line: "", pageStart: false });
   }
-  return lines;
+  return sections;
 }
 
 /**
@@ -89,13 +102,23 @@ function splitMergedApa(entry: ReferenceEntry): ReferenceEntry[] {
   }));
 }
 
+/** Entries of the reference section with the most entries (a TOC or empty section loses). */
 export function findReferenceEntries(
   pages: ReadonlyMap<number, string>,
 ): ReferenceEntry[] {
+  return referenceSections(pages)
+    .map(sectionEntries)
+    .reduce<ReferenceEntry[]>(
+      (best, e) => (e.length > best.length ? e : best),
+      [],
+    );
+}
+
+function sectionEntries(section: SectionLine[]): ReferenceEntry[] {
   type Block = { page: number; lines: string[]; pageStart: boolean };
   const blocks: Block[] = [];
   let current: Block | null = null;
-  for (const { page, line, pageStart } of referenceLines(pages)) {
+  for (const { page, line, pageStart } of section) {
     if (!line || line.startsWith("![")) {
       if (current) blocks.push(current);
       current = null;
@@ -116,7 +139,8 @@ export function findReferenceEntries(
     const previous = entries.at(-1);
     const continues =
       previous &&
-      (CONTINUATION.test(text) ||
+      ((CONTINUATION.test(text) &&
+        !(ENTRY_END.test(previous.text) && PARTICLE_AUTHOR.test(text))) ||
         (block.pageStart && !ENTRY_END.test(previous.text)));
     if (continues) previous.text = `${previous.text} ${text}`;
     else entries.push({ page: block.page, text, quote: block.lines[0] });
@@ -130,11 +154,15 @@ const CAPTION_SOURCE = /\(([^()]+)\)\s*\**\s*$/;
 const SOURCE_LINE =
   /^\**\s*(?:fuentes?|sources?|data sources?)\s*\**\s*:\s*(.+?)\s*$/i;
 const SELF_MADE =
-  /^(?:elaboraci[oó]n propia|own elaboration|prepared by the authors?)[,;]?\s*/i;
+  /^\(?(?:elaboraci[oó]n propia|own elaboration|prepared by the authors?)\)?[,;]?\s*/i;
+/** A caption parenthesis names a source with a year or a capital letter, not a unit. */
+const LOOKS_LIKE_SOURCE = /\b(1[89]\d\d|20\d\d)\b|\p{Lu}/u;
 
 function yearOf(text: string): number | null {
   const m = text.match(YEAR);
-  return m ? Number(m[1]) : null;
+  const year = m ? Number(m[1]) : null;
+  // The v0 value schema takes years from 1900.
+  return year !== null && year >= 1900 ? year : null;
 }
 
 /** Sources under tables and figures: caption parentheses and "Source:" lines. */
@@ -150,7 +178,7 @@ export function captionSources(
         ? line.match(CAPTION_SOURCE)?.[1]
         : undefined;
       const found = fromCaption ?? line.match(SOURCE_LINE)?.[1];
-      if (!found) continue;
+      if (!found || (fromCaption && !LOOKS_LIKE_SOURCE.test(found))) continue;
       const text = found
         .replace(SELF_MADE, "")
         .replace(/^[\s.,;:]+/, "")

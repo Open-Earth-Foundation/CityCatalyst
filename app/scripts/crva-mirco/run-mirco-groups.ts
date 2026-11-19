@@ -121,6 +121,7 @@ async function main() {
   let minutes = Number(argValue("--minutes", "0"));
   let config: Awaited<ReturnType<typeof checkService>> | null = null;
   let references: SavedReferences | null = null;
+  let previousFingerprint: string | null = null;
   const referencesPath = path.join(outDir, "references.json");
 
   if (!resultsDir) {
@@ -137,10 +138,15 @@ async function main() {
     );
     const started = Date.now();
     const referenceModel = argValue("--reference-model", "gpt-5.6-luna");
+    // Saved as soon as it is done, so a crash during the jobs keeps the paid pass.
     const referenceRun = options.referencePass
-      ? referencePass(entries, referenceModel)
+      ? referencePass(entries, referenceModel).then(async (saved) => {
+          await writeFile(referencesPath, JSON.stringify(saved, null, 2));
+          return saved;
+        })
       : Promise.resolve(null);
-    await Promise.all(
+    // allSettled: one client that fails to start must not lose the others' job IDs.
+    const settled = await Promise.allSettled(
       CRVA_GROUPS.map(async (group) => {
         const schema = path.join(outDir, "inputs", `${group.id}.schema.json`);
         const userPrompt = path.join(outDir, "inputs", `${group.id}.md`);
@@ -177,13 +183,44 @@ async function main() {
         }
       }),
     );
-    references = await referenceRun;
-    if (references) {
-      await writeFile(referencesPath, JSON.stringify(references, null, 2));
+    for (const [i, outcome] of settled.entries()) {
+      if (outcome.status === "rejected") {
+        const group = CRVA_GROUPS[i].id;
+        jobs.push({ group, jobId: null, exitCode: null });
+        console.error(
+          `${group}: client did not run: ${String(outcome.reason)}`,
+        );
+      }
     }
+    references = await referenceRun;
     minutes = Math.round(((Date.now() - started) / 60_000) * 10) / 10;
-  } else if (existsSync(referencesPath)) {
-    references = JSON.parse(await readFile(referencesPath, "utf8"));
+  } else {
+    // Recovery keeps what the first conversion knew: job IDs (from the client
+    // logs), wall time and the service fingerprint.
+    for (const group of CRVA_GROUPS) {
+      const log = path.join(outDir, `client-${group.id}.log`);
+      const jobId = existsSync(log)
+        ? parseJobId(await readFile(log, "utf8"))
+        : null;
+      jobs.push({ group: group.id, jobId, exitCode: 0 });
+    }
+    const previousPath = path.join(outDir, "run-1.json");
+    if (existsSync(previousPath)) {
+      const previous = JSON.parse(await readFile(previousPath, "utf8")) as {
+        stats?: { minutes?: number };
+        mirco?: { fingerprint?: string | null };
+      };
+      if (!process.argv.includes("--minutes"))
+        minutes = previous.stats?.minutes ?? 0;
+      previousFingerprint = previous.mirco?.fingerprint ?? null;
+    }
+    if (existsSync(referencesPath)) {
+      references = JSON.parse(await readFile(referencesPath, "utf8"));
+    } else if (options.referencePass) {
+      console.warn(
+        "references.json is missing: A1.2a has no reference-list items, and the A1 job skipped the list.",
+      );
+    }
   }
 
   const loaded = await Promise.all(
@@ -219,7 +256,7 @@ async function main() {
     extractionModel: MODEL,
   });
   const envelope = mergeEnvelopes(loaded.map((l) => l.envelope));
-  const stats = mircoRunStats({
+  const jobStats = mircoRunStats({
     run: 1,
     envelope,
     bundle,
@@ -227,6 +264,19 @@ async function main() {
     ocr,
     ocrOn: false,
   });
+  // The reference pass is part of the run's cost.
+  const stats = references
+    ? {
+        ...jobStats,
+        promptTokens: jobStats.promptTokens + references.usage.promptTokens,
+        completionTokens:
+          jobStats.completionTokens + references.usage.completionTokens,
+        llmCalls:
+          jobStats.llmCalls +
+          references.stats.batches +
+          references.stats.retries,
+      }
+    : jobStats;
   await writeFile(
     path.join(outDir, "run-1.json"),
     JSON.stringify(
@@ -239,7 +289,9 @@ async function main() {
           recovered: resultsDir !== null,
           model: config?.model ?? MODEL,
           reasoningEffort: config?.reasoning_effort ?? "medium",
-          fingerprint: config?.implementation_fingerprint ?? null,
+          fingerprint:
+            config?.implementation_fingerprint ?? previousFingerprint,
+          referencesMissing: options.referencePass && !references,
           ambiguousItems: merged.ambiguousItems,
           usage: envelope.usage,
           jobs: loaded.map(({ group, envelope: e }) => {

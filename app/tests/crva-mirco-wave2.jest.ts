@@ -274,3 +274,55 @@ describe("mergeEnvelopes", () => {
     expect(env.execution_status).toBe("partial: repair_error");
   });
 });
+
+// Final review fixes (wave 2).
+describe("wave 2 review fixes", () => {
+  it("marks a run with a failed group as failed", () => {
+    const env = mergeEnvelopes([
+      {
+        result: { data: {}, fields: [] },
+        execution_status: "completed",
+        usage: {},
+      },
+      { result: null, execution_status: "failed", usage: {} },
+    ]);
+    expect(env.result).toBeNull();
+    expect(env.execution_status).toBe("partial: failed");
+  });
+
+  it("counts risk rows it cannot use as bad pointers", () => {
+    const merged = mergeGroupResults([
+      {
+        groupId: "E1",
+        result: {
+          data: {
+            "E1.1a": [],
+            [RISK_ROWS_KEY]: [
+              { ...row("RCP4.5", "Alto"), hazard: "" },
+              row("RCP8.5", "Alto"),
+            ],
+          },
+          fields: [
+            found(`/${RISK_ROWS_KEY}/0/level`, [[146, CAPTION]]),
+            found(`/${RISK_ROWS_KEY}/9/level`, [[146, CAPTION]]),
+          ],
+        },
+      },
+    ]);
+    // Row 0 has an empty hazard, row 1 has no evidence, index 9 does not exist.
+    expect(merged.items).toEqual([]);
+    expect(merged.badPointers).toBe(3);
+  });
+
+  it("does not throw on a text E1.1a item without title or hazards", () => {
+    const text = {
+      fieldId: "E1.1a",
+      index: 0,
+      value: null,
+      evidence: [{ page: 1, quote: "una cita larga" }],
+    };
+    const rows = [row("RCP4.5", "Alto")];
+    const fields = [found(`/${RISK_ROWS_KEY}/0/level`, [[146, CAPTION]])];
+    expect(riskRowItems({ rows, fields, textItems: [text] })).toHaveLength(1);
+  });
+});

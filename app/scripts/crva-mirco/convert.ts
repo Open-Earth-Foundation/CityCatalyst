@@ -293,10 +293,11 @@ export function mircoRunStats(input: {
   };
 }
 
+const filled = z.string().trim().min(1);
 const RiskRowSchema = z.object({
-  hazard: z.string(),
-  receptor: z.string(),
-  level: z.string(),
+  hazard: filled,
+  receptor: filled,
+  level: filled,
   scenario: z.string(),
   horizon: z.string(),
   table: z.string(),
@@ -354,7 +355,21 @@ export function riskRowItems(input: {
   fields: unknown[];
   textItems: MircoItem[];
 }): MircoItem[] {
+  return riskRows(input).items;
+}
+
+/**
+ * riskRowItems plus a count of what it could not use (a row that fails the schema
+ * or has no evidence, an outcome for a row index that does not exist), counted
+ * like bad pointers on the other fields.
+ */
+function riskRows(input: {
+  rows: unknown[];
+  fields: unknown[];
+  textItems: MircoItem[];
+}): { items: MircoItem[]; bad: number } {
   const evidence = evidenceByIndex(input.fields, RISK_ROWS_KEY);
+  let bad = [...evidence.keys()].filter((i) => i >= input.rows.length).length;
   const groups = new Map<
     string,
     {
@@ -368,7 +383,10 @@ export function riskRowItems(input: {
   input.rows.forEach((raw, index) => {
     const row = RiskRowSchema.safeParse(raw);
     const rowEvidence = evidence.get(index) ?? [];
-    if (!row.success || rowEvidence.length === 0) return;
+    if (!row.success || rowEvidence.length === 0) {
+      bad += 1;
+      return;
+    }
     const { hazard, receptor, level, scenario, horizon, table } = row.data;
     const key = `${fold(hazard)}×${fold(receptor)}`;
     const group = groups.get(key) ?? {
@@ -388,16 +406,17 @@ export function riskRowItems(input: {
     groups.set(key, group);
   });
 
-  const titleKey = (v: E1Value) => {
-    const [hazard, receptor] = v.title.split("×");
-    return `${fold(v.hazards[0] ?? hazard ?? "")}×${fold(v.affected[0] ?? receptor ?? "")}`;
+  const titleKey = (v: Partial<E1Value> | null) => {
+    const [hazard, receptor] = (v?.title ?? "").split("×");
+    return `${fold(v?.hazards?.[0] ?? hazard ?? "")}×${fold(v?.affected?.[0] ?? receptor ?? "")}`;
   };
   const added: MircoItem[] = [];
   for (const [key, g] of groups) {
     const levels = `${g.cells.join("; ")}${g.tables.length ? ` (${g.tables.join(", ")})` : ""}`;
     const match = input.textItems.find(
       (item) =>
-        item.fieldId === "E1.1a" && titleKey(item.value as E1Value) === key,
+        item.fieldId === "E1.1a" &&
+        titleKey(item.value as Partial<E1Value> | null) === key,
     );
     if (match) {
       const value = match.value as E1Value;
@@ -422,7 +441,7 @@ export function riskRowItems(input: {
       evidence: g.evidence,
     });
   }
-  return added;
+  return { items: added, bad };
 }
 
 /** Joins the group jobs' results; a failed group (null result) adds nothing. */
@@ -447,14 +466,13 @@ export function mergeGroupResults(
     badPointers += own.badPointers;
     ambiguousItems += own.ambiguousItems;
     items.push(...own.items);
+    const rowFields = parsed.data.fields.filter(isRow);
     if (Array.isArray(rows)) {
-      items.push(
-        ...riskRowItems({
-          rows,
-          fields: parsed.data.fields.filter(isRow),
-          textItems: own.items,
-        }),
-      );
+      const risk = riskRows({ rows, fields: rowFields, textItems: own.items });
+      items.push(...risk.items);
+      badPointers += risk.bad;
+    } else {
+      badPointers += evidenceByIndex(rowFields, RISK_ROWS_KEY).size;
     }
   }
   return { items, badPointers, ambiguousItems };
@@ -490,9 +508,11 @@ export function mergeEnvelopes(envelopes: unknown[]): {
   const sum = (pick: (u: MircoUsage) => number) =>
     usage.reduce((total, u) => total + pick(u), 0);
   return {
-    result: parsed.some((e) => e.result != null)
-      ? { data: {}, fields: [] }
-      : null,
+    // A run missing a field group is not complete: mircoRunStats marks it failed.
+    result:
+      failed.length === 0 && parsed.every((e) => e.result != null)
+        ? { data: {}, fields: [] }
+        : null,
     execution_status: failed.length
       ? `partial: ${failed.join(", ")}`
       : "completed",

@@ -1,0 +1,245 @@
+/**
+ * Converts a result of Mirco's pdf-extraction pipeline (JSON Schema mode) into a
+ * CRVA draft bundle and run stats, with the v0 validation, quote check and dedupe,
+ * so scripts/crva-eval/score-run.ts scores it unchanged.
+ */
+import {
+  CRVA_FIELD_IDS,
+  type CrvaDraftBundle,
+  type CrvaDraftValue,
+  type CrvaDroppedValue,
+} from "@/backend/ingest/plugins/ccra/draft-schema";
+import {
+  candidatesToDraftValues,
+  dedupeValues,
+} from "@/backend/ingest/plugins/ccra/extract-crva-fields";
+import { verifyQuotes } from "@/backend/ingest/plugins/ccra/verify-quotes";
+import { z } from "zod";
+import type { OcrCache } from "../crva-eval/ocr-cache";
+import type { RunStats } from "../crva-eval/run-adapter";
+
+/** One schema array item (`/<fieldId>/<index>`) with the evidence of all its leaves. */
+export interface MircoItem {
+  fieldId: string;
+  index: number;
+  value: unknown;
+  evidence: { page: number; quote: string }[];
+}
+
+export interface MircoUsage {
+  promptTokens: number;
+  completionTokens: number;
+  cachedInputTokens: number;
+  reasoningTokens: number;
+}
+
+/** Only the parts of Mirco's result this converter reads; the rest passes through. */
+const EvidenceSchema = z.object({ pdf_page: z.number(), quote: z.string() });
+const OutcomeSchema = z.object({
+  field_id: z.string(),
+  status: z.string(),
+  observations: z.array(z.object({ evidence: z.array(z.unknown()) })),
+});
+const ResultSchema = z.object({
+  data: z.record(z.string(), z.unknown()).catch({}),
+  fields: z.array(z.unknown()),
+});
+const EnvelopeSchema = z.object({
+  result: z.unknown(),
+  execution_status: z.string().optional().catch(undefined),
+  repair: z
+    .object({ repairs: z.number().catch(0) })
+    .optional()
+    .catch(undefined),
+  usage: z.unknown(),
+});
+const UsageSchema = z.object({
+  input_tokens: z.number().catch(0),
+  output_tokens: z.number().catch(0),
+  input_tokens_details: z
+    .object({ cached_tokens: z.number().catch(0) })
+    .catch({ cached_tokens: 0 }),
+  output_tokens_details: z
+    .object({ reasoning_tokens: z.number().catch(0) })
+    .catch({ reasoning_tokens: 0 }),
+});
+
+/** RFC 6901 pointer segments. */
+function pointerSegments(pointer: string): string[] {
+  return pointer
+    .split("/")
+    .slice(1)
+    .map((s) => s.replace(/~1/g, "/").replace(/~0/g, "~"));
+}
+
+/**
+ * Mirco's validator wants an outcome per data leaf (`/C1.1a/0/hazard`), while v0
+ * has one value per item, so `found` leaves are grouped by item.
+ */
+export function mircoItems(result: unknown): {
+  items: MircoItem[];
+  badPointers: number;
+} {
+  const parsed = ResultSchema.safeParse(result);
+  if (!parsed.success) return { items: [], badPointers: 0 };
+  const { data } = parsed.data;
+  const items = new Map<string, MircoItem>();
+  let badPointers = 0;
+  for (const raw of parsed.data.fields) {
+    const outcome = OutcomeSchema.safeParse(raw);
+    if (!outcome.success || outcome.data.status !== "found") continue;
+    const [fieldId, indexText] = pointerSegments(outcome.data.field_id);
+    const index = Number(indexText);
+    const list = data[fieldId];
+    if (
+      !CRVA_FIELD_IDS.includes(fieldId) ||
+      !/^\d+$/.test(indexText ?? "") ||
+      !Array.isArray(list) ||
+      list[index] === undefined
+    ) {
+      badPointers += 1;
+      continue;
+    }
+    const key = `${fieldId}/${index}`;
+    const item: MircoItem = items.get(key) ?? {
+      fieldId,
+      index,
+      value: list[index],
+      evidence: [],
+    };
+    items.set(key, item);
+    for (const observation of outcome.data.observations) {
+      for (const rawEvidence of observation.evidence) {
+        const evidence = EvidenceSchema.safeParse(rawEvidence);
+        if (!evidence.success) continue;
+        const { pdf_page: page, quote } = evidence.data;
+        if (!item.evidence.some((x) => x.page === page && x.quote === quote)) {
+          item.evidence.push({ page, quote });
+        }
+      }
+    }
+  }
+  return { items: [...items.values()], badPointers };
+}
+
+const INVALID: CrvaDroppedValue = {
+  fieldId: "unknown",
+  page: null,
+  quote: null,
+  reason: "invalid_value",
+};
+
+/** Like assembleBundle, but an item may try each of its quotes; one drop per failed item. */
+export function assembleMircoBundle(input: {
+  file: string;
+  items: MircoItem[];
+  badPointers: number;
+  ocr: OcrCache;
+  extractionModel: string;
+}): CrvaDraftBundle {
+  const { file, items, badPointers, ocr, extractionModel } = input;
+  const kept: CrvaDraftValue[] = [];
+  const dropped: CrvaDroppedValue[] = Array.from(
+    { length: badPointers },
+    () => ({ ...INVALID }),
+  );
+  for (const item of items) {
+    let firstDrop: CrvaDroppedValue | null = null;
+    let found: CrvaDraftValue | null = null;
+    for (const e of item.evidence) {
+      const candidate = {
+        fieldId: item.fieldId,
+        value: item.value,
+        page: e.page,
+        quote: e.quote,
+      };
+      const extracted = candidatesToDraftValues(
+        [candidate],
+        file,
+        CRVA_FIELD_IDS,
+      );
+      const checked = verifyQuotes(extracted.values, ocr.pages);
+      if (checked.verified.length > 0) {
+        found = checked.verified[0];
+        break;
+      }
+      firstDrop ??= [...extracted.dropped, ...checked.dropped][0] ?? null;
+    }
+    if (found) kept.push(found);
+    else dropped.push(firstDrop ?? { ...INVALID, fieldId: item.fieldId });
+  }
+  const values = dedupeValues(kept);
+  const covered = new Set(values.map((value) => value.fieldId as string));
+  return {
+    file,
+    pageCount: ocr.pageCount,
+    ocrModel: ocr.ocrModel,
+    extractionModel,
+    values,
+    uncoveredFields: CRVA_FIELD_IDS.filter((id) => !covered.has(id)),
+    figures: ocr.figures,
+    dropped,
+  };
+}
+
+/** Agents API session usage; unknown or missing keys count as 0. */
+export function mircoUsage(usage: unknown): MircoUsage {
+  const u = UsageSchema.catch(UsageSchema.parse({})).parse(usage);
+  return {
+    promptTokens: u.input_tokens,
+    completionTokens: u.output_tokens,
+    cachedInputTokens: u.input_tokens_details.cached_tokens,
+    reasoningTokens: u.output_tokens_details.reasoning_tokens,
+  };
+}
+
+export function mircoRunStats(input: {
+  run: number;
+  envelope: unknown;
+  bundle: CrvaDraftBundle | null;
+  minutes: number;
+  ocr: OcrCache;
+  ocrOn: boolean;
+}): RunStats {
+  const { run, envelope, bundle, minutes, ocr, ocrOn } = input;
+  const env = EnvelopeSchema.catch({
+    result: null,
+    execution_status: undefined,
+    repair: undefined,
+    usage: undefined,
+  }).parse(envelope);
+  const error =
+    env.result == null || bundle === null
+      ? `Mirco result is null (execution_status: ${env.execution_status ?? "unknown"})`
+      : undefined;
+  const kept = error ? null : bundle;
+  const turns = (env.repair?.repairs ?? 0) + 1;
+  const usage = mircoUsage(env.usage);
+  const droppedByReason: Record<string, number> = {};
+  for (const d of kept?.dropped ?? []) {
+    droppedByReason[d.reason] = (droppedByReason[d.reason] ?? 0) + 1;
+  }
+  return {
+    run,
+    status: error ? "failed" : "ok",
+    minutes,
+    parts: 1,
+    retries: 0,
+    ocrPages: ocrOn ? ocr.pageCount : 0,
+    promptTokens: usage.promptTokens,
+    completionTokens: usage.completionTokens,
+    cachedInputTokens: usage.cachedInputTokens,
+    llmCalls: turns,
+    nonStopFinishes: 0,
+    modelTurns: turns,
+    valuesKept: kept?.values.length ?? 0,
+    valuesDropped: kept?.dropped.length ?? 0,
+    droppedByReason,
+    fieldsWithValue: kept
+      ? CRVA_FIELD_IDS.length - kept.uncoveredFields.length
+      : 0,
+    figures: kept?.figures.length ?? 0,
+    warnings: 0,
+    ...(error ? { error } : {}),
+  };
+}

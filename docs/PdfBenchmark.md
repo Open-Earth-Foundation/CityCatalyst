@@ -165,8 +165,8 @@ The mapping is field by field, with no repair or guessing.
 
 - `row_role` `emission`, `removal` and `notation` become rows. `information` rows are dropped and counted. Any other role is skipped and counted under `unknownRowRoles`.
 - A `notation` row has no value; its `notation_key` is kept in canonical form.
-- `total_inclusion: excluded` is counted as `excludedNotCarried`. Approve cannot carry it (the omit-from-total flag comes only from fixed GPC references), so the row is still imported and counts in the application total.
-- Approve drops some mapped rows. A parent reference such as `I.3` with `scope: null` is dropped as `gpc-reference-unknown`; a row with neither a value nor a notation key is dropped too. The report lists them as lost rows, by import issue code, in the Pipeline notes. `unexplained` or `notSkipped` marks a mismatch between the rows approve skipped and the issues it reported.
+- `total_inclusion: excluded` maps to `omitFromTotal: true`: the row is stored and left out of the application total (CC-1311).
+- Approve drops some mapped rows. Since CC-1311 a parent reference such as `I.3` with `scope: null` is stored at subsector level, unless its child rows (`I.3.1`, ...) came in the same envelope: then it is dropped as `gpc-parent-superseded`, or as `gpc-parent-gap` when the children sum differs from it by more than the larger of 1% and 1 t. A row with neither a value nor a notation key is dropped too. The report lists them as lost rows, by import issue code, in the Pipeline notes. `unexplained` or `notSkipped` marks a mismatch between the rows approve skipped and the issues it reported.
 
 The Pipeline notes table shows these counts per attempt, with the reported totals, scope basis and cost. It is not scored.
 
@@ -176,7 +176,7 @@ In order: the envelope's `cost_usd` (`envelope`); else its tokens at the price o
 
 ### Score variant
 
-The standard score is the headline. A pipeline can report an unsplit subsector (`I.3`, no scope) where the key has children; approve drops that row, so the standard score never sees it. The report adds a labelled variant, "parent refs (Mirco)", beside the standard score, per block and per case. It adds back the parent rows approve dropped, written as `<ref>.x` (Mirco's `scoringReference`). `I.3.x` matches a key row written `I.3` or `I.3.x` only, never a scoped child such as `I.3.1`. If the pipeline gave the children too and approve stored them, the variant counts that amount twice: see the "Of which children were stored too" column. Read the variant as an upper bound for that pipeline, not as a result. `SCORER_VERSION` is unchanged.
+The standard score is the headline. A pipeline can report an unsplit subsector (`I.3`, no scope) where the key has children. Before CC-1311 approve dropped that row; now it is stored, and the standard score matches it against a key row written `I.3`. Approve still drops it when its children were stored too (`gpc-parent-superseded`). The report adds a labelled variant, "parent refs (Mirco)", beside the standard score, per block and per case. It adds back the parent rows approve dropped, written as `<ref>.x` (Mirco's `scoringReference`). `I.3.x` matches a key row written `I.3` or `I.3.x` only, never a scoped child such as `I.3.1`. If the pipeline gave the children too and approve stored them, the variant counts that amount twice: see the "Of which children were stored too" column. Read the variant as an upper bound for that pipeline, not as a result. `SCORER_VERSION` is unchanged.
 
 ### Generators
 

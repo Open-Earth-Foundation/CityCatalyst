@@ -30,7 +30,7 @@ Options: `--max-part-mib <n>` on `run-adapter.ts` sets the largest PDF part (def
 
 ## OCR once, compare extractors
 
-`ocr-pdf.ts` runs Mistral OCR on a PDF once (paid) and saves it, so the agentic extractor ([`../crva-agent/README.md`](../crva-agent/README.md)) can reuse it:
+`ocr-pdf.ts` runs Mistral OCR on a PDF once (paid) and saves it, so the agentic extractor ([`../crva-agent/README.md`](../crva-agent/README.md)) and the quote check for Mirco's pipeline ([`../crva-mirco/README.md`](../crva-mirco/README.md)) can reuse it:
 
 ```
 npx tsx scripts/crva-eval/ocr-pdf.ts --pdf <path-to-pdf> --city buenos-aires [--max-part-mib 15] [--out <dir>]

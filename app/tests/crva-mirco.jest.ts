@@ -14,6 +14,7 @@ import {
   mircoUsage,
   type MircoItem,
 } from "../scripts/crva-mirco/convert";
+import { clientArgs, parseJobId } from "../scripts/crva-mirco/run-mirco";
 import {
   CRVA_VALUE_RULES,
   CRVA_VALUE_SHAPES,
@@ -350,5 +351,46 @@ describe("crvaUserPrompt", () => {
     const prompt = crvaUserPrompt("<role>Default</role>");
     expect(prompt.startsWith("<role>Default</role>")).toBe(true);
     for (const rule of CRVA_VALUE_RULES) expect(prompt).toContain(rule);
+  });
+});
+
+describe("clientArgs", () => {
+  const base = {
+    mircoDir: "C:/m",
+    city: "buenos-aires",
+    pdf: "C:/r.pdf",
+    schema: "C:/s.json",
+    userPrompt: "C:/u.md",
+    output: "C:/out/result.json",
+    baseUrl: "http://127.0.0.1:8080",
+  };
+
+  it("runs Mirco's client with repair, long timeout and our inputs", () => {
+    const args = clientArgs({ ...base, ocrOn: false }).join(" ");
+    expect(args).toContain("-m examples.extract");
+    expect(args).toContain("--city-pdf C:/r.pdf");
+    expect(args).toContain("--schema C:/s.json");
+    expect(args).toContain("--user-prompt-file C:/u.md");
+    expect(args).toContain("--auto-repair");
+    expect(args).toContain("--max-repairs 3");
+    expect(args).toContain("--timeout 7200");
+    expect(args).toContain("--output C:/out/result.json");
+    expect(args).toContain("--base-url http://127.0.0.1:8080");
+    expect(args).not.toContain("--mistral-ocr");
+  });
+
+  it("adds --mistral-ocr only when OCR is on", () => {
+    expect(clientArgs({ ...base, ocrOn: true })).toContain("--mistral-ocr");
+  });
+});
+
+describe("parseJobId", () => {
+  it("reads the job ID from the client log", () => {
+    expect(
+      parseJobId(
+        "INFO Accepted job abc_123; save this ID to resume polling after a disconnect.",
+      ),
+    ).toBe("abc_123");
+    expect(parseJobId("INFO nothing here")).toBeNull();
   });
 });

@@ -1043,7 +1043,9 @@ export type ImportRowIssue =
   | "direction-unconfirmed"
   | "excluded-reference-unconfirmed"
   | "reference-conflict"
-  | "skipped-in-review";
+  | "skipped-in-review"
+  | "gpc-parent-superseded"
+  | "gpc-parent-gap";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1057,6 +1059,16 @@ export interface ImportRowOutcome {
   issue: ImportRowIssue;
   /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
   tonnes?: number | null;
+  /** Subsector total replaced by its child rows (CC-1311). */
+  parentSuperseded?: ParentSupersededDetail;
+}
+
+/** A subsector-level value dropped because its child rows came in the same import. */
+export interface ParentSupersededDetail {
+  parentValue: number | null;
+  childrenSum: number | null;
+  childrenCount: number;
+  gap: number | null;
 }
 
 /** Where a row's scope comes from. */

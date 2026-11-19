@@ -211,6 +211,13 @@ export default function ImportRowIssues({
                   <Text color="content.secondary">
                     {t(`import-row-issue-${row.issue}`, {
                       notationKey: row.notationKey,
+                      parentValue:
+                        row.parentSuperseded?.parentValue?.toLocaleString(),
+                      childrenSum:
+                        row.parentSuperseded?.childrenSum?.toLocaleString() ??
+                        "0",
+                      childrenCount: row.parentSuperseded?.childrenCount,
+                      gap: row.parentSuperseded?.gap?.toLocaleString(),
                     })}
                   </Text>
                 </Table.Cell>

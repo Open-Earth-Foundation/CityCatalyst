@@ -50,6 +50,8 @@ export function supersedeParentRows(
 
     for (const parent of group.filter((row) => row.subcategoryId === null)) {
       const parentValue = parent.co2eq;
+      // Children that are all notation keys cannot replace a value.
+      if (parentValue !== null && childrenSum === null) continue;
       const gap =
         parentValue !== null && childrenSum !== null
           ? parentValue - childrenSum
@@ -67,7 +69,8 @@ export function supersedeParentRows(
         childrenSum,
         childrenCount: children.length,
         gap,
-        severity: gap !== null && Math.abs(gap) > tolerance ? "warning" : "info",
+        severity:
+          gap !== null && Math.abs(gap) > tolerance ? "warning" : "info",
       });
     }
   }

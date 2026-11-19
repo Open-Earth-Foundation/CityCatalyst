@@ -62,7 +62,13 @@ export function supersedeParentsWithChildren(
   }
   const candidates = rows
     .map((row, index) => ({ row, index }))
-    .filter(({ row }) => !row.errors?.length && row.subsectorId);
+    // An excluded child must not replace a parent that counts in the total.
+    .filter(
+      ({ row }) =>
+        !row.errors?.length &&
+        row.subsectorId &&
+        !(row.omitFromTotal && row.subcategoryId !== null),
+    );
   const superseded = supersedeParentRows(
     candidates.map(({ row, index }) => ({
       index,

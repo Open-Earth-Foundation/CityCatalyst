@@ -93,13 +93,22 @@ describe("supersedeParentRows", () => {
     ]);
   });
 
-  it("children all notation keys", () => {
+  it("children all notation keys: valued parent kept", () => {
     expect(
       supersedeParentRows([parent(0, 500), child(1, null, "s", "NO")]),
+    ).toEqual([]);
+  });
+
+  it("notation-key parent with notation-key children is superseded", () => {
+    expect(
+      supersedeParentRows([
+        parent(0, null, "s", "IE"),
+        child(1, null, "s", "NO"),
+      ]),
     ).toEqual([
       {
         index: 0,
-        parentValue: 500,
+        parentValue: null,
         childrenSum: null,
         childrenCount: 1,
         gap: null,
@@ -109,8 +118,9 @@ describe("supersedeParentRows", () => {
   });
 
   it("other subsector untouched", () => {
-    expect(supersedeParentRows([parent(0, 500, "s1"), child(1, 300, "s2")]))
-      .toEqual([]);
+    expect(
+      supersedeParentRows([parent(0, 500, "s1"), child(1, 300, "s2")]),
+    ).toEqual([]);
   });
 
   it("compares converted co2eq as given by the caller", () => {

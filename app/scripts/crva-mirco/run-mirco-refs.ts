@@ -1,22 +1,26 @@
 /**
- * Wave 2: runs Mirco's pipeline as five jobs, one per field group (groups.ts), in
- * parallel, plus our reference pass for A1.2a (references.ts), and saves one
- * harness run folder that scripts/crva-eval/score-run.ts scores unchanged.
- * Paid: OpenAI (five agent jobs and the reference mapping). Never resubmits a job.
+ * Runs Mirco's pipeline plus our reference pass for A1.2a (references.ts) and saves
+ * one harness run folder that scripts/crva-eval/score-run.ts scores unchanged.
+ * Paid: OpenAI (the agent job(s) and the reference mapping). Never resubmits a job.
  *
- *   npx tsx scripts/crva-mirco/run-mirco-groups.ts --city <slug> --pdf <report.pdf> \
+ * Default (wave 2.5): one job with the full 12-field schema and prompt from
+ * inputs.ts, unchanged from wave 1.5; A1.2a comes from the reference pass only.
+ * --groups (wave 2): five jobs, one per field group (groups.ts), in parallel; the
+ * A1 job keeps A1.2a for non-reference sources, and E1 adds risk table rows.
+ *
+ *   npx tsx scripts/crva-mirco/run-mirco-refs.ts --city <slug> --pdf <report.pdf> \
  *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
- *     [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
+ *     [--groups] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
  *
- * Recovery, no new jobs: --results-dir <run folder> converts the result-<group>.json
+ * Recovery, no new jobs: --results-dir <run folder> converts the result-<job>.json
  * files there again (after a usage refresh, say), reusing its references.json.
  *
  * Needs Mirco's service running with gpt-6.1-sol and medium effort (OCR off), and
  * OPENAI_API_KEY in app/.env for the reference mapping (LLM_BASE_URL="").
- * Output: app/reports/crva-eval/<city>/mirco-groups/<timestamp>/ with
- * inputs/<group>.schema.json and .md, client-<group>.log, result-<group>.json,
- * references.json, run-1.json and runs.md. Job IDs are printed; delete the jobs
- * with DELETE /v1/extractions/<id> once their usage is saved.
+ * Output: app/reports/crva-eval/<city>/mirco-refs/<timestamp>/ (mirco-groups/ with
+ * --groups) with inputs/<job>.schema.json and .md, client-<job>.log,
+ * result-<job>.json, references.json, run-1.json and runs.md. Job IDs are printed;
+ * delete the jobs with DELETE /v1/extractions/<id> once their usage is saved.
  */
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -33,8 +37,12 @@ import {
   mergeEnvelopes,
   mergeGroupResults,
   mircoRunStats,
+  withReferenceItems,
 } from "./convert";
 import { CRVA_GROUPS, groupJsonSchema, groupUserPrompt } from "./groups";
+import { crvaJsonSchema, crvaUserPrompt } from "./inputs";
+
+const SINGLE = "single";
 import {
   REFERENCE_ANSWER_SCHEMA,
   captionSources,
@@ -99,6 +107,10 @@ async function main() {
   const resultsDir = process.argv.includes("--results-dir")
     ? path.resolve(argValue("--results-dir"))
     : null;
+  const groupsMode = resultsDir
+    ? !existsSync(path.join(resultsDir, `result-${SINGLE}.json`))
+    : process.argv.includes("--groups");
+  const jobIds = groupsMode ? CRVA_GROUPS.map((g) => g.id) : [SINGLE];
   const outDir =
     resultsDir ??
     path.join(
@@ -106,7 +118,7 @@ async function main() {
       "reports",
       "crva-eval",
       city,
-      "mirco-groups",
+      groupsMode ? "mirco-groups" : "mirco-refs",
       new Date().toISOString().replace(/[:.]/g, "-"),
     );
   await mkdir(path.join(outDir, "inputs"), { recursive: true });
@@ -147,16 +159,24 @@ async function main() {
       : Promise.resolve(null);
     // allSettled: one client that fails to start must not lose the others' job IDs.
     const settled = await Promise.allSettled(
-      CRVA_GROUPS.map(async (group) => {
-        const schema = path.join(outDir, "inputs", `${group.id}.schema.json`);
-        const userPrompt = path.join(outDir, "inputs", `${group.id}.md`);
+      jobIds.map(async (id) => {
+        const group = { id };
+        const spec = groupsMode ? CRVA_GROUPS.find((g) => g.id === id)! : null;
+        const schema = path.join(outDir, "inputs", `${id}.schema.json`);
+        const userPrompt = path.join(outDir, "inputs", `${id}.md`);
         await writeFile(
           schema,
-          JSON.stringify(groupJsonSchema(group, options), null, 2),
+          JSON.stringify(
+            spec ? groupJsonSchema(spec, options) : crvaJsonSchema(),
+            null,
+            2,
+          ),
         );
         await writeFile(
           userPrompt,
-          groupUserPrompt(defaultPrompt, group, options),
+          spec
+            ? groupUserPrompt(defaultPrompt, spec, options)
+            : crvaUserPrompt(defaultPrompt),
         );
         const logPath = path.join(outDir, `client-${group.id}.log`);
         const exitCode = await runClient({
@@ -185,7 +205,7 @@ async function main() {
     );
     for (const [i, outcome] of settled.entries()) {
       if (outcome.status === "rejected") {
-        const group = CRVA_GROUPS[i].id;
+        const group = jobIds[i];
         jobs.push({ group, jobId: null, exitCode: null });
         console.error(
           `${group}: client did not run: ${String(outcome.reason)}`,
@@ -197,12 +217,12 @@ async function main() {
   } else {
     // Recovery keeps what the first conversion knew: job IDs (from the client
     // logs), wall time and the service fingerprint.
-    for (const group of CRVA_GROUPS) {
-      const log = path.join(outDir, `client-${group.id}.log`);
+    for (const group of jobIds) {
+      const log = path.join(outDir, `client-${group}.log`);
       const jobId = existsSync(log)
         ? parseJobId(await readFile(log, "utf8"))
         : null;
-      jobs.push({ group: group.id, jobId, exitCode: 0 });
+      jobs.push({ group, jobId, exitCode: 0 });
     }
     const previousPath = path.join(outDir, "run-1.json");
     if (existsSync(previousPath)) {
@@ -224,12 +244,12 @@ async function main() {
   }
 
   const loaded = await Promise.all(
-    CRVA_GROUPS.map(async (group) => {
-      const file = path.join(outDir, `result-${group.id}.json`);
+    jobIds.map(async (group) => {
+      const file = path.join(outDir, `result-${group}.json`);
       const envelope: unknown = existsSync(file)
         ? JSON.parse(await readFile(file, "utf8"))
         : { result: null, execution_status: "missing" };
-      return { group: group.id, envelope };
+      return { group, envelope };
     }),
   );
   const merged = mergeGroupResults(
@@ -238,16 +258,18 @@ async function main() {
       result: (envelope as { result?: unknown } | null)?.result ?? null,
     })),
   );
-  const items = references
-    ? [
-        ...merged.items,
-        ...referenceItems(
-          references.entries,
-          references.references,
-          captionSources(ocr.pages),
-        ),
-      ]
-    : merged.items;
+  const fromReferences = references
+    ? referenceItems(
+        references.entries,
+        references.references,
+        captionSources(ocr.pages),
+      )
+    : null;
+  // Groups: the A1 job already left the reference list out. Single job: its own
+  // A1.2a items are dropped in favour of the reference pass.
+  const items = groupsMode
+    ? [...merged.items, ...(fromReferences ?? [])]
+    : withReferenceItems(merged.items, fromReferences);
   const bundle = assembleMircoBundle({
     file: ocr.file,
     items,
@@ -285,7 +307,7 @@ async function main() {
         warnings: [],
         bundle,
         mirco: {
-          mode: "groups",
+          mode: groupsMode ? "groups" : SINGLE,
           recovered: resultsDir !== null,
           model: config?.model ?? MODEL,
           reasoningEffort: config?.reasoning_effort ?? "medium",

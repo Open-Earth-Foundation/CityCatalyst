@@ -14,6 +14,7 @@ import {
   mergeEnvelopes,
   mergeGroupResults,
   riskRowItems,
+  withReferenceItems,
 } from "../scripts/crva-mirco/convert";
 
 // Schema JSON is read by path in assertions.
@@ -324,5 +325,25 @@ describe("wave 2 review fixes", () => {
     const rows = [row("RCP4.5", "Alto")];
     const fields = [found(`/${RISK_ROWS_KEY}/0/level`, [[146, CAPTION]])];
     expect(riskRowItems({ rows, fields, textItems: [text] })).toHaveLength(1);
+  });
+});
+
+// Wave 2.5: the single job's A1.2a items are replaced by the reference pass.
+describe("withReferenceItems", () => {
+  const job = [
+    { fieldId: "A1.1", index: 0, value: "x", evidence: [] },
+    { fieldId: "A1.2a", index: 0, value: { author: "CCSM4" }, evidence: [] },
+    { fieldId: "A1.2a", index: 1, value: { author: "IPCC" }, evidence: [] },
+  ];
+  const refs = [
+    { fieldId: "A1.2a", index: 0, value: { author: "Balay" }, evidence: [] },
+  ];
+
+  it("drops the job's A1.2a items and adds the reference items", () => {
+    expect(withReferenceItems(job, refs)).toEqual([job[0], refs[0]]);
+  });
+
+  it("keeps the job's A1.2a items when no reference list was found", () => {
+    expect(withReferenceItems(job, null)).toEqual(job);
   });
 });

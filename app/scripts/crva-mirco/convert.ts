@@ -531,3 +531,19 @@ export function mergeEnvelopes(envelopes: unknown[]): {
     },
   };
 }
+
+/**
+ * Wave 2.5: A1.2a comes from the reference pass only. The job's own A1.2a items
+ * are dropped (in wave 2 they added climate models and other non-sources); with
+ * no reference list found (null), the job's items stay.
+ */
+export function withReferenceItems(
+  jobItems: MircoItem[],
+  referenceItems: MircoItem[] | null,
+): MircoItem[] {
+  if (!referenceItems) return jobItems;
+  return [
+    ...jobItems.filter((item) => item.fieldId !== "A1.2a"),
+    ...referenceItems,
+  ];
+}

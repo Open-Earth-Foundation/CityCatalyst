@@ -53,6 +53,8 @@ export type ModelPrice = {
 /** USD per page of a document-extraction API, with where the price was read. */
 export type VendorPrice = {
   perPage: number;
+  /** List price of one vendor credit, for vendors that report credits used. */
+  perCredit?: number;
   source: string;
   date: string;
 };

@@ -11,12 +11,17 @@
  * Generated folders live under benchmarks/pdf/generated/ (git-ignored): the raw
  * answers hold third-party document text and are never committed.
  */
+import env from "@next/env";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
 import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
 import type { EnvelopeData } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
+import type {
+  PricesFile,
+  VendorPrice,
+} from "@/backend/ingestion-benchmark/report";
 import {
   loadManifest,
   selectCases,
@@ -231,19 +236,105 @@ export function emptyData(): EnvelopeData {
   };
 }
 
-const SECRET_KEY = /authorization|api[-_]?key/i;
+/**
+ * Field names that look like a credential. `token` alone, so usage counts such
+ * as `input_tokens` stay in the raw answer.
+ */
+const SECRET_KEY = /authorization|api[-_]?key|secret|bearer|token(?!s)/i;
 
-/** A deep copy without any field whose name looks like a credential. */
-export function stripSecrets(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(stripSecrets);
+function redact(text: string, secrets: string[]): string {
+  return secrets.reduce(
+    (result, secret) =>
+      secret ? result.replaceAll(secret, "[redacted]") : result,
+    text,
+  );
+}
+
+/**
+ * A deep copy without any field whose name looks like a credential, and with
+ * every occurrence of the given secret values (the API key) in a string or a
+ * field name replaced by "[redacted]".
+ */
+export function stripSecrets(value: unknown, secrets: string[] = []): unknown {
+  if (typeof value === "string") return redact(value, secrets);
+  if (Array.isArray(value))
+    return value.map((item) => stripSecrets(item, secrets));
   if (typeof value === "object" && value !== null) {
     return Object.fromEntries(
       Object.entries(value)
         .filter(([key]) => !SECRET_KEY.test(key))
-        .map(([key, child]) => [key, stripSecrets(child)]),
+        .map(([key, child]) => [
+          redact(key, secrets),
+          stripSecrets(child, secrets),
+        ]),
     );
   }
   return value;
+}
+
+/** A failed vendor call: its status and answer body only, never the request. */
+export class CallError extends Error {
+  constructor(
+    message: string,
+    readonly body: unknown = null,
+    readonly status: number | null = null,
+  ) {
+    super(message);
+  }
+}
+
+/** Per-call timeout of a vendor call: extraction runs an LLM over many pages. */
+export const CALL_TIMEOUT_MS = 600_000;
+
+const retryable = (status: number) => status === 429 || status >= 500;
+
+/**
+ * One vendor call that answers JSON, retried once on HTTP 429, a 5xx or a
+ * timeout (each try with its own `timeoutMs`). Throws CallError on a network
+ * error, a non-2xx answer or an answer that is not a JSON object.
+ */
+export async function requestJson(
+  url: string,
+  init: RequestInit,
+  opts: { timeoutMs?: number; retryDelayMs?: number } = {},
+): Promise<{ status: number; body: Record<string, unknown> }> {
+  const timeoutMs = opts.timeoutMs ?? CALL_TIMEOUT_MS;
+  const retryDelayMs = opts.retryDelayMs ?? 5_000;
+  for (let attempt = 1; ; attempt++) {
+    const last = attempt === 2;
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch (error) {
+      const name = (error as Error).name;
+      if (!last && name === "TimeoutError") {
+        await sleep(retryDelayMs);
+        continue;
+      }
+      throw new CallError(`request failed (${name})`);
+    }
+    const text = await response.text();
+    let body: unknown = text;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      // keep the text
+    }
+    if (!response.ok) {
+      if (!last && retryable(response.status)) {
+        await sleep(retryDelayMs);
+        continue;
+      }
+      throw new CallError(`status ${response.status}`, body, response.status);
+    }
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      throw new CallError("response is not JSON", body);
+    }
+    return { status: response.status, body: body as Record<string, unknown> };
+  }
 }
 
 function writeJson(file: string, value: unknown): string {
@@ -273,6 +364,8 @@ export function writeEnvelope(
     executionStatus?: "completed" | "failed";
   },
   raw: unknown,
+  /** Secret values (the API key) to redact anywhere in the saved raw answer. */
+  secrets: string[] = [],
 ): void {
   const manifest = readFolderManifest(out);
   if (!manifest) throw new Error(`${out} has no manifest.json`);
@@ -288,7 +381,7 @@ export function writeEnvelope(
     version: envelope.version,
     cost_usd: envelope.costUsd,
   });
-  writeJson(path.join(out, "raw", name), stripSecrets(raw));
+  writeJson(path.join(out, "raw", name), stripSecrets(raw, secrets));
 
   manifest.entries = manifest.entries.filter(
     (e) => !(e.case_id === entry.id && e.attempt === attempt),
@@ -311,11 +404,15 @@ export function writeEnvelope(
  * tells the vendor the JSON schema decides the answer's shape.
  */
 export function envelopeInstructions(targetYear: number): string {
+  return [SYSTEM_PROMPT, ...envelopeYearLines(targetYear)].join("\n\n");
+}
+
+/** The lines envelopeInstructions adds after the built-in prompt. */
+export function envelopeYearLines(targetYear: number): string[] {
   return [
-    SYSTEM_PROMPT,
     `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.`,
     `Answer in the JSON schema you are given, not in the output format above: one row per distinct emissions or notation row, with the field meanings the schema describes. reporting_year is ${targetYear}.`,
-  ].join("\n\n");
+  ];
 }
 
 /**
@@ -418,4 +515,198 @@ export function readCasePdf(
   const file = pdfPathFor(config, entry);
   if (!file) throw new Error(`${entry.id}: PDF not found`);
   return fs.readFileSync(file);
+}
+
+export const sleep = (ms: number) =>
+  new Promise<void>((done) => setTimeout(done, ms));
+
+/** Polls an asynchronous vendor job until `done`, or throws CallError after `deadlineMs`. */
+export async function pollJob<T>(
+  get: () => Promise<T>,
+  done: (job: T) => boolean,
+  opts: { pollMs: number; deadlineMs: number },
+): Promise<{ job: T; polls: number }> {
+  const deadline = Date.now() + opts.deadlineMs;
+  for (let polls = 1; ; polls++) {
+    const job = await get();
+    if (done(job)) return { job, polls };
+    if (Date.now() + opts.pollMs > deadline) {
+      throw new CallError(
+        `job not finished after ${Math.round(opts.deadlineMs / 60_000)} min`,
+        job,
+      );
+    }
+    await sleep(opts.pollMs);
+  }
+}
+
+/** A multipart body holding the PDF as `file`, plus any text fields. */
+export function pdfForm(
+  pdf: Buffer,
+  fileName: string,
+  fields: Record<string, string> = {},
+): FormData {
+  const form = new FormData();
+  form.append(
+    "file",
+    new Blob([new Uint8Array(pdf)], { type: "application/pdf" }),
+    fileName,
+  );
+  for (const [name, value] of Object.entries(fields)) form.append(name, value);
+  return form;
+}
+
+/**
+ * What one attempt of a vendor generator records while it runs, filled in as
+ * soon as known so that a later failure still writes the billed usage and cost.
+ */
+export type AttemptRecord = {
+  usage: Record<string, unknown>;
+  costUsd: number | null;
+  /** Pages the vendor reports it processed, for the log line; null when it reports none. */
+  pages: number | null;
+  version: string | null;
+  /** The vendor's raw answers, saved (secrets stripped) next to the envelope. */
+  raw: Record<string, unknown>;
+};
+
+/** Polling of an asynchronous vendor job; the defaults are the generators'. */
+export type PollOptions = {
+  pollMs?: number;
+  /** Longest wait for one job. */
+  deadlineMs?: number;
+  /** Pause before the one retry of a call. */
+  retryDelayMs?: number;
+};
+
+export type VendorAttempt = (ctx: {
+  entry: CaseManifestEntry;
+  pdf: Buffer;
+  apiKey: string;
+  /** prices.json `vendors[<mode>]`, or null: cost n/a. */
+  price: VendorPrice | null;
+  record: AttemptRecord;
+}) => Promise<EnvelopeData>;
+
+/**
+ * The command line of a generator with one fixed mode (Reducto, LlamaExtract):
+ * `--cases <ids> --out <folder> [--runs n] [--config path]`. Each attempt of
+ * each case runs `attempt`; one that throws writes a failed envelope with
+ * empty rows and whatever usage and cost it recorded. Returns the exit code:
+ * 0, 1 when an attempt failed, 2 for a setup error before any vendor call.
+ */
+export async function runGenerator(
+  opts: {
+    vendor: Vendor;
+    pipeline: string;
+    /** Envelope and folder mode; also the prices.json `vendors` key. */
+    mode: string;
+    /** Pinned vendor model or tier, recorded in the folder manifest. */
+    model: string;
+    /** Environment variable of the API key (from app/.env). */
+    keyName: string;
+    attempt: VendorAttempt;
+    /** Test hook; defaults to benchmarks/pdf/cases.json. */
+    manifest?: CaseManifestEntry[];
+  },
+  argv: string[],
+): Promise<number> {
+  let args: GeneratorArgs;
+  let config: GeneratorConfig;
+  let selected: CaseManifestEntry[];
+  let out: string;
+  try {
+    const fixed = argv.find(
+      (flag) => flag === "--model" || flag === "--ranges",
+    );
+    if (fixed) throw new Error(`${fixed} is not used by this generator`);
+    args = parseGeneratorArgs(argv);
+    config = JSON.parse(fs.readFileSync(path.resolve(args.configPath), "utf8"));
+    out = path.resolve(args.out);
+    selected = prepareGeneration({
+      vendor: opts.vendor,
+      cases: args.cases,
+      runs: args.runs,
+      out,
+      config,
+      model: opts.model,
+      mode: opts.mode,
+      manifest: opts.manifest,
+    });
+  } catch (error) {
+    console.error((error as Error).message);
+    return 2;
+  }
+
+  if (!process.env[opts.keyName]) env.loadEnvConfig(process.cwd());
+  const apiKey = process.env[opts.keyName];
+  if (!apiKey) {
+    console.error(`${opts.keyName} is not set (app/.env)`);
+    return 2;
+  }
+  const prices = JSON.parse(fs.readFileSync(PRICES_PATH, "utf8")) as PricesFile;
+  const price = prices.vendors?.[opts.mode] ?? null;
+  if (!price) {
+    console.warn(`No price for ${opts.mode} in prices.json: cost will be n/a`);
+  }
+
+  let failed = 0;
+  for (const entry of selected) {
+    const pdf = readCasePdf(config, entry);
+    for (let attempt = 1; attempt <= args.runs; attempt++) {
+      const record: AttemptRecord = {
+        usage: {},
+        costUsd: null,
+        pages: null,
+        version: null,
+        raw: {},
+      };
+      let data = emptyData();
+      let error: string | null = null;
+      try {
+        data = await opts.attempt({ entry, pdf, apiKey, price, record });
+      } catch (caught) {
+        error = (caught as Error).message;
+        if (caught instanceof CallError && caught.body !== null) {
+          record.raw.errorBody = caught.body;
+        }
+      }
+      writeEnvelope(
+        out,
+        entry,
+        attempt,
+        {
+          data: error ? emptyData() : data,
+          usage: record.usage,
+          costUsd: record.costUsd,
+          pipeline: opts.pipeline,
+          mode: opts.mode,
+          version: record.version,
+          executionStatus: error ? "failed" : "completed",
+        },
+        { mode: opts.mode, version: record.version, error, ...record.raw },
+        [apiKey],
+      );
+      const rows = error ? 0 : data.rows.length;
+      const cost =
+        record.costUsd === null ? "cost n/a" : `$${record.costUsd.toFixed(3)}`;
+      console.log(
+        `${entry.id} attempt ${attempt}: ${error ? `failed (${error})` : `${rows} rows`}, ${record.pages ?? "n/a"} pages, ${cost}`,
+      );
+      if (error) failed++;
+    }
+  }
+  console.log(`Envelopes: ${out}`);
+  return failed ? 1 : 0;
+}
+
+/** Runs a generator's main and exits with its code. */
+export function exitWith(code: Promise<number>): void {
+  code.then(
+    (value) => process.exit(value),
+    (error) => {
+      console.error((error as Error).message);
+      process.exit(1);
+    },
+  );
 }

@@ -1,4 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -8,6 +15,7 @@ import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
 import { readRowsDir } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type { CaseManifestEntry } from "@/backend/ingestion-benchmark/selection";
 import {
+  CallError,
   DEFAULT_PAGE_RANGES,
   asEnvelopeData,
   emptyData,
@@ -18,8 +26,13 @@ import {
   parseGeneratorArgs,
   pdfPageCount,
   pinnedModel,
+  pollJob,
   prepareGeneration,
+  requestJson,
+  runGenerator,
+  stripSecrets,
   writeEnvelope,
+  type VendorAttempt,
 } from "../../../scripts/pdf-benchmark/generators/common";
 
 const caseEntry = (
@@ -420,6 +433,281 @@ describe("writeEnvelope", () => {
       headers: { "content-type": "json" },
       calls: [{ request: {}, ok: 1 }],
     });
+  });
+
+  it("redacts the given key value anywhere in the raw response", () => {
+    const entry = prepare();
+    const key = "vendor-key-abcdef123456";
+    writeEnvelope(
+      out,
+      entry,
+      1,
+      envelopeFor(),
+      { calls: [{ echo: `key=${key}` }] },
+      [key],
+    );
+    const text = fs.readFileSync(
+      path.join(out, "raw/C-901-attempt-1.json"),
+      "utf8",
+    );
+    expect(text).not.toContain(key);
+    expect(JSON.parse(text)).toEqual({ calls: [{ echo: "key=[redacted]" }] });
+  });
+});
+
+describe("stripSecrets", () => {
+  it("drops token, secret and bearer fields at any depth, keeping token counts", () => {
+    expect(
+      stripSecrets({
+        access_token: "t-1",
+        nested: [{ refreshToken: "t-2", Client_Secret: "s-1", BEARER: "b-1" }],
+        usage: { input_tokens: 10, num_tokens: 3 },
+        kept: "value",
+      }),
+    ).toEqual({
+      nested: [{}],
+      usage: { input_tokens: 10, num_tokens: 3 },
+      kept: "value",
+    });
+  });
+
+  it("replaces the exact key value inside any nested string", () => {
+    const key = "sk-live-0123456789";
+    const stripped = stripSecrets(
+      {
+        url: `https://x.test/?k=${key}`,
+        list: [`Bearer ${key}`, { deep: `${key}${key}` }, 5, null],
+        [key]: 1,
+      },
+      [key, ""],
+    );
+    expect(JSON.stringify(stripped)).not.toContain(key);
+    expect(stripped).toEqual({
+      url: "https://x.test/?k=[redacted]",
+      list: ["Bearer [redacted]", { deep: "[redacted][redacted]" }, 5, null],
+      "[redacted]": 1,
+    });
+  });
+});
+
+describe("requestJson", () => {
+  const fetchMock = jest.fn<typeof fetch>();
+  const realFetch = global.fetch;
+  beforeEach(() => {
+    fetchMock.mockReset();
+    global.fetch = fetchMock;
+  });
+  afterEach(() => {
+    global.fetch = realFetch;
+  });
+  const json = (status: number, body: unknown) =>
+    new Response(JSON.stringify(body), { status });
+  const timeout = () =>
+    Object.assign(new Error("timed out"), { name: "TimeoutError" });
+  const call = () =>
+    requestJson(
+      "https://vendor.test/x",
+      { method: "POST" },
+      { retryDelayMs: 0 },
+    );
+
+  it("returns the parsed body of a successful call", async () => {
+    fetchMock.mockResolvedValueOnce(json(200, { ok: 1 }));
+    await expect(call()).resolves.toEqual({ status: 200, body: { ok: 1 } });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect(init.method).toBe("POST");
+    expect(init.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it.each([429, 500, 503])("retries once on status %i", async (status) => {
+    fetchMock
+      .mockResolvedValueOnce(json(status, { error: "busy" }))
+      .mockResolvedValueOnce(json(200, { ok: 2 }));
+    await expect(call()).resolves.toEqual({ status: 200, body: { ok: 2 } });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries once on a timeout", async () => {
+    fetchMock
+      .mockRejectedValueOnce(timeout())
+      .mockResolvedValueOnce(json(200, { ok: 3 }));
+    await expect(call()).resolves.toEqual({ status: 200, body: { ok: 3 } });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("gives up after one retry with the status and body of the last answer", async () => {
+    fetchMock
+      .mockResolvedValueOnce(json(502, { error: "a" }))
+      .mockResolvedValueOnce(json(500, { error: "b" }));
+    const error = await call().catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(CallError);
+    expect(error).toMatchObject({
+      message: "status 500",
+      status: 500,
+      body: { error: "b" },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    fetchMock.mockReset();
+    fetchMock.mockRejectedValue(timeout());
+    await expect(call()).rejects.toThrow("request failed (TimeoutError)");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry a client error or a network error", async () => {
+    fetchMock.mockResolvedValueOnce(json(401, { detail: "no" }));
+    await expect(call()).rejects.toMatchObject({ status: 401 });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fetchMock.mockReset();
+    fetchMock.mockRejectedValueOnce(new TypeError("fetch failed"));
+    await expect(call()).rejects.toThrow("request failed (TypeError)");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("refuses an answer that is not a JSON object", async () => {
+    fetchMock.mockResolvedValueOnce(new Response("<html>", { status: 200 }));
+    await expect(call()).rejects.toMatchObject({
+      message: "response is not JSON",
+      body: "<html>",
+    });
+  });
+});
+
+describe("pollJob", () => {
+  it("polls until done and counts the polls", async () => {
+    const states = ["Pending", "Pending", "Completed"];
+    const result = await pollJob(
+      async () => states.shift()!,
+      (state) => state === "Completed",
+      { pollMs: 0, deadlineMs: 60_000 },
+    );
+    expect(result).toEqual({ job: "Completed", polls: 3 });
+  });
+
+  it("throws CallError with the last job after the deadline", async () => {
+    await expect(
+      pollJob(
+        async () => ({ status: "Pending" }),
+        () => false,
+        {
+          pollMs: 10,
+          deadlineMs: 5,
+        },
+      ),
+    ).rejects.toMatchObject({
+      message: "job not finished after 0 min",
+      body: { status: "Pending" },
+    });
+  });
+});
+
+describe("runGenerator", () => {
+  const KEY_NAME = "GENERATOR_TEST_KEY";
+  const KEY = "generator-test-key-987654321";
+  let configPath: string;
+  beforeEach(() => {
+    process.env[KEY_NAME] = KEY;
+    configPath = path.join(dir, "config.json");
+    fs.writeFileSync(configPath, JSON.stringify(config(["reducto"])));
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    delete process.env[KEY_NAME];
+    jest.restoreAllMocks();
+  });
+  const run = (attempt: VendorAttempt, extra: string[] = []) =>
+    runGenerator(
+      {
+        vendor: "reducto",
+        pipeline: "reducto/extract",
+        mode: "reducto/deep-extract",
+        model: "deep-extract-test",
+        keyName: KEY_NAME,
+        attempt,
+        manifest,
+      },
+      [
+        "--cases",
+        "C-901",
+        "--runs",
+        "2",
+        "--out",
+        out,
+        "--config",
+        configPath,
+        ...extra,
+      ],
+    );
+
+  it("writes one envelope per attempt, a failed one when the attempt throws", async () => {
+    let calls = 0;
+    const code = await run(async ({ entry, apiKey, record }) => {
+      calls++;
+      expect(entry.id).toBe("C-901");
+      expect(apiKey).toBe(KEY);
+      record.usage = { num_pages: 4 };
+      record.costUsd = 0.16;
+      record.pages = 4;
+      record.version = "v-test";
+      record.raw = { echo: `Bearer ${apiKey}` };
+      if (calls === 2) throw new CallError("job failed", { reason: "x" });
+      return data();
+    });
+    expect(code).toBe(1);
+
+    const rows = readRowsDir(out);
+    const first = rows.get("C-901", 1);
+    expect(first.executionStatus).toBe("completed");
+    expect(first.data).toEqual(data());
+    expect(first.costUsd).toBe(0.16);
+    expect(first.info).toMatchObject({
+      mode: "reducto/deep-extract",
+      version: "v-test",
+    });
+    const second = rows.get("C-901", 2);
+    expect(second.executionStatus).toBe("failed");
+    expect(second.data.rows).toEqual([]);
+    expect(second.costUsd).toBe(0.16);
+    expect(second.usage).toEqual({ num_pages: 4 });
+
+    const raw = fs.readFileSync(
+      path.join(out, "raw/C-901-attempt-2.json"),
+      "utf8",
+    );
+    expect(raw).not.toContain(KEY);
+    expect(JSON.parse(raw)).toEqual({
+      mode: "reducto/deep-extract",
+      version: "v-test",
+      error: "job failed",
+      echo: "Bearer [redacted]",
+      errorBody: { reason: "x" },
+    });
+    const folder = JSON.parse(
+      fs.readFileSync(path.join(out, "manifest.json"), "utf8"),
+    );
+    expect(folder).toMatchObject({
+      study: "reducto",
+      model: "deep-extract-test",
+      mode: "reducto/deep-extract",
+    });
+  });
+
+  it("exits 0 when every attempt completes", async () => {
+    await expect(run(async () => data())).resolves.toBe(0);
+  });
+
+  it("refuses --model and --ranges, and a missing key, before any call", async () => {
+    const attempt = jest.fn<VendorAttempt>();
+    await expect(run(attempt, ["--model", "x"])).resolves.toBe(2);
+    await expect(run(attempt, ["--ranges", "8"])).resolves.toBe(2);
+    process.env[KEY_NAME] = "";
+    // An empty variable is not overwritten by app/.env, which has no test key.
+    await expect(run(attempt)).resolves.toBe(2);
+    expect(attempt).not.toHaveBeenCalled();
   });
 });
 

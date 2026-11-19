@@ -21,7 +21,9 @@
  * json_schema: { name, schema, strict } }), `document_annotation_prompt` (free
  * text; needs the format) and `pages` (zero-based). The answer comes back as a
  * JSON string in `document_annotation`, pages billed in `usage_info`. A local
- * PDF is sent as a base64 data URL (basic OCR docs).
+ * PDF is sent as a base64 data URL (basic OCR docs). Each call has a
+ * 10-minute timeout and one retry on HTTP 429, a 5xx or a timeout
+ * (common.ts requestJson).
  *
  * `--ranges` (envelope `mode` and folder manifest `mode`):
  * - `whole` (`annotations/whole`, default): one call over the whole document,
@@ -48,6 +50,7 @@ import { resolve } from "node:path";
 import type { EnvelopeData } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type { PricesFile } from "@/backend/ingestion-benchmark/report";
 import {
+  CallError,
   PRICES_PATH,
   asEnvelopeData,
   emptyData,
@@ -60,6 +63,7 @@ import {
   pinnedModel,
   prepareGeneration,
   readCasePdf,
+  requestJson,
   writeEnvelope,
   type GeneratorArgs,
   type GeneratorConfig,
@@ -73,18 +77,6 @@ const MODES: Record<PageRanges, string> = {
   "8": "annotations/8-page",
 };
 const PAGES_PER_CALL = 8;
-/** Annotation calls run an LLM over many pages; longer than the app's plain OCR timeout. */
-const CALL_TIMEOUT_MS = 600_000;
-
-class CallError extends Error {
-  constructor(
-    message: string,
-    readonly body: unknown = null,
-    readonly status: number | null = null,
-  ) {
-    super(message);
-  }
-}
 
 type Call = {
   /** Null: the whole document. */
@@ -93,7 +85,7 @@ type Call = {
   response: unknown;
 };
 
-/** One annotation call; throws CallError (status and body only, never the request). */
+/** One annotation call (one retry on 429, 5xx or timeout); throws CallError. */
 async function annotate(
   apiKey: string,
   model: string,
@@ -101,48 +93,29 @@ async function annotate(
   pages: number[] | null,
   targetYear: number,
 ): Promise<{ status: number; response: Record<string, unknown> }> {
-  let response: Response;
-  try {
-    response = await fetch(OCR_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        document: { type: "document_url", document_url: documentUrl },
-        ...(pages ? { pages } : {}),
-        document_annotation_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "ghgi_envelope",
-            schema: envelopeSchema(),
-            strict: true,
-          },
+  const { status, body } = await requestJson(OCR_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      document: { type: "document_url", document_url: documentUrl },
+      ...(pages ? { pages } : {}),
+      document_annotation_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "ghgi_envelope",
+          schema: envelopeSchema(),
+          strict: true,
         },
-        document_annotation_prompt: envelopeInstructions(targetYear),
-        include_image_base64: false,
-      }),
-      signal: AbortSignal.timeout(CALL_TIMEOUT_MS),
-    });
-  } catch (error) {
-    throw new CallError(`request failed (${(error as Error).name})`);
-  }
-  const text = await response.text();
-  let body: unknown = text;
-  try {
-    body = JSON.parse(text);
-  } catch {
-    // keep the text
-  }
-  if (!response.ok) {
-    throw new CallError(`status ${response.status}`, body, response.status);
-  }
-  if (typeof body !== "object" || body === null) {
-    throw new CallError("response is not JSON", body);
-  }
-  return { status: response.status, response: body as Record<string, unknown> };
+      },
+      document_annotation_prompt: envelopeInstructions(targetYear),
+      include_image_base64: false,
+    }),
+  });
+  return { status, response: body };
 }
 
 function pagesProcessed(response: Record<string, unknown>): number {
@@ -279,6 +252,7 @@ async function main(argv: string[]): Promise<number> {
           executionStatus: error ? "failed" : "completed",
         },
         { model, pageCount, error, calls },
+        [apiKey],
       );
       const rows = error ? 0 : data.rows.length;
       console.log(

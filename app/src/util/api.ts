@@ -13,6 +13,7 @@ import {
 import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
 import {
   OAUTH_SIGNING_ALGORITHM,
+  OAuthTokenType,
   getOAuthSigningKey,
   verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
@@ -233,7 +234,10 @@ function getBearerToken(header: string): {
     getOAuthSigningKey();
     try {
       return {
-        token: verifyOAuthToken(rawToken) as unknown as BearerTokenPayload,
+        token: verifyOAuthToken(
+          rawToken,
+          OAuthTokenType.Access,
+        ) as unknown as BearerTokenPayload,
         kind: "oauth",
       };
     } catch {

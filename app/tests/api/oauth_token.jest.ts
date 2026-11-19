@@ -1,13 +1,18 @@
 import { POST as postToken } from "@/app/api/v1/token/route";
 import { db } from "@/models";
 import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 import { UsedAuthorizationCode } from "@/models/UsedAuthorizationCode";
 import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import jwt from "jsonwebtoken";
 import { createHash, randomBytes } from "node:crypto";
 import { v4 } from "uuid";
-import { signOAuthToken, verifyOAuthToken } from "@/lib/auth/oauth-signing";
+import {
+  OAuthTokenType,
+  signOAuthToken,
+  verifyOAuthToken,
+} from "@/lib/auth/oauth-signing";
 import {
   expectStatusCode,
   mockRequestFormData,
@@ -44,7 +49,7 @@ function createCode(jwtid: string, secret?: string): string {
   };
   return secret
     ? jwt.sign(payload, secret, options)
-    : signOAuthToken(payload, options);
+    : signOAuthToken(OAuthTokenType.Code, payload, options);
 }
 
 function tokenRequest(code: string) {
@@ -120,7 +125,12 @@ describe("OAuth token API", () => {
       expect(decoded?.header.alg).toBe("RS256");
       expect(decoded?.header.kid).toBeTruthy();
       // Verifies with the OAuth key and carries the user and client.
-      const payload = verifyOAuthToken(token);
+      const payload = verifyOAuthToken(
+        token,
+        token === body.access_token
+          ? OAuthTokenType.Access
+          : OAuthTokenType.Refresh,
+      );
       expect(payload.sub).toBe(testUserID);
       expect(payload.client_id).toBe(testClient.clientId);
       // The shared secret must not verify it.
@@ -173,5 +183,85 @@ describe("OAuth token API", () => {
     await expectStatusCode(res, 200);
 
     expect(await UsedAuthorizationCode.findByPk(staleJwtId)).toBeNull();
+  });
+
+  describe("refresh_token grant accepts only refresh tokens", () => {
+    // The refresh grant checks that the user authorized the client.
+    beforeAll(async () => {
+      await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+      await OAuthClientAuthz.upsert({
+        clientId: testClient.clientId,
+        userId: testUserID,
+        lastUsed: new Date(),
+      });
+    });
+
+    afterAll(async () => {
+      await OAuthClientAuthz.destroy({
+        where: { clientId: testClient.clientId, userId: testUserID },
+      });
+    });
+
+    function refreshRequest(token: string) {
+      const formData = new FormData();
+      formData.append("grant_type", "refresh_token");
+      formData.append("refresh_token", token);
+      const req = mockRequestFormData(formData);
+      req.headers.set("content-type", "application/x-www-form-urlencoded");
+      return req;
+    }
+
+    async function issueTokens() {
+      const jwtId = v4();
+      usedJwtIds.push(jwtId);
+      const res = await postToken(tokenRequest(createCode(jwtId)), {
+        params: Promise.resolve({}),
+      });
+      await expectStatusCode(res, 200);
+      return res.json();
+    }
+
+    it("accepts a refresh token", async () => {
+      const { refresh_token } = await issueTokens();
+      const res = await postToken(refreshRequest(refresh_token), {
+        params: Promise.resolve({}),
+      });
+      await expectStatusCode(res, 200);
+    });
+
+    it("rejects an authorization code, which would skip PKCE and single use", async () => {
+      // An unused code, so nothing but its type can stop it.
+      const code = createCode(v4());
+      const res = await postToken(refreshRequest(code), {
+        params: Promise.resolve({}),
+      });
+      await expectStatusCode(res, 400);
+    });
+
+    it("rejects an access token, so access cannot be renewed with itself", async () => {
+      const { access_token } = await issueTokens();
+      const res = await postToken(refreshRequest(access_token), {
+        params: Promise.resolve({}),
+      });
+      await expectStatusCode(res, 400);
+    });
+  });
+
+  it("rejects a refresh token or an access token presented as an authorization code", async () => {
+    const { access_token, refresh_token } = await (async () => {
+      const jwtId = v4();
+      usedJwtIds.push(jwtId);
+      const res = await postToken(tokenRequest(createCode(jwtId)), {
+        params: Promise.resolve({}),
+      });
+      return res.json();
+    })();
+
+    for (const token of [access_token, refresh_token]) {
+      const res = await postToken(tokenRequest(token), {
+        params: Promise.resolve({}),
+      });
+      await expectStatusCode(res, 400);
+    }
   });
 });

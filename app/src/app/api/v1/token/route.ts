@@ -68,6 +68,7 @@ import { OAuthClient } from "@/models/OAuthClient";
 import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import {
   getOAuthSigningKey,
+  OAuthTokenType,
   signOAuthToken,
   verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
@@ -166,7 +167,7 @@ async function handleAuthorizationCodeRequest(
   let decoded: JwtPayload;
 
   try {
-    decoded = verifyOAuthToken(tr.code);
+    decoded = verifyOAuthToken(tr.code, OAuthTokenType.Code);
   } catch (error: unknown) {
     if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
@@ -219,6 +220,7 @@ async function handleAuthorizationCodeRequest(
   const scope = decoded.scope;
 
   const accessToken = signOAuthToken(
+    OAuthTokenType.Access,
     {
       client_id: tr.client_id,
       scope,
@@ -232,6 +234,7 @@ async function handleAuthorizationCodeRequest(
   );
 
   const refreshToken = signOAuthToken(
+    OAuthTokenType.Refresh,
     {
       client_id: tr.client_id,
       scope,
@@ -284,7 +287,7 @@ async function handleRefreshTokenRequest(
   let decoded: JwtPayload;
 
   try {
-    decoded = verifyOAuthToken(rtr.refresh_token);
+    decoded = verifyOAuthToken(rtr.refresh_token, OAuthTokenType.Refresh);
   } catch (error: unknown) {
     if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
@@ -325,6 +328,7 @@ async function handleRefreshTokenRequest(
   const scope = decoded.scope;
 
   const accessToken = signOAuthToken(
+    OAuthTokenType.Access,
     {
       client_id: decoded.client_id,
       scope,

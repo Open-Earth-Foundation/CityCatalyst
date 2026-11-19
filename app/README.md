@@ -191,6 +191,10 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
 - Bearer tokens are told apart by their signature algorithm. An RS256 token is checked
   against this key. An HS256 token is checked against the shared secret and is never
   accepted as an OAuth token. Each path accepts only its own kind.
+- Every OAuth token carries its kind in the JWT `typ` header (`oauth-code+jwt`,
+  `at+jwt`, `oauth-refresh+jwt`), and `verifyOAuthToken` requires the expected kind.
+  Without it, all kinds would verify as each other, for example a refresh token as a
+  bearer token or an authorization code as a refresh token.
 - Tokens issued before this key existed were signed with the shared secret and stop
   working. Clients must authorize again.
 - Never commit a real key. Tests create a throwaway key in memory

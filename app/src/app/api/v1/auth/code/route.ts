@@ -60,7 +60,11 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { getOAuthSigningKey, signOAuthToken } from "@/lib/auth/oauth-signing";
+import {
+  getOAuthSigningKey,
+  OAuthTokenType,
+  signOAuthToken,
+} from "@/lib/auth/oauth-signing";
 import { logger } from "@/services/logger";
 import { v4 } from "uuid";
 import { OAuthClient } from "@/models/OAuthClient";
@@ -121,6 +125,7 @@ export const POST = apiHandler(async (req, { session }) => {
   logger.debug({ jwtid }, "Creating JWT");
 
   const code = signOAuthToken(
+    OAuthTokenType.Code,
     {
       client_id: clientId,
       redirect_uri: redirectUri,

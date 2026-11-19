@@ -17,6 +17,7 @@ import { verifyQuotes } from "@/backend/ingest/plugins/ccra/verify-quotes";
 import { z } from "zod";
 import type { OcrCache } from "../crva-eval/ocr-cache";
 import type { RunStats } from "../crva-eval/run-adapter";
+import { RISK_ROWS_KEY } from "./groups";
 
 /** One schema array item (`/<fieldId>/<index>`) with the evidence of all its leaves. */
 export interface MircoItem {
@@ -289,5 +290,224 @@ export function mircoRunStats(input: {
     figures: kept?.figures.length ?? 0,
     warnings: 0,
     ...(error ? { error } : {}),
+  };
+}
+
+const RiskRowSchema = z.object({
+  hazard: z.string(),
+  receptor: z.string(),
+  level: z.string(),
+  scenario: z.string(),
+  horizon: z.string(),
+  table: z.string(),
+});
+
+const fold = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Evidence of the `found` outcomes under `/<key>/<index>`, by index. */
+function evidenceByIndex(
+  fields: unknown[],
+  key: string,
+): Map<number, { page: number; quote: string }[]> {
+  const out = new Map<number, { page: number; quote: string }[]>();
+  for (const raw of fields) {
+    const outcome = OutcomeSchema.safeParse(raw);
+    if (!outcome.success || outcome.data.status !== "found") continue;
+    const [first, indexText] = pointerSegments(outcome.data.field_id);
+    if (first !== key || !/^\d+$/.test(indexText ?? "")) continue;
+    const list = out.get(Number(indexText)) ?? [];
+    for (const observation of outcome.data.observations) {
+      for (const rawEvidence of observation.evidence) {
+        const e = EvidenceSchema.safeParse(rawEvidence);
+        if (!e.success) continue;
+        const { pdf_page: page, quote } = e.data;
+        if (!list.some((x) => x.page === page && x.quote === quote))
+          list.push({ page, quote });
+      }
+    }
+    out.set(Number(indexText), list);
+  }
+  return out;
+}
+
+type E1Value = {
+  title: string;
+  description: string;
+  hazards: string[];
+  affected: string[];
+};
+
+/**
+ * Wave 2 risk table rows: one row per cell, grouped into one E1.1a item per
+ * hazard × receptor with the levels per scenario and horizon. A group whose
+ * hazard × receptor matches a text item is appended to that item instead
+ * (textItems are changed in place); the rest are returned as new items.
+ */
+export function riskRowItems(input: {
+  rows: unknown[];
+  fields: unknown[];
+  textItems: MircoItem[];
+}): MircoItem[] {
+  const evidence = evidenceByIndex(input.fields, RISK_ROWS_KEY);
+  const groups = new Map<
+    string,
+    {
+      hazard: string;
+      receptor: string;
+      cells: string[];
+      tables: string[];
+      evidence: { page: number; quote: string }[];
+    }
+  >();
+  input.rows.forEach((raw, index) => {
+    const row = RiskRowSchema.safeParse(raw);
+    const rowEvidence = evidence.get(index) ?? [];
+    if (!row.success || rowEvidence.length === 0) return;
+    const { hazard, receptor, level, scenario, horizon, table } = row.data;
+    const key = `${fold(hazard)}×${fold(receptor)}`;
+    const group = groups.get(key) ?? {
+      hazard,
+      receptor,
+      cells: [],
+      tables: [],
+      evidence: [],
+    };
+    const when = [scenario, horizon].map((s) => s.trim()).filter(Boolean);
+    group.cells.push(when.length ? `${when.join(" ")}: ${level}` : level);
+    if (table && !group.tables.includes(table)) group.tables.push(table);
+    for (const e of rowEvidence) {
+      if (!group.evidence.some((x) => x.page === e.page && x.quote === e.quote))
+        group.evidence.push(e);
+    }
+    groups.set(key, group);
+  });
+
+  const titleKey = (v: E1Value) => {
+    const [hazard, receptor] = v.title.split("×");
+    return `${fold(v.hazards[0] ?? hazard ?? "")}×${fold(v.affected[0] ?? receptor ?? "")}`;
+  };
+  const added: MircoItem[] = [];
+  for (const [key, g] of groups) {
+    const levels = `${g.cells.join("; ")}${g.tables.length ? ` (${g.tables.join(", ")})` : ""}`;
+    const match = input.textItems.find(
+      (item) =>
+        item.fieldId === "E1.1a" && titleKey(item.value as E1Value) === key,
+    );
+    if (match) {
+      const value = match.value as E1Value;
+      value.description = `${value.description}; ${levels}`;
+      for (const e of g.evidence) {
+        if (
+          !match.evidence.some((x) => x.page === e.page && x.quote === e.quote)
+        )
+          match.evidence.push(e);
+      }
+      continue;
+    }
+    added.push({
+      fieldId: "E1.1a",
+      index: input.textItems.length + added.length,
+      value: {
+        title: `${g.hazard} × ${g.receptor}`,
+        description: levels,
+        hazards: [g.hazard],
+        affected: [g.receptor],
+      },
+      evidence: g.evidence,
+    });
+  }
+  return added;
+}
+
+/** Joins the group jobs' results; a failed group (null result) adds nothing. */
+export function mergeGroupResults(
+  results: { groupId: string; result: unknown }[],
+): { items: MircoItem[]; badPointers: number; ambiguousItems: number } {
+  const items: MircoItem[] = [];
+  let badPointers = 0;
+  let ambiguousItems = 0;
+  for (const { result } of results) {
+    const parsed = ResultSchema.safeParse(result);
+    if (!parsed.success) continue;
+    const { [RISK_ROWS_KEY]: rows, ...data } = parsed.data.data;
+    const isRow = (raw: unknown) =>
+      OutcomeSchema.safeParse(raw).data?.field_id.startsWith(
+        `/${RISK_ROWS_KEY}`,
+      ) ?? false;
+    const own = mircoItems({
+      data,
+      fields: parsed.data.fields.filter((f) => !isRow(f)),
+    });
+    badPointers += own.badPointers;
+    ambiguousItems += own.ambiguousItems;
+    items.push(...own.items);
+    if (Array.isArray(rows)) {
+      items.push(
+        ...riskRowItems({
+          rows,
+          fields: parsed.data.fields.filter(isRow),
+          textItems: own.items,
+        }),
+      );
+    }
+  }
+  return { items, badPointers, ambiguousItems };
+}
+
+/**
+ * One envelope for run stats from the group jobs' envelopes: usage summed,
+ * repairs summed plus one per extra job (mircoRunStats counts repairs + 1 turns).
+ */
+export function mergeEnvelopes(envelopes: unknown[]): {
+  result: { data: Record<string, unknown>; fields: unknown[] } | null;
+  execution_status: string;
+  repair: { repairs: number };
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+    input_tokens_details: { cached_tokens: number };
+    output_tokens_details: { reasoning_tokens: number };
+  };
+} {
+  const parsed = envelopes.map((e) =>
+    EnvelopeSchema.catch({
+      result: null,
+      execution_status: undefined,
+      repair: undefined,
+      usage: undefined,
+    }).parse(e),
+  );
+  const usage = parsed.map((e) => mircoUsage(e.usage));
+  const failed = parsed
+    .map((e) => e.execution_status ?? "unknown")
+    .filter((s) => s !== "completed");
+  const sum = (pick: (u: MircoUsage) => number) =>
+    usage.reduce((total, u) => total + pick(u), 0);
+  return {
+    result: parsed.some((e) => e.result != null)
+      ? { data: {}, fields: [] }
+      : null,
+    execution_status: failed.length
+      ? `partial: ${failed.join(", ")}`
+      : "completed",
+    repair: {
+      repairs:
+        parsed.reduce((total, e) => total + (e.repair?.repairs ?? 0), 0) +
+        Math.max(0, parsed.length - 1),
+    },
+    usage: {
+      input_tokens: sum((u) => u.promptTokens),
+      output_tokens: sum((u) => u.completionTokens),
+      input_tokens_details: { cached_tokens: sum((u) => u.cachedInputTokens) },
+      output_tokens_details: {
+        reasoning_tokens: sum((u) => u.reasoningTokens),
+      },
+    },
   };
 }

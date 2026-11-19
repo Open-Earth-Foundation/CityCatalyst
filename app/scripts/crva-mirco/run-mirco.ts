@@ -30,7 +30,7 @@ import {
 import { redactSecrets } from "../crva-agent/run-stats";
 import { assembleMircoBundle, mircoItems, mircoRunStats } from "./convert";
 
-const MODEL = "gpt-6.1-sol";
+export const MODEL = "gpt-6.1-sol";
 const EFFORT = "medium";
 /** Mirco's client cancels the job at its deadline; 1800 s (its default) can cut a long report. */
 const CLIENT_TIMEOUT_S = 7200;
@@ -82,7 +82,7 @@ function argValue(flag: string, fallback?: string): string {
 }
 
 /** Stops before a paid call when the service is not set up as the spec requires. */
-async function checkService(baseUrl: string, ocrOn: boolean) {
+export async function checkService(baseUrl: string, ocrOn: boolean) {
   const response = await fetch(`${baseUrl}/v1/config`).catch(() => {
     throw new Error(
       `Mirco's service is not reachable at ${baseUrl}; start run-demo.cmd first`,
@@ -156,7 +156,7 @@ export function convertEnvelope(input: {
   return { stats, bundle, ambiguousItems };
 }
 
-async function runClient(input: {
+export async function runClient(input: {
   python: string;
   args: string[];
   cwd: string;

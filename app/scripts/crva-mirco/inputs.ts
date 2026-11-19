@@ -263,8 +263,11 @@ export const CRVA_FIELD_GUIDE: Record<CrvaFieldId, CrvaFieldGuide> = {
   },
 };
 
-function fieldGuideMarkdown(): string {
-  return (CRVA_FIELD_IDS as CrvaFieldId[])
+/** The field guide for the given fields (all 12 by default). */
+export function fieldGuideMarkdown(
+  ids: readonly CrvaFieldId[] = CRVA_FIELD_IDS as CrvaFieldId[],
+): string {
+  return ids
     .map((id) => {
       const guide = CRVA_FIELD_GUIDE[id];
       return [

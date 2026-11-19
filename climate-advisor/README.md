@@ -82,8 +82,7 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      size limit. The response uses `concept_note.visual.render` with
      `data.kind = "panels"`. CityCatalyst renders the
      tab controls and shares the selected panel between the card and Expand.
-     Each body is sanitized and displayed in a script-free sandbox. An empty
-     result has a text fallback. Calculators and linked filters remain experimental.
+     Each body follows the [chat visual rendering policy](#concept-note-chat-visual-rendering-cc-1241).
    - Successful tool calls are included in the SSE `done` event and restored
      by `GET /v1/threads/{thread_id}/messages` as `visuals`. HTML is retained
      in the call arguments and compacted for model-facing replay. A visual-only
@@ -98,6 +97,37 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chat visual rendering (CC-1241)
+
+The model supplies HTML and inline SVG. CityCatalyst sanitizes the markup and
+displays it in a sandboxed iframe with a restrictive content security policy.
+The sandbox uses `allow-same-origin` so the chat can read the frame document to
+measure its content height and preserve disclosure and radio selection state
+between the inline card and Expand. The same-origin sandbox must remain
+script-free. If generated scripts could run in that frame, they could access
+the parent CityCatalyst document in the user's signed-in session. Running
+arbitrary model scripts would require a separate origin boundary and a narrowly
+scoped messaging contract for sizing and state. See the
+[chat frame implementation](../app/src/components/ConceptNoteWorkspace/chat-visual-frame.tsx).
+
+An empty canvas that relies on JavaScript to draw a chart produces no visible
+output in this renderer. The backend rejects obviously empty
+visuals and identifies any empty panel by label. The prompt asks the model to
+retry once with visible HTML or inline SVG, then answer in text if the retry
+fails. The browser checks the rendered result as well. This catches cases such
+as saved visuals from older conversations and content that its CSS hides
+completely. If the browser finds an empty visual, it shows an unavailable
+message and lets the user ask Clima to show it again.
+
+For richer interaction, the preferred design is trusted CityCatalyst components
+that take validated data and settings from the model. The shipped tab control
+uses this approach for navigation, with sandboxed HTML inside each panel. In the
+local experiment, both a small set of typed components and a general registry of
+controls and views passed the same five interaction scenarios. They added 254
+and 763 input tokens per first call, respectively, relative to the HTML tool.
+That result supports starting with typed components when adding calculators or
+filters. Those controls were prototypes in CC-1241.
 
 ### Concept Note chapter structure
 

@@ -106,6 +106,12 @@ describe("parseArgs --pipeline", () => {
     );
   });
 
+  it("rejects --rows-dir without --pipeline precomputed", () => {
+    expect(() => parseArgs(["--rows-dir", "/x"])).toThrow(
+      "--rows-dir needs --pipeline precomputed",
+    );
+  });
+
   it("needs --rows-dir", () => {
     expect(() => parseArgs(["--pipeline", "precomputed"])).toThrow(
       "--pipeline precomputed needs --rows-dir",

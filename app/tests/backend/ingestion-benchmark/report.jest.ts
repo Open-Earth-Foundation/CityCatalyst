@@ -23,6 +23,7 @@ import {
   pipelineCostUsd,
   pricesFor,
   renderReport,
+  runCostUsd,
   rescoredRunFlags,
   reserveRunFolder,
   runFolderName,
@@ -473,6 +474,16 @@ describe("report", () => {
     expect(text.indexOf("| second |")).toBeGreaterThan(
       text.indexOf("| first |"),
     );
+  });
+
+  it("finds the header in a CRLF index and does not add a second one", () => {
+    const path = join(tmp(), "INDEX.md");
+    writeFileSync(path, `${INDEX_HEADER}| old |\n`.replace(/\n/g, "\r\n"));
+    appendIndexLine(path, "| new |");
+    const text = readFileSync(path, "utf8");
+    expect(text.split("| Run (UTC) |")).toHaveLength(2);
+    expect(text).not.toContain("\r");
+    expect(text.endsWith("| old |\n| new |\n")).toBe(true);
   });
 
   it("creates the index with the header when it does not exist", () => {
@@ -983,6 +994,36 @@ describe("pipeline cost", () => {
     const s = pipelineSummary();
     expect(render(s)).toContain("Estimated cost of this run: $0.250");
     expect(renderIndexLine(s, [block({})], "f")).toContain("| $0.250 |");
+  });
+
+  it("shows n/a, not $0.000, for a pipeline run without any envelope cost", () => {
+    const s = pipelineSummary();
+    s.results[0].runs[0].pipeline = undefined;
+    expect(runCostUsd(s)).toBeNull();
+    expect(render(s)).toContain("Estimated cost of this run: n/a");
+  });
+
+  it("shows envelope tokens per case, or n/a without them", () => {
+    const s = pipelineSummary();
+    expect(render(s)).toContain("| n/a | ");
+    s.results[0].runs[0].pipeline = pipelineAttempt({
+      usage: { input_tokens: 12_000, output_tokens: 3_000 },
+    });
+    const report = render(s);
+    expect(report).toContain("| 12k / 3k |");
+    expect(report).not.toContain("0k / 0k");
+  });
+
+  it("truncates a long total basis in the report only", () => {
+    const s = pipelineSummary();
+    const long = "x".repeat(500);
+    s.results[0].runs[0].pipeline = pipelineAttempt({
+      reported: { ...pipelineAttempt().reported, totalBasis: long },
+    });
+    const report = render(s);
+    expect(report).not.toContain(long);
+    expect(report).toContain(`${"x".repeat(200)}...`);
+    expect(s.results[0].runs[0].pipeline?.reported.totalBasis).toBe(long);
   });
 
   it("shows n/a for a pipeline attempt without a price", () => {

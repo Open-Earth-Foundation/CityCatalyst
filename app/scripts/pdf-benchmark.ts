@@ -302,8 +302,10 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     ...gitInfo(),
     llmModel: old.llmModel,
     extractionModel: old.pipeline ? undefined : old.extractionModel,
-    reasoningEffort: old.reasoningEffort,
-    ocrModel: old.ocrModel,
+    // A pipeline run has no built-in OCR model or reasoning effort.
+    ...(old.pipeline
+      ? {}
+      : { reasoningEffort: old.reasoningEffort, ocrModel: old.ocrModel }),
     prices,
     runsPerFile: old.runsPerFile ?? 3,
     heldOut: old.heldOut,
@@ -633,13 +635,16 @@ export async function main(argv: string[]): Promise<number> {
     const verdicts: CaseVerdict[] = results.map((result) =>
       caseVerdict(result, keys[result.id], prices),
     );
+    // A pipeline run is not compared with the built-in baseline or budgeted
+    // against its forecast: it holds the pipeline's rows, not the built-in import's.
+    const gateBaseline: Baseline = rowsDir ? {} : baseline;
     const gates: CaseGate[] = verdicts.map((verdict) => {
-      const before = baselineResult(baseline, outRoot, verdict.id);
+      const before = baselineResult(gateBaseline, outRoot, verdict.id);
       const comparison = compareWithBaseline({
         id: verdict.id,
         current: verdict,
         currentVersion: caseVersions.get(verdict.id)!,
-        baseline,
+        baseline: gateBaseline,
         key: keys[verdict.id],
         runsRoot: outRoot,
         prices,
@@ -649,6 +654,7 @@ export async function main(argv: string[]): Promise<number> {
         comparison,
         before ? forecastUsd(before, prices, verdict.attempts) : null,
         options.runs,
+        !!rowsDir,
       );
     });
     const manifestCounts = (["validated", "held-out", "dev"] as Block[]).reduce(
@@ -712,8 +718,12 @@ export async function main(argv: string[]): Promise<number> {
       ...git,
       // A precomputed run used no built-in extraction: claim no model, prompt or input.
       extractionModel: rowsDir ? undefined : extractionModel,
-      reasoningEffort: extraction.reasoningEffort,
-      ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+      ...(rowsDir
+        ? {}
+        : {
+            reasoningEffort: extraction.reasoningEffort,
+            ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+          }),
       prices,
       runsPerFile: options.runs,
       heldOut: manifest.filter((e) => e.block === "held-out").map((e) => e.id),

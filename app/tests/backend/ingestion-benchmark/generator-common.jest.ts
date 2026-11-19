@@ -180,6 +180,20 @@ describe("prepareGeneration", () => {
     });
   });
 
+  it("rejects more than 3 runs before any key load or call", () => {
+    expect(() =>
+      prepareGeneration({
+        vendor: "mistral",
+        cases: "C-901",
+        runs: 4,
+        out,
+        config: config(["mistral"]),
+        manifest,
+      }),
+    ).toThrow(/at most 3/);
+    expect(fs.existsSync(out)).toBe(false);
+  });
+
   it("rejects a runs value that is not a positive integer", () => {
     expect(() =>
       prepareGeneration({

@@ -384,10 +384,14 @@ describe("logBenchmarkRun", () => {
     expect(Object.keys(tags)).not.toContain("extraction_model");
     expect(Object.keys(tags)).not.toContain("prompt_hash");
     expect(Object.keys(tags)).not.toContain("input_representation");
+    expect(Object.keys(tags)).not.toContain("ocr_model");
+    expect(Object.keys(tags)).not.toContain("reasoning_effort");
     expect(tags).toMatchObject({
       pipeline: "precomputed",
       pipeline_study: "study-a",
       pipeline_stage: "stage-2",
+      pipeline_mode: "batch",
+      pipeline_version: "v3",
       exploratory: "true",
     });
     const metricKeys = new Set(

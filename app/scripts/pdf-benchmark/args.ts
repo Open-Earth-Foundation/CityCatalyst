@@ -111,6 +111,9 @@ export function parseArgs(argv: string[]): CliOptions {
   if (options.updateBaseline && options.rescore) {
     throw new Error("a rescore cannot update the baseline");
   }
+  if (options.rowsDir && !options.pipeline) {
+    throw new Error("--rows-dir needs --pipeline precomputed");
+  }
   if (options.pipeline && !options.rowsDir) {
     throw new Error("--pipeline precomputed needs --rows-dir");
   }

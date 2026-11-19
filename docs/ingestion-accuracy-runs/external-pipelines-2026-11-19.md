@@ -49,7 +49,7 @@ Summary over the run:
 
 Reading the two pipelines:
 
-- Mirco's rows are much more precise (97% vs 82%) and find more notation keys. When a row is stored, it is almost always right.
+- Mirco's rows are more precise (97% vs 82%) and find more notation keys, but read this with the caveat on per-case guidance below: the two pipelines did not get the same inputs.
 - Mirco's recall losses on C-020 and C-021 are mostly import losses, not extraction losses. The pipeline reports unsplit subsectors (for example `I.3` with no scope). Approve drops these as `gpc-reference-unknown` (7 to 9 rows per attempt), and the total then falls 10x short. With those rows added back, C-020 goes from 33% to 92% recall and its total is within tolerance; C-021 goes from 27% to 91%. The variant is an upper bound: on C-022 all 4 added parent rows also had their children stored, so the amount counts twice there.
 - Mirco's `approve_error` on C-023 and C-024 ("No valid rows to import") has the same cause: every row is a parent reference or has an unresolved reference, so approve keeps nothing.
 - The built-in import is better on totals: 3 cases within tolerance against 2, and more passing attempts. It fails hard on C-019 (output truncated, 10x off on all 3 attempts, US$ 2.14 of the US$ 5.56) and on C-020 (zero rows).
@@ -73,6 +73,8 @@ Every pipeline stored 4 distractor values on C-018 except the built-in import (2
 
 ## Caveats
 
+- Mirco's envelopes say his pipeline used per-case guidance (`case_context`) and a repair stage. The built-in import and the vendors got no per-case context. What that context held, and whether round 2 used feedback from the benchmark, is unconfirmed and still to be asked to Mirco, so compare his pipeline with the others with care.
+- The spec asked for the dev block as well, but the manifest has no dev cases, so only validated cases ran.
 - One attempt on one case per vendor. It shows that Reducto and LlamaExtract can match the best result on a clean, tabular report. It does not show how they handle the hard cases (C-017, C-019 to C-024), where the built-in import and Mirco's pipeline differ most.
 - LlamaExtract was run without the `<example_output>` block of the shared instructions, because its `system_prompt` has a length limit (ruling R13). The other vendors got the full instructions.
 - Mistral pricing: the annotations price is the list price per page. Whether OCR is billed on top was not confirmed.
@@ -93,6 +95,6 @@ The precomputed mode maps fields only and imports through the real approve step.
 ## Verdict
 
 - No external pipeline is ready to replace the built-in import on this evidence. Reducto and LlamaExtract are perfect on C-018, but so is Mirco's pipeline, and one easy case cannot rank them.
-- The largest measured gain does not need a vendor: approve drops parent references. Mirco's pipeline would move from 68% to up to 86% mean recall, and C-020 would pass its total, if approve kept or split them. This is an import change, not an extraction change, and it would apply to any pipeline that reports unsplit subsectors.
-- Mirco's pipeline has higher precision on C-017 to C-021, recovers more notation keys overall (26 against 10 of 39) and never truncates. The built-in import is better on C-016 and still wins on totals in this run.
+- The largest measured gain does not need a vendor: approve drops parent references. Mirco's pipeline would move from 68% to up to 86% mean recall, and C-020 would pass its total, if approve kept the parent rows (the variant measures keeping them as `<ref>.x`, not splitting them by scope). This is an import change, not an extraction change, and it would apply to any pipeline that reports unsplit subsectors.
+- Mirco's pipeline shows higher precision on C-017 to C-021 (with per-case guidance the built-in import did not get), recovers more notation keys overall (26 against 10 of 39) and never truncates. The built-in import is better on C-016 and still wins on totals in this run.
 - Next useful evidence, cheapest first: (1) decide how approve should treat parent references and re-score Mirco's envelopes (free); (2) run Reducto on C-017 and C-019 to C-021 once (about US$ 0.04/page) to test it on the hard cases; (3) only then consider LlamaExtract, which costs about twice as much as Reducto per page.

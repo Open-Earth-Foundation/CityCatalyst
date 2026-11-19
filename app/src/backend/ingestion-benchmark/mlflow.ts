@@ -255,11 +255,11 @@ export async function logBenchmarkRun(args: {
       ...(summary.pipeline
         ? {}
         : { extraction_model: none(summary.extractionModel) }),
-      ocr_model: none(summary.ocrModel),
-      reasoning_effort: none(summary.reasoningEffort),
       ...(summary.pipeline
         ? {}
         : {
+            ocr_model: none(summary.ocrModel),
+            reasoning_effort: none(summary.reasoningEffort),
             prompt_hash: none(summary.promptHash),
             input_representation: none(summary.inputRepresentation),
           }),
@@ -271,6 +271,12 @@ export async function logBenchmarkRun(args: {
             pipeline: summary.pipeline.id,
             pipeline_study: none(summary.pipeline.study),
             pipeline_stage: none(summary.pipeline.stage),
+            ...(summary.pipeline.mode
+              ? { pipeline_mode: summary.pipeline.mode }
+              : {}),
+            ...(summary.pipeline.version
+              ? { pipeline_version: summary.pipeline.version }
+              : {}),
           }
         : {}),
       exploratory: String(summary.exploratory),

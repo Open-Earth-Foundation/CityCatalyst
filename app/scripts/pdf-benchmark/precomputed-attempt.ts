@@ -213,10 +213,13 @@ export async function runPrecomputedAttempt(
   try {
     envelope = rowsDir.get(entry.id, attempt);
   } catch (error) {
-    const missing =
-      error instanceof RowsDirError && error.code === "missing_entry";
+    const code = error instanceof RowsDirError ? error.code : undefined;
+    const missing = code === "missing_entry";
     return finish({
-      failureMode: "setup_error",
+      // An envelope the pipeline wrote badly is its failure; a missing, duplicate
+      // or tampered file is the setup's.
+      failureMode:
+        code === "invalid_envelope" ? "extraction_error" : "setup_error",
       message: (error as Error).message,
       ...(missing ? { missingEnvelope: true as const } : {}),
     });

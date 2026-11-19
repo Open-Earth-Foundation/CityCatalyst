@@ -98,6 +98,9 @@ export function prepareGeneration(opts: {
   if (!Number.isInteger(opts.runs) || opts.runs < 1) {
     throw new Error("--runs must be a positive integer");
   }
+  if (opts.runs > 3) {
+    throw new Error("--runs must be at most 3 (3 attempts per case)");
+  }
   const selected = selectCases(opts.manifest ?? loadManifest(MANIFEST_PATH), {
     cases: opts.cases,
   });

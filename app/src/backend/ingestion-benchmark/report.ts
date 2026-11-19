@@ -502,7 +502,7 @@ export function pipelineCostUsd(
 }
 
 const sumOrNull = (values: (number | null)[]): number | null =>
-  values.some((value) => value === null)
+  values.length === 0 || values.some((value) => value === null)
     ? null
     : (values as number[]).reduce((sum, value) => sum + value, 0);
 
@@ -540,6 +540,43 @@ const money = (value: number | null) =>
 
 const tokensText = (usage: CaseUsage) =>
   `${(usage.promptTokens / 1000).toFixed(0)}k / ${(usage.completionTokens / 1000).toFixed(0)}k`;
+
+/** Input or output tokens of an envelope's usage: the plain key, else the sum of per-model keys. */
+function envelopeTokens(
+  usage: Record<string, number>,
+  names: string[],
+): number | null {
+  for (const name of names) if (name in usage) return usage[name];
+  const nested = Object.entries(usage).filter(([key]) =>
+    names.some((name) => key.endsWith(`.${name}`)),
+  );
+  return nested.length ? nested.reduce((sum, [, n]) => sum + n, 0) : null;
+}
+
+/**
+ * Tokens of a case: a precomputed case shows what its envelopes reported (n/a
+ * when one gives none), a built-in case its measured usage.
+ */
+function caseTokensText(result: CaseResult): string {
+  const envelopes = result.runs.flatMap((run) =>
+    run.pipeline ? [run.pipeline.usage] : [],
+  );
+  if (envelopes.length === 0) return tokensText(caseUsage(result));
+  const input = envelopes.map((u) =>
+    envelopeTokens(u, ["input_tokens", "prompt_tokens"]),
+  );
+  const output = envelopes.map((u) =>
+    envelopeTokens(u, ["output_tokens", "completion_tokens"]),
+  );
+  if (input.includes(null) || output.includes(null)) return "n/a";
+  const k = (values: (number | null)[]) =>
+    ((values as number[]).reduce((sum, n) => sum + n, 0) / 1000).toFixed(0);
+  return `${k(input)}k / ${k(output)}k`;
+}
+
+/** Keeps a long free-text field readable in a table cell. */
+const clip = (text: string, max = 200) =>
+  text.length > max ? `${text.slice(0, max)}...` : text;
 
 const pct = (ratio: number | null) =>
   ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
@@ -609,7 +646,7 @@ function renderPipelineNotes(summary: RunSummary): string[] {
       if (run.pipeline) {
         const p = run.pipeline;
         return [
-          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(p.reported.totalBasis ?? "n/a")} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) |`,
+          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(clip(p.reported.totalBasis ?? "n/a"))} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) |`,
         ];
       }
       return run.missingEnvelope
@@ -890,7 +927,7 @@ export function renderReport(
           ? "yes"
           : "no";
     lines.push(
-      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${caseTokensText(result)} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
     );
   }
 
@@ -977,7 +1014,10 @@ export const INDEX_HEADER = [
  */
 export function appendIndexLine(indexPath: string, line: string): void {
   mkdirSync(dirname(indexPath), { recursive: true });
-  const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  // A file saved with CRLF endings still holds the header; keep the file in LF.
+  const raw = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  const current = raw.replace(/\r\n/g, "\n");
+  if (current !== raw) writeFileSync(indexPath, current);
   if (!current.includes(INDEX_HEADER)) {
     const gap = current === "" || current.endsWith("\n") ? "" : "\n";
     appendFileSync(indexPath, `${gap}${INDEX_HEADER}`);

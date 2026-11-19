@@ -206,6 +206,19 @@ describe("runPrecomputedAttempt", () => {
     expect(seen.uploads).toBe(0);
   });
 
+  it("maps an invalid envelope to extraction_error before any upload", async () => {
+    const { ctx, seen } = fakeContext();
+    const rows = rowsDirOf(() => {
+      throw new RowsDirError("invalid_envelope", "case C-T1 attempt 1");
+    });
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
+    expect(run.failureMode).toBe("extraction_error");
+    expect(run.message).toContain("invalid_envelope");
+    expect(run.missingEnvelope).toBeUndefined();
+    expect(seen.cityCreates).toBe(0);
+    expect(seen.uploads).toBe(0);
+  });
+
   it("marks only a missing envelope, not other rows-folder errors", async () => {
     const { ctx } = fakeContext();
     const rows = rowsDirOf(() => {

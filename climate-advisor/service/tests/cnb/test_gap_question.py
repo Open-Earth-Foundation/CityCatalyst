@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 from app.config.settings import Settings, _load_llm_config
+from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
     GapQuestionOutput,
     GapQuestionRequest,
@@ -29,6 +30,16 @@ def test_rejects_single_or_invalid_choices(options):
         GapSubQuestion(question="Instrument?", options=options)
 
 
+def test_confirmation_takes_its_choices_from_the_ui():
+    question = GapSubQuestion(question="Still EUR 2m?", options=[], confirms=True)
+    assert question.confirms
+    # Model-written choices would bring back a "changed" answer with no value.
+    with pytest.raises(ValidationError):
+        GapSubQuestion(
+            question="Still EUR 2m?", options=["Yes", "No"], confirms=True
+        )
+
+
 @pytest.mark.parametrize("count", [0, 5])
 def test_requires_one_to_four_questions(count):
     with pytest.raises(ValidationError):
@@ -43,8 +54,13 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
     output = {
         "why_asking": "Support needed",
         "questions": [
-            {"question": "Instrument?", "options": ["Loan", "Grant", "Guarantee"]},
-            {"question": "Amount?", "options": []},
+            {
+                "question": "Instrument?",
+                "options": ["Loan", "Grant", "Guarantee"],
+                "where_to_find": "Loan agreement or lender term sheet",
+                "confirms": False,
+            },
+            {"question": "Amount?", "options": [], "where_to_find": "", "confirms": False},
         ],
     }
     client = AsyncMock()
@@ -84,6 +100,11 @@ def gap_route(monkeypatch):
                 state="open",
                 question="Original question",
                 why_asking="Needed",
+                suggestions=[
+                    ConceptNoteGapSuggestion(
+                        value="Loan of EUR 2 million", source_refs=["Plan"]
+                    )
+                ],
             )
         ],
     )
@@ -168,6 +189,12 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     }
     # Whole entries: truncating would drop later answers and undecided parts.
     assert context["previous_answers"] == ["Earlier answer " * 300]
+    # Source-grounded values let the model confirm instead of asking from scratch.
+    assert context["source_suggestions"] == [
+        {"value": "Loan of EUR 2 million", "source_refs": ["Plan"]}
+    ]
+    # Hints are optional, so an older model reply without them still validates.
+    assert result.questions[0].where_to_find == ""
     gap_route.args["session"].commit.assert_not_called()
 
 

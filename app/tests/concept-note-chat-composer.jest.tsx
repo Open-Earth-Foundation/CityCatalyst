@@ -325,6 +325,7 @@ beforeEach(() => {
         {
           question: "Which financing instrument?",
           options: ["Loan", "Grant", "Guarantee"],
+          where_to_find: "Loan agreement or lender term sheet",
         },
         { question: "What amount?", options: [] },
       ],
@@ -400,6 +401,61 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
     focused_chapter_id: "financing-chapter",
   });
   expect(closeGap).toHaveBeenCalledTimes(1);
+});
+
+it("shows source-grounded suggestions with their source and adds one to the answer", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const box = container.querySelector<HTMLElement>(
+    '[data-testid="concept-note-gap-source-suggestions"]',
+  )!;
+  expect(box.textContent).toContain("Loan");
+  expect(box.textContent).toContain("gap-source-label");
+  // Each question says where its answer is usually found, when there is a hint.
+  const hints = container.querySelectorAll(
+    '[data-testid="concept-note-gap-where-to-find"]',
+  );
+  expect(hints).toHaveLength(1);
+  expect(subQuestion(0).contains(hints[0])).toBe(true);
+  const use = [...box.querySelectorAll("button")];
+  expect(use).toHaveLength(2);
+  // Source text alone is enough to send, even with no question answered yet.
+  expect(previewButton().disabled).toBe(true);
+  await act(async () => use[1].click());
+  expect(use[1].disabled).toBe(true);
+  expect(previewButton().disabled).toBe(false);
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain("2. What amount?\ngap-not-decided\n\nGrant");
+  expect(content).toContain("marked as missing");
+});
+
+it("needs the current value before a changed source value counts as answered", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "Confirm the instrument.",
+      questions: [
+        { question: "Is the loan still planned?", options: [], confirms: true },
+      ],
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const radios = [
+    ...subQuestion(0).querySelectorAll<HTMLInputElement>('input[type="radio"]'),
+  ].map((radio) => radio.value);
+  // One fixed "still correct" choice, no preselection, no free-text "Other".
+  expect(radios).toEqual(["0", "custom", "unknown"]);
+  expect(subQuestion(0).textContent).toContain("gap-confirm-yes");
+  expect(subQuestion(0).textContent).toContain("gap-confirm-changed");
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  // "Changed" without the new value is not an answer.
+  expect(previewButton().disabled).toBe(true);
+  await writeAnswer(0, "A EUR 3 million grant");
+  expect(container.textContent).toContain("gap-complete-hint");
 });
 
 it("asks Clima to replace the gap marker once every question is answered", async () => {

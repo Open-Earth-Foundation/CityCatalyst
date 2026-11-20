@@ -32,7 +32,12 @@ CNB
       ├─ "{structure_tab}": editable, persisted chapter structure
       └─ "{draft_tab}"
          ├─ "{draft_sections}": chapter navigation, not a separate view
-         └─ Draft text, missing-information markers and reviewable proposals
+         ├─ Draft text, missing-information markers and reviewable proposals
+         └─ Missing-information marker → "{gap_answer}": short questions with
+            "Where to find it" hints, "{gap_source_suggestions}" (unverified
+            values from uploads, each with "{gap_use}" to add it to the answer),
+            then a previewed chapter change the user accepts. This is where
+            a draft gap is answered, not a "{todo_tab}" card.
 
 INFORMATION_FIRST_FLOW: choose a template → "{overview_tab}" → "{todo_tab}"
 and "{context_tab}" → confirm sourced candidates or enter explicit answers,

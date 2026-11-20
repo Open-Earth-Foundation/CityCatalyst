@@ -2316,8 +2316,11 @@ The standalone suggestions below are hidden while the latest message has choices
 `POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
-in the same chapter are skipped), each with zero or two to five answer categories.
-It writes nothing; answers go through the review-only chapter-edit flow.
+in the same chapter are skipped), each with zero or two to five answer categories
+and a `where_to_find` hint (kind of document or office, never a citation). The
+gap's source suggestions are sent as unverified values: a part they cover is asked
+as a confirmation (`confirms: true`, no options), for which the UI shows its own
+"still correct" choice and a field for the changed value. It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions

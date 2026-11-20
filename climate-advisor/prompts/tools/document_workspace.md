@@ -22,6 +22,7 @@ export while the service lists blockers or dependent text is still stale.
 
 For the overall document's required work prefer `document_workspace_points`.
 `concept_note_gaps` remains a read-only view of legacy and narrative chapter
-review findings. Do not silently reinterpret resolved legacy gaps as accepted
+review findings; call it as well when the user asks about a missing-information
+marker in the draft, since only it returns that gap's source suggestions. Do not silently reinterpret resolved legacy gaps as accepted
 point values. Editing existing prose continues through a reviewable edit
 proposal, separate from the acceptance of a point answer.

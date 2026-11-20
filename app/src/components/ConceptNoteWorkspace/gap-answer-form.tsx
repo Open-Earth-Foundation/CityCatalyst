@@ -43,7 +43,13 @@ interface GapAnswerFormProps {
 /** Validated by Climate Advisor's GapQuestionOutput before it reaches the browser. */
 interface GapQuestion {
   why_asking: string;
-  questions: { question: string; options: string[] }[];
+  questions: {
+    question: string;
+    options: string[];
+    where_to_find?: string;
+    /** Confirms a source value; a "changed" answer must carry the new value. */
+    confirms?: boolean;
+  }[];
 }
 
 /** Unsent answers, kept for the browser session so leaving the form loses nothing. */
@@ -103,11 +109,16 @@ export function GapAnswerForm({
   const [showRequest, setShowRequest] = useState(false);
   const [tooLong, setTooLong] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
+  const detailsRef = useRef<HTMLTextAreaElement>(null);
   const whyAsking = question?.why_asking ?? request.row.whyAsking;
   // Without generated questions, the original gap is one free-text question.
-  const questions = question?.questions ?? [
-    { question: request.row.question, options: [] },
-  ];
+  // A confirmation gets one fixed choice; "changed" is the free-text answer,
+  // so it always carries the new value.
+  const questions: GapQuestion["questions"] = (
+    question?.questions ?? [{ question: request.row.question, options: [] }]
+  ).map((item) =>
+    item.confirms ? { ...item, options: [t("gap-confirm-yes")] } : item,
+  );
   const answerKey = (index: number) => `${index}:${questions[index].question}`;
   const answers = questions.map(({ options }, index) => {
     const choice = choices[index];
@@ -120,7 +131,9 @@ export function GapAnswerForm({
   // legacy inline markers (no gap record) are answered without replacing them.
   // The unavailable fallback asks the original gap itself, so its answer covers it.
   const complete = request.row.gap !== null && answers.every(Boolean);
-  const answered = answers.some(Boolean);
+  // Source text the user added counts as an answer, so it can be sent alone.
+  const answered = answers.some(Boolean) || Boolean(details.trim());
+  const sourceSuggestions = request.row.gap?.suggestions ?? [];
   const answerText = [
     ...questions.map(
       ({ question: text }, index) =>
@@ -161,8 +174,8 @@ export function GapAnswerForm({
         setQuestion(result);
         setChoices(
           Object.fromEntries(
-            result.questions.flatMap(({ options }, index) =>
-              options.length ? [] : [[index, "custom"]],
+            result.questions.flatMap(({ options, confirms }, index) =>
+              options.length || confirms ? [] : [[index, "custom"]],
             ),
           ),
         );
@@ -291,6 +304,72 @@ export function GapAnswerForm({
             </chakra.button>
           </Box>
         </Box>
+        {sourceSuggestions.length > 0 && (
+          <VStack
+            align="stretch"
+            gap={2}
+            p={3}
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+            data-testid="concept-note-gap-source-suggestions"
+          >
+            <Box>
+              <Text fontSize="body.sm" fontWeight="semibold">
+                {t("gap-source-suggestions")}
+              </Text>
+              <Text fontSize="label.sm" color="content.tertiary">
+                {t("gap-source-suggestions-hint")}
+              </Text>
+            </Box>
+            {sourceSuggestions.map(({ value, source_refs }) => {
+              const added = details.includes(value);
+              return (
+                <HStack key={value} align="start" justify="space-between">
+                  {/* minW 0 lets an unbroken URL or file name wrap in the card. */}
+                  <Box flex="1" minW={0}>
+                    <Text fontSize="body.sm" overflowWrap="anywhere">
+                      {value}
+                    </Text>
+                    <Text
+                      fontSize="label.sm"
+                      color="content.tertiary"
+                      overflowWrap="anywhere"
+                    >
+                      {t("gap-source-label", {
+                        sources: source_refs.join(", "),
+                        interpolation: { escapeValue: false },
+                      })}
+                    </Text>
+                  </Box>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="outline"
+                    flexShrink={0}
+                    disabled={
+                      added ||
+                      fieldMax(details) - details.length <= value.length
+                    }
+                    onClick={() => {
+                      setDetails((current) =>
+                        [current.trim(), value].filter(Boolean).join("\n"),
+                      );
+                      // The button disables itself; focus follows the value.
+                      detailsRef.current?.focus();
+                    }}
+                  >
+                    {t(
+                      added
+                        ? "gap-source-suggestion-added"
+                        : "gap-use-source-suggestion",
+                    )}
+                  </Button>
+                </HStack>
+              );
+            })}
+          </VStack>
+        )}
         {loading && (
           <Text role="status" fontSize="body.sm">
             {t("gap-loading-options")}
@@ -313,95 +392,127 @@ export function GapAnswerForm({
           </Box>
         )}
         {!loading &&
-          questions.map(({ question: text, options }, index) => (
-            <VStack
-              key={`${index}-${text}`}
-              align="stretch"
-              gap={2}
-              p={3}
-              border="1px solid"
-              borderColor={answers[index] ? "content.link" : "border.neutral"}
-              borderRadius="rounded"
-              bg="base.light"
-              data-testid="concept-note-gap-subquestion"
-            >
-              <HStack align="start" gap={2}>
-                {questions.length > 1 && (
-                  <Box
-                    flexShrink={0}
-                    boxSize="20px"
-                    mt="1px"
-                    borderRadius="full"
-                    bg={answers[index] ? "content.link" : "background.neutral"}
-                    color={answers[index] ? "base.light" : "content.secondary"}
-                    fontSize="11px"
-                    fontWeight="semibold"
-                    lineHeight="20px"
-                    textAlign="center"
-                  >
-                    {index + 1}
-                  </Box>
-                )}
-                <Text fontSize="body.sm" fontWeight="semibold">
-                  {text}
-                </Text>
-              </HStack>
-              <RadioGroup
-                value={choices[index] ?? null}
-                onValueChange={({ value }) =>
-                  value &&
-                  setChoices((current) => ({ ...current, [index]: value }))
-                }
-                aria-label={text}
+          questions.map(
+            ({ question: text, options, where_to_find, confirms }, index) => (
+              <VStack
+                key={`${index}-${text}`}
+                align="stretch"
+                gap={2}
+                p={3}
+                border="1px solid"
+                borderColor={answers[index] ? "content.link" : "border.neutral"}
+                borderRadius="rounded"
+                bg="base.light"
+                data-testid="concept-note-gap-subquestion"
               >
-                <VStack align="stretch" gap={2}>
-                  {options.map((option, optionIndex) => (
-                    <Radio
-                      key={optionIndex}
-                      value={String(optionIndex)}
-                      alignItems="start"
+                <HStack align="start" gap={2}>
+                  {questions.length > 1 && (
+                    <Box
+                      flexShrink={0}
+                      boxSize="20px"
+                      mt="1px"
+                      borderRadius="full"
+                      bg={
+                        answers[index] ? "content.link" : "background.neutral"
+                      }
+                      color={
+                        answers[index] ? "base.light" : "content.secondary"
+                      }
+                      fontSize="11px"
+                      fontWeight="semibold"
+                      lineHeight="20px"
+                      textAlign="center"
                     >
-                      <Text fontSize="body.sm">{option}</Text>
-                    </Radio>
-                  ))}
-                  <Radio value="custom">
-                    <Text fontSize="body.sm">
-                      {t(options.length ? "gap-other" : "gap-your-answer")}
+                      {index + 1}
+                    </Box>
+                  )}
+                  <Box>
+                    <Text fontSize="body.sm" fontWeight="semibold">
+                      {text}
                     </Text>
-                  </Radio>
-                  <Radio value="unknown">
-                    <Text fontSize="body.sm">{t("gap-not-decided")}</Text>
-                  </Radio>
-                </VStack>
-              </RadioGroup>
-              {choices[index] === "custom" && (
-                <Textarea
-                  value={customAnswers[answerKey(index)] ?? ""}
-                  onChange={(event) =>
-                    setCustomAnswers((current) => ({
-                      ...current,
-                      [answerKey(index)]: event.target.value,
-                    }))
+                    {where_to_find && (
+                      <Text
+                        fontSize="label.sm"
+                        color="content.tertiary"
+                        data-testid="concept-note-gap-where-to-find"
+                      >
+                        {t("gap-where-to-find", {
+                          hint: where_to_find,
+                          interpolation: { escapeValue: false },
+                        })}
+                      </Text>
+                    )}
+                  </Box>
+                </HStack>
+                <RadioGroup
+                  value={choices[index] ?? null}
+                  onValueChange={({ value }) =>
+                    value &&
+                    setChoices((current) => ({ ...current, [index]: value }))
                   }
                   aria-label={text}
-                  placeholder={t("gap-answer-placeholder")}
-                  data-testid="concept-note-gap-custom-answer"
-                  maxLength={fieldMax(customAnswers[answerKey(index)] ?? "")}
-                  rows={2}
-                  fontSize="body.sm"
-                />
-              )}
-            </VStack>
-          ))}
+                >
+                  <VStack align="stretch" gap={2}>
+                    {options.map((option, optionIndex) => (
+                      <Radio
+                        key={optionIndex}
+                        value={String(optionIndex)}
+                        alignItems="start"
+                      >
+                        <Text fontSize="body.sm">{option}</Text>
+                      </Radio>
+                    ))}
+                    <Radio value="custom">
+                      <Text fontSize="body.sm">
+                        {t(
+                          confirms
+                            ? "gap-confirm-changed"
+                            : options.length
+                              ? "gap-other"
+                              : "gap-your-answer",
+                        )}
+                      </Text>
+                    </Radio>
+                    <Radio value="unknown">
+                      <Text fontSize="body.sm">{t("gap-not-decided")}</Text>
+                    </Radio>
+                  </VStack>
+                </RadioGroup>
+                {choices[index] === "custom" && (
+                  <Textarea
+                    value={customAnswers[answerKey(index)] ?? ""}
+                    onChange={(event) =>
+                      setCustomAnswers((current) => ({
+                        ...current,
+                        [answerKey(index)]: event.target.value,
+                      }))
+                    }
+                    aria-label={text}
+                    placeholder={t(
+                      confirms
+                        ? "gap-confirm-new-value"
+                        : "gap-answer-placeholder",
+                    )}
+                    data-testid="concept-note-gap-custom-answer"
+                    maxLength={fieldMax(customAnswers[answerKey(index)] ?? "")}
+                    rows={2}
+                    fontSize="body.sm"
+                  />
+                )}
+              </VStack>
+            ),
+          )}
         {!loading && (
           <Field label={t("gap-additional-details")}>
             <Textarea
+              ref={detailsRef}
               value={details}
               onChange={(event) => setDetails(event.target.value)}
               placeholder={t("gap-details-placeholder")}
               data-testid="concept-note-gap-details"
               maxLength={fieldMax(details)}
               rows={2}
+              autoresize
               fontSize="body.sm"
             />
           </Field>

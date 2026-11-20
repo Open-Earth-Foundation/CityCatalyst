@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { chakra, Flex, Icon, Input, Text, VStack } from "@chakra-ui/react";
+import { chakra, Flex, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
 import { LuArrowRight, LuCheck } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 
@@ -10,17 +10,18 @@ export function ChatChoices({
   choices,
   disabled,
   answered,
+  selectedAnswer,
   lng,
   onReply,
 }: {
   choices: string[];
   disabled: boolean;
   answered: boolean;
+  selectedAnswer?: string;
   lng: string;
   onReply: (answer: string) => Promise<void>;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [selected, setSelected] = useState<string | null>(null);
   const [custom, setCustom] = useState("");
   const [sending, setSending] = useState(false);
   const submitting = useRef(false);
@@ -33,6 +34,8 @@ export function ChatChoices({
     setSending(true);
     try {
       await onReply(reply);
+    } catch {
+      // The parent reports errors; preserve the draft so the user can retry.
     } finally {
       submitting.current = false;
       setSending(false);
@@ -57,11 +60,8 @@ export function ChatChoices({
             key={choice}
             type="button"
             disabled={locked}
-            aria-pressed={selected === choice}
-            onClick={() => {
-              setSelected(choice);
-              void submit(choice);
-            }}
+            aria-pressed={selectedAnswer === choice}
+            onClick={() => void submit(choice)}
             display="flex"
             alignItems="center"
             gap={2.5}
@@ -70,10 +70,12 @@ export function ChatChoices({
             pr={2}
             textAlign="left"
             fontSize="body.sm"
-            bg={selected === choice ? "content.link/6" : "transparent"}
+            bg={selectedAnswer === choice ? "content.link/6" : "transparent"}
             border={0}
-            color={selected === choice ? "content.link" : "content.primary"}
-            fontWeight={selected === choice ? "semibold" : "normal"}
+            color={
+              selectedAnswer === choice ? "content.link" : "content.primary"
+            }
+            fontWeight={selectedAnswer === choice ? "semibold" : "normal"}
             cursor={locked ? "default" : "pointer"}
             borderRadius="sm"
             _hover={
@@ -93,17 +95,19 @@ export function ChatChoices({
               flexShrink={0}
               boxSize="24px"
               borderRadius="sm"
-              bg={selected === choice ? "content.link/12" : "content.link/8"}
+              bg={
+                selectedAnswer === choice ? "content.link/12" : "content.link/8"
+              }
               fontSize="body.sm"
               fontWeight="medium"
               aria-hidden="true"
             >
               {String.fromCharCode(65 + index)}
             </Text>
-            <Text as="span" overflowWrap="anywhere">
+            <Text as="span" whiteSpace="pre-wrap" overflowWrap="anywhere">
               {choice}
             </Text>
-            {selected === choice && (
+            {selectedAnswer === choice && (
               <Icon as={LuCheck} boxSize={3.5} flexShrink={0} />
             )}
           </chakra.button>
@@ -114,23 +118,22 @@ export function ChatChoices({
           <Text fontSize="body.sm" mt={2}>
             {t("chat-choices-or")}
           </Text>
-          <Flex gap={2} align="center">
-            <Input
+          <Flex gap={2} align="flex-end">
+            <Textarea
               unstyled
+              autoresize
+              rows={1}
               aria-label={t("chat-choices-custom")}
               placeholder={t("chat-choices-custom")}
               value={custom}
               disabled={locked}
-              onFocus={() => setSelected(null)}
-              onChange={(event) => {
-                setCustom(event.target.value);
-                setSelected(null);
-              }}
+              onChange={(event) => setCustom(event.target.value)}
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
                   !event.shiftKey &&
-                  !event.nativeEvent.isComposing
+                  !event.nativeEvent.isComposing &&
+                  event.nativeEvent.keyCode !== 229
                 ) {
                   event.preventDefault();
                   void submit(answer);
@@ -142,6 +145,8 @@ export function ChatChoices({
               px={0}
               py={1}
               minH="36px"
+              maxH="200px"
+              width="100%"
               fontSize="body.sm"
               flex={1}
               minW={0}

@@ -285,6 +285,7 @@ export function ConceptNoteChatPanel({
     threadId,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  const latestQuestionRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
@@ -299,6 +300,21 @@ export function ConceptNoteChatPanel({
   // Only submission waits for context readiness and the current turn.
   const composerDisabled = !threadId;
   const requestedOverviewThreadRef = useRef<string | null>(null);
+
+  const scrollToLatest = useCallback(() => {
+    const scroll = chatScrollRef.current;
+    if (!scroll) return;
+    const question = latestQuestionRef.current;
+    // A long question must open at its heading, not at the last answer option.
+    const top =
+      question && question.offsetHeight > scroll.clientHeight - 24
+        ? scroll.scrollTop +
+          question.getBoundingClientRect().top -
+          scroll.getBoundingClientRect().top -
+          12
+        : scroll.scrollHeight;
+    scroll.scrollTo({ behavior: "auto", top: Math.max(0, top) });
+  }, []);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
   useEffect(() => {
@@ -330,22 +346,26 @@ export function ConceptNoteChatPanel({
       if (!chatScroll) {
         return;
       }
-      chatScroll.scrollTo({
-        behavior: "auto",
-        top: chatScroll.scrollHeight,
-      });
+      scrollToLatest();
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [gapAnswer, historyLoading, messages, reasoning, threadId]);
+  }, [
+    gapAnswer,
+    historyLoading,
+    messages,
+    reasoning,
+    threadId,
+    scrollToLatest,
+  ]);
 
   // Visuals resize after they load; keep the latest message in view if the user follows it.
   const keepLatestInView = useCallback(() => {
     const chatScroll = chatScrollRef.current;
     if (chatScroll && followLatestRef.current) {
-      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+      scrollToLatest();
     }
-  }, []);
+  }, [scrollToLatest]);
 
   useEffect(() => {
     if (!composerRequest) {
@@ -587,6 +607,14 @@ export function ConceptNoteChatPanel({
                   message.choices ||
                   message.role === "user") && (
                   <Box
+                    ref={
+                      message.choices && message.id === messages.at(-1)?.id
+                        ? latestQuestionRef
+                        : undefined
+                    }
+                    data-testid={
+                      message.choices ? "concept-note-chat-question" : undefined
+                    }
                     alignSelf={message.role === "user" ? "end" : "start"}
                     maxW="92%"
                     border={message.choices ? "none" : "1px solid"}
@@ -623,10 +651,20 @@ export function ConceptNoteChatPanel({
                         lng={lng}
                         disabled={chatDisabled}
                         answered={messageIndex < messages.length - 1}
+                        selectedAnswer={
+                          messages[messageIndex + 1]?.role === "user"
+                            ? messages[messageIndex + 1].text
+                            : undefined
+                        }
                         onReply={async (answer) => {
                           if (chatDisabled) return;
                           followLatestRef.current = true;
                           await sendChatMessage(answer);
+                          // Disabled/removed answer controls lose focus after submission.
+                          // Leave focus alone if the user has moved to another control.
+                          if (document.activeElement === document.body) {
+                            inputRef.current?.focus({ preventScroll: true });
+                          }
                         }}
                       />
                     )}

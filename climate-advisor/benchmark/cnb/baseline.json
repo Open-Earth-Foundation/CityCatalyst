@@ -1,4 +1,16 @@
 {
-  "status": "pending",
-  "reason": "Select and approve a run after Product approves chapter requirements and calibration labels. Historical runs are not approved automatically."
+  "status": "approved",
+  "run_id": "20261117-baseline-cc1242",
+  "report_sha256": "22b67d5d186923013ea086276bb23d66fda9f59d9d7f403275313fc96faa6936",
+  "artifact_sha256": "c2198b1c1504a12e621a9b43d341f43c470e8a5acde1d010289f849e9e3a1d34",
+  "fingerprints": {
+    "corpus": "1b78f7aeacc0bf8ee6e0f51ac2c2082148419e766ae1a06a9b2daf8919b1fdc5",
+    "judge_policy": "8a6ba053173b8d8b7eeb202cbb21e86dc45d51d9277ef974a03af709bb73f67b"
+  },
+  "repeats": [],
+  "approval": {
+    "reviewer": "Piotr Nowakowski",
+    "approved_at": "2026-11-17",
+    "reference": "https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3430"
+  }
 }

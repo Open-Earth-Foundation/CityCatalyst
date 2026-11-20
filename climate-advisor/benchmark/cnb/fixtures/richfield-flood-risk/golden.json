@@ -2,12 +2,6 @@
   "fixture_id": "richfield-flood-risk",
   "description": "PDF-derived Markdown of the public August 2025 City of Richfield, Minnesota stormwater model update and flood-risk prioritization study, drafted into an eight-section Minnesota DNR Flood Hazard Mitigation application, then verified and edited.",
   "source": {
-    "original_pdf": {
-      "path": "source.pdf",
-      "sha256": "c1e7d50fdd151ec3576edfa6fcf00909e2e1939eb6b6231e8f13e0d68520e33c",
-      "url": null,
-      "notes": "Public August 2025 Barr Engineering report for the City of Richfield. Redacted copy: the certifying engineer's name, signature and licence number (page 2) and the named City of Minneapolis correspondents (page 50) were removed with true PDF redaction, matching source.md."
-    },
     "path": "source.md",
     "filename": "Richfield_FloodRiskPrioritization.pdf",
     "source_label": "Richfield Flood Risk Prioritization",
@@ -35,7 +29,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -55,7 +49,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -83,7 +77,7 @@
         "requirements": [
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -127,11 +121,11 @@
           },
           {
             "chapter_ref": "project_description",
-            "priority": "mandatory"
+            "priority": "desirable"
           },
           {
             "chapter_ref": "project_analysis",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -144,14 +138,6 @@
             "locators": [
               {
                 "page": 49
-              }
-            ]
-          },
-          {
-            "text": "The prioritization by flood-risk area was reviewed by city staff who identified three locations for a planning-level evaluation.",
-            "locators": [
-              {
-                "page": 32
               }
             ]
           }
@@ -169,6 +155,14 @@
         "evidence": [
           {
             "text": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city.",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          },
+          {
+            "text": "For these reasons the city selected this area to evaluate concepts for system modifications to reduce flood risk.",
             "locators": [
               {
                 "page": 32
@@ -201,6 +195,42 @@
             "chapter_ref": "project_activities",
             "priority": "mandatory"
           }
+        ],
+        "alternative_evidence": [
+          [
+            {
+              "text": "Table 5-1 Wilson Pond Flood Mitigation Concepts - Cost Estimate Comparison",
+              "locators": [
+                {
+                  "page": 33
+                }
+              ]
+            },
+            {
+              "text": "**Table 5-5 Northwest of Roosevelt Park Flood Mitigation - Cost Estimate**",
+              "locators": [
+                {
+                  "page": 40
+                }
+              ]
+            },
+            {
+              "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
+              "locators": [
+                {
+                  "page": 43
+                }
+              ]
+            },
+            {
+              "text": "Three flood-risk areas were selected by the city based on the project prioritization framework developed. For these three flood-risk areas a total of six mitigation concepts were identified and evaluated in the updated stormwater model.",
+              "locators": [
+                {
+                  "page": 49
+                }
+              ]
+            }
+          ]
         ]
       },
       {
@@ -233,7 +263,7 @@
       },
       {
         "id": "cost-basis",
-        "statement": "All costs are presented in 2025 US dollars with an accuracy range of -30% to +50%.",
+        "statement": "The report gives costs in 2025 US dollars and states a -30% to +50% accuracy range.",
         "evidence": [
           {
             "text": "All costs are presented in 2025 US dollars.",
@@ -265,12 +295,32 @@
           },
           {
             "chapter_ref": "project_financing",
-            "priority": "desirable"
+            "priority": "mandatory"
           },
           {
             "chapter_ref": "project_analysis",
             "priority": "desirable"
           }
+        ],
+        "alternative_evidence": [
+          [
+            {
+              "text": "All costs are presented in 2025 US dollars.",
+              "locators": [
+                {
+                  "page": 52
+                }
+              ]
+            },
+            {
+              "text": "The estimated accuracy range for this point estimate is -30% to +50%.",
+              "locators": [
+                {
+                  "page": 53
+                }
+              ]
+            }
+          ]
         ]
       },
       {
@@ -278,7 +328,7 @@
         "statement": "Concept cost estimates range from $1,540,000 near Woodlawn Terrace to $17,333,000 for Wilson Pond Concept C.",
         "evidence": [
           {
-            "text": "$8,853,000",
+            "text": "Table 5-1 Wilson Pond Flood Mitigation Concepts - Cost Estimate Comparison",
             "locators": [
               {
                 "page": 33
@@ -286,7 +336,7 @@
             ]
           },
           {
-            "text": "$17,333,000",
+            "text": "C | Increase storm sewer capacity and number of pipes | **$17,333,000**",
             "locators": [
               {
                 "page": 33
@@ -294,15 +344,15 @@
             ]
           },
           {
-            "text": "$15,491,000",
+            "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
             "locators": [
               {
-                "page": 40
+                "page": 43
               }
             ]
           },
           {
-            "text": "$1,540,000",
+            "text": "A | Add underground storage chamber | **$1,540,000**",
             "locators": [
               {
                 "page": 43
@@ -317,7 +367,7 @@
           },
           {
             "chapter_ref": "project_financing",
-            "priority": "desirable"
+            "priority": "mandatory"
           },
           {
             "chapter_ref": "project_activities",
@@ -342,6 +392,126 @@
           {
             "chapter_ref": "flood_damages",
             "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "wilson-pond-damages",
+        "statement": "At Wilson Pond the lowest structures are affected during the 2-year 24-hour rainfall event.",
+        "evidence": [
+          {
+            "text": "The area around Wilson Pond is one of the locations with the largest risk of flooding in the city. This area impacts the most residential structures in a single location, the lowest structures are affected during the 2-year 24-hour rainfall event",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "flood_damages",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "alternatives-not-pursued",
+        "statement": "Surface storage and underground storage near Wilson Pond were ruled out because of space and shallow groundwater.",
+        "evidence": [
+          {
+            "text": "Options that were considered but not pursued for the area near Wilson Pond include adding surface storage areas, underground storage, and a pump to lower the water level in Wilson Pond ahead of a storm event. Surface storage was not considered due to a lack of undeveloped space near the flood-risk area and the city's direction to not consider property acquisition for flood-risk reduction. Underground storage was not considered due to the expected shallow groundwater in the area.",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_analysis",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "social-vulnerability",
+        "statement": "The selected areas lie in parts of the city with a high social vulnerability index.",
+        "evidence": [
+          {
+            "text": "Wilson Pond is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 32
+              }
+            ]
+          },
+          {
+            "text": "The flood-risk area Northwest of Roosevelt Park was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 10-year 24-hour duration rainfall event, the flood-risk area is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 40
+              }
+            ]
+          },
+          {
+            "text": "The flood-risk area near Woodlawn Terrace was selected by the city for further evaluation. This flood-risk area impacts multiple structures in a single location, the lowest structures are affected during the 2-year 24-hour duration rainfall event, the storm sewer pipes are classified as moderate to high risk, the flood-risk area is located within an area of the city with a high social vulnerability index",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "flood_damages",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_analysis",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "project_description",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "woodlawn-cost-range",
+        "statement": "Table 5-7 lists Woodlawn Terrace Concept A at $1,540,000 with an upper estimate of $2,695,000, above the table note's stated +50% range.",
+        "evidence": [
+          {
+            "text": "Table 5-7 Near Woodlawn Terrace Flood Mitigation - Cost Estimate Comparison",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          },
+          {
+            "text": "|  A | Add underground storage chamber | **$1,540,000** $1,078,000 - $2,695,000  |",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          },
+          {
+            "text": "Note: Total project cost accuracy range is -30% to +50%.",
+            "locators": [
+              {
+                "page": 43
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_financing",
+            "priority": "mandatory"
           }
         ]
       }
@@ -407,6 +577,15 @@
         "extraction_fact": "flood-risk-area-count"
       },
       {
+        "id": "prioritization-criteria",
+        "statement": "Flood-risk areas were prioritized on storm system conditions, critical infrastructure, frequency of flooding, social vulnerability index, and number of flood-prone structures.",
+        "origin": "document",
+        "chapters": [
+          "project_analysis"
+        ],
+        "extraction_fact": "prioritization-criteria"
+      },
+      {
         "id": "selected-sites",
         "statement": "The project addresses the flood-risk areas near Wilson Pond, northwest of Roosevelt Park, and near Woodlawn Terrace.",
         "origin": "document",
@@ -417,12 +596,31 @@
         "extraction_fact": "selected-sites"
       },
       {
+        "id": "selected-areas-and-concepts",
+        "statement": "The city selected three flood-risk areas, for which six mitigation concepts were identified and evaluated in the updated stormwater model.",
+        "origin": "document",
+        "chapters": [
+          "project_activities"
+        ],
+        "extraction_fact": "selected-areas-and-concepts"
+      },
+      {
         "id": "wilson-pond-damages",
         "statement": "At Wilson Pond the lowest structures are affected during the 2-year 24-hour rainfall event.",
         "origin": "document",
         "chapters": [
           "flood_damages"
-        ]
+        ],
+        "extraction_fact": "wilson-pond-damages"
+      },
+      {
+        "id": "concept-level-costs",
+        "statement": "The evaluated projects, their model results and their cost estimates are concept-level designs with planning-level cost estimates.",
+        "origin": "document",
+        "chapters": [
+          "project_financing"
+        ],
+        "extraction_fact": "concept-level-costs"
       },
       {
         "id": "concept-cost-figures",
@@ -447,7 +645,7 @@
       },
       {
         "id": "cost-accuracy",
-        "statement": "Cost estimates carry a -30% to +50% accuracy range.",
+        "statement": "The report states a -30% to +50% accuracy range for its estimates.",
         "origin": "document",
         "chapters": [
           "funding_breakout",
@@ -462,7 +660,8 @@
         "origin": "document",
         "chapters": [
           "project_analysis"
-        ]
+        ],
+        "extraction_fact": "alternatives-not-pursued"
       },
       {
         "id": "social-vulnerability",
@@ -472,7 +671,17 @@
           "flood_damages",
           "project_analysis",
           "project_description"
-        ]
+        ],
+        "extraction_fact": "social-vulnerability"
+      },
+      {
+        "id": "woodlawn-cost-range",
+        "statement": "Table 5-7 lists Woodlawn Terrace Concept A at $1,540,000 with an upper estimate of $2,695,000, above the table note's stated +50% range.",
+        "origin": "document",
+        "chapters": [
+          "project_financing"
+        ],
+        "extraction_fact": "woodlawn-cost-range"
       }
     ],
     "gaps": [
@@ -583,8 +792,8 @@
         "edits": [
           {
             "chapter_ref": "funding_breakout",
-            "find": "These estimates have an accuracy range of -30% to +50%",
-            "replace": "These estimates have an accuracy range of -10% to +15%"
+            "find": "The report states an accuracy range of -30% to +50%",
+            "replace": "The report states an accuracy range of -10% to +15%"
           }
         ],
         "expected_chapters": [
@@ -741,7 +950,7 @@
           },
           {
             "id": "accuracy",
-            "statement": "Cost estimates keep the 2025-dollar basis and the -30% to +50% accuracy range."
+            "statement": "The report's 2025-dollar basis and stated -30% to +50% range are preserved, along with the larger upper bound printed for Woodlawn Terrace Concept A in Table 5-7."
           },
           {
             "id": "dnr-request",
@@ -770,7 +979,7 @@
           },
           {
             "id": "accuracy",
-            "statement": "The estimates are in 2025 dollars with a -30% to +50% accuracy range."
+            "statement": "The report's 2025-dollar basis and stated -30% to +50% range are preserved, along with the larger upper bound printed for Woodlawn Terrace Concept A in Table 5-7."
           },
           {
             "id": "not-pursued",
@@ -779,8 +988,60 @@
           {
             "id": "svi",
             "statement": "The prioritization incorporated the social vulnerability index."
+          },
+          {
+            "id": "area-count",
+            "statement": "746 flood-risk areas were evaluated, 601 of them within or primarily within the Richfield municipal boundary."
+          },
+          {
+            "id": "design-storms",
+            "statement": "The alternatives were modeled against 2-, 10- and 100-year, 24-hour design storms."
+          },
+          {
+            "id": "modeled-reductions",
+            "statement": "Every concept's modeled 10-year, 24-hour peak water-level reductions are still stated: Wilson Pond Concept A 1.4, 0.8 and 3.9 feet; Concept B 0.6, 0.4 and 1.9 feet; Concept C 0.6, 0.5 and 2.3 feet; northwest of Roosevelt Park 3.7, 1.0 and 0.5 feet; near Woodlawn Terrace Concept A 0.1 and 0.1 foot; and Concept B 0.8 and 0.5 foot."
+          },
+          {
+            "id": "box-culverts",
+            "statement": "Wilson Pond Concept B uses a 5-foot-by-5-foot box culvert and Concept C two parallel 5-foot-by-5-foot box culverts from Wilson Pond to Highway 494."
+          },
+          {
+            "id": "cost-exclusions",
+            "statement": "The cost estimates exclude planning, engineering and design; construction management; permitting; property or easement acquisition; operations and maintenance; and monitoring."
+          },
+          {
+            "id": "planning-level",
+            "statement": "The modeled results are planning-level outcomes, not final design commitments."
+          },
+          {
+            "id": "groundwater-and-pumping",
+            "statement": "At Wilson Pond, underground storage was not pursued because shallow groundwater is expected, and pumped drawdown was not pursued because of the high flow rate needed within an assumed 24-hour period."
+          },
+          {
+            "id": "other-sites-screening",
+            "statement": "Northwest of Roosevelt Park, surface storage was not pursued because the open space is higher than the flood-risk area and increased downstream capacity was not evaluated further because the area drains to Norby's Pond; near Woodlawn Terrace, surface storage was not pursued because the open space is developed with baseball fields and parking lots."
+          },
+          {
+            "id": "coordination",
+            "statement": "Wilson Pond concepts would increase the volume and peak rate of discharge leaving Richfield and need coordination with the City of Bloomington or MnDOT; the near Woodlawn Terrace underground-storage concept needs an agreement with the parking-lot owner."
+          },
+          {
+            "id": "not-verified",
+            "statement": "No survey data was collected to verify whether the identified structures are flood-prone."
+          },
+          {
+            "id": "high-density-housing",
+            "statement": "The Woodlawn Terrace area affects three high-density housing structures."
+          },
+          {
+            "id": "markers",
+            "statement": "All eight [Information needed: ...] questions are still asked: selected location and concept, selection rationale, environmental effects, social and economic effects, public input, environmental review status, water-plan alignment, and wetland replacement credits."
           }
-        ]
+        ],
+        "length_ratio": {
+          "min_ratio": 0.5,
+          "max_ratio": 0.8
+        }
       },
       {
         "id": "agent-without-value",
@@ -792,16 +1053,93 @@
             "statement": "The concept note is unchanged; no authorized agent is invented."
           }
         ]
+      },
+      {
+        "id": "agent-after-clarification",
+        "instruction": "Dana Whitfield, City Manager.",
+        "recent_messages": [
+          {
+            "role": "user",
+            "content": "Fill in the authorized agent."
+          },
+          {
+            "role": "assistant",
+            "content": "The application does not say who the authorized agent is. Who should I name, and what is their title?"
+          }
+        ],
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "applicant_project_information"
+        ],
+        "expected_changes": [
+          {
+            "id": "agent-stated",
+            "statement": "The applicant chapter names Dana Whitfield, City Manager, as the authorized agent instead of asking for one."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "contact-still-asked",
+            "statement": "The local government contact is still requested; Dana Whitfield is not entered as the contact."
+          },
+          {
+            "id": "submittal-date-still-asked",
+            "statement": "The application submittal date is still requested."
+          },
+          {
+            "id": "project-name-still-asked",
+            "statement": "The official project name is still requested."
+          },
+          {
+            "id": "applicant",
+            "statement": "The City of Richfield, Minnesota is the applicant."
+          },
+          {
+            "id": "funds-official-still-asked",
+            "statement": "The project financing chapter still asks for evidence of financial capability, including the official authorized to commit funds."
+          }
+        ]
+      },
+      {
+        "id": "delete-site-constraints-paragraph",
+        "instruction": "In Existing mitigation and regulatory measures, delete the final paragraph, the one listing location-specific constraints such as shallow groundwater near Wilson Pond. Keep the paragraph before it.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "existing_mitigation_regulation"
+        ],
+        "expected_changes": [
+          {
+            "id": "constraints-paragraph-removed",
+            "statement": "The existing mitigation and regulatory measures chapter no longer contains the paragraph on location-specific constraints (expected shallow groundwater near Wilson Pond, downstream flood-risk conditions near northwest of Roosevelt Park, and private-property agreements near Woodlawn Terrace)."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "coordination-paragraph",
+            "statement": "The chapter still says that Wilson Pond alternatives need additional coordination with the City of Bloomington or MnDOT because increased discharge would be conveyed beyond Richfield toward the Minnesota River."
+          },
+          {
+            "id": "design-review",
+            "statement": "The chapter still says the selected concept needs site-specific design optimization, utility-conflict evaluation and permitting review."
+          },
+          {
+            "id": "ordinance-marker",
+            "statement": "The chapter still asks for the applicable floodplain ordinance standards and enforcement procedures, the project's compliance, required permits and any unresolved violations."
+          },
+          {
+            "id": "analysis-untouched",
+            "statement": "The project analysis chapter still mentions expected shallow groundwater near Wilson Pond."
+          }
+        ]
       }
     ]
   },
   "approval": {
-    "status": "pending",
-    "reviewer": null,
-    "reviewed_at": null,
+    "status": "approved",
+    "reviewer": "Piotr Nowakowski",
+    "reviewed_at": "2026-11-19",
     "source_sha256": "4e8241d596199264b6206ca65097177991494a89114f440075024d58391a3977",
     "template_sha256": "19140e268b6e598577547e101657b407cf3b24d9c75d0bb226faa6123a43cbe5",
-    "requirements_sha256": "f8283e6f072da21a4d2dd3431227b7a0ba226863263f8143e9301f0ff8aeb700",
-    "original_pdf_sha256": "c1e7d50fdd151ec3576edfa6fcf00909e2e1939eb6b6231e8f13e0d68520e33c"
+    "requirements_sha256": "5b46f8e770411e1216d07e00d450dcad9cb67b51692babf21f73ca1f439fd5ed"
   }
 }

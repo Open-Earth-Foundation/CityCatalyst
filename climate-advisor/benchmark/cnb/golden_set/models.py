@@ -8,7 +8,7 @@ contracts; a model judges meaning, support, and consistency using cited text.
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationFindingCategory,
@@ -65,6 +65,11 @@ class GoldenFact(GoldenContract):
     statement: str = Field(min_length=1)
     requirements: list[FactRequirement] = Field(min_length=1)
     evidence: list[GoldenEvidence] = Field(min_length=1)
+    alternative_evidence: list[Annotated[list[GoldenEvidence], Field(min_length=1)]] = Field(default_factory=list)
+
+    def evidence_groups(self) -> list[list[GoldenEvidence]]:
+        """Each group independently proves the fact. Every passage in a group is required."""
+        return [self.evidence, *self.alternative_evidence]
 
     @model_validator(mode="after")
     def unique_chapters(self) -> GoldenFact:
@@ -122,6 +127,7 @@ class DraftFact(GoldenContract):
     required: bool = True
     chapters: list[str] = Field(default_factory=list)
     extraction_fact: str | None = None
+    drafting_only_reason: str | None = Field(default=None, min_length=1)
 
 
 class ExpectedGap(GoldenContract):
@@ -285,11 +291,27 @@ class EditMessage(GoldenContract):
     content: str = Field(min_length=1)
 
 
+class LengthBand(GoldenContract):
+    """Allowed length of each edited chapter as a share of its original length."""
+
+    min_ratio: float = Field(gt=0)
+    max_ratio: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def ordered(self) -> LengthBand:
+        """The band must not be empty."""
+        if self.min_ratio > self.max_ratio:
+            raise ValueError("min_ratio must not exceed max_ratio")
+        return self
+
+
 class EditCase(GoldenContract):
     """One chat edit request against the reference draft.
 
     ``allowed_chapters`` lists every chapter the edit may change; any other
     changed chapter is a collateral edit. A clarification case allows none.
+    ``length_ratio`` is a deterministic length check for resizing requests
+    (for example "shorten by a third"), applied to every edited chapter.
     """
 
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]*$")
@@ -300,6 +322,7 @@ class EditCase(GoldenContract):
     allowed_chapters: list[str] = Field(default_factory=list)
     expected_changes: list[EditExpectation] = Field(default_factory=list)
     must_preserve: list[EditExpectation] = Field(default_factory=list)
+    length_ratio: LengthBand | None = None
 
     @model_validator(mode="after")
     def check_outcome(self) -> EditCase:
@@ -322,23 +345,9 @@ class EditingGolden(GoldenContract):
     cases: list[EditCase] = Field(min_length=1)
 
 
-class OriginalPdf(GoldenContract):
-    """The pinned PDF used for fresh conversion and source review.
-
-    ``notes`` records any redaction applied to the public original; conversion
-    always uses these local bytes rather than downloading the original URL.
-    """
-
-    path: str = Field(default="source.pdf", min_length=1)
-    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    url: str | None = None
-    notes: str | None = None
-
-
 class GoldenSourceFile(GoldenContract):
     """Checked-in, non-sensitive Markdown in the same shape CC delivers to CA."""
 
-    original_pdf: OriginalPdf | None = None
     path: str = Field(default="source.md", min_length=1)
     filename: str = Field(min_length=1)
     source_label: str = Field(min_length=1)
@@ -356,7 +365,6 @@ class GroundTruthApproval(GoldenContract):
     reviewer: str | None = Field(default=None, min_length=1)
     reviewed_at: date | None = None
     source_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
-    original_pdf_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     template_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     requirements_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
 
@@ -677,13 +685,10 @@ class FixtureReport(GoldenContract):
     editing: StageReport | None = None
     usage: dict[str, StageUsage] = Field(default_factory=dict)
     input_provenance: dict[str, Any] = Field(default_factory=dict)
-    inapplicable_reason: str | None = None
 
     @property
     def passed(self) -> bool:
         """Require current approved ground truth and successful evaluated stages."""
-        if self.inapplicable_reason:
-            return True
         stages = [getattr(self, stage) for stage in STAGES if getattr(self, stage)]
         return (
             self.approval_status == "approved" and not self.approval_errors
@@ -711,9 +716,12 @@ class GoldenSetReport(GoldenContract):
     fixtures: list[FixtureReport]
     requested_stages: list[str] = Field(default_factory=list)
     expected_fixture_ids: list[str] = Field(default_factory=list)
-    input_path: Literal["markdown", "pdf"] = "markdown"
     corpus_fingerprint: str | None = None
     evaluator_fingerprint: str | None = None
+    # Every non-model input that can change a result, so two runs differ only by LLM output.
+    producer_prompt_versions: dict[str, str] = Field(default_factory=dict)
+    llm_config_sha256: str | None = None
+    dependency_lock_sha256: str | None = None
     completed: bool = True
     run_errors: list[str] = Field(default_factory=list)
 
@@ -742,10 +750,7 @@ class GoldenSetReport(GoldenContract):
             return True
         if set(self.expected_fixture_ids) - {f.fixture_id for f in self.fixtures}:
             return True
-        applicable = [f for f in self.fixtures if not f.inapplicable_reason]
-        if not applicable:
-            return True
-        for fixture in applicable:
+        for fixture in self.fixtures:
             if fixture.approval_status != "approved" or fixture.approval_errors:
                 return True
             names = self.requested_stages or [s for s in STAGES if getattr(fixture, s)]

@@ -136,7 +136,18 @@ def case_checks(case: EditCase, record: dict[str, Any], snapshots: list[Workspac
         removed = removed_information_markers(before[ref], after)
         if removed:
             removed_markers[ref] = removed
+    # Resizing requests get a deterministic length check on every edited chapter.
+    ratios = {
+        ref: round(len(after) / len(before[ref]), 3)
+        for ref, after in record["edited_chapters"].items()
+    }
+    band = case.length_ratio
+    length_ok = band is None or (
+        bool(ratios) and all(band.min_ratio <= r <= band.max_ratio for r in ratios.values())
+    )
     return {
+        "length_ratios": ratios,
+        "length_ok": length_ok,
         "case_id": case.id,
         "expected_outcome": case.expected_outcome,
         "outcome": record["outcome"],
@@ -191,6 +202,16 @@ def editing_judge_input(
     instructions = [
         TextUnit(id=f"instruction/{case.id}", text=case.instruction, kind="context")
         for case in cases.values()
+    ]
+    # The planner sees earlier chat messages, so the judge must too.
+    instructions += [
+        TextUnit(
+            id=f"history/{case.id}/{index}",
+            text=f"{message.role}: {message.content}",
+            kind="context",
+        )
+        for case in cases.values()
+        for index, message in enumerate(case.recent_messages)
     ]
     return EditingJudgeInput(
         cases=[
@@ -250,6 +271,10 @@ def score_editing(
             report.semantic_failures.append(
                 f"{check['case_id']}: expected {check['expected_outcome']}, got {check['outcome']}"
             )
+        if not check["length_ok"]:
+            report.semantic_failures.append(
+                f"{check['case_id']}: edited length ratio {check['length_ratios']} outside the requested band"
+            )
         if check["collateral_chapters"]:
             report.integrity_failures.append(
                 f"{check['case_id']}: changed chapters outside the request: {', '.join(check['collateral_chapters'])}"
@@ -284,9 +309,11 @@ def score_editing(
             report.semantic_failures.append(f"{check['case_id']}: inconsistent after edit: {conflict.reason}")
         case_failed = (
             not check["outcome_ok"]
+            or not check["length_ok"]
             or check["collateral_chapters"]
             or len(report.semantic_failures) + len(report.integrity_failures) > failures_before
         )
+        check["passed"] = not case_failed
         passed += not case_failed
     report.metrics["case_pass_rate"] = passed / len(checks) if checks else 1.0
     report.metrics["expected_change_rate"] = applied / total_expected if total_expected else 1.0
@@ -328,6 +355,7 @@ async def evaluate_editing(
         json.dumps(records, ensure_ascii=False), encoding="utf-8"
     )
     payload = editing_judge_input(loaded, snapshots, records)
+    (output_dir / "judge_input.json").write_text(payload.model_dump_json(), encoding="utf-8")
     try:
         judgment = await judge(payload, settings)
     except GoldenJudgeError as exc:

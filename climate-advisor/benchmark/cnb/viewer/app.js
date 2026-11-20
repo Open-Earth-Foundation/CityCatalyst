@@ -185,7 +185,12 @@
   }
   const quotes = (f, stage, refs, kind, empty = "None cited") =>
     refs?.length ? refs.map((r) => quote(f, stage, r, kind)).join("") : `<div class="empty">${esc(empty)}</div>`;
-  const unitForText = (f, text) => f.units.find((u) => u.text.includes(text));
+  const evidenceGroups = (fact) => [fact.evidence || [], ...(fact.alternative_evidence || [])];
+  const renderEvidence = (fact, render) =>
+    evidenceGroups(fact).map((group) => group.map(render).join("")).join('<div class="muted">or</div>');
+  const unitForEvidence = (f, e) => f.units.find((u) => u.text.includes(e.text)
+    && e.locators.some((l) => l.page ? u.anchor === `page-${l.page}`
+      : u.anchor === l.heading || u.anchor.startsWith(l.heading + "/")));
 
   // ---------- highlighting ----------
   function segments(text, spans) {
@@ -339,7 +344,6 @@
   const extractionGate = (f) => f.golden.extraction.facts.some((x) => x.requirements) ? 1 : f.golden.extraction.thresholds.min_required_fact_coverage;
 
   function approvalNote(f) {
-    if (f.inapplicable_reason) return `<div class="callout">Not applicable: ${esc(f.inapplicable_reason)}</div>`;
     return `<div class="callout">Ground-truth approval: <b>${esc(f.approval_status || "not recorded")}</b>.
       ${(f.approval_errors || []).map(esc).join(" · ")}</div>`;
   }
@@ -403,7 +407,7 @@
   const METHOD = {
     extraction: {
       question: "Do the quotations that production source analysis keeps preserve the facts a reviewer needs?",
-      input: ["Pinned source Markdown, or fresh production conversion of the pinned PDF. Judgments always use the independent approved reference."],
+      input: ["Pinned source Markdown. Judgments always use the independent approved reference."],
       production: ["Source analysis: reader and synthesizer agents partition the document, keep exact quotations with page or heading anchors, and label topics."],
       python: ["Every quotation is an exact substring at a valid page or heading.", "The generated summary is saved for diagnosis but never sent to the judge."],
       judge: ["Expected fact → retained quotations: covered, partial, missing or contradicted.", "Expected topic → topic labels.", "Retained quotation → complete source: misleading, or missing a qualifier?"],
@@ -529,17 +533,14 @@
       <dl class="kv small" style="margin-top:12px">
         <dt>Drafted into</dt><dd>${esc(d?.funder || "–")}: ${esc(d?.template_name || "")}</dd>
         <dt>Expectations</dt><dd>${g.extraction.facts.length} extraction facts · ${g.chapter_writing?.facts.length || 0} draft facts · ${g.chapter_writing?.gaps.length || 0} expected gaps</dd>
-        <dt>Approval</dt><dd>${esc(f.approval_status || "not recorded")}${f.inapplicable_reason ? " · not applicable" : ""}</dd>
-        ${f.input_provenance?.conversion ? `<dt>PDF conversion</dt><dd>${fmtTime(f.input_provenance.conversion.elapsed_seconds)} · cost unavailable</dd>` : ""}
+        <dt>Approval</dt><dd>${esc(f.approval_status || "not recorded")}</dd>
         <dt>Seeded · edits</dt><dd>${g.verification?.defects.length || 0} defects · ${g.editing?.cases.length || 0} edit cases</dd>
       </dl>
       <div class="row small" style="margin-top:12px">
         <a class="pill" href="#/f/${fid}/golden">Golden set</a>
         <a class="pill" href="#/f/${fid}/source">source.md</a>
-        ${f.pdf ? `<a class="pill" href="${esc(f.pdf)}" target="_blank" rel="noopener">Original PDF ↗</a>` : `<span class="pill muted">native Markdown</span>`}
         <a class="pill" href="#/f/${fid}/reference">Reference draft</a>
       </div>
-      ${g.source.original_pdf?.notes ? `<p class="muted small" style="margin-top:10px">${esc(g.source.original_pdf.notes)}</p>` : ""}
     </div>`;
   }
 
@@ -562,7 +563,7 @@
         const raised = cj.flagged_gaps || [];
         const bad = cj.claims.filter((c) => claimStatus(c, "chapter_writing") !== "good").length;
         items.chapter_writing.push(`<b>${city}</b>${stageStatus(f.stages.chapter_writing) === "error" ? " <span class='muted'>(unofficial: judgment rejected)</span>" : ""}: `
-          + `${transfer.length ? `${count("transferred")} facts transferred, ${count("recovered")} recovered from full text after extraction missed them, ${count("lost_in_extraction")} lost in extraction, ${count("lost_in_drafting")} lost in drafting; ` : ""}`
+          + `${transfer.length ? `${count("transferred")} transfers covered, ${count("recovered")} recovered from full text after extraction missed them, ${count("lost_in_extraction")} lost in extraction, ${count("lost_in_drafting")} lost in drafting; ` : ""}`
           + `${raised.filter((g) => g.verdict === "valid").length}/${raised.length} raised gaps genuine; ${bad} of ${cj.claims.length} claims not fully supported.`);
       }
       const vj = judgmentOf(f, "verification");
@@ -805,7 +806,6 @@
         <span class="pill">${g.source.page_count ? `${g.source.page_count} pages` : `${f.units.length} blocks`}</span>
         <span class="pill mono">sha256 ${esc(short(g.source.sha256, 12))}</span>
         <span class="pill">${esc(g.source.filename)}</span>
-        ${f.pdf ? `<a class="pill" href="${esc(f.pdf)}" target="_blank" rel="noopener">Open original PDF ↗</a>` : ""}
       </div>
       <p class="muted small" style="max-width:110ch;margin-top:10px">${esc(g.source.provenance)}</p>
       <nav class="tabs">${tabs.map(([k, text, st]) => `<a href="#/f/${fid}/${k}" class="${k === tab ? "active" : ""}">${st ? `<span class="mini" style="background:var(--${cls(st)})" aria-hidden="true"></span>` : ""}${esc(text)}</a>`).join("")}</nav>
@@ -866,7 +866,7 @@
     const g = f.golden;
     const fid = g.fixture_id;
     const ev = (e) => {
-      const u = unitForText(f, e.text);
+      const u = unitForEvidence(f, e);
       const loc = e.locators.map((l) => (l.page ? `page ${l.page}` : l.heading)).join(" or ");
       const href = u ? `#/f/${fid}/source/${enc("u-" + u.anchor)}` : null;
       const inner = `${esc(e.text)}<span class="where">allowed locator: ${esc(loc)}${href ? " →" : ""}</span>`;
@@ -882,7 +882,7 @@
       ${approvalNote(f)}
       <p class="sub">What the retained quotations must preserve in each receiving chapter. Gate: ${pct(extractionGate(f))} of mandatory requirements fully covered; topics ≥ ${pct(g.extraction.thresholds.min_topic_coverage)}. Desirable coverage is reported separately.</p>
       ${g.extraction.facts.map((x) => `<div class="item"><div class="item-head"><div class="stmt">${esc(x.statement)}</div>${x.requirements ? x.requirements.map((r) => `<span class="pill ${r.priority === "mandatory" ? "req" : ""}">${esc(chapterTitle(f, r.chapter_ref))}: ${esc(r.priority)}</span>`).join("") : req(x.required)}</div>
-        <div class="fid">${esc(x.id)}</div><div style="margin-top:10px">${x.evidence.map(ev).join("")}</div></div>`).join("")}
+        <div class="fid">${esc(x.id)}</div><div style="margin-top:10px">${renderEvidence(x, ev)}</div></div>`).join("")}
       <h3 style="margin-top:22px">Topics</h3>
       <div class="grid g3" style="margin-top:10px">${g.extraction.topics.map((t) => `<div class="item" style="margin:0"><div class="stmt">${esc(t.statement)}</div><div class="fid">${esc(t.id)}</div></div>`).join("")}</div>
       ${w ? `
@@ -954,7 +954,7 @@
         return `<div class="item ${v.verdict === "covered" ? "ok" : ""}" id="${esc(v.id)}">
           <div class="item-head">${badge(v.verdict)}<div class="stmt">${esc(gf.statement || v.id)}</div><span class="pill ${gf.required ? "req" : ""}">${gf.chapter_ref ? (gf.required ? "mandatory" : "desirable") : (gf.required ? "required" : "optional")}</span></div>
           <div class="fid">${esc(v.id)}${gf.chapter_ref ? ` · ${esc(chapterTitle(f, gf.chapter_ref))}` : ""}</div>
-          <div class="cols"><div><div class="colhead">Golden evidence in source</div>${(gf.evidence || []).map((e) => `<div class="quote gold">${esc(e.text)}</div>`).join("")}</div>
+          <div class="cols"><div><div class="colhead">Golden evidence in source</div>${renderEvidence(gf, (e) => `<div class="quote gold">${esc(e.text)}</div>`)}</div>
           <div><div class="colhead">What the LLM retained (cited by judge)</div>${quotes(f, stage, v.output_refs, "out", "Nothing retained")}</div></div>
           <div class="reason">${esc(v.reason)}</div></div>`;
       }).join("")}</div>
@@ -1040,10 +1040,10 @@
       ${jump(fid, stage, [["sec-transfer", "Transfer"], ["sec-gaps", "Expected gaps"], ["sec-raised", "Raised gaps"], ["sec-facts", "Facts"], ["sec-chapters", "Chapters"], ["sec-claims", "Claims"], ["sec-output", "Generated application"]])}
       ${j ? `
       <h2 id="sec-transfer">Extraction → draft: where facts survive or are lost</h2>
-      <p class="sub">For each receiving extraction chapter: did extraction keep the linked fact, and did the drafter carry it into an allowed draft chapter? Draft verdicts aggregate allowed chapters; they do not prove transfer to every receiving chapter. <b>Recovered</b> means the drafter used the full source text.</p>
+      <p class="sub">Each receiving chapter has its own extraction verdict. The draft verdict covers all allowed draft chapters together. <b>Recovered</b> means the draft covered a fact that this extraction route missed.</p>
       <div class="card" style="padding:0"><table>
         <thead><tr><th>Draft fact</th><th>1 · Extraction</th><th>2 · Draft</th><th>Outcome</th></tr></thead>
-        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))}` : ""}</div></td>
+        <tbody>${transfer.map((r) => `<tr><td>${esc(golden[r.fact]?.statement || r.fact)}<div class="fid">${esc(r.fact)} ← ${esc(r.extraction_pair || r.extraction_fact)}${r.chapter_ref ? ` · ${esc(chapterTitle(f, r.chapter_ref))} · ${esc(r.priority || "")}` : ""}</div></td>
           <td>${r.extraction_verdict ? badge(r.extraction_verdict) : "–"}</td><td>${r.draft_verdict ? badge(r.draft_verdict) : "–"}</td><td>${badge(r.outcome)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No transfer data (extraction judgment unavailable).</td></tr>`}</tbody>
       </table></div>
 
@@ -1243,8 +1243,8 @@
     const tally = { full: 0, part: 0, none: 0 };
     const passages = {}; // fact id -> [{ n, status }] for the facts list
     for (const x of f.golden.extraction.facts)
-      x.evidence.forEach((e, n) => {
-        const u = unitForText(f, e.text);
+      evidenceGroups(x).flat().forEach((e, n) => {
+        const u = unitForEvidence(f, e);
         (passages[x.id] ||= []).push({ n, status: u ? null : "unlocated" });
         if (!u) return;
         const kept = (spans[u.anchor] || []).filter((s) => s.cls === "kept");
@@ -1365,12 +1365,12 @@
 
   // ---------- runs: loading, picking, comparing ----------
   const RUN_METRICS = {
-    extraction: [["required_fact_coverage", "facts kept"], ["topic_coverage", "topics"]],
-    chapter_writing: [["required_fact_coverage", "facts"], ["gap_recall", "gaps flagged"], ["flagged_gap_validity", "raised gaps genuine"]],
-    verification: [["defect_recall", "defects found"], ["false_alarm_rate", "false alarms"]],
+    extraction: [["fact_evidence_retained", "facts extracted"], ["pair_evidence_in_chapter", "routed to their chapter"], ["required_fact_coverage", "judge: facts in chapter"], ["topic_coverage", "topics"]],
+    chapter_writing: [["required_fact_coverage", "facts"], ["chapters_satisfied_rate", "chapters satisfied"], ["gap_recall", "gaps flagged"], ["flagged_gap_validity", "raised gaps genuine"]],
+    verification: [["defect_recall", "defects found"], ["false_alarm_rate", "false alarms"], ["clean_false_alarm_rate", "false alarms, clean draft"]],
     editing: [["case_pass_rate", "cases pass"]],
   };
-  const LOWER_IS_BETTER = new Set(["false_alarm_rate"]);
+  const LOWER_IS_BETTER = new Set(["false_alarm_rate", "clean_false_alarm_rate"]);
   const runLabel = (r) => `${r.label ? `${r.label} · ` : ""}${r.generated_at ? new Date(r.generated_at).toLocaleString() : r.id}`;
   const indexFixtureIds = () => [...new Set(INDEX.flatMap((r) => Object.keys(r.fixtures)))].sort();
   const shortFixture = (fid) => fid.split("-")[0].replace(/^./, (c) => c.toUpperCase());
@@ -1381,22 +1381,16 @@
   const costText = (u) => !u ? "–" : `${fmtCost(u.cost ?? u.cost_usd)} (${u.cost_complete === true ? "complete"
     : u.cost_complete === false ? `partial${u.unpriced_requests ? `: ${u.unpriced_requests} unpriced requests` : ""}`
     : "completeness not recorded"})`;
-  const conversionNote = (u) => u?.conversion_count
-    ? `<div class="muted small">PDF conversion: ${fmtTime(u.conversion_seconds)} · cost unavailable, excluded from total</div>` : "";
-  // Reported model charges exclude unpriced requests and PDF conversion charges.
-  function usageTotals(usageByFixture, conversions = []) {
+  // Reported model charges exclude unpriced requests.
+  function usageTotals(usageByFixture) {
     const stages = Object.values(usageByFixture).flatMap((u) => Object.values(u || {}));
-    if (!stages.length && !conversions.length) return null;
+    if (!stages.length) return null;
     const sum = (key) => stages.reduce((n, s) => n + (s[key] || 0), 0);
-    const conversionSeconds = conversions.reduce((n, c) => n + (c.elapsed_seconds || 0), 0);
-    return { seconds: sum("seconds") + conversionSeconds, requests: sum("requests"), cost: sum("cost_usd"),
-      cost_complete: conversions.length ? false : costComplete(stages), unpriced_requests: sum("unpriced_requests"),
-      conversion_count: conversions.length, conversion_seconds: conversionSeconds };
+    return { seconds: sum("seconds"), requests: sum("requests"), cost: sum("cost_usd"),
+      cost_complete: costComplete(stages), unpriced_requests: sum("unpriced_requests") };
   }
-  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])),
-    Object.values(r.fixtures).map((f) => f.input_provenance?.conversion).filter(Boolean));
-  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])),
-    run.fixtures.map((f) => f.input_provenance?.conversion).filter(Boolean));
+  const indexTotals = (r) => usageTotals(Object.fromEntries(Object.entries(r.fixtures).map(([fid, fx]) => [fid, fx.usage])));
+  const runTotals = (run) => usageTotals(Object.fromEntries(run.fixtures.map((f) => [f.golden.fixture_id, f.usage])));
 
   function loadRun(id) {
     return new Promise((resolve, reject) => {
@@ -1431,6 +1425,21 @@
     return `<span class="${better ? "up" : "down"}">${d > 0 ? "▲" : "▼"} ${Math.round(Math.abs(d) * 100)} pts</span>`;
   }
 
+  // Same rule as the baseline loader: scores are only comparable under identical corpus and judge policy.
+  function incompatibility(a, b) {
+    const reasons = [];
+    const reference = INDEX.find((run) => run.id === a.id) || a;
+    if (reference.baseline_execution_problem) reasons.push(reference.baseline_execution_problem);
+    else if (a.completed === false || a.run_errors?.length) reasons.push("Baseline evaluation is incomplete");
+    if (!a.corpus_fingerprint || !b.corpus_fingerprint || !a.evaluator_fingerprint || !b.evaluator_fingerprint)
+      reasons.push("a run predates evaluation fingerprints");
+    else {
+      if (a.corpus_fingerprint !== b.corpus_fingerprint) reasons.push("fixtures or golden expectations changed");
+      if (a.evaluator_fingerprint !== b.evaluator_fingerprint) reasons.push("judge model, prompts or scoring changed");
+    }
+    return reasons;
+  }
+
   async function comparePage(aId, bId) {
     const fids = indexFixtureIds();
     const ordered = [...INDEX].reverse(); // oldest → newest for trends
@@ -1444,7 +1453,7 @@
             <div class="muted small">${esc(r.generated_at ? new Date(r.generated_at).toLocaleString() : "")} · ${esc(r.code_version || "unknown commit")}</div></td>
           <td class="nowrap">${(() => {
             const u = indexTotals(r);
-            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${costText(u)} · ${u.requests} requests</div>${conversionNote(u)}` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
+            return u ? `${fmtTime(r.wall_seconds ?? u.seconds)}<div class="muted small">${costText(u)} · ${u.requests} requests</div>` : `<span class="muted" data-tip="Saved before time and cost were recorded">–</span>`;
           })()}</td>
           ${fids.map((fid) => {
             const fx = r.fixtures[fid];
@@ -1459,16 +1468,17 @@
         </tr>`).join("")}</tbody></table></div>
 
       <h2>Headline metrics over time</h2>
-      <p class="sub">Oldest run on the left. Arrows compare each run with the previous run that evaluated the same stage; green is better.</p>
+      <p class="sub">Oldest run on the left. Arrows compare each run with the previous run that evaluated the same stage; green is better. No arrow appears when the two runs used different fixtures, expectations or judge policy.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table class="trend">
         <thead><tr><th>Document · stage · metric</th>${ordered.map((r) => `<th class="nowrap"><a href="?run=${enc(r.id)}#/">${esc(r.label || r.id)}</a></th>`).join("")}</tr></thead>
         <tbody>${fids.flatMap((fid) => STAGE_KEYS.flatMap((s) => RUN_METRICS[s].map(([key, name]) => {
-          let previous = null;
+          let previous = null, previousRun = null;
           const cells = ordered.map((r) => {
             const value = r.fixtures[fid]?.stages[s]?.metrics?.[key];
             const status = r.fixtures[fid]?.stages[s]?.status;
-            const text = value == null ? (status === "error" ? `<span class="muted" data-tip="Judgment rejected; no official metrics">error</span>` : "–") : `${pct(value)} ${delta(key, previous, value)}`;
-            if (value != null) previous = value;
+            const arrow = previousRun && !incompatibility(previousRun, r).length ? delta(key, previous, value) : "";
+            const text = value == null ? (status === "error" ? `<span class="muted" data-tip="Judgment rejected; no official metrics">error</span>` : "–") : `${pct(value)} ${arrow}`;
+            if (value != null) [previous, previousRun] = [value, r];
             return `<td class="nowrap">${text}</td>`;
           });
           return `<tr><td>${esc(shortFixture(fid))} · ${STAGES[s].n} ${esc(STAGES[s].label)} · <span class="muted">${esc(name)}</span></td>${cells.join("")}</tr>`;
@@ -1497,7 +1507,7 @@
         <div class="muted small">${esc(run.run.generated_at ? new Date(run.run.generated_at).toLocaleString() : "")}${run.run.snapshot === "rebuilt_with_current_fixtures" ? " · snapshot rebuilt with later fixtures" : ""}</div>
         <div class="small" style="margin-top:6px">${(() => {
           const u = runTotals(run);
-          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${costText(u)}</b> · ${u.requests} model requests${conversionNote(u)}` : `<span class="muted">Time and cost not recorded for this run</span>`;
+          return u ? `<b>${fmtTime(run.run.wall_seconds ?? u.seconds)}</b> · <b>${costText(u)}</b> · ${u.requests} model requests` : `<span class="muted">Time and cost not recorded for this run</span>`;
         })()}</div>
         <a class="small" href="?run=${enc(run.run.id)}#/">Open this run →</a></div>`).join("")}</div>
       ${reviewSummary()}
@@ -1511,15 +1521,16 @@
   function reviewSummary() {
     if (!REVIEW) return "";
     const evidence = (id, row) => id ? `<a href="?run=${enc(id)}#/f/${enc(row.fixture_id)}/${enc(row.stage)}">${esc(id)}</a>` : "unavailable";
-    return `<h2>Approved baseline review</h2><div class="callout"><b>${esc(REVIEW.baseline?.status || "unavailable")}</b>: ${esc(REVIEW.baseline?.reason || "Pinned approved baseline")}
-      <p>Quality regression: ${esc(REVIEW.quality_regression)} · quality failures: ${esc(REVIEW.quality_failures)} · evaluation unavailable: ${esc(REVIEW.evaluation_unavailable)}</p>
+    const tone = { improved: "good", unchanged: "", regressed: "bad", mixed: "bad", unavailable: "err" }[REVIEW.outcome] || "";
+    const items = (row, key, title) => row[key]?.length ? `<h4>${title}</h4><ul>${row[key].map((i) => `<li><code>${esc(i.id)}</code> ${esc(i.before)} → ${esc(i.after)}</li>`).join("")}</ul>` : "";
+    return `<h2>Baseline review</h2><div class="callout ${tone}"><b>Outcome: ${esc(REVIEW.outcome || "unavailable")}</b> · baseline ${esc(REVIEW.baseline?.status || "unavailable")}: ${esc(REVIEW.baseline?.reason || "")}
+      <p>${REVIEW.noise_measured ? `Noise range from ${REVIEW.baseline_run_ids.length} baseline runs.` : "Noise not measured: one baseline run, so small changes may be model variation."}</p>
       <a href="comparison.md">Download review summary</a> · <a href="comparison.json">Comparison data</a></div>
-      ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.new_failures.length} new failures · ${row.evaluation_errors.length} unavailable</summary>
-        <p>Baseline: ${evidence(REVIEW.baseline_run_id, row)} · Candidate: ${evidence(REVIEW.candidate_run_id, row)}</p>
-        ${["new_failures", "resolved_failures", "quality_failures", "evaluation_errors"].map((key) => row[key].length ? `<h4>${esc(key.replace(/_/g, " "))}</h4><ul>${row[key].map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : "").join("")}
-        <h4>Chapter and mandatory evidence</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.details, null, 2))}</pre>
-        <h4>Metrics</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify(row.metrics, null, 2))}</pre>
-        <h4>Usage and cost completeness</h4><pre style="white-space:pre-wrap">${esc(JSON.stringify({ baseline: row.baseline_usage, candidate: row.candidate_usage }, null, 2))}</pre>
+      ${(REVIEW.rows || []).map((row) => `<details class="card" style="margin-top:12px"><summary>${esc(row.fixture_id)} · ${esc(row.stage)} · ${row.regressed_items?.length || 0} regressed · ${row.improved_items?.length || 0} improved · ${row.flaky_items?.length || 0} flaky${row.evaluation_errors.length ? " · unavailable" : ""}</summary>
+        <p>Baseline: ${evidence(REVIEW.baseline_run_ids?.[0], row)} · Candidate: ${evidence(REVIEW.candidate_run_id, row)}</p>
+        ${items(row, "regressed_items", "Regressed")}${items(row, "improved_items", "Improved")}${items(row, "flaky_items", "Flaky across baseline runs")}
+        ${row.evaluation_errors.length ? `<h4>Evaluation unavailable</h4><ul>${row.evaluation_errors.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
+        <table><thead><tr><th>Metric</th><th>Baseline</th><th>Candidate</th><th>Change</th></tr></thead><tbody>${Object.entries(row.metrics || {}).filter(([, m]) => m.delta).map(([key, m]) => `<tr><td>${esc(key)}</td><td>${pct(m.baseline)}</td><td>${pct(m.candidate)}</td><td>${esc(m.status || "context")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No metric changed.</td></tr>`}</tbody></table>
       </details>`).join("")}`;
   }
 
@@ -1533,6 +1544,12 @@
       add(`Model · ${role.replace(/_/g, " ")}`, m(A), m(B));
     }
     for (const stage of STAGE_KEYS) add(`Judge prompt · ${stage}`, short(A.run.judge_prompt_versions?.[stage], 12), short(B.run.judge_prompt_versions?.[stage], 12));
+    add("LLM config", short(A.run.llm_config_sha256, 12), short(B.run.llm_config_sha256, 12));
+    add("Dependency lock", short(A.run.dependency_lock_sha256, 12), short(B.run.dependency_lock_sha256, 12));
+    // Only changed producer prompts are listed; there are dozens of them.
+    const pa = A.run.producer_prompt_versions || {}, pb = B.run.producer_prompt_versions || {};
+    for (const name of new Set([...Object.keys(pa), ...Object.keys(pb)]))
+      if (pa[name] !== pb[name]) add(`Prompt · ${name.replace(/_/g, " ")}`, short(pa[name], 12), short(pb[name], 12));
     const fx = (run, fid) => run.fixtures.find((f) => f.golden.fixture_id === fid);
     for (const fid of new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))) {
       const a = fx(A, fid), b = fx(B, fid);
@@ -1542,14 +1559,28 @@
       add(`Golden expectations · ${shortFixture(fid)}`, a ? "baseline content" : null, b ? (same ? "baseline content" : "changed content (comparison may be incompatible)") : null);
     }
     return `<h2>What changed between the runs</h2>
-      <p class="sub">A changed model, prompt, source or expectation explains a changed result; if nothing here changed, the difference is run-to-run variance.</p>
+      <p class="sub">Every non-model input is recorded here: code, prompts, LLM config, dependencies, sources and expectations. If none of them changed, a different result comes from the models' own output.</p>
       <div class="card" style="padding:0"><table><thead><tr><th>Input</th><th>Run A</th><th>Run B</th><th></th></tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
+  }
+
+  // The review's noise status for one metric, when the review compares exactly A → B.
+  function reviewMetric(A, B, fid, stage, key) {
+    if (!REVIEW || REVIEW.baseline_run_ids?.[0] !== A.run.id || REVIEW.candidate_run_id !== B.run.id) return null;
+    return REVIEW.rows?.find((r) => r.fixture_id === fid && r.stage === stage)?.metrics?.[key] || null;
   }
 
   function stageDiff(A, B) {
     const fids = [...new Set([...A.fixtures, ...B.fixtures].map((f) => f.golden.fixture_id))];
     const fx = (run, fid) => run.fixtures.find((f) => f.golden.fixture_id === fid);
-    return `<h2>Stage results, A → B</h2>
+    const reasons = incompatibility(A.run, B.run);
+    const reviewed = REVIEW && REVIEW.baseline_run_ids?.[0] === A.run.id && REVIEW.candidate_run_id === B.run.id;
+    const noise = reviewed
+      ? (REVIEW.noise_measured ? `<p class="sub">Changes inside the spread of ${REVIEW.baseline_run_ids.length} baseline runs show as ≈ (within noise).</p>`
+        : `<p class="sub"><b>Noise not measured:</b> the baseline has one run, so small changes may be model variation. Add baseline repeats to confirm them.</p>`)
+      : `<p class="sub">These are raw metric differences. Open the review written by compare or evaluate for the baseline verdict and measured noise range.</p>`;
+    return `<h2>Stage results, A → B</h2>${reasons.length ? "" : noise}
+      ${reasons.length ? `<div class="callout bad" style="margin-bottom:14px"><b>Not comparable: ${esc(reasons.join("; "))}.</b>
+        <div class="small muted" style="margin-top:4px">Both results are shown side by side, but a higher or lower score here does not mean the producer got better or worse.</div></div>` : ""}
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Document</th>${STAGE_KEYS.map((s) => `<th>${STAGES[s].n} · ${STAGES[s].label}</th>`).join("")}</tr></thead>
         <tbody>${fids.map((fid) => `<tr><td><b>${esc(shortFixture(fid))}</b></td>${STAGE_KEYS.map((s) => {
@@ -1558,7 +1589,9 @@
           const metrics = RUN_METRICS[s].map(([key, name]) => {
             const va = a?.report?.metrics?.[key], vb = b?.report?.metrics?.[key];
             if (va == null && vb == null) return "";
-            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${delta(key, va, vb)}</div>`;
+            const status = reviewMetric(A, B, fid, s, key)?.status;
+            const change = reasons.length ? "" : status === "within_noise" ? `<span class="muted">≈ within noise</span>` : delta(key, va, vb);
+            return `<div class="cellnote">${esc(name)}: ${pct(va)} → ${pct(vb)} ${change}</div>`;
           }).join("");
           return `<td>${badge(sa)} → ${badge(sb)}${metrics}</td>`;
         }).join("")}</tr>`).join("")}</tbody></table></div>`;
@@ -1585,13 +1618,6 @@
         <td class="nowrap">${costChange(a, b)}</td>
         <td class="nowrap">${a?.requests ?? "–"} → ${b?.requests ?? "–"}</td></tr>`;
     }));
-    for (const fid of fids) {
-      const conversion = (run) => run.fixtures.find((f) => f.golden.fixture_id === fid)?.input_provenance?.conversion;
-      const a = conversion(A), b = conversion(B);
-      if (a || b) rows.push(`<tr><td>${esc(shortFixture(fid))} · PDF conversion</td>
-        <td>${change(a?.elapsed_seconds, b?.elapsed_seconds, fmtTime)}</td>
-        <td>Cost unavailable · excluded from total</td><td>–</td></tr>`);
-    }
     const ta = runTotals(A), tb = runTotals(B);
     const agents = {};
     for (const [tag, run] of [["a", A], ["b", B]])
@@ -1609,7 +1635,7 @@
       `<tr><td class="mono small">${esc(name)}</td><td class="nowrap">${costText(u.a)} · ${u.a?.requests ?? "–"}</td><td class="nowrap">${costText(u.b)} · ${u.b?.requests ?? "–"}</td>
         <td>${tb?.cost && tb.cost_complete === true && u.b?.cost_complete === true ? `${Math.round((u.b.cost_usd / tb.cost) * 100)}%` : "–"}</td></tr>`).join("");
     return `<h2>Time and cost, A → B</h2>
-      <p class="sub">Wall time and reported model cost. Cost comparisons require complete prices in both runs; older runs with no completeness record are unknown. PDF conversion cost is unavailable and excluded. Stage times overlap when documents run in parallel.</p>
+      <p class="sub">Wall time and reported model cost. Cost comparisons require complete prices in both runs; older runs with no completeness record are unknown. Stage times overlap when documents run in parallel.</p>
       <div class="card" style="padding:0;overflow-x:auto"><table>
         <thead><tr><th>Document · stage</th><th>Time</th><th>Reported cost · coverage</th><th>Requests</th></tr></thead>
         <tbody>${rows.join("")}

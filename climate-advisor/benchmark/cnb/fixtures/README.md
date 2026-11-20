@@ -38,16 +38,6 @@ Each directory has:
   contract. Richfield's certifying engineer, licence number, and private email
   correspondents are redacted; the Kraków plan is an official document and
   contains no personal data.
-- `source.pdf` (PDF fixtures only, **not in git**): the document `source.md` was
-  produced from, pinned by `source.original_pdf` (path, SHA-256, URL, notes).
-  Place the file in the fixture folder to use it; `fixture_problems` rejects a
-  copy whose SHA-256 differs, and a missing copy only makes the PDF path
-  unavailable. The `--input-path pdf` run converts these pinned bytes with the
-  production CNB `visual_context` converter; the default path uses fixed
-  Markdown. Both judge against the independent approved source reference. The
-  Kraków copy is the unmodified public annex at its `url`. The Richfield copy is
-  truly redacted (text and signature removed, not covered) to match `source.md`,
-  so it cannot be re-downloaded; get it from the benchmark maintainers.
 - `golden.json`: expectations for every stage (see below).
 - `drafting_input.json`: funder, opportunity, application template, and
   authoritative city context. Every template field is owned by at least one
@@ -61,14 +51,23 @@ targets, not evidence**: the original source and authoritative context establish
 truth. There are no keyword lists or reference answers. Statements may be in
 English for a Polish source; the judge compares meaning across languages.
 
+The Kraków edit uses a fictional 75% request for call FENX.01.02-IW.01-001/24.
+The published cap is 77%. The source plan gives separate amounts for Table 1,
+Tables 1 and 2 combined, and broader needs. These amounts have different scopes.
+[Call conditions](https://www.gov.pl/web/nfosigw/fenx0102-iw01-00124-adaptacja-terenow-zurbanizowanych-do-zmian-klimatu) · [Adopted plan, section 7.2](https://www.bip.krakow.pl/_inc/rada/uchwaly/show_pdf.php?id=134027)
+
+Richfield Table 5-7 reports an upper estimate greater than its stated +50% range.
+The fixture preserves the printed amount and attributes the percentage to the table note.
+[Barr report, Table 5-7](https://cms9files.revize.com/richfieldmn/Richfield_FloodRiskPrioritization.pdf)
+
 ### golden.json sections
 
 - `approval`: review status, reviewer/date, and source/template/requirements
-  fingerprints (including the original PDF digest where present). Approved
-  records require an actual review date, never a future date. All shipped
-  requirements are **pending Product review**.
+  fingerprints. Approved
+  records require an actual human review date. The revised fixtures are pending human
+  sign-off. Historical approvals belong to the archived run.
 - `extraction`: facts defined once (stable ID, statement, exact evidence with
-  allowed page or heading locators), explicit `requirements` entries containing
+  allowed page or heading locators, with optional alternative sufficient evidence groups), explicit `requirements` entries containing
   `chapter_ref` and `priority` (`mandatory` or `desirable`), topics and the topic
   threshold. One judge expectation is emitted for every `<fact_id>::<chapter_ref>`
   pair. All mandatory pairs must be fully covered; there is no fractional pass gate.
@@ -84,19 +83,17 @@ English for a Polish source; the judge compares meaning across languages.
   messages, the expected outcome (`edit` or `clarification`), the chapters the
   edit may change, statements that must change, and statements that must survive.
 
-## Human approval and proposed requirement rows
+## Human approval and requirement consistency
 
-The migrated rows are proposals derived from the existing chapter-writing links
-and template descriptions. Linked facts inherit their previous extraction
-mandatory/desirable priority; unlinked facts are mapped to the relevant template
-chapter (for example, financing estimates to Financing and methodology to
-Project analysis). Product must verify both the placement and priority; these
-mappings are not human-approved by this migration.
+The proposed requirement rows use the chapter-writing links and template descriptions. Human review covers placement and priority. `fixture_problems` keeps the two stages consistent: an
+extraction pair is mandatory only when a required drafting fact links that fact
+to that chapter, and a required document fact needs a link or a written drafting-only reason. A linked required fact needs its extraction fact
+mandatory in one of its chapters. A fact is therefore mandatory only where a
+correct application chapter would be wrong without it.
 
 `ground_truth_fingerprints(loaded)` hashes the actual source Markdown, normalized
-complete drafting input, and normalized four-stage requirements, and includes
-the pinned original PDF digest when present. Changing source,
-template, fact meaning/evidence, chapter assignment, priority, or scoring policy
+complete drafting input, reference draft, and normalized four-stage requirements. Changing the source,
+template, reference draft, fact meaning/evidence, chapter assignment, or priority
 invalidates prior approval. Pending or stale approvals prevent the fixture and
 run from passing as approved, while individual stage metrics and raw judgments
 remain inspectable. Source/candidate OCR differences do not replace reference
@@ -139,13 +136,18 @@ benchmark's source-preservation policy.
 
 ## Few-shot calibration examples
 
-Every judge prompt contains an `<examples>` block of worked verdicts. Each
-anchored example quotes a passage **extracted verbatim** from a fixture document
-and names its source unit; `test_few_shot_passages_are_extracted_verbatim_from_fixtures`
-fails if a passage is not an exact substring of that unit, or if it overlaps any
-golden evidence text, so examples never reveal the answer for an evaluated fact.
-Extraction examples must also quote retained text verbatim. Examples span all
-three documents and both languages.
+Every judge prompt contains an `<examples>` block of worked verdicts. Anchored
+examples quote passages **extracted verbatim** from fixture documents and name
+their source units. The offline `judge_example_problems(fixtures, prompts)` guard
+checks exact source membership and parses both `<examples>` and `<example_output>`
+JSON. It checks prose strings (excluding `unit`/`unit_id` locators) against all
+fixtures' extraction evidence and fact
+statements, drafting facts/gaps, seeded-defect find/replace text, and editing
+expectations. After case-folding and collapsing punctuation/whitespace, a shared
+substring of at least 40 characters, or containment of a whole golden evidence
+or expectation text, is reported as overlap. This deterministic guard does not detect arbitrary
+semantic paraphrases. Examples use unscored source passages, span all three
+documents and both languages, and keep extraction quotations verbatim.
 
 ## Stage gates
 
@@ -196,17 +198,12 @@ each open question that another chapter already answers.
 From `climate-advisor/`:
 
 ```bash
-# Deterministic tests: contracts, seeding, plumbing, prompt examples; no model calls.
-uv run pytest benchmark/cnb/tests -q
-
 # Every stage for every fixture, once; the label is shown in the viewer.
 uv run python -m benchmark.cnb.scripts.evaluate --label baseline
 
 # Selected stages or fixtures (repeat either flag).
-uv run python -m benchmark.cnb.scripts.evaluate \
-  --fixture krakow-flood-drainage-plan --stage chapter_writing
-uv run python -m benchmark.cnb.scripts.evaluate \
-  --fixture richfield-flood-risk --stage verification --stage editing
+uv run python -m benchmark.cnb.scripts.evaluate --fixture krakow-flood-drainage-plan --stage chapter_writing
+uv run python -m benchmark.cnb.scripts.evaluate --fixture richfield-flood-risk --stage verification --stage editing
 
 # Rebuild the viewer from saved runs (no model calls).
 uv run python -m benchmark.cnb.scripts.publish
@@ -216,13 +213,12 @@ uv run python -m benchmark.cnb.scripts.publish
 folder. `--parallel` evaluates the fixtures concurrently in one process (about
 the slowest fixture's time instead of the sum); by default they run one at a
 time to keep provider load bounded. `--run-id` names the run folder (default: UTC time plus the label); an
-existing run is never overwritten. There is no `--repeats` flag; run again to
-measure variance and compare the runs in the viewer. A full run makes one
-extraction, one draft per chapter, two or more validator passes per chapter, up
-to four edit plans with review per fixture, and four judge calls per fixture. The
-advisory live workflow runs the fixed-Markdown and PDF paths as parallel jobs on
-manual dispatch. Missing credentials are reported as unavailable.
-See [delivery and approval](../DELIVERY.md) for setup and baseline review.
+existing run is never overwritten. There is no `--repeats` flag; run again and
+compare the runs with `benchmark.cnb.scripts.compare`. A full run makes one
+extraction, one draft per chapter, validator passes per chapter on the seeded
+and the clean reference draft, up to six edit plans with review per fixture, and
+five judge calls per fixture. Nothing runs it automatically. See [benchmark.md](../benchmark.md) for
+comparing runs and baseline approval.
 
 Live execution requires `OPENROUTER_API_KEY` and the usual Climate Advisor
 settings. `llm_config.yaml` configures `models.cnb_golden_set_judge`
@@ -250,9 +246,8 @@ output/cnb_golden_set/
 └── runs/
     ├── index.js            # summary of every run, for the run picker and comparison
     └── <run-id>/           # one evaluator invocation
-        ├── report.md, report.json, outputs/...
+        ├── report.md, report.json, llm_config.json, outputs/...
         ├── viewer.js       # immutable fixture and judgment snapshot
-        ├── pdf/<fixture>.pdf # matching original PDFs for this run
         └── review-bundle.zip # candidate, approved baseline and viewer
 ```
 
@@ -265,7 +260,8 @@ return exit code 3. The viewer shows any run (picker in the top bar) by stage an
 and **Compare runs** shows the run history, headline metrics over time, and for
 any two runs: what changed in models, prompts, sources and expectations, the
 stage results A → B, and every expectation whose verdict changed. Reports
-record the run ID, label, and git commit (`-dirty` for uncommitted changes).
+record the run ID, label, git commit (`-dirty-<diff hash>` for uncommitted
+changes), every configured prompt's hash, and the LLM config and `uv.lock` hashes.
 
 Each run folder contains:
 
@@ -280,8 +276,7 @@ Each run folder contains:
   shows time and cost A → B and where the money goes. Runs saved before usage
   recording show no time or cost.
 - `cost_complete` and `unpriced_requests` distinguish reported totals from missing
-  billing evidence. PDF conversion time is reported separately with unavailable
-  cost; it is excluded from the reported model total.
+  billing evidence.
 - `delivery.json`, `comparison.json/.md` and `review-bundle.zip`: execution and
   publication status, an explicitly approved baseline comparison when available,
   and an extract-and-open review package with matching immutable evidence.
@@ -302,7 +297,7 @@ even when another stage is unavailable.
 ## Add or change a fixture
 
 1. Add non-sensitive source Markdown in the production artifact format (for a
-   PDF, CityCatalyst's Mistral OCR assembly). Pin its SHA-256, format, language,
+   PDF source, CityCatalyst's Mistral OCR assembly). Pin its SHA-256, format, language,
    and page count in `golden.json`.
 2. Write extraction facts with exact evidence and valid locators, and topics.
    Define every receiving chapter and its mandatory/desirable priority explicitly.
@@ -318,11 +313,10 @@ even when another stage is unavailable.
    template. Record the actual reviewer and ISO review date, set `approval.status`
    to `approved`, and copy `ground_truth_fingerprints(loaded)` from
    `benchmark.cnb.golden_set.core`. Never infer approval from a passing run.
-7. Run the deterministic tests and the live evaluation. Inspect the outputs,
+7. Run the live evaluation. Inspect the outputs,
    the original evidence, and the judge explanations; explain intentional
    baseline, prompt, or threshold changes in review.
 
 Model, reasoning, source prompt, tokenizer, or partition/excerpt/topic limit
 changes invalidate production cached source analyses through
-`source_analysis_contract_version`; the existing tests verify this independently
-of the judge.
+`source_analysis_contract_version`.

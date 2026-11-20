@@ -244,7 +244,29 @@ Use `script-quality-gate` when you add or change one.
 - New features should include tests where practical.
 - Bug fixes should include a regression test whenever feasible.
 - If you change prompts, tool outputs, or workflow contracts, update or add tests that exercise those paths.
-- Whenever changing a prompt, model configuration, or extraction pipeline (including PDF conversion), suggest that the user manually rerun the relevant benchmark before opening or updating a PR; explain that live runs consume provider usage and do not start one without the user's authorization.
+
+---
+
+## CNB golden-set benchmark
+
+`benchmark/cnb/` scores the real Concept Note Builder pipeline (extraction, chapter writing, verification, editing) against an approved baseline. `benchmark/cnb/benchmark.md` is the guide.
+
+A full run is expensive: it calls paid models for about $8–10 and takes about 25 minutes with `--parallel`. Because of this:
+
+- The benchmark runs only by hand, on the developer's machine. Do not add a GitHub Actions workflow, a CI step, a pytest test or a pre-commit hook that runs it. The local command, from `climate-advisor/`, runs every stage, compares the run with the approved baseline in `baseline.json` and uploads it to MLflow:
+
+  ```bash
+  uv run python -m benchmark.cnb.scripts.evaluate --label <short-change-name> --parallel --mlflow
+  ```
+
+  It exits `0` when nothing regressed, `1` for `regressed` or `mixed`, and `3` when the result is unavailable or not comparable.
+- Never start a live run (`evaluate`, `calibrate`, `propose_baseline` on a new run) without the user's explicit authorization for that run. `compare` and `rescore` call no models and are free.
+- When a change touches the CNB pipeline, tell the user before they open or update the PR that the benchmark is the way to check it, give the command above and the cost, and let them decide. The pipeline means:
+  - prompts in `prompts/cnb/` used by source analysis, chapter drafting, the support check, chapter validation or chat editing;
+  - models or settings for `cnb_*` entries in `llm_config.yaml`;
+  - `service/app/services/cnb/` modules for source analysis, application context, the context bundle, chapter drafting, chapter validation, edit planning and edit validation.
+- After a run, compare it with the baseline and report the outcome line from `comparison.md` (`improved`, `regressed`, `mixed`, `unchanged`, `unavailable`).
+- Changing a judge prompt in `benchmark/cnb/prompts/`, the fixtures or the scoring code makes new runs incomparable with the baseline. Warn the user that this needs a new approved baseline.
 
 ---
 

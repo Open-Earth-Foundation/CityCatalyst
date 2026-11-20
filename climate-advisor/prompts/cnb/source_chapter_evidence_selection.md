@@ -12,9 +12,14 @@ Rules:
 - choose only supplied candidates; copy `text` and the location field exactly
 - prefer excerpts that state a value (figure, date, cost, name, responsibility,
   target, result) over excerpts that only name a topic
+- prefer the candidate that keeps a total with its subsets, every named site or
+  project, and method qualifiers (return period, scenario, model limits)
 - cover different required fields before adding a second excerpt for the same one
+- when you choose a table value whose subject is only in a caption or label
+  candidate, also choose that caption or label
 - when candidates conflict, keep both sides of the conflict
-- never choose a title, heading, or table-of-contents line
+- never choose a document title, a table-of-contents line, or a heading that
+  names no subject of a chosen value
 - return one object for every chapter in `candidates`
 </task>
 

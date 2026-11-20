@@ -58,6 +58,8 @@ describe("OpenID Connect discovery and JWKS", () => {
         "authorization_endpoint",
         "token_endpoint",
         "userinfo_endpoint",
+        "revocation_endpoint",
+        "introspection_endpoint",
         "jwks_uri",
         "service_documentation",
       ]) {
@@ -65,6 +67,12 @@ describe("OpenID Connect discovery and JWKS", () => {
         expect(metadata[key]).toMatch(URL_REGEX);
       }
       expect(metadata.token_endpoint).toBe(`${metadata.issuer}/api/v1/token/`);
+      expect(metadata.revocation_endpoint).toBe(
+        `${metadata.issuer}/api/v1/oauth/revoke/`,
+      );
+      expect(metadata.introspection_endpoint).toBe(
+        `${metadata.issuer}/api/v1/oauth/introspect/`,
+      );
       expect(metadata.jwks_uri).toBe(
         `${metadata.issuer}/.well-known/jwks.json/`,
       );
@@ -76,12 +84,22 @@ describe("OpenID Connect discovery and JWKS", () => {
       expect(metadata.subject_types_supported).toEqual(["public"]);
     });
 
-    it("should support the code flow with PKCE S256 for public clients", () => {
+    it("should support the code flow with PKCE S256 for public and confidential clients", () => {
       expect(metadata.response_types_supported).toContain("code");
       expect(metadata.grant_types_supported).toContain("authorization_code");
       expect(metadata.grant_types_supported).toContain("refresh_token");
       expect(metadata.code_challenge_methods_supported).toContain("S256");
-      expect(metadata.token_endpoint_auth_methods_supported).toEqual(["none"]);
+      expect(metadata.token_endpoint_auth_methods_supported).toEqual([
+        "none",
+        "client_secret_basic",
+      ]);
+      expect(metadata.revocation_endpoint_auth_methods_supported).toEqual([
+        "none",
+        "client_secret_basic",
+      ]);
+      expect(metadata.introspection_endpoint_auth_methods_supported).toEqual([
+        "client_secret_basic",
+      ]);
     });
 
     it("should list the claims it can return", () => {

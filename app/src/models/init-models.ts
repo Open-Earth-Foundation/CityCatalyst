@@ -311,6 +311,12 @@ import {
   AuthorizationCodeOptionalAttributes,
 } from "./AuthorizationCode";
 import {
+  RefreshToken as _RefreshToken,
+  RefreshTokenAttributes,
+  RefreshTokenCreationAttributes,
+  RefreshTokenOptionalAttributes,
+} from "./RefreshToken";
+import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
@@ -396,6 +402,7 @@ export {
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
   _AuthorizationCode as AuthorizationCode,
+  _RefreshToken as RefreshToken,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -538,6 +545,9 @@ export type {
   AuthorizationCodeAttributes,
   AuthorizationCodeCreationAttributes,
   AuthorizationCodeOptionalAttributes,
+  RefreshTokenAttributes,
+  RefreshTokenCreationAttributes,
+  RefreshTokenOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -621,6 +631,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
   const AuthorizationCode = _AuthorizationCode.initModel(sequelize);
+  const RefreshToken = _RefreshToken.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -1683,6 +1694,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
     AuthorizationCode: AuthorizationCode,
+    RefreshToken: RefreshToken,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

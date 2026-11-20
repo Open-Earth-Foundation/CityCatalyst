@@ -9,7 +9,9 @@ import { db } from "@/models";
 import { AuthorizationCode } from "@/models/AuthorizationCode";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
+import { RefreshToken } from "@/models/RefreshToken";
 import AuthorizationCodeService from "@/backend/oauth/AuthorizationCodeService";
+import { hashSecret } from "@/backend/oauth/ClientAuthentication";
 import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import jwt from "jsonwebtoken";
@@ -87,13 +89,31 @@ function tokenRequest(code: string, overrides: Record<string, string> = {}) {
   return req;
 }
 
-function refreshRequest(refreshToken: string) {
+function refreshRequest(
+  refreshToken: string,
+  overrides: Record<string, string> = {},
+  headers: Record<string, string> = {},
+) {
+  const fields: Record<string, string> = {
+    grant_type: "refresh_token",
+    refresh_token: refreshToken,
+    client_id: testClient.clientId,
+    ...overrides,
+  };
   const formData = new FormData();
-  formData.append("grant_type", "refresh_token");
-  formData.append("refresh_token", refreshToken);
+  for (const [key, value] of Object.entries(fields)) {
+    formData.append(key, value);
+  }
   const req = mockRequestFormData(formData);
   req.headers.set("content-type", "application/x-www-form-urlencoded");
+  for (const [key, value] of Object.entries(headers)) {
+    req.headers.set(key, value);
+  }
   return req;
+}
+
+function basicAuth(clientId: string, secret: string): string {
+  return `Basic ${Buffer.from(`${clientId}:${secret}`).toString("base64")}`;
 }
 
 function bearer(token: string) {
@@ -140,6 +160,7 @@ describe("OAuth authorization code and token API", () => {
   });
 
   afterAll(async () => {
+    await RefreshToken.destroy({ where: { userId } });
     await AuthorizationCode.destroy({ where: { userId } });
     await OAuthClientAuthz.destroy({ where: { userId } });
     await OAuthClient.destroy({ where: { clientId: testClient.clientId } });
@@ -307,24 +328,31 @@ describe("OAuth authorization code and token API", () => {
       await expectStatusCode(res, 400);
     });
 
-    it("signs access and refresh tokens with the OAuth key", async () => {
+    it("signs the access token with the OAuth key and stores the refresh token hashed", async () => {
       const body = await exchange("read");
-      for (const token of [body.access_token, body.refresh_token]) {
-        const decoded = jwt.decode(token, { complete: true });
-        expect(decoded?.header.alg).toBe("RS256");
-        expect(decoded?.header.kid).toBeTruthy();
-        const payload = verifyOAuthToken(
-          token,
-          token === body.access_token
-            ? OAuthTokenType.Access
-            : OAuthTokenType.Refresh,
-        );
-        expect(payload.sub).toBe(userId);
-        expect(payload.client_id).toBe(testClient.clientId);
-        expect(() =>
-          jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET ?? "unset"),
-        ).toThrow();
-      }
+      expect(body.expires_in).toBe(15 * 60);
+
+      const decoded = jwt.decode(body.access_token, { complete: true });
+      expect(decoded?.header.alg).toBe("RS256");
+      expect(decoded?.header.kid).toBeTruthy();
+      const payload = verifyOAuthToken(body.access_token, OAuthTokenType.Access);
+      expect(payload.sub).toBe(userId);
+      expect(payload.client_id).toBe(testClient.clientId);
+      expect(payload.exp! - payload.iat!).toBe(15 * 60);
+
+      // Opaque refresh token: not a JWT, and only its hash is in the database.
+      expect(jwt.decode(body.refresh_token)).toBeNull();
+      expect(body.refresh_token).toMatch(/^[A-Za-z0-9_-]+$/);
+      const hash = createHash("sha256")
+        .update(body.refresh_token)
+        .digest("hex");
+      expect(await RefreshToken.findByPk(body.refresh_token)).toBeNull();
+      const row = await RefreshToken.findByPk(hash);
+      expect(row).not.toBeNull();
+      expect(row!.clientId).toBe(testClient.clientId);
+      expect(row!.userId).toBe(userId);
+      expect(row!.consumedAt).toBeNull();
+      expect(row!.revokedAt).toBeNull();
     });
 
     it("returns no id_token without the openid scope", async () => {
@@ -459,25 +487,126 @@ describe("OAuth authorization code and token API", () => {
       }
     });
 
-    it("types the tokens it issues", async () => {
+    it("types the JWTs it issues", async () => {
       const body = await exchange("openid read");
       const typ = (token: string) =>
         jwt.decode(token, { complete: true })!.header.typ;
       expect(typ(body.access_token)).toBe(OAuthTokenType.Access);
-      expect(typ(body.refresh_token)).toBe(OAuthTokenType.Refresh);
       expect(typ(body.id_token)).toBe(OAuthTokenType.Id);
+      // Refresh tokens are opaque, not typed JWTs.
+      expect(jwt.decode(body.refresh_token)).toBeNull();
     });
   });
 
   describe("POST /api/v1/token (refresh_token)", () => {
-    it("still issues a new access token, without an id_token", async () => {
+    it("rotates the refresh token and returns a new access token without an id_token", async () => {
       const body = await exchange("openid read");
       const res = await postToken(refreshRequest(body.refresh_token), noParams);
       await expectStatusCode(res, 200);
       const refreshed = await res.json();
       expect(refreshed.access_token).toBeDefined();
+      expect(refreshed.refresh_token).toBeDefined();
+      expect(refreshed.refresh_token).not.toBe(body.refresh_token);
       expect(refreshed.id_token).toBeUndefined();
       expect(refreshed.scope).toBe("openid read");
+      expect(refreshed.expires_in).toBe(15 * 60);
+
+      const oldHash = createHash("sha256")
+        .update(body.refresh_token)
+        .digest("hex");
+      expect(
+        (await RefreshToken.findByPk(oldHash))!.consumedAt,
+      ).not.toBeNull();
+    });
+
+    it("rejects reuse of a rotated refresh token and revokes the family", async () => {
+      const body = await exchange("read");
+      const first = await postToken(
+        refreshRequest(body.refresh_token),
+        noParams,
+      );
+      await expectStatusCode(first, 200);
+      const { refresh_token: next } = await first.json();
+
+      const reuse = await postToken(
+        refreshRequest(body.refresh_token),
+        noParams,
+      );
+      await expectStatusCode(reuse, 400);
+
+      // The rotated successor is dead too: the whole family was revoked.
+      await expectStatusCode(await postToken(refreshRequest(next), noParams), 400);
+    });
+
+    it("rejects a refresh without client_id for a public client", async () => {
+      const body = await exchange("read");
+      const formData = new FormData();
+      formData.append("grant_type", "refresh_token");
+      formData.append("refresh_token", body.refresh_token);
+      const req = mockRequestFormData(formData);
+      req.headers.set("content-type", "application/x-www-form-urlencoded");
+      await expectStatusCode(await postToken(req, noParams), 401);
+    });
+
+    it("requires client_secret_basic for a confidential client", async () => {
+      const secret = randomBytes(32).toString("base64url");
+      const confidential = {
+        clientId: "test-token-confidential",
+        redirectURI: "https://token-test-confidential.example/redirect",
+        clientSecretHash: hashSecret(secret),
+      };
+      await OAuthClient.destroy({ where: { clientId: confidential.clientId } });
+      await OAuthClient.create(confidential);
+      try {
+        // Issue through the public client first, then mint a refresh for the
+        // confidential client directly so we do not need its authorize UI.
+        const issued = await RefreshToken.create({
+          tokenHash: createHash("sha256").update("plain-refresh").digest("hex"),
+          familyId: randomUUID(),
+          clientId: confidential.clientId,
+          userId,
+          scope: "read",
+          expires: new Date(Date.now() + 60 * 60 * 1000),
+        });
+        await OAuthClientAuthz.findOrCreate({
+          where: { clientId: confidential.clientId, userId },
+          defaults: { clientId: confidential.clientId, userId },
+        });
+
+        const withoutBasic = await postToken(
+          refreshRequest("plain-refresh", {
+            client_id: confidential.clientId,
+          }),
+          noParams,
+        );
+        await expectStatusCode(withoutBasic, 401);
+
+        const withBasic = await postToken(
+          refreshRequest(
+            "plain-refresh",
+            { client_id: confidential.clientId },
+            { authorization: basicAuth(confidential.clientId, secret) },
+          ),
+          noParams,
+        );
+        await expectStatusCode(withBasic, 200);
+        const rotated = await withBasic.json();
+        expect(rotated.refresh_token).toBeDefined();
+        expect(rotated.refresh_token).not.toBe("plain-refresh");
+        expect(
+          (await RefreshToken.findByPk(issued.tokenHash))!.consumedAt,
+        ).not.toBeNull();
+      } finally {
+        await RefreshToken.destroy({
+          where: { clientId: confidential.clientId },
+        });
+        await OAuthClientAuthz.destroy({
+          where: { clientId: confidential.clientId },
+        });
+        await OAuthClient.destroy({
+          where: { clientId: confidential.clientId },
+        });
+      }
     });
   });
 

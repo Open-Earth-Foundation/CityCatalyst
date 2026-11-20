@@ -120,10 +120,8 @@ describe("OAuth signing key", () => {
   });
 
   it.each([
-    [OAuthTokenType.Id, OAuthTokenType.Refresh],
     [OAuthTokenType.Id, OAuthTokenType.Access],
-    [OAuthTokenType.Access, OAuthTokenType.Refresh],
-    [OAuthTokenType.Refresh, OAuthTokenType.Access],
+    [OAuthTokenType.Access, OAuthTokenType.Id],
   ])("does not verify a %s token as %s", (issued, expected) => {
     process.env.OAUTH_SIGNING_KEY = toPem(primaryKey);
     const token = signOAuthToken(issued, { sub: USER_ID });
@@ -275,15 +273,16 @@ describe("Bearer tokens in apiHandler", () => {
     expect((await res.json()).userId).toBe(USER_ID);
   });
 
-  it.each([OAuthTokenType.Refresh, OAuthTokenType.Id])(
-    "rejects a %s token used as a bearer token",
-    async (type) => {
-      // Same key, same claims, same audience: only the type differs.
-      const token = signOAuthToken(type, accessClaims, accessOptions);
-      await expectStatusCode(await call(token), 401);
-      expect(findGrant).not.toHaveBeenCalled();
-    },
-  );
+  it("rejects an id_token used as a bearer token", async () => {
+    // Same key, same claims, same audience: only the type differs.
+    const token = signOAuthToken(
+      OAuthTokenType.Id,
+      accessClaims,
+      accessOptions,
+    );
+    await expectStatusCode(await call(token), 401);
+    expect(findGrant).not.toHaveBeenCalled();
+  });
 
   it("rejects an HS256 token with OAuth-shaped claims signed with the shared secret", async () => {
     // Before the key split this was a valid access token.

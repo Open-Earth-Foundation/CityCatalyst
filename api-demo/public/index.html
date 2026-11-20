@@ -134,9 +134,14 @@
             response,
           );
 
-          const { access_token } = result;
+          // Rotation returns a new refresh_token. Keep the latest one, or the
+          // next refresh presents a spent token and the whole family is revoked.
+          const { access_token, refresh_token } = result;
 
           sessionStorage.setItem("access_token", access_token);
+          if (refresh_token) {
+            sessionStorage.setItem("refresh_token", refresh_token);
+          }
 
           setStatus("Token refreshed.");
 

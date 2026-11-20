@@ -51,14 +51,20 @@ export function buildDiscoveryDocument(issuer: string) {
     authorization_endpoint: `${issuer}/authorize/`,
     token_endpoint: `${issuer}/api/v1/token/`,
     userinfo_endpoint: `${issuer}/api/v1/oauth/userinfo/`,
+    revocation_endpoint: `${issuer}/api/v1/oauth/revoke/`,
+    introspection_endpoint: `${issuer}/api/v1/oauth/introspect/`,
     jwks_uri: `${issuer}/.well-known/jwks.json/`,
     scopes_supported: ["openid", "read", "write"],
     response_types_supported: ["code"],
     grant_types_supported: ["authorization_code", "refresh_token"],
     subject_types_supported: ["public"],
     id_token_signing_alg_values_supported: ["RS256"],
-    // Public clients only, protected by PKCE. There are no client secrets yet.
-    token_endpoint_auth_methods_supported: ["none"],
+    // Public clients (no secret, protected by PKCE) and confidential clients
+    // (HTTP Basic).
+    token_endpoint_auth_methods_supported: ["none", "client_secret_basic"],
+    revocation_endpoint_auth_methods_supported: ["none", "client_secret_basic"],
+    // Only registered resource servers may introspect.
+    introspection_endpoint_auth_methods_supported: ["client_secret_basic"],
     code_challenge_methods_supported: ["S256"],
     claims_supported: [
       "sub",

@@ -3,16 +3,22 @@
 import { useCallback, useRef, useState } from "react";
 
 /**
- * Native view state of a static visual: which radio/checkbox is checked and
- * which <details> is open, keyed per control. Model visuals have no scripts,
- * so these CSS-driven controls are the only state a card can hold.
+ * Native view state of a static visual, keyed per control: a radio or checkbox
+ * holds whether it is checked, a <details> whether it is open, and a <select>
+ * the index of its selected option. Model visuals have no scripts, so these
+ * CSS-driven controls are the only state a card can hold.
  */
-export type VisualViewState = Record<string, boolean>;
+export type VisualViewState = Record<string, boolean | number>;
 
 /** Radio ids with this prefix name a panel of a trusted named-card visual. */
 export const PANEL_ID_PREFIX = "cc-panel-";
 
-type StatefulControl = HTMLInputElement | HTMLDetailsElement;
+type StatefulControl =
+  HTMLInputElement | HTMLDetailsElement | HTMLSelectElement;
+
+function isSelect(element: StatefulControl): element is HTMLSelectElement {
+  return element.tagName === "SELECT";
+}
 
 /**
  * Lists the stateful controls with a key that matches across two documents
@@ -26,8 +32,10 @@ function statefulControls(doc: Document): [string, StatefulControl][] {
     ),
   );
   const details = Array.from(doc.querySelectorAll("details"));
+  const selects = Array.from(doc.querySelectorAll("select"));
+  // Ids are counted across all kinds, so a repeated id falls back to position.
   const idCounts = new Map<string, number>();
-  for (const element of [...inputs, ...details]) {
+  for (const element of [...inputs, ...details, ...selects]) {
     if (element.id)
       idCounts.set(element.id, (idCounts.get(element.id) ?? 0) + 1);
   }
@@ -42,28 +50,40 @@ function statefulControls(doc: Document): [string, StatefulControl][] {
       keyOf(item, `details:${i}`),
       item,
     ]),
+    ...selects.map((select, i): [string, StatefulControl] => [
+      keyOf(select, `select:${i}`),
+      select,
+    ]),
   ];
 }
 
-/** Reads the checked/open state of every native control in `doc`. */
+/** Reads the checked, open, or selected-option state of every control in `doc`. */
 export function readVisualViewState(doc: Document): VisualViewState {
   const state: VisualViewState = {};
   for (const [key, element] of statefulControls(doc)) {
-    state[key] = "open" in element ? element.open : element.checked;
+    if (isSelect(element)) state[key] = element.selectedIndex;
+    else state[key] = "open" in element ? element.open : element.checked;
   }
   return state;
 }
 
 /**
- * Writes `state` into `doc`. Setting properties fires no `change` event, and
- * a `toggle` only re-reads equal state, so syncing two frames cannot loop.
+ * Writes `state` into `doc`. Setting properties (`checked`, `open`, and
+ * `selectedIndex`) fires no `change` event, and a `toggle` only re-reads equal
+ * state, so syncing two frames cannot loop.
  */
 export function applyVisualViewState(doc: Document, state: VisualViewState) {
   const controls = statefulControls(doc);
+  // Selects hold a number, so they are set in their own pass before the flags.
+  for (const [key, element] of controls) {
+    const value = state[key];
+    if (typeof value !== "number" || !isSelect(element)) continue;
+    if (element.selectedIndex !== value) element.selectedIndex = value;
+  }
   // Unchecks first so checking a radio is never undone by a later sibling.
   for (const checked of [false, true]) {
     for (const [key, element] of controls) {
-      if (state[key] !== checked) continue;
+      if (isSelect(element) || state[key] !== checked) continue;
       if ("open" in element) {
         if (element.open !== checked) element.open = checked;
       } else if (element.checked !== checked) {
@@ -75,8 +95,9 @@ export function applyVisualViewState(doc: Document, state: VisualViewState) {
 
 /** The stable id of the checked trusted panel, e.g. `cc-panel-1`, if any. */
 export function activePanelId(state: VisualViewState): string | null {
+  // Only a `true` flag counts; a select's option index may also sit under a panel id.
   const key = Object.keys(state).find(
-    (k) => k.startsWith(`#${PANEL_ID_PREFIX}`) && state[k],
+    (k) => k.startsWith(`#${PANEL_ID_PREFIX}`) && state[k] === true,
   );
   return key ? key.slice(1) : null;
 }

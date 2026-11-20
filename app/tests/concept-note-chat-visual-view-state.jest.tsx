@@ -81,6 +81,38 @@ describe("visual view state", () => {
     ).toEqual([false, true, false, true]);
     expect(activePanelId(readVisualViewState(target))).toBeNull();
   });
+
+  it("copies a select's selected option by index between documents", () => {
+    const html =
+      '<select id="year"><option value="y2023">2023</option><option value="y2024">2024</option></select>' +
+      "<select><option>a</option><option>b</option></select>";
+    const source = documentWith(html);
+    source.querySelectorAll("select")[0].selectedIndex = 1;
+    source.querySelectorAll("select")[1].selectedIndex = 1;
+
+    const state = readVisualViewState(source);
+    expect(state).toEqual({ "#year": 1, "select:1": 1 });
+
+    const target = documentWith(html);
+    applyVisualViewState(target, state);
+    expect(
+      Array.from(target.querySelectorAll("select")).map((s) => s.selectedIndex),
+    ).toEqual([1, 1]);
+    expect(readVisualViewState(target)).toEqual(state);
+  });
+
+  it("never reads a select's option index as an active panel", () => {
+    // A select with a panel id holds 1, which is truthy but not a checked radio.
+    const source = documentWith(
+      '<select id="cc-panel-3"><option>a</option><option>b</option></select>',
+    );
+    source.querySelector("select")!.selectedIndex = 1;
+
+    const state = readVisualViewState(source);
+    expect(state).toEqual({ "#cc-panel-3": 1 });
+    expect(activePanelId(state)).toBeNull();
+    expect(activePanelId({ ...state, "#cc-panel-1": true })).toBe("cc-panel-1");
+  });
 });
 
 describe("ChatVisualFrame view state", () => {
@@ -249,6 +281,49 @@ describe("ChatVisualFrame view state", () => {
       api.current!.connect(frames[0]);
     });
     expect(checked(frames[0])).toBe("cc-panel-2");
+  });
+
+  it("syncs a select's option between two connected frames", async () => {
+    const FILTER =
+      '<select><option value="y2023">2023</option><option value="y2024">2024</option></select>';
+    function Host() {
+      const viewState = useVisualViewState();
+      return (
+        <>
+          <iframe
+            srcDoc="filters"
+            onLoad={(event) => viewState.connect(event.currentTarget)}
+          />
+          <iframe
+            srcDoc="filters"
+            onLoad={(event) => viewState.connect(event.currentTarget)}
+          />
+        </>
+      );
+    }
+    await act(async () => root.render(<Host />));
+    const [first, second] = Array.from(container.querySelectorAll("iframe"));
+    for (const frame of [first, second]) {
+      await act(async () => {
+        frame.contentDocument!.body.innerHTML = FILTER;
+        frame.dispatchEvent(new Event("load"));
+      });
+    }
+    const select = (frame: HTMLIFrameElement) =>
+      frame.contentDocument!.querySelector("select")!;
+
+    // Choosing 2024 in one frame sets it in the other, both ways.
+    await act(async () => {
+      select(first).selectedIndex = 1;
+      select(first).dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(select(second).selectedIndex).toBe(1);
+
+    await act(async () => {
+      select(second).selectedIndex = 0;
+      select(second).dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(select(first).selectedIndex).toBe(0);
   });
 
   it("starts a new visual from its own defaults", async () => {

@@ -139,6 +139,34 @@ afterEach(async () => {
   globalThis.fetch = originalFetch;
 });
 
+function panel(
+  status = contextStatus,
+  threadId: string | null = "thread",
+  gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
+) {
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <ConceptNoteChatPanel
+        cityId="city"
+        contextStatus={status}
+        composerRequest={null}
+        gapAnswer={gapAnswer}
+        onCloseGap={closeGap}
+        onAddGapSource={() => {}}
+        draftOverviewPending={false}
+        lng="en"
+        onOpenContext={() => {}}
+        runId="run"
+        threadId={threadId}
+        editScope={{ kind: "document" } as never}
+        edits={edits}
+        uploads={uploads}
+      />
+    </ChakraProvider>
+  );
+}
+
 async function renderPanel(
   status = contextStatus,
   threadId: string | null = "thread",
@@ -146,26 +174,7 @@ async function renderPanel(
   uploads?: ConceptNoteUploadResponse[],
 ): Promise<void> {
   await act(async () => {
-    root.render(
-      <ChakraProvider value={defaultSystem}>
-        <ConceptNoteChatPanel
-          cityId="city"
-          contextStatus={status}
-          composerRequest={null}
-          gapAnswer={gapAnswer}
-          onCloseGap={closeGap}
-          onAddGapSource={() => {}}
-          draftOverviewPending={false}
-          lng="en"
-          onOpenContext={() => {}}
-          runId="run"
-          threadId={threadId}
-          editScope={{ kind: "document" } as never}
-          edits={edits}
-          uploads={uploads}
-        />
-      </ChakraProvider>,
-    );
+    root.render(panel(status, threadId, gapAnswer, uploads));
   });
   if (gapAnswer)
     await act(async () => {
@@ -510,12 +519,11 @@ it("lets the user pick every option that applies when several can", async () => 
     }),
   } as Response);
   await renderPanel(contextStatus, "thread", gapAnswer);
-  const boxes = () =>
-    [
-      ...subQuestion(0).querySelectorAll<HTMLInputElement>(
-        'input[type="checkbox"]',
-      ),
-    ];
+  const boxes = () => [
+    ...subQuestion(0).querySelectorAll<HTMLInputElement>(
+      'input[type="checkbox"]',
+    ),
+  ];
   expect(subQuestion(0).querySelector('input[type="radio"]')).toBeNull();
   expect(boxes().map((box) => box.value)).toEqual([
     "0",
@@ -527,14 +535,16 @@ it("lets the user pick every option that applies when several can", async () => 
   await act(async () => boxes()[0].click());
   await act(async () => boxes()[2].click());
   await act(async () => boxes()[3].click());
-  // Writing an answer counts only once it is written.
-  expect(previewButton().disabled).toBe(true);
+  // An empty "Other" does not undo the options already selected.
+  expect(previewButton().disabled).toBe(false);
   await writeAnswer(0, "EIB loan");
   // "Not decided yet" clears the other selections, and choosing again clears it.
   await act(async () => boxes()[4].click());
-  expect(boxes().filter((box) => box.checked).map((box) => box.value)).toEqual([
-    "unknown",
-  ]);
+  expect(
+    boxes()
+      .filter((box) => box.checked)
+      .map((box) => box.value),
+  ).toEqual(["unknown"]);
   await act(async () => boxes()[0].click());
   await act(async () => boxes()[2].click());
   await act(async () => boxes()[3].click());
@@ -602,12 +612,18 @@ it("leaves the gap untouched when answered later and restores the answers on ret
 
   // A sent answer stays saved: the next round asks only for what it misses
   // and sends it again with the new answers, so a failed turn loses nothing.
+  // Like the workspace, closing the gap unmounts the form in the same update.
+  closeGap.mockImplementationOnce(() =>
+    root.render(panel(contextStatus, "thread", null)),
+  );
   await act(async () => previewButton().click());
   const [firstRequest] = sendMessage.mock.calls[0];
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(fetchQuestion).toHaveBeenCalledTimes(2);
-  const earlier = JSON.parse(fetchQuestion.mock.calls[1][1].body).earlier_answers;
+  const earlier = JSON.parse(
+    fetchQuestion.mock.calls[1][1].body,
+  ).earlier_answers;
   expect(earlier).toContain("2. What amount?\nEUR 2 million");
   expect(firstRequest).toContain(earlier);
   expect(
@@ -620,14 +636,32 @@ it("leaves the gap untouched when answered later and restores the answers on ret
   expect(secondRequest).toContain(earlier);
   expect(secondRequest).toContain("EUR 3 million from the city budget");
 
+  // Starting over drops the earlier answers and asks the gap afresh.
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const startOver = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "gap-earlier-answers-clear",
+  )!;
+  await act(async () => startOver.click());
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(
+    JSON.parse(fetchQuestion.mock.calls.at(-1)![1].body).earlier_answers,
+  ).toBe("");
+  expect(
+    container.querySelector('[data-testid="concept-note-gap-earlier-answers"]'),
+  ).toBeNull();
+
   // A closed gap gets a new version, which starts fresh.
   const nextVersion = structuredClone(gapAnswer);
   nextVersion.row.gap!.version = 2;
   await renderPanel(contextStatus, "thread", null);
+  const fetches = fetchQuestion.mock.calls.length;
   await renderPanel(contextStatus, "thread", nextVersion);
-  expect(fetchQuestion).toHaveBeenCalledTimes(3);
+  expect(fetchQuestion).toHaveBeenCalledTimes(fetches + 1);
   expect(
-    JSON.parse(fetchQuestion.mock.calls[2][1].body).earlier_answers,
+    JSON.parse(fetchQuestion.mock.calls.at(-1)![1].body).earlier_answers,
   ).toBe("");
 });
 

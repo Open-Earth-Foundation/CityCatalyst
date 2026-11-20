@@ -79,8 +79,8 @@ class GapQuestionOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     why_asking: str = Field(min_length=1, max_length=240)
-    # Empty when earlier answers already cover every part; the UI then asks the
-    # gap itself as one free-text question.
+    # Empty when earlier answers already cover every part; the UI then sends
+    # them again as a complete answer.
     questions: list[GapSubQuestion] = Field(max_length=MAX_QUESTIONS)
 
     @field_validator("questions", mode="before")

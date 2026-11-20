@@ -122,7 +122,7 @@ export function GapAnswerForm({
   const [draft] = useState(() => readDraft(draftKey));
   // Answers already sent are included again; new questions cover what they miss.
   const [sent, setSent] = useState(draft?.sent ?? "");
-  const [earlier] = useState(sent);
+  const [earlier, setEarlier] = useState(sent);
   const [question, setQuestion] = useState<GapQuestion | null>(
     draft?.question ?? null,
   );
@@ -161,10 +161,12 @@ export function GapAnswerForm({
   // question keeps every selected value, comma-separated.
   const picked = (index: number) =>
     (choices[index] ?? "").split(",").filter(Boolean);
-  const answers = questions.map(({ options }, index) => {
+  const answers = questions.map(({ options, multiple }, index) => {
     const custom = customAnswers[answerKey(index)]?.trim();
-    // Choosing to write an answer counts only once it is written.
-    if (picked(index).includes("custom") && !custom) return undefined;
+    // Choosing to write an answer counts only once it is written; other
+    // selected options of a multiple-answer question still count.
+    if (picked(index).includes("custom") && !custom && !multiple)
+      return undefined;
     const values = picked(index).flatMap((choice) =>
       choice === "custom"
         ? [custom]
@@ -180,8 +182,7 @@ export function GapAnswerForm({
       const kept = (current[index] ?? "")
         .split(",")
         .filter((choice) => choice && choice !== "unknown" && choice !== value);
-      const next =
-        value === "unknown" ? [] : kept;
+      const next = value === "unknown" ? [] : kept;
       if (checked) next.push(value);
       return { ...current, [index]: next.join(",") };
     });
@@ -262,6 +263,7 @@ export function GapAnswerForm({
     request.row.question,
     attempt,
     draft,
+    earlier,
   ]);
 
   useEffect(() => {
@@ -298,6 +300,14 @@ export function GapAnswerForm({
         setTooLong(!accepted);
         if (!accepted) return;
         // Keep what was sent; the next round asks only for what it misses.
+        // Saved here, not by the effect: sending closes the form right away.
+        saveDraft(draftKey, {
+          question: null,
+          choices: {},
+          customAnswers: {},
+          details: "",
+          sent: answerText,
+        });
         setSent(answerText);
         setQuestion(null);
         setChoices({});
@@ -403,6 +413,22 @@ export function GapAnswerForm({
             >
               {earlier}
             </Text>
+            {/* Without this, earlier answers near the length limit block every send. */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              onClick={() => {
+                setEarlier("");
+                setSent("");
+                setQuestion(null);
+                setChoices({});
+                setLoading(true);
+                setAttempt((value) => value + 1);
+              }}
+            >
+              {t("gap-earlier-answers-clear")}
+            </Button>
           </Box>
         )}
         {sourceSuggestions.length > 0 && (
@@ -569,7 +595,12 @@ export function GapAnswerForm({
                   </Box>
                 </HStack>
                 {multiple ? (
-                  <VStack align="stretch" gap={2} role="group" aria-label={text}>
+                  <VStack
+                    align="stretch"
+                    gap={2}
+                    role="group"
+                    aria-label={text}
+                  >
                     {[
                       ...options.map((option, optionIndex) => [
                         String(optionIndex),
@@ -596,40 +627,40 @@ export function GapAnswerForm({
                     ))}
                   </VStack>
                 ) : (
-                <RadioGroup
-                  value={choices[index] ?? null}
-                  onValueChange={({ value }) =>
-                    value &&
-                    setChoices((current) => ({ ...current, [index]: value }))
-                  }
-                  aria-label={text}
-                >
-                  <VStack align="stretch" gap={2}>
-                    {options.map((option, optionIndex) => (
-                      <Radio
-                        key={optionIndex}
-                        value={String(optionIndex)}
-                        alignItems="start"
-                      >
-                        <Text fontSize="body.sm">{option}</Text>
+                  <RadioGroup
+                    value={choices[index] ?? null}
+                    onValueChange={({ value }) =>
+                      value &&
+                      setChoices((current) => ({ ...current, [index]: value }))
+                    }
+                    aria-label={text}
+                  >
+                    <VStack align="stretch" gap={2}>
+                      {options.map((option, optionIndex) => (
+                        <Radio
+                          key={optionIndex}
+                          value={String(optionIndex)}
+                          alignItems="start"
+                        >
+                          <Text fontSize="body.sm">{option}</Text>
+                        </Radio>
+                      ))}
+                      <Radio value="custom">
+                        <Text fontSize="body.sm">
+                          {t(
+                            confirms
+                              ? "gap-confirm-changed"
+                              : options.length
+                                ? "gap-other"
+                                : "gap-your-answer",
+                          )}
+                        </Text>
                       </Radio>
-                    ))}
-                    <Radio value="custom">
-                      <Text fontSize="body.sm">
-                        {t(
-                          confirms
-                            ? "gap-confirm-changed"
-                            : options.length
-                              ? "gap-other"
-                              : "gap-your-answer",
-                        )}
-                      </Text>
-                    </Radio>
-                    <Radio value="unknown">
-                      <Text fontSize="body.sm">{t("gap-not-decided")}</Text>
-                    </Radio>
-                  </VStack>
-                </RadioGroup>
+                      <Radio value="unknown">
+                        <Text fontSize="body.sm">{t("gap-not-decided")}</Text>
+                      </Radio>
+                    </VStack>
+                  </RadioGroup>
                 )}
                 {picked(index).includes("custom") && (
                   <Textarea

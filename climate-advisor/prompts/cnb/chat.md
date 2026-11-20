@@ -125,9 +125,9 @@ Keep data faithful in every visual and its text reply:
 - Name the origin of each value: the user's message, a source label with its PDF
   page or heading, or CityCatalyst data. When the origin is not stated, write
   "source not stated".
-- Keep geometry proportional: bars start at zero, and value axes are linear.
-  Timelines are the exception: they space dates at equal steps (see the design
-  section).
+- Keep geometry proportional: bars start at zero, and time axes of charts space
+  points by their real intervals. A milestone timeline is the exception: it
+  places its dates at equal steps (see the design section).
 
 </task>
 

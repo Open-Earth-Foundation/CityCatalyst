@@ -495,6 +495,56 @@ it("needs the current value before a changed source value counts as answered", a
   expect(container.textContent).toContain("gap-complete-hint");
 });
 
+it("lets the user pick every option that applies when several can", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "The funder needs every co-financing source.",
+      questions: [
+        {
+          question: "Which co-financing sources apply?",
+          options: ["EU cohesion funds", "National budget", "City budget"],
+          multiple: true,
+        },
+      ],
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const boxes = () =>
+    [
+      ...subQuestion(0).querySelectorAll<HTMLInputElement>(
+        'input[type="checkbox"]',
+      ),
+    ];
+  expect(subQuestion(0).querySelector('input[type="radio"]')).toBeNull();
+  expect(boxes().map((box) => box.value)).toEqual([
+    "0",
+    "1",
+    "2",
+    "custom",
+    "unknown",
+  ]);
+  await act(async () => boxes()[0].click());
+  await act(async () => boxes()[2].click());
+  await act(async () => boxes()[3].click());
+  // Writing an answer counts only once it is written.
+  expect(previewButton().disabled).toBe(true);
+  await writeAnswer(0, "EIB loan");
+  // "Not decided yet" clears the other selections, and choosing again clears it.
+  await act(async () => boxes()[4].click());
+  expect(boxes().filter((box) => box.checked).map((box) => box.value)).toEqual([
+    "unknown",
+  ]);
+  await act(async () => boxes()[0].click());
+  await act(async () => boxes()[2].click());
+  await act(async () => boxes()[3].click());
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain(
+    "1. Which co-financing sources apply?\nEU cohesion funds; City budget; EIB loan",
+  );
+});
+
 it("asks Clima to replace the gap marker once every question is answered", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
   await act(async () =>

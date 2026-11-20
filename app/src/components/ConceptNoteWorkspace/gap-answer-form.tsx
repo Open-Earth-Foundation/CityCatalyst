@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Box,
+  Checkbox,
   HStack,
   Icon,
   Text,
@@ -52,6 +53,8 @@ interface GapQuestion {
     where_to_find?: string;
     /** Confirms a source value; a "changed" answer must carry the new value. */
     confirms?: boolean;
+    /** Several options can apply together, so each is a checkbox. */
+    multiple?: boolean;
   }[];
 }
 
@@ -143,13 +146,34 @@ export function GapAnswerForm({
     item.confirms ? { ...item, options: [t("gap-confirm-yes")] } : item,
   );
   const answerKey = (index: number) => `${index}:${questions[index].question}`;
+  // A choice is one option index, "custom" or "unknown"; a multiple-answer
+  // question keeps every selected value, comma-separated.
+  const picked = (index: number) =>
+    (choices[index] ?? "").split(",").filter(Boolean);
   const answers = questions.map(({ options }, index) => {
-    const choice = choices[index];
-    if (choice === "custom")
-      return customAnswers[answerKey(index)]?.trim() || undefined;
-    if (choice === "unknown") return undefined;
-    return options[Number(choice)];
+    const custom = customAnswers[answerKey(index)]?.trim();
+    // Choosing to write an answer counts only once it is written.
+    if (picked(index).includes("custom") && !custom) return undefined;
+    const values = picked(index).flatMap((choice) =>
+      choice === "custom"
+        ? [custom]
+        : choice === "unknown"
+          ? []
+          : [options[Number(choice)]],
+    );
+    return values.filter(Boolean).join("; ") || undefined;
   });
+  // "Not decided yet" excludes every other selection.
+  const toggleChoice = (index: number, value: string, checked: boolean) =>
+    setChoices((current) => {
+      const kept = (current[index] ?? "")
+        .split(",")
+        .filter((choice) => choice && choice !== "unknown" && choice !== value);
+      const next =
+        value === "unknown" ? [] : kept;
+      if (checked) next.push(value);
+      return { ...current, [index]: next.join(",") };
+    });
   // Edit validation only lets a marker be replaced for a recorded open gap, so
   // legacy inline markers (no gap record) are answered without replacing them.
   // The unavailable fallback asks the original gap itself, so its answer covers it.
@@ -434,7 +458,10 @@ export function GapAnswerForm({
         )}
         {!loading &&
           questions.map(
-            ({ question: text, options, where_to_find, confirms }, index) => (
+            (
+              { question: text, options, where_to_find, confirms, multiple },
+              index,
+            ) => (
               <VStack
                 key={`${index}-${text}`}
                 align="stretch"
@@ -485,6 +512,34 @@ export function GapAnswerForm({
                     )}
                   </Box>
                 </HStack>
+                {multiple ? (
+                  <VStack align="stretch" gap={2} role="group" aria-label={text}>
+                    {[
+                      ...options.map((option, optionIndex) => [
+                        String(optionIndex),
+                        option,
+                      ]),
+                      ["custom", t("gap-other")],
+                      ["unknown", t("gap-not-decided")],
+                    ].map(([value, label]) => (
+                      <Checkbox.Root
+                        key={value}
+                        value={value}
+                        alignItems="start"
+                        checked={picked(index).includes(value)}
+                        onCheckedChange={({ checked }) =>
+                          toggleChoice(index, value, checked === true)
+                        }
+                      >
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control />
+                        <Checkbox.Label>
+                          <Text fontSize="body.sm">{label}</Text>
+                        </Checkbox.Label>
+                      </Checkbox.Root>
+                    ))}
+                  </VStack>
+                ) : (
                 <RadioGroup
                   value={choices[index] ?? null}
                   onValueChange={({ value }) =>
@@ -519,7 +574,8 @@ export function GapAnswerForm({
                     </Radio>
                   </VStack>
                 </RadioGroup>
-                {choices[index] === "custom" && (
+                )}
+                {picked(index).includes("custom") && (
                   <Textarea
                     value={customAnswers[answerKey(index)] ?? ""}
                     onChange={(event) =>

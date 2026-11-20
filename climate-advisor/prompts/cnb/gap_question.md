@@ -19,8 +19,15 @@ or described in the chapter as not yet decided, confirmed or estimated, is still
 unconfirmed: ask for it again, and ask for it before new follow-up details.
 For each question, offer two to five concise, distinct answer categories
 whenever the question allows a meaningful choice. For a financing instrument
-these might be Loan, Grant, Guarantee, or a combination. Categories are possible
-user answers, not verified project facts. Never preselect an answer.
+these might be Loan, Grant and Guarantee. Categories are possible user answers,
+not verified project facts. Never preselect an answer.
+Each option must be one specific answer on the same dimension as the others.
+Never add an option that stands for other options or for no particular answer,
+such as Other, Another entity, Both, All of these, A combination, Mixed or
+Shared: the UI already offers a free-text answer. Set multiple to true when
+several options can apply at once, such as the co-financing sources or the
+partners of a project, so the user selects each one that applies (up to eight
+options); set it to false when exactly one option can be true.
 For an exact amount, date, name, location, or other factual detail without
 defensible alternatives, use an empty options list so the user can write it.
 Do not fabricate amounts, entities, commitments, or source citations. Do not
@@ -75,15 +82,18 @@ Return only a JSON object matching GapQuestionOutput:
 - why_asking (string, 1-240 characters): plain-language reason these answers matter.
 - questions (array, 1-4 items): each an object with
   - question (string, 1-160 characters): one focused question for one missing part.
-  - options (array of strings): zero or two to five distinct, nonblank options,
-    each at most 80 characters. No Other or Not decided yet option.
+  - options (array of strings): zero or two to five distinct, nonblank options
+    (up to eight when multiple is true), each at most 80 characters. No Other or
+    Not decided yet option.
   - where_to_find (string, 0-200 characters): where the answer is usually found;
     empty for a decision only the user can make.
   - confirms (boolean): true only for a question confirming a source_suggestions
     value; its options must be empty. Omit or false otherwise.
+  - multiple (boolean): true when the user may select several options because
+    more than one can apply; requires options. Omit or false otherwise.
 No additional fields.
 </output>
 
 <example_output>
-{"why_asking":"The funder needs to know which climate problem the project solves and who it affects.","questions":[{"question":"Your heat study reports 18 tropical nights a year. Is that still correct?","options":[],"where_to_find":"Reported in your uploaded heat study; confirm against the latest city climate risk assessment","confirms":true},{"question":"Which climate risk is the project's primary focus?","options":["Extreme heat","Urban flooding"],"where_to_find":"City climate risk assessment or adaptation plan"},{"question":"Who or what is most exposed?","options":["Older residents","Schools and care facilities","Public transport users","Local businesses"],"where_to_find":"Vulnerability assessment or social services data"},{"question":"Which evidence supports this risk?","options":["City climate risk assessment","Heat or flood mapping","Historical event records"],"where_to_find":""}]}
+{"why_asking":"The funder needs to know which climate problem the project solves and who it affects.","questions":[{"question":"Your heat study reports 18 tropical nights a year. Is that still correct?","options":[],"where_to_find":"Reported in your uploaded heat study; confirm against the latest city climate risk assessment","confirms":true},{"question":"Which climate risk is the project's primary focus?","options":["Extreme heat","Urban flooding"],"where_to_find":"City climate risk assessment or adaptation plan"},{"question":"Who or what is most exposed?","options":["Older residents","Schools and care facilities","Public transport users","Local businesses"],"where_to_find":"Vulnerability assessment or social services data","multiple":true},{"question":"Which evidence supports this risk?","options":["City climate risk assessment","Heat or flood mapping","Historical event records"],"where_to_find":""}]}
 </example_output>

@@ -36,15 +36,19 @@ class GapSubQuestion(BaseModel):
 
     # The prompt asks for 160; the margin keeps one long question from failing the set.
     question: str = Field(min_length=1, max_length=240)
+    # The prompt asks for five (eight for a checklist); the margin keeps one
+    # longer list from failing the set.
     options: list[
         Annotated[
             str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)
         ]
-    ] = Field(max_length=5)
+    ] = Field(max_length=8)
     # A document type or office that usually holds the answer, never a citation.
     where_to_find: str = Field(default="", max_length=200)
     # The UI shows its own "still correct" and "changed, enter the value" choices.
     confirms: bool = False
+    # Several options can apply together, so the UI lets the user select each one.
+    multiple: bool = False
 
     @field_validator("options")
     @classmethod
@@ -53,7 +57,7 @@ class GapSubQuestion(BaseModel):
         if len(value) == 1 or len({option.casefold() for option in value}) != len(
             value
         ):
-            raise ValueError("Use no options or two to five distinct options")
+            raise ValueError("Use no options or at least two distinct options")
         return value
 
     @model_validator(mode="after")
@@ -61,6 +65,9 @@ class GapSubQuestion(BaseModel):
         """A confirmation's choices come from the UI, so it carries none."""
         if self.confirms and self.options:
             raise ValueError("A confirmation question has no options")
+        # Several answers need options to select; free text already allows them.
+        if self.multiple and not self.options:
+            self.multiple = False
         return self
 
 

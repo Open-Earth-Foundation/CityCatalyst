@@ -23,7 +23,8 @@ from tests.test_concept_note_lifecycle import _workspace_repository
 
 
 @pytest.mark.parametrize(
-    "options", [["Loan"], ["Loan", " loan "], ["", "Grant"], ["x"] * 6]
+    "options",
+    [["Loan"], ["Loan", " loan "], ["", "Grant"], [f"Source {i}" for i in range(9)]],
 )
 def test_rejects_single_or_invalid_choices(options):
     with pytest.raises(ValidationError):
@@ -38,6 +39,14 @@ def test_confirmation_takes_its_choices_from_the_ui():
         GapSubQuestion(
             question="Still EUR 2m?", options=["Yes", "No"], confirms=True
         )
+
+
+def test_several_answers_need_options_to_select():
+    sources = [f"Source {i}" for i in range(8)]
+    question = GapSubQuestion(question="Sources?", options=sources, multiple=True)
+    assert question.multiple
+    # Free text already takes several answers, so the flag is dropped, not fatal.
+    assert not GapSubQuestion(question="Amount?", options=[], multiple=True).multiple
 
 
 def test_requires_a_question():
@@ -64,8 +73,9 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
                 "options": ["Loan", "Grant", "Guarantee"],
                 "where_to_find": "Loan agreement or lender term sheet",
                 "confirms": False,
+                "multiple": False,
             },
-            {"question": "Amount?", "options": [], "where_to_find": "", "confirms": False},
+            {"question": "Amount?", "options": [], "where_to_find": "", "confirms": False, "multiple": False},
         ],
     }
     client = AsyncMock()

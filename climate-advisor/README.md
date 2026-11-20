@@ -2241,7 +2241,10 @@ The standalone suggestions below are hidden while the latest message has choices
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
 in the same chapter are skipped), each with zero or two to five answer categories
-and a `where_to_find` hint (kind of document or office, never a citation). The
+and a `where_to_find` hint (kind of document or office, never a citation). Options
+never include catch-all choices such as Other, Both or A combination; when
+several options can apply, the question sets `multiple: true` (up to 8 options)
+and the UI shows checkboxes. The
 gap's source suggestions are sent as unverified values: each value gets its own
 confirmation (`confirms: true`, no options), for which the UI shows its own
 "still correct" choice and a field for the changed value, and no other question

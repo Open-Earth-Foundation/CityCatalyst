@@ -967,8 +967,18 @@ export function initModels(sequelize: Sequelize) {
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
-  Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
-  User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
+  Version.belongsTo(User, {
+    as: "author",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(Version, {
+    as: "versions",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   Version.belongsTo(Version, {
     as: "previousVersion",
     foreignKey: "previousVersionId",
@@ -1080,8 +1090,18 @@ export function initModels(sequelize: Sequelize) {
     as: "subSectorReportingLevels",
     foreignKey: "subsectorId",
   });
-  User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
-  UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
+  User.hasMany(UserFile, {
+    foreignKey: "userId",
+    as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  UserFile.belongsTo(User, {
+    as: "userFiles",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   UserFile.belongsTo(City, {
     foreignKey: "cityId",
     as: "city",
@@ -1211,6 +1231,8 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
@@ -1227,6 +1249,8 @@ export function initModels(sequelize: Sequelize) {
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",
     as: "projectInvites",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectModules.belongsTo(Project, {
     as: "project",
@@ -1379,13 +1403,13 @@ export function initModels(sequelize: Sequelize) {
   ImportedInventoryFile.belongsTo(User, {
     as: "user",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
   User.hasMany(ImportedInventoryFile, {
     as: "importedInventoryFiles",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
 

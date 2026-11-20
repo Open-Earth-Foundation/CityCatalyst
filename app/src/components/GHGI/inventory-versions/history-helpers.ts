@@ -27,7 +27,8 @@ export function groupInventoryHistory(
     }
 
     if (
-      previousVersion.author.userId !== version.author.userId ||
+      // Edits by deleted accounts have no author and are grouped together.
+      previousVersion.author?.userId !== version.author?.userId ||
       (previousVersion.label ?? null) !== (version.label ?? null) ||
       timeSinceFirstGroupVersion > maxVersionGroupSecondsElapsed
     ) {

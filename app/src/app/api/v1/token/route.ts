@@ -5,8 +5,8 @@
  *     tags:
  *       - auth
  *     operationId: postToken
- *     summary: Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).
- *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. When the code was issued for the `openid` scope, the response also contains an `id_token` (OpenID Connect). Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, that the code is unexpired and unused, and the PKCE S256 challenge. A code is spent by its first exchange attempt, even a failed one.
+ *     summary: Exchange an authorization code or a refresh token for access and refresh tokens (OAuth 2.0 PKCE).
+ *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. When the code was issued for the `openid` scope, the response also contains an `id_token` (OpenID Connect). Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, that the code is unexpired and unused, and the PKCE S256 challenge. A code is spent by its first exchange attempt, even a failed one. The refresh_token grant (`grant_type=refresh_token` with `refresh_token`, plus `client_id` for a public client) returns a new access token and a new refresh token. The refresh token that was used stops working, and presenting it again revokes every refresh token issued from the same authorization. Access tokens last 15 minutes. A refresh token lasts 30 days from the moment it is issued. A confidential client authenticates with HTTP Basic.
  *     requestBody:
  *       required: true
  *       content:
@@ -17,7 +17,7 @@
  *             properties:
  *               grant_type:
  *                 type: string
- *                 enum: [authorization_code]
+ *                 enum: [authorization_code, refresh_token]
  *               code:
  *                 type: string
  *               redirect_uri:
@@ -27,6 +27,12 @@
  *                 type: string
  *               code_verifier:
  *                 type: string
+ *               refresh_token:
+ *                 type: string
+ *                 description: For grant_type refresh_token. The code, redirect_uri and code_verifier fields are then not sent.
+ *     security:
+ *       - {}
+ *       - BasicAuth: []
  *     responses:
  *       200:
  *         description: Tokens issued successfully.
@@ -51,14 +57,16 @@
  *             examples:
  *               example:
  *                 value:
- *                   access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCJ9..."
  *                   token_type: "Bearer"
- *                   expires_in: 604800
- *                   refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   expires_in: 900
+ *                   refresh_token: "q2n0vXk1c8Zr3e9bYt5Jw7uLx4Ha6MdPoTgS0RfVnA"
  *                   scope: "openid read write"
  *                   id_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       400:
- *         description: Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code).
+ *         description: Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code, unknown/expired/used refresh token).
+ *       401:
+ *         description: The client could not be identified (a confidential client needs HTTP Basic credentials), or the user has revoked the app.
  *       415:
  *         description: Unsupported content type.
  *       500:
@@ -69,22 +77,24 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
-import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import {
   getOAuthSigningKey,
   OAuthTokenType,
   signOAuthToken,
-  verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
 import AuthorizationCodeService from "@/backend/oauth/AuthorizationCodeService";
+import {
+  AUTHENTICATES_ITSELF,
+  authenticateClient,
+} from "@/backend/oauth/ClientAuthentication";
+import RefreshTokenService from "@/backend/oauth/RefreshTokenService";
 import { getOAuthAudience, getOAuthIssuer } from "@/lib/auth/oauth-config";
 import IdentityClaimsService from "@/backend/oauth/IdentityClaimsService";
-import { logger } from "@/services/logger";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
-const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
-const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
+// Short, so that revoking an app or deleting a user takes hold quickly. A client
+// that wants to keep going uses its refresh token.
+const ACCESS_TOKEN_EXPIRY = 15 * 60;
 const ID_TOKEN_EXPIRY = 15 * 60;
 
 const authorizationCodeRequest = z.object({
@@ -98,6 +108,8 @@ const authorizationCodeRequest = z.object({
 const refreshTokenRequest = z.object({
   grant_type: z.literal("refresh_token"),
   refresh_token: z.string().min(1, "refresh_token is required"),
+  // A public client names itself here. A confidential client uses HTTP Basic.
+  client_id: z.string().optional(),
   scope: z.string().optional(),
 });
 
@@ -143,7 +155,7 @@ export const POST = apiHandler(async (_req) => {
       );
     }
   }
-});
+}, AUTHENTICATES_ITSELF);
 
 async function handleAuthorizationCodeRequest(
   _req: NextRequest,
@@ -157,6 +169,11 @@ async function handleAuthorizationCodeRequest(
 
   if (client.redirectURI !== tr.redirect_uri) {
     throw new createHttpError.BadRequest("redirect_uri mismatch");
+  }
+
+  // A confidential client must prove who it is. A public client has PKCE.
+  if (client.clientSecretHash) {
+    await authenticateClient(_req, tr.client_id);
   }
 
   // Checks expiry, single use, client, redirect URI and PKCE. The code is spent
@@ -186,25 +203,19 @@ async function handleAuthorizationCodeRequest(
     },
   );
 
-  const refreshToken = signOAuthToken(
-    OAuthTokenType.Refresh,
-    {
-      client_id: tr.client_id,
-      scope,
-    },
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRY,
-      issuer,
-      audience,
-      subject: grant.userId,
-    },
-  );
+  // Starts a new family of refresh tokens. Each refresh replaces the token
+  // with the next one.
+  const refresh = await RefreshTokenService.issue({
+    clientId: tr.client_id,
+    userId: grant.userId,
+    scope,
+  });
 
   const response: Record<string, unknown> = {
     access_token: accessToken,
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_EXPIRY,
-    refresh_token: refreshToken,
+    refresh_token: refresh.token,
     scope,
   };
 
@@ -255,65 +266,35 @@ async function issueIdToken(params: {
   );
 }
 
+/**
+ * The refresh_token grant. Exchanges a refresh token for a new access token and
+ * the next refresh token (rotation). The old refresh token stops working.
+ */
 async function handleRefreshTokenRequest(
   _req: NextRequest,
   rtr: z.infer<typeof refreshTokenRequest>,
 ) {
-  let decoded: JwtPayload;
+  // Who is asking. A refresh token only works for the client it was issued to.
+  const client = await authenticateClient(_req, rtr.client_id);
 
-  try {
-    decoded = verifyOAuthToken(rtr.refresh_token, OAuthTokenType.Refresh);
-  } catch (error: unknown) {
-    if (error instanceof TokenExpiredError) {
-      throw createHttpError.BadRequest("Code has expired.");
-    } else {
-      throw createHttpError.BadRequest("Invalid reset token.");
-    }
-  }
-
-  logger.debug({ decoded }, "Decoded refresh_token");
-
-  const issuer = getOAuthIssuer(_req);
-  const audience = getOAuthAudience(_req);
-
-  if (decoded.iss !== issuer) {
-    throw createHttpError.BadRequest("code issued by a different server.");
-  }
-
-  if (decoded.aud !== audience) {
-    throw createHttpError.BadRequest("code issued for a different server.");
-  }
-
-  const client = await OAuthClient.findByPk(decoded.client_id);
-
-  if (!client) {
-    throw new createHttpError.BadRequest("Unrecognized client_id");
-  }
-
-  const authz = await OAuthClientAuthz.findOne({
-    where: {
-      clientId: decoded.client_id,
-      userId: decoded.sub,
-    },
+  // Throws if the token is unknown, expired or revoked, if the app was revoked,
+  // or if the token was used before (which revokes its family).
+  const rotated = await RefreshTokenService.rotate({
+    token: rtr.refresh_token,
+    clientId: client.clientId,
   });
-
-  if (!authz) {
-    throw new createHttpError.Unauthorized("Authorization revoked");
-  }
-
-  const scope = decoded.scope;
 
   const accessToken = signOAuthToken(
     OAuthTokenType.Access,
     {
-      client_id: decoded.client_id,
-      scope,
+      client_id: rotated.clientId,
+      scope: rotated.scope,
     },
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
-      issuer,
-      audience,
-      subject: decoded.sub,
+      issuer: getOAuthIssuer(_req),
+      audience: getOAuthAudience(_req),
+      subject: rotated.userId,
     },
   );
 
@@ -321,6 +302,7 @@ async function handleRefreshTokenRequest(
     access_token: accessToken,
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_EXPIRY,
-    scope,
+    refresh_token: rotated.token,
+    scope: rotated.scope,
   });
 }

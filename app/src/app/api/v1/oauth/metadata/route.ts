@@ -32,6 +32,20 @@
  *                 jwks_uri:
  *                   type: string
  *                   description: Where the public keys that verify tokens are published
+ *                 revocation_endpoint:
+ *                   type: string
+ *                   description: Where a client revokes a refresh token (RFC 7009)
+ *                 introspection_endpoint:
+ *                   type: string
+ *                   description: Where a registered resource server checks a token (RFC 7662)
+ *                 revocation_endpoint_auth_methods_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 introspection_endpoint_auth_methods_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *                 scopes_supported:
  *                   type: array
  *                   items:
@@ -98,12 +112,16 @@
  *                   token_endpoint: "https://api.citycatalyst.example/api/v1/token/"
  *                   userinfo_endpoint: "https://api.citycatalyst.example/api/v1/oauth/userinfo/"
  *                   jwks_uri: "https://api.citycatalyst.example/.well-known/jwks.json/"
+ *                   revocation_endpoint: "https://api.citycatalyst.example/api/v1/oauth/revoke/"
+ *                   introspection_endpoint: "https://api.citycatalyst.example/api/v1/oauth/introspect/"
  *                   scopes_supported: ["openid", "read", "write"]
  *                   response_types_supported: ["code"]
  *                   grant_types_supported: ["authorization_code", "refresh_token"]
  *                   subject_types_supported: ["public"]
  *                   id_token_signing_alg_values_supported: ["RS256"]
- *                   token_endpoint_auth_methods_supported: ["none"]
+ *                   token_endpoint_auth_methods_supported: ["none", "client_secret_basic"]
+ *                   revocation_endpoint_auth_methods_supported: ["none", "client_secret_basic"]
+ *                   introspection_endpoint_auth_methods_supported: ["client_secret_basic"]
  *                   service_documentation: "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API"
  *                   ui_locales_supported: ["en", "de", "es", "pt"]
  *                   code_challenge_methods_supported: ["S256"]

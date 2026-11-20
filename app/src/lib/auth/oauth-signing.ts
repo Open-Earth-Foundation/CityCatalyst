@@ -1,8 +1,9 @@
 /**
- * Signing key for OAuth tokens: authorization codes, access tokens and refresh
- * tokens issued by `/api/v1/auth/code` and `/api/v1/token`.
+ * Signing key for OAuth JWTs: access tokens and id_tokens issued by
+ * `/api/v1/token`. Authorization codes and refresh tokens are opaque database
+ * values (see AuthorizationCodeService and RefreshTokenService), not JWTs.
  *
- * OAuth tokens are signed with their own RS256 key pair. They no longer share
+ * OAuth JWTs are signed with their own RS256 key pair. They no longer share
  * `VERIFICATION_TOKEN_SECRET`, which keeps signing invites, email verification
  * and Climate Advisor user tokens. With separate keys, a token minted for one
  * purpose cannot verify as another, and a public key can be published later
@@ -125,18 +126,16 @@ export function getPublicJwk() {
 
 /**
  * The kind of an OAuth token, written in the JWT `typ` header (explicit typing,
- * RFC 8725). All kinds share one key and similar claims, so without a type a
- * token of one kind would verify as another: a refresh token as an access
- * token, or an id_token as a bearer token.
+ * RFC 8725). The kinds share one key and similar claims, so without a type an
+ * id_token would verify as an access token.
  *
- * Authorization codes are not JWTs (they are opaque database rows), so they
- * have no type here. The id_token keeps the conventional `JWT`, which OpenID
- * Connect client libraries expect, and still cannot pass as an access or
- * refresh token because those require their own type.
+ * Authorization codes and refresh tokens are not JWTs (they are opaque database
+ * rows), so they have no type here. The id_token keeps the conventional `JWT`,
+ * which OpenID Connect client libraries expect, and still cannot pass as an
+ * access token because that requires its own type.
  */
 export const OAuthTokenType = {
   Access: "at+jwt", // RFC 9068
-  Refresh: "oauth-refresh+jwt",
   Id: "JWT",
 } as const;
 export type OAuthTokenType =

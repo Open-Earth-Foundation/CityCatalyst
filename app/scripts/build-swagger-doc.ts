@@ -52,6 +52,11 @@ function generateOpenAPISpec() {
               scheme: "bearer",
               bearerFormat: "JWT",
             },
+            // Client and resource server credentials at the OAuth endpoints
+            BasicAuth: {
+              type: "http",
+              scheme: "basic",
+            },
           },
         },
         security: [],

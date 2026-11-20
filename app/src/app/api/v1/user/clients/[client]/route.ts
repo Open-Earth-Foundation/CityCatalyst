@@ -24,6 +24,7 @@
  *       500:
  *         description: OAuth not enabled.
  */
+import RefreshTokenService from "@/backend/oauth/RefreshTokenService";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
@@ -148,6 +149,9 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.NotFound("No client authorization with that id");
   }
 
+  // Refresh tokens first: they are what would let the app get new access tokens.
+  // Without this, authorizing the app again later would revive the old ones.
+  await RefreshTokenService.revokeForGrant(clientId, session.user.id);
   await authz.destroy();
 
   return new NextResponse(null, { status: 204 });

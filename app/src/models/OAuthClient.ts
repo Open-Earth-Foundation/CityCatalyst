@@ -4,13 +4,22 @@ import { DataTypes, Model, Optional } from "sequelize";
 export interface OAuthClientAttributes {
   clientId: string;
   redirectURI: string;
+  /**
+   * Hex SHA-256 of the client secret. Null for a public client (a browser or
+   * mobile app that cannot keep a secret). A client with a secret is
+   * confidential and must authenticate at the token endpoint.
+   */
+  clientSecretHash?: string | null;
   created?: Date;
   lastUpdated?: Date;
 }
 
 export type OAuthClientPk = "clientId";
 export type OAuthClientId = OAuthClient[OAuthClientPk];
-export type OAuthClientOptionalAttributes = "created" | "lastUpdated";
+export type OAuthClientOptionalAttributes =
+  | "clientSecretHash"
+  | "created"
+  | "lastUpdated";
 export type OAuthClientCreationAttributes = Optional<
   OAuthClientAttributes,
   OAuthClientOptionalAttributes
@@ -22,6 +31,7 @@ export class OAuthClient
 {
   declare clientId: string;
   declare redirectURI: string;
+  declare clientSecretHash?: string | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -40,6 +50,11 @@ export class OAuthClient
           allowNull: false,
           unique: true,
           comment: "URL format, length limit similar to Google or AWS",
+        },
+        clientSecretHash: {
+          field: "client_secret_hash",
+          type: DataTypes.STRING(64),
+          allowNull: true,
         },
         created: {
           type: DataTypes.DATE,

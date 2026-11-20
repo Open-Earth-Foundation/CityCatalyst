@@ -233,7 +233,7 @@ describe("Access tokens verified through a JWKS", () => {
     });
 
     it.each([
-      ["a refresh token", OAuthTokenType.Refresh],
+      ["an opaque-style typ", "rt+jwt"],
       ["an id_token", OAuthTokenType.Id],
       ["a token with no type", null],
     ])("rejects %s used as an access token", async (_name, typ) => {

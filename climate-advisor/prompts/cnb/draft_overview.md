@@ -35,7 +35,7 @@ order:
    two or three concrete requests the user could send next,
    written as short quoted sentences in the user's voice. Base them on the
    missing items and on inputs that were available but lightly used, for
-   example "Help me estimate a budget range" or "Draft the project description
+   example "Help me reconcile the budget estimates" or "Draft the project description
    from my climate action plan's transport actions". End by inviting the user
    to write their own instruction. Optionally present these requests as the
    selectable `options` of `concept_note_ask_question` when that makes the
@@ -48,6 +48,9 @@ Rules:
 - use facts only from CONCEPT_NOTE_CONTEXT_BUNDLE_JSON and
   CONCEPT_NOTE_DRAFT_OVERVIEW_JSON; never invent sources, figures, chapters,
   gaps, partners, or budgets
+- keep conflicting point estimates separate; never turn them into a range
+  without explicit source support, even with an uncertainty caveat or as a
+  selectable next step
 - a chapter with open gaps is drafted but not complete; never call it final
 - do not claim that you changed, applied, confirmed, or saved anything
 - do not mention the application trigger, runtime markers, JSON, field names,

@@ -1,4 +1,7 @@
 {
+  "chat-choices-saved-draft": "Nicht gesendeter Antwortentwurf",
+  "chat-choices-use-draft": "Entwurf verwenden",
+  "chat-question-stale": "Diese Frage wurde in einem anderen Tab beantwortet oder geändert. Prüfen Sie den aktuellen Chat. Ihr nicht gesendeter Entwurf wurde beibehalten.",
   "wiring-eyebrow": "Konzeptnotizen-Ersteller · lokale Verdrahtung",
   "wiring-description": "Erstellen Sie einen Durchlauf, konvertieren Sie eine PDF und bestätigen Sie die dauerhafte Zustellung an den Concept Note Builder.",
   "default-note-name": "Konzeptnotiz",

@@ -254,8 +254,35 @@ export function ConceptNoteChatPanel({
   onDraftOverviewComplete,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [input, setInput] = useState("");
+  const draftThreadKey = `${runId}:${threadId ?? ""}`;
+  const [composerDrafts, setComposerDrafts] = useState<Record<string, string>>(
+    {},
+  );
+  const [choiceDrafts, setChoiceDrafts] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const input = composerDrafts[draftThreadKey] ?? "";
+  const inlineDrafts = choiceDrafts[draftThreadKey] ?? {};
+  const setInput = useCallback(
+    (value: string | ((current: string) => string)) => {
+      setComposerDrafts((current) => ({
+        ...current,
+        [draftThreadKey]:
+          typeof value === "function"
+            ? value(current[draftThreadKey] ?? "")
+            : value,
+      }));
+    },
+    [draftThreadKey],
+  );
+  function setChoiceDraft(questionId: string, value: string) {
+    setChoiceDrafts((current) => ({
+      ...current,
+      [draftThreadKey]: { ...current[draftThreadKey], [questionId]: value },
+    }));
+  }
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const appliedComposerRequestRef = useRef<string | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
   const {
     connection,
@@ -299,6 +326,13 @@ export function ConceptNoteChatPanel({
   // Typing stays open while context is processing or Clima responds.
   // Only submission waits for context readiness and the current turn.
   const composerDisabled = !threadId;
+  const latestMessage = messages.at(-1);
+  const activeQuestionId = latestMessage?.choices
+    ? (latestMessage.questionMessageId ?? latestMessage.id)
+    : undefined;
+  const recoverableDrafts = Object.entries(inlineDrafts).filter(
+    ([questionId, draft]) => draft.trim() && questionId !== activeQuestionId,
+  );
   const requestedOverviewThreadRef = useRef<string | null>(null);
 
   const scrollToLatest = useCallback(() => {
@@ -368,15 +402,19 @@ export function ConceptNoteChatPanel({
   }, [scrollToLatest]);
 
   useEffect(() => {
-    if (!composerRequest) {
+    if (
+      !composerRequest ||
+      appliedComposerRequestRef.current === composerRequest.id
+    ) {
       return;
     }
     const frame = requestAnimationFrame(() => {
+      appliedComposerRequestRef.current = composerRequest.id;
       setInput(composerRequest.content);
       inputRef.current?.focus();
     });
     return () => cancelAnimationFrame(frame);
-  }, [composerRequest]);
+  }, [composerRequest, setInput]);
 
   // Grow the composer with its content, then scroll past the max height.
   useLayoutEffect(() => {
@@ -649,22 +687,39 @@ export function ConceptNoteChatPanel({
                       <ChatChoices
                         choices={message.choices}
                         lng={lng}
-                        disabled={chatDisabled}
+                        disabled={chatDisabled || !message.questionMessageId}
                         answered={messageIndex < messages.length - 1}
+                        draft={
+                          inlineDrafts[
+                            message.questionMessageId ?? message.id
+                          ] ?? ""
+                        }
+                        onDraftChange={(value) =>
+                          setChoiceDraft(
+                            message.questionMessageId ?? message.id,
+                            value,
+                          )
+                        }
                         selectedAnswer={
                           messages[messageIndex + 1]?.role === "user"
                             ? messages[messageIndex + 1].text
                             : undefined
                         }
                         onReply={async (answer) => {
-                          if (chatDisabled) return;
+                          if (chatDisabled || !message.questionMessageId)
+                            return false;
                           followLatestRef.current = true;
-                          await sendChatMessage(answer);
+                          const completed = await sendChatMessage(
+                            answer,
+                            undefined,
+                            message.questionMessageId,
+                          );
                           // Disabled/removed answer controls lose focus after submission.
                           // Leave focus alone if the user has moved to another control.
                           if (document.activeElement === document.body) {
                             inputRef.current?.focus({ preventScroll: true });
                           }
+                          return completed;
                         }}
                       />
                     )}
@@ -752,6 +807,51 @@ export function ConceptNoteChatPanel({
           flexShrink={0}
           onSubmit={submitMessage}
         >
+          {recoverableDrafts.length > 0 && (
+            <Box maxH="30vh" overflowY="auto" mb={3}>
+              {recoverableDrafts.map(([questionId, draft]) => (
+                <Box
+                  key={questionId}
+                  data-testid="concept-note-saved-answer-draft"
+                  mb={3}
+                  p={3}
+                  borderWidth="1px"
+                  borderColor="border.neutral"
+                  borderRadius="rounded"
+                >
+                  <Text fontSize="label.sm" fontWeight="semibold">
+                    {t("chat-choices-saved-draft")}
+                  </Text>
+                  <Text
+                    fontSize="body.sm"
+                    whiteSpace="pre-wrap"
+                    overflowWrap="anywhere"
+                    maxH="80px"
+                    overflowY="auto"
+                    tabIndex={0}
+                  >
+                    {draft}
+                  </Text>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="outline"
+                    mt={2}
+                    disabled={chatDisabled}
+                    onClick={() => {
+                      setInput((current) =>
+                        current ? `${current}\n\n${draft}` : draft,
+                      );
+                      setChoiceDraft(questionId, "");
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    {t("chat-choices-use-draft")}
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+          )}
           <Flex align="flex-end" gap={3}>
             <Textarea
               data-testid="concept-note-chat-input"

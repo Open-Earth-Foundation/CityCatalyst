@@ -2220,14 +2220,30 @@ checks, manual verification steps, and remaining limitations.
 
 CNB can optionally use `concept_note_ask_question` when a short set of concrete
 choices makes a clarification or next-step decision easier for the user.
-It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
+It ends the turn with a Markdown `message` and 2–12 distinct `options` (no length
 cap, so an option can be a complete rewrite when the user asks for alternatives
 to choose from). The UI renders lettered answers and a custom-answer input
 inside that assistant bubble. Informational answers, acknowledgements, and
 open-ended questions can remain ordinary text; a previous choice does not force
-another question or set of choices.
-Clicking an option immediately sends its full text as a normal user message.
-The arrow or Enter sends a custom answer; document edits still require review.
+another question or set of choices. Alternatives requested only for discussion,
+with no decision to make yet, remain plain text. Exact requested counts up to 12
+appear as individually selectable alternatives in one card. Larger requests
+explicitly explain the card limit and use a complete plain-text list, or clearly
+numbered batches with the remaining count and instructions to continue.
+Conflicting point estimates remain separate unless source evidence supports a
+range; an uncertainty caveat alone does not justify deriving one.
+Clicking an option immediately sends its full text. The arrow or Enter sends
+a custom answer. Both carry `context.concept_note_question_message_id`: use
+`message_id` from history or `done.assistant_message_id` when `history_saved`
+is true. CNB checks the question and appends its reply atomically. A superseded
+question returns 409 (`concept_note_question_stale`) before the model runs.
+Document edits still require review. Failed
+streams can retry the exact saved reply without duplicating its user message.
+A request claim prevents simultaneous retries and is released on completion or
+disconnect. A crashed claim expires after 15 minutes; an expired writer cannot
+persist once a newer retry owns the claim. Older clients that omit the binding
+continue using ordinary chat. Older threads with a context-only CNB binding are
+supported. This protocol needs no schema migration.
 Older questions become read-only after a subsequent user message. Validated
 choices reload from existing `tools_used` history via the `choices` response
 field; raw tool audit data is not exposed.

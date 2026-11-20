@@ -21,6 +21,7 @@ from app.services.cnb.draft_overview import (
     load_draft_overview_message,
     release_draft_overview,
 )
+from app.services.cnb.question_reply import release_question_reply
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.cnb_progress import emit_cnb_progress, stream_cnb_events
 from app.utils.concept_note_context import (
@@ -79,9 +80,12 @@ class StreamingHandler:
         request_options: Optional[dict] = None,
         draft_overview_claim: Optional[tuple[UUID, str]] = None,
         request_token_refresh_context: Optional[RequestTokenRefreshContext] = None,
+        question_reply_claim: tuple[UUID, str] | None = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.assistant_message_id = uuid4()
+        self.question_reply_claim = question_reply_claim
         self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
@@ -121,9 +125,12 @@ class StreamingHandler:
     ) -> AsyncGenerator[bytes, None]:
         """Forward answer and request-local worker events on the existing stream."""
         events = stream_cnb_events(self._stream_response(payload, history_warning))
-        async with aclosing(events) as stream:
-            async for chunk in stream:
-                yield chunk
+        try:
+            async with aclosing(events) as stream:
+                async for chunk in stream:
+                    yield chunk
+        finally:
+            await self._release_question_reply()
 
     async def _stream_response(
         self,
@@ -224,6 +231,7 @@ class StreamingHandler:
                 ok=not self.streaming_error,
                 started_at=started_at,
             )
+            await self._release_question_reply()
             yield self._format_completion_event(req_id)
 
         except asyncio.CancelledError:
@@ -283,6 +291,7 @@ class StreamingHandler:
                 started_at=started_at,
                 status="error",
             )
+            await self._release_question_reply()
             yield format_sse(
                 {"message": "An internal error has occurred."}, event="error"
             ).encode("utf-8")
@@ -413,6 +422,9 @@ class StreamingHandler:
             "ok": ok,
             "request_id": req_id,
             "history_saved": self.history_saved,
+            "assistant_message_id": (
+                str(self.assistant_message_id) if self.history_saved else None
+            ),
             "thread_id": self.thread_identifier,
             "tools_used": self.tool_invocations or None,
         }
@@ -440,8 +452,17 @@ class StreamingHandler:
             user_id=self.user_id,
             assistant_content=assistant_content,
             tool_invocations=self._tool_invocations_for_persistence(),
+            message_id=self.assistant_message_id,
+            question_reply_claim=getattr(self, "question_reply_claim", None),
         )
         return self.history_saved
+
+    async def _release_question_reply(self) -> None:
+        """Make a failed explicit answer retryable before emitting terminal SSE."""
+        claim = getattr(self, "question_reply_claim", None)
+        if claim is not None:
+            await release_question_reply(self.session_factory, claim)
+            self.question_reply_claim = None
 
     def _tool_invocations_for_persistence(self) -> list[dict] | None:
         """Add server-bound CNB edit arguments to the database audit record."""

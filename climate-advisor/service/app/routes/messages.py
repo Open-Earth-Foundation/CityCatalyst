@@ -20,6 +20,14 @@ from app.services.cnb.draft_overview import (
     is_draft_overview_turn,
     release_draft_overview,
 )
+from app.services.cnb.question_reply import (
+    cnb_message_time,
+    question_message_id,
+    release_question_reply,
+    save_question_reply,
+    stale_question,
+    thread_run_id,
+)
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
@@ -88,6 +96,12 @@ async def post_message(
         token=identity.token,
     )
     normalized_context = normalize_write_context(payload.context, identity.token)
+    question_id = question_message_id(normalized_context)
+    question_reply_claim = None
+    if question_id is not None and session_factory is None:
+        raise HTTPException(503, detail={"code": "cnb_storage_unavailable"})
+    if question_id is not None and not payload.thread_id:
+        raise stale_question()
     authenticated_payload = payload.model_copy(
         update={
             "user_id": identity.user_id,
@@ -135,6 +149,10 @@ async def post_message(
         # is claimed after authentication so a rejected request cannot use up
         # the build's single overview.
         overview_turn = is_draft_overview_turn(authenticated_payload.options)
+        if question_id is not None and (
+            overview_turn or is_stationary_energy_resume_turn(authenticated_payload.options)
+        ):
+            raise stale_question()
         if overview_turn:
             authenticated_payload = authenticated_payload.model_copy(
                 update={"content": DRAFT_OVERVIEW_REQUEST}
@@ -146,6 +164,14 @@ async def post_message(
                 async with session_factory() as db_session:
                     thread_service = ThreadService(db_session)
                     thread = await thread_service.get_thread(resolved_thread_id)
+                    if thread and (question_id is not None or thread_run_id(thread)):
+                        thread = await thread_service.get_thread(
+                            resolved_thread_id, for_update=True
+                        )
+                    if question_id is not None and (
+                        thread is None or thread.user_id != identity.user_id
+                    ):
+                        raise stale_question()
 
                     if thread:
                         # Replace credentials so a stored cc_access_token cannot
@@ -181,23 +207,41 @@ async def post_message(
                             message_service = MessageService(db_session)
                             # A retry after a failed reply repeats a question
                             # that was saved before streaming began.
-                            already_saved = is_retry_turn(
-                                authenticated_payload.options
-                            ) and await message_service.latest_message_is_user_text(
-                                thread_id=resolved_thread_id,
-                                text=authenticated_payload.content,
-                            )
+                            if question_id is not None:
+                                question_reply_claim = await save_question_reply(
+                                    db_session,
+                                    thread=thread,
+                                    question_id=question_id,
+                                    content=authenticated_payload.content,
+                                    retry=is_retry_turn(authenticated_payload.options),
+                                )
+                                already_saved = True
+                            else:
+                                already_saved = is_retry_turn(
+                                    authenticated_payload.options
+                                ) and await message_service.latest_message_is_user_text(
+                                    thread_id=resolved_thread_id,
+                                    text=authenticated_payload.content,
+                                )
                             if not already_saved:
                                 await message_service.create_user_message(
                                     thread_id=resolved_thread_id,
                                     user_id=identity.user_id,
                                     text=authenticated_payload.content,
+                                    created_at=(
+                                        await cnb_message_time(db_session, thread.thread_id)
+                                        if thread_run_id(thread) else None
+                                    ),
                                 )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
 
                     logger.info("User message persisted to thread_id=%s", resolved_thread_id)
+            except HTTPException:
+                raise
             except Exception as e:
+                if question_id is not None:
+                    raise HTTPException(503, detail={"code": "cnb_storage_unavailable"}) from e
                 logger.warning("Failed to persist user message: %s", e)
                 history_warning = (
                     "Chat history is temporarily unavailable. The conversation will continue, "
@@ -228,8 +272,10 @@ async def post_message(
                 request_context=normalized_context,
                 request_options=authenticated_payload.options,
                 draft_overview_claim=draft_overview_claim,
+                question_reply_claim=question_reply_claim,
             )
         except BaseException:
+            await release_question_reply(session_factory, question_reply_claim)
             if draft_overview_claim is not None:
                 run_id, build_id = draft_overview_claim
                 await release_draft_overview(

@@ -27,6 +27,7 @@ const { useConceptNoteChat } =
 let chat: ReturnType<typeof useConceptNoteChat>;
 let root: Root;
 let historyOk = true;
+let historyMessages: unknown[] = [];
 const originalFetch = globalThis.fetch;
 
 function Harness() {
@@ -62,12 +63,13 @@ async function showChoiceQuestion() {
 
 beforeEach(async () => {
   historyOk = true;
+  historyMessages = [];
   startStream.mockClear();
   refreshDraft.mockClear();
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.fetch = jest.fn(async () => ({
     ok: historyOk,
-    json: async () => ({ messages: [] }),
+    json: async () => ({ messages: historyMessages }),
   })) as unknown as typeof fetch;
   root = createRoot(document.createElement("div"));
   await act(async () => root.render(<Harness />));
@@ -513,4 +515,107 @@ it("starts the drafting overview once and attaches its choices", async () => {
     text: "Where should we start?",
     choices: ["Budget", "Scope"],
   });
+});
+
+it("binds the saved assistant id to live choices without replacing the React message id", async () => {
+  await act(async () => chat.sendMessage("Help me choose"));
+  const localId = chat.messages.at(-1)!.id;
+  await act(async () => {
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Budget", "Partners"],
+    });
+    streamOptions.onComplete?.({
+      ok: true,
+      history_saved: true,
+      assistant_message_id: "saved-question",
+    });
+  });
+  expect(chat.messages.at(-1)).toMatchObject({
+    id: localId,
+    questionMessageId: "saved-question",
+    choices: ["Budget", "Partners"],
+  });
+  await act(async () =>
+    chat.sendMessage("Budget", undefined, "saved-question"),
+  );
+  expect(lastRequestBody()).toMatchObject({
+    context: { concept_note_question_message_id: "saved-question" },
+  });
+});
+
+it("discards unsaved live options rather than allowing an unbound reply", async () => {
+  await act(async () => chat.sendMessage("Help me choose"));
+  await act(async () => {
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Budget", "Partners"],
+    });
+    streamOptions.onComplete?.({
+      ok: true,
+      history_saved: false,
+      assistant_message_id: null,
+    });
+  });
+  expect(chat.messages.at(-1)?.choices).toBeUndefined();
+  expect(chat.messages.at(-1)?.questionMessageId).toBeUndefined();
+});
+
+it("refreshes stale question history, removes the rejected optimistic answer and never retries it", async () => {
+  await act(async () => chat.sendMessage("Budget", undefined, "old-question"));
+  historyMessages = [
+    {
+      message_id: "new-question",
+      role: "assistant",
+      text: "Which evidence is available?",
+      choices: ["City plan", "Feasibility report"],
+    },
+  ];
+  await act(async () =>
+    streamOptions.onError?.("stale", "concept_note_question_stale", {
+      status: 409,
+      streamStarted: false,
+    }),
+  );
+  expect(globalThis.fetch).toHaveBeenCalledTimes(2);
+  expect(chat.messages).toEqual([
+    expect.objectContaining({
+      id: "new-question",
+      questionMessageId: "new-question",
+      text: "Which evidence is available?",
+    }),
+  ]);
+  expect(chat.error).toBe("chat-question-stale");
+  expect(chat.canRetry).toBe(false);
+  expect(chat.connection).toBe("connected");
+  await act(async () => chat.retry());
+  expect(startStream).toHaveBeenCalledTimes(1);
+  await act(async () =>
+    chat.sendMessage("City plan", undefined, "new-question"),
+  );
+  expect(chat.error).toBeNull();
+  expect(lastRequestBody()).toMatchObject({
+    context: { concept_note_question_message_id: "new-question" },
+  });
+});
+
+it("returns completion status so callers retain rejected drafts and clear completed ones", async () => {
+  startStream.mockImplementationOnce(async () =>
+    streamOptions.onError?.("denied", undefined, {
+      status: 403,
+      streamStarted: false,
+    }),
+  );
+  let completed: boolean | undefined;
+  await act(async () => {
+    completed = await chat.sendMessage("Rejected draft");
+  });
+  expect(completed).toBe(false);
+  startStream.mockImplementationOnce(async () =>
+    streamOptions.onComplete?.({ ok: true, history_saved: true }),
+  );
+  await act(async () => {
+    completed = await chat.sendMessage("Accepted draft");
+  });
+  expect(completed).toBe(true);
 });

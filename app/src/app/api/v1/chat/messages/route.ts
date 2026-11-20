@@ -51,7 +51,9 @@
  *       401:
  *         description: Unauthorized
  *       409:
- *         description: CNB context is not ready (concept_note_context_not_ready), a draft overview is unavailable (concept_note_draft_overview_unavailable), or the selected question is stale (concept_note_question_stale).
+ *         description: CNB context is not ready (concept_note_context_not_ready), a draft overview is unavailable (concept_note_draft_overview_unavailable), the selected question is stale (concept_note_question_stale), or another chat is now the run's active chat (concept_note_thread_mismatch).
+ *       422:
+ *         description: A CNB message cannot form a document edit request, for example because it exceeds 8,000 characters. Nothing is saved.
  *       502:
  *         description: Climate Advisor transport or gateway failure
  *       503:
@@ -76,6 +78,7 @@ const FORWARDED_CONFLICT_CODES = new Set([
   "concept_note_context_not_ready",
   "concept_note_draft_overview_unavailable",
   "concept_note_question_stale",
+  "concept_note_thread_mismatch",
 ]);
 
 export const POST = apiHandler(async (req, { session }) => {

@@ -8,6 +8,7 @@ import type { SSEStreamOptions } from "@/hooks/useSSEStream";
 let streamOptions: SSEStreamOptions;
 const startStream = jest.fn(async (_url: string, _init?: RequestInit) => {});
 const refreshDraft = jest.fn();
+const threadInactive = jest.fn();
 // Stable like i18next's: history reloads whenever `t` changes.
 const t = (key: string) => key;
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -36,6 +37,7 @@ function Harness() {
     runId: "run",
     threadId: "thread",
     onDraftOverviewComplete: refreshDraft,
+    onThreadInactive: threadInactive,
   });
   useEffect(() => {
     chat = current;
@@ -66,6 +68,7 @@ beforeEach(async () => {
   historyMessages = [];
   startStream.mockClear();
   refreshDraft.mockClear();
+  threadInactive.mockClear();
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.fetch = jest.fn(async () => ({
     ok: historyOk,
@@ -618,4 +621,48 @@ it("returns completion status so callers retain rejected drafts and clear comple
     completed = await chat.sendMessage("Accepted draft");
   });
   expect(completed).toBe(true);
+});
+
+it("explains an inactive chat, removes the unsent answer and refreshes the chat list", async () => {
+  startStream.mockImplementationOnce(async () =>
+    streamOptions.onError?.("conflict", "concept_note_thread_mismatch", {
+      status: 409,
+      streamStarted: false,
+    }),
+  );
+  let completed: boolean | undefined;
+  await act(async () => {
+    completed = await chat.sendMessage("Use quarters", undefined, "question");
+  });
+
+  expect(completed).toBe(false);
+  expect(chat.error).toBe("chat-thread-inactive");
+  expect(chat.canRetry).toBe(false);
+  expect(chat.connection).toBe("connected");
+  expect(chat.messages.some((message) => message.role === "user")).toBe(false);
+  expect(threadInactive).toHaveBeenCalledTimes(1);
+});
+
+it("replaces the unsaved partial reply when Retry starts", async () => {
+  await act(async () => chat.sendMessage("Explain the timeline"));
+  await act(async () => {
+    streamOptions.onMessage?.("Quarters suit a five-year");
+    streamOptions.onError?.("failed", undefined, { streamStarted: true });
+  });
+  const assistantTexts = () =>
+    chat.messages
+      .filter((message) => message.role === "assistant")
+      .map((message) => message.text);
+  expect(assistantTexts()).toEqual(["Quarters suit a five-year"]);
+
+  await act(async () => chat.retry());
+  await act(async () => {
+    streamOptions.onMessage?.("Quarters suit a five-year programme.");
+    streamOptions.onComplete?.({ ok: true, history_saved: true });
+  });
+
+  expect(assistantTexts()).toEqual(["Quarters suit a five-year programme."]);
+  expect(
+    chat.messages.filter((message) => message.role === "user"),
+  ).toHaveLength(1);
 });

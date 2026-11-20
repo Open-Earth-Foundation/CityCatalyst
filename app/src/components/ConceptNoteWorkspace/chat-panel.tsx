@@ -19,6 +19,7 @@ import {
   Spinner,
   Text,
   Textarea,
+  VisuallyHidden,
   VStack,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
@@ -284,6 +285,12 @@ export function ConceptNoteChatPanel({
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const appliedComposerRequestRef = useRef<string | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
+  const chatThreads = useConceptNoteChatThreads({
+    cityId,
+    lng,
+    runId,
+    threadId,
+  });
   const {
     connection,
     error: chatError,
@@ -304,12 +311,8 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
-  });
-  const chatThreads = useConceptNoteChatThreads({
-    cityId,
-    lng,
-    runId,
-    threadId,
+    // The chat list then shows the newer chat and offers a way back to it.
+    onThreadInactive: chatThreads.refresh,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const latestQuestionRef = useRef<HTMLDivElement | null>(null);
@@ -318,14 +321,21 @@ export function ConceptNoteChatPanel({
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
+  // A pending chat switch has not made this chat active on the server yet.
   const chatDisabled =
-    contextBlocked || !threadId || historyLoading || isGenerating;
+    contextBlocked ||
+    !threadId ||
+    historyLoading ||
+    isGenerating ||
+    chatThreads.busy;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
   // Typing stays open while context is processing or Clima responds.
   // Only submission waits for context readiness and the current turn.
   const composerDisabled = !threadId;
+  // Every CNB message becomes an edit request, which the service caps.
+  const composerOverLimit = input.trim().length - EDIT_INSTRUCTION_MAX_CHARS;
   const latestMessage = messages.at(-1);
   const activeQuestionId = latestMessage?.choices
     ? (latestMessage.questionMessageId ?? latestMessage.id)
@@ -401,6 +411,21 @@ export function ConceptNoteChatPanel({
     }
   }, [scrollToLatest]);
 
+  // Narrow layouts load history while the chat pane is hidden (zero height),
+  // so scroll again once the user opens Clima.
+  useEffect(() => {
+    const chatScroll = chatScrollRef.current;
+    if (!chatScroll || typeof ResizeObserver === "undefined") return;
+    let visible = chatScroll.clientHeight > 0;
+    const observer = new ResizeObserver(() => {
+      const nowVisible = chatScroll.clientHeight > 0;
+      if (nowVisible && !visible) keepLatestInView();
+      visible = nowVisible;
+    });
+    observer.observe(chatScroll);
+    return () => observer.disconnect();
+  }, [keepLatestInView]);
+
   useEffect(() => {
     if (
       !composerRequest ||
@@ -435,7 +460,7 @@ export function ConceptNoteChatPanel({
   ): Promise<void> {
     event.preventDefault();
     const content = input.trim();
-    if (chatDisabled || !content) {
+    if (chatDisabled || !content || composerOverLimit > 0) {
       return;
     }
     setInput("");
@@ -499,10 +524,11 @@ export function ConceptNoteChatPanel({
     >
       <Flex
         align="center"
-        gap={3}
+        // Tighter spacing on phones keeps the "Clima" title whole beside the status and switcher.
+        gap={{ base: 2, sm: 3 }}
         borderBottom="1px solid"
         borderColor="border.neutral"
-        px={4}
+        px={{ base: 3, sm: 4 }}
         py={3}
       >
         <Flex
@@ -521,6 +547,7 @@ export function ConceptNoteChatPanel({
             fontSize="18px"
             fontWeight="semibold"
             color="content.primary"
+            truncate
           >
             {t("clima")}
           </Text>
@@ -559,6 +586,17 @@ export function ConceptNoteChatPanel({
           threadId={threadId}
         />
       </Flex>
+
+      {/* Announce a finished question once; streaming text is not announced. */}
+      <VisuallyHidden
+        role="status"
+        aria-live="polite"
+        data-testid="concept-note-chat-question-announcement"
+      >
+        {!isGenerating && latestMessage?.choices
+          ? t("chat-choices-arrived", { count: latestMessage.choices.length })
+          : ""}
+      </VisuallyHidden>
 
       <VStack
         ref={chatScrollRef}
@@ -709,17 +747,22 @@ export function ConceptNoteChatPanel({
                           if (chatDisabled || !message.questionMessageId)
                             return false;
                           followLatestRef.current = true;
-                          const completed = await sendChatMessage(
+                          // The answer controls lock or unmount while Clima replies,
+                          // so keep keyboard focus in the composer from the start.
+                          const active = document.activeElement;
+                          if (
+                            active === document.body ||
+                            active?.closest(
+                              '[data-testid="concept-note-chat-choices"]',
+                            )
+                          ) {
+                            inputRef.current?.focus({ preventScroll: true });
+                          }
+                          return sendChatMessage(
                             answer,
                             undefined,
                             message.questionMessageId,
                           );
-                          // Disabled/removed answer controls lose focus after submission.
-                          // Leave focus alone if the user has moved to another control.
-                          if (document.activeElement === document.body) {
-                            inputRef.current?.focus({ preventScroll: true });
-                          }
-                          return completed;
                         }}
                       />
                     )}
@@ -862,7 +905,12 @@ export function ConceptNoteChatPanel({
               resize="none"
               disabled={composerDisabled}
               aria-describedby={
-                contextBlocked ? "concept-note-chat-blocked" : undefined
+                [
+                  contextBlocked && "concept-note-chat-blocked",
+                  composerOverLimit > 0 && "concept-note-chat-too-long",
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
               }
               placeholder={
                 threadId ? t("chat-input-placeholder") : t("chat-unavailable")
@@ -903,7 +951,12 @@ export function ConceptNoteChatPanel({
                 },
               }}
               p={0}
-              disabled={chatDisabled || !input.trim()}
+              disabled={
+                chatDisabled ||
+                composerDisabled ||
+                !input.trim() ||
+                composerOverLimit > 0
+              }
               loading={isGenerating}
               size="xs"
               variant="solid"
@@ -912,6 +965,17 @@ export function ConceptNoteChatPanel({
               <Icon as={LuArrowUp} boxSize={5} />
             </Button>
           </Flex>
+          {composerOverLimit > 0 && (
+            <Text
+              id="concept-note-chat-too-long"
+              role="alert"
+              mt={2}
+              fontSize="label.sm"
+              color="sentiment.negativeDefault"
+            >
+              {t("chat-message-too-long", { count: composerOverLimit })}
+            </Text>
+          )}
           {contextBlocked && (
             <Text
               id="concept-note-chat-blocked"

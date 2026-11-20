@@ -276,3 +276,12 @@ it("rejects more than twelve choices instead of silently truncating them", () =>
     readConceptNoteChoices({ name: "concept_note_ask_question", options }),
   ).toBeUndefined();
 });
+
+it("trims option labels so they match the trimmed answer that is sent", () => {
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: ["  Use quarters ", "Use months\n"],
+    }),
+  ).toEqual(["Use quarters", "Use months"]);
+});

@@ -570,7 +570,11 @@ describe("Chat routes", () => {
     expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
   });
 
-  it.each(["concept_note_context_not_ready", "concept_note_question_stale"])(
+  it.each([
+    "concept_note_context_not_ready",
+    "concept_note_question_stale",
+    "concept_note_thread_mismatch",
+  ])(
     "preserves the CNB %s rejection as HTTP 409 with its stable code",
     async (code) => {
       const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;

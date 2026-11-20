@@ -2237,6 +2237,9 @@ a custom answer. Both carry `context.concept_note_question_message_id`: use
 `message_id` from history or `done.assistant_message_id` when `history_saved`
 is true. CNB checks the question and appends its reply atomically. A superseded
 question returns 409 (`concept_note_question_stale`) before the model runs.
+Edit-scoped text that cannot form an `EditProposalRequest` (for example longer
+than 8,000 characters) returns 422 (`concept_note_edit_request_invalid`) before
+any thread or message is written.
 Document edits still require review. Failed
 streams can retry the exact saved reply without duplicating its user message.
 A request claim prevents simultaneous retries and is released on completion or

@@ -29,7 +29,8 @@ export function readConceptNoteChoices(value: unknown): string[] | undefined {
       options.length
   )
     return;
-  return options;
+  // Sent answers are trimmed, so labels must match them for the selected state.
+  return options.map((option) => option.trim());
 }
 
 export interface ConceptNoteReasoning {

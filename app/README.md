@@ -7,9 +7,13 @@ frontend and backend code for the app, as well as database management scripts.
 
 Selecting a suggested answer or sending the card's custom text replies to that
 specific question. If someone has already answered in another tab, the chat
-refreshes its history and shows the accepted reply. While the workspace is open,
+refreshes its history and shows the accepted reply. If another tab opened a newer
+chat, the send is refused with an explanation and the chat list offers the way back
+to the latest chat; the unsent card text stays in place. While the workspace is open,
 **Use draft** retrieves unused inline text into the main composer for that chat.
 It preserves any text already in the composer and lets the user edit before sending.
+Chat messages and custom answers are limited to the 8,000-character edit-request
+limit: longer text stays in the field with a hint and cannot be sent.
 
 **Answer in chat** on a chapter gap opens up to four questions in Clima, each
 with suggested choices (possible answers, not source facts), free text, or

@@ -289,3 +289,39 @@ async def test_explicit_run_scope_must_match_the_thread(chat_api):
     assert response.json()["detail"]["code"] == "concept_note_thread_mismatch"
     save_message.assert_not_awaited()
     handler.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_rejects_an_unusable_edit_request_before_saving_the_turn(chat_api):
+    """Text over the edit limit must not become a stored, unanswerable message."""
+    client, _factory, run_id, thread_id, _upload_id, save_message, handler = chat_api
+    edit = {"scope": {"kind": "auto"}, "idempotency_key": str(uuid4())}
+
+    response = await client.post(
+        "/v1/messages",
+        json={
+            "thread_id": str(thread_id),
+            "user_id": "owner",
+            "content": "x" * 8_001,
+            "context": {"concept_note_run_id": str(run_id), "concept_note_edit": edit},
+        },
+        headers=AUTH_HEADERS,
+    )
+    assert response.status_code == 422
+    assert response.json()["detail"]["code"] == "concept_note_edit_request_invalid"
+    save_message.assert_not_awaited()
+    handler.assert_not_called()
+
+    # The limit itself is still accepted.
+    response = await client.post(
+        "/v1/messages",
+        json={
+            "thread_id": str(thread_id),
+            "user_id": "owner",
+            "content": "x" * 8_000,
+            "context": {"concept_note_run_id": str(run_id), "concept_note_edit": edit},
+        },
+        headers=AUTH_HEADERS,
+    )
+    assert response.status_code == 200
+    save_message.assert_awaited_once()

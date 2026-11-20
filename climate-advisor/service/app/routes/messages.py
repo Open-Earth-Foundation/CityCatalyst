@@ -12,7 +12,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.models.requests import MessageCreateRequest
-from app.services.cnb.chat_readiness import require_chat_context_ready
+from app.services.cnb.chat_readiness import (
+    require_chat_context_ready,
+    require_valid_edit_request,
+)
 from app.services.cnb.chat_retry import is_retry_turn
 from app.services.cnb.draft_overview import (
     DRAFT_OVERVIEW_REQUEST,
@@ -70,6 +73,7 @@ async def post_message(
 
     This endpoint handles:
     - Request-bearer authentication against Core before any write
+    - Edit-request validation (422 concept_note_edit_request_invalid before any write)
     - Thread resolution/creation for the canonical subject
     - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
     - Hidden drafting-overview claim (after auth, once per drafting build)
@@ -96,6 +100,8 @@ async def post_message(
         token=identity.token,
     )
     normalized_context = normalize_write_context(payload.context, identity.token)
+    # Reject an unusable edit request before any thread or message is written.
+    require_valid_edit_request(normalized_context, payload.content)
     question_id = question_message_id(normalized_context)
     question_reply_claim = None
     if question_id is not None and session_factory is None:

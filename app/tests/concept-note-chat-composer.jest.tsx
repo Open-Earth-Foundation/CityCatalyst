@@ -762,3 +762,59 @@ it("does not reapply an already used composer request when switching threads", a
   expect(composer().value).toBe("Edited thread one draft");
   expect(sendMessage).not.toHaveBeenCalled();
 });
+
+it("keeps an over-limit composer message, blocks sending and explains the limit", async () => {
+  await renderPanel();
+  await type("y".repeat(8_010));
+  const send = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-chat-send"]',
+  )!;
+
+  expect(send.disabled).toBe(true);
+  expect(
+    container.querySelector("#concept-note-chat-too-long")?.textContent,
+  ).toBe("chat-message-too-long");
+  expect(composer().getAttribute("aria-describedby")).toBe(
+    "concept-note-chat-too-long",
+  );
+  await act(async () => composer().form!.requestSubmit());
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(composer().value).toHaveLength(8_010);
+});
+
+it("moves keyboard focus to the composer as soon as a suggested answer is sent", async () => {
+  let finish!: (value: boolean) => void;
+  sendMessage.mockImplementation(
+    () =>
+      new Promise<boolean>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  messages = [choiceQuestion()];
+  await renderPanel();
+  const option = container.querySelector<HTMLButtonElement>(
+    "button[aria-pressed]",
+  )!;
+  await act(async () => {
+    option.focus();
+    option.click();
+  });
+
+  // Still streaming: focus must not wait for the reply to finish.
+  expect(document.activeElement).toBe(composer());
+  await act(async () => finish(true));
+});
+
+it("announces a finished suggested-answer question politely", async () => {
+  messages = [choiceQuestion()];
+  await renderPanel();
+  const status = container.querySelector(
+    '[data-testid="concept-note-chat-question-announcement"]',
+  )!;
+  expect(status.getAttribute("aria-live")).toBe("polite");
+  expect(status.textContent).toBe("chat-choices-arrived");
+
+  isGenerating = true;
+  await renderPanel();
+  expect(status.textContent).toBe("");
+});

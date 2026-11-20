@@ -1,6 +1,12 @@
 {
   "chat-choices-saved-draft": "Unsent answer draft",
   "chat-choices-use-draft": "Use draft",
+  "chat-choices-arrived_one": "Clima asked a question with {{count}} suggested answer.",
+  "chat-choices-arrived_other": "Clima asked a question with {{count}} suggested answers.",
+  "chat-message-too-long_one": "Shorten this message by {{count}} character to send it.",
+  "chat-message-too-long_other": "Shorten this message by {{count}} characters to send it.",
+  "chat-thread-inactive": "Your message was not sent because a newer chat was opened for this concept note, possibly in another tab. Go back to the latest chat to continue.",
+  "edit-view-clarification": "View clarification",
   "chat-question-stale": "This question was answered or changed in another tab. Review the latest chat. Your unsent draft has been kept.",
   "chat-choices-label": "Suggested answers",
   "chat-choices-or": "Or:",

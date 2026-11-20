@@ -219,3 +219,20 @@ it("retains a failed custom draft and enables a retry", async () => {
   expect(reply).toHaveBeenCalledTimes(2);
   expect(reply).toHaveBeenLastCalledWith("First line\nSecond line");
 });
+
+it("keeps a custom answer over the edit limit unsent and says how much to shorten it", async () => {
+  await render();
+  await type("x".repeat(8_003));
+
+  expect(send().disabled).toBe(true);
+  expect(container.textContent).toContain("chat-message-too-long");
+  expect(input().getAttribute("aria-invalid")).toBe("true");
+  const event = await enter();
+  expect(event.defaultPrevented).toBe(true);
+  expect(reply).not.toHaveBeenCalled();
+  expect(input().value).toHaveLength(8_003);
+
+  await type("x".repeat(8_000));
+  expect(send().disabled).toBe(false);
+  expect(container.textContent).not.toContain("chat-message-too-long");
+});

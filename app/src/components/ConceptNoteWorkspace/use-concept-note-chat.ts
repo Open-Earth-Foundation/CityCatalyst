@@ -25,6 +25,8 @@ const DRAFT_OVERVIEW_CONTENT = "draft_overview";
 const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
 const CONTEXT_NOT_READY = "concept_note_context_not_ready";
 const QUESTION_STALE = "concept_note_question_stale";
+// Another tab or session made a different chat the run's active chat.
+const THREAD_INACTIVE = "concept_note_thread_mismatch";
 const HTTP_REQUEST_ERROR_KEYS: Record<number, string> = {
   401: "chat-auth-required",
   403: "chat-access-denied",
@@ -69,6 +71,8 @@ interface UseConceptNoteChatOptions {
   editScope?: EditScope;
   onProposal?: (proposalId: string) => Promise<void>;
   onDraftOverviewComplete?: () => void;
+  /** Called when the service rejects a send because this chat is no longer active. */
+  onThreadInactive?: () => void;
 }
 
 interface ConceptNoteChatController {
@@ -99,6 +103,7 @@ export function useConceptNoteChat({
   editScope,
   onProposal,
   onDraftOverviewComplete,
+  onThreadInactive,
 }: UseConceptNoteChatOptions): ConceptNoteChatController {
   const { t } = useTranslation(lng, "concept-notes");
   const [messages, setMessages] = useState<ConceptNoteChatMessage[]>([]);
@@ -117,6 +122,8 @@ export function useConceptNoteChat({
   const currentTurnRef = useRef<ChatTurn | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
+  // Partial text of a failed reply; it was never saved, so Retry replaces it.
+  const failedAssistantMessageIdRef = useRef<string | null>(null);
   // The overview turn keeps its own label instead of the request-based stages.
   const draftOverviewTurnRef = useRef(false);
 
@@ -296,6 +303,14 @@ export function useConceptNoteChat({
         setHistoryAttempt((attempt) => attempt + 1);
         return;
       }
+      // Nothing was saved; the chat list shows which chat is active now.
+      if (code === THREAD_INACTIVE && requestRejected) {
+        setConnectionFailed(false);
+        setFailedTurn(null);
+        setError(t("chat-thread-inactive"));
+        onThreadInactive?.();
+        return;
+      }
       // Clima answered and declined; the connection itself is fine.
       if (code === DRAFT_OVERVIEW_UNAVAILABLE || code === CONTEXT_NOT_READY) {
         setConnectionFailed(false);
@@ -319,6 +334,7 @@ export function useConceptNoteChat({
       }
       setConnectionFailed(true);
       setFailedTurn(turn);
+      failedAssistantMessageIdRef.current = assistantMessageId;
       if (turn?.overview) setOverviewFailed(true);
       setError(t(chatErrorKey(code, details, turn)));
     },
@@ -344,6 +360,7 @@ export function useConceptNoteChat({
         }
         const payload: unknown = await response.json();
         if (controller.signal.aborted) return;
+        failedAssistantMessageIdRef.current = null;
         setMessages(readConceptNoteThreadMessages(payload));
         setMessagesThreadId(threadId);
         setError(
@@ -460,10 +477,13 @@ export function useConceptNoteChat({
     staleQuestionThreadRef.current = null;
     // Anything sent after a failure is the attempt to reconnect.
     if (connectionFailed) setRetrying(true);
+    // The failed reply was never saved; drop its partial text so it is not shown twice.
+    const failedAssistantId = failedAssistantMessageIdRef.current;
+    failedAssistantMessageIdRef.current = null;
     const assistantMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
     setMessages((current) => [
-      ...current,
+      ...current.filter((message) => message.id !== failedAssistantId),
       ...(userMessage ? [userMessage] : []),
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { chakra, Flex, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
 import { LuArrowRight, LuCheck } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
+import { EDIT_INSTRUCTION_MAX_CHARS } from "@/util/concept-note-edit-types";
 
 /** Suggested and custom replies stay inside the message that asked the question. */
 export function ChatChoices({
@@ -26,10 +27,14 @@ export function ChatChoices({
   onReply: (answer: string) => Promise<boolean | void>;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
+  const tooLongId = useId();
   const [sending, setSending] = useState(false);
   const submitting = useRef(false);
   const locked = disabled || answered || sending;
   const answer = draft.trim();
+  // Every CNB reply becomes an edit request, which the service caps.
+  const overLimit = answer.length - EDIT_INSTRUCTION_MAX_CHARS;
+  const canSendCustom = !locked && Boolean(answer) && overLimit <= 0;
 
   async function submit(reply: string) {
     if (locked || !reply || submitting.current) return;
@@ -67,10 +72,11 @@ export function ChatChoices({
             aria-pressed={selectedAnswer === choice}
             onClick={() => void submit(choice)}
             display="flex"
-            alignItems="center"
+            // Top alignment keeps each letter beside the first line of a long answer.
+            alignItems="flex-start"
             gap={2.5}
             minH="42px"
-            py={1}
+            py="9px"
             pr={2}
             textAlign="left"
             fontSize="body.sm"
@@ -102,17 +108,26 @@ export function ChatChoices({
               bg={
                 selectedAnswer === choice ? "content.link/12" : "content.link/8"
               }
+              // An explicit color keeps the letter readable on the hover tint.
+              color={
+                selectedAnswer === choice ? "content.link" : "content.primary"
+              }
               fontSize="body.sm"
               fontWeight="medium"
               aria-hidden="true"
             >
               {String.fromCharCode(65 + index)}
             </Text>
-            <Text as="span" whiteSpace="pre-wrap" overflowWrap="anywhere">
+            <Text
+              as="span"
+              py="2px"
+              whiteSpace="pre-wrap"
+              overflowWrap="anywhere"
+            >
               {choice}
             </Text>
             {selectedAnswer === choice && (
-              <Icon as={LuCheck} boxSize={3.5} flexShrink={0} />
+              <Icon as={LuCheck} boxSize={3.5} flexShrink={0} mt="5px" />
             )}
           </chakra.button>
         ))}
@@ -131,6 +146,8 @@ export function ChatChoices({
               placeholder={t("chat-choices-custom")}
               value={draft}
               disabled={locked}
+              aria-invalid={overLimit > 0 || undefined}
+              aria-describedby={overLimit > 0 ? tooLongId : undefined}
               onChange={(event) => onDraftChange(event.target.value)}
               onKeyDown={(event) => {
                 if (
@@ -140,7 +157,7 @@ export function ChatChoices({
                   event.nativeEvent.keyCode !== 229
                 ) {
                   event.preventDefault();
-                  void submit(answer);
+                  if (canSendCustom) void submit(answer);
                 }
               }}
               border={0}
@@ -163,7 +180,7 @@ export function ChatChoices({
             <chakra.button
               type="button"
               aria-label={t("chat-choices-send")}
-              disabled={locked || !answer}
+              disabled={!canSendCustom}
               onClick={() => void submit(answer)}
               minW="40px"
               minH="40px"
@@ -182,6 +199,16 @@ export function ChatChoices({
               <Icon as={LuArrowRight} boxSize={5} />
             </chakra.button>
           </Flex>
+          {overLimit > 0 && (
+            <Text
+              id={tooLongId}
+              role="alert"
+              fontSize="label.sm"
+              color="sentiment.negativeDefault"
+            >
+              {t("chat-message-too-long", { count: overLimit })}
+            </Text>
+          )}
         </>
       )}
     </VStack>

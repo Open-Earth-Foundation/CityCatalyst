@@ -1,4 +1,7 @@
-"""Reject CNB chat turns before persistence when their source context is not ready."""
+"""Reject CNB chat turns before persistence when they cannot be answered.
+
+Covers source context that is not ready and text that cannot form an edit request.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +9,7 @@ import logging
 from typing import Any
 from uuid import UUID
 
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.models.db.concept_note import (
     ConceptNoteContextBundle,
     ConceptNoteRun,
@@ -15,11 +19,35 @@ from app.persistence.concept_notes.context_bundle import normalize_bundle
 from app.services.thread_service import ThreadService
 from app.utils.concept_note_context import extract_concept_note_run_id
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
+
+
+def require_valid_edit_request(context: dict[str, Any], content: str) -> None:
+    """Reject a CNB turn whose text cannot form an edit request, before saving it.
+
+    The streaming handler binds every edit-scoped chat turn as an
+    ``EditProposalRequest``. Checking here keeps a deterministic validation
+    failure, such as text over the 8,000-character limit, from being stored as
+    an unanswerable user message.
+    """
+    edit_context = context.get("concept_note_edit")
+    if not isinstance(edit_context, dict):
+        return
+    try:
+        EditProposalRequest.model_validate({**edit_context, "instruction": content})
+    except ValidationError as exc:
+        raise HTTPException(
+            422,
+            detail={
+                "code": "concept_note_edit_request_invalid",
+                "message": "This message cannot be used as a document change request. Shorten it to 8,000 characters or fewer and send it again.",
+            },
+        ) from exc
 
 
 async def require_chat_context_ready(

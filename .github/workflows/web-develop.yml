@@ -644,6 +644,7 @@ jobs:
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
+            "OAUTH_SIGNING_KEY=${{secrets.OAUTH_SIGNING_KEY}}" \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
             MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
             LLM_PROVIDER=openai \

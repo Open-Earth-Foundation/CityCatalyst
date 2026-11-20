@@ -24,6 +24,7 @@ import {
 const DRAFT_OVERVIEW_CONTENT = "draft_overview";
 const DRAFT_OVERVIEW_UNAVAILABLE = "concept_note_draft_overview_unavailable";
 const CONTEXT_NOT_READY = "concept_note_context_not_ready";
+const QUESTION_STALE = "concept_note_question_stale";
 const HTTP_REQUEST_ERROR_KEYS: Record<number, string> = {
   401: "chat-auth-required",
   403: "chat-access-denied",
@@ -41,6 +42,7 @@ interface ChatTurn {
   context: Record<string, unknown>;
   options?: Record<string, unknown>;
   overview: boolean;
+  completed?: boolean;
 }
 
 function chatErrorKey(
@@ -81,7 +83,11 @@ interface ConceptNoteChatController {
   progress: ConceptNoteProgress | null;
   reasoning: ConceptNoteReasoning[];
   messages: ConceptNoteChatMessage[];
-  sendMessage: (content: string, scope?: EditScope) => Promise<void>;
+  sendMessage: (
+    content: string,
+    scope?: EditScope,
+    questionMessageId?: string,
+  ) => Promise<boolean>;
   requestDraftOverview: () => Promise<void>;
   retry: () => Promise<void>;
 }
@@ -107,6 +113,7 @@ export function useConceptNoteChat({
   const [failedTurn, setFailedTurn] = useState<ChatTurn | null>(null);
   const [overviewFailed, setOverviewFailed] = useState(false);
   const [historyAttempt, setHistoryAttempt] = useState(0);
+  const staleQuestionThreadRef = useRef<string | null>(null);
   const currentTurnRef = useRef<ChatTurn | null>(null);
   const assistantMessageIdRef = useRef<string | null>(null);
   const pendingUserMessageIdRef = useRef<string | null>(null);
@@ -214,7 +221,28 @@ export function useConceptNoteChat({
         ),
       );
     },
-    onComplete: () => {
+    onComplete: (data) => {
+      if (currentTurnRef.current) currentTurnRef.current.completed = true;
+      const assistantId = assistantMessageIdRef.current;
+      if (assistantId && data) {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? {
+                  ...message,
+                  questionMessageId:
+                    data.history_saved === true &&
+                    typeof data.assistant_message_id === "string"
+                      ? data.assistant_message_id
+                      : undefined,
+                  ...(data.history_saved === false
+                    ? { choices: undefined }
+                    : {}),
+                }
+              : message,
+          ),
+        );
+      }
       // Draft observation ends at chapter completion; refresh the consumed overview.
       if (draftOverviewTurnRef.current) {
         onDraftOverviewComplete?.();
@@ -273,6 +301,15 @@ export function useConceptNoteChat({
       assistantMessageIdRef.current = null;
       pendingUserMessageIdRef.current = null;
       setIsGenerating(false);
+      if (code === QUESTION_STALE && requestRejected) {
+        staleQuestionThreadRef.current = threadId;
+        setMessagesThreadId(null);
+        setConnectionFailed(false);
+        setFailedTurn(null);
+        setError(t("chat-question-stale"));
+        setHistoryAttempt((attempt) => attempt + 1);
+        return;
+      }
       // Clima answered and declined; the connection itself is fine.
       if (code === DRAFT_OVERVIEW_UNAVAILABLE || code === CONTEXT_NOT_READY) {
         setConnectionFailed(false);
@@ -320,9 +357,14 @@ export function useConceptNoteChat({
           throw new Error("Concept Note chat history request failed");
         }
         const payload: unknown = await response.json();
+        if (controller.signal.aborted) return;
         setMessages(readConceptNoteThreadMessages(payload));
         setMessagesThreadId(threadId);
-        setError(null);
+        setError(
+          staleQuestionThreadRef.current === threadId
+            ? t("chat-question-stale")
+            : null,
+        );
         setConnectionFailed(false);
         setFailedTurn(null);
         setRetrying(false);
@@ -350,7 +392,8 @@ export function useConceptNoteChat({
   async function sendMessage(
     content: string,
     scope = editScope,
-  ): Promise<void> {
+    questionMessageId?: string,
+  ): Promise<boolean> {
     const normalizedContent = content.trim();
     if (
       !normalizedContent ||
@@ -358,22 +401,27 @@ export function useConceptNoteChat({
       isGenerating ||
       currentTurnRef.current
     ) {
-      return;
+      return false;
     }
 
     const userMessageId = crypto.randomUUID();
     pendingUserMessageIdRef.current = userMessageId;
-    await streamReply(
+    return streamReply(
       {
         content: normalizedContent,
-        context: scope
-          ? {
-              concept_note_edit: {
-                scope,
-                idempotency_key: crypto.randomUUID(),
-              },
-            }
-          : {},
+        context: {
+          ...(scope
+            ? {
+                concept_note_edit: {
+                  scope,
+                  idempotency_key: crypto.randomUUID(),
+                },
+              }
+            : {}),
+          ...(questionMessageId
+            ? { concept_note_question_message_id: questionMessageId }
+            : {}),
+        },
         overview: false,
       },
       { id: userMessageId, role: "user", text: normalizedContent },
@@ -419,9 +467,11 @@ export function useConceptNoteChat({
   async function streamReply(
     turn: ChatTurn,
     userMessage?: ConceptNoteChatMessage,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const { content, context, options } = turn;
     currentTurnRef.current = turn;
+    turn.completed = false;
+    staleQuestionThreadRef.current = null;
     // Anything sent after a failure is the attempt to reconnect.
     if (connectionFailed) setRetrying(true);
     const assistantMessageId = crypto.randomUUID();
@@ -472,6 +522,7 @@ export function useConceptNoteChat({
         setReasoning([]);
       }
     }
+    return Boolean(turn.completed);
   }
 
   const historyLoading = Boolean(threadId) && messagesThreadId !== threadId;

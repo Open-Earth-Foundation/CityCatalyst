@@ -9,7 +9,7 @@ import {
   jest,
 } from "@jest/globals";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
-import { act } from "react";
+import { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -57,7 +57,7 @@ async function render(
   await act(async () =>
     root.render(
       <ChakraProvider value={defaultSystem}>
-        <ChatChoices
+        <ChoicesFixture
           choices={choices}
           disabled={disabled}
           answered={answered}
@@ -68,6 +68,12 @@ async function render(
       </ChakraProvider>,
     ),
   );
+}
+function ChoicesFixture(
+  props: Omit<Parameters<typeof ChatChoices>[0], "draft" | "onDraftChange">,
+) {
+  const [draft, setDraft] = useState("");
+  return <ChatChoices {...props} draft={draft} onDraftChange={setDraft} />;
 }
 const send = () =>
   container.querySelector<HTMLButtonElement>(

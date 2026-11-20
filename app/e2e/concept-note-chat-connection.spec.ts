@@ -12,6 +12,7 @@ test.beforeEach(({ context }) => skipCookieConsent(context));
 const cityId = "f8063baa-e795-4ffb-a507-7a2ea6090eae";
 const runId = "e7cca88d-de54-4050-88ed-d6b39790853c";
 const threadId = "30000000-0000-4000-8000-000000000001";
+const questionId = "40000000-0000-4000-8000-000000000001";
 
 type ChatReply = (route: Route) => Promise<void> | void;
 
@@ -197,7 +198,10 @@ const question = (options = choices) =>
     sse(
       ["message", { content: questionText, index: 0 }],
       ["tool_result", { name: "concept_note_ask_question", options }],
-      ["done", { ok: true }],
+      [
+        "done",
+        { ok: true, history_saved: true, assistant_message_id: questionId },
+      ],
     ),
   );
 
@@ -482,4 +486,172 @@ test("shows a static visual without letting it reach the network", async ({
   } finally {
     listener.close();
   }
+});
+
+test("an unsent inline draft survives clicking an option and recovers without an extra request", async ({
+  page,
+}) => {
+  const history: HistoryMessage[] = [
+    { message_id: questionId, role: "assistant", text: questionText, choices },
+  ];
+  const { chatRequests } = await openWorkspace(
+    page,
+    [answer("Choice accepted.")],
+    history,
+  );
+  const custom = page.getByRole("textbox", { name: "Write your own answer…" });
+  await custom.fill("Unsent paragraph.\nKeep this detail.");
+  await page
+    .getByTestId("concept-note-chat-input")
+    .fill("Existing composer draft");
+  await page.getByRole("button", { name: choices[0], exact: true }).click();
+  await expect(
+    page.getByText("Choice accepted.", { exact: true }),
+  ).toBeVisible();
+  const saved = page.getByTestId("concept-note-saved-answer-draft");
+  await expect(saved).toContainText("Unsent paragraph.");
+  await saved.getByRole("button", { name: "Use draft", exact: true }).click();
+  await expect(page.getByTestId("concept-note-chat-input")).toHaveValue(
+    "Existing composer draft\n\nUnsent paragraph.\nKeep this detail.",
+  );
+  await expect(page.getByTestId("concept-note-chat-input")).toBeFocused();
+  expect(chatRequests).toHaveLength(1);
+  expect(chatRequests[0]).toMatchObject({
+    context: { concept_note_question_message_id: questionId },
+  });
+  await page.screenshot({
+    path: test.info().outputPath("inline-draft-recovered.png"),
+  });
+});
+
+test("an unsent inline draft survives sending a different main message", async ({
+  page,
+}) => {
+  const history: HistoryMessage[] = [
+    { message_id: questionId, role: "assistant", text: questionText, choices },
+  ];
+  const { chatRequests } = await openWorkspace(
+    page,
+    [answer("Main message accepted.")],
+    history,
+  );
+  await page
+    .getByRole("textbox", { name: "Write your own answer…" })
+    .fill("Unsent inline detail");
+  await ask(page, "Another main message");
+  await expect(
+    page.getByText("Main message accepted.", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByTestId("concept-note-saved-answer-draft")
+    .getByRole("button", { name: "Use draft", exact: true })
+    .click();
+  await expect(page.getByTestId("concept-note-chat-input")).toHaveValue(
+    "Unsent inline detail",
+  );
+  expect(chatRequests).toHaveLength(1);
+});
+
+test("a stale answer reloads current history without retrying or losing either draft", async ({
+  page,
+}) => {
+  const latestId = "40000000-0000-4000-8000-000000000002";
+  const history: HistoryMessage[] = [
+    { message_id: questionId, role: "assistant", text: questionText, choices },
+  ];
+  const rejected: ChatReply = (route) => {
+    history.splice(0, history.length, {
+      message_id: latestId,
+      role: "assistant",
+      text: "Which source should we use?",
+      choices: ["City climate plan", "Feasibility report"],
+    });
+    return route.fulfill({
+      status: 409,
+      json: {
+        code: "concept_note_question_stale",
+        message: "Question changed",
+      },
+    });
+  };
+  const { chatRequests } = await openWorkspace(
+    page,
+    [rejected, answer("Fresh choice accepted.")],
+    history,
+  );
+  const draft = "Custom answer written in the old tab";
+  await page
+    .getByRole("textbox", { name: "Write your own answer…" })
+    .fill(draft);
+  await page
+    .getByTestId("concept-note-chat-input")
+    .fill("Keep this separate main draft");
+  await page.getByRole("button", { name: "Send answer", exact: true }).click();
+  await expect(
+    page.getByText("Which source should we use?", { exact: true }),
+  ).toBeVisible();
+  await expect(chatError(page)).toContainText("another tab");
+  await expect(page.getByTestId("concept-note-chat-retry")).toHaveCount(0);
+  await expect(
+    page.getByTestId("concept-note-saved-answer-draft"),
+  ).toContainText(draft);
+  await expect(page.getByTestId("concept-note-chat-input")).toHaveValue(
+    "Keep this separate main draft",
+  );
+  expect(chatRequests).toHaveLength(1);
+  expect(chatRequests[0]).toMatchObject({
+    context: { concept_note_question_message_id: questionId },
+  });
+  await page.screenshot({
+    path: test.info().outputPath("stale-answer-resynced-with-drafts.png"),
+  });
+  await page
+    .getByRole("button", { name: "City climate plan", exact: true })
+    .click();
+  await expect(
+    page.getByText("Fresh choice accepted.", { exact: true }),
+  ).toBeVisible();
+  await expect(chatError(page)).toHaveCount(0);
+  expect(chatRequests.at(-1)).toMatchObject({
+    context: { concept_note_question_message_id: latestId },
+  });
+});
+
+// Exact eight-title options from the real model stress run, replayed to isolate UI selection.
+const eightTitles = [
+  "Warm Schools",
+  "Comfortable Public Buildings",
+  "Heat Smart Sampleton",
+  "Better Buildings, Better Comfort",
+  "Sampleton Retrofit Pilot",
+  "Ten Buildings Transformed",
+  "Efficient Heat, Shared Comfort",
+  "Public Buildings Renewed",
+];
+test("eight suggested titles remain enabled and H sends its full title", async ({
+  page,
+}) => {
+  const { chatRequests } = await openWorkspace(page, [
+    question(eightTitles),
+    answer("Title accepted."),
+  ]);
+  await ask(page, "Give me eight project titles to choose from.");
+  const card = page.getByTestId("concept-note-chat-choices");
+  const options = card.locator("button[aria-pressed]");
+  await expect(options).toHaveCount(8);
+  for (const [index, title] of eightTitles.entries()) {
+    await expect(options.nth(index)).toBeEnabled();
+    await expect(options.nth(index).locator("span").first()).toHaveText(
+      String.fromCharCode(65 + index),
+    );
+    await expect(options.nth(index)).toHaveAccessibleName(title);
+  }
+  await card.getByRole("button", { name: eightTitles[7], exact: true }).click();
+  await expect(
+    page.getByText("Title accepted.", { exact: true }),
+  ).toBeVisible();
+  expect(chatRequests.at(-1)).toMatchObject({
+    content: eightTitles[7],
+    context: { concept_note_question_message_id: questionId },
+  });
 });

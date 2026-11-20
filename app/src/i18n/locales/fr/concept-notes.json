@@ -1,4 +1,7 @@
 {
+  "chat-choices-saved-draft": "Brouillon de réponse non envoyé",
+  "chat-choices-use-draft": "Utiliser le brouillon",
+  "chat-question-stale": "Cette question a reçu une réponse ou a été modifiée dans un autre onglet. Consultez la conversation à jour. Votre brouillon non envoyé a été conservé.",
   "wiring-eyebrow": "Constructeur de Note Conceptuelle · câblage local",
   "wiring-description": "Créez une exécution, convertissez un PDF et vérifiez la livraison durable au Concept Note Builder.",
   "default-note-name": "Note conceptuelle",

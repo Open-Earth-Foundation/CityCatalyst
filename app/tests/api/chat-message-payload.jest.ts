@@ -61,12 +61,14 @@ describe("buildClimateAdvisorMessagePayload", () => {
           access_token: "expired-token",
           cc_access_token: "client-supplied-token",
           concept_note_run_id: "run-1",
+          concept_note_question_message_id: "question-message-id",
         },
       },
     });
 
     expect(payload.context).toEqual({
       concept_note_run_id: "run-1",
+      concept_note_question_message_id: "question-message-id",
       access_token: "server-issued-token",
     });
   });

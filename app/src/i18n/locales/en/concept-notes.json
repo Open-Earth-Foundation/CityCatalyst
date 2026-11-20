@@ -1,4 +1,7 @@
 {
+  "chat-choices-saved-draft": "Unsent answer draft",
+  "chat-choices-use-draft": "Use draft",
+  "chat-question-stale": "This question was answered or changed in another tab. Review the latest chat. Your unsent draft has been kept.",
   "chat-choices-label": "Suggested answers",
   "chat-choices-or": "Or:",
   "chat-choices-custom": "Write your own answer…",

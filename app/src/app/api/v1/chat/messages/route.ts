@@ -21,6 +21,13 @@
  *               content:
  *                 type: string
  *                 description: User message content
+ *               context:
+ *                 type: object
+ *                 properties:
+ *                   concept_note_question_message_id:
+ *                     type: string
+ *                     format: uuid
+ *                     description: Saved assistant message ID when replying from a CNB answer card
  *               options:
  *                 type: object
  *                 description: Optional parameters (model, temperature, etc.)
@@ -44,7 +51,7 @@
  *       401:
  *         description: Unauthorized
  *       409:
- *         description: Concept Note document context is not ready (concept_note_context_not_ready), or no finished draft is waiting for its chat overview (concept_note_draft_overview_unavailable)
+ *         description: CNB context is not ready (concept_note_context_not_ready), a draft overview is unavailable (concept_note_draft_overview_unavailable), or the selected question is stale (concept_note_question_stale).
  *       502:
  *         description: Climate Advisor transport or gateway failure
  *       503:
@@ -68,6 +75,7 @@ import { apiHandler } from "@/util/api";
 const FORWARDED_CONFLICT_CODES = new Set([
   "concept_note_context_not_ready",
   "concept_note_draft_overview_unavailable",
+  "concept_note_question_stale",
 ]);
 
 export const POST = apiHandler(async (req, { session }) => {

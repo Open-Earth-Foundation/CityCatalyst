@@ -1,4 +1,7 @@
 {
+  "chat-choices-saved-draft": "Rascunho de resposta não enviado",
+  "chat-choices-use-draft": "Usar rascunho",
+  "chat-question-stale": "Esta pergunta foi respondida ou alterada em outra aba. Confira a conversa atualizada. Seu rascunho não enviado foi mantido.",
   "wiring-eyebrow": "Construtor de Nota Conceitual · fiação local",
   "wiring-description": "Crie uma execução, converta um PDF e verifique a entrega durável ao Construtor de Notas Conceituais.",
   "default-note-name": "Nota conceitual",

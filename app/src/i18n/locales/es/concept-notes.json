@@ -1,4 +1,7 @@
 {
+  "chat-choices-saved-draft": "Borrador de respuesta sin enviar",
+  "chat-choices-use-draft": "Usar borrador",
+  "chat-question-stale": "Esta pregunta se respondió o cambió en otra pestaña. Revisa el chat actualizado. Tu borrador sin enviar se ha conservado.",
   "wiring-eyebrow": "Creador de Notas Conceptuales · cableado local",
   "wiring-description": "Cree una ejecución, convierta un PDF y verifique la entrega duradera al Constructor de Notas Conceptuales.",
   "default-note-name": "Nota conceptual",

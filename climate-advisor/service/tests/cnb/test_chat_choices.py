@@ -15,7 +15,10 @@ from app.utils.streaming_events import handle_tool_output
 from pydantic import ValidationError
 
 
-@pytest.mark.parametrize("options", [["Only"], ["A"] * 7, ["Yes", " yes "], ["", "No"]])
+@pytest.mark.parametrize(
+    "options",
+    [["Only"], [f"Option {i}" for i in range(13)], ["Yes", " yes "], ["", "No"]],
+)
 def test_invalid_options_are_rejected(options):
     with pytest.raises(ValidationError):
         ConceptNoteQuestion(message="Which next step?", options=options)
@@ -25,6 +28,26 @@ def test_complete_rewrites_fit_in_options():
     rewrites = ["Rewrite one. " * 40, "Rewrite two. " * 40]
     question = ConceptNoteQuestion(message="Which rewrite?", options=rewrites)
     assert question.options == [rewrite.strip() for rewrite in rewrites]
+
+
+@pytest.mark.parametrize("count", [8, 12])
+@pytest.mark.asyncio
+async def test_requested_alternatives_remain_individually_selectable_in_history(count):
+    options = [f"Project title {i + 1}" for i in range(count)]
+    output = await concept_note_ask_question.on_invoke_tool(
+        ToolContext(
+            context=None,
+            tool_name="concept_note_ask_question",
+            tool_call_id="titles",
+            tool_arguments="",
+        ),
+        json.dumps({"question": {"message": "Which title?", "options": options}}),
+    )
+    result = json.loads(output)
+    assert result["options"] == options
+    assert saved_question_choices(
+        [{"name": "concept_note_ask_question", "result_json": result}]
+    ) == options
 
 
 @pytest.mark.asyncio

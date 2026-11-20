@@ -11,6 +11,8 @@ export function ChatChoices({
   disabled,
   answered,
   selectedAnswer,
+  draft,
+  onDraftChange,
   lng,
   onReply,
 }: {
@@ -18,22 +20,24 @@ export function ChatChoices({
   disabled: boolean;
   answered: boolean;
   selectedAnswer?: string;
+  draft: string;
+  onDraftChange: (draft: string) => void;
   lng: string;
-  onReply: (answer: string) => Promise<void>;
+  onReply: (answer: string) => Promise<boolean | void>;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [custom, setCustom] = useState("");
   const [sending, setSending] = useState(false);
   const submitting = useRef(false);
   const locked = disabled || answered || sending;
-  const answer = custom.trim();
+  const answer = draft.trim();
 
   async function submit(reply: string) {
     if (locked || !reply || submitting.current) return;
     submitting.current = true;
     setSending(true);
     try {
-      await onReply(reply);
+      const completed = await onReply(reply);
+      if (completed !== false && reply === answer) onDraftChange("");
     } catch {
       // The parent reports errors; preserve the draft so the user can retry.
     } finally {
@@ -125,9 +129,9 @@ export function ChatChoices({
               rows={1}
               aria-label={t("chat-choices-custom")}
               placeholder={t("chat-choices-custom")}
-              value={custom}
+              value={draft}
               disabled={locked}
-              onChange={(event) => setCustom(event.target.value)}
+              onChange={(event) => onDraftChange(event.target.value)}
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&

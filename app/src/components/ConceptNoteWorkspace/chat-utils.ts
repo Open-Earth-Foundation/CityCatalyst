@@ -5,6 +5,8 @@ export interface ConceptNoteChatVisual {
 
 export interface ConceptNoteChatMessage {
   id: string;
+  /** Durable server id required when replying to a suggested-answer card. */
+  questionMessageId?: string;
   role: "assistant" | "user";
   text: string;
   visuals?: ConceptNoteChatVisual[];
@@ -18,7 +20,7 @@ export function readConceptNoteChoices(value: unknown): string[] | undefined {
   if (
     !Array.isArray(options) ||
     options.length < 2 ||
-    options.length > 6 ||
+    options.length > 12 ||
     !options.every(
       (option): option is string =>
         typeof option === "string" && option.trim().length > 0,
@@ -141,6 +143,10 @@ export function readConceptNoteThreadMessages(
         ...(visuals.length > 0 ? { visuals } : {}),
         ...(role === "assistant" && message.choices
           ? {
+              questionMessageId:
+                typeof message.message_id === "string"
+                  ? message.message_id
+                  : undefined,
               choices: readConceptNoteChoices({
                 name: "concept_note_ask_question",
                 options: message.choices,

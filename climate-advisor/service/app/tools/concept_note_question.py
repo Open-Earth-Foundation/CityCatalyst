@@ -23,7 +23,7 @@ class ConceptNoteQuestion(BaseModel):
     message: Annotated[
         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4000)
     ]
-    options: list[Answer] = Field(min_length=2, max_length=6)
+    options: list[Answer] = Field(min_length=2, max_length=12)
 
     @field_validator("options")
     @classmethod
@@ -57,13 +57,19 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     """End this turn with an interactive question inside the assistant message.
 
     message contains your concise user-facing explanation and ONE question as
-    Markdown. options contains 2-6 contextual answer texts as plain text, without
+    Markdown. options contains 2-12 contextual answer texts as plain text, without
     letter prefixes or Markdown. The UI adds A/B/C labels and a free-text answer automatically.
     Use when concrete choices make a clarification or next-step decision
     easier for the user, and always when the user asks for options or
     alternatives to choose from, such as rewrites; then each option holds one
-    complete alternative. Do not use for direct answers, acknowledgements, or
-    open-ended questions. It is optional, including after a previous choice.
+    complete alternative. Honor an exact requested count up to 12, with each
+    alternative individually selectable; never group several into one option.
+    For more than 12, explain the card limit and provide the requested alternatives
+    in plain text, explicitly paginating only if needed without dropping the rest.
+    Do not use when alternatives are for discussion only or the user says they
+    are not choosing yet, even if they say "options" or "alternatives".
+    Do not use for direct answers, acknowledgements, or open-ended questions.
+    It is optional, including after a previous choice.
     It only presents choices;
     it never edits the document, submits anything, or authorizes another tool.
     """

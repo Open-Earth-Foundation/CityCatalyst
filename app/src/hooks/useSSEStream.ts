@@ -26,7 +26,7 @@ export interface SSEStreamOptions {
   onToolResult?: (tool: ToolResultPayload) => void;
   onProgress?: (progress: unknown) => void;
   onReasoning?: (reasoning: unknown) => void;
-  onComplete?: () => void;
+  onComplete?: (data?: SSEDataRecord) => void;
   onError?: (error: string, code?: string, details?: SSEErrorDetails) => void;
   onWarning?: (warning: string) => void;
   /**
@@ -185,7 +185,7 @@ export function useSSEStream(
               event.data.ok === true &&
               options.onComplete
             ) {
-              options.onComplete();
+              options.onComplete(event.data);
             } else if (
               (!isRecord(event.data) || event.data.ok !== true) &&
               options.onError &&

@@ -2250,6 +2250,13 @@ confirmation (`confirms: true`, no options), for which the UI shows its own
 "still correct" choice and a field for the changed value, and no other question
 asks for a confirmed value again. A reply with more than 4 questions is trimmed to
 the first 4 instead of failing; the dropped parts stay open for the next round.
+A question with options asks one choice about one thing; values and per-item
+statuses get their own free-text questions, and questions are never conditional.
+`earlier_answers` carries what the user already sent for this gap version but
+is not in the draft yet (for example when a partial answer got a clarification);
+the model asks only for what they miss and may return no questions when they
+cover the gap. The form sends earlier and new answers together, so a gap with
+more parts than four questions can still be completed over several rounds.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
 The form's edit request binds the answer to its gap: `concept_note_edit.scope`

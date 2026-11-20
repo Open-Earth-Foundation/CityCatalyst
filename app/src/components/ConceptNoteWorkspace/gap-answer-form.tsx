@@ -64,6 +64,8 @@ interface GapDraft {
   choices: Record<number, string>;
   customAnswers: Record<string, string>;
   details: string;
+  /** Everything already sent for this gap version; later rounds ask only what it misses. */
+  sent?: string;
 }
 
 function readDraft(key: string): GapDraft | null {
@@ -118,6 +120,9 @@ export function GapAnswerForm({
   // A new gap version starts fresh, since earlier answers may no longer fit it.
   const draftKey = `cnb-gap-draft:${runId}:${request.chapterId}:${request.row.gap?.gap_id ?? request.row.question}:${request.row.gap?.version}`;
   const [draft] = useState(() => readDraft(draftKey));
+  // Answers already sent are included again; new questions cover what they miss.
+  const [sent, setSent] = useState(draft?.sent ?? "");
+  const [earlier] = useState(sent);
   const [question, setQuestion] = useState<GapQuestion | null>(
     draft?.question ?? null,
   );
@@ -137,11 +142,17 @@ export function GapAnswerForm({
   const headingRef = useRef<HTMLParagraphElement>(null);
   const detailsRef = useRef<HTMLTextAreaElement>(null);
   const whyAsking = question?.why_asking ?? request.row.whyAsking;
+  // Earlier answers can cover every part, leaving nothing new to ask.
+  const coveredEarlier = Boolean(earlier) && question?.questions.length === 0;
   // Without generated questions, the original gap is one free-text question.
   // A confirmation gets one fixed choice; "changed" is the free-text answer,
   // so it always carries the new value.
   const questions: GapQuestion["questions"] = (
-    question?.questions ?? [{ question: request.row.question, options: [] }]
+    coveredEarlier
+      ? []
+      : question?.questions.length
+        ? question.questions
+        : [{ question: request.row.question, options: [] }]
   ).map((item) =>
     item.confirms ? { ...item, options: [t("gap-confirm-yes")] } : item,
   );
@@ -179,9 +190,11 @@ export function GapAnswerForm({
   // The unavailable fallback asks the original gap itself, so its answer covers it.
   const complete = request.row.gap !== null && answers.every(Boolean);
   // Source text the user added counts as an answer, so it can be sent alone.
-  const answered = answers.some(Boolean) || Boolean(details.trim());
+  const answered =
+    answers.some(Boolean) || Boolean(details.trim()) || coveredEarlier;
   const sourceSuggestions = request.row.gap?.suggestions ?? [];
   const answerText = [
+    earlier,
     ...questions.map(
       ({ question: text }, index) =>
         `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
@@ -196,7 +209,7 @@ export function GapAnswerForm({
     Math.min(2000, value.length + Math.max(0, charsLeft));
 
   useEffect(() => {
-    // Reopening a saved draft keeps its questions, so its answers still match.
+    // Reopening an unsent draft keeps its questions, so its answers still match.
     if (attempt === 0 && draft?.question) return;
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
@@ -211,6 +224,7 @@ export function GapAnswerForm({
               gap_id: request.row.gap?.gap_id ?? null,
               question: request.row.question,
               language: lng,
+              earlier_answers: earlier,
             }),
             signal: controller.signal,
           },
@@ -221,9 +235,11 @@ export function GapAnswerForm({
         setQuestion(result);
         setChoices(
           Object.fromEntries(
-            result.questions.flatMap(({ options, confirms }, index) =>
-              options.length || confirms ? [] : [[index, "custom"]],
-            ),
+            result.questions.length || earlier
+              ? result.questions.flatMap(({ options, confirms }, index) =>
+                  options.length || confirms ? [] : [[index, "custom"]],
+                )
+              : [[0, "custom"]],
           ),
         );
       } catch {
@@ -252,11 +268,20 @@ export function GapAnswerForm({
     if (loading) return;
     saveDraft(
       draftKey,
-      answered || details.trim()
-        ? { question, choices, customAnswers, details }
+      answered || details.trim() || sent
+        ? { question, choices, customAnswers, details, sent }
         : null,
     );
-  }, [draftKey, loading, answered, question, choices, customAnswers, details]);
+  }, [
+    draftKey,
+    loading,
+    answered,
+    question,
+    choices,
+    customAnswers,
+    details,
+    sent,
+  ]);
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
@@ -269,7 +294,15 @@ export function GapAnswerForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (disabled || loading || !answered) return;
-        setTooLong(!onAnswer(answerText, complete));
+        const accepted = onAnswer(answerText, complete);
+        setTooLong(!accepted);
+        if (!accepted) return;
+        // Keep what was sent; the next round asks only for what it misses.
+        setSent(answerText);
+        setQuestion(null);
+        setChoices({});
+        setCustomAnswers({});
+        setDetails("");
       }}
     >
       <VStack align="stretch" gap={3}>
@@ -302,7 +335,9 @@ export function GapAnswerForm({
             >
               {loading
                 ? t("gap-loading-question")
-                : t("gap-questions-heading", { count: questions.length })}
+                : coveredEarlier
+                  ? t("gap-earlier-answers-cover")
+                  : t("gap-questions-heading", { count: questions.length })}
             </Text>
             {!loading && questions.length > 1 && (
               <Text fontSize="label.sm" color="content.tertiary" flexShrink={0}>
@@ -349,6 +384,27 @@ export function GapAnswerForm({
             </chakra.button>
           </Box>
         </Box>
+        {earlier && (
+          <Box
+            p={3}
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+            data-testid="concept-note-gap-earlier-answers"
+          >
+            <Text fontSize="body.sm" fontWeight="semibold">
+              {t("gap-earlier-answers")}
+            </Text>
+            <Text
+              fontSize="body.sm"
+              color="content.secondary"
+              whiteSpace="pre-wrap"
+              overflowWrap="anywhere"
+            >
+              {earlier}
+            </Text>
+          </Box>
+        )}
         {sourceSuggestions.length > 0 && (
           <VStack
             align="stretch"

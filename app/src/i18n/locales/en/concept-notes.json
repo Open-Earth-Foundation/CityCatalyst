@@ -551,6 +551,8 @@
   "gap-retry-question": "Retry answer choices",
   "gap-your-answer": "Your answer",
   "gap-answer-placeholder": "Answer the question above with the information you know.",
+  "gap-earlier-answers": "Already sent for this gap. They are sent again with your new answers, so answer only what is still missing.",
+  "gap-earlier-answers-cover": "Your earlier answers cover every part of this gap",
   "gap-additional-details": "Additional details (optional)",
   "gap-details-placeholder": "Add terms or context if you know them.",
   "gap-add-source": "Add supporting source",

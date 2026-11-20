@@ -49,9 +49,10 @@ def test_several_answers_need_options_to_select():
     assert not GapSubQuestion(question="Amount?", options=[], multiple=True).multiple
 
 
-def test_requires_a_question():
-    with pytest.raises(ValidationError):
-        GapQuestionOutput(why_asking="Support needed", questions=[])
+def test_no_questions_when_earlier_answers_cover_the_gap():
+    # Used to fail as a 503; the UI then lets the earlier answers complete the gap.
+    output = GapQuestionOutput(why_asking="Already answered", questions=[])
+    assert output.questions == []
 
 
 def test_keeps_the_first_four_questions_instead_of_failing():
@@ -193,6 +194,8 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert result.questions[0].options == ["Loan", "Grant"]
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
+    # Answers already sent for this gap reach the model, so it asks only the rest.
+    assert context["earlier_answers"] == ""
     # Long chapters are cut around the gap, not from the start.
     assert len(context["chapter_excerpt"]) == 12000
     assert context["chapter_excerpt"].endswith("Original question]")

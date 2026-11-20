@@ -27,6 +27,8 @@ class GapQuestionRequest(BaseModel):
     gap_id: UUID | None = None
     question: str = Field(min_length=1, max_length=2000)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
+    # What the user already sent for this gap version; not in the draft yet.
+    earlier_answers: str = Field(default="", max_length=8000)
 
 
 class GapSubQuestion(BaseModel):
@@ -77,7 +79,9 @@ class GapQuestionOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     why_asking: str = Field(min_length=1, max_length=240)
-    questions: list[GapSubQuestion] = Field(min_length=1, max_length=MAX_QUESTIONS)
+    # Empty when earlier answers already cover every part; the UI then asks the
+    # gap itself as one free-text question.
+    questions: list[GapSubQuestion] = Field(max_length=MAX_QUESTIONS)
 
     @field_validator("questions", mode="before")
     @classmethod

@@ -600,24 +600,60 @@ it("leaves the gap untouched when answered later and restores the answers on ret
     )!.value,
   ).toBe("EUR 2 million");
 
-  // A sent answer stays saved, so a failed or rejected turn loses nothing.
+  // A sent answer stays saved: the next round asks only for what it misses
+  // and sends it again with the new answers, so a failed turn loses nothing.
   await act(async () => previewButton().click());
-  expect(sendMessage).toHaveBeenCalledTimes(1);
+  const [firstRequest] = sendMessage.mock.calls[0];
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(fetchQuestion).toHaveBeenCalledTimes(1);
+  expect(fetchQuestion).toHaveBeenCalledTimes(2);
+  const earlier = JSON.parse(fetchQuestion.mock.calls[1][1].body).earlier_answers;
+  expect(earlier).toContain("2. What amount?\nEUR 2 million");
+  expect(firstRequest).toContain(earlier);
   expect(
-    subQuestion(1).querySelector<HTMLTextAreaElement>(
-      '[data-testid="concept-note-gap-custom-answer"]',
-    )!.value,
-  ).toBe("EUR 2 million");
+    container.querySelector('[data-testid="concept-note-gap-earlier-answers"]')
+      ?.textContent,
+  ).toContain("EUR 2 million");
+  await writeAnswer(1, "EUR 3 million from the city budget");
+  await act(async () => previewButton().click());
+  const [secondRequest] = sendMessage.mock.calls[1];
+  expect(secondRequest).toContain(earlier);
+  expect(secondRequest).toContain("EUR 3 million from the city budget");
 
   // A closed gap gets a new version, which starts fresh.
   const nextVersion = structuredClone(gapAnswer);
   nextVersion.row.gap!.version = 2;
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", nextVersion);
-  expect(fetchQuestion).toHaveBeenCalledTimes(2);
+  expect(fetchQuestion).toHaveBeenCalledTimes(3);
+  expect(
+    JSON.parse(fetchQuestion.mock.calls[2][1].body).earlier_answers,
+  ).toBe("");
+});
+
+it("lets earlier answers alone complete the gap when nothing is missing", async () => {
+  sessionStorage.setItem(
+    "cnb-gap-draft:run:financing-chapter:financing-gap:1",
+    JSON.stringify({
+      question: null,
+      choices: {},
+      customAnswers: {},
+      details: "",
+      sent: "1. Which financing instrument?\nLoan",
+    }),
+  );
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({ why_asking: "Covered.", questions: [] }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(subQuestion(0)).toBeUndefined();
+  expect(container.textContent).toContain("gap-earlier-answers-cover");
+  expect(container.textContent).toContain("gap-complete-hint");
+  await act(async () => previewButton().click());
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(content).toContain("1. Which financing instrument?\nLoan");
+  expect(scope).toMatchObject({ answer_complete: true });
 });
 
 it("offers free text for gaps without suggestions and blocks submission while Clima is busy", async () => {

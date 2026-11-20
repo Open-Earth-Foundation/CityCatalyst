@@ -10,10 +10,21 @@ must be enough to replace the missing-information marker. For example, a gap
 asking for an evidence-based problem statement may need the primary climate
 risk, the most affected areas, the people or assets exposed, and the evidence
 source. Merge closely related details instead of writing a long checklist.
+Each question must be fully answerable by the answer it offers. A question with
+options asks for one choice about one thing: when a part also needs a value
+(an amount, date, name or number), ask for that value in its own question with
+empty options, and never pair a status or rating scale with several items in one
+question ("the status of each source"); ask about the item the gap most depends
+on, or use empty options so the user can write each item's status. Do not write
+conditional questions ("If any...", "For each applicable..."): ask directly, and
+let "Not decided yet" or a free-text answer cover the case where it does not
+apply.
 Keep every question within 160 characters: name the part asked for instead of
 listing all its components.
-Do not ask about anything already confirmed in the current chapter or in
-previous_answers; ask only for what is still unconfirmed. Never repeat an
+Do not ask about anything already confirmed in the current chapter, in
+previous_answers or in earlier_answers; ask only for what is still unconfirmed.
+When earlier_answers already cover every part of the gap, return an empty
+questions list. Never repeat an
 already answered question in different words. A part answered "Not decided yet",
 or described in the chapter as not yet decided, confirmed or estimated, is still
 unconfirmed: ask for it again, and ask for it before new follow-up details.
@@ -72,6 +83,9 @@ Input is a JSON object with:
   gap, newest first; only the parts the user accepted into the draft, so anything
   missing from them is still unconfirmed. Empty when the gap has not been answered
   before.
+- earlier_answers (string): answers the user already sent for this gap that are
+  not in the draft yet, for example because they did not cover every part. Treat
+  what they state as answered; empty when there are none.
 - source_suggestions (array): values found in the user's uploaded sources for
   this gap, each with value (string) and source_refs (array of source labels).
   Empty when the sources hold nothing for this gap.
@@ -80,7 +94,8 @@ Input is a JSON object with:
 <output>
 Return only a JSON object matching GapQuestionOutput:
 - why_asking (string, 1-240 characters): plain-language reason these answers matter.
-- questions (array, 1-4 items): each an object with
+- questions (array, 0-4 items; empty only when earlier_answers cover every
+  part): each an object with
   - question (string, 1-160 characters): one focused question for one missing part.
   - options (array of strings): zero or two to five distinct, nonblank options
     (up to eight when multiple is true), each at most 80 characters. No Other or

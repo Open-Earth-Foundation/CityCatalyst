@@ -109,7 +109,7 @@ describe("ChatVisualFrame", () => {
           <ChatVisualFrame
             lng="en"
             title={title}
-            html="<svg></svg><script>alert(1)</script>"
+            html='<svg><rect width="5" height="5"></rect></svg><script>alert(1)</script>'
           />
         </ChakraProvider>,
       ),
@@ -120,7 +120,9 @@ describe("ChatVisualFrame", () => {
     const frame = frames[0];
     expect(frame.getAttribute("sandbox")).toBe("allow-same-origin");
     expect(frame.getAttribute("title")).toBe(title);
-    expect(frame.getAttribute("srcdoc")).toContain("<svg></svg>");
+    expect(frame.getAttribute("srcdoc")).toContain(
+      '<svg><rect width="5" height="5"></rect></svg>',
+    );
     expect(frame.getAttribute("srcdoc")).not.toContain("script");
     expect(container.textContent).toContain("chat-visual-label");
     // The accessible name must carry the raw title, not HTML entities.
@@ -128,6 +130,24 @@ describe("ChatVisualFrame", () => {
       (element) => element.getAttribute("aria-label"),
     );
     expect(labels).toContain(`Expand visual: ${title}`);
+  });
+
+  it("draws only the frame in bare mode, with no header or Expand", async () => {
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <ChatVisualFrame
+            bare
+            lng="en"
+            title="Chart"
+            html='<svg><rect width="5" height="5"></rect></svg>'
+          />
+        </ChakraProvider>,
+      ),
+    );
+    expect(container.querySelector("iframe")).not.toBeNull();
+    expect(container.querySelectorAll("button")).toHaveLength(0);
+    expect(container.textContent).not.toContain("chat-visual-label");
   });
 
   it("fits the inline frame to its loaded content", async () => {
@@ -139,7 +159,7 @@ describe("ChatVisualFrame", () => {
           <ChatVisualFrame
             lng="en"
             title="Chart"
-            html="<svg></svg>"
+            html='<svg><rect width="5" height="5"></rect></svg>'
             onHeightChange={onHeightChange}
           />
         </ChakraProvider>,
@@ -171,7 +191,7 @@ describe("ChatVisualFrame", () => {
     await load(0);
     expect(frame.style.height).toBe("537px");
     await load(2012);
-    expect(frame.style.height).toBe("720px");
+    expect(frame.style.height).toBe("1200px");
     await load(10);
     expect(frame.style.height).toBe("120px");
     container.remove();

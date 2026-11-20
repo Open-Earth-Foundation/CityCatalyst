@@ -1,7 +1,12 @@
-export interface ConceptNoteChatVisual {
-  title: string;
+export interface ConceptNoteChatVisualPanel {
+  label: string;
   html: string;
 }
+
+/** One model-authored HTML visual, or switchable panels drawn as app tabs. */
+export type ConceptNoteChatVisual =
+  | { title: string; html: string; panels?: undefined }
+  | { title: string; panels: ConceptNoteChatVisualPanel[]; html?: undefined };
 
 export interface ConceptNoteChatMessage {
   id: string;
@@ -84,14 +89,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export function readConceptNoteVisual(
   value: unknown,
 ): ConceptNoteChatVisual | null {
-  if (
-    !isRecord(value) ||
-    typeof value.title !== "string" ||
-    typeof value.html !== "string" ||
-    !value.html
-  )
-    return null;
+  if (!isRecord(value) || typeof value.title !== "string") return null;
+  if (Array.isArray(value.panels)) {
+    const panels = readConceptNoteVisualPanels(value.panels);
+    return panels ? { title: value.title, panels } : null;
+  }
+  if (typeof value.html !== "string" || !value.html) return null;
   return { title: value.title, html: value.html };
+}
+
+/** Panels need 2+ entries with a label and HTML; anything else is dropped whole. */
+function readConceptNoteVisualPanels(
+  value: unknown[],
+): ConceptNoteChatVisualPanel[] | null {
+  const panels = value.flatMap((panel) =>
+    isRecord(panel) &&
+    typeof panel.label === "string" &&
+    panel.label.trim() &&
+    typeof panel.html === "string" &&
+    panel.html
+      ? [{ label: panel.label, html: panel.html }]
+      : [],
+  );
+  return panels.length >= 2 && panels.length === value.length ? panels : null;
 }
 
 /** A live render result keeps only the title; the HTML is in the call arguments. */
@@ -105,10 +125,40 @@ export function readConceptNoteToolVisual(
     !isRecord(result.arguments)
   )
     return null;
+  if (result.data.kind === "panels") {
+    // Labels come trimmed from the result, bodies from the call arguments.
+    const labels = result.data.labels;
+    const panels = result.arguments.panels;
+    if (
+      !Array.isArray(labels) ||
+      !Array.isArray(panels) ||
+      labels.length !== panels.length
+    )
+      return null;
+    return readConceptNoteVisual({
+      title: result.data.title,
+      panels: panels.map((panel, index) => ({
+        label: labels[index],
+        html: isRecord(panel) ? panel.html : undefined,
+      })),
+    });
+  }
   return readConceptNoteVisual({
     title: result.data.title,
     html: result.arguments.html,
   });
+}
+
+/** Same title and content; used to skip a re-reported tool call. */
+export function isSameConceptNoteVisual(
+  a: ConceptNoteChatVisual,
+  b: ConceptNoteChatVisual,
+): boolean {
+  return (
+    a.title === b.title &&
+    a.html === b.html &&
+    JSON.stringify(a.panels) === JSON.stringify(b.panels)
+  );
 }
 
 export function readConceptNoteThreadMessages(

@@ -19,11 +19,13 @@ import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWor
 import type { EditController } from "@/components/ConceptNoteWorkspace/document-review";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteChatMessage } from "@/components/ConceptNoteWorkspace/chat-utils";
 
 const sendMessage =
   jest.fn<(content: string, scope?: EditScope) => Promise<void>>();
 const closeGap = jest.fn();
 let isGenerating = false;
+let messages: ConceptNoteChatMessage[] = [];
 const promptI18n = createInstance();
 const t = (key: string, values?: Record<string, unknown>) =>
   key === "gap-answer-request" || key === "gap-answer-complete-request"
@@ -46,7 +48,7 @@ jest.unstable_mockModule(
       isGenerating,
       progress: null,
       reasoning: "",
-      messages: [],
+      messages,
       sendMessage,
       requestDraftOverview: jest.fn(),
     }),
@@ -613,4 +615,95 @@ it("preserves apostrophes, ampersands and source URLs in the plain-text gap answ
   expect(sendMessage.mock.calls[0][0]).toContain(answer);
   expect(sendMessage.mock.calls[0][0]).not.toContain("&#");
   expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");
+});
+
+describe("scrolling to Clima's newest reply", () => {
+  // jsdom has no layout, so the chat column and reply geometry are stubbed.
+  const chatTop = 100;
+  const chatClientHeight = 324;
+  const chatContentHeight = 1000;
+  let replyTop = 0;
+  let scrollTo: jest.Mock<(options: ScrollToOptions) => void>;
+  let originalRect: typeof HTMLElement.prototype.getBoundingClientRect;
+  let requestFrame: jest.SpiedFunction<typeof window.requestAnimationFrame>;
+
+  const rect = (top: number) =>
+    ({
+      top,
+      bottom: top,
+      left: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }) as DOMRect;
+
+  beforeEach(() => {
+    messages = [
+      { id: "question-1", role: "user", text: "Summarise the plan" },
+      { id: "reply-1", role: "assistant", text: "Here is the draft plan." },
+    ];
+    originalRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+      if (this.dataset.testid === "concept-note-chat-scroll") {
+        return rect(chatTop);
+      }
+      if (this.hasAttribute("data-chat-message")) return rect(replyTop);
+      return originalRect.call(this);
+    };
+    Object.defineProperty(HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get(this: HTMLElement) {
+        return this.dataset.testid === "concept-note-chat-scroll"
+          ? chatContentHeight
+          : 0;
+      },
+    });
+    Object.defineProperty(HTMLElement.prototype, "clientHeight", {
+      configurable: true,
+      get(this: HTMLElement) {
+        return this.dataset.testid === "concept-note-chat-scroll"
+          ? chatClientHeight
+          : 0;
+      },
+    });
+    scrollTo = jest.fn<(options: ScrollToOptions) => void>();
+    HTMLElement.prototype.scrollTo = scrollTo;
+    // Run frames synchronously so the scroll happens inside the render's act().
+    requestFrame = jest
+      .spyOn(window, "requestAnimationFrame")
+      .mockImplementation((callback: FrameRequestCallback) => {
+        callback(0);
+        return 0;
+      });
+  });
+
+  afterEach(() => {
+    messages = [];
+    HTMLElement.prototype.getBoundingClientRect = originalRect;
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
+    Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollTo");
+    requestFrame.mockRestore();
+  });
+
+  it("stops at the start of a reply taller than the chat area", async () => {
+    // The reply starts 400px into the content, so it is 600px tall.
+    replyTop = chatTop + 400;
+    await renderPanel();
+
+    // 16px of padding above the reply's top edge.
+    expect(scrollTo).toHaveBeenLastCalledWith({ behavior: "auto", top: 384 });
+  });
+
+  it("follows the bottom while the newest reply fits in the chat area", async () => {
+    // The reply starts 900px into the content, so it is 100px tall.
+    replyTop = chatTop + 900;
+    await renderPanel();
+
+    // Bottom is scrollHeight minus clientHeight: 1000 - 324.
+    expect(scrollTo).toHaveBeenLastCalledWith({ behavior: "auto", top: 676 });
+  });
 });

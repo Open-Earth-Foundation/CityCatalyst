@@ -71,16 +71,22 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      chapter, question, reason, severity, and state, filtered by
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
-   - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
-     chart, diagram, or table (title at most 200 characters, HTML at most
-     200,000) and returns `concept_note.visual.render` with the title and size;
-     the HTML stays only in the call arguments. CityCatalyst strips scripts,
-     links, forms and external resources with DOMPurify and renders the rest in
-     a script-free sandboxed iframe, so a visual cannot send note context out.
-     The SSE `done` event and the stored message keep one copy of the HTML,
-     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
-     replayed history replaces it with a short placeholder. A visual-only turn
-     is saved with empty text.
+   - `concept_note_render_visual(title, html, data)` shows a static HTML document.
+     Charts can use inline SVG, tables use HTML, and independent sections can
+     use native disclosures. Optional data metadata describes the values,
+     units, sources, missing observations, conflicts and calculations.
+     The tool rejects obviously empty documents and limits titles to 200
+     characters and HTML to 200,000 characters.
+   - `concept_note_render_panels(title, panels)` accepts two to six named HTML
+     fragments with distinct labels up to 40 characters and the same combined HTML
+     size limit. The response uses `concept_note.visual.render` with
+     `data.kind = "panels"`. CityCatalyst renders the
+     tab controls and shares the selected panel between the card and Expand.
+     Each body follows the [chat visual rendering policy](#concept-note-chat-visual-rendering-cc-1241).
+   - Successful tool calls are included in the SSE `done` event and restored
+     by `GET /v1/threads/{thread_id}/messages` as `visuals`. HTML is retained
+     in the call arguments and compacted for model-facing replay. A visual-only
+     turn is saved with empty text.
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list
@@ -91,6 +97,47 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chat visual rendering (CC-1241)
+
+The model supplies HTML and inline SVG. CityCatalyst sanitizes the markup and
+displays it in a sandboxed iframe with a restrictive content security policy.
+The sandbox uses `allow-same-origin` so the chat can read the frame document to
+measure its content height and preserve disclosure and radio selection state
+between the inline card and Expand. The same-origin sandbox must remain
+script-free. If generated scripts could run in that frame, they could access
+the parent CityCatalyst document in the user's signed-in session. Running
+arbitrary model scripts would require a separate origin boundary and a narrowly
+scoped messaging contract for sizing and state. See the
+[chat frame implementation](../app/src/components/ConceptNoteWorkspace/chat-visual-frame.tsx).
+
+An empty canvas that relies on JavaScript to draw a chart produces no visible
+output in this renderer. The backend rejects obviously empty visuals and
+identifies any empty panel by label. The prompt asks the model to retry once
+with visible HTML or inline SVG, then answer in text if the retry fails. The
+backend also rejects SVG text that would draw below 11 px in a 320 px column
+(`visual_text_too_small`), naming the affected panels, so the model redraws it
+with a 320-unit viewBox and fonts of at least 12. Mini charts in a 2-column grid
+(viewBox up to 200 wide) are measured at the 140 px width they get on a phone,
+so the model redraws them with a 150-unit viewBox and fonts of at least 13. The
+browser checks the rendered result as well. This catches cases such as saved
+visuals from older conversations and content that its CSS hides completely. If
+the browser finds an empty visual, it shows an unavailable message and lets the
+user ask Clima to show it again.
+
+Native radio, checkbox, select and details controls work in the sandbox without
+scripts. The prompt uses them for sliders, filters and series toggles, with
+every state precomputed from the given data, so the chat never calculates
+anything live.
+
+For richer interaction, the preferred design is trusted CityCatalyst components
+that take validated data and settings from the model. The shipped tab control
+uses this approach for navigation, with sandboxed HTML inside each panel. In the
+local experiment, both a small set of typed components and a general registry of
+controls and views passed the same five interaction scenarios. They added 254
+and 763 input tokens per first call, respectively, relative to the HTML tool.
+That result supports starting with typed components when adding calculators or
+filters. Those controls were prototypes in CC-1241.
 
 ### Concept Note chapter structure
 

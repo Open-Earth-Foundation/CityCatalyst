@@ -325,6 +325,8 @@ class StreamingHandler:
             thread_id=self.thread_id,
             user_id=self.user_id,
             session_factory=self.session_factory,
+            # CNB restores every saved visual; tell its model when some fell out.
+            note_omitted_messages=bool(self.workflow_context.concept_note_run_id),
         )
         if self.workflow_context.concept_note_run_id:
             conversation_history = clean_cnb_history(conversation_history)

@@ -35,8 +35,9 @@ Classify each change:
 - unsupported: the model invented a fact, changed an unrelated fact, lost a
   commitment/caveat, reversed a negation, filled an unknown without support,
   replaced an `[Information needed: ...]` marker with text saying the
-  information is missing, unknown, not provided or undecided, or exceeded the
-  request. Generic "make it clearer" never authorizes those changes.
+  information is missing, unknown, not provided or undecided, replaced a marker
+  with text that does not state everything that marker asks for, or exceeded
+  the request. Generic "make it clearer" never authorizes those changes.
 
 Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and

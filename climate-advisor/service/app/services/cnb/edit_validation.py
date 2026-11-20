@@ -33,10 +33,11 @@ from app.utils.cnb_information_markers import (
 def bind_answer_gap(
     request: EditProposalRequest, chapters: list[WorkspaceChapterSnapshot]
 ) -> list[WorkspaceChapterSnapshot]:
-    """Let a gap-form answer fill only the gap version it answers, when complete.
+    """Check a gap-form answer against the gap version it answers.
 
-    Hiding every other gap makes the existing marker checks reject any other
-    marker removal, so an answer can never close a different gap.
+    A partial answer may not remove any marker, so every gap is hidden from the
+    marker checks. A complete answer may also fill other open gaps that ask for
+    the same information; the planner and the semantic review decide that.
     """
     scope = request.scope
     if scope.gap_id is None:
@@ -58,14 +59,9 @@ def bind_answer_gap(
             "gap_changed",
             "This gap was answered or changed. Reopen it to answer its current version.",
         )
-    kept = [gap] if scope.answer_complete else []
-    return [
-        replace(
-            chapter,
-            gaps=kept if chapter.chapter_id == scope.focused_chapter_id else [],
-        )
-        for chapter in chapters
-    ]
+    if scope.answer_complete:
+        return chapters
+    return [replace(chapter, gaps=[]) for chapter in chapters]
 
 
 def validate_edit_plan(

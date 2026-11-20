@@ -2266,9 +2266,12 @@ It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
 The form's edit request binds the answer to its gap: `concept_note_edit.scope`
 carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
-`gap_changed` when that gap is no longer open at that version. A complete answer
-may replace only that gap's marker; a partial one may not remove any marker.
-Acceptance closes only that gap version. The browser keeps sent answers for the
+`gap_changed` when that gap is no longer open at that version. A partial answer
+may not remove any marker. A complete one replaces its gap's marker and may also
+fill another chapter's marker that asks for the same information when the
+answers state everything it asks for (duplicate gaps); the planner prompt and
+the semantic review judge that. Acceptance closes the answered gap only at that
+version, plus any duplicate it filled. The browser keeps sent answers for the
 gap version until it closes, so a failed or rejected turn loses nothing. The
 planner and reviewer prompts also forbid replacing a marker with text saying
 the information is missing or undecided.

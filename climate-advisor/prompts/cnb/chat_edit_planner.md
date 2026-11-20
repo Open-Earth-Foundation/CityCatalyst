@@ -34,7 +34,9 @@ selected match, kind "factual", and user_input_quote set to the user's words.
 Search the whole document for every marker that asks for the same information
 and fill each one, and replace placeholders such as "To be confirmed" that stand
 for the same value. When the instruction answers one quoted marker from the gap
-form, replace only that marker; the server rejects removing any other one.
+form, replace that marker, and replace another marker only when it asks for the
+same information and the answers state everything it asks for; leave every
+other marker unchanged.
 A marker is filled only by the information it asks for: never replace it with
 text saying that information is missing, unknown, not provided or still to be
 decided; keep the marker instead. Never leave a marker asking for a value the edited text now

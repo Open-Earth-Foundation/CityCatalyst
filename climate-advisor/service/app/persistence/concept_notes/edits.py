@@ -454,8 +454,8 @@ async def resolve_filled_information_gaps(
 ) -> None:
     """Close structured gaps whose accepted grounded edits replace their markers.
 
-    A gap-form answer may close only the gap version it answered, and only when
-    every question was answered; any other removed marker makes the gap stale.
+    A partial gap-form answer closes nothing. A complete one closes its gap only
+    at the version answered, and may close other open gaps it also fills.
     """
     removed = removed_information_markers(before, after)
     if not removed:
@@ -478,8 +478,7 @@ async def resolve_filled_information_gaps(
             gap
             for gap in gaps
             if scope.answer_complete
-            and gap.gap_id == scope.gap_id
-            and gap.version == scope.gap_version
+            and (gap.gap_id != scope.gap_id or gap.version == scope.gap_version)
         ]
     gaps_by_key = {information_marker_key(gap.question): gap for gap in gaps}
     now = datetime.now(UTC)

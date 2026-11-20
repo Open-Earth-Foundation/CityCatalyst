@@ -585,13 +585,15 @@ def bound_scope(**overrides) -> EditScope:
         (bound_scope(), True),
         (bound_scope(answer_complete=False), False),
         (bound_scope(gap_version=2), False),
-        (bound_scope(gap_id=uuid4()), False),
+        # A complete answer to another gap may also fill this one (a duplicate).
+        (bound_scope(gap_id=uuid4()), True),
+        (bound_scope(gap_id=uuid4(), answer_complete=False), False),
     ],
 )
-async def test_a_bound_answer_closes_only_its_complete_current_gap(
+async def test_a_bound_answer_closes_gaps_only_when_complete_and_current(
     workspace, scope, resolves
 ) -> None:
-    """A form answer can never close another gap, a newer version, or a partial one."""
+    """A partial answer closes nothing, and its own gap closes only at that version."""
     [before] = await workspace.list_chapters(run_id=RUN_ID)
     marker = "[Information needed: Confirm the lead partner.]"
     answer = "Lincoln Park Neighborhood Council will lead delivery."
@@ -629,10 +631,8 @@ async def test_a_bound_answer_closes_only_its_complete_current_gap(
     assert after.gaps[0].state == ("resolved" if resolves else "open")
 
 
-async def test_planning_sees_only_the_gap_a_complete_answer_may_fill(
-    workspace,
-) -> None:
-    """Hiding other gaps makes the marker checks reject any other removal."""
+async def test_planning_hides_every_gap_from_a_partial_answer(workspace) -> None:
+    """Hidden gaps make the marker checks reject any marker removal."""
     chapters = await workspace.list_chapters(run_id=RUN_ID)
 
     def request(scope: EditScope | None) -> EditProposalRequest:
@@ -643,8 +643,8 @@ async def test_planning_sees_only_the_gap_a_complete_answer_may_fill(
         )
 
     assert bind_answer_gap(request(None), chapters) is chapters
-    [complete] = bind_answer_gap(request(bound_scope()), chapters)
-    assert [gap.gap_id for gap in complete.gaps] == [GAP_ID]
+    # A complete answer may also fill duplicates; the review judges each one.
+    assert bind_answer_gap(request(bound_scope()), chapters) is chapters
     [partial] = bind_answer_gap(request(bound_scope(answer_complete=False)), chapters)
     assert partial.gaps == []
     with pytest.raises(EditOperationError) as error:

@@ -1,5 +1,5 @@
 /**
- * Converts a result of Mirco's pdf-extraction pipeline (JSON Schema mode) into a
+ * Converts a result of the pdf-extraction pipeline (JSON Schema mode) into a
  * CRVA draft bundle and run stats, with the v0 validation, quote check and dedupe,
  * so scripts/crva-eval/score-run.ts scores it unchanged.
  */
@@ -20,21 +20,21 @@ import type { RunStats } from "../crva-eval/run-adapter";
 import { RISK_ROWS_KEY } from "./groups";
 
 /** One schema array item (`/<fieldId>/<index>`) with the evidence of all its leaves. */
-export interface MircoItem {
+export interface AgenticItem {
   fieldId: string;
   index: number;
   value: unknown;
   evidence: { page: number; quote: string }[];
 }
 
-export interface MircoUsage {
+export interface AgenticUsage {
   promptTokens: number;
   completionTokens: number;
   cachedInputTokens: number;
   reasoningTokens: number;
 }
 
-/** Only the parts of Mirco's result this converter reads; the rest passes through. */
+/** Only the parts of the pipeline's result this converter reads; the rest passes through. */
 const EvidenceSchema = z.object({ pdf_page: z.number(), quote: z.string() });
 const OutcomeSchema = z.object({
   field_id: z.string(),
@@ -74,19 +74,19 @@ function pointerSegments(pointer: string): string[] {
 }
 
 /**
- * Mirco's validator wants an outcome per data leaf (`/C1.1a/0/hazard`), while v0
+ * The pipeline's validator wants an outcome per data leaf (`/C1.1a/0/hazard`), while v0
  * has one value per item, so `found` leaves are grouped by item. Items whose
  * outcomes are all `ambiguous` are not v0 values; they are only counted.
  */
-export function mircoItems(result: unknown): {
-  items: MircoItem[];
+export function agenticItems(result: unknown): {
+  items: AgenticItem[];
   badPointers: number;
   ambiguousItems: number;
 } {
   const parsed = ResultSchema.safeParse(result);
   if (!parsed.success) return { items: [], badPointers: 0, ambiguousItems: 0 };
   const { data } = parsed.data;
-  const items = new Map<string, MircoItem>();
+  const items = new Map<string, AgenticItem>();
   const ambiguous = new Set<string>();
   let badPointers = 0;
   for (const raw of parsed.data.fields) {
@@ -98,7 +98,7 @@ export function mircoItems(result: unknown): {
     const [fieldId, indexText] = segments;
     const index = Number(indexText);
     const list = data[fieldId];
-    // Mirco's validator counts an empty array as a leaf, so an empty field still
+    // The pipeline's validator counts an empty array as a leaf, so an empty field still
     // gets an outcome; it holds no value and is not a v0 drop.
     if (segments.length === 1 && Array.isArray(list) && list.length === 0) {
       continue;
@@ -117,7 +117,7 @@ export function mircoItems(result: unknown): {
       continue;
     }
     const key = `${fieldId}/${index}`;
-    const item: MircoItem = items.get(key) ?? {
+    const item: AgenticItem = items.get(key) ?? {
       fieldId,
       index,
       value: list[index],
@@ -174,9 +174,9 @@ const INVALID: CrvaDroppedValue = {
  * that passes (a short leaf quote, like a hazard name, supports less of the value
  * the judge reads); one drop per failed item.
  */
-export function assembleMircoBundle(input: {
+export function assembleAgenticBundle(input: {
   file: string;
-  items: MircoItem[];
+  items: AgenticItem[];
   badPointers: number;
   ocr: OcrCache;
   extractionModel: string;
@@ -232,7 +232,7 @@ export function assembleMircoBundle(input: {
 }
 
 /** Agents API session usage; unknown or missing keys count as 0. */
-export function mircoUsage(usage: unknown): MircoUsage {
+export function agenticUsage(usage: unknown): AgenticUsage {
   const u = UsageSchema.catch(UsageSchema.parse({})).parse(usage);
   return {
     promptTokens: u.input_tokens,
@@ -242,7 +242,7 @@ export function mircoUsage(usage: unknown): MircoUsage {
   };
 }
 
-export function mircoRunStats(input: {
+export function agenticRunStats(input: {
   run: number;
   envelope: unknown;
   bundle: CrvaDraftBundle | null;
@@ -259,11 +259,11 @@ export function mircoRunStats(input: {
   }).parse(envelope);
   const error =
     env.result == null || bundle === null
-      ? `Mirco result is null (execution_status: ${env.execution_status ?? "unknown"})`
+      ? `Pipeline result is null (execution_status: ${env.execution_status ?? "unknown"})`
       : undefined;
   const kept = error ? null : bundle;
   const turns = (env.repair?.repairs ?? 0) + 1;
-  const usage = mircoUsage(env.usage);
+  const usage = agenticUsage(env.usage);
   const droppedByReason: Record<string, number> = {};
   for (const d of kept?.dropped ?? []) {
     droppedByReason[d.reason] = (droppedByReason[d.reason] ?? 0) + 1;
@@ -353,8 +353,8 @@ type E1Value = {
 export function riskRowItems(input: {
   rows: unknown[];
   fields: unknown[];
-  textItems: MircoItem[];
-}): MircoItem[] {
+  textItems: AgenticItem[];
+}): AgenticItem[] {
   return riskRows(input).items;
 }
 
@@ -366,8 +366,8 @@ export function riskRowItems(input: {
 function riskRows(input: {
   rows: unknown[];
   fields: unknown[];
-  textItems: MircoItem[];
-}): { items: MircoItem[]; bad: number } {
+  textItems: AgenticItem[];
+}): { items: AgenticItem[]; bad: number } {
   const evidence = evidenceByIndex(input.fields, RISK_ROWS_KEY);
   let bad = [...evidence.keys()].filter((i) => i >= input.rows.length).length;
   const groups = new Map<
@@ -410,7 +410,7 @@ function riskRows(input: {
     const [hazard, receptor] = (v?.title ?? "").split("×");
     return `${fold(v?.hazards?.[0] ?? hazard ?? "")}×${fold(v?.affected?.[0] ?? receptor ?? "")}`;
   };
-  const added: MircoItem[] = [];
+  const added: AgenticItem[] = [];
   for (const [key, g] of groups) {
     const levels = `${g.cells.join("; ")}${g.tables.length ? ` (${g.tables.join(", ")})` : ""}`;
     const match = input.textItems.find(
@@ -447,8 +447,8 @@ function riskRows(input: {
 /** Joins the group jobs' results; a failed group (null result) adds nothing. */
 export function mergeGroupResults(
   results: { groupId: string; result: unknown }[],
-): { items: MircoItem[]; badPointers: number; ambiguousItems: number } {
-  const items: MircoItem[] = [];
+): { items: AgenticItem[]; badPointers: number; ambiguousItems: number } {
+  const items: AgenticItem[] = [];
   let badPointers = 0;
   let ambiguousItems = 0;
   for (const { result } of results) {
@@ -459,7 +459,7 @@ export function mergeGroupResults(
       OutcomeSchema.safeParse(raw).data?.field_id.startsWith(
         `/${RISK_ROWS_KEY}`,
       ) ?? false;
-    const own = mircoItems({
+    const own = agenticItems({
       data,
       fields: parsed.data.fields.filter((f) => !isRow(f)),
     });
@@ -480,7 +480,7 @@ export function mergeGroupResults(
 
 /**
  * One envelope for run stats from the group jobs' envelopes: usage summed,
- * repairs summed plus one per extra job (mircoRunStats counts repairs + 1 turns).
+ * repairs summed plus one per extra job (agenticRunStats counts repairs + 1 turns).
  */
 export function mergeEnvelopes(envelopes: unknown[]): {
   result: { data: Record<string, unknown>; fields: unknown[] } | null;
@@ -501,14 +501,14 @@ export function mergeEnvelopes(envelopes: unknown[]): {
       usage: undefined,
     }).parse(e),
   );
-  const usage = parsed.map((e) => mircoUsage(e.usage));
+  const usage = parsed.map((e) => agenticUsage(e.usage));
   const failed = parsed
     .map((e) => e.execution_status ?? "unknown")
     .filter((s) => s !== "completed");
-  const sum = (pick: (u: MircoUsage) => number) =>
+  const sum = (pick: (u: AgenticUsage) => number) =>
     usage.reduce((total, u) => total + pick(u), 0);
   return {
-    // A run missing a field group is not complete: mircoRunStats marks it failed.
+    // A run missing a field group is not complete: agenticRunStats marks it failed.
     result:
       failed.length === 0 && parsed.every((e) => e.result != null)
         ? { data: {}, fields: [] }
@@ -538,9 +538,9 @@ export function mergeEnvelopes(envelopes: unknown[]): {
  * no reference list found (null), the job's items stay.
  */
 export function withReferenceItems(
-  jobItems: MircoItem[],
-  referenceItems: MircoItem[] | null,
-): MircoItem[] {
+  jobItems: AgenticItem[],
+  referenceItems: AgenticItem[] | null,
+): AgenticItem[] {
   if (!referenceItems) return jobItems;
   return [
     ...jobItems.filter((item) => item.fieldId !== "A1.2a"),
@@ -575,9 +575,9 @@ function sameSource(a: unknown, b: unknown): boolean {
  * items stay.
  */
 export function unionReferenceItems(
-  jobItems: MircoItem[],
-  referenceItems: MircoItem[] | null,
-): MircoItem[] {
+  jobItems: AgenticItem[],
+  referenceItems: AgenticItem[] | null,
+): AgenticItem[] {
   if (!referenceItems) return jobItems;
   const extra = jobItems.filter(
     (item) =>

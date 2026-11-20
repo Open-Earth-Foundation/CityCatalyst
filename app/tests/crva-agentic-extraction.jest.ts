@@ -8,20 +8,20 @@ import {
 } from "@/backend/ingest/plugins/ccra/draft-schema";
 import type { OcrCache } from "../scripts/crva-eval/ocr-cache";
 import {
-  assembleMircoBundle,
-  mircoItems,
-  mircoRunStats,
-  mircoUsage,
+  assembleAgenticBundle,
+  agenticItems,
+  agenticRunStats,
+  agenticUsage,
   toV0Value,
-  type MircoItem,
-} from "../scripts/crva-mirco/convert";
+  type AgenticItem,
+} from "../scripts/crva-agentic-extraction/convert";
 import {
   clientArgs,
   convertEnvelope,
   failureNote,
   ocrMismatch,
   parseJobId,
-} from "../scripts/crva-mirco/run-mirco";
+} from "../scripts/crva-agentic-extraction/run-agentic";
 import {
   CRVA_VALUE_RULES,
   CRVA_VALUE_SHAPES,
@@ -32,10 +32,10 @@ import {
   CRVA_GRANULARITY_RULES,
   granularityRules,
   CRVA_ITEM_SCHEMAS,
-  CRVA_MIRCO_SHAPES,
+  CRVA_AGENTIC_SHAPES,
   crvaJsonSchema,
   crvaUserPrompt,
-} from "../scripts/crva-mirco/inputs";
+} from "../scripts/crva-agentic-extraction/inputs";
 
 // Schema JSON is read by path in assertions.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,17 +76,17 @@ describe("crvaJsonSchema", () => {
     ]);
     expect(item.properties.used_for).toEqual({ type: ["string", "null"] });
     expect(schema.properties["A1.2a"].description).toContain('"title"');
-    expect(CRVA_MIRCO_SHAPES["A1.2a"]).not.toBe(CRVA_VALUE_SHAPES["A1.2a"]);
+    expect(CRVA_AGENTIC_SHAPES["A1.2a"]).not.toBe(CRVA_VALUE_SHAPES["A1.2a"]);
   });
 
   it("only A1.2a differs from the v0 shapes", () => {
     for (const id of ids.filter((x) => x !== "A1.2a")) {
-      expect(CRVA_MIRCO_SHAPES[id]).toBe(CRVA_VALUE_SHAPES[id]);
+      expect(CRVA_AGENTIC_SHAPES[id]).toBe(CRVA_VALUE_SHAPES[id]);
     }
   });
 
-  it.each(ids)("%s item keys match CRVA_MIRCO_SHAPES", (id) => {
-    const shape = CRVA_MIRCO_SHAPES[id];
+  it.each(ids)("%s item keys match CRVA_AGENTIC_SHAPES", (id) => {
+    const shape = CRVA_AGENTIC_SHAPES[id];
     const item = CRVA_ITEM_SCHEMAS[id] as JsonObject;
     if (!shape.startsWith("{")) {
       expect(item).toEqual({ type: "string" });
@@ -161,7 +161,7 @@ const HEAT = {
   description: "Las olas de calor afectan a las personas mayores",
 };
 
-describe("mircoItems", () => {
+describe("agenticItems", () => {
   it("groups leaf outcomes into one item per array index", () => {
     const result = {
       data: { "C1.1a": [HEAT], "A1.1": ["Río de la Plata"] },
@@ -175,7 +175,7 @@ describe("mircoItems", () => {
         field("/A2.1a/0", [], "not_found_after_search"),
       ],
     };
-    const { items, badPointers } = mircoItems(result);
+    const { items, badPointers } = agenticItems(result);
     expect(badPointers).toBe(0);
     expect(items).toEqual([
       {
@@ -205,7 +205,7 @@ describe("mircoItems", () => {
         field("/A1.1/5", [[1, "q"]]),
       ],
     };
-    expect(mircoItems(result)).toEqual({
+    expect(agenticItems(result)).toEqual({
       items: [],
       badPointers: 3,
       ambiguousItems: 0,
@@ -213,12 +213,12 @@ describe("mircoItems", () => {
   });
 
   it("returns nothing for a missing result", () => {
-    expect(mircoItems(null)).toEqual({
+    expect(agenticItems(null)).toEqual({
       items: [],
       badPointers: 0,
       ambiguousItems: 0,
     });
-    expect(mircoItems({})).toEqual({
+    expect(agenticItems({})).toEqual({
       items: [],
       badPointers: 0,
       ambiguousItems: 0,
@@ -226,9 +226,9 @@ describe("mircoItems", () => {
   });
 });
 
-describe("assembleMircoBundle", () => {
-  const build = (items: MircoItem[], badPointers = 0) =>
-    assembleMircoBundle({
+describe("assembleAgenticBundle", () => {
+  const build = (items: AgenticItem[], badPointers = 0) =>
+    assembleAgenticBundle({
       file: OCR.file,
       items,
       badPointers,
@@ -274,7 +274,7 @@ describe("assembleMircoBundle", () => {
   });
 
   it("adds invalid_value drops for bad pointers and dedupes values", () => {
-    const item: MircoItem = {
+    const item: AgenticItem = {
       fieldId: "A1.1",
       index: 0,
       value: "Río de la Plata",
@@ -320,7 +320,7 @@ describe("toV0Value", () => {
   });
 
   it("lets an A1.2a item in the new shape pass the v0 checks", () => {
-    const bundle = assembleMircoBundle({
+    const bundle = assembleAgenticBundle({
       file: OCR.file,
       items: [
         {
@@ -347,10 +347,10 @@ describe("toV0Value", () => {
   });
 });
 
-describe("mircoUsage", () => {
+describe("agenticUsage", () => {
   it("maps Agents API usage keys", () => {
     expect(
-      mircoUsage({
+      agenticUsage({
         input_tokens: 100,
         output_tokens: 20,
         input_tokens_details: { cached_tokens: 40 },
@@ -365,7 +365,7 @@ describe("mircoUsage", () => {
   });
 
   it("returns zeros for missing usage", () => {
-    expect(mircoUsage(undefined)).toEqual({
+    expect(agenticUsage(undefined)).toEqual({
       promptTokens: 0,
       completionTokens: 0,
       cachedInputTokens: 0,
@@ -374,9 +374,9 @@ describe("mircoUsage", () => {
   });
 });
 
-describe("mircoRunStats", () => {
+describe("agenticRunStats", () => {
   it("marks a null result as failed", () => {
-    const stats = mircoRunStats({
+    const stats = agenticRunStats({
       run: 1,
       envelope: { result: null, execution_status: "repair_error" },
       bundle: null,
@@ -389,7 +389,7 @@ describe("mircoRunStats", () => {
   });
 
   it("counts turns, OCR pages and values for an ok run", () => {
-    const bundle = assembleMircoBundle({
+    const bundle = assembleAgenticBundle({
       file: OCR.file,
       items: [
         {
@@ -409,7 +409,7 @@ describe("mircoRunStats", () => {
       repair: { repairs: 2 },
       usage: { input_tokens: 10, output_tokens: 3 },
     };
-    const on = mircoRunStats({
+    const on = agenticRunStats({
       run: 1,
       envelope,
       bundle,
@@ -432,7 +432,7 @@ describe("mircoRunStats", () => {
       droppedByReason: { invalid_value: 1 },
       fieldsWithValue: 1,
     });
-    const off = mircoRunStats({
+    const off = agenticRunStats({
       run: 1,
       envelope,
       bundle,
@@ -557,7 +557,7 @@ describe("crvaUserPrompt", () => {
 
 describe("clientArgs", () => {
   const base = {
-    mircoDir: "C:/m",
+    pipelineDir: "C:/m",
     city: "buenos-aires",
     pdf: "C:/r.pdf",
     schema: "C:/s.json",
@@ -566,7 +566,7 @@ describe("clientArgs", () => {
     baseUrl: "http://127.0.0.1:8080",
   };
 
-  it("runs Mirco's client with repair, long timeout and our inputs", () => {
+  it("runs the pdf-extraction client with repair, long timeout and our inputs", () => {
     const args = clientArgs({ ...base, ocrOn: false }).join(" ");
     expect(args).toContain("-m examples.extract");
     expect(args).toContain("--city-pdf C:/r.pdf");
@@ -598,7 +598,7 @@ describe("parseJobId", () => {
 
 describe("review fixes", () => {
   it("keeps the longest passing quote of an item", () => {
-    const bundle = assembleMircoBundle({
+    const bundle = assembleAgenticBundle({
       file: OCR.file,
       items: [
         {
@@ -628,7 +628,7 @@ describe("review fixes", () => {
       data: { "A2.1a": [] },
       fields: [field("/A2.1a", [[1, "La ciudad limita con el Río"]])],
     };
-    expect(mircoItems(result)).toEqual({
+    expect(agenticItems(result)).toEqual({
       items: [],
       badPointers: 0,
       ambiguousItems: 0,
@@ -644,7 +644,7 @@ describe("review fixes", () => {
         field("/A1.1/1", [[1, "La ciudad limita con el Río"]]),
       ],
     };
-    const { items, ambiguousItems } = mircoItems(result);
+    const { items, ambiguousItems } = agenticItems(result);
     expect(items.map((i) => i.index)).toEqual([1]);
     expect(ambiguousItems).toBe(1);
   });

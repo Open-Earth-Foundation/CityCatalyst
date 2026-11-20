@@ -3,7 +3,7 @@
  * per field, by majority vote or union, and writes one harness run file that
  * scripts/crva-eval/score-run.ts scores unchanged. Offline: no agent calls.
  *
- *   npx tsx scripts/crva-mirco/combine.ts --mode vote|union [--min 2] \
+ *   npx tsx scripts/crva-agentic-extraction/combine.ts --mode vote|union [--min 2] \
  *     --out <dir>/run-<n>.json <run-a.json> <run-b.json> [<run-c.json>...]
  *
  * Matching: a field's key (A1.2a name and year; name; hazard × group or sector;

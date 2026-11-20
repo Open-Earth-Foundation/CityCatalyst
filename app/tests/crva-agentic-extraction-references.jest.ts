@@ -5,7 +5,7 @@ import {
   findReferenceEntries,
   mapReferences,
   referenceItems,
-} from "../scripts/crva-mirco/references";
+} from "../scripts/crva-agentic-extraction/references";
 
 const pages = (entries: Record<number, string>) =>
   new Map(Object.entries(entries).map(([p, t]) => [Number(p), t]));

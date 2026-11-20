@@ -8,15 +8,15 @@ import {
   RISK_ROWS_KEY,
   groupJsonSchema,
   groupUserPrompt,
-} from "../scripts/crva-mirco/groups";
-import { CRVA_ITEM_SCHEMAS } from "../scripts/crva-mirco/inputs";
+} from "../scripts/crva-agentic-extraction/groups";
+import { CRVA_ITEM_SCHEMAS } from "../scripts/crva-agentic-extraction/inputs";
 import {
   mergeEnvelopes,
   mergeGroupResults,
   riskRowItems,
   unionReferenceItems,
   withReferenceItems,
-} from "../scripts/crva-mirco/convert";
+} from "../scripts/crva-agentic-extraction/convert";
 
 // Schema JSON is read by path in assertions.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -263,7 +263,7 @@ describe("mergeEnvelopes", () => {
       input_tokens_details: { cached_tokens: 8 },
       output_tokens_details: { reasoning_tokens: 1 },
     });
-    // mircoRunStats counts repairs + 1 turns: 2 jobs with 1 + 0 repairs = 3 turns.
+    // agenticRunStats counts repairs + 1 turns: 2 jobs with 1 + 0 repairs = 3 turns.
     expect(env.repair.repairs).toBe(2);
     expect(env.execution_status).toBe("completed");
   });

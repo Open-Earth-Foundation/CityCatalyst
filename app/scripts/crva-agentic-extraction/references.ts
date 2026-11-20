@@ -5,7 +5,7 @@
  * named under tables and figures. Nothing here reads the gold.
  */
 import { z } from "zod";
-import type { MircoItem } from "./convert";
+import type { AgenticItem } from "./convert";
 
 export interface ReferenceEntry {
   page: number;
@@ -315,8 +315,8 @@ export function referenceItems(
   entries: ReferenceEntry[],
   references: MappedReference[],
   sources: SourceMention[],
-): MircoItem[] {
-  const items: MircoItem[] = entries.map((entry, index) => ({
+): AgenticItem[] {
+  const items: AgenticItem[] = entries.map((entry, index) => ({
     fieldId: "A1.2a",
     index,
     value: { ...references[index], used_for: null },

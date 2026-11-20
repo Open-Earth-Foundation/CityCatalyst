@@ -1,18 +1,18 @@
 /**
- * Runs Mirco's pdf-extraction pipeline once on one CRVA report and saves the run in
+ * Runs the pdf-extraction pipeline once on one CRVA report and saves the run in
  * the harness's run-file shape, so scripts/crva-eval/score-run.ts scores it unchanged.
  * Paid: OpenAI (and Mistral with --ocr-mode on). Never resubmits a job.
  *
- *   npx tsx scripts/crva-mirco/run-mirco.ts --city <slug> --pdf <report.pdf> \
- *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
+ *   npx tsx scripts/crva-agentic-extraction/run-agentic.ts --city <slug> --pdf <report.pdf> \
+ *     --ocr reports/crva-eval/<city>/ocr --pipeline-dir <path to pdf-extraction> \
  *     --ocr-mode on|off [--base-url http://127.0.0.1:8080]
  *
  * Recovery, no submission: add --result <saved /result JSON> [--job-id <id>]
- * [--minutes <wall time>] instead of --mirco-dir to convert a result saved by hand.
+ * [--minutes <wall time>] instead of --pipeline-dir to convert a result saved by hand.
  *
- * Needs Mirco's service running (run-demo.cmd) with gpt-6.1-sol and medium effort,
- * and the inputs from scripts/crva-mirco/inputs.ts.
- * Output: app/reports/crva-eval/<city>/mirco-ocr-<on|off>/<timestamp>/ with
+ * Needs the pdf-extraction service running (run-demo.cmd) with gpt-6.1-sol and medium effort,
+ * and the inputs from scripts/crva-agentic-extraction/inputs.ts.
+ * Output: app/reports/crva-eval/<city>/agentic-extraction-ocr-<on|off>/<timestamp>/ with
  * client.log (job ID), result.json (raw envelope), run-1.json and runs.md.
  */
 import { spawn } from "node:child_process";
@@ -28,16 +28,20 @@ import {
   type RunStats,
 } from "../crva-eval/run-adapter";
 import { redactSecrets } from "../crva-agent/run-stats";
-import { assembleMircoBundle, mircoItems, mircoRunStats } from "./convert";
+import {
+  assembleAgenticBundle,
+  agenticItems,
+  agenticRunStats,
+} from "./convert";
 
 export const MODEL = "gpt-6.1-sol";
 const EFFORT = "medium";
-/** Mirco's client cancels the job at its deadline; 1800 s (its default) can cut a long report. */
+/** The pdf-extraction client cancels the job at its deadline; 1800 s (its default) can cut a long report. */
 const CLIENT_TIMEOUT_S = 7200;
 const MAX_REPAIRS = 3;
 
 export function clientArgs(input: {
-  mircoDir: string;
+  pipelineDir: string;
   city: string;
   pdf: string;
   schema: string;
@@ -85,7 +89,7 @@ function argValue(flag: string, fallback?: string): string {
 export async function checkService(baseUrl: string, ocrOn: boolean) {
   const response = await fetch(`${baseUrl}/v1/config`).catch(() => {
     throw new Error(
-      `Mirco's service is not reachable at ${baseUrl}; start run-demo.cmd first`,
+      `The pdf-extraction service is not reachable at ${baseUrl}; start run-demo.cmd first`,
     );
   });
   const config = (await response.json()) as {
@@ -134,18 +138,18 @@ export function convertEnvelope(input: {
 } {
   const { envelope, ocr, ocrOn, minutes } = input;
   const result = (envelope as { result?: unknown } | null)?.result;
-  const { items, badPointers, ambiguousItems } = mircoItems(result);
+  const { items, badPointers, ambiguousItems } = agenticItems(result);
   const bundle =
     result == null
       ? null
-      : assembleMircoBundle({
+      : assembleAgenticBundle({
           file: ocr.file,
           items,
           badPointers,
           ocr,
           extractionModel: MODEL,
         });
-  const stats = mircoRunStats({
+  const stats = agenticRunStats({
     run: 1,
     envelope,
     bundle,
@@ -200,7 +204,7 @@ async function main() {
     "reports",
     "crva-eval",
     city,
-    `mirco-ocr-${mode}`,
+    `agentic-extraction-ocr-${mode}`,
     stamp,
   );
   const resultPath = path.join(outDir, "result.json");
@@ -215,12 +219,17 @@ async function main() {
     await mkdir(outDir, { recursive: true });
     await copyFile(savedResult, resultPath);
   } else {
-    const mircoDir = path.resolve(argValue("--mirco-dir"));
+    const pipelineDir = path.resolve(argValue("--pipeline-dir"));
     const baseUrl = argValue("--base-url", "http://127.0.0.1:8080");
-    const inputs = path.join(APP_DIR, "reports", "crva-eval", "mirco-inputs");
+    const inputs = path.join(
+      APP_DIR,
+      "reports",
+      "crva-eval",
+      "agentic-extraction-inputs",
+    );
     const schema = path.join(inputs, "crva-v0.schema.json");
     const userPrompt = path.join(inputs, "crva-user-prompt.md");
-    const python = path.join(mircoDir, ".venv", "Scripts", "python.exe");
+    const python = path.join(pipelineDir, ".venv", "Scripts", "python.exe");
     for (const file of [pdf, schema, userPrompt, python]) {
       if (!existsSync(file)) throw new Error(`Not found: ${file}`);
     }
@@ -231,7 +240,7 @@ async function main() {
     const exitCode = await runClient({
       python,
       args: clientArgs({
-        mircoDir,
+        pipelineDir,
         city,
         pdf,
         schema,
@@ -240,7 +249,7 @@ async function main() {
         output: resultPath,
         baseUrl,
       }),
-      cwd: mircoDir,
+      cwd: pipelineDir,
       logPath,
     });
     minutes = Math.round(((Date.now() - started) / 60_000) * 10) / 10;
@@ -271,7 +280,7 @@ async function main() {
         stats,
         warnings: [],
         bundle,
-        mirco: {
+        agentic: {
           jobId,
           ocrOn,
           recovered: savedResult !== null,

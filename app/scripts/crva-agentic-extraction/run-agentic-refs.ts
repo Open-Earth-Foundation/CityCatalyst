@@ -1,5 +1,5 @@
 /**
- * Runs Mirco's pipeline plus our reference pass for A1.2a (references.ts) and saves
+ * Runs the pdf-extraction pipeline plus our reference pass for A1.2a (references.ts) and saves
  * one harness run folder that scripts/crva-eval/score-run.ts scores unchanged.
  * Paid: OpenAI (the agent job(s) and the reference mapping). Never resubmits a job.
  *
@@ -14,17 +14,17 @@
  * --groups (wave 2): five jobs, one per field group (groups.ts), in parallel; the
  * A1 job keeps A1.2a for non-reference sources, and E1 adds risk table rows.
  *
- *   npx tsx scripts/crva-mirco/run-mirco-refs.ts --city <slug> --pdf <report.pdf> \
- *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
+ *   npx tsx scripts/crva-agentic-extraction/run-agentic-refs.ts --city <slug> --pdf <report.pdf> \
+ *     --ocr reports/crva-eval/<city>/ocr --pipeline-dir <path to pdf-extraction> \
  *     [--runs 1-5] [--combine vote|union] [--groups]
  *     [--reference-mode union|replace] [--no-c1-split] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
  *
  * Recovery, no new jobs: --results-dir <run folder> converts the result-<job>.json
  * files there again (after a usage refresh, say), reusing its references.json.
  *
- * Needs Mirco's service running with gpt-6.1-sol and medium effort (OCR off), and
+ * Needs the pdf-extraction service running with gpt-6.1-sol and medium effort (OCR off), and
  * OPENAI_API_KEY in app/.env for the reference mapping (LLM_BASE_URL="").
- * Output: app/reports/crva-eval/<city>/mirco-refs/<timestamp>/ (mirco-groups/ with
+ * Output: app/reports/crva-eval/<city>/agentic-extraction-refs/<timestamp>/ (agentic-extraction-groups/ with
  * --groups) with inputs/<job>.schema.json and .md, client-<job>.log,
  * result-<job>.json, references.json, run-1.json and runs.md. Job IDs are printed;
  * delete the jobs with DELETE /v1/extractions/<id> once their usage is saved.
@@ -40,10 +40,10 @@ import { judgeClientConfig } from "../crva-eval/judge";
 import { APP_DIR, runsTableMarkdown } from "../crva-eval/run-adapter";
 import { redactSecrets } from "../crva-agent/run-stats";
 import {
-  assembleMircoBundle,
+  assembleAgenticBundle,
   mergeEnvelopes,
   mergeGroupResults,
-  mircoRunStats,
+  agenticRunStats,
   unionReferenceItems,
   withReferenceItems,
 } from "./convert";
@@ -70,7 +70,7 @@ import {
   ocrMismatch,
   parseJobId,
   runClient,
-} from "./run-mirco";
+} from "./run-agentic";
 
 function argValue(flag: string, fallback?: string): string {
   const i = process.argv.indexOf(flag);
@@ -85,7 +85,7 @@ export interface RunPlan {
 }
 
 /**
- * How many Mirco jobs to run per report and how to combine them. Default since
+ * How many pipeline jobs to run per report and how to combine them. Default since
  * 2026-11-20: 3 runs, vote 2 of 3. --runs 1 gives one uncombined run (waves up to
  * 2.7); --combine union (2 or 3 runs) is for experiments. Group mode runs once.
  */
@@ -188,7 +188,7 @@ async function main() {
       "reports",
       "crva-eval",
       city,
-      groupsMode ? "mirco-groups" : "mirco-refs",
+      groupsMode ? "agentic-extraction-groups" : "agentic-extraction-refs",
       new Date().toISOString().replace(/[:.]/g, "-"),
     );
   await mkdir(path.join(outDir, "inputs"), { recursive: true });
@@ -207,15 +207,15 @@ async function main() {
   const referencesPath = path.join(outDir, "references.json");
 
   if (!resultsDir) {
-    const mircoDir = path.resolve(argValue("--mirco-dir"));
+    const pipelineDir = path.resolve(argValue("--pipeline-dir"));
     const baseUrl = argValue("--base-url", "http://127.0.0.1:8080");
-    const python = path.join(mircoDir, ".venv", "Scripts", "python.exe");
+    const python = path.join(pipelineDir, ".venv", "Scripts", "python.exe");
     for (const file of [pdf, python]) {
       if (!existsSync(file)) throw new Error(`Not found: ${file}`);
     }
     config = await checkService(baseUrl, false);
     const defaultPrompt = await readFile(
-      path.join(mircoDir, "extractor", "prompts", "user.md"),
+      path.join(pipelineDir, "extractor", "prompts", "user.md"),
       "utf8",
     );
     const started = Date.now();
@@ -254,7 +254,7 @@ async function main() {
         const exitCode = await runClient({
           python,
           args: clientArgs({
-            mircoDir,
+            pipelineDir,
             city,
             pdf,
             schema,
@@ -263,7 +263,7 @@ async function main() {
             output: path.join(outDir, `result-${group.id}.json`),
             baseUrl,
           }),
-          cwd: mircoDir,
+          cwd: pipelineDir,
           logPath,
         });
         const jobId = parseJobId(await readFile(logPath, "utf8"));
@@ -300,11 +300,11 @@ async function main() {
     if (existsSync(previousPath)) {
       const previous = JSON.parse(await readFile(previousPath, "utf8")) as {
         stats?: { minutes?: number };
-        mirco?: { fingerprint?: string | null };
+        agentic?: { fingerprint?: string | null };
       };
       if (!process.argv.includes("--minutes"))
         minutes = previous.stats?.minutes ?? 0;
-      previousFingerprint = previous.mirco?.fingerprint ?? null;
+      previousFingerprint = previous.agentic?.fingerprint ?? null;
     }
     if (existsSync(referencesPath)) {
       references = JSON.parse(await readFile(referencesPath, "utf8"));
@@ -351,7 +351,7 @@ async function main() {
       : referenceMode === "union"
         ? unionReferenceItems(merged.items, fromReferences)
         : withReferenceItems(merged.items, fromReferences);
-    const bundle = assembleMircoBundle({
+    const bundle = assembleAgenticBundle({
       file: ocr.file,
       items,
       badPointers: merged.badPointers,
@@ -359,7 +359,7 @@ async function main() {
       extractionModel: MODEL,
     });
     const envelope = mergeEnvelopes(subset.map((l) => l.envelope));
-    const stats = mircoRunStats({
+    const stats = agenticRunStats({
       run: 1,
       envelope,
       bundle,
@@ -430,7 +430,7 @@ async function main() {
         stats,
         warnings: [],
         bundle,
-        mirco: {
+        agentic: {
           mode: groupsMode ? "groups" : SINGLE,
           referenceMode: groupsMode ? null : referenceMode,
           plan,

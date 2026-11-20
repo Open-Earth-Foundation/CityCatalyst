@@ -1,5 +1,5 @@
 /**
- * Wave 2: one Mirco job per field group instead of one job for all 12 fields, so
+ * Wave 2: one pipeline job per field group instead of one job for all 12 fields, so
  * each job has a smaller output and one topic. Builds each group's JSON Schema and
  * user prompt from the wave 1.5 rules and field guide (inputs.ts).
  */
@@ -12,7 +12,7 @@ import {
   CRVA_DETAIL_RULES,
   CRVA_GRANULARITY_RULES,
   CRVA_ITEM_SCHEMAS,
-  CRVA_MIRCO_SHAPES,
+  CRVA_AGENTIC_SHAPES,
   fieldGuideMarkdown,
 } from "./inputs";
 
@@ -76,7 +76,7 @@ export function groupJsonSchema(
         id,
         {
           type: "array",
-          description: `${CRVA_FIELD_LABELS[id]}. Each item: ${CRVA_MIRCO_SHAPES[id]}${sourcesOnly}`,
+          description: `${CRVA_FIELD_LABELS[id]}. Each item: ${CRVA_AGENTIC_SHAPES[id]}${sourcesOnly}`,
           items: CRVA_ITEM_SCHEMAS[id],
         },
       ];

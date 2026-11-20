@@ -4,7 +4,7 @@ import type {
   CrvaDraftValue,
 } from "@/backend/ingest/plugins/ccra/draft-schema";
 import type { RunStats } from "../scripts/crva-eval/run-adapter";
-import { runPlan } from "../scripts/crva-mirco/run-mirco-refs";
+import { runPlan } from "../scripts/crva-agentic-extraction/run-agentic-refs";
 import {
   clusterValues,
   combineRuns,
@@ -12,7 +12,7 @@ import {
   unionValues,
   valueKey,
   voteValues,
-} from "../scripts/crva-mirco/combine";
+} from "../scripts/crva-agentic-extraction/combine";
 
 const v = (
   fieldId: string,

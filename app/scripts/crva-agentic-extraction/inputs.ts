@@ -1,11 +1,11 @@
 /**
- * Builds the CRVA JSON Schema and user prompt for Mirco's pdf-extraction pipeline
+ * Builds the CRVA JSON Schema and user prompt for the pdf-extraction pipeline
  * from the adapter v0 constants (A1.2a also asks for the title), plus detail and
  * granularity rules and a field guide with Buenos Aires examples.
  *
- *   npx tsx scripts/crva-mirco/inputs.ts --mirco-dir <path to pdf-extraction>
+ *   npx tsx scripts/crva-agentic-extraction/inputs.ts --pipeline-dir <path to pdf-extraction>
  *
- * Output: app/reports/crva-eval/mirco-inputs/crva-v0.schema.json and crva-user-prompt.md.
+ * Output: app/reports/crva-eval/agentic-extraction-inputs/crva-v0.schema.json and crva-user-prompt.md.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -45,12 +45,12 @@ const CAPACITY_FACTOR = objectOf({
  * Value shapes this pipeline asks for: the v0 shapes, except A1.2a, which also asks
  * for the title (the gold keeps it; v0's `name` lost it). convert.ts maps A1.2a back.
  */
-export const CRVA_MIRCO_SHAPES: Record<CrvaFieldId, string> = {
+export const CRVA_AGENTIC_SHAPES: Record<CrvaFieldId, string> = {
   ...CRVA_VALUE_SHAPES,
   "A1.2a": `{"author": string, "title": string, "year": integer or null, "used_for": string or null}. One item per entry of the reference list or data sources.`,
 };
 
-/** JSON Schema of one value per field, mirroring CRVA_MIRCO_SHAPES (pinned by test). */
+/** JSON Schema of one value per field, mirroring CRVA_AGENTIC_SHAPES (pinned by test). */
 export const CRVA_ITEM_SCHEMAS: Record<CrvaFieldId, object> = {
   "A1.1": STRING,
   "A1.2a": objectOf({
@@ -83,7 +83,7 @@ export function crvaJsonSchema(): Record<string, unknown> {
       id,
       {
         type: "array",
-        description: `${CRVA_FIELD_LABELS[id]}. Each item: ${CRVA_MIRCO_SHAPES[id]}`,
+        description: `${CRVA_FIELD_LABELS[id]}. Each item: ${CRVA_AGENTIC_SHAPES[id]}`,
         items: CRVA_ITEM_SCHEMAS[id],
       },
     ]),
@@ -315,7 +315,7 @@ export function fieldGuideMarkdown(
 }
 
 /**
- * Mirco's default user prompt plus the v0 value rules (so the v0 quote check is
+ * The pipeline's default user prompt plus the v0 value rules (so the v0 quote check is
  * fair), the detail and granularity rules, and the field guide.
  */
 export function crvaUserPrompt(
@@ -334,14 +334,19 @@ export function crvaUserPrompt(
 }
 
 async function main() {
-  const i = process.argv.indexOf("--mirco-dir");
-  const mircoDir = i >= 0 ? process.argv[i + 1] : undefined;
-  if (!mircoDir) throw new Error("Missing --mirco-dir");
+  const i = process.argv.indexOf("--pipeline-dir");
+  const pipelineDir = i >= 0 ? process.argv[i + 1] : undefined;
+  if (!pipelineDir) throw new Error("Missing --pipeline-dir");
   const defaultUserPrompt = await readFile(
-    path.join(mircoDir, "extractor", "prompts", "user.md"),
+    path.join(pipelineDir, "extractor", "prompts", "user.md"),
     "utf8",
   );
-  const outDir = path.join(APP_DIR, "reports", "crva-eval", "mirco-inputs");
+  const outDir = path.join(
+    APP_DIR,
+    "reports",
+    "crva-eval",
+    "agentic-extraction-inputs",
+  );
   await mkdir(outDir, { recursive: true });
   await writeFile(
     path.join(outDir, "crva-v0.schema.json"),

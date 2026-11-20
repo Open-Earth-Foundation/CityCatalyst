@@ -17,7 +17,7 @@ from benchmark.cnb.golden_set.judge import judge_example_problems
 from benchmark.cnb.golden_set.models import StageReport, TextUnit
 from benchmark.cnb.golden_set.verification import seed_defects
 from benchmark.cnb.scripts.compare import main as compare_main
-from benchmark.cnb.scripts.mlflow_log import RUN_DESCRIPTION, review_tags
+from benchmark.cnb.scripts.mlflow_log import RUN_DESCRIPTION, golden_rows, review_tags
 
 ROOT = Path(__file__).resolve().parents[2] / "benchmark/cnb"
 
@@ -42,6 +42,30 @@ def test_mlflow_description_distinguishes_quality_failures_from_unavailable_scor
     assert "\n- **Extraction (Unavailable)**" in tags["richfield-flood-risk"][RUN_DESCRIPTION]
     assert tags["krakow-flood-drainage-plan"]["fixture_result"] == "Issues found"
     assert tags["harbor-point-heat-resilience"]["approval_state"] == "unapproved"
+
+
+def test_mlflow_rows_cover_golden_items_only_with_run_stable_inputs():
+    item = {"verdict": "partially_covered", "reason": "Year missing",
+            "output_refs": [{"unit_id": "u", "quote": "2035"}]}
+    fixture = {"fixture_id": "krakow-flood-drainage-plan",
+               "extraction": {"judgment": {"facts": [{**item, "id": "horizon"}],
+                                           "claims": [{**item, "id": "output-dependent"}]}},
+               "chapter_writing": {"judgment": {"chapters": [{**item, "chapter_ref": "budget"}]}},
+               "verification": {"judgment": {"defects": [{"id": "d", "verdict": "detected",
+                                                          "finding_refs": []}]}},
+               "editing": {"judgment": {"cases": [{"case_id": "fill", "changes": [item],
+                   "expected_changes": [{**item, "id": "c", "verdict": "applied"}],
+                   "preserved": [{**item, "id": "p", "verdict": "altered"}]}]}}}
+    rows = golden_rows({"fixtures": [fixture]})
+    assert [row["inputs"]["check"] for row in rows] == [
+        "Kraków · extraction · fact · horizon",
+        "Kraków · chapter writing · chapter · budget",
+        "Kraków · verification · defect · d",
+        "Kraków · editing · fill change · c",
+        "Kraków · editing · fill preserved · p",
+    ]
+    assert rows[0]["outputs"] == {"verdict": "partially_covered", "reason": "Year missing",
+                                  "evidence": ["2035"]}
 
 
 def test_current_answer_key_is_executable_offline():

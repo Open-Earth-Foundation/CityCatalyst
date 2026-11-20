@@ -6,7 +6,8 @@ from the process environment, falling back to climate-advisor/.env for
 MLFLOW_TRACKING_* values without overriding existing variables.
 Inputs on log: report.json, optional delivery.json and comparison.json in RUN_DIR.
 Outputs: readable run descriptions, parent quality/mean metrics, and fixture runs
-with provenance and stage status in Clima-CNB-Benchmark, or verified files in
+with provenance and stage status in Clima-CNB-Benchmark, an MLflow evaluation with
+one row per golden-set item (Evaluation runs → compare to another run), or verified files in
 DIR/runs/<original-run-id>. Logs the parent ID. No benchmark providers are called.
 
 Usage from climate-advisor/:
@@ -58,6 +59,13 @@ SUMMARY_METRICS = {
     ),
     "editing": (("case_pass_rate", "edit cases passed"),),
 }
+# Golden-set judgments with stable IDs; output-dependent claims/findings stay aggregate metrics.
+GOLDEN_ITEMS = {
+    "extraction": (("facts", "fact"), ("topics", "topic")),
+    "chapter_writing": (("facts", "fact"), ("chapters", "chapter"), ("gaps", "gap")),
+    "verification": (("defects", "defect"),),
+}
+PASSING_VERDICTS = {"covered", "satisfied", "flagged", "detected", "applied", "preserved"}
 
 
 def _load_tracking_env() -> None:
@@ -150,6 +158,57 @@ def review_tags(
         "Open **Artifacts → run → report.md** for the detailed checks and reasons.",
     ])
     return description, children
+
+
+def golden_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
+    """One evaluation row per golden-set item; inputs are identical across runs."""
+    rows = []
+    for fixture in report.get("fixtures", []):
+        name = FIXTURE_NAMES.get(fixture["fixture_id"], fixture["fixture_id"])
+        for stage in STAGES:
+            judgment = (fixture.get(stage) or {}).get("judgment") or {}
+            groups = [(kind, judgment.get(key) or []) for key, kind in GOLDEN_ITEMS.get(stage, ())]
+            for case in judgment.get("cases") or []:
+                groups += [(f"{case['case_id']} change", case.get("expected_changes") or []),
+                           (f"{case['case_id']} preserved", case.get("preserved") or [])]
+            for kind, items in groups:
+                for item in items:
+                    refs = item.get("output_refs") or item.get("finding_refs") or []
+                    item_id = item.get("id") or item.get("chapter_ref")
+                    rows.append({
+                        # MLflow pairs rows across runs by identical inputs; one string reads best.
+                        "inputs": {"check": f"{name} · {stage.replace('_', ' ')} · {kind} · {item_id}"},
+                        "outputs": {"verdict": item["verdict"], "reason": item.get("reason", ""),
+                                    "evidence": [ref.get("quote") for ref in refs]},
+                    })
+    return rows
+
+
+def _log_item_evaluation(parent_id: str, experiment_id: str, report: dict[str, Any]) -> None:
+    """Attach golden-set verdicts as an MLflow evaluation for run-to-run comparison.
+
+    No judge is called: scorers only read verdicts already stored in report.json.
+    """
+    import mlflow
+    from mlflow.entities import Feedback
+    from mlflow.genai.scorers import scorer
+
+    rows = golden_rows(report)
+    if not rows:
+        return
+
+    @scorer
+    def passed(outputs: dict[str, Any]) -> Feedback:
+        return Feedback(value=outputs["verdict"] in PASSING_VERDICTS, rationale=outputs["reason"])
+
+    @scorer
+    def verdict(outputs: dict[str, Any]) -> Feedback:
+        return Feedback(value=outputs["verdict"], rationale=outputs["reason"])
+
+    # Traces follow the active experiment, not the run, so both must be set.
+    mlflow.set_experiment(experiment_id=experiment_id)
+    with mlflow.start_run(run_id=parent_id):
+        mlflow.genai.evaluate(data=rows, scorers=[passed, verdict])
 
 
 def _payload(report: dict[str, Any]) -> tuple[
@@ -261,6 +320,8 @@ def log_run_dir(run_dir: Path, *, draft: bool = False) -> str | None:
         run_id = export_run_dir(run_dir, experiment_name=EXPERIMENT, metrics=metrics,
                                 params=params, tags=tags, children=children,
                                 child_tags=child_tags)
+        client = MlflowClient()
+        _log_item_evaluation(run_id, client.get_run(run_id).info.experiment_id, report)
         logger.info("CNB MLflow export completed run_id=%s", run_id)
         return run_id
     except Exception as error:

@@ -40,13 +40,18 @@ def test_confirmation_takes_its_choices_from_the_ui():
         )
 
 
-@pytest.mark.parametrize("count", [0, 5])
-def test_requires_one_to_four_questions(count):
+def test_requires_a_question():
     with pytest.raises(ValidationError):
-        GapQuestionOutput(
-            why_asking="Support needed",
-            questions=[{"question": f"Part {i}?", "options": []} for i in range(count)],
-        )
+        GapQuestionOutput(why_asking="Support needed", questions=[])
+
+
+def test_keeps_the_first_four_questions_instead_of_failing():
+    # Two confirmations plus three open parts once turned the whole set into a 503.
+    output = GapQuestionOutput(
+        why_asking="Support needed",
+        questions=[{"question": f"Part {i}?", "options": []} for i in range(5)],
+    )
+    assert [q.question for q in output.questions] == [f"Part {i}?" for i in range(4)]
 
 
 async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):

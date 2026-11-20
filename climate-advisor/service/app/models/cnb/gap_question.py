@@ -1,5 +1,6 @@
 """Contracts for a focused, read-only set of gap-filling questions."""
 
+import logging
 from typing import Annotated
 from uuid import UUID
 
@@ -11,6 +12,10 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+
+logger = logging.getLogger(__name__)
+
+MAX_QUESTIONS = 4
 
 
 class GapQuestionRequest(BaseModel):
@@ -65,4 +70,19 @@ class GapQuestionOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     why_asking: str = Field(min_length=1, max_length=240)
-    questions: list[GapSubQuestion] = Field(min_length=1, max_length=4)
+    questions: list[GapSubQuestion] = Field(min_length=1, max_length=MAX_QUESTIONS)
+
+    @field_validator("questions", mode="before")
+    @classmethod
+    def keep_first_questions(cls, value: object) -> object:
+        """Trim an over-long set instead of failing it.
+
+        One confirmation per source value can push the model past the limit; a
+        dropped part stays open and is asked again once these are answered.
+        """
+        if isinstance(value, list) and len(value) > MAX_QUESTIONS:
+            logger.info(
+                "Trimmed gap questions from %d to %d", len(value), MAX_QUESTIONS
+            )
+            return value[:MAX_QUESTIONS]
+        return value

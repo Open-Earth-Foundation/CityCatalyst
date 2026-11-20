@@ -28,6 +28,18 @@ questions list. Never repeat an
 already answered question in different words. A part answered "Not decided yet",
 or described in the chapter as not yet decided, confirmed or estimated, is still
 unconfirmed: ask for it again, and ask for it before new follow-up details.
+Some parts cannot be answered yet because the work that produces them does not
+exist: the chapter or earlier answers say a study, assessment, survey, permit
+decision, rating or design is not commissioned, not started, still being
+procured or still pending. Do not ask for that work's findings, values,
+conditions, ratings or specifications, and never offer options that state its
+outcome. Ask instead for what the chapter does not already say about it: its
+expected completion date, the responsible party, its status only when the
+chapter does not state it, and any interim estimate or expected outcome the user
+can already give. Status options must not contradict what the chapter says,
+such as offering "Completed" for work the chapter says has not started. A scale, method or threshold the chapter does not state is unknown: never
+refer to it as if it existed ("using the register's scale") or offer an
+invented one; ask which one will be used or leave the options empty.
 For each question, offer two to five concise, distinct answer categories
 whenever the question allows a meaningful choice. For a financing instrument
 these might be Loan, Grant and Guarantee. Categories are possible user answers,

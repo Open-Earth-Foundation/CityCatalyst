@@ -2257,6 +2257,9 @@ is not in the draft yet (for example when a partial answer got a clarification);
 the model asks only for what they miss and may return no questions when they
 cover the gap. The form sends earlier and new answers together, so a gap with
 more parts than four questions can still be completed over several rounds.
+When the chapter says the work behind a part does not exist yet (a study,
+survey, permit decision, rating or design not commissioned or pending), the
+questions ask for its timing, owner and any interim estimate, never its results.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
 The form's edit request binds the answer to its gap: `concept_note_edit.scope`

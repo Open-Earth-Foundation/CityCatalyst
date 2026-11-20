@@ -140,6 +140,11 @@ def test_labels_match_frontend_translations(ui_locale):
     if not path.exists():
         pytest.skip("Frontend locales are not available in this checkout")
     translations = json.loads(path.read_text(encoding="utf-8"))
+    # The app shows English for keys awaiting translation, so the guide does too.
+    fallback = json.loads(
+        (FRONTEND_LOCALES / "en" / "concept-notes.json").read_text(encoding="utf-8")
+    )
+    translations = {**fallback, **translations}
     expected = {
         name: (
             translations[key].replace("{{format}}", value)

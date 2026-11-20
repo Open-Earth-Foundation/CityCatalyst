@@ -117,11 +117,13 @@ identifies any empty panel by label. The prompt asks the model to retry once
 with visible HTML or inline SVG, then answer in text if the retry fails. The
 backend also rejects SVG text that would draw below 11 px in a 320 px column
 (`visual_text_too_small`), naming the affected panels, so the model redraws it
-with a 320-unit viewBox and fonts of at least 12. The browser checks the
-rendered result as well. This catches cases such as saved visuals from older
-conversations and content that its CSS hides completely. If the browser finds
-an empty visual, it shows an unavailable message and lets the user ask Clima to
-show it again.
+with a 320-unit viewBox and fonts of at least 12. Mini charts in a 2-column grid
+(viewBox up to 200 wide) are measured at the 140 px width they get on a phone,
+so the model redraws them with a 150-unit viewBox and fonts of at least 13. The
+browser checks the rendered result as well. This catches cases such as saved
+visuals from older conversations and content that its CSS hides completely. If
+the browser finds an empty visual, it shows an unavailable message and lets the
+user ask Clima to show it again.
 
 Native radio, checkbox, select and details controls work in the sandbox without
 scripts. The prompt uses them for sliders, filters and series toggles, with

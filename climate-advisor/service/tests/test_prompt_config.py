@@ -295,7 +295,15 @@ def test_cnb_chat_prompt_routes_answer_forms_and_states_visual_limits() -> None:
     )
     assert 'never as zero' in composed
     assert "show each one with its own source side by side" in composed
-    assert '<div style="overflow-x:auto">' in composed
+    assert "overflow-x" not in composed
+    assert "Put each unit once, in the column header" in composed
+    assert "tables that repeat the row label column" in composed
+    assert "Do not write scrolling instructions" in composed
+    assert "Put legends and series keys in HTML below the chart" in composed
+    assert "viewBox width 150 and font-size of at least 13" in composed
+    assert "Category axes, including years used as bar" in composed
+    assert "never call equal steps" in composed
+    assert "(13 in mini charts)" in composed
     assert "Never paste HTML, SVG, or CSS into the text" in composed
 
 

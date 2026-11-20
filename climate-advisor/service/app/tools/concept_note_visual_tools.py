@@ -26,10 +26,10 @@ NO_VISIBLE_CONTENT_HINT = {
 }
 # Shared by the visual and panel tools, which both return visual_text_too_small.
 TEXT_TOO_SMALL_HINT = {
-    "reason": "Some SVG text would be smaller than 11 px in a 320 px chat column.",
-    "next_step": "Use viewBox width 320 and font-size of at least 12 for every SVG "
-    "label, then retry once. If that also fails, do not call the tool again; "
-    "answer in text with the same values.",
+    "reason": "Some SVG text would be smaller than 11 px once drawn in the chat.",
+    "next_step": "Use viewBox width 320 (150 for mini charts in a 2-column grid) "
+    "and font-size of at least 12 (13 in mini charts), then retry once. If that "
+    "also fails, do not call the tool again; answer in text with the same values.",
 }
 
 
@@ -58,18 +58,21 @@ async def concept_note_render_visual(
     It shows in a chat column 340 to 500 px wide that fits up to 1200 px of
     height before scrolling: one fluid column at width 100%, each SVG with
     viewBox width 320 and font-size of at least 12, no fixed widths over 320 px,
-    the key result first, and no vh or 100% heights. Print every exact value
-    with its unit as visible text, not only on hover. Keep tables to 4 columns
-    inline; wrap a wider table alone in `<div style="overflow-x:auto">`. For
-    long lists show the leaders first and the complete list in `<details>`.
+    the key result first, and no vh or 100% heights. Mini charts in a 2-column
+    grid use viewBox width 150 and font-size of at least 13. Print every exact
+    value with its unit as visible text, not only on hover. Put legends in HTML
+    below the chart, not inside the SVG. Tables keep units only in their headers
+    and at most 4 columns; split a wider table into tables that repeat the row
+    label. For long lists show the leaders first and the complete list in
+    `<details>`.
     ALWAYS also reply with a short text answer giving the main result, its
     exact values and the data source; never paste the HTML instead. The visual
     is shown in chat only; it never changes the Concept Note.
     HTML that would show nothing once scripts and external resources are
     removed returns visual_no_visible_content: retry once, then answer in text.
     SVG text under 11 px returns visual_text_too_small with `smallest_text_px`:
-    retry once with viewBox width 320 and font-size of at least 12, then answer
-    in text.
+    retry once with viewBox width 320 (150 for mini charts in a 2-column grid)
+    and font-size of at least 12 (13 in mini charts), then answer in text.
     When the visual shows numbers, pass `data` with every plotted value: its
     unit, its source (document values cite source_index and the page or anchor
     of the concept_note_sources_query excerpt) and its status. Use status

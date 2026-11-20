@@ -99,6 +99,11 @@ _CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 # Style rules whose selector names text, tspan or svg can size SVG text.
 _SVG_TEXT_SELECTOR = re.compile(r"\b(?:text|tspan|svg)\b")
 _SVG_TEXT_ELEMENTS = frozenset({"text", "tspan", "textpath"})
+# Mini charts sit two to a row in the chat, so a phone draws each one about
+# 140 px wide. A top-level viewBox up to 200 wide is treated as a mini chart;
+# wider svgs fill the full column.
+MINI_CHART_MAX_VIEWBOX = 200
+MINI_CHART_PX = 140
 
 
 class _OpenElement(NamedTuple):
@@ -136,15 +141,18 @@ def _viewbox_width(viewbox: str | None) -> float | None:
 
 
 def _rendered_px(size: float, svg_width: float | None, column_px: int) -> float:
-    """Scale a font size by how far its top-level svg shrinks in the column.
+    """Scale a font size by how far its top-level svg shrinks where it is drawn.
 
-    The chat fits an svg to the column, so a viewBox wider than the column
-    shrinks its text by column_px / viewBox width. A narrower viewBox is not
-    enlarged, which matches how the browser draws it.
+    A mini chart (viewBox up to MINI_CHART_MAX_VIEWBOX wide) is drawn
+    MINI_CHART_PX wide. Any other svg fills the column_px wide chat column.
+    Each svg scales by min(1, draw_px / viewBox width). A narrower viewBox is
+    not enlarged here, so this can understate the drawn size but never
+    overstate it.
     """
-    if svg_width is None or svg_width <= column_px:
+    if svg_width is None:
         return size
-    return size * column_px / svg_width
+    draw_px = MINI_CHART_PX if svg_width <= MINI_CHART_MAX_VIEWBOX else column_px
+    return size * min(draw_px, svg_width) / svg_width
 
 
 def _style_default_px(css: str) -> float | None:
@@ -248,8 +256,9 @@ def smallest_svg_text_px(html: str, column_px: int = 320) -> float | None:
     Text takes its size from a font-size attribute or inline style on it or an
     ancestor. Text with no size takes the smallest font-size from <style>
     rules that name text, tspan or svg. Each size is scaled by the shrink
-    factor of its top-level svg in a column_px wide column. Returns None when
-    no SVG text has a known size, so the caller skips the check.
+    factor of its top-level svg: a mini chart (viewBox up to 200 wide) is drawn
+    140 px wide, and any other svg fills a column_px wide column. Returns None
+    when no SVG text has a known size, so the caller skips the check.
     """
     finder = _SmallestSvgTextFinder(column_px)
     finder.feed(html)

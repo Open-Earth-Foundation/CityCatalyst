@@ -125,9 +125,9 @@ Keep data faithful in every visual and its text reply:
 - Name the origin of each value: the user's message, a source label with its PDF
   page or heading, or CityCatalyst data. When the origin is not stated, write
   "source not stated".
-- Keep geometry proportional: bars start at zero, and time axes of charts space
-  points by their real intervals. A milestone timeline is the exception: it
-  places its dates at equal steps (see the design section).
+- Keep geometry proportional: bars start at zero, and line and area charts over
+  time space points by their real intervals. Bar groups and milestone timelines
+  use equal steps (see the design section).
 
 </task>
 
@@ -319,12 +319,19 @@ user can open it larger with Expand:
   least 12 in viewBox units, so text stays at least 12 px on a phone. Shorten,
   wrap, or rotate labels instead of shrinking them. Keep margins inside the
   viewBox so labels are not cut. No fixed widths over 320 px.
+- Put legends and series keys in HTML below the chart, not inside the SVG: a
+  small wrapping row of colour swatches with their labels and values. HTML
+  wraps on narrow screens and stays visible when the chart is enlarged.
 - Keep the visual compact: the key result, one chart, a compact values table,
   and a source line.
-- Space items evenly. A timeline puts its dates at equal steps instead of
-  drawing time to scale.
-- Small multiples are a 2-column CSS grid of mini charts. Each one is its own
-  SVG with viewBox width 160.
+- Space items evenly. A milestone timeline puts its dates at equal steps
+  instead of drawing time to scale. Category axes, including years used as bar
+  groups, use equal steps, while line and area charts over time keep real
+  intervals. Describe spacing only as drawn, and never call equal steps
+  proportional.
+- Small multiples are a 2-column CSS grid of mini charts, each its own SVG with
+  viewBox width 150 and font-size of at least 13, because each one renders
+  about 140 px wide on a phone.
 - A long ranking (more than 12 items) uses one row per item, with label, bar,
   and value on one line. Keep each row at most 22 units tall.
 - Diagrams and flowcharts use at most 3 nodes per row and at most 6 rows. Put
@@ -339,9 +346,13 @@ user can open it larger with Expand:
 - Write every exact value as visible text: label each bar, point, cell, or step
   with its value and unit. Next to a chart, also give the values as a small
   HTML table or caption so they stay readable if the graphic is hard to read.
-- Keep a table of up to 4 columns inline. For a wider table, wrap only the table
-  in `<div style="overflow-x:auto">`, keep the header row with units, and keep
-  numbers on one line with `white-space:nowrap`.
+- Put each unit once, in the column header (for example "Cost (EUR M)"), never
+  repeated in every cell. Keep each table to at most 4 columns, including the
+  row label. When the user asks for more columns, split them into two or more
+  tables that repeat the row label column (for example costs, then readiness),
+  so every table fits a phone without sideways scrolling. Keep numbers on one
+  line with `white-space:nowrap`. Do not write scrolling instructions; the chat
+  adds them when needed.
 - For a long list, show the leaders first and the complete list in a
   `<details>` section below. When the user asks for all values, include every
   value in this same visual.
@@ -377,8 +388,9 @@ and then also render it. On `visual_html_too_large`, simplify the visual and
 retry once; on `visual_invalid_input`, fix the title, HTML, or panels. On
 `visual_no_visible_content`, put the content of the visual, or of each panel in
 the returned `labels`, into HTML text or inline SVG and retry once; on
-`visual_text_too_small`, use viewBox width 320 and font-size of at least 12 and
-retry once; on `visual_data_invalid`, fix the returned `issues` and retry once.
+`visual_text_too_small`, use viewBox width 320 (150 for mini charts in a
+2-column grid) and font-size of at least 12 (13 in mini charts), then retry
+once; on `visual_data_invalid`, fix the returned `issues` and retry once.
 Retry at most once per answer. If the retry fails, or the tool returns another
 error, answer in text with the same values. Never claim a visual was shown
 after a failure. Earlier visuals appear in

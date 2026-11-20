@@ -72,6 +72,15 @@ SMALL_TEXT_SVG = '<svg viewBox="0 0 440 300"><text font-size="11">a</text></svg>
     [
         # 11 px text in a 440-wide viewBox shrinks to 8 px in the 320 px column.
         (SMALL_TEXT_SVG, 8.0),
+        # Mini charts (viewBox up to 200 wide) are drawn 140 px wide instead.
+        (
+            '<svg viewBox="0 0 160 100"><text font-size="11">a</text></svg>',
+            11 * 140 / 160,
+        ),
+        (
+            '<svg viewBox="0 0 150 100"><text font-size="13">a</text></svg>',
+            13 * 140 / 150,
+        ),
         # A 320-wide viewBox is not enlarged or shrunk.
         ('<svg viewBox="0 0 320 200"><g font-size="12"><text>a</text></g></svg>', 12.0),
         # Nested svgs use the top-level scale; the inner viewBox is ignored.
@@ -104,6 +113,7 @@ async def test_tool_rejects_svg_text_below_minimum_with_one_retry_hint() -> None
     assert result["error_code"] == "visual_text_too_small"
     assert result["data"]["smallest_text_px"] == 8.0
     assert "viewBox width 320" in result["data"]["next_step"]
+    assert "150 for mini charts" in result["data"]["next_step"]
     assert "retry once" in result["data"]["next_step"]
 
 

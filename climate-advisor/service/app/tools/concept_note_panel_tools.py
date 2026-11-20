@@ -51,10 +51,13 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     CSS and inline SVG. Scripts, links, forms and external resources are
     removed. Each panel shows in a chat column 340 to 500 px wide: one fluid
     column, no fixed widths over 320 px, each SVG with viewBox width 320 and
-    font-size of at least 12. Combined panel HTML must stay under 200,000
-    characters. `title` is required, at most 200 characters. Never invent
-    numbers: use only data the user gave or the context contains, and keep the
-    user's own wording of each panel's content.
+    font-size of at least 12. Mini charts in a 2-column grid use viewBox width
+    150 and font-size of at least 13. Put legends in HTML below each chart, not
+    inside the SVG. Tables keep units only in their headers and at most 4
+    columns; split a wider table into tables that repeat the row label. Combined
+    panel HTML must stay under 200,000 characters. `title` is required, at most
+    200 characters. Never invent numbers: use only data the user gave or the
+    context contains, and keep the user's own wording of each panel's content.
     For sections the user should open independently (e.g. project phases),
     do not use this tool: call `concept_note_render_visual` with native
     `<details><summary>Phase</summary>...</details>` elements instead.
@@ -64,8 +67,9 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     are removed returns visual_no_visible_content with its `labels`: fix those
     panels and retry once, then answer in text.
     A panel with SVG text under 11 px returns visual_text_too_small with its
-    `labels` and `smallest_text_px`: retry once with viewBox width 320 and
-    font-size of at least 12, then answer in text.
+    `labels` and `smallest_text_px`: retry once with viewBox width 320 (150 for
+    mini charts in a 2-column grid) and font-size of at least 12 (13 in mini
+    charts), then answer in text.
     """
     # Validate the model-supplied payload before the chat renders it.
     title = title.strip()

@@ -695,11 +695,7 @@ describe("scope notes", () => {
 
   it("gives a notation-key row with a total of 0 no value", async () => {
     const result = await notes([
-      noted(
-        "I.1.1",
-        { finalScope: "1" },
-        { totalCO2e: 0, notationKey: "NO" },
-      ),
+      noted("I.1.1", { finalScope: "1" }, { totalCO2e: 0, notationKey: "NO" }),
     ]);
     expect(result.inferredScopeRows?.[0]).toMatchObject({
       gpcRefNo: "I.1.1",
@@ -934,5 +930,101 @@ describe("decisions on held rows (applyReviewedRows)", () => {
     );
     expect(result.rows[0].gpcRefNo).toBe("I.1.1");
     expect(findPendingRows(result)).toHaveLength(1);
+  });
+
+  describe("unconfirmed value or unit", () => {
+    // A document reference with a matching scope: nothing else holds the row.
+    const document = { refSource: "document" };
+    const decideOn = (reviewDecision: string) =>
+      decide({ decisionRef: "I.1.1", reviewDecision });
+
+    it("a row with valueCheck not_found is a value-unconfirmed review row", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, valueCheck: "not_found", page: 4 }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0]).toMatchObject({
+        issue: "value-unconfirmed",
+        page: 4,
+        value: 1710,
+      });
+    });
+
+    it("unitCheck missing wins over valueCheck", () => {
+      const pending = findPendingRows(
+        held("I.1.1", {
+          ...document,
+          valueCheck: "not_found",
+          unitCheck: "missing",
+        }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0].issue).toBe("unit-unconfirmed");
+    });
+
+    it("a reference conflict wins over an unconfirmed unit", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, scope: "2", unitCheck: "missing" }),
+      );
+      expect(pending[0].issue).toBe("reference-conflict");
+    });
+
+    it("a row with yearCheck caption_other is a year-unconfirmed review row", () => {
+      const pending = findPendingRows(
+        held("I.1.1", { ...document, yearCheck: "caption_other", page: 3 }),
+      );
+      expect(pending).toHaveLength(1);
+      expect(pending[0]).toMatchObject({ issue: "year-unconfirmed", page: 3 });
+    });
+
+    it.each([
+      ["valueCheck", { valueCheck: "not_found" }],
+      ["unitCheck", { unitCheck: "missing" }],
+      ["yearCheck", { yearCheck: "caption_other" }],
+    ])("a %s row is pending until kept or skipped", async (_name, check) => {
+      for (const kind of ["keep", "skip"]) {
+        const result = held("I.1.1", { ...document, ...check });
+        expect(findPendingRows(result)).toHaveLength(1);
+        await applyReviewedRows(result, decideOn(kind), "file");
+        expect(findPendingRows(result)).toHaveLength(0);
+        // Keep imports the stored value unchanged.
+        expect(result.rows[0].totalCO2e).toBe(1710);
+      }
+    });
+
+    it.each([
+      // Each would be accepted on another issue: it matches the catalogue scope.
+      ["reclassify", "1", { gpcRefNo: "I.4.4" }],
+      ["correct-scope", null, { scope: "1" }],
+    ])(
+      "ignores a crafted %s on an unconfirmed row",
+      async (kind, scope, extra) => {
+        const result = held("I.1.1", {
+          ...document,
+          scope,
+          valueCheck: "not_found",
+        });
+        await applyReviewedRows(
+          result,
+          decide({
+            decisionRef: "I.1.1",
+            decisionScope: scope,
+            reviewDecision: kind,
+            ...extra,
+          }),
+          "file",
+        );
+        expect(result.rows[0].gpcRefNo).toBe("I.1.1");
+        expect(result.rows[0].review?.decision).toBeNull();
+        expect(findPendingRows(result)).toHaveLength(1);
+      },
+    );
+
+    it("a stored import without the new fields has no new pending rows", () => {
+      expect(findPendingRows(held("I.1.1", document))).toHaveLength(0);
+      expect(
+        findPendingRows(held("I.1.1", { refSource: "inferred" })),
+      ).toHaveLength(0);
+    });
   });
 });

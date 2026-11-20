@@ -1,0 +1,103 @@
+{
+  "schema_version": "citycatalyst.structured-document.1",
+  "annotation_mode": "none",
+  "provider": {
+    "name": "mistral",
+    "requested_model": "mistral-ocr-latest",
+    "returned_model": "mistral-ocr-latest",
+    "payload": {}
+  },
+  "document": {
+    "page_count": 2,
+    "pages": [
+      {
+        "page_index": 0,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "# City GHG Inventory 2021",
+        "blocks": [],
+        "tables": [],
+        "images": []
+      },
+      {
+        "page_index": 1,
+        "dimensions": { "width": 1000, "height": 1400, "dpi": 200 },
+        "header": null,
+        "footer": null,
+        "markdown": "Figure 2: Emissions by sector 2021 (kt CO2e)\n\n[tbl-1.md](tbl-1.md)",
+        "blocks": [
+          {
+            "block_id": "p1-b0",
+            "page_index": 1,
+            "reading_order_index": 0,
+            "provider_type": "caption",
+            "normalized_type": "caption",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "Figure 2: Emissions by sector 2021 (kt CO2e)",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 100,
+              "bottom_right_x": 900,
+              "bottom_right_y": 130
+            },
+            "bbox_norm": { "x0": 0.08, "y0": 0.07, "x1": 0.9, "y1": 0.09 },
+            "related_image_id": null,
+            "related_table_id": null
+          },
+          {
+            "block_id": "p1-b1",
+            "page_index": 1,
+            "reading_order_index": 1,
+            "provider_type": "table",
+            "normalized_type": "table",
+            "hierarchy": {
+              "level": null,
+              "parent_block_id": null,
+              "provenance": "absent"
+            },
+            "content": "[tbl-1.md](tbl-1.md)",
+            "confidence": null,
+            "confidence_metric": null,
+            "bbox_px": {
+              "top_left_x": 80,
+              "top_left_y": 140,
+              "bottom_right_x": 900,
+              "bottom_right_y": 180
+            },
+            "bbox_norm": { "x0": 0.08, "y0": 0.1, "x1": 0.9, "y1": 0.13 },
+            "related_image_id": null,
+            "related_table_id": "tbl-1.md"
+          }
+        ],
+        "tables": [
+          {
+            "table_id": "tbl-1.md",
+            "page_index": 1,
+            "content": "| Sector | 2021 |\n| --- | --- |",
+            "bbox_px": null,
+            "bbox_norm": null
+          }
+        ],
+        "images": []
+      }
+    ],
+    "relationships": [
+      {
+        "id": "rel-p1-p1-b1-p1-b0",
+        "type": "caption_of_table",
+        "from_block_id": "p1-b0",
+        "to_block_id": "p1-b1",
+        "page_index": 1,
+        "provenance": "derived",
+        "rule": "nearest_caption_same_page"
+      }
+    ]
+  }
+}

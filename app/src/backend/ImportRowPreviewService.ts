@@ -43,12 +43,6 @@ function conflictingScope(row: ImportRow): number | null {
 }
 
 /**
- * Why a row needs a user decision, or null. Rows reviewed so far include those
- * already decided, so the list stays on screen and a decision can be changed.
- * Nothing here looks at the wording of a quote: a found quote proves the text
- * exists, so it never clears a row. Only a recorded decision does.
- */
-/**
  * True when the reference the row will be saved under and the scope it will
  * be saved with disagree in the database catalogue. This looks only at the
  * final values, so a per-row override that swaps the reference cannot hide a
@@ -86,11 +80,22 @@ function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
   );
 }
 
+/**
+ * Why a row needs a user decision, or null. Rows reviewed so far include those
+ * already decided, so the list stays on screen and a decision can be changed.
+ * Nothing here looks at the wording of a quote: a found quote proves the text
+ * exists, so it never clears a row. Only a recorded decision does.
+ * A reference conflict comes first; then a unit or value that extraction could
+ * not confirm on the page, even on a reference the document printed.
+ */
 export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
+  if (row.review?.unitCheck === "missing") return "unit-unconfirmed";
+  if (row.review?.valueCheck === "not_found") return "value-unconfirmed";
+  if (row.review?.yearCheck === "caption_other") return "year-unconfirmed";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))
     return "excluded-reference-unconfirmed";

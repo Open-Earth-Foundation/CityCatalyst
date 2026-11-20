@@ -54,7 +54,10 @@
  *       404:
  *         description: Import file not found.
  *       409:
- *         description: The inventory already has data and replaceExisting was not set (error code inventory-has-data).
+ *         description: |
+ *           The inventory already has data and replaceExisting was not set (error code inventory-has-data),
+ *           or rows held for review have no decision yet (error code import-rows-pending). A
+ *           value-unconfirmed, unit-unconfirmed or year-unconfirmed row accepts only keep or skip.
  *       401:
  *         description: Unauthorized.
  */

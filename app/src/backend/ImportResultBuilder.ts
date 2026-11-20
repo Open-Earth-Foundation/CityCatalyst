@@ -50,7 +50,8 @@ export async function applyReviewedRows(
     )
       continue;
     const review = row.review;
-    const heldExcluded = reviewIssue(row) === "excluded-reference-unconfirmed";
+    const issue = reviewIssue(row);
+    const heldExcluded = issue === "excluded-reference-unconfirmed";
     const originalRef = review.suggestedRefNo ?? row.gpcRefNo;
     if (
       decision.decisionRef !== originalRef ||
@@ -64,12 +65,15 @@ export async function applyReviewedRows(
       review.decision = "skip";
       continue;
     }
-    if (
-      !["keep", "reclassify", "correct-scope"].includes(
-        String(decision.reviewDecision),
-      )
-    )
-      continue;
+    // A value, unit or year extraction could not confirm is kept or skipped,
+    // never moved.
+    const allowed =
+      issue === "value-unconfirmed" ||
+      issue === "unit-unconfirmed" ||
+      issue === "year-unconfirmed"
+        ? ["keep"]
+        : ["keep", "reclassify", "correct-scope"];
+    if (!allowed.includes(String(decision.reviewDecision))) continue;
     const chosenRef =
       decision.reviewDecision === "reclassify" &&
       typeof decision.gpcRefNo === "string"

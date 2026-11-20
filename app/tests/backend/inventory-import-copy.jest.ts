@@ -39,3 +39,47 @@ describe("inventory import and download copy", () => {
     );
   });
 });
+
+describe("unit-unconfirmed copy (R25)", () => {
+  const locales = ["en", "de", "es", "fr", "pt"] as const;
+  const keys = [
+    "import-row-issue-unit-unconfirmed",
+    "import-row-issue-unit-unconfirmed-no-page",
+  ];
+  it.each(locales)(
+    "%s names tonnes, kt and kg and a factor of 1,000 without a direction",
+    (locale) => {
+      const strings = JSON.parse(
+        readFileSync(`src/i18n/locales/${locale}/onboarding.json`, "utf8"),
+      );
+      for (const key of keys) {
+        const text: string = strings[key];
+        expect(text).toMatch(/\bkt\b/);
+        expect(text).toMatch(/\bkg\b/);
+        expect(text).toMatch(/1[.,\s ]?000/);
+        // "too small" / "1.000-mal zu klein" / "menor" / "trop petite" assume kt.
+        expect(text).not.toMatch(/too small|zu klein|menor|trop petite/i);
+      }
+      expect(strings[keys[0]]).toContain("{{page}}");
+      expect(strings[keys[1]]).not.toContain("{{page}}");
+    },
+  );
+});
+
+describe("year-unconfirmed copy", () => {
+  it.each(["en", "de", "es", "fr", "pt"] as const)(
+    "%s has both messages, the page only in the first",
+    (locale) => {
+      const strings = JSON.parse(
+        readFileSync(`src/i18n/locales/${locale}/onboarding.json`, "utf8"),
+      );
+      expect(strings["import-row-issue-year-unconfirmed"]).toContain(
+        "{{page}}",
+      );
+      expect(strings["import-row-issue-year-unconfirmed-no-page"]).toBeTruthy();
+      expect(
+        strings["import-row-issue-year-unconfirmed-no-page"],
+      ).not.toContain("{{page}}");
+    },
+  );
+});

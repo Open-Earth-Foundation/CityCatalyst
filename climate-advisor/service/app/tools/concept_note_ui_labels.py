@@ -35,6 +35,9 @@ UI_LABEL_KEYS: dict[str, tuple[str, str | None]] = {
     "continue_export": ("review-continue-export", None),
     "export_pdf": ("export-format", "PDF"),
     "export_docx": ("export-format", "DOCX"),
+    "gap_answer": ("gap-answer-in-chat", None),
+    "gap_source_suggestions": ("gap-source-suggestions", None),
+    "gap_use": ("gap-use-source-suggestion", None),
 }
 
 UI_LABELS: dict[str, dict[str, str]] = {
@@ -64,6 +67,10 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "continue_export": "Continue to export",
         "export_pdf": "Export PDF",
         "export_docx": "Export DOCX",
+        "gap_answer": "Answer in chat",
+        # Not translated in the app yet; the UI shows English.
+        "gap_source_suggestions": "Found in your sources",
+        "gap_use": "Use",
     },
     "de": {
         "chat_input": "Fragen Sie Clima nach diesem Konzeptpapier",
@@ -91,6 +98,10 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "continue_export": "Weiter zum Export",
         "export_pdf": "Export PDF",
         "export_docx": "Export DOCX",
+        "gap_answer": "Antwort im Chat",
+        # Not translated in the app yet; the UI shows English.
+        "gap_source_suggestions": "Found in your sources",
+        "gap_use": "Use",
     },
     "es": {
         "chat_input": "Pregunta a Clima sobre esta nota conceptual",
@@ -118,6 +129,10 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "continue_export": "Continuar con la exportación",
         "export_pdf": "Exportar PDF",
         "export_docx": "Exportar DOCX",
+        "gap_answer": "Responde en el chat",
+        # Not translated in the app yet; the UI shows English.
+        "gap_source_suggestions": "Found in your sources",
+        "gap_use": "Use",
     },
     "fr": {
         "chat_input": "Demander à Clima à propos de cette note conceptuelle",
@@ -145,6 +160,10 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "continue_export": "Continuer l'exportation",
         "export_pdf": "Exporter PDF",
         "export_docx": "Exporter DOCX",
+        "gap_answer": "Réponse dans le chat",
+        # Not translated in the app yet; the UI shows English.
+        "gap_source_suggestions": "Found in your sources",
+        "gap_use": "Use",
     },
     "pt": {
         "chat_input": "Pergunte ao Clima sobre esta nota conceitual",
@@ -172,6 +191,10 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "continue_export": "Continue a exportar",
         "export_pdf": "Exportar PDF",
         "export_docx": "Exportar DOCX",
+        "gap_answer": "Responda no chat",
+        # Not translated in the app yet; the UI shows English.
+        "gap_source_suggestions": "Found in your sources",
+        "gap_use": "Use",
     },
 }
 

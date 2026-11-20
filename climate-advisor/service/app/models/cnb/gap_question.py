@@ -3,7 +3,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 
 class GapQuestionRequest(BaseModel):
@@ -22,12 +29,17 @@ class GapSubQuestion(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    question: str = Field(min_length=1, max_length=160)
+    # The prompt asks for 160; the margin keeps one long question from failing the set.
+    question: str = Field(min_length=1, max_length=240)
     options: list[
         Annotated[
             str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)
         ]
     ] = Field(max_length=5)
+    # A document type or office that usually holds the answer, never a citation.
+    where_to_find: str = Field(default="", max_length=200)
+    # The UI shows its own "still correct" and "changed, enter the value" choices.
+    confirms: bool = False
 
     @field_validator("options")
     @classmethod
@@ -38,6 +50,13 @@ class GapSubQuestion(BaseModel):
         ):
             raise ValueError("Use no options or two to five distinct options")
         return value
+
+    @model_validator(mode="after")
+    def validate_confirmation(self) -> "GapSubQuestion":
+        """A confirmation's choices come from the UI, so it carries none."""
+        if self.confirms and self.options:
+            raise ValueError("A confirmation question has no options")
+        return self
 
 
 class GapQuestionOutput(BaseModel):

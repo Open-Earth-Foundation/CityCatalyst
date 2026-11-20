@@ -1,4 +1,5 @@
 import ECRFImportService, {
+  supersedeParentsWithChildren,
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
 import FileParserService from "@/backend/FileParserService";
@@ -82,7 +83,9 @@ export async function applyReviewedRows(
         : review.scope;
     const mapping = await ECRFImportService.lookupGPCReference(chosenRef);
     if (!mapping) continue;
-    const catalogueScope = await db.models.Scope.findByPk(mapping.scopeId);
+    const catalogueScope = mapping.scopeId
+      ? await db.models.Scope.findByPk(mapping.scopeId)
+      : null;
     const expected = scopeFromLabel(catalogueScope?.scopeName) ?? null;
     // A held excluded row has no scope conflict to correct, so a reclassify
     // takes the target reference's own scope.
@@ -129,7 +132,7 @@ export async function applyReviewedRows(
     row.sectorId = mapping.sectorId;
     row.subsectorId = mapping.subsectorId;
     row.subcategoryId = mapping.subcategoryId;
-    row.scopeId = scope?.scopeId ?? mapping.scopeId;
+    row.scopeId = scope?.scopeId ?? mapping.scopeId ?? "";
     review.suggestedRefNo = originalRef;
     review.finalScope =
       normalizedScope == null
@@ -139,6 +142,8 @@ export async function applyReviewedRows(
     review.decision = decision.reviewDecision as
       "keep" | "reclassify" | "correct-scope";
   }
+  // A reclassify can move a child into or out of a subsector (CC-1311).
+  supersedeParentsWithChildren(result.rows, result.warnings);
 }
 
 // Fields a user may correct per row on PDF/AI-extracted imports.

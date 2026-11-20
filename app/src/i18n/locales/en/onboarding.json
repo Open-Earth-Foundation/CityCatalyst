@@ -335,6 +335,8 @@
   "import-row-issue-direction-unconfirmed": "Needs your decision before the import can finish.",
   "import-row-issue-reference-conflict": "The document states this reference, but other data on the row disagrees.",
   "import-row-issue-skipped-in-review": "Skipped in the review.",
+  "import-row-issue-gpc-parent-superseded": "Subsector total replaced by its {{childrenCount}} detailed rows (they sum {{childrenSum}} t CO2e).",
+  "import-row-issue-gpc-parent-gap": "Subsector total of {{parentValue}} t CO2e replaced by its {{childrenCount}} detailed rows, which sum {{childrenSum}} t CO2e ({{gap}} t apart). Check for missing rows.",
   "import-row-issue-excluded-reference-unconfirmed": "Left out of BASIC and BASIC+ totals, but the row looks like energy use or losses. Needs your decision before the import can finish.",
   "import-row-issue-reported-apart-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals.",
   "not-specified": "Not specified",

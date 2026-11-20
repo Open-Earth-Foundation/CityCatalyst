@@ -161,6 +161,32 @@ it("shows each rejected row with its source, status and reason", () => {
   ]);
 });
 
+it("shows the parent value, children sum and gap of a superseded subsector", () => {
+  preview = {
+    totalRows: 2,
+    importedRows: 1,
+    skippedRows: 1,
+    skippedByIssue: { "gpc-parent-gap": 1 },
+    rows: [
+      outcome(2, {
+        gpcRefNo: "I.3",
+        issue: "gpc-parent-gap",
+        parentSuperseded: {
+          parentValue: 500,
+          childrenSum: 300,
+          childrenCount: 1,
+          gap: 200,
+        },
+      }),
+    ],
+  };
+  render({});
+  const reason = container.querySelector("tbody tr td:last-child")?.textContent;
+  expect(reason).toBe(
+    'import-row-issue-gpc-parent-gap:{"notationKey":null,"parentValue":"500","childrenSum":"300","childrenCount":1,"gap":"200"}',
+  );
+});
+
 it("collapses long lists until the user asks for all rows", () => {
   preview = {
     totalRows: 12,

@@ -445,7 +445,9 @@ export default class InventoryImportService {
       if (!row.errors?.length) continue;
       skippedRows++;
       for (const message of row.errors) {
-        warnings.push(`Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${message}`);
+        warnings.push(
+          `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${message}`,
+        );
       }
     }
 
@@ -562,6 +564,11 @@ export default class InventoryImportService {
                 inventoryValue = await existingValue.update(
                   {
                     co2eq: accumulatedCo2eq,
+                    // Rows merged into one value stay out of the total only
+                    // when every one of them is marked excluded.
+                    omitFromTotal:
+                      existingValue.omitFromTotal === true &&
+                      row.omitFromTotal === true,
                     co2eqYears: 100, // Default value
                     unavailableReason: null,
                     unavailableExplanation: null,
@@ -592,13 +599,11 @@ export default class InventoryImportService {
                     subCategoryId: row.subcategoryId ?? undefined,
                     co2eq: co2eqBigInt,
                     co2eqYears: 100, // Default value
+                    omitFromTotal: row.omitFromTotal === true,
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
                     ...(options?.sourceDocumentId
-                      ? withIncomingSourceDocument(
-                          {},
-                          options.sourceDocumentId,
-                        )
+                      ? withIncomingSourceDocument({}, options.sourceDocumentId)
                       : {}),
                   },
                   { transaction: rowTransaction },

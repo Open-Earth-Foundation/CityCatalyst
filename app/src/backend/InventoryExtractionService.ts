@@ -117,6 +117,8 @@ export type ExtractedRow = {
   originalScope?: string | null;
   category: string | null;
   totalCO2e: number | null;
+  /** Stored but left out of the inventory total (the source marks it excluded). */
+  omitFromTotal?: boolean;
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;

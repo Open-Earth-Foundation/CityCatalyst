@@ -8,7 +8,11 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
 )
-from app.models.cnb.concept_note_edits import EditChange
+from app.models.cnb.concept_note_edits import (
+    EditChange,
+    EditProposalRequest,
+    EditScope,
+)
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
@@ -19,6 +23,7 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGapResolution,
 )
 from app.persistence.concept_notes.edits import (
+    EditOperationError,
     append_revision,
     resolve_filled_information_gaps,
 )
@@ -26,6 +31,7 @@ from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
 )
+from app.services.cnb.edit_validation import bind_answer_gap
 from sqlalchemy import DefaultClause, delete, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -559,3 +565,93 @@ async def test_source_revalidation_rejects_marker_gap_mismatch(workspace) -> Non
 
     [chapter] = await workspace.list_chapters(run_id=RUN_ID)
     assert chapter.revision_number == 1
+
+
+def bound_scope(**overrides) -> EditScope:
+    """A gap-form answer to the fixture gap's first version."""
+    values = {
+        "focused_chapter_id": CHAPTER_ID,
+        "gap_id": GAP_ID,
+        "gap_version": 1,
+        "answer_complete": True,
+    }
+    return EditScope(**{**values, **overrides})
+
+
+@pytest.mark.parametrize(
+    ("scope", "resolves"),
+    [
+        (None, True),
+        (bound_scope(), True),
+        (bound_scope(answer_complete=False), False),
+        (bound_scope(gap_version=2), False),
+        (bound_scope(gap_id=uuid4()), False),
+    ],
+)
+async def test_a_bound_answer_closes_only_its_complete_current_gap(
+    workspace, scope, resolves
+) -> None:
+    """A form answer can never close another gap, a newer version, or a partial one."""
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    marker = "[Information needed: Confirm the lead partner.]"
+    answer = "Lincoln Park Neighborhood Council will lead delivery."
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=before.body_markdown.index(marker),
+        before=marker,
+        after=answer,
+        kind="factual",
+        group_id="lead_partner",
+        user_input_quote=answer,
+    )
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        resolve = resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before.body_markdown,
+            after=before.body_markdown.replace(marker, answer),
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=scope,
+        )
+        if resolves:
+            await resolve
+        else:
+            with pytest.raises(EditOperationError) as error:
+                await resolve
+            assert error.value.code == "stale_gap"
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert after.gaps[0].state == ("resolved" if resolves else "open")
+
+
+async def test_planning_sees_only_the_gap_a_complete_answer_may_fill(
+    workspace,
+) -> None:
+    """Hiding other gaps makes the marker checks reject any other removal."""
+    chapters = await workspace.list_chapters(run_id=RUN_ID)
+
+    def request(scope: EditScope | None) -> EditProposalRequest:
+        return EditProposalRequest(
+            instruction="Lead partner: Lincoln Park Neighborhood Council.",
+            scope=scope or EditScope(),
+            idempotency_key=uuid4(),
+        )
+
+    assert bind_answer_gap(request(None), chapters) is chapters
+    [complete] = bind_answer_gap(request(bound_scope()), chapters)
+    assert [gap.gap_id for gap in complete.gaps] == [GAP_ID]
+    [partial] = bind_answer_gap(request(bound_scope(answer_complete=False)), chapters)
+    assert partial.gaps == []
+    with pytest.raises(EditOperationError) as error:
+        bind_answer_gap(request(bound_scope(gap_version=2)), chapters)
+    assert error.value.code == "gap_changed"
+
+
+def test_a_bound_answer_names_its_chapter_and_version() -> None:
+    with pytest.raises(ValueError, match="gap_id requires"):
+        EditScope(gap_id=GAP_ID, gap_version=1)

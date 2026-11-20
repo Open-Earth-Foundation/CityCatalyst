@@ -34,7 +34,8 @@ interface GapAnswerFormProps {
   answerLimit: number;
   /**
    * complete is true when every question has a substantive answer. Returns
-   * false when the request is too long to send, so the form keeps the answers.
+   * false when the request is too long to send. Sent answers stay saved for
+   * this gap version until it closes, so a failed or rejected turn loses nothing.
    */
   onAnswer: (answer: string, complete: boolean) => boolean;
   onClose: () => void;
@@ -54,7 +55,7 @@ interface GapQuestion {
   }[];
 }
 
-/** Unsent answers, kept for the browser session so leaving the form loses nothing. */
+/** Answers kept for the browser session until their gap version closes. */
 interface GapDraft {
   question: GapQuestion | null;
   choices: Record<number, string>;
@@ -244,9 +245,7 @@ export function GapAnswerForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (disabled || loading || !answered) return;
-        const sent = onAnswer(answerText, complete);
-        setTooLong(!sent);
-        if (sent) saveDraft(draftKey, null);
+        setTooLong(!onAnswer(answerText, complete));
       }}
     >
       <VStack align="stretch" gap={3}>

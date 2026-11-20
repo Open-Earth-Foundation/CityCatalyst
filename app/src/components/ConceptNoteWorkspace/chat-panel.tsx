@@ -405,9 +405,15 @@ export function ConceptNoteChatPanel({
       },
     );
     if (content.length > EDIT_INSTRUCTION_MAX_CHARS) return false;
+    const { gap } = gapAnswer.row;
     const scope: EditScope = {
       kind: "auto",
       focused_chapter_id: gapAnswer.chapterId,
+      ...(gap && {
+        gap_id: gap.gap_id,
+        gap_version: gap.version,
+        answer_complete: complete,
+      }),
     };
     onCloseGap();
     onOpenDraft?.();

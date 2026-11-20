@@ -40,6 +40,20 @@ class EditScope(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     kind: Literal["auto"] = "auto"
     focused_chapter_id: UUID | None = None
+    # A gap-form answer is bound to the gap version the user answered; only a
+    # complete answer may replace that gap's marker and close it.
+    gap_id: UUID | None = None
+    gap_version: PositiveInt | None = None
+    answer_complete: bool = False
+
+    @model_validator(mode="after")
+    def validate_gap_binding(self) -> EditScope:
+        """A bound answer must name the chapter and version it answers."""
+        if self.gap_id is not None and (
+            self.focused_chapter_id is None or self.gap_version is None
+        ):
+            raise ValueError("gap_id requires focused_chapter_id and gap_version")
+        return self
 
 
 class EditProposalRequest(BaseModel):

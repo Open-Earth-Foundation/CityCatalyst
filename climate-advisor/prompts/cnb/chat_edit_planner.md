@@ -33,7 +33,11 @@ replace the whole marker with a sentence that states the supplied fact, using a
 selected match, kind "factual", and user_input_quote set to the user's words.
 Search the whole document for every marker that asks for the same information
 and fill each one, and replace placeholders such as "To be confirmed" that stand
-for the same value. Never leave a marker asking for a value the edited text now
+for the same value. When the instruction answers one quoted marker from the gap
+form, replace only that marker; the server rejects removing any other one.
+A marker is filled only by the information it asks for: never replace it with
+text saying that information is missing, unknown, not provided or still to be
+decided; keep the marker instead. Never leave a marker asking for a value the edited text now
 states, and never add the value next to a marker that still asks for it. Each
 marker asks for one thing; when the user's words answer only part of a marker's
 question, leave that marker and its chapter unchanged and, if nothing else was

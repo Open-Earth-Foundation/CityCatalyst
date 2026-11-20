@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 from collections.abc import Sequence
+from dataclasses import replace
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -27,6 +28,44 @@ from app.utils.cnb_information_markers import (
     marker_replacement_text,
     removed_information_markers,
 )
+
+
+def bind_answer_gap(
+    request: EditProposalRequest, chapters: list[WorkspaceChapterSnapshot]
+) -> list[WorkspaceChapterSnapshot]:
+    """Let a gap-form answer fill only the gap version it answers, when complete.
+
+    Hiding every other gap makes the existing marker checks reject any other
+    marker removal, so an answer can never close a different gap.
+    """
+    scope = request.scope
+    if scope.gap_id is None:
+        return chapters
+    gap = next(
+        (
+            gap
+            for chapter in chapters
+            if chapter.chapter_id == scope.focused_chapter_id
+            for gap in chapter.gaps
+            if gap.gap_id == scope.gap_id
+        ),
+        None,
+    )
+    if gap is None or gap.state not in {"open", "caveat"} or (
+        gap.version != scope.gap_version
+    ):
+        raise EditOperationError(
+            "gap_changed",
+            "This gap was answered or changed. Reopen it to answer its current version.",
+        )
+    kept = [gap] if scope.answer_complete else []
+    return [
+        replace(
+            chapter,
+            gaps=kept if chapter.chapter_id == scope.focused_chapter_id else [],
+        )
+        for chapter in chapters
+    ]
 
 
 def validate_edit_plan(

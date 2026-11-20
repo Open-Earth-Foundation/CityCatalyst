@@ -399,9 +399,13 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
   expect(content).toContain(gapAnswer.row.question);
   expect(content).not.toContain("investment-plan");
   expect(content).not.toContain("grant-application");
+  // A partial answer is bound to its gap version but may not close the gap.
   expect(scope).toEqual({
     kind: "auto",
     focused_chapter_id: "financing-chapter",
+    gap_id: "financing-gap",
+    gap_version: 1,
+    answer_complete: false,
   });
   expect(closeGap).toHaveBeenCalledTimes(1);
 });
@@ -502,7 +506,11 @@ it("asks Clima to replace the gap marker once every question is answered", async
   await writeAnswer(1, "EUR 2 million");
   expect(container.textContent).toContain("gap-complete-hint");
   await act(async () => previewButton().click());
-  const [content] = sendMessage.mock.calls[0];
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(scope).toMatchObject({
+    gap_id: "financing-gap",
+    answer_complete: true,
+  });
   expect(content).toContain(
     "My answers:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
   );
@@ -542,10 +550,23 @@ it("leaves the gap untouched when answered later and restores the answers on ret
     )!.value,
   ).toBe("EUR 2 million");
 
-  // A sent answer clears the draft, so the next visit starts fresh.
+  // A sent answer stays saved, so a failed or rejected turn loses nothing.
   await act(async () => previewButton().click());
+  expect(sendMessage).toHaveBeenCalledTimes(1);
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(fetchQuestion).toHaveBeenCalledTimes(1);
+  expect(
+    subQuestion(1).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toBe("EUR 2 million");
+
+  // A closed gap gets a new version, which starts fresh.
+  const nextVersion = structuredClone(gapAnswer);
+  nextVersion.row.gap!.version = 2;
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", nextVersion);
   expect(fetchQuestion).toHaveBeenCalledTimes(2);
 });
 

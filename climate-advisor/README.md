@@ -2249,6 +2249,14 @@ asks for a confirmed value again. A reply with more than 4 questions is trimmed 
 the first 4 instead of failing; the dropped parts stay open for the next round.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
+The form's edit request binds the answer to its gap: `concept_note_edit.scope`
+carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
+`gap_changed` when that gap is no longer open at that version. A complete answer
+may replace only that gap's marker; a partial one may not remove any marker.
+Acceptance closes only that gap version. The browser keeps sent answers for the
+gap version until it closes, so a failed or rejected turn loses nothing. The
+planner and reviewer prompts also forbid replacing a marker with text saying
+the information is missing or undecided.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

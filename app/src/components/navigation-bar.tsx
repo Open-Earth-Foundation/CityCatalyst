@@ -51,7 +51,7 @@ import { useTheme } from "next-themes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getCityHomePath } from "@/util/routes";
+import { getCityHomePath, getLocalizedPath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 import { getParamValue } from "@/util/helpers";
@@ -125,7 +125,12 @@ export function NavigationBar({
     await i18next.changeLanguage(language);
 
     const currentPath = pathname || location.pathname;
-    const newPath = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, `/${language}`);
+    const newPath = getLocalizedPath(
+      currentPath,
+      language,
+      location.search,
+      location.hash,
+    );
     router.replace(newPath);
     router.refresh();
   };

@@ -1,0 +1,8 @@
+{
+  "name": "crva-agent-prototype",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@openai/agents": "0.22.0"
+  }
+}

@@ -1,0 +1,129 @@
+// The only file that imports the Agents SDK (installed in this folder only).
+import { readFile, readdir } from "node:fs/promises";
+import path from "node:path";
+import {
+  MaxTurnsExceededError,
+  RunContext,
+  run,
+  setTracingDisabled,
+} from "@openai/agents";
+import {
+  Capabilities,
+  Manifest,
+  SandboxAgent,
+  dir,
+  file,
+} from "@openai/agents/sandbox";
+// The Docker client ships in the "local" export, next to the Unix-local one (unused).
+import { DockerSandboxClient } from "@openai/agents/sandbox/local";
+import { agentInstructions, type Variant } from "./instructions";
+import { cachedInputTokens, type AgentRunResult } from "./run-stats";
+
+export const SANDBOX_IMAGE = "crva-agent-sandbox:1";
+const OUTPUT_PATH = "output/values.jsonl";
+
+type Entry = ReturnType<typeof dir> | ReturnType<typeof file>;
+
+/**
+ * The host workspace as inline entries. localDir/localFile only accept sources under
+ * process.cwd() or an extraPathGrants bind mount, so the content is read here instead.
+ */
+async function readEntries(hostDir: string): Promise<Record<string, Entry>> {
+  const entries: Record<string, Entry> = {};
+  for (const entry of await readdir(hostDir, { withFileTypes: true })) {
+    const hostPath = path.join(hostDir, entry.name);
+    entries[entry.name] = entry.isDirectory()
+      ? dir({ children: await readEntries(hostPath) })
+      : file({ content: await readFile(hostPath) });
+  }
+  return entries;
+}
+
+/**
+ * One SandboxAgent run in a fresh Docker container holding a copy of `workspaceDir`.
+ * Paid: model calls go to api.openai.com with OPENAI_API_KEY. A max-turns or timeout cap
+ * comes back as `error`; any other failure throws. The container is removed afterwards.
+ */
+export async function runAgent(input: {
+  variant: Variant;
+  workspaceDir: string;
+  pageCount: number;
+  model: string;
+  maxTurns: number;
+  timeoutMs: number;
+}): Promise<AgentRunResult> {
+  // No trace upload: run content (report text, tool output) stays off the OpenAI platform.
+  setTracingDisabled(true);
+  // The manifest lives on the session; the agent gets none, so the SDK applies no delta.
+  // Only the model name is passed: role crva_extraction sets no temperature or reasoning
+  // settings in app/llm_config.yaml. If one is added, map it into modelSettings to keep
+  // parity with v0.
+  const agent = new SandboxAgent({
+    name: "crva-extractor",
+    model: input.model,
+    instructions: agentInstructions(input.variant, input.pageCount),
+    capabilities: Capabilities.default(),
+  });
+  let toolCalls = 0;
+  agent.on("agent_tool_start", () => {
+    toolCalls += 1;
+  });
+  // A RunContext we hold keeps the usage even when run() throws.
+  const context = new RunContext();
+  // Everything that can throw is built before the container exists, so nothing leaks it.
+  const workspace = new Manifest({
+    entries: await readEntries(input.workspaceDir),
+  });
+
+  // Default archiveLimits (1 GiB input, 4 GiB extracted, 100k members) already accept the
+  // 41.2 MiB variant B PDF, so none are set.
+  const client = new DockerSandboxClient({
+    image: SANDBOX_IMAGE,
+    networkMode: "none",
+  });
+  // We own the session so the workspace outlives run() and we can read the output.
+  const session = await client.create({ manifest: workspace });
+  let error: string | undefined;
+  try {
+    const signal = AbortSignal.timeout(input.timeoutMs);
+    try {
+      await run(agent, "Extract the CRVA fields from the report.", {
+        maxTurns: input.maxTurns,
+        signal,
+        context,
+        sandbox: { session },
+      });
+    } catch (err) {
+      if (err instanceof MaxTurnsExceededError) {
+        error = `max turns ${input.maxTurns}`;
+      } else if (signal.aborted) {
+        error = `timeout ${input.timeoutMs / 60_000} min`;
+      } else {
+        // Any other failure (API, sandbox) throws; the caller marks the run failed.
+        throw err;
+      }
+    }
+    const outputText = (await session.pathExists(OUTPUT_PATH))
+      ? new TextDecoder().decode(await session.readFile({ path: OUTPUT_PATH }))
+      : null;
+    return {
+      outputText,
+      usage: {
+        promptTokens: context.usage.inputTokens,
+        completionTokens: context.usage.outputTokens,
+        cachedInputTokens: cachedInputTokens(context.usage.inputTokensDetails),
+      },
+      modelTurns: context.usage.requests,
+      toolCalls,
+      ...(error ? { error } : {}),
+    };
+  } finally {
+    // Removes the container and its host workspace copy. A close failure is logged, never
+    // thrown, so it cannot mask the run's result or error.
+    try {
+      await session.close();
+    } catch (closeErr) {
+      console.error("crva-agent: sandbox close failed", closeErr);
+    }
+  }
+}

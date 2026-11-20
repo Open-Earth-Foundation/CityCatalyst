@@ -51,7 +51,7 @@ function failItem(prefix: "ocr_failed" | "llm_failed", err: unknown): never {
   throw new IngestItemError("validation_failed", `${prefix}: ${detail}`);
 }
 
-function listFigures(ocr: MistralOcrResult): CrvaFigure[] {
+export function listFigures(ocr: MistralOcrResult): CrvaFigure[] {
   const { pages, relationships } = ocr.structured.document;
   const blocks = new Map(
     pages.flatMap((page) =>

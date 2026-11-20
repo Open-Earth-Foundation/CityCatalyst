@@ -112,13 +112,21 @@ scoped messaging contract for sizing and state. See the
 [chat frame implementation](../app/src/components/ConceptNoteWorkspace/chat-visual-frame.tsx).
 
 An empty canvas that relies on JavaScript to draw a chart produces no visible
-output in this renderer. The backend rejects obviously empty
-visuals and identifies any empty panel by label. The prompt asks the model to
-retry once with visible HTML or inline SVG, then answer in text if the retry
-fails. The browser checks the rendered result as well. This catches cases such
-as saved visuals from older conversations and content that its CSS hides
-completely. If the browser finds an empty visual, it shows an unavailable
-message and lets the user ask Clima to show it again.
+output in this renderer. The backend rejects obviously empty visuals and
+identifies any empty panel by label. The prompt asks the model to retry once
+with visible HTML or inline SVG, then answer in text if the retry fails. The
+backend also rejects SVG text that would draw below 11 px in a 320 px column
+(`visual_text_too_small`), naming the affected panels, so the model redraws it
+with a 320-unit viewBox and fonts of at least 12. The browser checks the
+rendered result as well. This catches cases such as saved visuals from older
+conversations and content that its CSS hides completely. If the browser finds
+an empty visual, it shows an unavailable message and lets the user ask Clima to
+show it again.
+
+Native radio, checkbox, select and details controls work in the sandbox without
+scripts. The prompt uses them for sliders, filters and series toggles, with
+every state precomputed from the given data, so the chat never calculates
+anything live.
 
 For richer interaction, the preferred design is trusted CityCatalyst components
 that take validated data and settings from the model. The shipped tab control

@@ -125,6 +125,23 @@ async def test_render_panels_accepts_svg_only_panel() -> None:
     assert result["success"] is True
 
 
+async def test_render_panels_names_small_svg_text_panels() -> None:
+    small = '<svg viewBox="0 0 440 300"><text font-size="11">a</text></svg>'
+    panels = [
+        PANELS[0],
+        {"label": "Costs", "html": small},
+        {"label": "Risks", "html": small.replace("11", "9")},
+    ]
+
+    result = await invoke("Plan", panels)
+
+    assert result["success"] is False
+    assert result["error_code"] == "visual_text_too_small"
+    assert result["data"]["labels"] == ["Costs", "Risks"]
+    assert result["data"]["smallest_text_px"] == round(9 * 320 / 440, 1)
+    assert "viewBox width 320" in result["data"]["next_step"]
+
+
 async def test_history_reads_panels_from_arguments_with_result_labels() -> None:
     result = await invoke("Retrofit plan", PANELS)
     stored = [

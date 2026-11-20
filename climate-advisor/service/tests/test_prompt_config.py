@@ -289,7 +289,10 @@ def test_cnb_chat_prompt_routes_answer_forms_and_states_visual_limits() -> None:
     assert "`panels` (array of 2-6 objects)" in composed
     assert "at most 40 characters" in composed
     # Static-only truth, data fidelity and layout rules.
-    assert "live controls are not\navailable in chat" in composed
+    assert "scripts never run, and nothing is calculated live." in composed
+    assert "`body:has(#f option[value=y2024]:checked) .y2024{display:block}`" in (
+        composed
+    )
     assert 'never as zero' in composed
     assert "show each one with its own source side by side" in composed
     assert '<div style="overflow-x:auto">' in composed

@@ -7,12 +7,14 @@ from typing import Any
 from agents import function_tool
 from app.services.cnb.visual_data import VisualData, check_visual_data
 from app.utils.concept_note_context import VISUAL_RENDER_ACTION
-from app.utils.visual_html import has_visible_content
+from app.utils.visual_html import has_visible_content, smallest_svg_text_px
 
 logger = logging.getLogger(__name__)
 
 MAX_VISUAL_TITLE_CHARS = 200
 MAX_VISUAL_HTML_CHARS = 200_000
+# Smaller SVG text is unreadable on a phone, where the chat shows a 320 px column.
+MIN_SVG_TEXT_PX = 11
 # Returned with visual_no_visible_content; the result is the model's only
 # guidance for this code, so it carries the one-retry limit itself.
 NO_VISIBLE_CONTENT_HINT = {
@@ -20,6 +22,13 @@ NO_VISIBLE_CONTENT_HINT = {
     "and external resources are removed.",
     "next_step": "Retry once with the content as HTML text or inline SVG "
     "shapes and labels. If that also fails, do not call the tool again; "
+    "answer in text with the same values.",
+}
+# Shared by the visual and panel tools, which both return visual_text_too_small.
+TEXT_TOO_SMALL_HINT = {
+    "reason": "Some SVG text would be smaller than 11 px in a 320 px chat column.",
+    "next_step": "Use viewBox width 320 and font-size of at least 12 for every SVG "
+    "label, then retry once. If that also fails, do not call the tool again; "
     "answer in text with the same values.",
 }
 
@@ -34,26 +43,33 @@ async def concept_note_render_visual(
     or when a pattern across series, a flow, or many values is hard to read in
     text. Not for single facts, short lists, capability questions or edits.
     For switchable cards or tabs use `concept_note_render_panels` instead.
+    For KPI cards, metric tiles or a dashboard of numbers, use one visual with
+    a grid of cards, not panels.
     `html` must be ONE complete, static HTML document with inline CSS and
     inline SVG. Scripts, links, forms, SVG animation and external resources
-    are removed before display, so draw charts as inline SVG; buttons, sliders
-    and filters cannot work, so show precomputed results in a table instead.
-    Native `<details><summary>` sections do work. Keep it under about 100 KB
-    (hard limit 200,000 characters). Never invent numbers: use only data from
-    the conversation, context or source results and label its sources.
+    are removed before display, so draw charts as inline SVG and never rely on
+    JavaScript. Buttons, search boxes and links do not work. Native controls do
+    work without scripts (radio inputs, select, checkbox and details styled with
+    `:checked` or `:has()`); precompute every state from the given data. Keep it
+    under about 100 KB (hard limit 200,000 characters). Never invent numbers:
+    use only data from the conversation, context or source results and label
+    its sources.
     `title` is required, at most 200 characters.
-    It shows in a chat column 340 to 500 px wide that fits up to 720 px of
-    height before scrolling: one fluid column at width 100%, no fixed widths
-    over 320 px, text of at least 12 px, the key result first, and no vh or
-    100% heights. Print every exact value with its unit as visible text, not
-    only on hover. Keep tables to 4 columns inline; wrap a wider table alone
-    in `<div style="overflow-x:auto">`. For long lists show the leaders first
-    and the complete list in `<details>`.
+    It shows in a chat column 340 to 500 px wide that fits up to 1200 px of
+    height before scrolling: one fluid column at width 100%, each SVG with
+    viewBox width 320 and font-size of at least 12, no fixed widths over 320 px,
+    the key result first, and no vh or 100% heights. Print every exact value
+    with its unit as visible text, not only on hover. Keep tables to 4 columns
+    inline; wrap a wider table alone in `<div style="overflow-x:auto">`. For
+    long lists show the leaders first and the complete list in `<details>`.
     ALWAYS also reply with a short text answer giving the main result, its
     exact values and the data source; never paste the HTML instead. The visual
     is shown in chat only; it never changes the Concept Note.
     HTML that would show nothing once scripts and external resources are
     removed returns visual_no_visible_content: retry once, then answer in text.
+    SVG text under 11 px returns visual_text_too_small with `smallest_text_px`:
+    retry once with viewBox width 320 and font-size of at least 12, then answer
+    in text.
     When the visual shows numbers, pass `data` with every plotted value: its
     unit, its source (document values cite source_index and the page or anchor
     of the concept_note_sources_query excerpt) and its status. Use status
@@ -83,6 +99,15 @@ async def concept_note_render_visual(
     if not has_visible_content(html):
         return _visual_result(
             False, data=NO_VISIBLE_CONTENT_HINT, code="visual_no_visible_content"
+        )
+
+    # SVG text drawn below the readable minimum in a phone-width column.
+    smallest_px = smallest_svg_text_px(html)
+    if smallest_px is not None and smallest_px < MIN_SVG_TEXT_PX:
+        return _visual_result(
+            False,
+            data={"smallest_text_px": round(smallest_px, 1), **TEXT_TOO_SMALL_HINT},
+            code="visual_text_too_small",
         )
 
     # Optional data metadata: invalid provenance blocks, visibility gaps warn.

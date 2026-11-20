@@ -12,9 +12,13 @@ from typing import Any
 from agents import function_tool
 from pydantic import BaseModel
 
-from app.tools.concept_note_visual_tools import NO_VISIBLE_CONTENT_HINT
+from app.tools.concept_note_visual_tools import (
+    MIN_SVG_TEXT_PX,
+    NO_VISIBLE_CONTENT_HINT,
+    TEXT_TOO_SMALL_HINT,
+)
 from app.utils.concept_note_context import VISUAL_PANELS_KIND, VISUAL_RENDER_ACTION
-from app.utils.visual_html import has_visible_content
+from app.utils.visual_html import has_visible_content, smallest_svg_text_px
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +42,19 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     """Show switchable cards (tabs) in the chat: one panel visible at a time.
 
     Use when the user asks for switchable cards, tabs, or panels, e.g. "three
-    cards for Overview, Costs and Risks". The chat draws the tab buttons
-    itself; the user switches with a click, tap, or the arrow keys. Do NOT draw
-    tab buttons, radio inputs, or hidden sections inside the HTML.
+    cards for Overview, Costs and Risks". Not for KPI cards, metric tiles or a
+    dashboard of numbers: use one `concept_note_render_visual` with a grid of
+    cards. The chat draws the tab buttons itself; the user switches with a
+    click, tap, or the arrow keys. Do NOT draw tab buttons inside a panel.
     `panels`: 2 to 6 items, each with a distinct `label` (the tab text, at most
     40 characters) and `html`: static HTML for that panel only, with inline
     CSS and inline SVG. Scripts, links, forms and external resources are
     removed. Each panel shows in a chat column 340 to 500 px wide: one fluid
-    column, no fixed widths over 320 px, text of at least 12 px. Combined panel
-    HTML must stay under 200,000 characters. `title` is required, at most 200
-    characters. Never invent numbers: use only data the user gave or the
-    context contains, and keep the user's own wording of each panel's content.
+    column, no fixed widths over 320 px, each SVG with viewBox width 320 and
+    font-size of at least 12. Combined panel HTML must stay under 200,000
+    characters. `title` is required, at most 200 characters. Never invent
+    numbers: use only data the user gave or the context contains, and keep the
+    user's own wording of each panel's content.
     For sections the user should open independently (e.g. project phases),
     do not use this tool: call `concept_note_render_visual` with native
     `<details><summary>Phase</summary>...</details>` elements instead.
@@ -57,6 +63,9 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     A panel whose HTML would show nothing once scripts and external resources
     are removed returns visual_no_visible_content with its `labels`: fix those
     panels and retry once, then answer in text.
+    A panel with SVG text under 11 px returns visual_text_too_small with its
+    `labels` and `smallest_text_px`: retry once with viewBox width 320 and
+    font-size of at least 12, then answer in text.
     """
     # Validate the model-supplied payload before the chat renders it.
     title = title.strip()
@@ -90,6 +99,24 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
             False,
             data={**NO_VISIBLE_CONTENT_HINT, "labels": blank_labels},
             code="visual_no_visible_content",
+        )
+
+    # Small SVG text is named per panel, so one retry can fix every failing panel.
+    text_px = [smallest_svg_text_px(panel.html) for panel in panels]
+    small = [
+        (label, px)
+        for label, px in zip(labels, text_px)
+        if px is not None and px < MIN_SVG_TEXT_PX
+    ]
+    if small:
+        return _panels_result(
+            False,
+            data={
+                "labels": [label for label, _ in small],
+                "smallest_text_px": round(min(px for _, px in small), 1),
+                **TEXT_TOO_SMALL_HINT,
+            },
+            code="visual_text_too_small",
         )
 
     logger.info(

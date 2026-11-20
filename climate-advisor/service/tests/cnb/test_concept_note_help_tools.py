@@ -131,7 +131,7 @@ async def test_guide_describes_static_chat_visuals():
     """Help must not promise live sliders or filters that the sandbox removes."""
     guide = (await invoke_ready("en"))["guide"]
     assert "switchable cards or tabs, and expandable sections" in guide
-    assert "buttons, sliders, filters, and search boxes do not work" in guide
+    assert "buttons, search boxes, and links do not work" in guide
     assert "never change the concept note" in guide
 
 

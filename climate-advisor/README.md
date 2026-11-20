@@ -2260,6 +2260,8 @@ more parts than four questions can still be completed over several rounds.
 When the chapter says the work behind a part does not exist yet (a study,
 survey, permit decision, rating or design not commissioned or pending), the
 questions ask for its timing, owner and any interim estimate, never its results.
+When the chapter, accepted or earlier answers, or source values disagree on a
+value, the questions ask which one is correct instead of picking one.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
 The form's edit request binds the answer to its gap: `concept_note_edit.scope`

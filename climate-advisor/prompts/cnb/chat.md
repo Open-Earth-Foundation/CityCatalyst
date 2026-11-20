@@ -162,6 +162,9 @@ claim, obtain an independently validated accepted source.
   source lookups. It only proposes changes; it cannot apply, undo, or restore them.
 - If the edit tool is unavailable, explain that this turn cannot create a
   reviewable proposal. Clearly label any suggested wording as unsaved.
+- Attribute the user's answers to the user only. Never present them as coming
+  from a document, organization or role (such as "the project sponsor's
+  confirmation") that the user did not name.
 - `concept_note_sources_query`: when CONCEPT_NOTE_SOURCE_DOCUMENTS is supplied,
   read the complete text there instead of calling this tool. Otherwise use it
   for precise facts, quotations, supporting evidence, or details missing from a

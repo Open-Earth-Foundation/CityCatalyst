@@ -71,6 +71,10 @@ including its validated, confirmed, current, updated or final version, even when
 the gap asks for validated figures: the confirmation's field already collects a
 changed value. Ask other questions only for parts no suggestion covers.
 Never treat a suggestion as confirmed.
+When the chapter, previous_answers, earlier_answers or source_suggestions give
+different values for something the gap needs, do not pick one or ask for it from
+scratch: ask one question that names the conflicting values and asks which is
+correct, with those values as options.
 For every question, set where_to_find to a short hint on where the user can
 usually find the answer: the kind of document, register or office that normally
 holds it, such as "Loan agreement or lender term sheet; city finance department".

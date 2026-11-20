@@ -47,6 +47,7 @@ import {
   ChapterGapMarker,
   chapterGapRows,
   gapRowForMessage,
+  isEstimate,
   type ChapterGapRow,
 } from "./chapter-gaps-panel";
 import {
@@ -474,7 +475,10 @@ export function DraftDocumentPanel({
           >
             {chapters.map((chapter) => {
               const isSelected = focus.selectedChapterId === chapter.chapter_id;
-              const gapCount = gapRows.get(chapter.chapter_id)!.length;
+              // Estimates stay listed in the chapter, but they are not open gaps.
+              const gapCount = gapRows
+                .get(chapter.chapter_id)!
+                .filter((row) => !isEstimate(row)).length;
               return (
                 <Button
                   key={chapter.chapter_id}

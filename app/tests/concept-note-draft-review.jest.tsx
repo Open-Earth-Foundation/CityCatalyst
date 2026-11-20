@@ -173,3 +173,88 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   expect(onConfirmChapter).toHaveBeenCalledWith(chapter);
   expect(onFocusedChapterChange).toHaveBeenCalledWith(chapter.chapter_id);
 });
+
+it("counts only open gaps in the section list, not estimates to confirm", async () => {
+  const gap = {
+    why_asking: "",
+    severity: "critical",
+    suggestions: [],
+    source_refs: [],
+    created_at: "2026-11-20T10:00:00Z",
+    updated_at: "2026-11-20T10:00:00Z",
+  } as const;
+  const chapter: ConceptNoteDraftChapter = {
+    chapter_id: "chapter-1",
+    title: "Budget",
+    template_section_id: "budget",
+    position: 0,
+    required: true,
+    user_locked: false,
+    status: "draft",
+    body_markdown:
+      "The request is an estimated $2 million. [Information needed: Confirm funding]",
+    revision_number: 2,
+    confirmed_body_markdown: null,
+    confirmed_revision_number: null,
+    gaps: [
+      {
+        ...gap,
+        gap_id: "gap-open",
+        field_key: "funding",
+        question: "Confirm funding",
+        state: "open",
+        version: 1,
+        resolution: null,
+      },
+      {
+        ...gap,
+        gap_id: "gap-estimate",
+        field_key: "request",
+        question: "Confirm the request amount",
+        state: "caveat",
+        version: 2,
+        resolution: {
+          resolution_id: "resolution-1",
+          action: "answer",
+          answer: "The request is an estimated $2 million.",
+          actor_user_id: "owner",
+          source_refs: [],
+          created_at: "2026-11-20T10:00:00Z",
+        },
+      },
+    ],
+    open_gap_count: 1,
+    caveat_count: 1,
+  };
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={appTheme}>
+        <DraftDocumentPanel
+          chapters={[chapter]}
+          lng="en"
+          noteName="Tram project"
+          focusFindingKey={null}
+          isConfirmingChapter={false}
+          onConfirmChapter={jest.fn()}
+          focus={{
+            chapterElements: { current: {} },
+            previewElement: { current: null },
+            focusedFindingElement: { current: null },
+            isChapterPanelOpen: true,
+            selectedChapterId: chapter.chapter_id,
+            selectChapter: jest.fn(),
+            toggleChapterPanel: jest.fn(),
+            focusedFinding: null,
+          }}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  expect(
+    container.querySelector('[data-testid="concept-note-section-gap-count"]')
+      ?.textContent,
+  ).toBe("1");
+});

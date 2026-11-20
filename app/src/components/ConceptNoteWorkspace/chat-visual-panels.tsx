@@ -145,6 +145,7 @@ export function ChatVisualPanels({
           {renderTabs(
             (panel, label) => (
               <ExpandedPanelFrame
+                headingTitles={[title, panel.label]}
                 html={panel.html}
                 lng={lng}
                 title={label}
@@ -159,6 +160,8 @@ export function ChatVisualPanels({
         (panel, label) => (
           <ChatVisualFrame
             bare
+            // The card shows its title and the tab label, not this joined label.
+            headingTitles={[title, panel.label]}
             html={panel.html}
             lng={lng}
             onHeightChange={onHeightChange}
@@ -178,17 +181,20 @@ export function ChatVisualPanels({
  * same note as the inline card instead of an empty frame.
  */
 function ExpandedPanelFrame({
+  headingTitles,
   html,
   lng,
   onFrameLoad,
   title,
 }: {
+  headingTitles: string[];
   html: string;
   lng: string;
   onFrameLoad: (frame: HTMLIFrameElement) => void;
   title: string;
 }) {
-  const { srcDoc, hasContent } = useSandboxedVisual(html, lng);
+  // Same headings as the inline frame, so both get the same srcdoc.
+  const { srcDoc, hasContent } = useSandboxedVisual(html, lng, headingTitles);
   const [renderedBlank, setRenderedBlank] = useState(false);
   // The dialog mounts only on click, so this always runs with DOMPurify.
   if (!hasContent || renderedBlank) {

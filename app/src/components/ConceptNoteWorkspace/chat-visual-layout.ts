@@ -1,3 +1,5 @@
+import { hasRenderedVisualContent } from "./chat-visual-content";
+
 /**
  * Layout fixes for AI-generated chat visuals. They run on the document that
  * DOMPurify has already sanitized, so the model's HTML is parsed only once and
@@ -40,11 +42,16 @@ const HINT_CLASS = "cc-visual-scroll-hint";
 const LONG_CLASS = "cc-visual-long";
 const RANKED_CLASS = "cc-visual-ranked";
 const TOGGLE_CLASS = "cc-visual-long-toggle";
+// Set by watchTableScroll on a scroll box whose table fits its width.
+const FITS_CLASS = "cc-fits";
 
 // Hidden entries are `display:none` only while the toggle is closed; the
 // !important rules win over model CSS such as `tr{display:grid}`.
 const LAYOUT_CSS = [
   `.${SCROLL_CLASS}{overflow-x:auto!important;max-width:100%!important;min-width:0}`,
+  // A box that scrolls on one axis scrolls on both, so a sticky header would stick
+  // to it instead of the page. Once measured as fitting, it stops scrolling.
+  `.${SCROLL_CLASS}.${FITS_CLASS}{overflow:visible!important}`,
   `.${LONG_CLASS}:has(>.${TOGGLE_CLASS}:not([open])) table.${RANKED_CLASS}>tbody>tr:nth-child(n+${VISUAL_LEADING_ENTRIES + 1}),`,
   `.${LONG_CLASS}:has(>.${TOGGLE_CLASS}:not([open]))>.${RANKED_CLASS}>li:nth-child(n+${VISUAL_LEADING_ENTRIES + 1}){display:none!important}`,
   `.${TOGGLE_CLASS}>summary{cursor:pointer;padding:6px 0;font-weight:600}`,
@@ -344,10 +351,186 @@ export function adaptVisualLayout(
 
   if (changed) {
     const style = doc.createElement("style");
+    style.setAttribute("data-cc-layout", "");
     style.textContent = LAYOUT_CSS;
     doc.head.append(style);
   }
   return changed;
+}
+
+/**
+ * Theme variables every visual can use, as in Visualize: series colours and the
+ * app's text, border and surface colours. These are the blue theme's values;
+ * `syncHostTheme` replaces them with the organization theme once the frame loads.
+ */
+export const VISUAL_THEME_DEFAULTS: Record<string, string> = {
+  "--chart-1": "#2351DC",
+  "--chart-2": "#E07B24",
+  "--chart-3": "#149037",
+  "--chart-4": "#8A3FD1",
+  "--chart-5": "#C4314B",
+  "--chart-6": "#5B6472",
+  "--foreground": "#00001F",
+  "--muted-foreground": "#4B4C63",
+  "--border": "#D7D8FA",
+  "--background": "#FFFFFF",
+  "--card": "#FFFFFF",
+  "--muted": "#E8EAFB",
+  // The app's fonts are not loaded in the frame (CSP allows data: fonts only),
+  // so this names Open Sans for systems that have it and falls back to a sans.
+  "--font-sans":
+    '"Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',
+};
+
+// Chakra variables of the app theme that the visual variables follow.
+const HOST_THEME_SOURCES: Record<string, string> = {
+  "--chart-1": "--chakra-colors-interactive-secondary",
+  "--foreground": "--chakra-colors-content-primary",
+  "--muted-foreground": "--chakra-colors-content-tertiary",
+  "--border": "--chakra-colors-border-neutral",
+  "--background": "--chakra-colors-base-light",
+  "--card": "--chakra-colors-base-light",
+  "--muted": "--chakra-colors-background-neutral",
+};
+
+const themeCss = (values: Record<string, string>) =>
+  `:root{color-scheme:light;${Object.entries(values)
+    .map(([name, value]) => `${name}:${value}`)
+    .join(";")}}`;
+
+// Before the model's CSS, so any rule of its own wins. Without it a page with
+// no font-family is drawn in the browser's serif default.
+const THEME_BASE_CSS =
+  "body{font-family:var(--font-sans);color:var(--foreground)}";
+
+// After the model's CSS. Labels a few units past the viewBox edge are drawn,
+// not cut; the content inset keeps them inside the card. Title duplicates hide.
+const HOST_CSS =
+  "svg:not(svg svg){overflow:visible}[data-cc-duplicate-title]{display:none!important}";
+
+// Media features for the OS colour scheme; see addHostStyles.
+const PREFERS_DARK = /\(\s*prefers-color-scheme\s*:\s*dark\s*\)/gi;
+const PREFERS_LIGHT = /\(\s*prefers-color-scheme\s*:\s*light\s*\)/gi;
+
+const normalizeTitle = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[\s.:;!?]+$/, "")
+    .trim();
+
+/**
+ * The heading that opens the page when it repeats one of `titles` (the card
+ * title, or for a panel also its tab label), or null. A heading that is the
+ * page's only text stays: hiding it would leave nothing to read.
+ */
+function duplicateTitleHeading(
+  doc: Document,
+  titles: string[],
+): Element | null {
+  const wanted = new Set(titles.map(normalizeTitle).filter(Boolean));
+  if (!wanted.size || !doc.body) return null;
+  let heading: Element | null = null;
+  let otherText = false;
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!node.textContent?.trim()) continue;
+    const parent = node.parentElement;
+    if (parent?.closest("style,script,title,template")) continue;
+    if (heading) {
+      if (!heading.contains(node)) {
+        otherText = true;
+        break;
+      }
+      continue;
+    }
+    // Only the first visible text decides: a heading further down is content.
+    const opening = parent?.closest("h1,h2,h3,h4");
+    if (
+      !opening ||
+      opening.closest("svg,table") ||
+      !wanted.has(normalizeTitle(opening.textContent ?? ""))
+    ) {
+      return null;
+    }
+    heading = opening;
+  }
+  // A drawing that paints something: an empty <svg> or a canvas does not.
+  const drawing = doc.body.querySelector(
+    "svg :is(path,rect,circle,ellipse,line,polyline,polygon,use),img,table,meter,progress",
+  );
+  return heading && (otherText || drawing) ? heading : null;
+}
+
+/**
+ * Adds the host styles every visual gets: theme variables and a sans default
+ * before the model's CSS, and the SVG overflow and duplicate-title rules after
+ * it. The model's light/dark media rules always resolve to light. A first heading that repeats the card `title` is hidden, because the card
+ * and the Expand dialog already show the title. Runs on the sanitized document.
+ */
+export function addHostStyles(
+  doc: Document,
+  titles: string | string[] = [],
+): void {
+  // The card is always light, but a frame's prefers-color-scheme follows the
+  // OS (Chromium ignores the iframe's color-scheme). A model's dark-mode rule
+  // would draw a dark card in the light chat, so it never matches here.
+  for (const style of Array.from(doc.querySelectorAll("style"))) {
+    const css = style.textContent ?? "";
+    if (/prefers-color-scheme/i.test(css)) {
+      style.textContent = css
+        .replace(PREFERS_DARK, "(width < 0px)")
+        .replace(PREFERS_LIGHT, "(width >= 0px)");
+    }
+  }
+
+  const theme = doc.createElement("style");
+  theme.setAttribute("data-cc-theme", "");
+  theme.textContent = themeCss(VISUAL_THEME_DEFAULTS) + THEME_BASE_CSS;
+  doc.head.prepend(theme);
+
+  const host = doc.createElement("style");
+  host.setAttribute("data-cc-host", "");
+  host.textContent = HOST_CSS;
+  doc.head.append(host);
+
+  duplicateTitleHeading(
+    doc,
+    typeof titles === "string" ? [titles] : titles,
+  )?.setAttribute("data-cc-duplicate-title", "");
+}
+
+/**
+ * Shows a hidden duplicate title again when, once laid out, nothing else on
+ * the page is visible (the remaining text was hidden by CSS, for example), so
+ * hiding it never leaves an empty card. Runs on each loaded frame.
+ */
+export function restoreLoneDuplicateTitle(doc: Document | null): void {
+  const heading = doc?.querySelector("[data-cc-duplicate-title]");
+  if (heading && hasRenderedVisualContent(doc) === false) {
+    heading.removeAttribute("data-cc-duplicate-title");
+  }
+}
+
+/**
+ * Replaces the default theme values in a loaded frame with the organization
+ * theme of the page around it, read from the app's Chakra variables on the
+ * iframe element. Values the page does not define keep their defaults.
+ */
+export function syncHostTheme(frame: HTMLIFrameElement): void {
+  const style = frame.contentDocument?.querySelector("style[data-cc-theme]");
+  const win = frame.ownerDocument.defaultView;
+  if (!style || !win) return;
+  const computed = win.getComputedStyle(frame);
+  const values = { ...VISUAL_THEME_DEFAULTS };
+  for (const [name, source] of Object.entries(HOST_THEME_SOURCES)) {
+    const value = computed.getPropertyValue(source).trim();
+    // Plain colours only, so nothing but a colour reaches the frame's CSS.
+    if (/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%/]+\))$/i.test(value)) {
+      values[name] = value;
+    }
+  }
+  style.textContent = themeCss(values) + THEME_BASE_CSS;
 }
 
 // Expand zooms the whole page evenly. A width:100% SVG in the ~1200 px dialog
@@ -420,20 +603,137 @@ function fitFirstChart(
   return Math.floor(room / zoom);
 }
 
+/** Room kept under a page that fits the Expand frame whole. */
+const EXPANDED_FIT_MARGIN_PX = 16;
+/** Chart labels may be at most this many times the page's own text size. */
+export const EXPANDED_TEXT_RATIO = 1.5;
+// Caps the text sample used for the page's text size.
+const MAX_SAMPLED_TEXT = 200;
+
+/** Bottom of the page content in document px, or 0 when it is not laid out. */
+function pageContentHeight(doc: Document, win: Window): number {
+  const scrollTop = doc.scrollingElement?.scrollTop ?? 0;
+  let bottom = 0;
+  for (const child of Array.from(doc.body.children)) {
+    if (/^(style|script|template)$/.test(child.localName)) continue;
+    const rect = child.getBoundingClientRect();
+    if (rect.width > 0 || rect.height > 0) {
+      bottom = Math.max(bottom, rect.bottom + scrollTop);
+    }
+  }
+  if (!bottom) return 0;
+  // The body's own min-height (e.g. 100vh) is ignored: only content counts.
+  const body = win.getComputedStyle(doc.body);
+  return Math.ceil(
+    bottom +
+      (parseFloat(body.paddingBottom) || 0) +
+      (parseFloat(body.marginBottom) || 0),
+  );
+}
+
+const median = (values: number[]) =>
+  [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
+
+/** Median font size of the page's HTML text, outside SVG, or 0 if none. */
+function pageTextPx(doc: Document, win: Window): number {
+  const sizes: number[] = [];
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+  for (
+    let node = walker.nextNode();
+    node && sizes.length < MAX_SAMPLED_TEXT;
+    node = walker.nextNode()
+  ) {
+    const parent = node.parentElement;
+    if (
+      !node.textContent?.trim() ||
+      !parent ||
+      parent.closest("svg,style,script,title,template") ||
+      !isShown(parent)
+    ) {
+      continue;
+    }
+    const size = parseFloat(win.getComputedStyle(parent).fontSize);
+    if (size > 0) sizes.push(size);
+  }
+  return sizes.length ? median(sizes) : 0;
+}
+
 /**
- * Adds the Expand layout to a loaded frame document: a zoom that fits the page
- * to the frame width, and height caps. Every top-level chart is capped to one
- * screen. The first chart is also capped so it and the legend or key under it
- * fit on the first screen, because the series and slice names must be visible
- * without scrolling. Later charts keep only the screen cap:
- * their position depends on scrolling, so a fit measured at the top would not
- * apply to them. The style is host CSS on the live document, not part of the
- * srcdoc, so inline and Expand frames keep the same srcdoc (view state is keyed
- * by it).
+ * Narrows each top-level chart whose labels would be drawn much larger than
+ * the page text, so Expand enlarges the chart and its table together instead
+ * of turning axis labels into headings. A 150-unit mini chart filling a
+ * 270 px grid cell otherwise draws 13-unit labels at 23 px next to 12 px
+ * text. Measured on the unzoomed page; returns the CSS for the caps.
+ */
+function capChartText(doc: Document, win: Window): string {
+  const pagePx = pageTextPx(doc, win);
+  if (!pagePx) return "";
+  const limit = EXPANDED_TEXT_RATIO * pagePx;
+  const rules: string[] = [];
+  const charts = Array.from(
+    doc.body.querySelectorAll<SVGSVGElement>("svg[viewBox]"),
+  ).filter((svg) => !svg.parentElement?.closest("svg"));
+  charts.forEach((svg, index) => {
+    const viewBoxWidth = Number(
+      (svg.getAttribute("viewBox") ?? "").trim().split(/[\s,]+/)[2],
+    );
+    const rect = svg.getBoundingClientRect();
+    if (!(viewBoxWidth > 0) || !(rect.width > 0)) return;
+    // Laid-out labels only: a hidden tooltip does not set the chart's size.
+    const sizes = Array.from(svg.querySelectorAll("text"))
+      .filter((text) => isShown(text))
+      .map((text) => parseFloat(win.getComputedStyle(text).fontSize))
+      .filter((size) => size > 0);
+    if (!sizes.length) return;
+    // The median label: one large headline number does not shrink the chart.
+    const label = median(sizes);
+    if ((label * rect.width) / viewBoxWidth <= limit) return;
+    const cap = Math.floor((viewBoxWidth * limit) / label);
+    svg.setAttribute("data-cc-text-cap", String(index));
+    // A chart that filled its box stays centred in it once narrower.
+    const box = svg.parentElement?.getBoundingClientRect().width ?? 0;
+    const centre =
+      box > 0 && rect.width >= 0.9 * box
+        ? "display:block!important;margin-left:auto!important;margin-right:auto!important;"
+        : "";
+    // More specific than the base svg rule, which also carries !important.
+    rules.push(
+      `svg[viewBox][data-cc-text-cap="${index}"]:not(svg svg){max-width:${cap}px!important;${centre}}`,
+    );
+  });
+  return rules.join("");
+}
+
+/** The zoom and the one-screen chart cap, in unzoomed px. */
+function expandedBaseCss(zoom: number, innerHeight: number): string {
+  // 48 px leaves room for the dialog header. The cap is in unzoomed px, so
+  // after zoom one chart still fits the frame height.
+  const height = Math.floor((innerHeight - 48) / zoom);
+  return `html{zoom:${zoom}}body{max-width:${EXPANDED_LAYOUT_PX}px!important;margin-left:auto!important;margin-right:auto!important}svg[viewBox]:not(svg svg){max-height:${height}px!important;max-width:100%!important}`;
+}
+
+/**
+ * Adds the Expand layout to a loaded frame document: a zoom, chart text caps
+ * and height caps.
+ *
+ * - A page that fits the frame at its normal size is zoomed only as far as it
+ *   still fits whole, so a ranking, table or accordion is read without
+ *   scrolling. A taller page is zoomed to fit the frame width, up to 1.6x.
+ * - A chart whose labels would outgrow the page text is narrowed, see
+ *   `capChartText`.
+ * - Every top-level chart is capped to one screen. On a page taller than the
+ *   frame, the first chart is also capped so it and the legend or key under it
+ *   fit on the first screen, because the series and slice names must be
+ *   visible without scrolling. Later charts keep only the screen cap: their
+ *   position depends on scrolling, so a fit measured at the top would not
+ *   apply to them.
+ *
+ * The style is host CSS on the live document, not part of the srcdoc, so
+ * inline and Expand frames keep the same srcdoc (view state is keyed by it).
  */
 export function applyExpandedLayout(doc: Document): void {
   const win = doc.defaultView;
-  if (!win) return;
+  if (!win || !doc.body) return;
   const existing = doc.head.querySelector<HTMLStyleElement>(
     "style[data-cc-expanded]",
   );
@@ -443,27 +743,53 @@ export function applyExpandedLayout(doc: Document): void {
     doc.head.append(style);
   }
 
-  // Never zoom below 1: a phone-width dialog keeps the page at its normal size.
   const update = () => {
-    const zoom = Math.max(
+    // Never zoom below 1: a phone-width dialog keeps the page at its normal size.
+    const widthZoom = Math.max(
       1,
       Math.min(
         EXPANDED_MAX_ZOOM,
         (win.innerWidth - EXPANDED_SIDE_PX) / EXPANDED_LAYOUT_PX,
       ),
     );
-    // 48 px leaves room for the dialog header. The cap is in unzoomed px, so
-    // after zoom one chart still fits the frame height.
-    const height = Math.floor((win.innerHeight - 48) / zoom);
-    const base = `html{zoom:${zoom}}body{max-width:${EXPANDED_LAYOUT_PX}px!important;margin-left:auto!important;margin-right:auto!important}svg[viewBox]:not(svg svg){max-height:${height}px!important;max-width:100%!important}`;
 
-    // Drop the last run's mark and measure with the base rule only, so the
-    // layout reflects the new zoom and not the old fit cap.
-    doc
-      .querySelectorAll("[data-cc-fit]")
-      .forEach((el) => el.removeAttribute("data-cc-fit"));
+    // Drop the last run's marks and measure the page at zoom 1, so the
+    // layout reflects the new frame size and not the old caps.
+    doc.querySelectorAll("[data-cc-fit],[data-cc-text-cap]").forEach((el) => {
+      el.removeAttribute("data-cc-fit");
+      el.removeAttribute("data-cc-text-cap");
+    });
+    style.textContent = expandedBaseCss(1, win.innerHeight);
+    const textCaps = capChartText(doc, win);
+    style.textContent = expandedBaseCss(1, win.innerHeight) + textCaps;
+
+    // Zoom scales the laid-out page evenly, so the fitting zoom is exact.
+    const pageHeight = pageContentHeight(doc, win);
+    const room = win.innerHeight - EXPANDED_FIT_MARGIN_PX;
+    const fitsWhole = pageHeight > 0 && pageHeight <= room;
+    const zoom = fitsWhole
+      ? Math.max(
+          1,
+          Math.floor(Math.min(widthZoom, room / pageHeight) * 1000) / 1000,
+        )
+      : widthZoom;
+
+    let base = expandedBaseCss(zoom, win.innerHeight) + textCaps;
     style.textContent = base;
-    const fitCap = fitFirstChart(doc, win, zoom);
+    if (fitsWhole) {
+      // The estimate misses content past its box (a positioned footer, labels
+      // past an SVG edge), so check the real scroll extent and step back.
+      const root = doc.documentElement;
+      for (
+        let fit = zoom;
+        fit > 1 && root.scrollHeight > root.clientHeight + 1;
+      ) {
+        fit = Math.max(1, Math.floor(fit * 0.94 * 1000) / 1000);
+        base = expandedBaseCss(fit, win.innerHeight) + textCaps;
+        style.textContent = base;
+      }
+    }
+    const fitCap = fitsWhole ? null : fitFirstChart(doc, win, zoom);
     // The fit selector has more specificity than the base rule, which also
     // carries !important, so the cap wins.
     style.textContent =
@@ -615,6 +941,7 @@ export function watchTableScroll(doc: Document): void {
     const update = () => {
       const overflow = box.scrollWidth > box.clientWidth + 1;
       box.classList.toggle("cc-overflow", overflow);
+      box.classList.toggle(FITS_CLASS, !overflow);
       box.classList.toggle("cc-more-left", overflow && box.scrollLeft > 1);
       box.classList.toggle(
         "cc-more-right",
@@ -623,6 +950,10 @@ export function watchTableScroll(doc: Document): void {
     };
     update();
     box.addEventListener("scroll", update, { passive: true });
-    new ResizeObserver(update).observe(box);
+    // The table too: a CSS filter can widen it while the box keeps its size.
+    const observer = new ResizeObserver(update);
+    observer.observe(box);
+    const table = box.querySelector("table");
+    if (table) observer.observe(table);
   }
 }

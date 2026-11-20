@@ -75,7 +75,7 @@ describe("buildSandboxedVisualDocument", () => {
     const doc = buildSandboxedVisualDocument("<svg></svg>");
 
     expect(doc).toMatch(
-      /^<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy"[^>]*><\/head><body><svg><\/svg><\/body><\/html>$/,
+      /^<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy"[^>]*><style data-cc-theme="">[^<]*<\/style><style data-cc-host="">[^<]*<\/style><\/head><body><svg><\/svg><\/body><\/html>$/,
     );
   });
 });
@@ -195,5 +195,38 @@ describe("ChatVisualFrame", () => {
     await load(10);
     expect(frame.style.height).toBe("120px");
     container.remove();
+  });
+});
+
+describe("local SVG references", () => {
+  it("keeps same-document hrefs on use, textPath and gradients, and drops every other href", () => {
+    const doc = buildSandboxedVisualDocument(
+      [
+        '<svg viewBox="0 0 100 40"><defs><symbol id="h"><path d="M0 0H5"></path></symbol>',
+        '<linearGradient id="base"></linearGradient><linearGradient id="g2" href="#base"></linearGradient>',
+        '<path id="arc" d="M0 30A50 50 0 0 1 100 30"></path></defs>',
+        '<use href="#h" x="0"></use><use xlink:href="#h" x="10"></use>',
+        '<use href="https://evil.test/i.svg#h"></use><use href="data:image/svg+xml,x#h"></use>',
+        '<use href="javascript:alert(1)//#h"></use>',
+        '<text><textPath href="#arc">Recycling 47%</textPath></text>',
+        '<image href="#h"></image><a href="#h"><text>Link</text></a>',
+        '<rect width="5" height="5"><animateTransform attributeName="transform" type="scale" from="0" to="1"></animateTransform>',
+        '<animateMotion dur="1s" path="M0 0H9"></animateMotion></rect></svg>',
+        // Outside SVG the same tag name is plain HTML: no href is kept.
+        '<textpath href="#arc">HTML</textpath>',
+      ].join(""),
+    );
+    expect(doc).toContain('<use href="#h" x="0"></use>');
+    expect(doc).toMatch(/<use xlink:href="#h" x="10"><\/use>/);
+    expect(doc).toContain('<linearGradient id="g2" href="#base">');
+    expect(doc).toContain('<textPath href="#arc">');
+    expect(doc).not.toContain("evil.test");
+    expect(doc).not.toContain("javascript:");
+    expect(doc).not.toContain("data:image");
+    expect(doc).not.toMatch(/<textpath href/);
+    expect(doc).not.toMatch(/<image[^>]*href/);
+    // SMIL animation would freeze a chart at its start state; it is removed.
+    expect(doc).not.toMatch(/<(animate|animateMotion|animateTransform|set)\b/i);
+    expect(doc).not.toMatch(/<a\b/);
   });
 });

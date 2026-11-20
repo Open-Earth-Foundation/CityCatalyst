@@ -16,6 +16,7 @@ import {
 import {
   applyExpandedLayout,
   ensureContentInset,
+  syncHostTheme,
   watchTableScroll,
 } from "@/components/ConceptNoteWorkspace/chat-visual-layout";
 
@@ -25,6 +26,8 @@ const labels = {
   showFirst: (count: number) => `Nur die ersten ${count} Einträge anzeigen`,
   scrollHint: "Seitlich scrollen, um alle Spalten zu sehen →",
 };
+// The layout style, not the host's theme and overflow styles.
+const LAYOUT_STYLE = "head style[data-cc-layout]";
 
 /** The sandboxed document as the iframe receives it, parsed for assertions. */
 const render = (html: string) =>
@@ -77,7 +80,7 @@ describe("visual layout: tables", () => {
     );
     const table = doc.querySelector("table")!;
     expect(table.parentElement!.className).toBe("cc-visual-table-scroll");
-    expect(doc.querySelector("head style")!.textContent).toContain(
+    expect(doc.querySelector(LAYOUT_STYLE)!.textContent).toContain(
       ".cc-visual-table-scroll{overflow-x:auto!important",
     );
     // Ordinary short table: no toggle, header and unit kept.
@@ -129,7 +132,7 @@ describe("visual layout: tables", () => {
     expect(rows).toHaveLength(60);
     expect(rows[0]).toBe("D6060 ktCO₂e");
     expect(rows[59]).toBe("D011 ktCO₂e");
-    expect(doc.querySelector("head style")!.textContent).toContain(
+    expect(doc.querySelector(LAYOUT_STYLE)!.textContent).toContain(
       "table.cc-visual-ranked>tbody>tr:nth-child(n+11)",
     );
   });
@@ -516,5 +519,241 @@ describe("default content inset", () => {
     setTextBox(box(0, 20, 100, 20));
     ensureContentInset(document);
     expect(document.querySelector("style[data-cc-inset]")).toBeNull();
+  });
+});
+
+describe("host styles", () => {
+  it("puts the theme before the model's CSS and the host rules after it", () => {
+    const doc = render(
+      "<html><head><style>p{color:red}</style></head><body><p>Hi</p></body></html>",
+    );
+    const styles = Array.from(doc.head.querySelectorAll("style"));
+    expect(styles[0].hasAttribute("data-cc-theme")).toBe(true);
+    expect(styles[0].textContent).toContain("--chart-1:#2351DC");
+    expect(styles[0].textContent).toContain("color-scheme:light");
+    expect(styles[0].textContent).toContain(
+      "body{font-family:var(--font-sans)",
+    );
+    expect(styles[1].textContent).toBe("p{color:red}");
+    expect(styles.at(-1)!.hasAttribute("data-cc-host")).toBe(true);
+    expect(styles.at(-1)!.textContent).toContain(
+      "svg:not(svg svg){overflow:visible}",
+    );
+  });
+
+  it("resolves the model's colour-scheme media rules to light", () => {
+    const doc = render(
+      "<style>@media (prefers-color-scheme: dark){body{background:#111}}@media (prefers-color-scheme:light) and (min-width:400px){p{color:red}}</style><p>Hi</p>",
+    );
+    const css = Array.from(
+      doc.querySelectorAll("style"),
+      (s) => s.textContent,
+    ).join("");
+    expect(css).not.toContain("prefers-color-scheme");
+    expect(css).toContain("@media (width < 0px){body{background:#111}}");
+    expect(css).toContain("@media (width >= 0px) and (min-width:400px)");
+  });
+
+  it("hides an opening heading that repeats the card title", () => {
+    const doc = new DOMParser().parseFromString(
+      buildSandboxedVisualDocument(
+        "<h1>Emissions by sector, 2024.</h1><p>Buildings lead.</p><h2>Emissions by sector, 2024</h2>",
+        labels,
+        "Emissions  by Sector, 2024",
+      ),
+      "text/html",
+    );
+    const [h1, h2] = Array.from(doc.querySelectorAll("h1,h2"));
+    expect(h1.hasAttribute("data-cc-duplicate-title")).toBe(true);
+    // Only the opening heading: later headings are content.
+    expect(h2.hasAttribute("data-cc-duplicate-title")).toBe(false);
+  });
+
+  it("keeps a heading that is the page's only content", () => {
+    const doc = new DOMParser().parseFromString(
+      buildSandboxedVisualDocument("<h2>Energy mix</h2>", labels, "Energy mix"),
+      "text/html",
+    );
+    expect(doc.querySelector("[data-cc-duplicate-title]")).toBeNull();
+  });
+
+  it("keeps the heading when only an empty SVG would remain", () => {
+    const doc = new DOMParser().parseFromString(
+      buildSandboxedVisualDocument(
+        '<h2>Energy mix</h2><svg viewBox="0 0 10 10"></svg>',
+        labels,
+        "Energy mix",
+      ),
+      "text/html",
+    );
+    expect(doc.querySelector("[data-cc-duplicate-title]")).toBeNull();
+  });
+
+  it("matches a panel heading against the card title and the tab label", () => {
+    const hidden = (body: string) =>
+      new DOMParser()
+        .parseFromString(
+          buildSandboxedVisualDocument(body, labels, [
+            "Retrofit plan",
+            "Costs",
+          ]),
+          "text/html",
+        )
+        .querySelector("[data-cc-duplicate-title]")?.textContent;
+    expect(hidden("<h3>Costs</h3><p>EUR 125</p>")).toBe("Costs");
+    expect(hidden("<h3>Retrofit plan</h3><p>EUR 125</p>")).toBe(
+      "Retrofit plan",
+    );
+    expect(
+      hidden("<h3>Retrofit plan: Costs</h3><p>EUR 125</p>"),
+    ).toBeUndefined();
+  });
+
+  it("keeps a heading that differs from the title or follows other text", () => {
+    const html = (body: string) =>
+      new DOMParser().parseFromString(
+        buildSandboxedVisualDocument(body, labels, "Energy mix"),
+        "text/html",
+      );
+    expect(
+      html("<h1>Energy mix by source</h1>").querySelector(
+        "[data-cc-duplicate-title]",
+      ),
+    ).toBeNull();
+    expect(
+      html("<p>Key result</p><h2>Energy mix</h2>").querySelector(
+        "[data-cc-duplicate-title]",
+      ),
+    ).toBeNull();
+  });
+
+  it("copies the organization theme colours from the app into a loaded frame", () => {
+    // In the app the variables come from the theme on an ancestor; jsdom
+    // resolves only the element's own, so they are set on the frame here.
+    const wrapper = document.createElement("div");
+    const frame = document.createElement("iframe");
+    frame.style.setProperty("--chakra-colors-interactive-secondary", "#8E7109");
+    frame.style.setProperty(
+      "--chakra-colors-content-primary",
+      "red;}body{display:none",
+    );
+    wrapper.append(frame);
+    document.body.append(wrapper);
+    try {
+      const frameDoc = frame.contentDocument!;
+      frameDoc.open();
+      frameDoc.write(
+        buildSandboxedVisualDocument("<p>Hi</p>", labels).replace(
+          /<meta http-equiv[^>]*>/,
+          "",
+        ),
+      );
+      frameDoc.close();
+      syncHostTheme(frame);
+      const theme = frameDoc.querySelector("style[data-cc-theme]")!;
+      expect(theme.textContent).toContain("--chart-1:#8E7109");
+      // Anything but a plain colour keeps the default.
+      expect(theme.textContent).toContain("--foreground:#00001F");
+      expect(theme.textContent).not.toContain("display:none");
+    } finally {
+      wrapper.remove();
+    }
+  });
+});
+
+describe("expanded layout: whole-page fit and chart text", () => {
+  const originalSize = { width: window.innerWidth, height: window.innerHeight };
+  afterEach(() => {
+    window.innerWidth = originalSize.width;
+    window.innerHeight = originalSize.height;
+    document
+      .querySelectorAll("style[data-cc-expanded]")
+      .forEach((style) => style.remove());
+    document.body.innerHTML = "";
+  });
+  const box = (top: number, width: number, height: number) =>
+    ({
+      top,
+      width,
+      height,
+      bottom: top + height,
+      left: 0,
+      right: width,
+    }) as DOMRect;
+
+  it("zooms a page that fits at 1x only as far as it still fits whole", () => {
+    window.innerWidth = 1200;
+    window.innerHeight = 900;
+    document.body.innerHTML = "<ol><li>Abbey 120</li></ol>";
+    // 700 px of content and jsdom's 8 px body margin: (900 - 16) / 708 = 1.248,
+    // under the width zoom 1.6.
+    document.querySelector("ol")!.getBoundingClientRect = () =>
+      box(0, 560, 700);
+    applyExpandedLayout(document);
+    const css = document.querySelector("style[data-cc-expanded]")!.textContent;
+    expect(css).toContain("html{zoom:1.248}");
+    expect(css).not.toContain("data-cc-fit");
+  });
+
+  it("keeps the width zoom for a page taller than the frame", () => {
+    window.innerWidth = 1200;
+    window.innerHeight = 900;
+    document.body.innerHTML = "<ol><li>Abbey 120</li></ol>";
+    document.querySelector("ol")!.getBoundingClientRect = () =>
+      box(0, 560, 1400);
+    applyExpandedLayout(document);
+    expect(
+      document.querySelector("style[data-cc-expanded]")!.textContent,
+    ).toContain("html{zoom:1.6}");
+  });
+
+  it("narrows a chart whose labels would outgrow the page text", () => {
+    window.innerWidth = 1200;
+    window.innerHeight = 900;
+    document.body.innerHTML =
+      '<div><svg viewBox="0 0 150 120"><text style="font-size:13px">Waste</text><text style="font-size:13px">2019</text></svg></div><p style="font-size:12px">Source</p><div><svg viewBox="0 0 320 200"><text style="font-size:12px">Ok</text></svg></div>';
+    const [mini, wide] = Array.from(document.querySelectorAll("svg"));
+    // The mini chart fills a 270 px cell: 13 units draw at 23.4 px, over 1.5 x 12.
+    mini.getBoundingClientRect = () => box(0, 270, 216);
+    mini.parentElement!.getBoundingClientRect = () => box(0, 270, 216);
+    // 12 units in 320 drawn 400 wide is 15 px, under the 18 px limit.
+    wide.getBoundingClientRect = () => box(300, 400, 250);
+    applyExpandedLayout(document);
+    const css = document.querySelector("style[data-cc-expanded]")!.textContent;
+    expect(mini.getAttribute("data-cc-text-cap")).toBe("0");
+    // 150 x 18 / 13 = 207 px wide, centred in its cell.
+    expect(css).toContain(
+      'svg[viewBox][data-cc-text-cap="0"]:not(svg svg){max-width:207px!important;display:block!important',
+    );
+    expect(wide.hasAttribute("data-cc-text-cap")).toBe(false);
+  });
+});
+
+describe("sticky table headers", () => {
+  it("lets a table that fits its box stop scrolling, so a sticky header sticks to the page", () => {
+    const original = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      observe() {}
+      disconnect() {}
+    } as unknown as typeof ResizeObserver;
+    try {
+      const doc = render(
+        "<style>th{position:sticky;top:0}</style><table><thead><tr><th>Month</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>",
+      );
+      const scrollBox = doc.querySelector<HTMLElement>(
+        ".cc-visual-table-scroll",
+      )!;
+      Object.defineProperties(scrollBox, {
+        scrollWidth: { value: 300 },
+        clientWidth: { value: 400 },
+      });
+      watchTableScroll(doc);
+      expect(scrollBox.classList.contains("cc-fits")).toBe(true);
+      expect(doc.querySelector(LAYOUT_STYLE)!.textContent).toContain(
+        ".cc-visual-table-scroll.cc-fits{overflow:visible!important}",
+      );
+    } finally {
+      globalThis.ResizeObserver = original;
+    }
   });
 });

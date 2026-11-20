@@ -20,8 +20,11 @@ import { ReviewButton as Button } from "./review-button";
 import { useVisualViewState } from "./use-visual-view-state";
 import {
   adaptVisualLayout,
+  addHostStyles,
   applyExpandedLayout,
   ensureContentInset,
+  restoreLoneDuplicateTitle,
+  syncHostTheme,
   type VisualLayoutLabels,
   watchTableScroll,
 } from "./chat-visual-layout";
@@ -37,12 +40,66 @@ const VISUAL_CSP =
   "default-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; form-action 'none'; base-uri 'none'";
 
 // DOMPurify already drops scripts, meta, link, base, embedded frames, SVG
-// <set>/<animate> and event handlers; links and forms go too.
+// <set>/<animate> and event handlers; links and forms go too. <use> is allowed
+// back for repeated icons, but only with a same-document href (see below).
 const SANITIZE_OPTIONS = {
   WHOLE_DOCUMENT: true,
-  FORBID_TAGS: ["a", "area", "form"],
+  ADD_TAGS: ["use"],
+  // SMIL animation leaves a chart frozen at its start state; the backend
+  // rejects it too, this covers older history.
+  FORBID_TAGS: [
+    "a",
+    "area",
+    "form",
+    "animate",
+    "animatemotion",
+    "animatetransform",
+    "set",
+  ],
   FORBID_ATTR: ["href", "xlink:href"],
 };
+
+// SVG elements that may point at another element of the same document:
+// <use href="#icon">, <textPath href="#arc">, a gradient or pattern inheriting
+// another's stops. Anything else, or any href that is not "#id", is dropped.
+const LOCAL_REFERENCE_TAGS = new Set([
+  "use",
+  "textpath",
+  "lineargradient",
+  "radialgradient",
+  "pattern",
+]);
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const LOCAL_REFERENCE = /^#[A-Za-z_][\w.:-]*$/;
+
+/**
+ * Keeps `href` / `xlink:href` on the SVG elements above when it names an
+ * element of the same document. Such a reference loads nothing and cannot
+ * navigate: the frame has no scripts, and the CSP blocks every other URL.
+ */
+function keepLocalReference(
+  node: Element,
+  data: { attrName: string; attrValue: string; forceKeepAttr?: boolean },
+) {
+  if (
+    (data.attrName === "href" || data.attrName === "xlink:href") &&
+    node.namespaceURI === SVG_NAMESPACE &&
+    LOCAL_REFERENCE_TAGS.has(node.nodeName.toLowerCase()) &&
+    LOCAL_REFERENCE.test(data.attrValue)
+  ) {
+    data.forceKeepAttr = true;
+  }
+}
+
+// A purifier of our own, so the hook never applies to other DOMPurify users.
+let visualPurifier: ReturnType<typeof DOMPurify> | null = null;
+function purifier() {
+  if (!visualPurifier) {
+    visualPurifier = DOMPurify(window);
+    visualPurifier.addHook("uponSanitizeAttribute", keepLocalReference);
+  }
+  return visualPurifier;
+}
 
 // Used where no locale is at hand, e.g. tests; the chat passes its own labels.
 const ENGLISH_LAYOUT_LABELS: VisualLayoutLabels = {
@@ -65,12 +122,13 @@ export interface SandboxedVisual {
 export function prepareVisualDocument(
   html: string,
   labels: VisualLayoutLabels = ENGLISH_LAYOUT_LABELS,
+  titles: string | string[] = [],
 ): SandboxedVisual {
   const failed = { srcDoc: "", hasContent: false };
   // Fail closed where DOMPurify has no DOM (server rendering).
   if (!DOMPurify.isSupported) return failed;
   // WHOLE_DOCUMENT + RETURN_DOM gives the sanitized <html> element.
-  const root = DOMPurify.sanitize(html, {
+  const root = purifier().sanitize(html, {
     ...SANITIZE_OPTIONS,
     RETURN_DOM: true,
   }) as Element | null;
@@ -78,6 +136,7 @@ export function prepareVisualDocument(
   const doc = root.ownerDocument;
   // Host markup added after sanitizing is ours: plain text and fixed CSS only.
   adaptVisualLayout(doc, labels);
+  addHostStyles(doc, titles);
   const clean = root.outerHTML;
   const head = /^<html[^>]*><head>/.exec(clean)?.[0];
   if (!head) return failed;
@@ -94,7 +153,7 @@ export function prepareVisualDocument(
  */
 export function hasSanitizedVisualContent(html: string): boolean {
   if (!DOMPurify.isSupported) return true;
-  const root = DOMPurify.sanitize(html, {
+  const root = purifier().sanitize(html, {
     ...SANITIZE_OPTIONS,
     RETURN_DOM: true,
   }) as Element | null;
@@ -105,32 +164,50 @@ export function hasSanitizedVisualContent(html: string): boolean {
 export function buildSandboxedVisualDocument(
   html: string,
   labels?: VisualLayoutLabels,
+  titles?: string | string[],
 ): string {
-  return prepareVisualDocument(html, labels).srcDoc;
+  return prepareVisualDocument(html, labels, titles).srcDoc;
 }
 
-/** `prepareVisualDocument` with toggle labels in the app's locale, memoized. */
-export function useSandboxedVisual(html: string, lng: string): SandboxedVisual {
+/**
+ * `prepareVisualDocument` with toggle labels in the app's locale, memoized.
+ * `titles` are the headings the card already shows (see `addHostStyles`).
+ * Pass the same ones wherever one visual is shown (card and Expand), so both
+ * get the same srcdoc.
+ */
+export function useSandboxedVisual(
+  html: string,
+  lng: string,
+  titles: string | string[] = [],
+): SandboxedVisual {
   const { t } = useTranslation(lng, "concept-notes");
+  // A stable key, so a new array with the same titles does not rebuild.
+  const titleKey = (typeof titles === "string" ? [titles] : titles).join(
+    "\u0000",
+  );
   return useMemo(
     () =>
-      prepareVisualDocument(html, {
-        // Set as textContent, so i18next escaping would only show &amp; etc.
-        showAll: (count) =>
-          t("chat-visual-show-all", {
-            count,
+      prepareVisualDocument(
+        html,
+        {
+          // Set as textContent, so i18next escaping would only show &amp; etc.
+          showAll: (count) =>
+            t("chat-visual-show-all", {
+              count,
+              interpolation: { escapeValue: false },
+            }),
+          showFirst: (count) =>
+            t("chat-visual-show-first", {
+              count,
+              interpolation: { escapeValue: false },
+            }),
+          scrollHint: t("chat-visual-scroll-hint", {
             interpolation: { escapeValue: false },
           }),
-        showFirst: (count) =>
-          t("chat-visual-show-first", {
-            count,
-            interpolation: { escapeValue: false },
-          }),
-        scrollHint: t("chat-visual-scroll-hint", {
-          interpolation: { escapeValue: false },
-        }),
-      }),
-    [html, t],
+        },
+        titleKey ? titleKey.split("\u0000") : [],
+      ),
+    [html, t, titleKey],
   );
 }
 
@@ -159,6 +236,10 @@ export function VisualIframe({
       sandbox="allow-same-origin"
       srcDoc={srcDoc}
       onLoad={(event) => {
+        // First, so measurements below see the organization theme's colours
+        // and the title the page may need back.
+        syncHostTheme(event.currentTarget);
+        restoreLoneDuplicateTitle(event.currentTarget.contentDocument);
         onLoad?.();
         onFrameLoad?.(event.currentTarget);
       }}
@@ -262,6 +343,8 @@ export type VisualViewStateHandle = ReturnType<typeof useVisualViewState>;
 interface ChatVisualFrameProps {
   /** Only the bordered frame, no header; a parent card draws its own header and Expand. */
   bare?: boolean;
+  /** Headings the card shows, hidden when the page repeats them; defaults to `title`. */
+  headingTitles?: string[];
   html: string;
   lng: string;
   onHeightChange?: () => void;
@@ -273,6 +356,7 @@ interface ChatVisualFrameProps {
 /** An AI-generated static HTML visual, sanitized into a script-free sandboxed iframe. */
 export function ChatVisualFrame({
   bare = false,
+  headingTitles,
   html,
   lng,
   onHeightChange,
@@ -293,7 +377,7 @@ export function ChatVisualFrame({
   // gets a note instead of a blank card. The static check runs on the
   // sanitized document; the load check catches content hidden by CSS. On the
   // server DOMPurify is unavailable, so nothing is judged blank there.
-  const visual = useSandboxedVisual(html, lng);
+  const visual = useSandboxedVisual(html, lng, headingTitles ?? title);
   const staticBlank = DOMPurify.isSupported && !visual.hasContent;
   const [renderedBlankHtml, setRenderedBlankHtml] = useState<string | null>(
     null,

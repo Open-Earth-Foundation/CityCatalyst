@@ -45,10 +45,27 @@ const VISIBLE = [
   "<details><summary>Design</summary>Phase 1</details>",
   "<label><input type=radio name=t checked></label>",
   "<p>42 tCO2e</p><script>alert(1)</script>",
+  // CSS-only marks: values in ::after, a bar painted by its background.
+  '<style>.b::after{content:"Jan 62 mm"}</style><div class="b" style="width:62%"></div>',
+  '<div style="background:#2351DC;width:62%;height:20px"></div>',
+  // Empty waffle cells painted by a stylesheet rule.
+  '<style>.c{width:10px;height:10px;background:#087f8c}</style><div><i class="c"></i><i class="c"></i><i class="c"></i></div>',
+  // A pictogram drawn only by local <use> references.
+  '<svg viewBox="0 0 30 10"><defs><symbol id="h"><path d="M0 0H5"></path></symbol></defs><use href="#h"></use></svg>',
 ];
 
 describe("hasVisualContent", () => {
   it.each(BLANK)("is blank after sanitizing: %s", (html) => {
+    expect(hasVisualContent(buildSandboxedVisualDocument(html))).toBe(false);
+  });
+
+  it.each([
+    '<style>.b::after{content:""}</style><div class="b" style="width:62%"></div>',
+    '<div style="background:transparent;width:62%;height:20px"></div>',
+    '<svg viewBox="0 0 30 10"><use href="https://evil.test/i.svg#h"></use></svg>',
+    // One painted container a script was meant to fill draws no chart.
+    '<style>#chart{background:#fff;height:200px}</style><div id="chart"></div><script>draw()</script>',
+  ])("draws nothing with CSS or a removed reference alone: %s", (html) => {
     expect(hasVisualContent(buildSandboxedVisualDocument(html))).toBe(false);
   });
 

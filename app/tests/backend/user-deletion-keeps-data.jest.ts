@@ -1,6 +1,7 @@
 /**
- * CC-1274: deleting a user keeps their inventory edit history and their
- * imported and uploaded files, with the user reference set to null.
+ * CC-1274: deleting a user keeps their inventory edit history, their imported
+ * and uploaded files and their project invites, with the user reference set to
+ * null. Deleting a user who has a project invite used to fail.
  */
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { randomUUID } from "node:crypto";
@@ -8,7 +9,7 @@ import env from "@next/env";
 import VersionHistoryService from "@/backend/VersionHistoryService";
 import { groupInventoryHistory } from "@/components/GHGI/inventory-versions/history-helpers";
 import { db } from "@/models";
-import type { VersionHistoryEntry } from "@/util/types";
+import { InviteStatus, type VersionHistoryEntry } from "@/util/types";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
@@ -24,6 +25,9 @@ describe("Deleting a user keeps their data", () => {
   const versionIds = { deleted: randomUUID(), kept: randomUUID() };
   const importedFileIds = { deleted: randomUUID(), kept: randomUUID() };
   const userFileIds = { deleted: randomUUID(), kept: randomUUID() };
+  const organizationId = randomUUID();
+  const projectId = randomUUID();
+  const projectInviteIds = { deleted: randomUUID(), kept: randomUUID() };
 
   beforeAll(async () => {
     env.loadEnvConfig(process.cwd());
@@ -46,6 +50,20 @@ describe("Deleting a user keeps their data", () => {
       totalEmissions: 0,
       inventoryType: InventoryTypeEnum.GPC_BASIC,
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+    });
+
+    await db.models.Organization.create({
+      organizationId,
+      name: `${PREFIX}org`,
+      contactEmail: `${PREFIX}org@example.com`,
+      active: true,
+    });
+    await db.models.Project.create({
+      projectId,
+      organizationId,
+      name: `${PREFIX}project`,
+      description: PREFIX,
+      cityCountLimit: 5,
     });
 
     for (const [key, authorId] of [
@@ -77,6 +95,13 @@ describe("Deleting a user keeps their data", () => {
         cityId,
         fileName: `${PREFIX}${key}.csv`,
       });
+      await db.models.ProjectInvite.create({
+        id: projectInviteIds[key],
+        projectId,
+        userId: authorId,
+        email: `${PREFIX}${key}@example.com`,
+        status: InviteStatus.PENDING,
+      });
     }
 
     // The action under test.
@@ -87,6 +112,9 @@ describe("Deleting a user keeps their data", () => {
     await db.models.Version.destroy({ where: { inventoryId } });
     await db.models.ImportedInventoryFile.destroy({ where: { cityId } });
     await db.models.UserFile.destroy({ where: { cityId } });
+    await db.models.ProjectInvite.destroy({ where: { projectId } });
+    await db.models.Project.destroy({ where: { projectId } });
+    await db.models.Organization.destroy({ where: { organizationId } });
     await db.models.Inventory.destroy({ where: { inventoryId } });
     await db.models.City.destroy({ where: { cityId } });
     await db.models.User.destroy({ where: { userId: keptUserId } });
@@ -119,15 +147,29 @@ describe("Deleting a user keeps their data", () => {
     expect(file!.userId).toBeNull();
   });
 
+  it("keeps their ProjectInvite rows, with no user", async () => {
+    const invite = await db.models.ProjectInvite.findByPk(
+      projectInviteIds.deleted,
+    );
+    expect(invite).not.toBeNull();
+    expect(invite!.userId).toBeNull();
+    // The invite stays addressed to the same email.
+    expect(invite!.email).toBe(`${PREFIX}deleted@example.com`);
+  });
+
   it("leaves the data of other users untouched", async () => {
     const version = await db.models.Version.findByPk(versionIds.kept);
     const imported = await db.models.ImportedInventoryFile.findByPk(
       importedFileIds.kept,
     );
     const userFile = await db.models.UserFile.findByPk(userFileIds.kept);
+    const invite = await db.models.ProjectInvite.findByPk(
+      projectInviteIds.kept,
+    );
     expect(version!.authorId).toBe(keptUserId);
     expect(imported!.userId).toBe(keptUserId);
     expect(userFile!.userId).toBe(keptUserId);
+    expect(invite!.userId).toBe(keptUserId);
   });
 
   it("returns version history with a null author for the deleted user", async () => {

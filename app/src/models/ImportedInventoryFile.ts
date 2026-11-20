@@ -1,5 +1,5 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Op, Optional } from "sequelize";
 import type { User, UserId } from "./User";
 import type { City, CityId } from "./City";
 import type { Inventory, InventoryId } from "./Inventory";
@@ -45,6 +45,15 @@ export interface ImportedInventoryFileAttributes {
   created?: Date;
   lastUpdated?: Date;
   completedAt?: Date | null;
+}
+
+/**
+ * Filter for finding an import the signed-in user may open: one they uploaded,
+ * or one whose uploader has been deleted (user_id is null). Without the null
+ * case a kept file could never be found again, because no one's id matches.
+ */
+export function uploadedByOrOrphaned(userId: string) {
+  return { [Op.or]: [userId, null] };
 }
 
 export type ImportedInventoryFilePk = "id";

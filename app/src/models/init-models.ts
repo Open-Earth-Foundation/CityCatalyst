@@ -1231,6 +1231,8 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
@@ -1247,6 +1249,8 @@ export function initModels(sequelize: Sequelize) {
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",
     as: "projectInvites",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectModules.belongsTo(Project, {
     as: "project",

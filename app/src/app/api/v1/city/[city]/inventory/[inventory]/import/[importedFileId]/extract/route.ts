@@ -45,6 +45,7 @@
  *         description: PDF OCR storage is not configured.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import { enqueueInventoryPdfOcr } from "@/backend/PdfOcrService";
 import { db } from "@/models";
@@ -70,7 +71,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId: session.user.id,
+      userId: uploadedByOrOrphaned(session.user.id),
     },
   });
   if (!importedFile) {

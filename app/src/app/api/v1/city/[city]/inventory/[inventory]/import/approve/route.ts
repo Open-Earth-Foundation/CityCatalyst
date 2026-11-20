@@ -59,6 +59,7 @@
  *         description: Unauthorized.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
@@ -268,7 +269,7 @@ async function runApproveImportInBackground(args: {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId,
+      userId: uploadedByOrOrphaned(userId),
     },
   });
 
@@ -521,7 +522,7 @@ export const POST = apiHandler(
         id: importedFileId,
         inventoryId,
         cityId,
-        userId: session.user.id,
+        userId: uploadedByOrOrphaned(session.user.id),
       },
     });
 
@@ -623,7 +624,7 @@ export const POST = apiHandler(
             id: importedFileId,
             inventoryId,
             cityId,
-            userId: session.user.id,
+            userId: uploadedByOrOrphaned(session.user.id),
             importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
             lastUpdated: importedFile.lastUpdated,
           },

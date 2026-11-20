@@ -5,9 +5,17 @@
  *
  *   npx tsx scripts/pdf-benchmark.ts --cases C-004,C-010
  *   npx tsx scripts/pdf-benchmark.ts --list
+ *   npx tsx scripts/pdf-benchmark.ts --cases C-015 --pipeline precomputed --rows-dir <folder>
+ *
+ * With --pipeline precomputed the rows come from an external pipeline's
+ * envelope folder (manifest.json + one file per case and attempt) instead of
+ * OCR and extraction; a case with no envelope fails as setup_error and marks
+ * the run incomplete.
  *
  * Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error,
- * 130 interrupted.
+ * 3 incomplete (an --all run with missing or unfinished cases, or a precomputed
+ * run with a case that has no envelope; no regression or error), 130
+ * interrupted.
  */
 import env from "@next/env";
 import { execFileSync } from "node:child_process";
@@ -47,6 +55,10 @@ import {
   adaptLegacySummary,
   type LegacySummary,
 } from "@/backend/ingestion-benchmark/legacy-results";
+import {
+  readRowsDir,
+  type RowsDir,
+} from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import { rescoreCase } from "@/backend/ingestion-benchmark/rescore";
 import {
   pdfExtractionModel,
@@ -57,13 +69,18 @@ import {
   ZERO_TOKENS,
   appendIndexLine,
   caseMetrics,
+  incompleteRun,
   gitInfo,
+  pricesFor,
   renderIndexLine,
-  runFolderName,
+  rescoredRunFlags,
+  reserveRunFolder,
   writeRunArtifact,
   type Block,
   type CaseResult,
+  type PipelineInfo,
   type Prices,
+  type PricesFile,
   type RunEntry,
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
@@ -176,6 +193,27 @@ function printList(
   console.log(`${manifest.length} cases`);
 }
 
+/**
+ * Who produced the rows: study and stage come from the folder manifest, mode
+ * and version from the first envelope that can be read (null when none can).
+ */
+function pipelineInfo(
+  rows: RowsDir,
+  selected: CaseManifestEntry[],
+  runs: number,
+): PipelineInfo {
+  for (const entry of selected) {
+    for (let attempt = 1; attempt <= runs; attempt++) {
+      try {
+        return rows.get(entry.id, attempt).info;
+      } catch {
+        // that attempt fails on its own; try the next one
+      }
+    }
+  }
+  return { id: "precomputed", ...rows.info, mode: null, version: null };
+}
+
 function missingInputs(
   selected: CaseManifestEntry[],
   config: LocalConfig,
@@ -205,13 +243,13 @@ async function rescoreRun(options: CliOptions): Promise<number> {
   let config: LocalConfig;
   let manifest: CaseManifestEntry[];
   let keys: Record<string, KeyFile>;
-  let allPrices: Record<string, Prices>;
+  let allPrices: PricesFile;
   let old: LegacySummary;
   try {
     config = loadConfig(resolve(options.configPath), false);
     manifest = loadManifest(MANIFEST_PATH);
     keys = loadAnswerKeys(config.answerKeys);
-    allPrices = readJson<Record<string, Prices>>(PRICES_PATH, "Prices file");
+    allPrices = readJson<PricesFile>(PRICES_PATH, "Prices file");
     old = readJson<LegacySummary>(resolve(options.rescore!), "Results file");
     if (!Array.isArray(old.results)) {
       throw new ConfigError(
@@ -239,7 +277,8 @@ async function rescoreRun(options: CliOptions): Promise<number> {
   const results = before.map((result) => rescoreCase(result, keys[result.id]));
   const extractionModel = old.extractionModel ?? old.llmModel;
   const prices =
-    old.prices ?? (extractionModel ? allPrices[extractionModel] : undefined);
+    old.prices ??
+    pricesFor(allPrices, { pipeline: !!old.pipeline, model: extractionModel });
 
   const caseVersions = results.map((result) =>
     caseTestSetVersion(
@@ -262,18 +301,29 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     measuredAt: new Date().toISOString(),
     ...gitInfo(),
     llmModel: old.llmModel,
-    extractionModel: old.extractionModel,
-    reasoningEffort: old.reasoningEffort,
-    ocrModel: old.ocrModel,
+    extractionModel: old.pipeline ? undefined : old.extractionModel,
+    // A pipeline run has no built-in OCR model or reasoning effort.
+    ...(old.pipeline
+      ? {}
+      : { reasoningEffort: old.reasoningEffort, ocrModel: old.ocrModel }),
     prices,
     runsPerFile: old.runsPerFile ?? 3,
     heldOut: old.heldOut,
     results,
     selection: results.map((result) => result.id),
-    exploratory: (old.runsPerFile ?? 3) !== 3,
+    ...rescoredRunFlags(old),
+    // A pipeline run that had no envelope for a case stays incomplete.
+    incomplete: incompleteRun({
+      all: false,
+      missing: [],
+      unfinished: [],
+      results,
+    }),
     interrupted: false,
-    promptHash: old.promptHash ?? null,
-    inputRepresentation: old.inputRepresentation ?? null,
+    promptHash: old.pipeline ? null : (old.promptHash ?? null),
+    inputRepresentation: old.pipeline
+      ? null
+      : (old.inputRepresentation ?? null),
     testSetVersion: combinedTestSetVersion(caseVersions),
     scorerVersion: SCORER_VERSION,
     dirty: dirty(),
@@ -281,20 +331,23 @@ async function rescoreRun(options: CliOptions): Promise<number> {
     mlflowNote: "not logged (rescore)",
     rescoredFrom: { measuredAt: old.measuredAt, commit: old.commit },
   };
+  const rescoreFolder = reserveRunFolder(
+    outRoot,
+    summary.measuredAt,
+    summary.commit,
+    summary.pipeline?.study,
+  );
   const runFolder = writeRunArtifact({
     outRoot,
     summary,
     verdicts,
     blocks,
     gates: [],
+    folder: rescoreFolder,
   });
   appendIndexLine(
     join(outRoot, "INDEX.md"),
-    renderIndexLine(
-      summary,
-      blocks,
-      runFolderName(summary.measuredAt, summary.commit),
-    ),
+    renderIndexLine(summary, blocks, rescoreFolder),
   );
 
   const pct = (value: number | null) =>
@@ -329,13 +382,13 @@ export async function main(argv: string[]): Promise<number> {
   let manifest: CaseManifestEntry[];
   let keys: Record<string, KeyFile>;
   let baseline: Baseline;
-  let allPrices: Record<string, Prices>;
+  let allPrices: PricesFile;
   try {
     config = loadConfig(resolve(options.configPath));
     manifest = loadManifest(MANIFEST_PATH);
     keys = loadAnswerKeys(config.answerKeys);
     baseline = loadBaseline(BASELINE_PATH);
-    allPrices = readJson<Record<string, Prices>>(PRICES_PATH, "Prices file");
+    allPrices = readJson<PricesFile>(PRICES_PATH, "Prices file");
   } catch (error) {
     console.error((error as Error).message);
     return 2;
@@ -354,7 +407,11 @@ export async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const extractionModel = extraction.model;
-  const prices = allPrices[extractionModel];
+  // A precomputed run used no built-in OCR or LLM: only its envelopes cost.
+  const prices = pricesFor(allPrices, {
+    pipeline: !!options.pipeline,
+    model: extractionModel,
+  });
 
   if (options.list) {
     printList(manifest, baseline, outRoot, prices);
@@ -377,8 +434,21 @@ export async function main(argv: string[]): Promise<number> {
     throw error;
   }
 
+  // Read once per run; an attempt without an envelope fails on its own.
+  let rowsDir: RowsDir | undefined;
+  if (options.pipeline) {
+    try {
+      rowsDir = readRowsDir(resolve(options.rowsDir!));
+    } catch (error) {
+      console.error((error as Error).message);
+      return 2;
+    }
+  }
+
   const { createContext, disposeContext, pdfPathFor, runAttempt } =
     await import("./pdf-benchmark/run-case");
+  const { runPrecomputedAttempt } =
+    await import("./pdf-benchmark/precomputed-attempt");
   const missing = missingInputs(selected, config, keys, pdfPathFor);
   // A full-set run goes on without the cases whose inputs are missing here and
   // marks itself incomplete; an explicit selection stops before any paid call.
@@ -422,9 +492,12 @@ export async function main(argv: string[]): Promise<number> {
   console.log(
     `Selected ${selected.length} case(s) x ${options.runs} attempt(s): ${selected.map((c) => c.id).join(", ")}`,
   );
-  console.log(
-    `Forecast: ${money(forecastTotal)}, about ${minutes(forecastSeconds)} (from the baseline usage; model ${extractionModel ?? "unknown"}${prices ? "" : ", no prices for this model"})`,
-  );
+  // A precomputed run calls no OCR or LLM, so the built-in forecast does not apply.
+  if (!options.pipeline) {
+    console.log(
+      `Forecast: ${money(forecastTotal)}, about ${minutes(forecastSeconds)} (from the baseline usage; model ${extractionModel ?? "unknown"}${prices ? "" : ", no prices for this model"})`,
+    );
+  }
   if (options.dryRun) return 0;
 
   const { promptHash } = await import("./pdf-benchmark/prompt-hash");
@@ -497,7 +570,16 @@ export async function main(argv: string[]): Promise<number> {
         for (let attempt = 1; attempt <= options.runs; attempt++) {
           if (interrupted) break;
           console.log(`[${entry.id}] attempt ${attempt}/${options.runs}`);
-          const run = await runAttempt(ctx, entry, key, attempt);
+          const run = rowsDir
+            ? await runPrecomputedAttempt(
+                ctx,
+                entry,
+                key,
+                attempt,
+                rowsDir,
+                prices ?? {},
+              )
+            : await runAttempt(ctx, entry, key, attempt);
           console.log(
             `[${entry.id}] attempt ${attempt}: ${run.failureMode}${run.message ? ` (${run.message})` : ""}`,
           );
@@ -553,13 +635,16 @@ export async function main(argv: string[]): Promise<number> {
     const verdicts: CaseVerdict[] = results.map((result) =>
       caseVerdict(result, keys[result.id], prices),
     );
+    // A pipeline run is not compared with the built-in baseline or budgeted
+    // against its forecast: it holds the pipeline's rows, not the built-in import's.
+    const gateBaseline: Baseline = rowsDir ? {} : baseline;
     const gates: CaseGate[] = verdicts.map((verdict) => {
-      const before = baselineResult(baseline, outRoot, verdict.id);
+      const before = baselineResult(gateBaseline, outRoot, verdict.id);
       const comparison = compareWithBaseline({
         id: verdict.id,
         current: verdict,
         currentVersion: caseVersions.get(verdict.id)!,
-        baseline,
+        baseline: gateBaseline,
         key: keys[verdict.id],
         runsRoot: outRoot,
         prices,
@@ -569,6 +654,7 @@ export async function main(argv: string[]): Promise<number> {
         comparison,
         before ? forecastUsd(before, prices, verdict.attempts) : null,
         options.runs,
+        !!rowsDir,
       );
     });
     const manifestCounts = (["validated", "held-out", "dev"] as Block[]).reduce(
@@ -581,7 +667,16 @@ export async function main(argv: string[]): Promise<number> {
     const blocks = blockSummaries(verdicts, manifestCounts);
 
     const git = gitInfo();
-    const folderName = runFolderName(measuredAt, git.commit);
+    const pipeline = rowsDir
+      ? pipelineInfo(rowsDir, selected, options.runs)
+      : undefined;
+    // Reserved now so a baseline entry, the index and the folder agree on the name.
+    const folderName = reserveRunFolder(
+      outRoot,
+      measuredAt,
+      git.commit,
+      pipeline?.study,
+    );
     const baselineEntries: Record<string, BaselineEntry> = Object.fromEntries(
       verdicts.map((verdict) => [
         verdict.id,
@@ -605,30 +700,43 @@ export async function main(argv: string[]): Promise<number> {
           options.runs,
       )
       .map((entry) => entry.id);
-    const incomplete =
-      options.all && (missingCases.length > 0 || unfinished.length > 0)
-        ? { missing: missingCases, unfinished }
-        : undefined;
+    const incomplete = incompleteRun({
+      all: !!options.all,
+      missing: missingCases,
+      unfinished,
+      results,
+    });
     const baselineNotRecorded =
-      options.updateBaseline && options.runs === 3 && !interrupted
+      options.updateBaseline &&
+      options.runs === 3 &&
+      !options.pipeline &&
+      !interrupted
         ? runnerFailedCases(baselineEntries)
         : [];
     const summary: RunSummary = {
       measuredAt,
       ...git,
-      extractionModel,
-      reasoningEffort: extraction.reasoningEffort,
-      ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+      // A precomputed run used no built-in extraction: claim no model, prompt or input.
+      extractionModel: rowsDir ? undefined : extractionModel,
+      ...(rowsDir
+        ? {}
+        : {
+            reasoningEffort: extraction.reasoningEffort,
+            ocrModel: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
+          }),
       prices,
       runsPerFile: options.runs,
       heldOut: manifest.filter((e) => e.block === "held-out").map((e) => e.id),
       results,
       selection: selected.map((entry) => entry.id),
-      exploratory: options.runs !== 3,
+      exploratory: options.runs !== 3 || !!options.pipeline,
+      exploratoryReason: options.pipeline ? "pipeline" : undefined,
+      ...(pipeline ? { pipeline } : {}),
       interrupted,
-      promptHash: promptHash(),
-      inputRepresentation:
-        process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown",
+      promptHash: rowsDir ? null : promptHash(),
+      inputRepresentation: rowsDir
+        ? null
+        : (process.env.PDF_BENCHMARK_INPUT_REPRESENTATION ?? "ocr-markdown"),
       testSetVersion: combinedTestSetVersion([...caseVersions.values()]),
       scorerVersion: SCORER_VERSION,
       dirty: dirty(),
@@ -644,6 +752,7 @@ export async function main(argv: string[]): Promise<number> {
       verdicts,
       blocks,
       gates,
+      folder: folderName,
     });
 
     const mlflowConfig = mlflowConfigFromEnv(process.env, options.noMlflow);
@@ -663,7 +772,14 @@ export async function main(argv: string[]): Promise<number> {
       else summary.mlflowNote = `MLflow logging failed: ${logged.reason}`;
     }
     // Rewrite so the report carries the MLflow URL or note.
-    writeRunArtifact({ outRoot, summary, verdicts, blocks, gates });
+    writeRunArtifact({
+      outRoot,
+      summary,
+      verdicts,
+      blocks,
+      gates,
+      folder: folderName,
+    });
 
     // OCR text is third-party document text: written locally only, git-ignored.
     for (const [attemptKey, text] of ocrTexts) {
@@ -678,7 +794,7 @@ export async function main(argv: string[]): Promise<number> {
       renderIndexLine(summary, blocks, folderName),
     );
 
-    if (options.updateBaseline) {
+    if (options.updateBaseline && !options.pipeline) {
       const updated = updateBaseline({
         baseline,
         entries: baselineEntries,

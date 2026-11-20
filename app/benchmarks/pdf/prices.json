@@ -3,5 +3,27 @@
     "llmInputPerMTok": 0.2,
     "llmOutputPerMTok": 1.2,
     "ocrPerPage": 0.002
+  },
+  "models": {},
+  "vendors": {
+    "mistral/annotations/mistral-ocr-4-1": {
+      "perPage": 0.005,
+      "source": "https://docs.mistral.ai/models/ocr-4-1",
+      "date": "2026-11-18",
+      "note": "OCR 4.1 card: $5 per 1000 annotated pages. Not confirmed whether this includes the $4 per 1000 OCR pages."
+    },
+    "reducto/deep-extract": {
+      "perPage": 0.04,
+      "source": "https://reducto.ai/pricing",
+      "date": "2026-11-18",
+      "note": "Deep Extract list price $40 per 1,000 pages (also https://docs.reducto.ai/reference/credit-usage.md, effective 2026-09-01). Parse included. Dense extractions over 100 fields per page may add an unpublished per-field surcharge; the generator then reports cost n/a. Credit-based accounts: no published price per credit, cost n/a."
+    },
+    "llamaextract/agentic-plus": {
+      "perPage": 0.09,
+      "perCredit": 0.0015,
+      "source": "https://developers.llamaindex.ai/llamaparse/general/pricing/#extraction",
+      "date": "2026-11-18",
+      "note": "Pay as you go $1.50 per 1,000 credits. Agentic Plus: 50 extract credits + 10 Agentic parse credits = 60 credits per page ($0.09). Cost uses the credits the job reports; perPage only when they are missing."
+    }
   }
 }

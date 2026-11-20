@@ -11,6 +11,7 @@ import {
 } from "@/backend/ingestion-benchmark/redact";
 import type {
   CaseResult,
+  PipelineAttempt,
   RunEntry,
   RunSummary,
 } from "@/backend/ingestion-benchmark/report";
@@ -183,6 +184,94 @@ describe("publishableSummary", () => {
     expect(leaks(JSON.stringify(out))).toEqual([]);
     expect(JSON.stringify(input)).toBe(before);
     expect(out.results[0].runs[0].stored).toEqual(stored);
+  });
+
+  it("leaves no envelope benchmark or repair content in a pipeline run entry", () => {
+    const BENCH = "SECRET-benchmark-value-4242";
+    const REPAIR = "SECRET-repair-value-5151";
+    const withPipeline = run(1, {
+      pipeline: {
+        executionStatus: "ok",
+        rowsInEnvelope: 3,
+        unknownRowRoles: {},
+        droppedRows: {},
+        rowRoles: { value: 3 },
+        scopeBasis: {},
+        totalInclusion: {},
+        reported: {
+          totalT: 932,
+          grossT: null,
+          netT: null,
+          removalsT: null,
+          totalBasis: null,
+          totalKind: null,
+        },
+        costUsd: null,
+        costSource: "none",
+        usage: {},
+        lostRows: {},
+        // Anything an envelope carries beyond the mapped counts must not leave.
+        benchmark: { expected_total: BENCH },
+        repair: { note: REPAIR },
+      } as unknown as PipelineAttempt,
+    });
+    const out = publishableSummary({
+      ...summaryOf([{ ...caseResult(), runs: [withPipeline] }]),
+      pipeline: {
+        id: "precomputed",
+        study: "s",
+        stage: "t",
+        mode: null,
+        version: null,
+      },
+    });
+    const text = JSON.stringify(out);
+    expect(text).not.toContain("benchmark");
+    expect(text).not.toContain("repair");
+    expect(text).not.toContain(BENCH);
+    expect(text).not.toContain(REPAIR);
+    expect(out.results[0].runs[0].pipeline?.rowsInEnvelope).toBe(3);
+    expect(out.pipeline?.study).toBe("s");
+  });
+
+  it("keeps the parent-reference rows and redacts the variant score of a pipeline run", () => {
+    const parentRefRows: StoredValue[] = [
+      { gpc: "I.3", scope: null, valueT: 12, omit: false, notation: null },
+    ];
+    const withVariant = run(1, {
+      pipeline: {
+        executionStatus: "completed",
+        rowsInEnvelope: 3,
+        unknownRowRoles: {},
+        droppedRows: {},
+        rowRoles: {},
+        scopeBasis: {},
+        totalInclusion: {},
+        reported: {
+          totalT: null,
+          grossT: null,
+          netT: null,
+          removalsT: null,
+          totalBasis: null,
+          totalKind: null,
+        },
+        costUsd: null,
+        costSource: "none",
+        usage: {},
+        lostRows: {},
+        parentRefRows,
+        parentRefOverlap: 1,
+        variantScore: scoreFile(key, [...stored, ...parentRefRows]),
+      },
+    });
+    const out = publishableSummary(
+      summaryOf([{ ...caseResult(), runs: [withVariant] }]),
+    );
+    expect(leaks(JSON.stringify(out))).toEqual([]);
+    const pipeline = out.results[0].runs[0].pipeline;
+    expect(pipeline?.parentRefRows).toEqual(parentRefRows);
+    expect(pipeline?.parentRefOverlap).toBe(1);
+    expect(pipeline?.variantScore).toMatchObject({ missingRowCount: 1 });
   });
 
   it("accepts a file without results", () => {

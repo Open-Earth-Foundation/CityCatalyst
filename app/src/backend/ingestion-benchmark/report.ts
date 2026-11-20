@@ -21,6 +21,7 @@ import type {
   BlockSummary,
   CaseVerdict,
 } from "@/backend/ingestion-benchmark/metrics";
+import type { ReadEnvelope } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
 import type {
   FileScore,
   StoredValue,
@@ -38,12 +39,59 @@ export type Tokens = {
   maxCompletionTokens?: number;
 };
 
-/** Unit prices in USD. Any missing price makes the cost "n/a" instead of a guess. */
+/** USD per million tokens of a model a precomputed pipeline used, with where the price was read. */
+export type ModelPrice = {
+  inputPerMTok: number;
+  outputPerMTok: number;
+  /** Cached input tokens; without it they cost inputPerMTok. */
+  cachedInputPerMTok?: number;
+  /** URL of the price page. */
+  source: string;
+  date: string;
+};
+
+/** USD per page of a document-extraction API, with where the price was read. */
+export type VendorPrice = {
+  perPage: number;
+  /** List price of one vendor credit, for vendors that report credits used. */
+  perCredit?: number;
+  source: string;
+  date: string;
+};
+
+/**
+ * Unit prices in USD. Any missing price makes the cost "n/a" instead of a
+ * guess. The llm and ocr prices are those of the built-in extraction; `models`
+ * and `vendors` price the envelopes of a precomputed pipeline.
+ */
 export type Prices = {
   llmInputPerMTok?: number;
   llmOutputPerMTok?: number;
   ocrPerPage?: number;
+  models?: Record<string, ModelPrice>;
+  vendors?: Record<string, VendorPrice>;
 };
+
+/** prices.json: built-in prices by model name, plus `models` and `vendors` for precomputed pipelines. */
+export type PricesFile = {
+  models?: Record<string, ModelPrice>;
+  vendors?: Record<string, VendorPrice>;
+  [builtInModel: string]: unknown;
+};
+
+/**
+ * The prices of one run: the built-in model's entry, or for a precomputed
+ * pipeline only `models` and `vendors` (it used no built-in OCR or LLM).
+ */
+export function pricesFor(
+  file: PricesFile,
+  run: { pipeline: boolean; model?: string },
+): Prices | undefined {
+  if (run.pipeline) {
+    return { models: file.models ?? {}, vendors: file.vendors ?? {} };
+  }
+  return run.model ? (file[run.model] as Prices | undefined) : undefined;
+}
 
 export type FailureMode =
   | "scored"
@@ -62,6 +110,49 @@ export type StageMs = {
   extraction: number | null;
   import: number | null;
   total: number;
+};
+
+/** Who produced the rows of a precomputed run. */
+export type PipelineInfo = {
+  id: string;
+  study: string | null;
+  stage: string | null;
+  mode: string | null;
+  version: string | null;
+};
+
+/** What a precomputed pipeline reported for one attempt. */
+export type PipelineAttempt = {
+  executionStatus: string;
+  rowsInEnvelope: number;
+  unknownRowRoles: Record<string, number>;
+  droppedRows: Record<string, number>;
+  rowRoles: Record<string, number>;
+  scopeBasis: Record<string, number>;
+  totalInclusion: Record<string, number>;
+  reported: {
+    totalT: number | null;
+    grossT: number | null;
+    netT: number | null;
+    removalsT: number | null;
+    totalBasis: string | null;
+    totalKind: string | null;
+  };
+  costUsd: number | null;
+  costSource: "envelope" | "tokens" | "none";
+  usage: Record<string, number>;
+  /** Rows approve skipped, by import issue code (e.g. gpc-reference-unknown). */
+  lostRows: Record<string, number>;
+  /**
+   * Unsplit I/II/III subsector rows of the envelope that approve did not store,
+   * as the pipeline gave them (pipeline output, not answer-key content). Set
+   * on scored attempts.
+   */
+  parentRefRows?: StoredValue[];
+  /** Of parentRefRows, those whose children approve stored too: the variant counts them twice. */
+  parentRefOverlap?: number;
+  /** The "parent refs (Mirco)" variant score (scoring-variant.ts); the standard one is RunEntry.score. */
+  variantScore?: FileScore | null;
 };
 
 export type RunEntry = {
@@ -83,6 +174,10 @@ export type RunEntry = {
   usage?: Tokens;
   /** Pages whose extraction failed twice and were skipped. */
   failedPages?: number[];
+  /** Set when the rows came from a precomputed pipeline. */
+  pipeline?: PipelineAttempt;
+  /** Set when the precomputed rows folder has no envelope for this attempt. */
+  missingEnvelope?: true;
 };
 
 export type CaseResult = {
@@ -121,8 +216,11 @@ export type RunSummary = {
   heldOut?: string[];
   results: CaseResult[];
   selection: string[];
-  /** Attempts other than 3 per case. */
+  /** Attempts other than 3 per case, or a precomputed pipeline. */
   exploratory: boolean;
+  exploratoryReason?: "attempts" | "pipeline";
+  /** Set when the rows came from a precomputed pipeline. */
+  pipeline?: PipelineInfo;
   interrupted: boolean;
   promptHash: string | null;
   inputRepresentation: string | null;
@@ -145,6 +243,53 @@ export type RunSummary = {
   /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
   rescoredFrom?: { measuredAt: string; commit: string };
 };
+
+/** Reason recorded for a case the precomputed rows folder has no envelope for. */
+export const NO_ENVELOPE_REASON = "no envelope in the rows folder";
+
+/**
+ * Exploratory flags of a rescore: the rescored run keeps the pipeline of the
+ * run it rescores, and a pipeline run stays exploratory.
+ */
+export function rescoredRunFlags(old: {
+  runsPerFile?: number;
+  pipeline?: PipelineInfo;
+}): Pick<RunSummary, "exploratory" | "exploratoryReason" | "pipeline"> {
+  if (old.pipeline) {
+    return {
+      exploratory: true,
+      exploratoryReason: "pipeline",
+      pipeline: old.pipeline,
+    };
+  }
+  return { exploratory: (old.runsPerFile ?? 3) !== 3 };
+}
+
+/**
+ * Whether a run is incomplete: a full-set run (--all) with cases left out or
+ * unfinished, or any run with a case the precomputed rows folder has no
+ * envelope for.
+ */
+export function incompleteRun(input: {
+  all: boolean;
+  missing: { id: string; reason: string }[];
+  unfinished: string[];
+  results: CaseResult[];
+}): RunSummary["incomplete"] {
+  const noEnvelope = input.results
+    .filter((result) => result.runs.some((run) => run.missingEnvelope))
+    .map((result) => ({
+      id: result.id,
+      reason: NO_ENVELOPE_REASON,
+    }));
+  const fullSetGap =
+    input.all && (input.missing.length > 0 || input.unfinished.length > 0);
+  if (!fullSetGap && noEnvelope.length === 0) return undefined;
+  return {
+    missing: [...input.missing, ...noEnvelope],
+    unfinished: input.all ? input.unfinished : [],
+  };
+}
 
 export type CaseMetrics = {
   ocrOk: boolean | null;
@@ -299,11 +444,139 @@ export function costUsd(usage: CaseUsage, prices?: Prices): number | null {
   );
 }
 
+/**
+ * Tokens of a model at its price. Cached input tokens are part of the input
+ * tokens (OpenAI usage); reasoning tokens are part of the output tokens.
+ */
+function tokenCost(
+  usage: Record<string, number>,
+  prefix: string,
+  price: ModelPrice,
+): number | null {
+  const input =
+    usage[`${prefix}input_tokens`] ?? usage[`${prefix}prompt_tokens`];
+  const output =
+    usage[`${prefix}output_tokens`] ?? usage[`${prefix}completion_tokens`];
+  if (input === undefined || output === undefined) return null;
+  const cached =
+    usage[`${prefix}input_tokens_details.cached_tokens`] ??
+    usage[`${prefix}prompt_tokens_details.cached_tokens`] ??
+    0;
+  return (
+    ((input - cached) / 1e6) * price.inputPerMTok +
+    (cached / 1e6) * (price.cachedInputPerMTok ?? price.inputPerMTok) +
+    (output / 1e6) * price.outputPerMTok
+  );
+}
+
+/**
+ * Cost of one envelope: its own `cost_usd` first; else its tokens at
+ * `prices.models` for the model the envelope version names, or for models
+ * named in its usage keys (`<model>.input_tokens`); else none.
+ */
+export function pipelineCostUsd(
+  envelope: Pick<ReadEnvelope, "costUsd" | "usage" | "info">,
+  prices: Prices | undefined,
+): Pick<PipelineAttempt, "costUsd" | "costSource"> {
+  if (envelope.costUsd !== null) {
+    return { costUsd: envelope.costUsd, costSource: "envelope" };
+  }
+  const none = { costUsd: null, costSource: "none" as const };
+  const models = prices?.models ?? {};
+  const version = envelope.info.version;
+  if (version && models[version]) {
+    const cost = tokenCost(envelope.usage, "", models[version]);
+    return cost === null ? none : { costUsd: cost, costSource: "tokens" };
+  }
+  const named = Object.keys(models).filter(
+    (model) => `${model}.input_tokens` in envelope.usage,
+  );
+  const costs = named.map((model) =>
+    tokenCost(envelope.usage, `${model}.`, models[model]),
+  );
+  if (costs.length === 0 || costs.some((cost) => cost === null)) return none;
+  return {
+    costUsd: (costs as number[]).reduce((sum, cost) => sum + cost, 0),
+    costSource: "tokens",
+  };
+}
+
+const sumOrNull = (values: (number | null)[]): number | null =>
+  values.length === 0 || values.some((value) => value === null)
+    ? null
+    : (values as number[]).reduce((sum, value) => sum + value, 0);
+
+/**
+ * What a case cost: a precomputed case its envelopes (null when one has no
+ * cost), a built-in case its OCR and LLM usage at `prices`.
+ */
+export function caseCostUsd(
+  result: CaseResult,
+  prices: Prices | undefined,
+): number | null {
+  const envelopes = result.runs.flatMap((run) =>
+    run.pipeline ? [run.pipeline] : [],
+  );
+  return envelopes.length
+    ? sumOrNull(envelopes.map((pipeline) => pipeline.costUsd))
+    : costUsd(caseUsage(result), prices);
+}
+
+/** What the run cost: every envelope of a precomputed run, or the built-in usage at its prices. */
+export function runCostUsd(summary: RunSummary): number | null {
+  return summary.pipeline
+    ? sumOrNull(
+        summary.results.flatMap((result) =>
+          result.runs.flatMap((run) =>
+            run.pipeline ? [run.pipeline.costUsd] : [],
+          ),
+        ),
+      )
+    : costUsd(totalUsage(summary.results), summary.prices);
+}
+
 const money = (value: number | null) =>
   value === null ? "n/a" : `$${value.toFixed(value < 1 ? 3 : 2)}`;
 
 const tokensText = (usage: CaseUsage) =>
   `${(usage.promptTokens / 1000).toFixed(0)}k / ${(usage.completionTokens / 1000).toFixed(0)}k`;
+
+/** Input or output tokens of an envelope's usage: the plain key, else the sum of per-model keys. */
+function envelopeTokens(
+  usage: Record<string, number>,
+  names: string[],
+): number | null {
+  for (const name of names) if (name in usage) return usage[name];
+  const nested = Object.entries(usage).filter(([key]) =>
+    names.some((name) => key.endsWith(`.${name}`)),
+  );
+  return nested.length ? nested.reduce((sum, [, n]) => sum + n, 0) : null;
+}
+
+/**
+ * Tokens of a case: a precomputed case shows what its envelopes reported (n/a
+ * when one gives none), a built-in case its measured usage.
+ */
+function caseTokensText(result: CaseResult): string {
+  const envelopes = result.runs.flatMap((run) =>
+    run.pipeline ? [run.pipeline.usage] : [],
+  );
+  if (envelopes.length === 0) return tokensText(caseUsage(result));
+  const input = envelopes.map((u) =>
+    envelopeTokens(u, ["input_tokens", "prompt_tokens"]),
+  );
+  const output = envelopes.map((u) =>
+    envelopeTokens(u, ["output_tokens", "completion_tokens"]),
+  );
+  if (input.includes(null) || output.includes(null)) return "n/a";
+  const k = (values: (number | null)[]) =>
+    ((values as number[]).reduce((sum, n) => sum + n, 0) / 1000).toFixed(0);
+  return `${k(input)}k / ${k(output)}k`;
+}
+
+/** Keeps a long free-text field readable in a table cell. */
+const clip = (text: string, max = 200) =>
+  text.length > max ? `${text.slice(0, max)}...` : text;
 
 const pct = (ratio: number | null) =>
   ratio === null ? "n/a" : `${Math.round(ratio * 100)}%`;
@@ -346,6 +619,148 @@ function failureModesText(verdict: CaseVerdict | undefined): string {
   return parts.length ? parts.join(", ") : "none";
 }
 
+const NOT_BUILT_IN = "n/a (precomputed pipeline)";
+
+function pipelineText(pipeline: PipelineInfo): string {
+  const where = [pipeline.study, pipeline.stage].filter(Boolean).join("/");
+  const how = [pipeline.mode, pipeline.version].filter(Boolean).join(" ");
+  const detail = [where, how].filter(Boolean).join(", ");
+  return `${pipeline.id}${detail ? ` (${detail})` : ""}`;
+}
+
+const tally = (counts: Record<string, number>) => {
+  const parts = Object.entries(counts).map(([key, n]) => `${key} ${n}`);
+  return parts.length ? cell(parts.join(", ")) : "none";
+};
+
+const reportedText = (reported: PipelineAttempt["reported"]) =>
+  `total ${reported.totalT ?? "n/a"}, gross ${reported.grossT ?? "n/a"}, net ${reported.netT ?? "n/a"}, removals ${reported.removalsT ?? "n/a"}`;
+
+/**
+ * What the pipeline reported per attempt: facts about the envelope, never
+ * scored. Empty for a built-in run.
+ */
+function renderPipelineNotes(summary: RunSummary): string[] {
+  const rows = summary.results.flatMap((result) =>
+    result.runs.flatMap((run) => {
+      if (run.pipeline) {
+        const p = run.pipeline;
+        return [
+          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(clip(p.reported.totalBasis ?? "n/a"))} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) |`,
+        ];
+      }
+      return run.missingEnvelope
+        ? [
+            `| ${cell(result.id)} | ${run.run} | no envelope | - | - | - | - | - | - | - | - | - |`,
+          ]
+        : [];
+    }),
+  );
+  if (rows.length === 0) return [];
+  return [
+    "",
+    "## Pipeline notes",
+    "",
+    "What the pipeline reported for each attempt: facts about the envelope, not scored. Lost rows are the rows approve skipped, by import issue code; `unexplained` and `notSkipped` mark a mismatch between the rows approve skipped and the issues it reported.",
+    "",
+    "| Case | Attempt | Execution status | Rows in envelope | Unknown row roles | Dropped rows | Lost rows | Reported totals (t) | Total basis / kind | Scope basis | Total inclusion | Cost |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...rows,
+  ];
+}
+
+const yesNo = (flag: boolean | null) =>
+  flag === null ? "n/a" : flag ? "yes" : "no";
+
+/** Variant figures of one case, the same way the standard ones are taken; null where an attempt has no variant score. */
+function variantOfCase(result: CaseResult, verdict: CaseVerdict | undefined) {
+  const scored = result.runs.filter((run) => run.failureMode === "scored");
+  const missing = scored.some((run) => !run.pipeline?.variantScore);
+  const variant = (run: RunEntry) => run.pipeline?.variantScore ?? null;
+  const precisions = result.runs
+    .filter((run) => run.ok)
+    .map((run) => variant(run)?.rowPrecision);
+  const withTotal = result.runs.filter(
+    (run) => variant(run)?.expectedTotal != null,
+  );
+  return {
+    // Recall counts failed attempts as 0, over cases that have a row recall.
+    recall:
+      missing || verdict?.recallFailedAsZero == null
+        ? null
+        : mean(
+            result.runs.map((run) =>
+              run.failureMode === "scored" ? (variant(run)?.rowRecall ?? 0) : 0,
+            ),
+          ),
+    precision: missing ? null : mean(precisions),
+    totalsWithin:
+      missing || withTotal.length === 0
+        ? null
+        : result.runs.every(
+            (run) =>
+              run.failureMode === "scored" &&
+              variant(run)?.totalWithinTolerance === true,
+          ),
+    parentRefRows: result.runs.reduce(
+      (sum, run) => sum + (run.pipeline?.parentRefRows?.length ?? 0),
+      0,
+    ),
+    overlap: result.runs.reduce(
+      (sum, run) => sum + (run.pipeline?.parentRefOverlap ?? 0),
+      0,
+    ),
+  };
+}
+
+/**
+ * The standard score beside the "parent refs (Mirco)" variant, per block and
+ * per case, for a precomputed run. The standard score stays the headline.
+ */
+function renderScoreVariant(
+  summary: RunSummary,
+  verdicts: CaseVerdict[],
+  blocks: BlockSummary[],
+): string[] {
+  const verdictById = new Map(verdicts.map((v) => [v.id, v]));
+  const cases = summary.results.map((result) => ({
+    result,
+    verdict: verdictById.get(result.id),
+    variant: variantOfCase(result, verdictById.get(result.id)),
+  }));
+  // Any case without a variant figure makes the block figure n/a, as a missing price does for cost.
+  const meanAll = (values: (number | null)[]) =>
+    values.some((v) => v === null) ? null : mean(values);
+  const blockRows = blocks.map((block) => {
+    const inBlock = cases.filter((c) => c.result.block === block.block);
+    const headline = inBlock.filter(
+      (c) =>
+        c.result.eligible === true && c.verdict?.recallFailedAsZero != null,
+    );
+    const precisionOf = inBlock.filter(
+      (c) => caseMetrics(c.result).rowPrecision !== null,
+    );
+    return `| ${block.block} | ${pct(block.headlineRecall)} | ${pct(headline.length ? meanAll(headline.map((c) => c.variant.recall)) : null)} | ${pct(aggregate(inBlock.map((c) => c.result)).rowPrecision)} | ${pct(precisionOf.length ? meanAll(precisionOf.map((c) => c.variant.precision)) : null)} |`;
+  });
+  return [
+    "",
+    "## Score variant: parent references",
+    "",
+    "The standard score is the headline. The parent refs (Mirco) variant also scores the rows the pipeline gave as an unsplit I, II or III subsector (such as I.3) that approve dropped, and writes every such reference as `<ref>.x` (Mirco's `scoringReference`): it can match a key row written as that subsector or as `<ref>.x`, never an exact child row with a scope such as I.3.1. When the pipeline also gave the children of a parent reference and approve stored them, the variant counts that amount twice (see the last column); the standard score is unaffected. Recall counts failed attempts as 0; precision is the mean over the scored attempts; parent-reference rows are summed over the attempts.",
+    "",
+    "| Block | Headline recall: standard | Headline recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) |",
+    "| --- | --- | --- | --- | --- |",
+    ...blockRows,
+    "",
+    "| Case | Block | Recall: standard | Recall: parent refs (Mirco) | Precision: standard | Precision: parent refs (Mirco) | Totals within tolerance: standard | Totals within tolerance: parent refs (Mirco) | Parent-reference rows added | Of which children were stored too |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...cases.map(
+      ({ result, verdict, variant }) =>
+        `| ${cell(result.id)} | ${result.block} | ${pct(verdict?.recallFailedAsZero ?? null)} | ${pct(variant.recall)} | ${pct(verdict?.rowPrecision ?? null)} | ${pct(variant.precision)} | ${yesNo(verdict?.totalWithinToleranceAll ?? null)} | ${yesNo(variant.totalsWithin)} | ${variant.parentRefRows} | ${variant.overlap} |`,
+    ),
+  ];
+}
+
 export function renderReport(
   summary: RunSummary,
   verdicts: CaseVerdict[],
@@ -354,16 +769,25 @@ export function renderReport(
 ): string {
   const verdictById = new Map(verdicts.map((v) => [v.id, v]));
   const gateById = new Map(gates.map((g) => [g.id, g]));
-  const usage = totalUsage(summary.results);
-  const cost = costUsd(usage, summary.prices);
+  const cost = runCostUsd(summary);
   const title = `# PDF benchmark run ${summary.measuredAt.slice(0, 16).replace("T", " ")} UTC${summary.interrupted ? " - INTERRUPTED" : ""}${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.incomplete ? " - INCOMPLETE" : ""}`;
   const lines: string[] = [
     title,
     "",
     `- Commit: \`${summary.commit}\` on \`${summary.branch}\`${summary.dirty ? " (dirty working tree)" : ""}`,
-    `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
-    `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
-    `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+    ...(summary.pipeline
+      ? [
+          `- Pipeline: ${cell(pipelineText(summary.pipeline))}`,
+          "- Exploratory: pipeline",
+          `- Extraction model: ${NOT_BUILT_IN}`,
+          `- Prompt hash: ${NOT_BUILT_IN}`,
+          `- Input representation: ${NOT_BUILT_IN}`,
+        ]
+      : [
+          `- Extraction model: ${summary.extractionModel ?? summary.llmModel ?? "default"}; reasoning effort: ${summary.reasoningEffort ?? "provider default"}; OCR model: ${summary.ocrModel ?? "default"}`,
+          `- Prompt hash: ${summary.promptHash ?? "n/a"}`,
+          `- Input representation: ${summary.inputRepresentation ?? "n/a"}`,
+        ]),
     `- Test-set version: ${summary.testSetVersion}; scorer version: ${summary.scorerVersion ?? "n/a"}`,
     `- Attempts per case: ${summary.runsPerFile}`,
     ...(summary.rescoredFrom
@@ -382,9 +806,25 @@ export function renderReport(
     );
   }
   if (summary.incomplete) {
-    const { missing, unfinished } = summary.incomplete;
+    const { unfinished } = summary.incomplete;
+    // A precomputed run runs a case without an envelope as a failed attempt.
+    const noEnvelope = summary.pipeline
+      ? summary.incomplete.missing.filter(
+          (m) => m.reason === NO_ENVELOPE_REASON,
+        )
+      : [];
+    const missing = summary.incomplete.missing.filter(
+      (m) => !noEnvelope.includes(m),
+    );
     lines.push(
-      "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      summary.pipeline
+        ? "**INCOMPLETE**: this run does not cover every case; numbers cover the cases listed under Selection only."
+        : "**INCOMPLETE**: this full-set run does not cover every case; numbers cover the cases listed under Selection only.",
+      ...(noEnvelope.length
+        ? [
+            `- No envelope in the rows folder: ${noEnvelope.map((m) => m.id).join(", ")}`,
+          ]
+        : []),
       ...(missing.length
         ? [
             `- Missing inputs (not run): ${missing.map((m) => `${m.id} (${cell(m.reason)})`).join(", ")}`,
@@ -487,7 +927,7 @@ export function renderReport(
           ? "yes"
           : "no";
     lines.push(
-      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${tokensText(caseUsage(result))} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${caseTokensText(result)} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
     );
   }
 
@@ -518,9 +958,12 @@ export function renderReport(
       ),
     )
     .map((result) => result.id);
+  lines.push("", `Estimated cost of this run: ${money(cost)}`);
+  lines.push(...renderPipelineNotes(summary));
+  if (summary.pipeline) {
+    lines.push(...renderScoreVariant(summary, verdicts, blocks));
+  }
   lines.push(
-    "",
-    `Estimated cost of this run: ${money(cost)}`,
     "",
     "## Notes",
     "",
@@ -550,8 +993,8 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}`;
-  const cost = costUsd(totalUsage(summary.results), summary.prices);
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${cell(summary.pipeline.id)}:${cell(summary.pipeline.study ?? "unknown")}` : ""}`;
+  const cost = runCostUsd(summary);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }
 
@@ -571,7 +1014,10 @@ export const INDEX_HEADER = [
  */
 export function appendIndexLine(indexPath: string, line: string): void {
   mkdirSync(dirname(indexPath), { recursive: true });
-  const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  // A file saved with CRLF endings still holds the header; keep the file in LF.
+  const raw = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
+  const current = raw.replace(/\r\n/g, "\n");
+  if (current !== raw) writeFileSync(indexPath, current);
   if (!current.includes(INDEX_HEADER)) {
     const gap = current === "" || current.endsWith("\n") ? "" : "\n";
     appendFileSync(indexPath, `${gap}${INDEX_HEADER}`);
@@ -593,13 +1039,52 @@ export function gitInfo(): { commit: string; branch: string } {
   };
 }
 
-export function runFolderName(measuredAt: string, commit: string): string {
+/**
+ * `<date>-<HHMM>-<commit>`, plus `-<study>` (slugged) for a precomputed
+ * pipeline run so two pipelines finishing in the same minute stay apart.
+ */
+export function runFolderName(
+  measuredAt: string,
+  commit: string,
+  study?: string | null,
+): string {
   const stamp = measuredAt.slice(0, 16).replace("T", "-").replace(":", "");
-  return `${stamp}-${commit}`;
+  const slug = (study ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40)
+    .replace(/-+$/, "");
+  return slug ? `${stamp}-${commit}-${slug}` : `${stamp}-${commit}`;
 }
 
 /**
- * Writes the run folder under `outRoot` and returns its path. Holds the report,
+ * Creates the run folder under `outRoot` and returns its name. Never reuses an
+ * existing folder: on a clash it appends `-2`, `-3`, and so on. Creating the
+ * folder is what reserves the name.
+ */
+export function reserveRunFolder(
+  outRoot: string,
+  measuredAt: string,
+  commit: string,
+  study?: string | null,
+): string {
+  mkdirSync(outRoot, { recursive: true });
+  const base = runFolderName(measuredAt, commit, study);
+  for (let n = 1; ; n++) {
+    const name = n === 1 ? base : `${base}-${n}`;
+    try {
+      mkdirSync(join(outRoot, name));
+      return name;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+  }
+}
+
+/**
+ * Writes the run folder under `outRoot` (a new one unless `folder` is given)
+ * and returns its path. Holds the report,
  * the results (including the stored values a later baseline rescore needs,
  * with the answer-key content of each score redacted) and each attempt's
  * extracted values. Never copies inputs, answer keys or OCR text.
@@ -610,9 +1095,19 @@ export function writeRunArtifact(args: {
   verdicts: CaseVerdict[];
   blocks: BlockSummary[];
   gates: CaseGate[];
+  /** Folder name from `reserveRunFolder`; a rewrite of the same run passes it. */
+  folder?: string;
 }): string {
   const { outRoot, summary, verdicts, blocks, gates } = args;
-  const dir = join(outRoot, runFolderName(summary.measuredAt, summary.commit));
+  const folder =
+    args.folder ??
+    reserveRunFolder(
+      outRoot,
+      summary.measuredAt,
+      summary.commit,
+      summary.pipeline?.study,
+    );
+  const dir = join(outRoot, folder);
   mkdirSync(dir, { recursive: true });
   writeFileSync(
     join(dir, "results.json"),

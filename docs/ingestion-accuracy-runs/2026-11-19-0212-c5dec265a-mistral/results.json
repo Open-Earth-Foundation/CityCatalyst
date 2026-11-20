@@ -1,0 +1,353 @@
+{
+  "measuredAt": "2026-11-19T02:12:04.876Z",
+  "commit": "c5dec265a",
+  "branch": "david/cc-1295-benchmark-external-document-extraction",
+  "reasoningEffort": null,
+  "ocrModel": "mistral-ocr-latest",
+  "prices": {
+    "models": {},
+    "vendors": {
+      "mistral/annotations/mistral-ocr-4-1": {
+        "perPage": 0.005,
+        "source": "https://docs.mistral.ai/models/ocr-4-1",
+        "date": "2026-11-18",
+        "note": "OCR 4.1 card: $5 per 1000 annotated pages. Not confirmed whether this includes the $4 per 1000 OCR pages."
+      },
+      "reducto/deep-extract": {
+        "perPage": 0.04,
+        "source": "https://reducto.ai/pricing",
+        "date": "2026-11-18",
+        "note": "Deep Extract list price $40 per 1,000 pages (also https://docs.reducto.ai/reference/credit-usage.md, effective 2026-09-01). Parse included. Dense extractions over 100 fields per page may add an unpublished per-field surcharge; the generator then reports cost n/a. Credit-based accounts: no published price per credit, cost n/a."
+      },
+      "llamaextract/agentic-plus": {
+        "perPage": 0.09,
+        "perCredit": 0.0015,
+        "source": "https://developers.llamaindex.ai/llamaparse/general/pricing/#extraction",
+        "date": "2026-11-18",
+        "note": "Pay as you go $1.50 per 1,000 credits. Agentic Plus: 50 extract credits + 10 Agentic parse credits = 60 credits per page ($0.09). Cost uses the credits the job reports; perPage only when they are missing."
+      }
+    }
+  },
+  "runsPerFile": 1,
+  "heldOut": [
+    "C-027",
+    "C-028",
+    "C-029",
+    "C-030",
+    "C-031"
+  ],
+  "results": [
+    {
+      "id": "C-018",
+      "file": "Santiago, Chile 2022.pdf",
+      "kind": "pdf",
+      "targetYear": 2022,
+      "keyId": "C-018",
+      "ocr": {
+        "ok": true,
+        "code": null
+      },
+      "productFlowFailsAtOcr": false,
+      "runs": [
+        {
+          "run": 1,
+          "warnings": [],
+          "ok": true,
+          "ms": 3265,
+          "stageMs": {
+            "ocr": null,
+            "extraction": null,
+            "import": 1631,
+            "total": 3265
+          },
+          "usage": {
+            "calls": 0,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "reasoningTokens": 0,
+            "lengthStops": 0,
+            "maxCompletionTokens": 0
+          },
+          "extractedRows": 19,
+          "heldRowsIncluded": 0,
+          "pipeline": {
+            "executionStatus": "completed",
+            "rowsInEnvelope": 19,
+            "unknownRowRoles": {},
+            "droppedRows": {
+              "excludedNotCarried": 7
+            },
+            "rowRoles": {
+              "notation": 7,
+              "emission": 12
+            },
+            "scopeBasis": {
+              "inferred": 7,
+              "explicit": 12
+            },
+            "totalInclusion": {
+              "excluded": 7,
+              "included": 12
+            },
+            "reported": {
+              "totalT": 2145243.596,
+              "grossT": 2145243.596,
+              "netT": 2145243.596,
+              "removalsT": null,
+              "totalBasis": "Total de Emisiones (netas) for the 2022 reporting period (01/01/2022–31/12/2022), Comuna de Santiago, GPC Básico+ level, community-wide. Printed in Anexo 2 as 2.145.243.596 KgCO2e = 2,145,243.596 tCO2e (Tabla 4 rounds to 2.145.244 tCO2e). No removals reported (Remociones-Suelos Gestionados = N/A), so gross equals net. Scope totals: Alcance 1 = 1,249,052.717 t; Alcance 2 = 542,082.372 t; Alcance 3 = 354,108.507 t.",
+              "totalKind": "net"
+            },
+            "costUsd": 0.13,
+            "costSource": "envelope",
+            "usage": {
+              "pages_processed": 26,
+              "calls": 1
+            },
+            "lostRows": {
+              "no-value-or-notation-key": 7
+            },
+            "parentRefRows": [],
+            "parentRefOverlap": 0,
+            "variantScore": {
+              "keyValueRows": 12,
+              "storedGroups": 12,
+              "matchedRows": 10,
+              "rowRecall": 0.8333333333333334,
+              "rowPrecision": 0.8333333333333334,
+              "subsectorRecall": 0.6666666666666666,
+              "valueAccuracy": 0.8333333333333334,
+              "classificationAccuracy": 1,
+              "storedTotal": 1680098.9970000002,
+              "totalWithinTolerance": false,
+              "adjustedTotal": 1680098.9970000002,
+              "adjustedWithinTolerance": false,
+              "toleranceSource": "legacy",
+              "notationScored": 3,
+              "notationRecovered": 0,
+              "missingRowCount": 2,
+              "distractorsStoredCount": 4,
+              "unexpectedStoredCount": 2
+            }
+          },
+          "failureMode": "scored",
+          "stored": [
+            {
+              "gpc": "I.1.2",
+              "scope": "2",
+              "valueT": 164429.429,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.1.3",
+              "scope": "3",
+              "valueT": 8221.471,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.1",
+              "scope": "1",
+              "valueT": 104801.192,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.2",
+              "scope": "2",
+              "valueT": 377652.943,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.2.3",
+              "scope": "3",
+              "valueT": 18882.647,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "I.8.1",
+              "scope": "1",
+              "valueT": 1048.012,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.1",
+              "scope": "1",
+              "valueT": 592388,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "II.1.3",
+              "scope": "3",
+              "valueT": 249503,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "IV.2",
+              "scope": "1",
+              "valueT": 85668.155,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.1.2",
+              "scope": "3",
+              "valueT": 77495.011,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.2.1",
+              "scope": "1",
+              "valueT": 2.76,
+              "omit": false,
+              "notation": null
+            },
+            {
+              "gpc": "III.4.2",
+              "scope": "3",
+              "valueT": 6.377,
+              "omit": false,
+              "notation": null
+            }
+          ],
+          "score": {
+            "keyValueRows": 12,
+            "storedGroups": 12,
+            "matchedRows": 10,
+            "rowRecall": 0.8333333333333334,
+            "rowPrecision": 0.8333333333333334,
+            "subsectorRecall": 0.6666666666666666,
+            "valueAccuracy": 0.8333333333333334,
+            "classificationAccuracy": 1,
+            "storedTotal": 1680098.9970000002,
+            "totalWithinTolerance": false,
+            "adjustedTotal": 1680098.9970000002,
+            "adjustedWithinTolerance": false,
+            "toleranceSource": "legacy",
+            "notationScored": 3,
+            "notationRecovered": 0,
+            "missingRowCount": 2,
+            "distractorsStoredCount": 4,
+            "unexpectedStoredCount": 2
+          },
+          "total": 1680098.9970000002
+        }
+      ],
+      "stableTotal": false,
+      "block": "validated",
+      "eligible": false,
+      "totalOnly": false,
+      "textTables": null,
+      "ocrUsage": {
+        "calls": 0,
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "reasoningTokens": 0,
+        "lengthStops": 0,
+        "maxCompletionTokens": 0,
+        "pages": null
+      }
+    }
+  ],
+  "selection": [
+    "C-018"
+  ],
+  "exploratory": true,
+  "exploratoryReason": "pipeline",
+  "pipeline": {
+    "id": "precomputed",
+    "study": "mistral",
+    "stage": "2026-11-19",
+    "mode": "annotations/whole",
+    "version": "mistral-ocr-4-1"
+  },
+  "interrupted": false,
+  "promptHash": null,
+  "inputRepresentation": null,
+  "testSetVersion": "510369476497",
+  "scorerVersion": "2",
+  "dirty": false,
+  "mlflowRunUrl": null,
+  "mlflowNote": "MLflow skipped (--no-mlflow)",
+  "verdicts": [
+    {
+      "id": "C-018",
+      "block": "validated",
+      "eligible": false,
+      "attempts": 1,
+      "attemptsPassed": 0,
+      "casePasses": false,
+      "exploratory": true,
+      "recallFailedAsZero": 0.8333333333333334,
+      "attemptRecalls": [
+        0.8333333333333334
+      ],
+      "attemptTotalFactors": [
+        1.2768557113780599
+      ],
+      "attemptTotalsWithinTolerance": [
+        false
+      ],
+      "textTables": null,
+      "recallScoredOnly": 0.8333333333333334,
+      "rowPrecision": 0.8333333333333334,
+      "valueAccuracy": 0.8333333333333334,
+      "classificationAccuracy": 1,
+      "notationScored": 3,
+      "notationRecovered": 0,
+      "distractorsStored": 4,
+      "totalWithinToleranceAll": false,
+      "tenXAttempts": 0,
+      "wrongTotalAttempts": 1,
+      "warnedWrongTotalAttempts": 0,
+      "failureModes": {
+        "scored": 1,
+        "ocr_error": 0,
+        "extraction_error": 0,
+        "truncated": 0,
+        "zero_rows": 0,
+        "approve_error": 0,
+        "readback_error": 0,
+        "setup_error": 0
+      },
+      "costUsd": 0.13,
+      "seconds": 3.265
+    }
+  ],
+  "blocks": [
+    {
+      "block": "validated",
+      "casesInRun": 1,
+      "casesInManifest": 22,
+      "headlineRecall": null,
+      "headlineRecallCases": 0,
+      "recallScoredOnly": null,
+      "recallScoredOnlyCases": 0,
+      "provisionalRecall": 0.8333333333333334,
+      "provisionalRecallCases": 1,
+      "casesTotalWithinTolerance": 0,
+      "attemptPassShare": 0,
+      "tenXAttempts": 0,
+      "warningShare": 0
+    }
+  ],
+  "gates": [
+    {
+      "id": "C-018",
+      "verdict": "ok",
+      "reasons": [
+        "no baseline"
+      ],
+      "costUsd": 0.13,
+      "forecastUsd": null,
+      "lines": [],
+      "baseline": null
+    }
+  ]
+}

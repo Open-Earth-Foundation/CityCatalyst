@@ -4,6 +4,9 @@
  * queue worker (what the scheduler runs in production) until the import
  * settles, then reads the stored values back and scores them. Ported from
  * measure-ghgi-import.jest.ts (CC-1132).
+ *
+ * The setup, approve and read-back helpers are shared with the precomputed
+ * attempt (precomputed-attempt.ts, CC-1295).
  */
 import env from "@next/env";
 import { NextRequest } from "next/server";
@@ -11,8 +14,12 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { QueryTypes } from "sequelize";
+import type { ECRFRowData } from "@/backend/ECRFImportService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
-import { heldRowDecisions } from "@/backend/ingestion-benchmark/held-rows";
+import {
+  heldRowDecisions,
+  type HeldRowDecisions,
+} from "@/backend/ingestion-benchmark/held-rows";
 import type {
   FailureMode,
   RunEntry,
@@ -225,7 +232,7 @@ type ReadBackRow = {
 };
 
 // InventoryValue.co2eq is stored in kg; the report is in tonnes.
-async function readBack(ctx: RunContext, inventoryId: string) {
+export async function readBack(ctx: RunContext, inventoryId: string) {
   const rows = await ctx.db.sequelize!.query<ReadBackRow>(
     `SELECT iv.gpc_reference_number AS gpc,
             COALESCE(sc.scope_name, ss.scope_name) AS scope,
@@ -259,6 +266,19 @@ async function readBack(ctx: RunContext, inventoryId: string) {
   };
 }
 
+/** One call of the import status route. */
+export async function getStatus(
+  ctx: RunContext,
+  ids: { city: string; inventory: string },
+  importedFileId: string,
+) {
+  const response = await ctx.routes.status.GET(mockRequest(), {
+    params: Promise.resolve({ ...ids, importedFileId }),
+  });
+  const json = await response.json();
+  return { importStatus: json?.data?.importStatus as string, json };
+}
+
 async function pollStatus(
   ctx: RunContext,
   ids: { city: string; inventory: string },
@@ -268,13 +288,9 @@ async function pollStatus(
 ) {
   const start = Date.now();
   for (;;) {
-    const response = await ctx.routes.status.GET(mockRequest(), {
-      params: Promise.resolve({ ...ids, importedFileId }),
-    });
-    const json = await response.json();
-    const importStatus = json?.data?.importStatus as string;
-    if (until.includes(importStatus) || Date.now() - start > maxMs) {
-      return { importStatus, json };
+    const state = await getStatus(ctx, ids, importedFileId);
+    if (until.includes(state.importStatus) || Date.now() - start > maxMs) {
+      return state;
     }
     await sleep(1500);
   }
@@ -357,25 +373,109 @@ async function ingestItemWarnings(
   }
 }
 
-/** Include decisions for the rows the review would hold back, built the way the review screen sends them. */
-async function includeHeldRows(ctx: RunContext, importedFileId: string) {
+/**
+ * Include decisions for the rows the review would hold back, built the way the
+ * review screen sends them, and the import rows they were built from.
+ */
+export async function includeHeldRows(
+  ctx: RunContext,
+  importedFileId: string,
+): Promise<HeldRowDecisions & { importRows: ECRFRowData[] }> {
   const { buildImportResult } = await import("@/backend/ImportResultBuilder");
   const { findPendingRows } = await import("@/backend/ImportRowPreviewService");
   const file =
     await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
-  if (!file) return { decisions: {}, included: 0, unresolved: 0 };
+  if (!file)
+    return { decisions: {}, included: 0, unresolved: 0, importRows: [] };
   const { importResult } = await buildImportResult(file);
-  return heldRowDecisions(findPendingRows(importResult), importedFileId);
+  return {
+    ...heldRowDecisions(findPendingRows(importResult), importedFileId),
+    importRows: importResult.rows,
+  };
 }
 
-type Stage = "setup" | "upload" | "job" | "approve" | "readback";
-
-export async function runAttempt(
+/** Creates the test city and inventory, then uploads the PDF. The city is registered for cleanup before the upload. */
+export async function setUpImport(
   ctx: RunContext,
   entry: CaseManifestEntry,
-  key: KeyFile,
   attempt: number,
-): Promise<RunEntry> {
+  pdf: { buffer: Buffer<ArrayBuffer>; path: string },
+) {
+  const city = await ctx.db.models.City.create({
+    cityId: randomUUID(),
+    name: `Ingestion accuracy ${entry.id} r${attempt}`,
+    country: "Test",
+    locode: `XX_IA_${entry.id}_${attempt}_${randomUUID().slice(0, 6)}`.slice(
+      0,
+      32,
+    ),
+  });
+  ctx.cityIds.push(city.cityId);
+  await city.addUser(TEST_USER_ID);
+  const inventory = await ctx.db.models.Inventory.create({
+    inventoryId: randomUUID(),
+    cityId: city.cityId,
+    inventoryName: `IA_${entry.id}_${attempt}`,
+    year: entry.year,
+    totalEmissions: 0,
+    inventoryType: InventoryTypeEnum.GPC_BASIC,
+    globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+  });
+  const ids = { city: city.cityId, inventory: inventory.inventoryId };
+  const form = new FormData();
+  form.append("file", new File([pdf.buffer], basename(pdf.path)));
+  const request = mockRequest();
+  request.formData = async () => form;
+  const uploaded = await ctx.routes.upload.POST(request, {
+    params: Promise.resolve(ids),
+  });
+  const uploadedJson = await uploaded.json();
+  if (uploaded.status >= 300) {
+    throw new Error(
+      `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
+    );
+  }
+  const importedFileId: string = uploadedJson.data.id;
+  ctx.importedFileIds.push(importedFileId);
+  return { ids, importedFileId };
+}
+
+/** Calls approve with the held-row decisions and polls until the import settles. */
+export async function approveImport(
+  ctx: RunContext,
+  ids: { city: string; inventory: string },
+  importedFileId: string,
+  held: HeldRowDecisions,
+) {
+  const approved = await ctx.routes.approve.POST(
+    mockRequest({
+      importedFileId,
+      ...(held.included > 0
+        ? {
+            mappingOverrides: {
+              columnMappings: {},
+              rowDecisions: held.decisions,
+            },
+          }
+        : {}),
+    }),
+    { params: Promise.resolve(ids) },
+  );
+  if (approved.status >= 300) {
+    const detail = await approved.json().catch(() => null);
+    throw new Error(
+      `approve ${approved.status}${(detail?.error?.message ?? detail?.message) ? `: ${String(detail?.error?.message ?? detail.message).slice(0, 160)}` : ""}${held.unresolved ? ` (${held.unresolved} held row(s) cannot be included)` : ""}`,
+    );
+  }
+  return pollStatus(ctx, ids, importedFileId, ["completed", "failed"]);
+}
+
+/**
+ * Stage times and LLM usage of one attempt. `usage()` measures since the start
+ * the first time it is called and returns that value after; `finish` builds
+ * the run entry.
+ */
+export function attemptClock(attempt: number) {
   const started = Date.now();
   const beforeRun = snapshot();
   const stageMs: RunEntry["stageMs"] = {
@@ -384,22 +484,34 @@ export async function runAttempt(
     import: null,
     total: 0,
   };
-  let usage: Tokens | null = null;
+  let measured: Tokens | null = null;
+  const usage = (): Tokens => (measured ??= since(beforeRun));
   const finish = (
     partial: Partial<RunEntry> & { failureMode: FailureMode },
   ): RunEntry => {
     stageMs.total = Date.now() - started;
-    usage ??= since(beforeRun);
     return {
       run: attempt,
       warnings: [],
       ok: partial.failureMode === "scored",
       ms: stageMs.total,
       stageMs,
-      usage,
+      usage: usage(),
       ...partial,
     };
   };
+  return { stageMs, usage, finish };
+}
+
+type Stage = "setup" | "job" | "approve" | "readback";
+
+export async function runAttempt(
+  ctx: RunContext,
+  entry: CaseManifestEntry,
+  key: KeyFile,
+  attempt: number,
+): Promise<RunEntry> {
+  const { stageMs, usage: measureUsage, finish } = attemptClock(attempt);
 
   const pdfPath = pdfPathFor(ctx.config, entry);
   if (!pdfPath) {
@@ -413,50 +525,18 @@ export async function runAttempt(
   ctx.ocrRuns.set(entry.id, ocrRuns);
 
   let stage: Stage = "setup";
-  let ids = { city: "", inventory: "" };
   let ocrOk = false;
   let warnings: string[] = [];
   let extractedRows = 0;
   let heldRowsIncluded = 0;
   let failedPages: number[] = [];
   try {
-    const city = await ctx.db.models.City.create({
-      cityId: randomUUID(),
-      name: `Ingestion accuracy ${entry.id} r${attempt}`,
-      country: "Test",
-      locode: `XX_IA_${entry.id}_${attempt}_${randomUUID().slice(0, 6)}`.slice(
-        0,
-        32,
-      ),
+    const setup = await setUpImport(ctx, entry, attempt, {
+      buffer,
+      path: pdfPath,
     });
-    ctx.cityIds.push(city.cityId);
-    await city.addUser(TEST_USER_ID);
-    const inventory = await ctx.db.models.Inventory.create({
-      inventoryId: randomUUID(),
-      cityId: city.cityId,
-      inventoryName: `IA_${entry.id}_${attempt}`,
-      year: entry.year,
-      totalEmissions: 0,
-      inventoryType: InventoryTypeEnum.GPC_BASIC,
-      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-    });
-    ids = { city: city.cityId, inventory: inventory.inventoryId };
-    stage = "upload";
-    const form = new FormData();
-    form.append("file", new File([buffer], basename(pdfPath)));
-    const request = mockRequest();
-    request.formData = async () => form;
-    const uploaded = await ctx.routes.upload.POST(request, {
-      params: Promise.resolve(ids),
-    });
-    const uploadedJson = await uploaded.json();
-    if (uploaded.status >= 300) {
-      throw new Error(
-        `upload ${uploaded.status}: ${JSON.stringify(uploadedJson).slice(0, 200)}`,
-      );
-    }
-    const importedFileId: string = uploadedJson.data.id;
-    ctx.importedFileIds.push(importedFileId);
+    const ids = setup.ids;
+    const importedFileId = setup.importedFileId;
 
     stage = "job";
     const jobStarted = Date.now();
@@ -516,7 +596,7 @@ export async function runAttempt(
     }
     stageMs.ocr = ocrMs;
     stageMs.extraction = Math.max(0, jobMs - (ocrMs ?? 0));
-    usage = since(beforeRun);
+    const usage = measureUsage();
     warnings = [
       ...collectWarnings(state.json?.data),
       ...(await ingestItemWarnings(ctx, importedFileId)),
@@ -558,30 +638,7 @@ export async function runAttempt(
     // measures what the model extracted, so every held row is included.
     const held = await includeHeldRows(ctx, importedFileId);
     heldRowsIncluded = held.included;
-    const approved = await ctx.routes.approve.POST(
-      mockRequest({
-        importedFileId,
-        ...(held.included > 0
-          ? {
-              mappingOverrides: {
-                columnMappings: {},
-                rowDecisions: held.decisions,
-              },
-            }
-          : {}),
-      }),
-      { params: Promise.resolve(ids) },
-    );
-    if (approved.status >= 300) {
-      const detail = await approved.json().catch(() => null);
-      throw new Error(
-        `approve ${approved.status}${(detail?.error?.message ?? detail?.message) ? `: ${String(detail?.error?.message ?? detail.message).slice(0, 160)}` : ""}${held.unresolved ? ` (${held.unresolved} held row(s) cannot be included)` : ""}`,
-      );
-    }
-    const done = await pollStatus(ctx, ids, importedFileId, [
-      "completed",
-      "failed",
-    ]);
+    const done = await approveImport(ctx, ids, importedFileId, held);
     stageMs.import = Date.now() - importStarted;
     if (done.importStatus !== "completed") {
       return finish({
@@ -617,7 +674,7 @@ export async function runAttempt(
         ? "approve_error"
         : stage === "readback"
           ? "readback_error"
-          : stage === "setup" || stage === "upload"
+          : stage === "setup"
             ? "setup_error"
             : stage === "job" &&
                 !ocrOk &&

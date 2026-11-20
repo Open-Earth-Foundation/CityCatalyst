@@ -106,4 +106,42 @@ describe("rescoreCase", () => {
     expect(rescored.runs[0].score?.rowRecall).toBeNull();
     expect(rescored.runs[0].score?.totalWithinTolerance).toBe(true);
   });
+
+  it("recomputes the parent-reference variant of a pipeline run from its stored values and dropped parent-reference rows", () => {
+    const withParent: KeyFile = {
+      ...key,
+      expectedTotal: 140,
+      keyValueRows: 2,
+      rows: [
+        ...key.rows,
+        { ...key.rows[0], row: 2, gpc: "I.3.x", scope: "", value: 40 },
+      ],
+    };
+    const stored = [
+      { gpc: "I.1.1", scope: "1", valueT: 100, omit: false, notation: null },
+    ];
+    const pipeline = {
+      parentRefRows: [
+        { gpc: "I.3", scope: null, valueT: 40, omit: false, notation: null },
+      ],
+      variantScore: null,
+    } as unknown as RunEntry["pipeline"];
+    const [entry] = rescoreCase(
+      result([run(1, { stored, pipeline })]),
+      withParent,
+    ).runs;
+    expect(entry.score?.matchedRows).toBe(1);
+    expect(entry.pipeline?.variantScore?.matchedRows).toBe(2);
+    expect(entry.pipeline?.variantScore?.totalWithinTolerance).toBe(true);
+    expect(entry.pipeline?.parentRefRows).toEqual(pipeline?.parentRefRows);
+  });
+
+  it("adds no pipeline to a built-in run", () => {
+    const stored = [
+      { gpc: "I.1.1", scope: "1", valueT: 100, omit: false, notation: null },
+    ];
+    expect(
+      rescoreCase(result([run(1, { stored })]), key).runs[0].pipeline,
+    ).toBeUndefined();
+  });
 });

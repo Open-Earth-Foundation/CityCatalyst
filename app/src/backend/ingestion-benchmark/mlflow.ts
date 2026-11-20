@@ -103,6 +103,9 @@ function attemptMetrics(
       ["attempt.seconds", run.stageMs?.total / 1000],
       ["attempt.prompt_tokens", run.usage?.promptTokens],
       ["attempt.completion_tokens", run.usage?.completionTokens],
+      // Only counts and cost of an envelope; its totals and usage stay in results.json.
+      ["attempt.rows_in_envelope", run.pipeline?.rowsInEnvelope],
+      ["attempt.cost_usd", run.pipeline?.costUsd],
     ];
     return values.flatMap(([key, raw]) => {
       const value = asNumber(raw);
@@ -249,14 +252,33 @@ export async function logBenchmarkRun(args: {
       commit: none(summary.commit),
       branch: none(summary.branch),
       dirty: String(summary.dirty),
-      extraction_model: none(summary.extractionModel),
-      ocr_model: none(summary.ocrModel),
-      reasoning_effort: none(summary.reasoningEffort),
-      prompt_hash: none(summary.promptHash),
-      input_representation: none(summary.inputRepresentation),
+      ...(summary.pipeline
+        ? {}
+        : { extraction_model: none(summary.extractionModel) }),
+      ...(summary.pipeline
+        ? {}
+        : {
+            ocr_model: none(summary.ocrModel),
+            reasoning_effort: none(summary.reasoningEffort),
+            prompt_hash: none(summary.promptHash),
+            input_representation: none(summary.inputRepresentation),
+          }),
       test_set_version: none(summary.testSetVersion),
       scorer_version: none(summary.scorerVersion),
       selection: summary.selection.join(",") || "none",
+      ...(summary.pipeline
+        ? {
+            pipeline: summary.pipeline.id,
+            pipeline_study: none(summary.pipeline.study),
+            pipeline_stage: none(summary.pipeline.stage),
+            ...(summary.pipeline.mode
+              ? { pipeline_mode: summary.pipeline.mode }
+              : {}),
+            ...(summary.pipeline.version
+              ? { pipeline_version: summary.pipeline.version }
+              : {}),
+          }
+        : {}),
       exploratory: String(summary.exploratory),
       interrupted: String(summary.interrupted),
       "mlflow.runName": basename(runFolder),

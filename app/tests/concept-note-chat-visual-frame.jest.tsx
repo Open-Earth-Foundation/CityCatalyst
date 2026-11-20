@@ -132,6 +132,24 @@ describe("ChatVisualFrame", () => {
     expect(labels).toContain(`Expand visual: ${title}`);
   });
 
+  it("draws only the frame in bare mode, with no header or Expand", async () => {
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <ChatVisualFrame
+            bare
+            lng="en"
+            title="Chart"
+            html='<svg><rect width="5" height="5"></rect></svg>'
+          />
+        </ChakraProvider>,
+      ),
+    );
+    expect(container.querySelector("iframe")).not.toBeNull();
+    expect(container.querySelectorAll("button")).toHaveLength(0);
+    expect(container.textContent).not.toContain("chat-visual-label");
+  });
+
   it("fits the inline frame to its loaded content", async () => {
     document.body.appendChild(container);
     const onHeightChange = jest.fn();
@@ -173,7 +191,7 @@ describe("ChatVisualFrame", () => {
     await load(0);
     expect(frame.style.height).toBe("537px");
     await load(2012);
-    expect(frame.style.height).toBe("720px");
+    expect(frame.style.height).toBe("1200px");
     await load(10);
     expect(frame.style.height).toBe("120px");
     container.remove();

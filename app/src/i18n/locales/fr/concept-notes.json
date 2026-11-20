@@ -340,6 +340,7 @@
   "export": "Exporter",
   "chat-visual-show-all": "Afficher les {{count}} entrées",
   "chat-visual-show-first": "Afficher seulement les {{count}} premières entrées",
+  "chat-visual-scroll-hint": "Faites défiler horizontalement pour voir toutes les colonnes →",
   "chat-generating": "Génération de réponse",
   "rename": "Renommer",
   "duplicate": "Dupliquer",

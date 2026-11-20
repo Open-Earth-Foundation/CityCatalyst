@@ -7,7 +7,8 @@
  * - Every table scrolls horizontally inside its own box, so a wide table no
  *   longer pushes the whole frame sideways. Headers and unit columns scroll
  *   with the data, so they stay aligned. A table the model already wrapped in
- *   a horizontal scroller is left in that scroller, not wrapped twice.
+ *   a horizontal scroller is left in that scroller, not wrapped twice. Each
+ *   scroll box gets a hint line after it, shown only while columns are hidden.
  * - A long ranking shows its leading entries first. The remaining entries stay
  *   in the same answer, unchanged, behind a native <details> toggle. Without
  *   CSS :has() support every entry simply stays visible.
@@ -26,13 +27,16 @@ export const VISUAL_LEADING_ENTRIES = 10;
 /** Collapse only rankings longer than this; shorter ones are ordinary content. */
 export const VISUAL_LONG_RANKING_MIN = 21;
 
-/** Toggle texts in the user's language, e.g. "Show all 60 entries". */
+/** Toggle and hint texts in the user's language, e.g. "Show all 60 entries". */
 export interface VisualLayoutLabels {
   showAll: (count: number) => string;
   showFirst: (count: number) => string;
+  /** Shown under a table whose columns are cut off, e.g. "Scroll sideways …". */
+  scrollHint: string;
 }
 
 const SCROLL_CLASS = "cc-visual-table-scroll";
+const HINT_CLASS = "cc-visual-scroll-hint";
 const LONG_CLASS = "cc-visual-long";
 const RANKED_CLASS = "cc-visual-ranked";
 const TOGGLE_CLASS = "cc-visual-long-toggle";
@@ -45,6 +49,13 @@ const LAYOUT_CSS = [
   `.${LONG_CLASS}:has(>.${TOGGLE_CLASS}:not([open]))>.${RANKED_CLASS}>li:nth-child(n+${VISUAL_LEADING_ENTRIES + 1}){display:none!important}`,
   `.${TOGGLE_CLASS}>summary{cursor:pointer;padding:6px 0;font-weight:600}`,
   `.${TOGGLE_CLASS}[open]>summary>.cc-more,.${TOGGLE_CLASS}:not([open])>summary>.cc-less{display:none}`,
+  // The hint shows only while watchTableScroll marks the box as overflowing.
+  `.${HINT_CLASS}{display:none;margin:4px 0 0;font:12px/1.4 system-ui,sans-serif;color:#5b6472}`,
+  `.${SCROLL_CLASS}.cc-overflow+.${HINT_CLASS}{display:block}`,
+  // Fades mark the side where columns are hidden, since touch screens hide scrollbars.
+  `.${SCROLL_CLASS}.cc-more-right{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}`,
+  `.${SCROLL_CLASS}.cc-more-left{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 40px),transparent)}`,
+  `.${SCROLL_CLASS}.cc-more-left.cc-more-right{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent)}`,
 ].join("");
 
 // Words that say the entries are a ranking: "ranked by total", "Top 25",
@@ -287,11 +298,15 @@ export function adaptVisualLayout(
     if (!scroller) {
       block = wrap(table, SCROLL_CLASS);
       changed = true;
-    } else if (
-      scroller.children.length === 1 &&
-      scroller.firstElementChild === table
-    ) {
-      block = scroller;
+    } else {
+      // Marked too, so the fade and hint also cover the model's scroller.
+      scroller.classList.add(SCROLL_CLASS);
+      if (
+        scroller.children.length === 1 &&
+        scroller.firstElementChild === table
+      ) {
+        block = scroller;
+      }
     }
 
     // Long rankings, unless the model already put them in its own disclosure.
@@ -318,10 +333,66 @@ export function adaptVisualLayout(
     changed = true;
   }
 
+  // Last, so the hint follows any ranking wrapper; one per scroll box.
+  for (const box of Array.from(doc.querySelectorAll(`.${SCROLL_CLASS}`))) {
+    const hint = doc.createElement("p");
+    hint.className = HINT_CLASS;
+    hint.textContent = labels.scrollHint;
+    box.after(hint);
+    changed = true;
+  }
+
   if (changed) {
     const style = doc.createElement("style");
     style.textContent = LAYOUT_CSS;
     doc.head.append(style);
   }
   return changed;
+}
+
+// Expand gives a ~1200 px frame. There a width:100% SVG scales up to about
+// 3.7x and its lower part falls below the fold, so its height is capped and
+// preserveAspectRatio fits the whole chart. The body width is capped so tables
+// stay readable. Inline frames keep the model's own layout.
+const EXPANDED_CSS = `body{max-width:880px!important;margin-left:auto!important;margin-right:auto!important}
+svg[viewBox]:not(svg svg){max-height:calc(100vh - 48px)!important;max-width:100%!important}`;
+
+/**
+ * Adds the Expand layout to a loaded frame document, once. The style is host
+ * CSS on the live document, not part of the srcdoc, so inline and Expand frames
+ * keep the same srcdoc (view state is keyed by it).
+ */
+export function applyExpandedLayout(doc: Document): void {
+  if (doc.head.querySelector("style[data-cc-expanded]")) return;
+  const style = doc.createElement("style");
+  style.setAttribute("data-cc-expanded", "");
+  style.textContent = EXPANDED_CSS;
+  doc.head.append(style);
+}
+
+/**
+ * Shows which side of a horizontally scrolling table hides columns: a fade on
+ * that side and the hint under the box. Touch screens hide scrollbars, so the
+ * fade and hint are the only cue there. Runs once per box on a loaded frame.
+ */
+export function watchTableScroll(doc: Document): void {
+  const boxes = doc.querySelectorAll<HTMLElement>(
+    `.${SCROLL_CLASS}:not([data-cc-watched])`,
+  );
+  for (const box of Array.from(boxes)) {
+    box.setAttribute("data-cc-watched", "");
+    // One pass after the box is laid out, then on scroll and on box resize.
+    const update = () => {
+      const overflow = box.scrollWidth > box.clientWidth + 1;
+      box.classList.toggle("cc-overflow", overflow);
+      box.classList.toggle("cc-more-left", overflow && box.scrollLeft > 1);
+      box.classList.toggle(
+        "cc-more-right",
+        overflow && box.scrollLeft + box.clientWidth < box.scrollWidth - 1,
+      );
+    };
+    update();
+    box.addEventListener("scroll", update, { passive: true });
+    new ResizeObserver(update).observe(box);
+  }
 }

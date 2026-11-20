@@ -103,7 +103,7 @@ describe("useVisualFrameHeight", () => {
     expect(frame.style.height).toBe("211px");
     // Still capped at the card's max height.
     await resizeInner(2000);
-    expect(frame.style.height).toBe("720px");
+    expect(frame.style.height).toBe("1200px");
   });
 
   it("watches root, body and body's children of the loaded document only", async () => {

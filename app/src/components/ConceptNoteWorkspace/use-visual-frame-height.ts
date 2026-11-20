@@ -9,7 +9,9 @@ import {
 
 const INLINE_DEFAULT_HEIGHT = 420;
 const INLINE_MIN_HEIGHT = 120;
-const INLINE_MAX_HEIGHT = 720;
+// The card follows its content up to this height, so most visuals fit without
+// an inner scrollbar. Taller ones scroll inside the card.
+const INLINE_MAX_HEIGHT = 1200;
 
 // Only body's direct children are watched, and at most this many, so a huge
 // model document cannot make the card track thousands of elements.

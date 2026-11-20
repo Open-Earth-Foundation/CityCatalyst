@@ -20,7 +20,9 @@ import { ReviewButton as Button } from "./review-button";
 import { useVisualViewState } from "./use-visual-view-state";
 import {
   adaptVisualLayout,
+  applyExpandedLayout,
   type VisualLayoutLabels,
+  watchTableScroll,
 } from "./chat-visual-layout";
 import { useVisualFrameHeight } from "./use-visual-frame-height";
 import {
@@ -45,6 +47,7 @@ const SANITIZE_OPTIONS = {
 const ENGLISH_LAYOUT_LABELS: VisualLayoutLabels = {
   showAll: (count) => `Show all ${count} entries`,
   showFirst: (count) => `Show first ${count} entries`,
+  scrollHint: "Scroll sideways to see all columns →",
 };
 
 export interface SandboxedVisual {
@@ -122,6 +125,9 @@ export function useSandboxedVisual(html: string, lng: string): SandboxedVisual {
             count,
             interpolation: { escapeValue: false },
           }),
+        scrollHint: t("chat-visual-scroll-hint", {
+          interpolation: { escapeValue: false },
+        }),
       }),
     [html, t],
   );
@@ -218,16 +224,26 @@ export function VisualExpandDialog({
         </Button>
       </DialogTrigger>
       <DialogContent
-        w="calc(100vw - 32px)"
+        // Phones: the dialog uses the screen, not the card's narrower width.
+        positionerProps={{ p: { base: 2, md: 10 } }}
+        w={{ base: "full", md: "calc(100vw - 32px)" }}
         maxW="1200px"
-        h="min(900px, calc(100dvh - 32px))"
+        h={{
+          base: "calc(100dvh - 16px)",
+          md: "min(900px, calc(100dvh - 32px))",
+        }}
         overflow="hidden"
         borderRadius="rounded"
         bg="base.light"
         boxShadow="12dp"
       >
         <DialogHeader flexShrink={0} pe={14}>
-          <DialogTitle fontFamily="heading" color="content.primary">
+          <DialogTitle
+            fontFamily="heading"
+            color="content.primary"
+            lineClamp={2}
+            fontSize={{ base: "md", md: "lg" }}
+          >
             {title}
           </DialogTitle>
         </DialogHeader>
@@ -243,8 +259,8 @@ export function VisualExpandDialog({
 export type VisualViewStateHandle = ReturnType<typeof useVisualViewState>;
 
 interface ChatVisualFrameProps {
-  /** False when a parent draws one Expand for several frames (panel cards). */
-  expandable?: boolean;
+  /** Only the bordered frame, no header; a parent card draws its own header and Expand. */
+  bare?: boolean;
   html: string;
   lng: string;
   onHeightChange?: () => void;
@@ -255,7 +271,7 @@ interface ChatVisualFrameProps {
 
 /** An AI-generated static HTML visual, sanitized into a script-free sandboxed iframe. */
 export function ChatVisualFrame({
-  expandable = true,
+  bare = false,
   html,
   lng,
   onHeightChange,
@@ -284,6 +300,7 @@ export function ChatVisualFrame({
   const blank = staticBlank || renderedBlankHtml === html;
   const onInlineFrameLoad = (frame: HTMLIFrameElement) => {
     viewState.connect(frame);
+    if (frame.contentDocument) watchTableScroll(frame.contentDocument);
     // null means not laid out yet (offscreen); only a definite false hides it.
     if (hasRenderedVisualContent(frame.contentDocument) === false) {
       setRenderedBlankHtml(html);
@@ -302,27 +319,27 @@ export function ChatVisualFrame({
       data-testid="concept-note-chat-visual"
       data-active-panel={viewState.activePanel ?? undefined}
     >
-      <HStack
-        gap={3}
-        borderBottom="1px solid"
-        borderColor="border.neutral"
-        px={3}
-        py={2}
-      >
-        <Box flex={1} minW={0}>
-          <Text
-            fontSize="body.sm"
-            fontWeight="semibold"
-            color="content.primary"
-            truncate
-          >
-            {title}
-          </Text>
-          <Text fontSize="label.sm" color="content.tertiary">
-            {t("chat-visual-label")}
-          </Text>
-        </Box>
-        {expandable && (
+      {!bare && (
+        <HStack
+          gap={3}
+          borderBottom="1px solid"
+          borderColor="border.neutral"
+          px={3}
+          py={2}
+        >
+          <Box flex={1} minW={0}>
+            <Text
+              fontSize="body.sm"
+              fontWeight="semibold"
+              color="content.primary"
+              truncate
+            >
+              {title}
+            </Text>
+            <Text fontSize="label.sm" color="content.tertiary">
+              {t("chat-visual-label")}
+            </Text>
+          </Box>
           <VisualExpandDialog
             lng={lng}
             title={title}
@@ -333,11 +350,17 @@ export function ChatVisualFrame({
               srcDoc={visual.srcDoc}
               title={title}
               height="100%"
-              onFrameLoad={viewState.connect}
+              onFrameLoad={(frame) => {
+                viewState.connect(frame);
+                if (frame.contentDocument) {
+                  applyExpandedLayout(frame.contentDocument);
+                  watchTableScroll(frame.contentDocument);
+                }
+              }}
             />
           </VisualExpandDialog>
-        )}
-      </HStack>
+        </HStack>
+      )}
       {blank ? (
         <VisualEmptyNote lng={lng} />
       ) : (

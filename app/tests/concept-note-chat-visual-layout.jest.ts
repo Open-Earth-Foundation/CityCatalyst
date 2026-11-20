@@ -6,11 +6,16 @@ import {
   buildSandboxedVisualDocument,
   prepareVisualDocument,
 } from "@/components/ConceptNoteWorkspace/chat-visual-frame";
+import {
+  applyExpandedLayout,
+  watchTableScroll,
+} from "@/components/ConceptNoteWorkspace/chat-visual-layout";
 
 // German labels, so the tests also show the toggle is not hard-coded English.
 const labels = {
   showAll: (count: number) => `Alle ${count} Einträge anzeigen`,
   showFirst: (count: number) => `Nur die ersten ${count} Einträge anzeigen`,
+  scrollHint: "Seitlich scrollen, um alle Spalten zu sehen →",
 };
 
 /** The sandboxed document as the iframe receives it, parsed for assertions. */
@@ -70,6 +75,10 @@ describe("visual layout: tables", () => {
     // Ordinary short table: no toggle, header and unit kept.
     expect(doc.querySelector("details")).toBeNull();
     expect(table.tHead!.textContent).toBe("SourceDistrict estimate (ktCO₂e)");
+    // The hint sits right after the scroll box, with the label text.
+    const hint = table.parentElement!.nextElementSibling!;
+    expect(hint.className).toBe("cc-visual-scroll-hint");
+    expect(hint.textContent).toBe(labels.scrollHint);
   });
 
   it("keeps a table the model already scrolls in its scroller, not wrapped twice", () => {
@@ -80,8 +89,11 @@ describe("visual layout: tables", () => {
       "<style>@media (max-width:600px){.wrap{overflow:auto}}</style><div class=wrap><table><tr><td>North</td><td>98</td></tr></table></div>",
     ]) {
       const doc = render(html);
-      expect(doc.querySelector(".cc-visual-table-scroll")).toBeNull();
-      expect(doc.querySelector("table")!.parentElement!.tagName).toBe("DIV");
+      // The model's scroller is the one scroll box, followed by one hint.
+      const box = doc.querySelector(".cc-visual-table-scroll")!;
+      expect(doc.querySelectorAll(".cc-visual-table-scroll")).toHaveLength(1);
+      expect(doc.querySelector("table")!.parentElement).toBe(box);
+      expect(box.nextElementSibling!.className).toBe("cc-visual-scroll-hint");
       expect(doc.querySelectorAll("div")).toHaveLength(1);
     }
   });
@@ -132,12 +144,14 @@ describe("visual layout: tables", () => {
     const doc = render(
       `<h2>Top 60 districts by total</h2><div style="overflow-x:auto"><table>${header}<tbody>${ranking}</tbody></table></div>`,
     );
-    // The model's scroller is reused as the collapsing block.
+    // The model's scroller is reused as the collapsing block and marked as a scroll box.
     const block = doc.querySelector(".cc-visual-long")!;
     expect(block.firstElementChild!.getAttribute("style")).toBe(
       "overflow-x:auto",
     );
-    expect(doc.querySelector(".cc-visual-table-scroll")).toBeNull();
+    expect(
+      block.firstElementChild!.classList.contains("cc-visual-table-scroll"),
+    ).toBe(true);
     expect(doc.querySelectorAll("tbody tr")).toHaveLength(60);
   });
 
@@ -272,5 +286,55 @@ describe("prepareVisualDocument", () => {
     expect(prepareVisualDocument("<script>alert(1)</script>").hasContent).toBe(
       false,
     );
+  });
+});
+
+describe("expanded layout and table scroll cues", () => {
+  it("adds the Expand style once and leaves the srcdoc alone", () => {
+    const doc = document.implementation.createHTMLDocument("");
+    applyExpandedLayout(doc);
+    applyExpandedLayout(doc);
+    const styles = doc.querySelectorAll("style[data-cc-expanded]");
+    expect(styles).toHaveLength(1);
+    expect(styles[0].textContent).toContain("max-height:calc(100vh - 48px)");
+  });
+
+  it("marks the hidden side of an overflowing table once, and updates on scroll", () => {
+    const observed: unknown[] = [];
+    const original = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      constructor() {
+        observed.push(this);
+      }
+      observe() {}
+      disconnect() {}
+    } as unknown as typeof ResizeObserver;
+    try {
+      const doc = render(
+        '<table style="width:760px"><tbody><tr><td>1</td></tr></tbody></table>',
+      );
+      const box = doc.querySelector<HTMLElement>(".cc-visual-table-scroll")!;
+      // jsdom has no layout: a 760 px table in a 400 px box, scrolled to the start.
+      Object.defineProperties(box, {
+        scrollWidth: { value: 760 },
+        clientWidth: { value: 400 },
+        scrollLeft: { value: 0, writable: true },
+      });
+
+      watchTableScroll(doc);
+      watchTableScroll(doc);
+      expect(observed).toHaveLength(1);
+      expect(box.classList.contains("cc-overflow")).toBe(true);
+      expect(box.classList.contains("cc-more-right")).toBe(true);
+      expect(box.classList.contains("cc-more-left")).toBe(false);
+
+      // Scrolled to the end: the fade moves to the left side.
+      box.scrollLeft = 360;
+      box.dispatchEvent(new Event("scroll"));
+      expect(box.classList.contains("cc-more-left")).toBe(true);
+      expect(box.classList.contains("cc-more-right")).toBe(false);
+    } finally {
+      globalThis.ResizeObserver = original;
+    }
   });
 });

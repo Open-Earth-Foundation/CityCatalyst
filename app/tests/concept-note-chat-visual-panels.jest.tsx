@@ -167,6 +167,8 @@ describe("ChatVisualPanels", () => {
       list.getAttribute("aria-labelledby")!,
     );
     expect(heading?.textContent).toBe("Retrofit plan");
+    // One header for the card; the tab bodies draw no header of their own.
+    expect(container.textContent!.split("chat-visual-label")).toHaveLength(2);
     expect(tabs().map((tab) => tab.textContent)).toEqual([
       "Overview",
       "Costs",

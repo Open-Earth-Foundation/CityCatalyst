@@ -9,8 +9,11 @@ import {
   useState,
 } from "react";
 
+import { useTranslation } from "@/i18n/client";
+
 import type { ConceptNoteChatVisualPanel } from "./chat-utils";
 import { hasRenderedVisualContent } from "./chat-visual-content";
+import { applyExpandedLayout, watchTableScroll } from "./chat-visual-layout";
 import {
   ChatVisualFrame,
   hasSanitizedVisualContent,
@@ -43,6 +46,7 @@ export function ChatVisualPanels({
   panels,
   title,
 }: ChatVisualPanelsProps) {
+  const { t } = useTranslation(lng, "concept-notes");
   const headingId = useId();
   const [selected, setSelected] = useState("0");
   // One host state for all panel bodies, inline and expanded; keyed per body.
@@ -76,12 +80,23 @@ export function ChatVisualPanels({
       <Tabs.List
         aria-labelledby={expanded ? undefined : headingId}
         aria-label={expanded ? title : undefined}
-        overflowX="auto"
+        // Wraps onto more lines, so every tab stays visible without scrolling.
+        flexWrap="wrap"
         flexShrink={0}
         px={expanded ? 4 : 0}
       >
         {panels.map((panel, index) => (
-          <Tabs.Trigger key={index} value={String(index)} flexShrink={0}>
+          <Tabs.Trigger
+            key={index}
+            value={String(index)}
+            flexShrink={0}
+            maxW="full"
+            h="auto"
+            minH="8"
+            py={1.5}
+            whiteSpace="normal"
+            textAlign="start"
+          >
             {panel.label}
           </Tabs.Trigger>
         ))}
@@ -108,16 +123,19 @@ export function ChatVisualPanels({
       data-selected-panel={panels[Number(selected)]?.label}
     >
       <HStack gap={3} mb={1}>
-        <Text
-          id={headingId}
-          flex={1}
-          minW={0}
-          fontSize="body.sm"
-          fontWeight="semibold"
-          color="content.primary"
-        >
-          {title}
-        </Text>
+        <Box flex={1} minW={0}>
+          <Text
+            id={headingId}
+            fontSize="body.sm"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {title}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("chat-visual-label")}
+          </Text>
+        </Box>
         {/* One Expand for the whole card, with the same tabs inside. */}
         <VisualExpandDialog lng={lng} title={title} hidden={allBlank}>
           {renderTabs(
@@ -136,7 +154,7 @@ export function ChatVisualPanels({
       {renderTabs(
         (panel, label) => (
           <ChatVisualFrame
-            expandable={false}
+            bare
             html={panel.html}
             lng={lng}
             onHeightChange={onHeightChange}
@@ -179,6 +197,10 @@ function ExpandedPanelFrame({
       height="100%"
       onFrameLoad={(frame) => {
         onFrameLoad(frame);
+        if (frame.contentDocument) {
+          applyExpandedLayout(frame.contentDocument);
+          watchTableScroll(frame.contentDocument);
+        }
         // null means not laid out yet; only a definite false is blank.
         if (hasRenderedVisualContent(frame.contentDocument) === false) {
           setRenderedBlank(true);

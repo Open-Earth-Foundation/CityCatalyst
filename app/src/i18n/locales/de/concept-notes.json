@@ -340,6 +340,7 @@
   "export": "Export",
   "chat-visual-show-all": "Alle {{count}} Einträge anzeigen",
   "chat-visual-show-first": "Nur die ersten {{count}} Einträge anzeigen",
+  "chat-visual-scroll-hint": "Seitlich scrollen, um alle Spalten zu sehen →",
   "chat-generating": "Antwort generieren",
   "rename": "Umbenennen",
   "duplicate": "Duplikat",

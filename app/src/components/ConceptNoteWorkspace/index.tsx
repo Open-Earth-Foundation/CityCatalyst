@@ -680,6 +680,7 @@ export function ConceptNoteWorkspace({
                 }
                 gapAnswer={gapAnswer}
                 onCloseGap={() => setGapAnswer(null)}
+                uploads={uploads}
                 onAddGapSource={() => {
                   setMobilePane("workspace");
                   setTab("context");

@@ -552,7 +552,7 @@
   "gap-add-source": "Add supporting source",
   "gap-source-suggestions": "Found in your sources",
   "gap-source-suggestions-hint": "Values found in your uploaded files, not yet confirmed. Use adds one to your additional details; confirm it in the questions below.",
-  "gap-source-label": "Source: {{sources}}",
+  "gap-source-label": "Source:",
   "gap-use-source-suggestion": "Use",
   "gap-source-suggestion-added": "Added",
   "gap-where-to-find": "Where to find it: {{hint}}",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Box,
   HStack,
@@ -15,6 +15,7 @@ import { LuArrowLeft, LuPaperclip } from "react-icons/lu";
 import { Field } from "@/components/ui/field";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import { useTranslation } from "@/i18n/client";
+import type { ConceptNoteUploadResponse } from "@/util/types";
 import type { ChapterGapRow } from "./chapter-gaps-panel";
 import { ReviewButton as Button } from "./review-button";
 
@@ -38,6 +39,7 @@ interface GapAnswerFormProps {
   onAnswer: (answer: string, complete: boolean) => boolean;
   onClose: () => void;
   onAddSource: () => void;
+  uploads?: ConceptNoteUploadResponse[];
 }
 
 /** Validated by Climate Advisor's GapQuestionOutput before it reaches the browser. */
@@ -77,6 +79,25 @@ function saveDraft(key: string, draft: GapDraft | null): void {
   }
 }
 
+/**
+ * A readable name for a source ref, with the file type of the run upload it
+ * names. Without a matching upload the ref itself is shown, minus underscores.
+ */
+function sourceDocument(
+  ref: string,
+  uploads: ConceptNoteUploadResponse[],
+): { name: string; type?: string } {
+  const stem = (filename = "") => filename.replace(/\.[^.]+$/, "");
+  const upload = uploads.find(
+    ({ filename, sourceLabel }) =>
+      ref === sourceLabel || ref === filename || ref === stem(filename),
+  );
+  return {
+    name: (stem(upload?.filename) || ref).replace(/[_\s]+/g, " ").trim() || ref,
+    type: /\.([a-z0-9]+)$/i.exec(upload?.filename ?? "")?.[1].toUpperCase(),
+  };
+}
+
 /** Ask about each missing part; choices are user answers, not inferred project facts. */
 export function GapAnswerForm({
   runId,
@@ -87,6 +108,7 @@ export function GapAnswerForm({
   onAnswer,
   onClose,
   onAddSource,
+  uploads = [],
 }: GapAnswerFormProps) {
   const { t } = useTranslation(lng, "concept-notes");
   // A new gap version starts fresh, since earlier answers may no longer fit it.
@@ -336,9 +358,29 @@ export function GapAnswerForm({
                       color="content.tertiary"
                       overflowWrap="anywhere"
                     >
-                      {t("gap-source-label", {
-                        sources: source_refs.join(", "),
-                        interpolation: { escapeValue: false },
+                      {t("gap-source-label")}{" "}
+                      {source_refs.map((ref, index) => {
+                        const { name, type } = sourceDocument(ref, uploads);
+                        return (
+                          <Fragment key={ref}>
+                            {index > 0 && ", "}
+                            {name}
+                            {type && (
+                              <>
+                                {" · "}
+                                <chakra.span
+                                  px={1}
+                                  borderRadius="sm"
+                                  bg="background.neutral"
+                                  fontWeight="semibold"
+                                  whiteSpace="nowrap"
+                                >
+                                  {type}
+                                </chakra.span>
+                              </>
+                            )}
+                          </Fragment>
+                        );
                       })}
                     </Text>
                   </Box>

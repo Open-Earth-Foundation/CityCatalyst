@@ -19,6 +19,7 @@ import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWor
 import type { EditController } from "@/components/ConceptNoteWorkspace/document-review";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteUploadResponse } from "@/util/types";
 
 const sendMessage =
   jest.fn<(content: string, scope?: EditScope) => Promise<void>>();
@@ -142,6 +143,7 @@ async function renderPanel(
   status = contextStatus,
   threadId: string | null = "thread",
   gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
 ): Promise<void> {
   await act(async () => {
     root.render(
@@ -160,6 +162,7 @@ async function renderPanel(
           threadId={threadId}
           editScope={{ kind: "document" } as never}
           edits={edits}
+          uploads={uploads}
         />
       </ChakraProvider>,
     );
@@ -427,6 +430,36 @@ it("shows source-grounded suggestions with their source and adds one to the answ
   const [content] = sendMessage.mock.calls[0];
   expect(content).toContain("2. What amount?\ngap-not-decided\n\nGrant");
   expect(content).toContain("marked as missing");
+});
+
+it("names each source by its uploaded document and file type, or a readable label", async () => {
+  const krakowGap = structuredClone(gapAnswer);
+  krakowGap.row.gap!.suggestions = [
+    {
+      value: "Reported total project value: PLN 1.92 billion.",
+      source_refs: ["Krakow_KST_IV_Investment_Plan"],
+    },
+    { value: "Lifecycle cost", source_refs: ["Annex_7_Cost_Breakdown"] },
+  ];
+  await renderPanel(contextStatus, "thread", krakowGap, [
+    {
+      uploadId: "upload",
+      status: "ready",
+      filename: "Krakow_KST_IV_Investment_Plan.pdf",
+      sourceLabel: "Krakow_KST_IV_Investment_Plan",
+    },
+  ]);
+  const lines = [
+    ...container.querySelectorAll(
+      '[data-testid="concept-note-gap-source-suggestions"] p',
+    ),
+  ].map((line) => line.textContent);
+  expect(lines).toContain(
+    "gap-source-label Krakow KST IV Investment Plan · PDF",
+  );
+  // No upload matches, so the label is humanized and no file type is invented.
+  expect(lines).toContain("gap-source-label Annex 7 Cost Breakdown");
+  expect(container.textContent).not.toContain("_");
 });
 
 it("needs the current value before a changed source value counts as answered", async () => {

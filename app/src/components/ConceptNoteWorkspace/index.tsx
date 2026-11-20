@@ -523,6 +523,7 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               gapAnswer={gapAnswer}
               onCloseGap={() => setGapAnswer(null)}
+              uploads={uploads}
               onAddGapSource={() => {
                 setTab("context");
                 setUploadPickerRequest((value) => value + 1);

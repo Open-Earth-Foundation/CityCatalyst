@@ -54,7 +54,10 @@ import {
   EDIT_INSTRUCTION_MAX_CHARS,
   type EditScope,
 } from "@/util/concept-note-edit-types";
-import type { ConceptNoteDraftState } from "@/util/types";
+import type {
+  ConceptNoteDraftState,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 // About eight lines of composer text before it scrolls.
 const COMPOSER_MAX_HEIGHT_PX = 190;
@@ -78,6 +81,8 @@ interface ConceptNoteChatPanelProps {
   gapAnswer: GapAnswerRequest | null;
   onCloseGap: () => void;
   onAddGapSource: () => void;
+  /** The run's uploads, so gap source refs show as document names. */
+  uploads?: ConceptNoteUploadResponse[];
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
@@ -238,6 +243,7 @@ export function ConceptNoteChatPanel({
   gapAnswer,
   onCloseGap,
   onAddGapSource,
+  uploads,
   draftOverviewPending,
   lng,
   onOpenContext,
@@ -530,6 +536,7 @@ export function ConceptNoteChatPanel({
             onAnswer={answerGap}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
+            uploads={uploads}
           />
         ) : (
           <>

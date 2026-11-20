@@ -77,6 +77,7 @@ import {
   verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
 import AuthorizationCodeService from "@/backend/oauth/AuthorizationCodeService";
+import { getOAuthAudience, getOAuthIssuer } from "@/lib/auth/oauth-config";
 import IdentityClaimsService from "@/backend/oauth/IdentityClaimsService";
 import { logger } from "@/services/logger";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -167,7 +168,8 @@ async function handleAuthorizationCodeRequest(
     codeVerifier: tr.code_verifier,
   });
 
-  const origin = process.env.HOST || new URL(_req.url).origin;
+  const issuer = getOAuthIssuer(_req);
+  const audience = getOAuthAudience(_req);
   const scope = grant.scope;
 
   const accessToken = signOAuthToken(
@@ -178,8 +180,8 @@ async function handleAuthorizationCodeRequest(
     },
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
-      issuer: origin,
-      audience: origin,
+      issuer,
+      audience,
       subject: grant.userId,
     },
   );
@@ -192,8 +194,8 @@ async function handleAuthorizationCodeRequest(
     },
     {
       expiresIn: REFRESH_TOKEN_EXPIRY,
-      issuer: origin,
-      audience: origin,
+      issuer,
+      audience,
       subject: grant.userId,
     },
   );
@@ -212,7 +214,7 @@ async function handleAuthorizationCodeRequest(
       userId: grant.userId,
       clientId: tr.client_id,
       nonce: grant.nonce,
-      issuer: origin,
+      issuer,
     });
   }
 
@@ -271,13 +273,14 @@ async function handleRefreshTokenRequest(
 
   logger.debug({ decoded }, "Decoded refresh_token");
 
-  const origin = process.env.HOST || new URL(_req.url).origin;
+  const issuer = getOAuthIssuer(_req);
+  const audience = getOAuthAudience(_req);
 
-  if (decoded.iss !== origin) {
+  if (decoded.iss !== issuer) {
     throw createHttpError.BadRequest("code issued by a different server.");
   }
 
-  if (decoded.aud !== origin) {
+  if (decoded.aud !== audience) {
     throw createHttpError.BadRequest("code issued for a different server.");
   }
 
@@ -308,8 +311,8 @@ async function handleRefreshTokenRequest(
     },
     {
       expiresIn: ACCESS_TOKEN_EXPIRY,
-      issuer: origin,
-      audience: origin,
+      issuer,
+      audience,
       subject: decoded.sub,
     },
   );

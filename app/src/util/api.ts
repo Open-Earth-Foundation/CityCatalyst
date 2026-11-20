@@ -70,6 +70,13 @@ export type ApiRequestAuthenticator = (
 export interface ApiHandlerOptions {
   /** Use for endpoints with dedicated authentication that still need the standard API lifecycle. */
   authenticateRequest?: ApiRequestAuthenticator;
+  /**
+   * The scope an OAuth access token must carry for this route. It replaces the
+   * default, which is `read` for GET and HEAD and `write` for other methods.
+   * For routes whose meaning does not follow the HTTP method, such as the OIDC
+   * userinfo endpoint, which needs `openid` for both GET and POST.
+   */
+  oauthScope?: string;
 }
 
 // TODO extend this to other endpoints that need to skip the frozen check
@@ -469,21 +476,29 @@ export function apiHandler(
                 throw new createHttpError.Unauthorized("Token missing scope");
               }
               const scopes = token.scope.split(" ");
-              if (
-                ["GET", "HEAD"].includes(req.method) &&
-                !scopes.includes("read")
-              ) {
-                throw new createHttpError.Unauthorized(
-                  "No read scope available",
-                );
-              }
-              if (
-                ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-                !scopes.includes("write")
-              ) {
-                throw new createHttpError.Unauthorized(
-                  "No write scope available",
-                );
+              if (options.oauthScope) {
+                if (!scopes.includes(options.oauthScope)) {
+                  throw new createHttpError.Unauthorized(
+                    `No ${options.oauthScope} scope available`,
+                  );
+                }
+              } else {
+                if (
+                  ["GET", "HEAD"].includes(req.method) &&
+                  !scopes.includes("read")
+                ) {
+                  throw new createHttpError.Unauthorized(
+                    "No read scope available",
+                  );
+                }
+                if (
+                  ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+                  !scopes.includes("write")
+                ) {
+                  throw new createHttpError.Unauthorized(
+                    "No write scope available",
+                  );
+                }
               }
               const authz = await OAuthClientAuthz.findOne({
                 where: {

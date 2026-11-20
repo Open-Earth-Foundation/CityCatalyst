@@ -305,11 +305,11 @@ import {
   OAuthClientAuthzOptionalAttributes,
 } from "./OAuthClientAuthz";
 import {
-  UsedAuthorizationCode as _UsedAuthorizationCode,
-  UsedAuthorizationCodeAttributes,
-  UsedAuthorizationCodeCreationAttributes,
-  UsedAuthorizationCodeOptionalAttributes,
-} from "./UsedAuthorizationCode";
+  AuthorizationCode as _AuthorizationCode,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
+} from "./AuthorizationCode";
 import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
@@ -395,7 +395,7 @@ export {
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
-  _UsedAuthorizationCode as UsedAuthorizationCode,
+  _AuthorizationCode as AuthorizationCode,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -535,9 +535,9 @@ export type {
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
-  UsedAuthorizationCodeAttributes,
-  UsedAuthorizationCodeCreationAttributes,
-  UsedAuthorizationCodeOptionalAttributes,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -620,7 +620,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
-  const UsedAuthorizationCode = _UsedAuthorizationCode.initModel(sequelize);
+  const AuthorizationCode = _AuthorizationCode.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -1658,7 +1658,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
-    UsedAuthorizationCode: UsedAuthorizationCode,
+    AuthorizationCode: AuthorizationCode,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

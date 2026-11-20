@@ -6,7 +6,7 @@
  *       - auth
  *     operationId: postToken
  *     summary: Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).
- *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, token issuer/audience, single‑use code, and PKCE S256 challenge.
+ *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. When the code was issued for the `openid` scope, the response also contains an `id_token` (OpenID Connect). Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, that the code is unexpired and unused, and the PKCE S256 challenge. A code is spent by its first exchange attempt, even a failed one.
  *     requestBody:
  *       required: true
  *       content:
@@ -45,14 +45,18 @@
  *                   type: string
  *                 scope:
  *                   type: string
+ *                 id_token:
+ *                   type: string
+ *                   description: Signed JWT (RS256) that identifies the user. Present only when the scope includes `openid`. Valid for 15 minutes. Carries `nonce` when one was sent with the authorization request.
  *             examples:
  *               example:
  *                 value:
- *                   access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
  *                   token_type: "Bearer"
  *                   expires_in: 604800
- *                   refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *                   scope: "read write"
+ *                   refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   scope: "openid read write"
+ *                   id_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
  *       400:
  *         description: Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code).
  *       415:
@@ -72,25 +76,15 @@ import {
   signOAuthToken,
   verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
+import AuthorizationCodeService from "@/backend/oauth/AuthorizationCodeService";
+import IdentityClaimsService from "@/backend/oauth/IdentityClaimsService";
 import { logger } from "@/services/logger";
-import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { Op, UniqueConstraintError } from "sequelize";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import { UsedAuthorizationCode } from "@/models/UsedAuthorizationCode";
 
 const ACCESS_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 const REFRESH_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
-
-function verifyPKCE(verifier: string, challenge: string): boolean {
-  const hash = createHash("sha256").update(verifier, "ascii").digest();
-  const base64url = hash
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-  return base64url === challenge;
-}
+const ID_TOKEN_EXPIRY = 15 * 60;
 
 const authorizationCodeRequest = z.object({
   grant_type: z.literal("authorization_code"),
@@ -164,60 +158,17 @@ async function handleAuthorizationCodeRequest(
     throw new createHttpError.BadRequest("redirect_uri mismatch");
   }
 
-  let decoded: JwtPayload;
-
-  try {
-    decoded = verifyOAuthToken(tr.code, OAuthTokenType.Code);
-  } catch (error: unknown) {
-    if (error instanceof TokenExpiredError) {
-      throw createHttpError.BadRequest("Code has expired.");
-    } else {
-      throw createHttpError.BadRequest("Invalid reset token.");
-    }
-  }
-
-  logger.debug({ decoded }, "Decoded authorization code");
+  // Checks expiry, single use, client, redirect URI and PKCE. The code is spent
+  // by this call, so it cannot be tried a second time.
+  const grant = await AuthorizationCodeService.redeem({
+    code: tr.code,
+    clientId: tr.client_id,
+    redirectUri: tr.redirect_uri,
+    codeVerifier: tr.code_verifier,
+  });
 
   const origin = process.env.HOST || new URL(_req.url).origin;
-
-  if (decoded.iss !== origin) {
-    throw createHttpError.BadRequest("code issued by a different server.");
-  }
-
-  if (decoded.aud !== origin) {
-    throw createHttpError.BadRequest("code issued for a different server.");
-  }
-
-  if (decoded.client_id !== tr.client_id) {
-    throw createHttpError.BadRequest("client_id mismatch with code.");
-  }
-
-  if (decoded.redirect_uri !== tr.redirect_uri) {
-    throw createHttpError.BadRequest("redirect_uri mismatch with code.");
-  }
-
-  const codeChallenge = decoded.code_challenge;
-
-  if (!verifyPKCE(tr.code_verifier, codeChallenge)) {
-    throw createHttpError.BadRequest("PKCE verification failed.");
-  }
-
-  // Same as 'jwtid' on input in code endpoint!
-
-  const jwtid = decoded.jti;
-
-  if (!jwtid) {
-    throw createHttpError.BadRequest("No jwtid in code.");
-  }
-
-  logger.debug(
-    { jwtid },
-    "Checking for replay of jwtid for authorization token",
-  );
-
-  await markCodeUsed(jwtid, decoded.exp);
-
-  const scope = decoded.scope;
+  const scope = grant.scope;
 
   const accessToken = signOAuthToken(
     OAuthTokenType.Access,
@@ -229,7 +180,7 @@ async function handleAuthorizationCodeRequest(
       expiresIn: ACCESS_TOKEN_EXPIRY,
       issuer: origin,
       audience: origin,
-      subject: decoded.sub,
+      subject: grant.userId,
     },
   );
 
@@ -243,41 +194,63 @@ async function handleAuthorizationCodeRequest(
       expiresIn: REFRESH_TOKEN_EXPIRY,
       issuer: origin,
       audience: origin,
-      subject: decoded.sub,
+      subject: grant.userId,
     },
   );
 
-  return NextResponse.json({
+  const response: Record<string, unknown> = {
     access_token: accessToken,
     token_type: "Bearer",
     expires_in: ACCESS_TOKEN_EXPIRY,
     refresh_token: refreshToken,
     scope,
-  });
+  };
+
+  // OpenID Connect: only requests with the `openid` scope get an id_token.
+  if (scope.split(" ").includes("openid")) {
+    response.id_token = await issueIdToken({
+      userId: grant.userId,
+      clientId: tr.client_id,
+      nonce: grant.nonce,
+      issuer: origin,
+    });
+  }
+
+  return NextResponse.json(response);
 }
 
 /**
- * Atomically records an authorization code as redeemed. The primary key on
- * `jwt_id` makes the insert fail for a replayed code, regardless of which app
- * replica handled the first redemption. Expired rows are pruned afterwards,
- * since an expired code is already rejected by jwt.verify.
+ * Builds the id_token (OpenID Connect Core section 2). It is meant for the
+ * client, not for calling APIs: `aud` is the client id, not this server.
  */
-async function markCodeUsed(jwtid: string, exp: number | undefined) {
-  const expires = exp ? new Date(exp * 1000) : new Date();
+async function issueIdToken(params: {
+  userId: string;
+  clientId: string;
+  nonce: string | null;
+  issuer: string;
+}): Promise<string> {
+  const [claims, amr] = await Promise.all([
+    IdentityClaimsService.forUser(params.userId),
+    IdentityClaimsService.authenticationMethods(params.userId),
+  ]);
+  // `sub` is set through the signing options below.
+  const { sub, ...identity } = claims;
 
-  try {
-    await UsedAuthorizationCode.create({ jwtId: jwtid, expires });
-  } catch (error: unknown) {
-    if (error instanceof UniqueConstraintError) {
-      logger.debug({ jwtid }, "Replayed authorization code");
-      throw createHttpError.BadRequest("Single-use code.");
-    }
-    throw error;
-  }
-
-  await UsedAuthorizationCode.destroy({
-    where: { expires: { [Op.lt]: new Date() } },
-  });
+  return signOAuthToken(
+    OAuthTokenType.Id,
+    {
+      ...identity,
+      amr,
+      // Echoed unchanged so the client can tie the token to its own request.
+      ...(params.nonce ? { nonce: params.nonce } : {}),
+    },
+    {
+      expiresIn: ID_TOKEN_EXPIRY,
+      issuer: params.issuer,
+      audience: params.clientId,
+      subject: sub,
+    },
+  );
 }
 
 async function handleRefreshTokenRequest(

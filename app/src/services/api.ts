@@ -2112,12 +2112,15 @@ export const api = createApi({
           redirectUri,
           codeChallenge,
           scope,
+          nonce,
           csrfToken,
         }: {
           clientId: string;
           redirectUri: string;
           codeChallenge: string;
           scope: string;
+          /** OpenID Connect nonce from the authorization request, if any. */
+          nonce?: string;
           csrfToken: string;
         }) => ({
           method: "POST",
@@ -2127,6 +2130,7 @@ export const api = createApi({
             redirectUri,
             codeChallenge,
             scope,
+            nonce,
             csrfToken,
           },
         }),

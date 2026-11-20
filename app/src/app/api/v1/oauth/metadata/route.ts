@@ -5,8 +5,13 @@
  *     tags:
  *       - oauth
  *     operationId: getOauthMetadata
- *     summary: Advertise OAuth 2.0 Authorization Server metadata (RFC 8414).
- *     description: Public endpoint that returns the discovery document for OAuth clients, including issuer, authorization endpoint, token endpoint, supported scopes, response types, grant types, and PKCE methods. Requires the OAUTH_ENABLED feature flag; otherwise returns a 500 configuration error. Useful for dynamic client configuration and interoperability.
+ *     deprecated: true
+ *     x-sunset: "2027-09-30"
+ *     summary: Advertise OAuth 2.0 Authorization Server metadata (RFC 8414). Deprecated, use /.well-known/openid-configuration.
+ *     description: |
+ *       Deprecated. Use `/.well-known/openid-configuration` (OpenID Connect Discovery) or `/.well-known/oauth-authorization-server` (RFC 8414). They return the same document. This path stays until the sunset date, `2027-09-30`, because it is part of the frozen API contract. Responses carry `Deprecation` and `Sunset` headers.
+ *
+ *       Public endpoint that returns the discovery document for OAuth clients, including issuer, authorization endpoint, token endpoint, userinfo endpoint, JWKS location, supported scopes, response types, grant types, and PKCE methods. Requires the OAUTH_ENABLED feature flag; otherwise returns a 500 configuration error.
  *     responses:
  *       200:
  *         description: Metadata document with required fields.
@@ -21,6 +26,12 @@
  *                   type: string
  *                 token_endpoint:
  *                   type: string
+ *                 userinfo_endpoint:
+ *                   type: string
+ *                   description: OpenID Connect UserInfo endpoint
+ *                 jwks_uri:
+ *                   type: string
+ *                   description: Where the public keys that verify tokens are published
  *                 scopes_supported:
  *                   type: array
  *                   items:
@@ -42,6 +53,25 @@
  *                     description: OAuth grant type identifier
  *                     example: "authorization_code"
  *                   description: OAuth 2.0 grant types supported by the authorization server
+ *                 subject_types_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "public"
+ *                 id_token_signing_alg_values_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "RS256"
+ *                 token_endpoint_auth_methods_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "none"
+ *                 claims_supported:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *                 service_documentation:
  *                   type: string
  *                   description: URL to the authorization server's documentation
@@ -66,9 +96,14 @@
  *                   issuer: "https://api.citycatalyst.example"
  *                   authorization_endpoint: "https://api.citycatalyst.example/authorize/"
  *                   token_endpoint: "https://api.citycatalyst.example/api/v1/token/"
- *                   scopes_supported: ["read", "write"]
+ *                   userinfo_endpoint: "https://api.citycatalyst.example/api/v1/oauth/userinfo/"
+ *                   jwks_uri: "https://api.citycatalyst.example/.well-known/jwks.json/"
+ *                   scopes_supported: ["openid", "read", "write"]
  *                   response_types_supported: ["code"]
  *                   grant_types_supported: ["authorization_code", "refresh_token"]
+ *                   subject_types_supported: ["public"]
+ *                   id_token_signing_alg_values_supported: ["RS256"]
+ *                   token_endpoint_auth_methods_supported: ["none"]
  *                   service_documentation: "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API"
  *                   ui_locales_supported: ["en", "de", "es", "pt"]
  *                   code_challenge_methods_supported: ["S256"]
@@ -78,42 +113,21 @@
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { languages } from "@/i18n/settings";
+import {
+  buildDiscoveryDocument,
+  issuerFor,
+  legacyMetadataHeaders,
+} from "@/backend/oauth/discovery";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 
-const DOCUMENTATION_URL =
-  "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API";
-
-// Definition of Authorization Server Metadata from
-// https://datatracker.ietf.org/doc/html/rfc8414#section-2
-
-interface OAuthMetadata {
-  issuer: string;
-  authorization_endpoint: string;
-  token_endpoint: string;
-  jwks_uri?: string;
-  registration_endpoint?: string;
-  scopes_supported: string[];
-  response_types_supported: string[];
-  response_modes_supported?: string[];
-  grant_types_supported?: string[];
-  token_endpoint_auth_methods_supported?: string[];
-  token_endpoint_auth_signing_alg_values_supported?: string[];
-  service_documentation?: string;
-  ui_locales_supported?: string[];
-  op_policy_uri?: string;
-  op_tos_uri?: string;
-  revocation_endpoint?: string;
-  revocation_endpoint_auth_methods_supported?: string[];
-  revocation_endpoint_auth_signing_alg_values_supported?: string[];
-  introspection_endpoint?: string;
-  introspection_endpoint_auth_methods_supported?: string[];
-  introspection_endpoint_auth_signing_alg_values_supported?: string[];
-  code_challenge_methods_supported?: string[];
-}
-
-export const GET = apiHandler(async (_req) => {
+/**
+ * Deprecated path for the discovery document. It serves the same document as
+ * /.well-known/openid-configuration. It is kept, not removed, because paths
+ * under /api/v1 are part of the frozen API contract and may only be removed
+ * after a deprecation window (see LEGACY_METADATA_SUNSET).
+ */
+export const GET = apiHandler(async (req) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     logger.warn(
       `OAuth Metadata endpoint hit but OAuth 2.0 is not enabled.
@@ -124,23 +138,15 @@ export const GET = apiHandler(async (_req) => {
     );
   }
 
-  const origin = process.env.HOST || new URL(_req.url).origin;
+  const issuer = issuerFor(req);
 
-  if (!origin) {
+  if (!issuer) {
     throw createHttpError.InternalServerError(
       "Unable to determine server origin URL",
     );
   }
 
-  return NextResponse.json<OAuthMetadata>({
-    issuer: origin,
-    authorization_endpoint: `${origin}/authorize/`,
-    token_endpoint: `${origin}/api/v1/token/`,
-    scopes_supported: ["read", "write"],
-    response_types_supported: ["code"],
-    grant_types_supported: ["authorization_code", "refresh_token"],
-    service_documentation: DOCUMENTATION_URL,
-    ui_locales_supported: languages,
-    code_challenge_methods_supported: ["S256"],
+  return NextResponse.json(buildDiscoveryDocument(issuer), {
+    headers: legacyMetadataHeaders(issuer),
   });
 });

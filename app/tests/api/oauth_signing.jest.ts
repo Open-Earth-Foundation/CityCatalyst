@@ -120,8 +120,8 @@ describe("OAuth signing key", () => {
   });
 
   it.each([
-    [OAuthTokenType.Code, OAuthTokenType.Refresh],
-    [OAuthTokenType.Code, OAuthTokenType.Access],
+    [OAuthTokenType.Id, OAuthTokenType.Refresh],
+    [OAuthTokenType.Id, OAuthTokenType.Access],
     [OAuthTokenType.Access, OAuthTokenType.Refresh],
     [OAuthTokenType.Refresh, OAuthTokenType.Access],
   ])("does not verify a %s token as %s", (issued, expected) => {
@@ -276,7 +276,7 @@ describe("Bearer tokens in apiHandler", () => {
     expect((await res.json()).userId).toBe(USER_ID);
   });
 
-  it.each([OAuthTokenType.Refresh, OAuthTokenType.Code])(
+  it.each([OAuthTokenType.Refresh, OAuthTokenType.Id])(
     "rejects a %s token used as a bearer token",
     async (type) => {
       // Same key, same claims, same audience: only the type differs.

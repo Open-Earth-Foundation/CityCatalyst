@@ -309,7 +309,21 @@ describe("expanded layout and table scroll cues", () => {
     document
       .querySelectorAll("style[data-cc-expanded], style[data-cc-inset]")
       .forEach((style) => style.remove());
+    document.body.innerHTML = "";
   });
+
+  // A chart, then a legend, at fixed viewport positions (jsdom has no layout).
+  const rect = (top: number, height: number) =>
+    ({ top, height, bottom: top + height }) as DOMRect;
+  const layoutChart = (top: number, height: number, legendHeight: number) => {
+    document.body.innerHTML =
+      '<h1>Title</h1><svg viewBox="0 0 400 300"></svg><p>Legend</p>';
+    const chart = document.querySelector("svg")!;
+    chart.getBoundingClientRect = () => rect(top, height);
+    document.querySelector("p")!.getBoundingClientRect = () =>
+      rect(top + height, legendHeight);
+    return chart;
+  };
 
   it("zooms a 1200 px dialog by 1.6, caps the chart in unzoomed px, and keeps one style", () => {
     setViewport(1200, 900);
@@ -384,6 +398,49 @@ describe("expanded layout and table scroll cues", () => {
     } finally {
       globalThis.ResizeObserver = original;
     }
+  });
+
+  it("caps the first chart so its legend fits on the first screen", () => {
+    // Zoom 1 at 600 px. Room: 832 - 200 - (60 + 8) - 16 = 548 px.
+    setViewport(600, 832);
+    const chart = layoutChart(200, 700, 60);
+    applyExpandedLayout(document);
+    expect(chart.hasAttribute("data-cc-fit")).toBe(true);
+    expect(
+      document.querySelector("style[data-cc-expanded]")!.textContent,
+    ).toContain("svg[viewBox][data-cc-fit]{max-height:548px!important}");
+  });
+
+  it("does not mark a first chart that already fits with its legend", () => {
+    // Room is 648 px, more than the 300 px chart.
+    setViewport(600, 832);
+    const chart = layoutChart(100, 300, 60);
+    applyExpandedLayout(document);
+    expect(chart.hasAttribute("data-cc-fit")).toBe(false);
+    expect(
+      document.querySelector("style[data-cc-expanded]")!.textContent,
+    ).not.toContain("data-cc-fit");
+  });
+
+  it("leaves a first chart that starts far down the page to the screen cap", () => {
+    // Room is 248 px, under 40% of the 832 px window.
+    setViewport(600, 832);
+    const chart = layoutChart(500, 700, 60);
+    applyExpandedLayout(document);
+    expect(chart.hasAttribute("data-cc-fit")).toBe(false);
+    expect(
+      document.querySelector("style[data-cc-expanded]")!.textContent,
+    ).not.toContain("data-cc-fit");
+  });
+
+  it("does not reserve a follower taller than a quarter of the window", () => {
+    // The 300 px block is over 208 px, so only the 16 px margin is kept: 616 px.
+    setViewport(600, 832);
+    layoutChart(200, 700, 300);
+    applyExpandedLayout(document);
+    expect(
+      document.querySelector("style[data-cc-expanded]")!.textContent,
+    ).toContain("svg[viewBox][data-cc-fit]{max-height:616px!important}");
   });
 });
 

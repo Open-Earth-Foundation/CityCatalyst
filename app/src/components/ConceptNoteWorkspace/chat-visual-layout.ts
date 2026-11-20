@@ -362,11 +362,74 @@ export const EXPANDED_MAX_ZOOM = 1.6;
 /** Room kept left and right of the zoomed page. */
 export const EXPANDED_SIDE_PX = 64;
 
+/** The first top-level chart in the body that is laid out, or null. */
+function firstChart(doc: Document): Element | null {
+  return (
+    Array.from(doc.body.querySelectorAll("svg[viewBox]")).find(
+      (svg) =>
+        !svg.parentElement?.closest("svg") &&
+        svg.getBoundingClientRect().height > 0,
+    ) ?? null
+  );
+}
+
+/** The element after `chart` in reading order, climbing at most two levels. */
+function followerOf(chart: Element): Element | null {
+  let node: Element = chart;
+  for (let depth = 0; depth < 3; depth++) {
+    const next = node.nextElementSibling;
+    if (next) return next;
+    const parent = node.parentElement;
+    if (!parent || parent.tagName === "BODY") return null;
+    node = parent;
+  }
+  return null;
+}
+
+/**
+ * Marks the first chart for a height cap that keeps it and the block right
+ * after it (its legend or key) on the first screen. Returns the cap in
+ * unzoomed px, or null when the chart needs no cap or starts far down the page.
+ */
+function fitFirstChart(
+  doc: Document,
+  win: Window,
+  zoom: number,
+): number | null {
+  const chart = firstChart(doc);
+  if (!chart) return null;
+
+  // Reserve the follower only when it is a short block, not a whole table.
+  const chartRect = chart.getBoundingClientRect();
+  const follower = followerOf(chart);
+  const followerHeight = follower?.getBoundingClientRect().height ?? 0;
+  const reserve =
+    follower && followerHeight <= 0.25 * win.innerHeight
+      ? followerHeight + 8
+      : 0;
+
+  // Add the scroll offset back, so the room is measured from the document top
+  // even when the reader has scrolled.
+  const scrollTop = doc.scrollingElement?.scrollTop ?? 0;
+  const room = win.innerHeight - (chartRect.top + scrollTop) - reserve - 16;
+  // Far down the page, the reader scrolls to the chart anyway. A chart that
+  // already fits needs no cap.
+  if (room < 0.4 * win.innerHeight || room >= chartRect.height) return null;
+
+  chart.setAttribute("data-cc-fit", "");
+  return Math.floor(room / zoom);
+}
+
 /**
  * Adds the Expand layout to a loaded frame document: a zoom that fits the page
- * to the frame width, and a chart height cap for one chart per screen. The
- * style is host CSS on the live document, not part of the srcdoc, so inline and
- * Expand frames keep the same srcdoc (view state is keyed by it).
+ * to the frame width, and height caps. Every top-level chart is capped to one
+ * screen. The first chart is also capped so it and the legend or key under it
+ * fit on the first screen, because the series and slice names must be visible
+ * without scrolling. Later charts keep only the screen cap:
+ * their position depends on scrolling, so a fit measured at the top would not
+ * apply to them. The style is host CSS on the live document, not part of the
+ * srcdoc, so inline and Expand frames keep the same srcdoc (view state is keyed
+ * by it).
  */
 export function applyExpandedLayout(doc: Document): void {
   const win = doc.defaultView;
@@ -392,7 +455,21 @@ export function applyExpandedLayout(doc: Document): void {
     // 48 px leaves room for the dialog header. The cap is in unzoomed px, so
     // after zoom one chart still fits the frame height.
     const height = Math.floor((win.innerHeight - 48) / zoom);
-    style.textContent = `html{zoom:${zoom}}body{max-width:${EXPANDED_LAYOUT_PX}px!important;margin-left:auto!important;margin-right:auto!important}svg[viewBox]:not(svg svg){max-height:${height}px!important;max-width:100%!important}`;
+    const base = `html{zoom:${zoom}}body{max-width:${EXPANDED_LAYOUT_PX}px!important;margin-left:auto!important;margin-right:auto!important}svg[viewBox]:not(svg svg){max-height:${height}px!important;max-width:100%!important}`;
+
+    // Drop the last run's mark and measure with the base rule only, so the
+    // layout reflects the new zoom and not the old fit cap.
+    doc
+      .querySelectorAll("[data-cc-fit]")
+      .forEach((el) => el.removeAttribute("data-cc-fit"));
+    style.textContent = base;
+    const fitCap = fitFirstChart(doc, win, zoom);
+    // The fit selector has more specificity than the base rule, which also
+    // carries !important, so the cap wins.
+    style.textContent =
+      fitCap === null
+        ? base
+        : `${base}svg[viewBox][data-cc-fit]{max-height:${fitCap}px!important}`;
   };
   update();
   // Only the first call registers a listener; a later call reuses the style.

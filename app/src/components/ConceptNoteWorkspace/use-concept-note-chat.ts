@@ -240,16 +240,34 @@ export function useConceptNoteChat({
       setRetrying(false);
       setReasoning([]);
       const assistantMessageId = assistantMessageIdRef.current;
+      const status = details?.status;
+      // Timeouts and rate limits may still have accepted the user's answer.
+      const requestRejected =
+        !details?.streamStarted &&
+        status !== undefined &&
+        status >= 400 &&
+        status < 500 &&
+        status !== 408 &&
+        status !== 429;
       const rejectedUserMessageId =
-        code === CONTEXT_NOT_READY ? pendingUserMessageIdRef.current : null;
+        code === CONTEXT_NOT_READY || requestRejected
+          ? pendingUserMessageIdRef.current
+          : null;
       if (assistantMessageId) {
         setMessages((current) =>
-          current.filter(
-            (message) =>
-              message.id !== rejectedUserMessageId &&
-              (message.id !== assistantMessageId ||
-                Boolean(message.text.trim() || message.visuals?.length)),
-          ),
+          current
+            .filter(
+              (message) =>
+                message.id !== rejectedUserMessageId &&
+                (message.id !== assistantMessageId ||
+                  Boolean(message.text.trim() || message.visuals?.length)),
+            )
+            // Failed assistant output is not saved, so its choices cannot be answered.
+            .map((message) =>
+              message.id === assistantMessageId
+                ? { ...message, choices: undefined }
+                : message,
+            ),
         );
       }
       assistantMessageIdRef.current = null;
@@ -269,15 +287,7 @@ export function useConceptNoteChat({
       }
       // Request rejections need user action, not a connection retry. Timeouts
       // and rate limits remain retryable because they can be transient.
-      const status = details?.status;
-      if (
-        !details?.streamStarted &&
-        status !== undefined &&
-        status >= 400 &&
-        status < 500 &&
-        status !== 408 &&
-        status !== 429
-      ) {
+      if (requestRejected) {
         setConnectionFailed(false);
         setFailedTurn(null);
         if (turn?.overview) setOverviewFailed(true);
@@ -449,7 +459,15 @@ export function useConceptNoteChat({
         draftOverviewTurnRef.current = false;
         currentTurnRef.current = null;
         setRetrying(false);
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantMessageId
+              ? { ...message, choices: undefined }
+              : message,
+          ),
+        );
         assistantMessageIdRef.current = null;
+        pendingUserMessageIdRef.current = null;
         setIsGenerating(false);
         setReasoning([]);
       }

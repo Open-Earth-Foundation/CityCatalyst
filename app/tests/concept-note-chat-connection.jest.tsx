@@ -47,6 +47,19 @@ function lastRequestBody(): Record<string, unknown> {
   return JSON.parse(String(init?.body));
 }
 
+async function showChoiceQuestion() {
+  await act(async () => chat.requestDraftOverview());
+  await act(async () => {
+    streamOptions.onMessage?.("Where should we start?");
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Budget", "Partners"],
+    });
+    streamOptions.onComplete?.();
+  });
+  return chat.messages.at(-1)!;
+}
+
 beforeEach(async () => {
   historyOk = true;
   startStream.mockClear();
@@ -233,6 +246,156 @@ it.each([408, 429])(
     });
   },
 );
+
+it.each([
+  [400, undefined, "chat-request-rejected"],
+  [401, undefined, "chat-auth-required"],
+  [403, undefined, "chat-access-denied"],
+  [404, undefined, "chat-not-found"],
+  [409, undefined, "chat-request-rejected"],
+  [422, undefined, "chat-request-rejected"],
+  [409, "concept_note_context_not_ready", "chat-context-not-ready"],
+] as const)(
+  "makes the original choices usable after a rejected answer (%s, %s)",
+  async (status, code, errorKey) => {
+    const question = await showChoiceQuestion();
+    await act(async () => chat.sendMessage("Budget"));
+    await act(async () =>
+      streamOptions.onError?.("request rejected", code, {
+        status,
+        streamStarted: false,
+      }),
+    );
+
+    // The panel treats a question as answered when a later message exists.
+    expect(chat.messages).toEqual([question]);
+    expect(chat.messages.at(-1)?.choices).toEqual(["Budget", "Partners"]);
+    expect(chat.isGenerating).toBe(false);
+    expect(chat.error).toBe(errorKey);
+    expect(chat.canRetry).toBe(false);
+    expect(chat.connection).toBe("connected");
+
+    await act(async () => chat.sendMessage("Partners"));
+    expect(lastRequestBody().content).toBe("Partners");
+    expect(chat.messages.filter((message) => message.role === "user")).toEqual([
+      expect.objectContaining({ text: "Partners" }),
+    ]);
+  },
+);
+
+it.each([408, 429, 502])(
+  "keeps the pending answer and edit idempotency key for retryable HTTP %s",
+  async (status) => {
+    await showChoiceQuestion();
+    await act(async () => chat.sendMessage("Budget", { kind: "auto" }));
+    const originalContext = lastRequestBody().context;
+    expect(originalContext).toMatchObject({
+      concept_note_edit: { idempotency_key: expect.any(String) },
+    });
+    await act(async () =>
+      streamOptions.onError?.("temporarily unavailable", undefined, {
+        status,
+        streamStarted: false,
+      }),
+    );
+
+    expect(chat.messages.at(-1)).toMatchObject({
+      role: "user",
+      text: "Budget",
+    });
+    expect(chat.canRetry).toBe(true);
+    await act(async () => chat.retry());
+    expect(lastRequestBody()).toMatchObject({
+      content: "Budget",
+      context: originalContext,
+      options: { concept_note_turn: "retry" },
+    });
+    expect(
+      chat.messages.filter((message) => message.role === "user"),
+    ).toHaveLength(1);
+  },
+);
+
+it.each([undefined, "stream_stalled"])(
+  "removes choices from a failed streamed question and keeps partial text (%s)",
+  async (code) => {
+    await act(async () => chat.sendMessage("Help me choose the next step"));
+    await act(async () => {
+      streamOptions.onMessage?.("Which approach?");
+      streamOptions.onToolResult?.({
+        name: "concept_note_ask_question",
+        options: ["Detailed", "Brief"],
+      });
+    });
+    expect(chat.messages.at(-1)?.choices).toEqual(["Detailed", "Brief"]);
+
+    await act(async () =>
+      streamOptions.onError?.("Connection lost", code, { streamStarted: true }),
+    );
+    expect(chat.messages.at(-1)).toMatchObject({ text: "Which approach?" });
+    expect(chat.messages.at(-1)?.choices).toBeUndefined();
+    expect(chat.isGenerating).toBe(false);
+    expect(chat.canRetry).toBe(true);
+
+    await act(async () => chat.retry());
+    await act(async () =>
+      streamOptions.onError?.("Unavailable", undefined, {
+        status: 502,
+        streamStarted: false,
+      }),
+    );
+    // Even when retry fails before any output, the old partial card stays inert.
+    expect(chat.messages.some((message) => message.choices)).toBe(false);
+    await act(async () => chat.retry());
+    await act(async () => {
+      streamOptions.onMessage?.("Which scope?");
+      streamOptions.onToolResult?.({
+        name: "concept_note_ask_question",
+        options: ["Citywide", "Pilot"],
+      });
+      streamOptions.onComplete?.();
+    });
+    expect(chat.messages.filter((message) => message.choices)).toEqual([
+      expect.objectContaining({
+        text: "Which scope?",
+        choices: ["Citywide", "Pilot"],
+      }),
+    ]);
+    expect(chat.connection).toBe("connected");
+    expect(chat.error).toBeNull();
+  },
+);
+
+it("drops an empty failed assistant even when choices arrived before its text", async () => {
+  await act(async () => chat.sendMessage("Choose an approach"));
+  await act(async () => {
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Detailed", "Brief"],
+    });
+    streamOptions.onError?.("Connection lost", undefined, {
+      streamStarted: true,
+    });
+  });
+  expect(chat.messages).toEqual([
+    expect.objectContaining({ role: "user", text: "Choose an approach" }),
+  ]);
+});
+
+it("removes choices from a stream interrupted by cancellation", async () => {
+  startStream.mockImplementationOnce(async () => {
+    streamOptions.onMessage?.("Which approach?");
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Detailed", "Brief"],
+    });
+    throw Object.assign(new Error("Cancelled"), { name: "AbortError" });
+  });
+  await act(async () => chat.sendMessage("Help me choose the next step"));
+  expect(chat.messages.at(-1)).toMatchObject({ text: "Which approach?" });
+  expect(chat.messages.at(-1)?.choices).toBeUndefined();
+  expect(chat.isGenerating).toBe(false);
+});
 
 it("clears a failed overview when Clima reports it has already been posted", async () => {
   await act(async () => chat.requestDraftOverview());

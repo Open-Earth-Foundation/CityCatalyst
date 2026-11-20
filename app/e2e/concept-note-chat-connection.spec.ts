@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
+import type { DocumentWorkspace } from "@/util/document-workspace";
 import { skipCookieConsent } from "./helpers";
 
 test.beforeEach(({ context }) => skipCookieConsent(context));
@@ -43,7 +44,18 @@ const interrupted = stream(": keep-alive\n\nevent: progress\ndata: {}\n\n");
 // Leave the request open with no bytes, like a frozen connection.
 const stalled: ChatReply = () => new Promise(() => {});
 
-async function openWorkspace(page: Page, replies: ChatReply[]) {
+type HistoryMessage = {
+  message_id: string;
+  role: "assistant" | "user";
+  text: string;
+  choices?: string[];
+};
+
+async function openWorkspace(
+  page: Page,
+  replies: ChatReply[],
+  history: HistoryMessage[] = [],
+) {
   const chatRequests: Array<Record<string, unknown>> = [];
   await page.route("**/api/auth/session/**", (route) =>
     route.fulfill({
@@ -63,7 +75,7 @@ async function openWorkspace(page: Page, replies: ChatReply[]) {
       return reply(route);
     }
     if (path === `/api/v1/chat/threads/${threadId}/messages`)
-      return route.fulfill({ json: { messages: [] } });
+      return route.fulfill({ json: { messages: history } });
     if (path === "/api/v1/user")
       return route.fulfill({
         json: {
@@ -102,6 +114,29 @@ async function openWorkspace(page: Page, replies: ChatReply[]) {
       return route.fulfill({ json: { data: { hasAccess: true } } });
     if (!path.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
+    if (path.endsWith("/workspace"))
+      return route.fulfill({
+        json: {
+          revision: 1,
+          setup: null,
+          points: [],
+          needs: [],
+          overview: {
+            required_total: 0,
+            required_covered: 0,
+            optional_total: 0,
+            optional_covered: 0,
+            waiting_count: 0,
+            next_steps: [],
+          },
+          export_eligibility: {
+            working: false,
+            final: false,
+            blockers: [],
+            workspace_revision: 1,
+          },
+        } satisfies DocumentWorkspace,
+      });
     if (path.endsWith("/context-bundle/refresh"))
       return route.fulfill({ json: { run_id: runId, status: "current" } });
     if (path.endsWith("/draft"))
@@ -152,12 +187,145 @@ const badge = (page: Page) =>
   page.getByTestId("concept-note-connection-status");
 const chatError = (page: Page) => page.getByTestId("concept-note-chat-error");
 
+const questionText = "Which opening should we use?";
+const choices = [
+  "Lead with accessibility",
+  "Lead with reliable public transport",
+];
+const question = (options = choices) =>
+  stream(
+    sse(
+      ["message", { content: questionText, index: 0 }],
+      ["tool_result", { name: "concept_note_ask_question", options }],
+      ["done", { ok: true }],
+    ),
+  );
+
 async function ask(page: Page, text: string) {
   const input = page.getByTestId("concept-note-chat-input");
   await expect(input).toBeEnabled();
   await input.fill(text);
   await input.press("Enter");
 }
+
+test("long suggested answers keep the question visible on mobile and preserve paragraphs", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  const paragraph =
+    "The proposed tram extension would connect residential areas with jobs and essential services through reliable public transport. Its benefits need to be supported by evidence, with clear delivery responsibilities and milestones.";
+  const options = [
+    `${paragraph}\n\nThe budget and funding sources remain to be confirmed.`,
+    `For a community audience: ${paragraph}\n\nLocations and dates are provisional.`,
+    `For a technical audience: ${paragraph}\n\nNo quantified benefits are assumed.`,
+  ];
+  await openWorkspace(page, [question(options)]);
+  await page.getByRole("button", { name: "Clima", exact: true }).click();
+  await ask(page, "Give me three complete alternative introductions.");
+
+  const card = page.getByTestId("concept-note-chat-question");
+  await expect(card).toContainText(questionText);
+  await expect
+    .poll(async () => {
+      const box = await card.boundingBox();
+      const scroll = await page
+        .getByTestId("concept-note-chat-scroll")
+        .boundingBox();
+      return Boolean(
+        box && scroll && box.y >= scroll.y && box.y < scroll.y + 30,
+      );
+    })
+    .toBe(true);
+  const first = card.getByRole("button", { name: options[0] });
+  await expect(first.locator("span").nth(1)).toHaveCSS(
+    "white-space",
+    "pre-wrap",
+  );
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    375,
+  );
+});
+
+test("a rejected choice reopens the card without a false selection and preserves custom paragraphs", async ({
+  page,
+}) => {
+  const rejected: ChatReply = (route) =>
+    route.fulfill({
+      status: 403,
+      json: { message: "Forbidden" },
+    });
+  const { chatRequests } = await openWorkspace(page, [
+    question(),
+    rejected,
+    answer("Custom answer received."),
+  ]);
+  await ask(page, "Which opening is better?");
+  const card = page.getByTestId("concept-note-chat-choices");
+  const first = card.getByRole("button", { name: choices[0] });
+  await first.click();
+  await expect(chatError(page)).toContainText("permission");
+  await expect(first).toBeEnabled();
+  await expect(first).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page
+      .getByTestId("concept-note-chat-scroll")
+      .getByText(choices[0], { exact: true }),
+  ).toHaveCount(1);
+
+  const custom = card.getByRole("textbox", { name: "Write your own answer…" });
+  await custom.fill("Combine both approaches.");
+  await custom.press("Shift+Enter");
+  await expect(custom).toHaveValue("Combine both approaches.\n");
+  expect(chatRequests).toHaveLength(2);
+  // Filling the full multiline answer also verifies the exact transport payload.
+  const text = "Combine both approaches.\nKeep funding provisional.";
+  await custom.fill(text);
+  await custom.press("Enter");
+  await expect(
+    page.getByText("Custom answer received.", { exact: true }),
+  ).toBeVisible();
+  expect(chatRequests.at(-1)?.content).toBe(text);
+  await expect(page.getByTestId("concept-note-chat-input")).toBeFocused();
+});
+
+test("saved question history restores the selected answer and keeps old options locked", async ({
+  page,
+}) => {
+  const history: HistoryMessage[] = [
+    { message_id: "question", role: "assistant", text: questionText, choices },
+  ];
+  const { chatRequests } = await openWorkspace(
+    page,
+    [answer("I will use that opening.")],
+    history,
+  );
+  const first = page
+    .getByTestId("concept-note-chat-choices")
+    .getByRole("button", { name: choices[0] });
+  await expect(first).toBeEnabled();
+  await first.focus();
+  await first.press("Enter");
+  await expect(
+    page.getByText("I will use that opening.", { exact: true }),
+  ).toBeVisible();
+  expect(chatRequests).toHaveLength(1);
+  await expect(page.getByTestId("concept-note-chat-input")).toBeFocused();
+
+  history.push(
+    { message_id: "reply", role: "user", text: choices[0] },
+    {
+      message_id: "followup",
+      role: "assistant",
+      text: "I will use that opening.",
+    },
+  );
+  await page.reload();
+  await expect(first).toBeDisabled();
+  await expect(first).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("textbox", { name: "Write your own answer…" }),
+  ).toHaveCount(0);
+});
 
 test("connects after the history loads and stays connected through a reply", async ({
   page,

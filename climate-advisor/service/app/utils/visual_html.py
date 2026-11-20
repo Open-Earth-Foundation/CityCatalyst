@@ -8,6 +8,8 @@ cases; the browser re-checks the rendered result.
 """
 
 import re
+from collections import Counter
+from collections.abc import Iterator
 from html.parser import HTMLParser
 from typing import NamedTuple
 
@@ -30,72 +32,171 @@ _HIDDEN_ELEMENTS = frozenset(
         "canvas",  # Without scripts a canvas never gets drawn.
     }
 )
-# SVG shapes that draw without any text. <image> and <use> are absent: the
-# sanitizer drops their href, so they render nothing.
+# SVG shapes that draw without any text. <image> is absent: the sanitizer
+# drops its external or data: href, so it renders nothing. <use> counts only
+# with a local "#id" href, the one kind the sanitizer keeps.
 _SVG_SHAPES = frozenset(
     {"path", "rect", "circle", "ellipse", "line", "polyline", "polygon"}
 )
 # HTML elements that show something without text content.
 _SELF_VISIBLE = frozenset({"hr", "input", "select", "textarea", "meter", "progress"})
+_CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+_HEADINGS = frozenset({"h1", "h2", "h3", "h4", "h5", "h6"})
+# A CSS content value that draws text, e.g. a bar label in ::after.
+_CSS_CONTENT = re.compile(r"(?<![-\w])content\s*:\s*([^;}]+)")
+_EMPTY_CONTENT = frozenset({'""', "''", "none", "normal"})
+_CSS_BACKGROUND = re.compile(r"(?<![-\w])background(?:-color)?\s*:\s*([^;]+)")
+_CSS_SIZE = re.compile(r"(?<![-\w])(?:width|height)\s*:")
+_NO_BACKGROUND = frozenset({"", "none", "transparent", "initial", "inherit", "unset"})
+
+
+def _draws_css_content(css: str) -> bool:
+    """Return whether a stylesheet writes text with a non-empty content value."""
+    # Only declaration blocks: a selector such as .content:hover is no value.
+    blocks = re.findall(r"\{([^{}]*)\}", _CSS_COMMENT.sub("", css))
+    return any(
+        value.replace("!important", "").strip().lower() not in _EMPTY_CONTENT
+        for block in blocks
+        for value in _CSS_CONTENT.findall(block)
+    )
+
+
+# Elements painted by one stylesheet class that make a drawing (bars, waffle
+# cells). One painted box is more often an empty container for a script.
+MIN_PAINTED_MARKS = 3
+# A selector that ends in a class, e.g. ".cell" or "div.bar", without a state.
+_PAINTED_SELECTOR = re.compile(r"\.([\w-]+)$")
+
+
+def _painted_classes(css: str) -> set[str]:
+    """Classes whose stylesheet rule paints a background, e.g. `.cell{background:red}`."""
+    painted = set()
+    for selector, body in _CSS_RULE.findall(_CSS_COMMENT.sub("", css)):
+        backgrounds = _CSS_BACKGROUND.findall(body.lower())
+        if not backgrounds or backgrounds[-1].replace(
+            "!important", ""
+        ).strip() in _NO_BACKGROUND:
+            continue
+        for part in selector.split(","):
+            match = _PAINTED_SELECTOR.search(part.strip())
+            if match and ":" not in part:
+                painted.add(match.group(1))
+    return painted
+
+
+def _is_css_box(style: str) -> bool:
+    """Return whether an inline style draws a coloured box (a CSS-only bar)."""
+    backgrounds = _CSS_BACKGROUND.findall(style.lower())
+    return bool(
+        backgrounds
+        and backgrounds[-1].replace("!important", "").strip() not in _NO_BACKGROUND
+        and _CSS_SIZE.search(style.lower())
+    )
 
 
 class _VisibleContentFinder(HTMLParser):
-    """Stops at the first text or element the sanitized document would show."""
+    """Records whether the sanitized document would show any text or drawing."""
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.found = False
+        # Heading text alone does not count next to a canvas: that is a
+        # library chart whose drawing never runs, only its title shows.
+        self.heading_text = False
+        self.canvas = False
         self._hidden_depth = 0
         self._svg_depth = 0
+        self._heading_depth = 0
+        self._in_style = False
+        self._css: list[str] = []
+        self._class_counts: Counter[str] = Counter()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag in _HIDDEN_ELEMENTS:
             self._hidden_depth += 1
+            self.canvas = self.canvas or tag == "canvas"
+            self._in_style = tag == "style"
             return
         if self._hidden_depth:
             return
+        values = dict(attrs)
+        self._class_counts.update(set((values.get("class") or "").split()))
         if tag == "svg":
             self._svg_depth += 1
+        elif tag in _HEADINGS:
+            self._heading_depth += 1
         elif (self._svg_depth and tag in _SVG_SHAPES) or tag in _SELF_VISIBLE:
             self.found = True
+        elif tag == "use" and self._svg_depth:
+            href = values.get("href") or values.get("xlink:href") or ""
+            self.found = self.found or href.strip().startswith("#")
         elif tag == "img":
             # The frame's CSP only loads data: images.
-            src = (dict(attrs).get("src") or "").strip().lower()
+            src = (values.get("src") or "").strip().lower()
             self.found = self.found or src.startswith("data:image/")
+        if _is_css_box(values.get("style") or ""):
+            self.found = True
 
     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         # Self-closing tags (<rect/>) open nothing, so skip the depth counters.
-        if tag not in _HIDDEN_ELEMENTS and tag != "svg":
+        if tag == "canvas":
+            self.canvas = True
+        elif tag not in _HIDDEN_ELEMENTS and tag not in _HEADINGS and tag != "svg":
             self.handle_starttag(tag, attrs)
 
     def handle_endtag(self, tag: str) -> None:
         if tag in _HIDDEN_ELEMENTS:
             self._hidden_depth = max(0, self._hidden_depth - 1)
-        elif tag == "svg" and not self._hidden_depth:
+            self._in_style = False
+        elif self._hidden_depth:
+            return
+        elif tag == "svg":
             self._svg_depth = max(0, self._svg_depth - 1)
+        elif tag in _HEADINGS:
+            self._heading_depth = max(0, self._heading_depth - 1)
 
     def handle_data(self, data: str) -> None:
-        if not self._hidden_depth and data.strip():
-            self.found = True
+        if self._in_style:
+            self._css.append(data)
+        elif not self._hidden_depth and data.strip():
+            if self._heading_depth:
+                self.heading_text = True
+            else:
+                self.found = True
+
+    def visible(self) -> bool:
+        """Return the verdict once the whole document has been read."""
+        css = "".join(self._css)
+        return (
+            self.found
+            or (self.heading_text and not self.canvas)
+            or _draws_css_content(css)
+            or any(
+                self._class_counts[name] >= MIN_PAINTED_MARKS
+                for name in _painted_classes(css)
+            )
+        )
 
 
 def has_visible_content(html: str) -> bool:
     """Return whether the visual keeps any text or drawing after sanitizing.
 
     Text inside links or forms counts: the sanitizer keeps it and drops only
-    the element. Conservative by design; a False means the card would be blank.
+    the element. So do CSS-only marks: a <style> content value (a label in
+    ::after) and an inline-styled box with a background and a width or
+    height. A canvas with only a heading beside it is blank. Conservative by
+    design; a False means the card would be blank.
     """
     finder = _VisibleContentFinder()
     finder.feed(html)
     finder.close()
-    return finder.found
+    return finder.visible()
 
 
 # Plain numbers or px only. em, %, rem and keywords such as "small" do not match.
 _PX_VALUE = re.compile(r"(\d*\.?\d+)(?:px)?")
 _CSS_FONT_SIZE = re.compile(r"font-size\s*:\s*([^;}]+)")
 _CSS_RULE = re.compile(r"([^{}]+)\{([^{}]*)\}")
-_CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 # Style rules whose selector names text, tspan or svg can size SVG text.
 _SVG_TEXT_SELECTOR = re.compile(r"\b(?:text|tspan|svg)\b")
 _SVG_TEXT_ELEMENTS = frozenset({"text", "tspan", "textpath"})
@@ -113,6 +214,54 @@ class _OpenElement(NamedTuple):
     font_px: float | None  # Own or inherited size; None when unknown.
     in_svg: bool
     svg_width: float | None  # viewBox width of the top-level svg, if any.
+    hidden: bool = False  # Not drawn where it stands, e.g. in <defs> or a closed tooltip.
+    classes: frozenset[str] = frozenset()
+
+
+# SVG containers whose content is not drawn in place (or drawn at another scale).
+_UNDRAWN_SVG_CONTAINERS = frozenset(
+    {"defs", "symbol", "clippath", "mask", "pattern", "marker"}
+)
+_INLINE_HIDDEN = re.compile(r"display\s*:\s*none|visibility\s*:\s*hidden", re.I)
+# One compound step of a simple selector: an optional tag and one or more classes.
+_CLASS_STEP = re.compile(r"^[a-z][\w-]*(?:\.[\w-]+)+$|^(?:\.[\w-]+)+$", re.I)
+_STYLE_BLOCK = re.compile(r"<style\b[^>]*>(.*?)</style\s*>", re.I | re.S)
+
+
+def _hidden_selectors(css: str) -> list[list[frozenset[str]]]:
+    """Class chains a stylesheet hides outright, e.g. `.pt .tip{display:none}`.
+
+    Each chain lists the classes of each descendant step, outermost first.
+    Only plain class selectors are read: a rule with a state (`:hover`),
+    a combinator other than descendant, or an attribute is skipped, because
+    whether it hides the element cannot be told without a browser.
+    """
+    chains = []
+    for selector, body in _CSS_RULE.findall(_CSS_COMMENT.sub("", css)):
+        if not _INLINE_HIDDEN.search(body):
+            continue
+        for part in selector.split(","):
+            steps = part.split()
+            if not steps or not all(_CLASS_STEP.match(step) for step in steps):
+                continue
+            chains.append(
+                [frozenset(re.findall(r"\.([\w-]+)", step)) for step in steps]
+            )
+    return chains
+
+
+def _matches_chain(
+    classes: frozenset[str], ancestors: list[frozenset[str]], chain: list[frozenset[str]]
+) -> bool:
+    """Whether an element with `classes` under `ancestors` matches `chain`."""
+    if not chain[-1] <= classes:
+        return False
+    # Earlier steps match ancestors in order, nearest last.
+    needed = list(chain[:-1])
+    for ancestor in reversed(ancestors):
+        if needed and needed[-1] <= ancestor:
+            needed.pop()
+    return not needed
 
 
 def _to_px(value: str | None) -> float | None:
@@ -169,9 +318,11 @@ def _style_default_px(css: str) -> float | None:
 class _SmallestSvgTextFinder(HTMLParser):
     """Walks the element tree and collects the rendered size of SVG text."""
 
-    def __init__(self, column_px: int) -> None:
+    def __init__(self, column_px: int, css: str = "") -> None:
         super().__init__(convert_charrefs=True)
         self._column_px = column_px
+        # Read from every <style> up front, so a rule after the SVG counts too.
+        self._hidden_chains = _hidden_selectors(css)
         self._stack: list[_OpenElement] = []
         self._in_style = False
         self._css: list[str] = []
@@ -213,6 +364,9 @@ class _SmallestSvgTextFinder(HTMLParser):
         if not any(e.tag in _SVG_TEXT_ELEMENTS and e.in_svg for e in self._stack):
             return
         current = self._stack[-1]
+        # Hidden text (a closed tooltip, <defs>) is not judged by its size.
+        if current.hidden:
+            return
         if current.font_px is None:
             self._unsized_factors.append(
                 _rendered_px(1.0, current.svg_width, self._column_px)
@@ -246,8 +400,22 @@ class _SmallestSvgTextFinder(HTMLParser):
         if own_px is None:
             own_px = _to_px(attrs.get("font-size"))
         font_px = own_px if own_px is not None else (parent.font_px if parent else None)
+        classes = frozenset((attrs.get("class") or "").split())
+        ancestors = [element.classes for element in self._stack]
+        hidden = (
+            (parent.hidden if parent else False)
+            or (in_svg and tag in _UNDRAWN_SVG_CONTAINERS)
+            or bool(_INLINE_HIDDEN.search(attrs.get("style") or ""))
+            or attrs.get("display") == "none"
+            or any(
+                _matches_chain(classes, ancestors, chain)
+                for chain in self._hidden_chains
+            )
+        )
         if push:
-            self._stack.append(_OpenElement(tag, font_px, in_svg, svg_width))
+            self._stack.append(
+                _OpenElement(tag, font_px, in_svg, svg_width, hidden, classes)
+            )
 
 
 def smallest_svg_text_px(html: str, column_px: int = 320) -> float | None:
@@ -260,7 +428,188 @@ def smallest_svg_text_px(html: str, column_px: int = 320) -> float | None:
     140 px wide, and any other svg fills a column_px wide column. Returns None
     when no SVG text has a known size, so the caller skips the check.
     """
-    finder = _SmallestSvgTextFinder(column_px)
+    css = "\n".join(_STYLE_BLOCK.findall(html))
+    finder = _SmallestSvgTextFinder(column_px, css)
     finder.feed(html)
     finder.close()
     return finder.smallest_px()
+
+
+class _Node:
+    """One element in a lightweight parse tree."""
+
+    __slots__ = ("tag", "attrs", "children", "texts")
+
+    def __init__(self, tag: str, attrs: dict[str, str | None]) -> None:
+        self.tag = tag
+        self.attrs = attrs
+        self.children: list[_Node] = []
+        self.texts: list[str] = []
+
+    def walk(self) -> Iterator["_Node"]:
+        """Yield this node and every descendant in document order."""
+        # Iterative, so unclosed tags nested thousands deep cannot overflow.
+        pending = [self]
+        while pending:
+            node = pending.pop()
+            yield node
+            pending.extend(reversed(node.children))
+
+
+# HTML elements that never have content, so they are never left open.
+_VOID_ELEMENTS = frozenset(
+    {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
+     "param", "source", "track", "wbr"}
+)
+
+
+class _TreeBuilder(HTMLParser):
+    """Builds a _Node tree; stray end tags are ignored, unclosed tags stay open."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = _Node("#root", {})
+        self._stack = [self.root]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        node = _Node(tag, dict(attrs))
+        self._stack[-1].children.append(node)
+        if tag not in _VOID_ELEMENTS:
+            self._stack.append(node)
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self._stack[-1].children.append(_Node(tag, dict(attrs)))
+
+    def handle_endtag(self, tag: str) -> None:
+        for index in range(len(self._stack) - 1, 0, -1):
+            if self._stack[index].tag == tag:
+                del self._stack[index:]
+                return
+
+    def handle_data(self, data: str) -> None:
+        self._stack[-1].texts.append(data)
+
+
+def _parse_tree(html: str) -> _Node:
+    builder = _TreeBuilder()
+    builder.feed(html)
+    builder.close()
+    return builder.root
+
+
+# The first word(s) of Mermaid source. Case-sensitive like Mermaid itself, and
+# strict enough that prose such as "Pie chart of sectors" does not match.
+_MERMAID_START = re.compile(
+    r"(?:graph|flowchart)\s+(?:TD|TB|BT|RL|LR)\b"
+    r"|(?:sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram)\b"
+    r"|gantt\s*(?:\n|title\b|dateFormat\b|section\b)"
+    r"|pie(?:\s+showData)?\s*(?:\n|title\b)"
+)
+
+
+def needs_svg(html: str) -> bool:
+    """Return whether the visual relies on a script library instead of SVG.
+
+    Scripts never run in the chat. A <canvas> stays empty, so any canvas is
+    flagged (Chart.js and similar). Mermaid source shows as plain text, so an
+    element with class mermaid (or language-mermaid), or a pre/code/div block that
+    starts like Mermaid source, is flagged when the document has no <svg>.
+    """
+    nodes = list(_parse_tree(html).walk())
+    if any(node.tag == "canvas" for node in nodes):
+        return True
+    if any(node.tag == "svg" for node in nodes):
+        return False
+    for node in nodes:
+        if node.tag in ("script", "style"):
+            continue
+        classes = (node.attrs.get("class") or "").lower().split()
+        if any(name == "mermaid" or name.endswith("-mermaid") for name in classes):
+            return True
+        # Source is judged in code blocks and bare divs, not in prose, so a
+        # paragraph that starts with a keyword ("classDiagram is ...") passes.
+        if node.tag in ("pre", "code", "div") and any(
+            _MERMAID_START.match(text.lstrip()) for text in node.texts
+        ):
+            return True
+    return False
+
+
+# The sanitizer removes these, leaving a chart frozen at its start state.
+_SVG_ANIMATION_TAGS = {
+    "animate": "animate",
+    "animatetransform": "animateTransform",
+    "animatemotion": "animateMotion",
+    "set": "set",
+}
+
+
+def svg_animation_elements(html: str) -> list[str]:
+    """Return the SVG animation element names the visual uses, sorted."""
+    found = {
+        _SVG_ANIMATION_TAGS[node.tag]
+        for node in _parse_tree(html).walk()
+        if node.tag in _SVG_ANIMATION_TAGS
+    }
+    return sorted(found)
+
+
+WAFFLE_CELLS = 100
+# Fewer cells than this is not a cell grid the check understands (for example
+# a card holding a title and a legend), so it is skipped rather than flagged.
+_MIN_WAFFLE_GRID = 50
+# A container with at least this many same-tag children with children of
+# their own is a grid of rows.
+_MIN_WAFFLE_ROWS = 5
+
+
+def _dominant_children(node: _Node) -> list[_Node]:
+    """Return the children with the most common tag (the cells or rows)."""
+    if not node.children:
+        return []
+    tag = Counter(child.tag for child in node.children).most_common(1)[0][0]
+    return [child for child in node.children if child.tag == tag]
+
+
+def _cell_count(node: _Node) -> int:
+    """Count cells as direct children, or as children of direct-child rows."""
+    group = _dominant_children(node)
+    if len(group) >= _MIN_WAFFLE_ROWS and all(row.children for row in group):
+        return sum(len(_dominant_children(row)) for row in group)
+    return len(group)
+
+
+def _walk_outside_tables(node: _Node) -> Iterator[_Node]:
+    """Yield `node` and its descendants, skipping every table and its contents."""
+    pending = [node]
+    while pending:
+        current = pending.pop()
+        if current.tag == "table":
+            continue
+        yield current
+        pending.extend(reversed(current.children))
+
+
+def _is_waffle(node: _Node) -> bool:
+    label = f"{node.attrs.get('class') or ''} {node.attrs.get('aria-label') or ''}"
+    return "waffle" in label.lower()
+
+
+def waffle_cell_counts(html: str) -> list[int]:
+    """Return the cell count of each waffle chart in the visual.
+
+    A waffle is an element whose class or aria-label contains "waffle" and
+    that holds no other such element. Its grid is the element inside it (or
+    itself) with the most cells; grids under 50 cells are not counted.
+    """
+    counts = []
+    for node in _parse_tree(html).walk():
+        if not _is_waffle(node) or any(
+            _is_waffle(inner) for inner in node.walk() if inner is not node
+        ):
+            continue
+        # A table next to the grid (e.g. the values) is not the grid.
+        count = max((_cell_count(inner) for inner in _walk_outside_tables(node)), default=0)
+        if count >= _MIN_WAFFLE_GRID:
+            counts.append(count)
+    return counts

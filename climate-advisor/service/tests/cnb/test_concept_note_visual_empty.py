@@ -83,3 +83,65 @@ async def test_tool_accepts_svg_without_html_text() -> None:
     result = await invoke("Bars", VISIBLE[1])
 
     assert result["success"] is True
+
+
+# Cases added with the CSS-only, <use> and canvas-title rules.
+@pytest.mark.parametrize(
+    "html",
+    [
+        # A library chart: the canvas is never drawn, only the titles show.
+        (
+            "<html><head><title>Emissions</title></head><body>"
+            '<canvas id="c"></canvas></body></html>'
+        ),
+        (
+            '<h2>Emissions by sector</h2><canvas id="c"></canvas>'
+            '<script src="https://cdn.test/chart.js"></script>'
+        ),
+        # The sanitizer still drops external <use> references.
+        '<svg><use href="https://cdn.test/icons.svg#i"/></svg>',
+        # A selector is not a content value; empty content draws nothing.
+        (
+            '<style>.content:hover{color:red}.a::after{content:""}</style>'
+            '<div class="content"></div>'
+        ),
+        # A transparent box draws nothing.
+        '<div style="background:transparent;width:40px;height:10px"></div>',
+    ],
+)
+def test_more_blank_after_sanitizing(html: str) -> None:
+    assert has_visible_content(html) is False
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        # Local references render now that the frontend keeps "#id" hrefs.
+        (
+            '<svg viewBox="0 0 10 10"><defs><symbol id="p"><circle r="2"/></symbol>'
+            '</defs><use href="#p" x="2"/><use xlink:href="#p" x="6"/></svg>'
+        ),
+        # CSS-only bars: the value is in ::after and the bar is a styled box.
+        (
+            '<style>.bar::after{content:"412 ktCO2e"}</style>'
+            '<div class="bar"></div>'
+        ),
+        '<div style="background:#087f8c;width:60%;height:12px"></div>',
+        # A heading alone is content when no canvas is waiting to be drawn.
+        "<h1>37%</h1>",
+    ],
+)
+def test_more_visible_after_sanitizing(html: str) -> None:
+    assert has_visible_content(html) is True
+
+
+def test_class_painted_marks_count_as_content() -> None:
+    cells = '<i class="cell"></i>' * 3
+    assert has_visible_content(
+        f"<style>.cell{{height:30px;background:red}}</style><div>{cells}</div>"
+    )
+    # One painted container (a script target) is still blank.
+    assert not has_visible_content(
+        '<style>#chart,.box{height:200px;background:#fff}</style><div class="box"></div>'
+        "<script>draw()</script>"
+    )

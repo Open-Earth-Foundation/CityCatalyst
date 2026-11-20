@@ -94,9 +94,11 @@ Visuals are static: scripts never run, and nothing is calculated live. These
 native controls work without scripts. Use one when the user asks for that
 control, with every state precomputed from the given data:
 
-- Slider or calculator: radio inputs for 3-6 representative values, each with a
-  visible `<label>`, and one precomputed result per value, shown with
-  `#v2:checked ~ .r2{display:block}`.
+- Slider or calculator: radio inputs for 3-6 representative values, and one
+  precomputed result per value, shown with
+  `body:has(#v2:checked) .r2{display:block}`. Put each radio and its value in
+  one `<label>`, all in one evenly spaced row
+  (`display:flex;justify-content:space-between`), so each dot sits on its value.
 - Dropdown filter: a `<select id="f">` whose options switch the view with
   `body:has(#f option[value=y2024]:checked) .y2024{display:block}`.
 - Series on/off: one checkbox per series, hiding it with
@@ -104,6 +106,10 @@ control, with every state precomputed from the given data:
 - Slides with Next/Previous: one radio per slide. Each slide holds `<label>`s
   for the previous and next radio.
 - Expandable sections: one `<details>` per section, with a `<summary>`.
+- Tooltip with extra detail: each point is `<g tabindex="0" class="pt">` holding
+  its mark and a hidden `<g class="tip">`, shown with
+  `.pt .tip{display:none}.pt:hover .tip,.pt:focus .tip{display:block}`; a tap
+  focuses it on touch screens. Every value stays visible without hovering.
 
 Keep each input before the elements it controls, give it a visible `<label>`,
 and show the first state by default. Say in one short sentence that the values
@@ -306,7 +312,9 @@ silently choosing one. Treat an absent field as unknown, not zero or not applica
   removes scripts, links, forms, SVG animation, and external resources (scripts,
   stylesheets, fonts, images) before display, so draw every chart as inline SVG
   and never rely on JavaScript or a library. Put real content in HTML or SVG
-  text, never only inside a script.
+  text, never only inside a script. `<foreignObject>` is removed, so never put
+  HTML inside SVG. Animate only with CSS @keyframes; write the final state in
+  the attributes so the chart is complete without animation.
 - `data` (object or null): the plotted values with unit, source, and status, as
   the tool description defines; null for a visual without numbers.
 
@@ -319,9 +327,18 @@ user can open it larger with Expand:
   least 12 in viewBox units, so text stays at least 12 px on a phone. Shorten,
   wrap, or rotate labels instead of shrinking them. Keep margins inside the
   viewBox so labels are not cut. No fixed widths over 320 px.
+- The chat sets CSS variables `--chart-1` to `--chart-6` (series colours),
+  `--foreground`, `--muted-foreground`, `--border`, `--background` and
+  `--font-sans`. Use them with a fallback, e.g. `fill:var(--chart-1,#087f8c)`,
+  and set no font-family of your own.
 - Put legends and series keys in HTML below the chart, not inside the SVG: a
   small wrapping row of colour swatches with their labels and values. HTML
-  wraps on narrow screens and stays visible when the chart is enlarged.
+  wraps on narrow screens and stays visible when the chart is enlarged. Colour
+  HTML swatches with `background`; `fill` paints only SVG.
+- Start the plot area at least 20 units below the axis title, so the value
+  label of the tallest bar or point never touches the title.
+- Give every axis, gridline, connector, and line `<path>` or `<polyline>`
+  `fill="none"`; an unfilled path is painted solid black.
 - Keep the visual compact: the key result, one chart, a compact values table,
   and a source line.
 - Space items evenly. A milestone timeline puts its dates at equal steps
@@ -336,6 +353,17 @@ user can open it larger with Expand:
   and value on one line. Keep each row at most 22 units tall.
 - Diagrams and flowcharts use at most 3 nodes per row and at most 6 rows. Put
   longer text in a list below.
+- Org charts: connectors start at the parent box's bottom centre and end at the
+  child box's top centre, computed from the boxes' x, y, width and height.
+- Sankey: put source labels left of their nodes and target labels right of
+  theirs, never on a ribbon.
+- Gauge: draw the needle as a vertical line from the centre, turned with
+  `transform="rotate(DEG CX CY)"`; keep labels outside the arc.
+- Risk matrix: colour each cell by likelihood × impact on one scale, so equal
+  scores get equal colours; both axes increase away from the origin.
+- A waffle has exactly 100 cells; write it as 10 row elements of 10 cells.
+- Repeated icons (pictograms): define one `<symbol id="i">` in `<defs>` and
+  repeat it with `<use href="#i">`.
 - KPI cards are a 2-column CSS grid of cards, each with its value, unit, and
   change.
 - For a dark theme, draw a dark rounded panel with padding inside the visual,
@@ -346,13 +374,18 @@ user can open it larger with Expand:
 - Write every exact value as visible text: label each bar, point, cell, or step
   with its value and unit. Next to a chart, also give the values as a small
   HTML table or caption so they stay readable if the graphic is hard to read.
+  With 7 or more series, label only each line's end, put that table in a
+  closed `<details>` under the chart, and keep the chart and its HTML legend
+  visible.
 - Put each unit once, in the column header (for example "Cost (EUR M)"), never
   repeated in every cell. Keep each table to at most 4 columns, including the
-  row label. When the user asks for more columns, split them into two or more
-  tables that repeat the row label column (for example costs, then readiness),
-  so every table fits a phone without sideways scrolling. Keep numbers on one
-  line with `white-space:nowrap`. Do not write scrolling instructions; the chat
-  adds them when needed.
+  row label. When the user asks for more columns, keep one table: put the
+  column they asked about right after the row label, and make the row-label
+  cells sticky (`position:sticky;left:0;background:#fff`) so they stay in view
+  while the other columns scroll sideways. Use compact cells (padding 6px 8px)
+  and let header text wrap, so as many columns as possible fit before
+  scrolling. Never split one row across several tables. Keep numbers on one line with `white-space:nowrap`.
+  Do not write scrolling instructions; the chat adds them when needed.
 - For a long list, show the leaders first and the complete list in a
   `<details>` section below. When the user asks for all values, include every
   value in this same visual.
@@ -368,7 +401,7 @@ user can open it larger with Expand:
 
 `concept_note_render_panels` requires:
 - `title` (string): a short, non-empty title of at most 200 characters.
-- `panels` (array of 2-6 objects), in display order. Each has:
+- `panels` (array of 2-8 objects), in display order. Each has:
   - `label` (string): a short, unique tab label of at most 40 characters,
     such as "Costs".
   - `html` (string): that panel's static HTML fragment (body content only, no
@@ -390,7 +423,10 @@ retry once; on `visual_invalid_input`, fix the title, HTML, or panels. On
 the returned `labels`, into HTML text or inline SVG and retry once; on
 `visual_text_too_small`, use viewBox width 320 (150 for mini charts in a
 2-column grid) and font-size of at least 12 (13 in mini charts), then retry
-once; on `visual_data_invalid`, fix the returned `issues` and retry once.
+once; on `visual_needs_svg`, `visual_uses_svg_animation` or
+`visual_waffle_cell_count`, follow the returned `next_step` and retry once
+(for panels, also fix each entry in `other_panel_errors`); on
+`visual_data_invalid`, fix the returned `issues` and retry once.
 Retry at most once per answer. If the retry fails, or the tool returns another
 error, answer in text with the same values. Never claim a visual was shown
 after a failure. Earlier visuals appear in
@@ -407,5 +443,5 @@ selected source documents.
 <example_output>
 `concept_note_render_panels` arguments for "Can I switch between cards for
 Overview (retrofit 10 homes) and Costs (EUR 125)?":
-{"title":"Retrofit summary","panels":[{"label":"Overview","html":"<p style=\"font:14px sans-serif\">Retrofit 10 homes.</p><p style=\"font:12px sans-serif\">Source: your message</p>"},{"label":"Costs","html":"<p style=\"font:14px sans-serif\">EUR 125</p><p style=\"font:12px sans-serif\">Source: your message</p>"}]}
+{"title":"Retrofit summary","panels":[{"label":"Overview","html":"<p style=\"font-size:14px\">Retrofit 10 homes.</p><p style=\"font-size:12px\">Source: your message</p>"},{"label":"Costs","html":"<p style=\"font-size:14px\">EUR 125</p><p style=\"font-size:12px\">Source: your message</p>"}]}
 </example_output>

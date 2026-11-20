@@ -286,7 +286,7 @@ def test_cnb_chat_prompt_routes_answer_forms_and_states_visual_limits() -> None:
     assert "Switchable cards present content; they are not choices." in composed
     # The panel contract matches `concept_note_render_panels(title, panels)`.
     assert "`concept_note_render_panels` requires:" in composed
-    assert "`panels` (array of 2-6 objects)" in composed
+    assert "`panels` (array of 2-8 objects)" in composed
     assert "at most 40 characters" in composed
     # Static-only truth, data fidelity and layout rules.
     assert "scripts never run, and nothing is calculated live." in composed
@@ -297,7 +297,8 @@ def test_cnb_chat_prompt_routes_answer_forms_and_states_visual_limits() -> None:
     assert "show each one with its own source side by side" in composed
     assert "overflow-x" not in composed
     assert "Put each unit once, in the column header" in composed
-    assert "tables that repeat the row label column" in composed
+    assert "make the row-label\n  cells sticky" in composed
+    assert "Never split one row across several" in composed
     assert "Do not write scrolling instructions" in composed
     assert "Put legends and series keys in HTML below the chart" in composed
     assert "viewBox width 150 and font-size of at least 13" in composed

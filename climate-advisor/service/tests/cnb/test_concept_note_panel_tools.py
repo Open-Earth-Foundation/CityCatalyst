@@ -142,6 +142,68 @@ async def test_render_panels_names_small_svg_text_panels() -> None:
     assert "viewBox width 320" in result["data"]["next_step"]
 
 
+async def test_render_panels_accepts_eight_panels() -> None:
+    panels = [{"label": f"Tab {i}", "html": f"<p>{i}</p>"} for i in range(8)]
+
+    assert (await invoke("Plan", panels))["success"] is True
+    nine = [*panels, {"label": "Tab 8", "html": "<p>8</p>"}]
+    assert (await invoke("Plan", nine))["error_code"] == "visual_invalid_input"
+
+
+async def test_render_panels_names_panels_with_svg_animation() -> None:
+    animated = '<svg><rect width="9"><animate attributeName="x"/></rect></svg>'
+    moving = '<svg><circle r="3"><animateMotion path="M0 0H9"/></circle></svg>'
+    panels = [
+        PANELS[0],
+        {"label": "Costs", "html": animated},
+        {"label": "Risks", "html": moving},
+    ]
+
+    result = await invoke("Plan", panels)
+
+    assert result["error_code"] == "visual_uses_svg_animation"
+    assert result["data"]["labels"] == ["Costs", "Risks"]
+    assert result["data"]["elements"] == ["animate", "animateMotion"]
+    assert "retry once" in result["data"]["next_step"]
+
+
+async def test_render_panels_names_mermaid_and_waffle_panels() -> None:
+    mermaid = '<div class="mermaid">graph TD\nA-->B</div>'
+    waffle = '<p>37 of 100</p><div class="waffle">' + "<i></i>" * 90 + "</div>"
+
+    result = await invoke("Plan", [PANELS[0], {"label": "Flow", "html": mermaid}])
+    assert result["error_code"] == "visual_needs_svg"
+    assert result["data"]["labels"] == ["Flow"]
+
+    result = await invoke("Plan", [PANELS[0], {"label": "Share", "html": waffle}])
+    assert result["error_code"] == "visual_waffle_cell_count"
+    assert result["data"]["labels"] == ["Share"]
+    assert result["data"]["cell_counts"] == [90]
+
+
+async def test_render_panels_lists_other_panels_failing_another_check() -> None:
+    mermaid = '<div class="mermaid">graph TD\nA-->B</div>'
+    waffle = '<p>37 of 100</p><div class="waffle">' + "<i></i>" * 90 + "</div>"
+
+    result = await invoke(
+        "Plan",
+        [
+            {"label": "Share", "html": waffle},
+            {"label": "Flow", "html": mermaid},
+            PANELS[0],
+        ],
+    )
+
+    # The first check in order is the error; the other panel comes with its own step.
+    assert result["error_code"] == "visual_needs_svg"
+    assert result["data"]["labels"] == ["Flow"]
+    [other] = result["data"]["other_panel_errors"]
+    assert other["label"] == "Share"
+    assert other["error_code"] == "visual_waffle_cell_count"
+    assert other["cell_counts"] == [90]
+    assert "100 cells" in other["next_step"] or other["next_step"]
+
+
 async def test_history_reads_panels_from_arguments_with_result_labels() -> None:
     result = await invoke("Retrofit plan", PANELS)
     stored = [

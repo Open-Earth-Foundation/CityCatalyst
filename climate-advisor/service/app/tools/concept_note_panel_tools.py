@@ -12,20 +12,16 @@ from typing import Any
 from agents import function_tool
 from pydantic import BaseModel
 
-from app.tools.concept_note_visual_tools import (
-    MIN_SVG_TEXT_PX,
-    NO_VISIBLE_CONTENT_HINT,
-    TEXT_TOO_SMALL_HINT,
-)
+from app.tools.concept_note_visual_tools import VISUAL_HTML_CHECKS
 from app.utils.concept_note_context import VISUAL_PANELS_KIND, VISUAL_RENDER_ACTION
-from app.utils.visual_html import has_visible_content, smallest_svg_text_px
 
 logger = logging.getLogger(__name__)
 
 MAX_PANELS_TITLE_CHARS = 200
 MAX_PANEL_LABEL_CHARS = 40
 MIN_PANELS = 2
-MAX_PANELS = 6
+# The chat's tab strip wraps, so eight short labels still fit a phone.
+MAX_PANELS = 8
 # Same total budget as one visual: every panel is stored and streamed once.
 MAX_PANELS_HTML_CHARS = 200_000
 
@@ -46,7 +42,7 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     dashboard of numbers: use one `concept_note_render_visual` with a grid of
     cards. The chat draws the tab buttons itself; the user switches with a
     click, tap, or the arrow keys. Do NOT draw tab buttons inside a panel.
-    `panels`: 2 to 6 items, each with a distinct `label` (the tab text, at most
+    `panels`: 2 to 8 items, each with a distinct `label` (the tab text, at most
     40 characters) and `html`: static HTML for that panel only, with inline
     CSS and inline SVG. Scripts, links, forms and external resources are
     removed. Each panel shows in a chat column 340 to 500 px wide: one fluid
@@ -54,7 +50,8 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     font-size of at least 12. Mini charts in a 2-column grid use viewBox width
     150 and font-size of at least 13. Put legends in HTML below each chart, not
     inside the SVG. Tables keep units only in their headers and at most 4
-    columns; split a wider table into tables that repeat the row label. Combined
+    columns; a wider table stays one table with sticky row labels, never one
+    row split across tables. Combined
     panel HTML must stay under 200,000 characters. `title` is required, at most
     200 characters. Never invent numbers: use only data the user gave or the
     context contains, and keep the user's own wording of each panel's content.
@@ -66,10 +63,12 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     A panel whose HTML would show nothing once scripts and external resources
     are removed returns visual_no_visible_content with its `labels`: fix those
     panels and retry once, then answer in text.
-    A panel with SVG text under 11 px returns visual_text_too_small with its
+    A panel with SVG text under 12 px returns visual_text_too_small with its
     `labels` and `smallest_text_px`: retry once with viewBox width 320 (150 for
     mini charts in a 2-column grid) and font-size of at least 12 (13 in mini
-    charts), then answer in text.
+    charts), then answer in text. visual_needs_svg (Mermaid source),
+    visual_uses_svg_animation and visual_waffle_cell_count also name the
+    failing `labels`: follow `next_step`, retry once, then answer in text.
     """
     # Validate the model-supplied payload before the chat renders it.
     title = title.strip()
@@ -91,36 +90,38 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
             code="visual_html_too_large",
         )
 
-    # A panel with content only in scripts, iframes or external files would
-    # be a blank tab. Name every such panel so one retry can fix them all.
-    blank_labels = [
-        label
-        for label, panel in zip(labels, panels)
-        if not has_visible_content(panel.html)
-    ]
-    if blank_labels:
-        return _panels_result(
-            False,
-            data={**NO_VISIBLE_CONTENT_HINT, "labels": blank_labels},
-            code="visual_no_visible_content",
-        )
-
-    # Small SVG text is named per panel, so one retry can fix every failing panel.
-    text_px = [smallest_svg_text_px(panel.html) for panel in panels]
-    small = [
-        (label, px)
-        for label, px in zip(labels, text_px)
-        if px is not None and px < MIN_SVG_TEXT_PX
-    ]
-    if small:
+    # Each panel's first failing check. The first code in check order is the
+    # error; panels failing another check are listed too, each with its own
+    # next step, so one retry can fix every panel.
+    failures: list[tuple[int, str, dict[str, Any], dict[str, str]]] = []
+    for label, panel in zip(labels, panels):
+        for order, (code, check, hint) in enumerate(VISUAL_HTML_CHECKS):
+            if (details := check(panel.html)) is not None:
+                failures.append((order, label, details, hint))
+                break
+    if failures:
+        first = min(order for order, *_ in failures)
+        code, _, hint = VISUAL_HTML_CHECKS[first]
+        same = [(label, details) for order, label, details, _ in failures if order == first]
+        others = [
+            {
+                "label": label,
+                "error_code": VISUAL_HTML_CHECKS[order][0],
+                **details,
+                "next_step": other_hint["next_step"],
+            }
+            for order, label, details, other_hint in failures
+            if order != first
+        ]
         return _panels_result(
             False,
             data={
-                "labels": [label for label, _ in small],
-                "smallest_text_px": round(min(px for _, px in small), 1),
-                **TEXT_TOO_SMALL_HINT,
+                "labels": [label for label, _ in same],
+                **_merge_details([details for _, details in same]),
+                **hint,
+                **({"other_panel_errors": others} if others else {}),
             },
-            code="visual_text_too_small",
+            code=code,
         )
 
     logger.info(
@@ -140,6 +141,20 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
             "html_chars": html_chars,
         },
     )
+
+
+def _merge_details(details: list[dict[str, Any]]) -> dict[str, Any]:
+    """Combine per-panel details: numbers keep the smallest, lists concatenate."""
+    merged: dict[str, Any] = {}
+    for item in details:
+        for key, value in item.items():
+            if key not in merged:
+                merged[key] = value
+            elif isinstance(value, list):
+                merged[key] = merged[key] + [v for v in value if v not in merged[key]]
+            else:
+                merged[key] = min(merged[key], value)
+    return merged
 
 
 def _panels_result(

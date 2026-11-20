@@ -10,21 +10,20 @@ import {
   IngestItemError,
   ingestItemErrorStatus,
 } from "@/backend/ingest/types";
+import { isGrantActive } from "@/backend/oauth/grants";
 import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
+import { getOAuthJwksUri } from "@/lib/auth/oauth-config";
 import {
   OAUTH_SIGNING_ALGORITHM,
-  OAuthTokenType,
   getOAuthSigningKey,
-  verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
+import { verifyAccessToken } from "@/lib/auth/oauth-verify";
 import { AppSession, Auth } from "@/lib/auth";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
 import { H } from "@/lib/highlight";
 import { db } from "@/models";
-import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import { OAuthClient } from "@/models/OAuthClient";
 import { Organization } from "@/models/Organization";
 import { logger } from "@/services/logger";
 import {
@@ -221,10 +220,13 @@ type BearerTokenKind = "oauth" | "shared-secret";
  * key as its secret is refused. Callers must check `kind` for the flow they
  * serve (see apiHandler).
  */
-function getBearerToken(header: string): {
+async function getBearerToken(
+  header: string,
+  req: NextRequest,
+): Promise<{
   token: BearerTokenPayload;
   kind: BearerTokenKind;
-} {
+}> {
   const match = header.match(/^Bearer\s+(.*)$/);
   if (!match) {
     throw new createHttpError.BadRequest(`Malformed Authorization header`);
@@ -233,23 +235,27 @@ function getBearerToken(header: string): {
   const alg = jwt.decode(rawToken, { complete: true })?.header.alg;
 
   if (alg === OAUTH_SIGNING_ALGORITHM) {
-    // Without a key, this server has never issued an OAuth token.
-    if (!process.env.OAUTH_SIGNING_KEY) {
-      throw new createHttpError.Unauthorized("Invalid or expired access token");
+    // With no JWKS configured the token is verified with this app's own key.
+    // Without that key, this server has never issued an OAuth token. A key that
+    // is set but unusable is a 500, not a 401. With a JWKS configured the key
+    // is fetched, and no local key is needed.
+    if (!getOAuthJwksUri()) {
+      if (!process.env.OAUTH_SIGNING_KEY) {
+        throw new createHttpError.Unauthorized(
+          "Invalid or expired access token",
+        );
+      }
+      getOAuthSigningKey();
     }
-    // A key that is set but unusable is a 500, not a 401.
-    getOAuthSigningKey();
-    try {
-      return {
-        token: verifyOAuthToken(
-          rawToken,
-          OAuthTokenType.Access,
-        ) as unknown as BearerTokenPayload,
-        kind: "oauth",
-      };
-    } catch {
-      throw new createHttpError.Unauthorized("Invalid or expired access token");
-    }
+    // Checks signature, algorithm, type, issuer, audience and expiry. Throws a
+    // 401 for an invalid token and a 503 if the keys cannot be fetched.
+    return {
+      token: (await verifyAccessToken(
+        rawToken,
+        req,
+      )) as unknown as BearerTokenPayload,
+      kind: "oauth",
+    };
   }
 
   if (alg === "HS256") {
@@ -277,12 +283,17 @@ async function makeOAuthUserSession(
   token: BearerTokenPayload,
 ): Promise<AppSession> {
   const userId = token.sub;
+  // The token is already verified. The user row is read for the role and the
+  // profile fields, which are not in the token. A token for a user that no
+  // longer exists is not a valid credential.
   const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {
-    throw new createHttpError.BadRequest(`Malformed Authorization header`);
+    throw new createHttpError.Unauthorized("Invalid or expired access token");
   }
+  // The session ends when the token does.
+  const expiresAt = token.exp ?? Math.floor(Date.now() / 1000) + 3600;
   return {
-    expires: new Date(token.iat * 1000).toISOString(),
+    expires: new Date(expiresAt * 1000).toISOString(),
     user: {
       id: user.userId,
       name: user.name,
@@ -416,11 +427,18 @@ export function apiHandler(
             session = patSession;
           } else {
             // Existing JWT/OAuth validation
-            const { token, kind } = getBearerToken(authorization);
+            const { token, kind } = await getBearerToken(authorization, req);
 
-            const origin = process.env.HOST || new URL(req.url).origin;
-            if (token.aud !== origin) {
-              throw new createHttpError.Unauthorized("Wrong server for token");
+            // OAuth tokens had their issuer and audience checked when they were
+            // verified. Shared-secret tokens (Climate Advisor) are minted by this
+            // server for this server, so they must carry its own origin.
+            if (kind === "shared-secret") {
+              const origin = process.env.HOST || new URL(req.url).origin;
+              if (token.aud !== origin) {
+                throw new createHttpError.Unauthorized(
+                  "Wrong server for token",
+                );
+              }
             }
 
             // Check if this is service-to-service authentication
@@ -468,8 +486,7 @@ export function apiHandler(
                   "Invalid or expired access token",
                 );
               }
-              const client = await OAuthClient.findByPk(token.client_id);
-              if (!client) {
+              if (!token.client_id) {
                 throw new createHttpError.Unauthorized("Invalid client");
               }
               if (!token.scope) {
@@ -500,16 +517,11 @@ export function apiHandler(
                   );
                 }
               }
-              const authz = await OAuthClientAuthz.findOne({
-                where: {
-                  clientId: token.client_id,
-                  userId: token.sub,
-                },
-              });
-              if (!authz) {
+              // Revoking an app deletes the grant, which takes effect here on the
+              // next request even though the token itself has not expired.
+              if (!(await isGrantActive(token.client_id, token.sub))) {
                 throw new createHttpError.Unauthorized("Authorization revoked");
               }
-              await authz.update({ lastUsed: new Date() });
               session = await makeOAuthUserSession(token);
             } else {
               throw new createHttpError.Unauthorized(

@@ -24,7 +24,7 @@ import {
   verifyOAuthToken,
 } from "@/lib/auth/oauth-signing";
 import { db } from "@/models";
-import { OAuthClient } from "@/models/OAuthClient";
+
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 import { apiHandler } from "@/util/api";
 import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
@@ -217,7 +217,9 @@ describe("Bearer tokens in apiHandler", () => {
     );
   }
 
-  let findClient: ReturnType<typeof jest.spyOn>;
+  // The grant lookup runs only after a token has passed verification, so a
+  // rejected token must never reach it.
+  let findGrant: ReturnType<typeof jest.spyOn>;
 
   beforeAll(async () => {
     setupTests();
@@ -244,11 +246,8 @@ describe("Bearer tokens in apiHandler", () => {
     process.env.CC_SERVICE_API_KEY = SERVICE_KEY;
     process.env.HOST = ORIGIN;
 
-    // No database: the client, the grant and the user are stubbed.
-    findClient = jest
-      .spyOn(OAuthClient, "findByPk")
-      .mockResolvedValue({ clientId: CLIENT_ID } as never);
-    jest
+    // No database: the grant and the user are stubbed.
+    findGrant = jest
       .spyOn(OAuthClientAuthz, "findOne")
       .mockResolvedValue({ update: async () => undefined } as never);
     jest.spyOn(db.models.User, "findOne").mockResolvedValue({
@@ -282,7 +281,7 @@ describe("Bearer tokens in apiHandler", () => {
       // Same key, same claims, same audience: only the type differs.
       const token = signOAuthToken(type, accessClaims, accessOptions);
       await expectStatusCode(await call(token), 401);
-      expect(findClient).not.toHaveBeenCalled();
+      expect(findGrant).not.toHaveBeenCalled();
     },
   );
 
@@ -294,7 +293,7 @@ describe("Bearer tokens in apiHandler", () => {
     });
     const res = await call(token);
     await expectStatusCode(res, 401);
-    expect(findClient).not.toHaveBeenCalled();
+    expect(findGrant).not.toHaveBeenCalled();
   });
 
   it("rejects an invite-style token signed with the shared secret", async () => {

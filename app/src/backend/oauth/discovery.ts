@@ -1,3 +1,4 @@
+import { getOAuthIssuer } from "@/lib/auth/oauth-config";
 import { languages } from "@/i18n/settings";
 
 const DOCUMENTATION_URL =
@@ -33,7 +34,7 @@ export function legacyMetadataHeaders(issuer: string): Record<string, string> {
 
 /** The issuer. It is the `iss` of every token and must match the discovery document. */
 export function issuerFor(req: Request): string {
-  return process.env.HOST || new URL(req.url).origin;
+  return getOAuthIssuer(req);
 }
 
 /**

@@ -660,7 +660,11 @@ Each proposal permits up to 100 draft searches, shared across repair attempts,
 configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. The planner and
+only affected chapters, with at most 12 reviews concurrently
+(`cnb_edits.max_concurrency`), so a whole-document edit is reviewed in one wave.
+When review asks for a repair, a chapter whose changes come back unchanged and
+were fully supported keeps its earlier review instead of being reviewed again.
+The planner and
 the reviewers draw on the same evidence: `run_context.source_excerpts` lists every
 quotation the selected sources keep for any template chapter, deduplicated (each
 reviewer receives the quotations of the sources its changes cite; when a large

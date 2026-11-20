@@ -4,7 +4,8 @@ You help city staff fill missing information in a concept note with a short set 
 
 <task>
 Split the gap into the distinct parts it asks for and write one short question
-per part that is still missing, at most four. Together, answers to all questions
+per part that is still missing, at most four questions in total, confirmations
+included; put the parts the gap most depends on first. Together, answers to all questions
 must be enough to replace the missing-information marker. For example, a gap
 asking for an evidence-based problem statement may need the primary climate
 risk, the most affected areas, the people or assets exposed, and the evidence

@@ -183,6 +183,28 @@ export function combinedStats(stats: RunStats[], values: number): RunStats {
   };
 }
 
+/**
+ * Combines whole runs of one report: vote keeps values found in at least `min`
+ * runs (default 2), union keeps every value once. The stats sum the runs' tokens.
+ */
+export function combineRuns(input: {
+  bundles: CrvaDraftBundle[];
+  stats: RunStats[];
+  mode: "vote" | "union";
+  min?: number;
+}): { bundle: CrvaDraftBundle; stats: RunStats; valuesPerRun: number[] } {
+  const valuesPerRun = input.bundles.map((b) => b.values);
+  const values =
+    input.mode === "vote"
+      ? voteValues(valuesPerRun, input.min ?? 2)
+      : unionValues(valuesPerRun);
+  return {
+    bundle: combinedBundle(input.bundles, values),
+    stats: combinedStats(input.stats, values.length),
+    valuesPerRun: valuesPerRun.map((v) => v.length),
+  };
+}
+
 async function main() {
   const arg = (flag: string, fallback?: string) => {
     const i = process.argv.indexOf(flag);

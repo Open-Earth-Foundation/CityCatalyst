@@ -1,7 +1,13 @@
 import { describe, expect, it } from "@jest/globals";
-import type { CrvaDraftValue } from "@/backend/ingest/plugins/ccra/draft-schema";
+import type {
+  CrvaDraftBundle,
+  CrvaDraftValue,
+} from "@/backend/ingest/plugins/ccra/draft-schema";
+import type { RunStats } from "../scripts/crva-eval/run-adapter";
+import { runPlan } from "../scripts/crva-mirco/run-mirco-refs";
 import {
   clusterValues,
+  combineRuns,
   sameValue,
   unionValues,
   valueKey,
@@ -137,5 +143,102 @@ describe("voteValues", () => {
 
   it("unions every value once", () => {
     expect(unionValues(runs)).toHaveLength(3);
+  });
+});
+
+// Vote 2/3 default (2026-11-20): the runner plans N runs and a combiner.
+describe("runPlan", () => {
+  it("defaults to 3 runs combined by vote", () => {
+    expect(runPlan([])).toEqual({ runs: 3, combine: "vote" });
+  });
+
+  it("gives one uncombined run with --runs 1", () => {
+    expect(runPlan(["--runs", "1"])).toEqual({ runs: 1, combine: "none" });
+  });
+
+  it("allows union of 2 or 3 runs for experiments", () => {
+    expect(runPlan(["--runs", "2", "--combine", "union"])).toEqual({
+      runs: 2,
+      combine: "union",
+    });
+    expect(runPlan(["--combine", "union"])).toEqual({
+      runs: 3,
+      combine: "union",
+    });
+  });
+
+  it("rejects plans that do not make sense", () => {
+    expect(() => runPlan(["--runs", "2"])).toThrow(
+      /vote needs at least 3 runs/,
+    );
+    expect(() => runPlan(["--runs", "1", "--combine", "vote"])).toThrow(
+      /--runs 1/,
+    );
+    expect(() => runPlan(["--runs", "0"])).toThrow(/--runs/);
+    expect(() => runPlan(["--combine", "majority"])).toThrow(/--combine/);
+    expect(() => runPlan(["--groups", "--runs", "3"])).toThrow(/--groups/);
+    expect(runPlan(["--groups"])).toEqual({ runs: 1, combine: "none" });
+  });
+});
+
+describe("combineRuns", () => {
+  const bundle = (values: CrvaDraftValue[]) =>
+    ({
+      file: "r.pdf",
+      pageCount: 2,
+      ocrModel: "m",
+      extractionModel: "x",
+      values,
+      uncoveredFields: [],
+      figures: [],
+      dropped: [],
+    }) as CrvaDraftBundle;
+  const stats = (promptTokens: number, minutes: number) =>
+    ({
+      run: 1,
+      status: "ok",
+      minutes,
+      parts: 1,
+      retries: 0,
+      ocrPages: 0,
+      promptTokens,
+      completionTokens: 10,
+      cachedInputTokens: 0,
+      llmCalls: 1,
+      nonStopFinishes: 0,
+      modelTurns: 1,
+      valuesKept: 1,
+      valuesDropped: 0,
+      droppedByReason: {},
+      fieldsWithValue: 1,
+      figures: 0,
+      warnings: 0,
+    }) as RunStats;
+  const heat = c12("Olas de calor", "Energía", "Cortes");
+  const drought = c12("Sequías", "Alimentos", "Precio");
+
+  it("votes 2 of 3 and sums the runs' tokens", () => {
+    const out = combineRuns({
+      bundles: [bundle([heat, drought]), bundle([heat]), bundle([])],
+      stats: [stats(100, 10), stats(200, 12), stats(300, 11)],
+      mode: "vote",
+    });
+    expect(out.bundle.values).toHaveLength(1);
+    expect(out.bundle.uncoveredFields).not.toContain("C1.2a");
+    expect(out.stats).toMatchObject({
+      promptTokens: 600,
+      minutes: 12,
+      valuesKept: 1,
+    });
+    expect(out.valuesPerRun).toEqual([2, 1, 0]);
+  });
+
+  it("unions every value once", () => {
+    const out = combineRuns({
+      bundles: [bundle([heat, drought]), bundle([heat])],
+      stats: [stats(100, 10), stats(200, 12)],
+      mode: "union",
+    });
+    expect(out.bundle.values).toHaveLength(2);
   });
 });

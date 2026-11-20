@@ -3,7 +3,10 @@
  * one harness run folder that scripts/crva-eval/score-run.ts scores unchanged.
  * Paid: OpenAI (the agent job(s) and the reference mapping). Never resubmits a job.
  *
- * Default (wave 2.5): one job with the full 12-field schema and prompt from
+ * Default (vote 2/3, 2026-11-20): three single jobs in parallel, each converted on
+ * its own, then combined by combine.ts vote 2 of 3 (part-<k>.json keeps each run).
+ * --runs 1 runs one job (waves 2.5-2.7); --combine union (2 or 3 runs) is for
+ * experiments. Each single job uses the full 12-field schema and prompt from
  * inputs.ts, unchanged from wave 1.5. A1.2a: the reference pass plus the job's own
  * A1.2a items no reference item covers (--reference-mode union, wave 2.6), or the
  * reference pass only (replace, wave 2.5). The C1 split rules (inputs.ts
@@ -13,7 +16,8 @@
  *
  *   npx tsx scripts/crva-mirco/run-mirco-refs.ts --city <slug> --pdf <report.pdf> \
  *     --ocr reports/crva-eval/<city>/ocr --mirco-dir <path to pdf-extraction> \
- *     [--groups] [--reference-mode union|replace] [--no-c1-split] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
+ *     [--runs 1-5] [--combine vote|union] [--groups]
+ *     [--reference-mode union|replace] [--no-c1-split] [--base-url http://127.0.0.1:8080] [--reference-model gpt-5.6-luna]
  *
  * Recovery, no new jobs: --results-dir <run folder> converts the result-<job>.json
  * files there again (after a usage refresh, say), reusing its references.json.
@@ -44,6 +48,7 @@ import {
   withReferenceItems,
 } from "./convert";
 import { CRVA_GROUPS, groupJsonSchema, groupUserPrompt } from "./groups";
+import { combineRuns } from "./combine";
 import { crvaJsonSchema, crvaUserPrompt } from "./inputs";
 
 const SINGLE = "single";
@@ -72,6 +77,49 @@ function argValue(flag: string, fallback?: string): string {
   const value = i >= 0 ? process.argv[i + 1] : fallback;
   if (!value) throw new Error(`Missing ${flag}`);
   return value;
+}
+
+export interface RunPlan {
+  runs: number;
+  combine: "none" | "vote" | "union";
+}
+
+/**
+ * How many Mirco jobs to run per report and how to combine them. Default since
+ * 2026-11-20: 3 runs, vote 2 of 3. --runs 1 gives one uncombined run (waves up to
+ * 2.7); --combine union (2 or 3 runs) is for experiments. Group mode runs once.
+ */
+export function runPlan(argv: string[]): RunPlan {
+  const value = (flag: string) => {
+    const i = argv.indexOf(flag);
+    return i >= 0 ? argv[i + 1] : undefined;
+  };
+  const groups = argv.includes("--groups");
+  const runsText = value("--runs");
+  const combineText = value("--combine");
+  if (groups) {
+    if (runsText || combineText)
+      throw new Error(
+        "--groups runs one job per group; drop --runs and --combine",
+      );
+    return { runs: 1, combine: "none" };
+  }
+  const runs = Number(runsText ?? "3");
+  if (!Number.isInteger(runs) || runs < 1 || runs > 5)
+    throw new Error("--runs must be an integer from 1 to 5");
+  if (runs === 1) {
+    if (combineText)
+      throw new Error("--runs 1 has nothing to combine; drop --combine");
+    return { runs, combine: "none" };
+  }
+  const combine = combineText ?? "vote";
+  if (combine !== "vote" && combine !== "union")
+    throw new Error("--combine must be vote or union");
+  if (combine === "vote" && runs < 3)
+    throw new Error(
+      "vote needs at least 3 runs (2 of 3); use --combine union for 2",
+    );
+  return { runs, combine };
 }
 
 interface SavedReferences {
@@ -111,10 +159,28 @@ async function main() {
   const resultsDir = process.argv.includes("--results-dir")
     ? path.resolve(argValue("--results-dir"))
     : null;
+  // Recovery reads the plan from the result files there; a new run from the flags.
+  const savedRuns = resultsDir
+    ? existsSync(path.join(resultsDir, `result-${SINGLE}.json`))
+      ? 1
+      : [1, 2, 3, 4, 5].filter((k) =>
+          existsSync(path.join(resultsDir, `result-${SINGLE}-${k}.json`)),
+        ).length
+    : null;
   const groupsMode = resultsDir
-    ? !existsSync(path.join(resultsDir, `result-${SINGLE}.json`))
+    ? savedRuns === 0
     : process.argv.includes("--groups");
-  const jobIds = groupsMode ? CRVA_GROUPS.map((g) => g.id) : [SINGLE];
+  const plan: RunPlan =
+    savedRuns === null
+      ? runPlan(process.argv)
+      : groupsMode || savedRuns === 1
+        ? { runs: 1, combine: "none" }
+        : runPlan([...process.argv, "--runs", String(savedRuns)]);
+  const jobIds = groupsMode
+    ? CRVA_GROUPS.map((g) => g.id)
+    : plan.runs === 1
+      ? [SINGLE]
+      : Array.from({ length: plan.runs }, (_, k) => `${SINGLE}-${k + 1}`);
   const outDir =
     resultsDir ??
     path.join(
@@ -258,12 +324,6 @@ async function main() {
       return { group, envelope };
     }),
   );
-  const merged = mergeGroupResults(
-    loaded.map(({ group, envelope }) => ({
-      groupId: group,
-      result: (envelope as { result?: unknown } | null)?.result ?? null,
-    })),
-  );
   const fromReferences = references
     ? referenceItems(
         references.entries,
@@ -277,28 +337,80 @@ async function main() {
   const referenceMode = argValue("--reference-mode", "union");
   if (referenceMode !== "union" && referenceMode !== "replace")
     throw new Error("--reference-mode must be union or replace");
-  const items = groupsMode
-    ? [...merged.items, ...(fromReferences ?? [])]
-    : referenceMode === "union"
-      ? unionReferenceItems(merged.items, fromReferences)
-      : withReferenceItems(merged.items, fromReferences);
-  const bundle = assembleMircoBundle({
-    file: ocr.file,
-    items,
-    badPointers: merged.badPointers,
-    ocr,
-    extractionModel: MODEL,
-  });
+
+  /** One converted run from some of the loaded jobs (all groups, or one single job). */
+  const convert = (subset: typeof loaded) => {
+    const merged = mergeGroupResults(
+      subset.map(({ group, envelope }) => ({
+        groupId: group,
+        result: (envelope as { result?: unknown } | null)?.result ?? null,
+      })),
+    );
+    const items = groupsMode
+      ? [...merged.items, ...(fromReferences ?? [])]
+      : referenceMode === "union"
+        ? unionReferenceItems(merged.items, fromReferences)
+        : withReferenceItems(merged.items, fromReferences);
+    const bundle = assembleMircoBundle({
+      file: ocr.file,
+      items,
+      badPointers: merged.badPointers,
+      ocr,
+      extractionModel: MODEL,
+    });
+    const envelope = mergeEnvelopes(subset.map((l) => l.envelope));
+    const stats = mircoRunStats({
+      run: 1,
+      envelope,
+      bundle,
+      minutes,
+      ocr,
+      ocrOn: false,
+    });
+    return { merged, bundle, envelope, stats };
+  };
+
+  const parts =
+    plan.combine === "none"
+      ? [convert(loaded)]
+      : loaded.map((l) => convert([l]));
+  for (const [k, part] of parts.entries()) {
+    if (parts.length === 1) break;
+    await writeFile(
+      path.join(outDir, `part-${k + 1}.json`),
+      JSON.stringify(
+        {
+          stats: { ...part.stats, run: k + 1 },
+          warnings: [],
+          bundle: part.bundle,
+        },
+        null,
+        2,
+      ),
+    );
+  }
+  const combined =
+    plan.combine === "none"
+      ? null
+      : combineRuns({
+          bundles: parts.map((p) => p.bundle),
+          stats: parts.map((p) => p.stats),
+          mode: plan.combine,
+        });
+  const bundle = combined?.bundle ?? parts[0].bundle;
+  const jobStats = combined
+    ? {
+        ...combined.stats,
+        status: parts.some((p) => p.stats.status === "failed")
+          ? ("failed" as const)
+          : combined.stats.status,
+      }
+    : parts[0].stats;
   const envelope = mergeEnvelopes(loaded.map((l) => l.envelope));
-  const jobStats = mircoRunStats({
-    run: 1,
-    envelope,
-    bundle,
-    minutes,
-    ocr,
-    ocrOn: false,
-  });
-  // The reference pass is part of the run's cost.
+  const merged = {
+    ambiguousItems: parts.reduce((t, p) => t + p.merged.ambiguousItems, 0),
+  };
+  // The reference pass (one per report) is part of the run's cost.
   const stats = references
     ? {
         ...jobStats,
@@ -321,6 +433,8 @@ async function main() {
         mirco: {
           mode: groupsMode ? "groups" : SINGLE,
           referenceMode: groupsMode ? null : referenceMode,
+          plan,
+          valuesPerRun: combined?.valuesPerRun ?? null,
           recovered: resultsDir !== null,
           model: config?.model ?? MODEL,
           reasoningEffort: config?.reasoning_effort ?? "medium",

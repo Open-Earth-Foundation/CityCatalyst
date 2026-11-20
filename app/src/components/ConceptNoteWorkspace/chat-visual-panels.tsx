@@ -13,7 +13,11 @@ import { useTranslation } from "@/i18n/client";
 
 import type { ConceptNoteChatVisualPanel } from "./chat-utils";
 import { hasRenderedVisualContent } from "./chat-visual-content";
-import { applyExpandedLayout, watchTableScroll } from "./chat-visual-layout";
+import {
+  applyExpandedLayout,
+  ensureContentInset,
+  watchTableScroll,
+} from "./chat-visual-layout";
 import {
   ChatVisualFrame,
   hasSanitizedVisualContent,
@@ -198,6 +202,7 @@ function ExpandedPanelFrame({
       onFrameLoad={(frame) => {
         onFrameLoad(frame);
         if (frame.contentDocument) {
+          ensureContentInset(frame.contentDocument);
           applyExpandedLayout(frame.contentDocument);
           watchTableScroll(frame.contentDocument);
         }

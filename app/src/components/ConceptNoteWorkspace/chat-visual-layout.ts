@@ -350,23 +350,176 @@ export function adaptVisualLayout(
   return changed;
 }
 
-// Expand gives a ~1200 px frame. There a width:100% SVG scales up to about
-// 3.7x and its lower part falls below the fold, so its height is capped and
-// preserveAspectRatio fits the whole chart. The body width is capped so tables
-// stay readable. Inline frames keep the model's own layout.
-const EXPANDED_CSS = `body{max-width:880px!important;margin-left:auto!important;margin-right:auto!important}
-svg[viewBox]:not(svg svg){max-height:calc(100vh - 48px)!important;max-width:100%!important}`;
+// Expand zooms the whole page evenly. A width:100% SVG in the ~1200 px dialog
+// grows about 3.7x, so its text (27-34 px) outgrew the headings, tables and
+// source line (12-14 px). Zooming the root element scales text, tables and
+// charts together, so the hierarchy stays as the model wrote it. Inline frames
+// keep the model's own layout.
+/** Page column width before zoom: a little wider than the 500 px desktop chat column, so text wraps about as inline. */
+export const EXPANDED_LAYOUT_PX = 560;
+/** Largest zoom, so a very wide dialog does not enlarge text past what fits a screen. */
+export const EXPANDED_MAX_ZOOM = 1.6;
+/** Room kept left and right of the zoomed page. */
+export const EXPANDED_SIDE_PX = 64;
 
 /**
- * Adds the Expand layout to a loaded frame document, once. The style is host
- * CSS on the live document, not part of the srcdoc, so inline and Expand frames
- * keep the same srcdoc (view state is keyed by it).
+ * Adds the Expand layout to a loaded frame document: a zoom that fits the page
+ * to the frame width, and a chart height cap for one chart per screen. The
+ * style is host CSS on the live document, not part of the srcdoc, so inline and
+ * Expand frames keep the same srcdoc (view state is keyed by it).
  */
 export function applyExpandedLayout(doc: Document): void {
-  if (doc.head.querySelector("style[data-cc-expanded]")) return;
+  const win = doc.defaultView;
+  if (!win) return;
+  const existing = doc.head.querySelector<HTMLStyleElement>(
+    "style[data-cc-expanded]",
+  );
+  const style = existing ?? doc.createElement("style");
+  if (!existing) {
+    style.setAttribute("data-cc-expanded", "");
+    doc.head.append(style);
+  }
+
+  // Never zoom below 1: a phone-width dialog keeps the page at its normal size.
+  const update = () => {
+    const zoom = Math.max(
+      1,
+      Math.min(
+        EXPANDED_MAX_ZOOM,
+        (win.innerWidth - EXPANDED_SIDE_PX) / EXPANDED_LAYOUT_PX,
+      ),
+    );
+    // 48 px leaves room for the dialog header. The cap is in unzoomed px, so
+    // after zoom one chart still fits the frame height.
+    const height = Math.floor((win.innerHeight - 48) / zoom);
+    style.textContent = `html{zoom:${zoom}}body{max-width:${EXPANDED_LAYOUT_PX}px!important;margin-left:auto!important;margin-right:auto!important}svg[viewBox]:not(svg svg){max-height:${height}px!important;max-width:100%!important}`;
+  };
+  update();
+  // Only the first call registers a listener; a later call reuses the style.
+  if (!existing) win.addEventListener("resize", update);
+}
+
+// Text inside these is never drawn, so it does not count as content.
+const INSET_HIDDEN_TEXT_PARENTS = "style, script, title";
+// Elements that paint a box or a line; their edges count as content.
+const INSET_DRAWN_TAGS = new Set([
+  "img",
+  "canvas",
+  "table",
+  "hr",
+  "input",
+  "select",
+  "textarea",
+  "button",
+  "progress",
+  "meter",
+]);
+// A background that paints nothing: the keyword or alpha 0.
+const TRANSPARENT_COLOR = /^(transparent|rgba?\([^)]*[,/]\s*0(\.0*)?\s*\))$/;
+// Caps the element scan; text is measured in full. Keeps big documents cheap.
+const MAX_SCANNED_ELEMENTS = 400;
+// Content closer than this to the card edge gets the inset.
+const CLOSE_SIDE_PX = 8;
+const CLOSE_TOP_PX = 6;
+const INSET_PX = 12;
+
+/** Whether the element is laid out and not hidden. Without checkVisibility, assume yes. */
+function isShown(element: Element): boolean {
+  return element.checkVisibility?.({ visibilityProperty: true }) ?? true;
+}
+
+/** Whether an element paints its own box or line, see `INSET_DRAWN_TAGS`. */
+function isPainted(element: Element, win: Window): boolean {
+  const tag = element.localName;
+  // Only the outermost svg counts: its shapes lie inside its box.
+  if (tag === "svg") return !element.parentElement?.closest("svg");
+  if (INSET_DRAWN_TAGS.has(tag)) return true;
+  const style = win.getComputedStyle(element);
+  return (
+    !TRANSPARENT_COLOR.test(style.backgroundColor) ||
+    parseFloat(style.borderLeftWidth) > 0
+  );
+}
+
+/** Boxes of visible text and painted elements, in viewport coordinates. */
+function contentRects(doc: Document, win: Window): DOMRect[] {
+  const rects: DOMRect[] = [];
+  // Text: a Range per node measures the glyphs, not the block that holds them.
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const parent = node.parentElement;
+    if (
+      !node.textContent?.trim() ||
+      !parent ||
+      parent.closest(INSET_HIDDEN_TEXT_PARENTS) ||
+      !isShown(parent)
+    ) {
+      continue;
+    }
+    const range = doc.createRange();
+    range.selectNodeContents(node);
+    rects.push(range.getBoundingClientRect());
+  }
+  // Painted elements, first MAX_SCANNED_ELEMENTS only.
+  const elements = Array.from(doc.body.getElementsByTagName("*")).slice(
+    0,
+    MAX_SCANNED_ELEMENTS,
+  );
+  for (const element of elements) {
+    if (isPainted(element, win) && isShown(element)) {
+      rects.push(element.getBoundingClientRect());
+    }
+  }
+  // Zero-size boxes, e.g. an empty line box, say nothing about the edge.
+  return rects.filter((rect) => rect.width > 0 && rect.height > 0);
+}
+
+/**
+ * Gives a loaded model page a default inset when its content touches the card
+ * edge. Some pages set body margin 0 and no padding, so titles, tables and
+ * charts sit at the card's left edge. Pages with their own spacing are left
+ * alone. Runs once per document and marks it, even when nothing was added.
+ */
+export function ensureContentInset(doc: Document): void {
+  const win = doc.defaultView;
+  if (!doc.body || !win || doc.querySelector("style[data-cc-inset]")) return;
+  // Zero width means the frame is not laid out (e.g. hidden); a later load can measure.
+  if (doc.documentElement.getBoundingClientRect().width === 0) return;
+
+  let minLeft = Infinity;
+  let maxRight = -Infinity;
+  let minTop = Infinity;
+  for (const rect of contentRects(doc, win)) {
+    minLeft = Math.min(minLeft, rect.left);
+    maxRight = Math.max(maxRight, rect.right);
+    minTop = Math.min(minTop, rect.top);
+  }
+
+  // clientWidth leaves out a vertical scrollbar, so the right margin is the visible one.
+  const sideTooClose =
+    minLeft < CLOSE_SIDE_PX ||
+    maxRight > doc.documentElement.clientWidth - CLOSE_SIDE_PX;
+  const topTooClose = minTop < CLOSE_TOP_PX;
+  const declarations: string[] = [];
+  if (sideTooClose) {
+    declarations.push(
+      `padding-left:${INSET_PX}px!important`,
+      `padding-right:${INSET_PX}px!important`,
+    );
+  }
+  if (topTooClose) {
+    declarations.push(
+      `padding-top:${INSET_PX}px!important`,
+      `padding-bottom:${INSET_PX}px!important`,
+    );
+  }
+
+  // An empty style still marks the document as measured.
   const style = doc.createElement("style");
-  style.setAttribute("data-cc-expanded", "");
-  style.textContent = EXPANDED_CSS;
+  style.setAttribute("data-cc-inset", "");
+  style.textContent = declarations.length
+    ? `body{${declarations.join(";")}}`
+    : "";
   doc.head.append(style);
 }
 

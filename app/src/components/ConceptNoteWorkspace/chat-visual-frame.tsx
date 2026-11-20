@@ -21,6 +21,7 @@ import { useVisualViewState } from "./use-visual-view-state";
 import {
   adaptVisualLayout,
   applyExpandedLayout,
+  ensureContentInset,
   type VisualLayoutLabels,
   watchTableScroll,
 } from "./chat-visual-layout";
@@ -300,7 +301,10 @@ export function ChatVisualFrame({
   const blank = staticBlank || renderedBlankHtml === html;
   const onInlineFrameLoad = (frame: HTMLIFrameElement) => {
     viewState.connect(frame);
-    if (frame.contentDocument) watchTableScroll(frame.contentDocument);
+    if (frame.contentDocument) {
+      ensureContentInset(frame.contentDocument);
+      watchTableScroll(frame.contentDocument);
+    }
     // null means not laid out yet (offscreen); only a definite false hides it.
     if (hasRenderedVisualContent(frame.contentDocument) === false) {
       setRenderedBlankHtml(html);
@@ -353,6 +357,8 @@ export function ChatVisualFrame({
               onFrameLoad={(frame) => {
                 viewState.connect(frame);
                 if (frame.contentDocument) {
+                  // Inset is measured before the Expand zoom, so zoom does not skew it.
+                  ensureContentInset(frame.contentDocument);
                   applyExpandedLayout(frame.contentDocument);
                   watchTableScroll(frame.contentDocument);
                 }

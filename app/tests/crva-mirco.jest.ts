@@ -30,6 +30,7 @@ import {
   CRVA_DETAIL_RULES,
   CRVA_FIELD_GUIDE,
   CRVA_GRANULARITY_RULES,
+  granularityRules,
   CRVA_ITEM_SCHEMAS,
   CRVA_MIRCO_SHAPES,
   crvaJsonSchema,
@@ -453,8 +454,8 @@ describe("crvaUserPrompt", () => {
   it("adds the detail and granularity rules", () => {
     const prompt = crvaUserPrompt("<role>Default</role>");
     expect(CRVA_DETAIL_RULES.length).toBeGreaterThan(0);
-    expect(CRVA_GRANULARITY_RULES.length).toBeGreaterThan(0);
-    for (const rule of [...CRVA_DETAIL_RULES, ...CRVA_GRANULARITY_RULES]) {
+    expect(granularityRules().length).toBeGreaterThan(0);
+    for (const rule of [...CRVA_DETAIL_RULES, ...granularityRules()]) {
       expect(prompt).toContain(rule);
     }
     expect(prompt).toContain("<detail_rules>");
@@ -513,14 +514,17 @@ describe("crvaUserPrompt", () => {
     expect(CRVA_FIELD_GUIDE["B1.2a"].definition).toMatch(/secondary/i);
   });
 
-  // Wave 2.6 is the baseline; the wave 2.7 C1 split is behind c1Split (off).
-  it("keeps the wave 2.6 grouping rule by default", () => {
+  // c1Split is the default after BA gold v2 (2026-11-20); c1Split: false is wave 2.6.
+  it("keeps the wave 2.6 grouping rule with c1Split false", () => {
     const rules = CRVA_GRANULARITY_RULES.join(" ");
     expect(rules).toMatch(
       /hazards, groups or sectors the report treats as one/i,
     );
     expect(rules).not.toMatch(/several sectors or groups for the same impact/i);
-    const prompt = crvaUserPrompt("x");
+    expect(granularityRules({ c1Split: false })).toEqual(
+      CRVA_GRANULARITY_RULES,
+    );
+    const prompt = crvaUserPrompt("x", { c1Split: false });
     expect(prompt).toContain(rules.split(" - ")[0]);
     expect(prompt).not.toMatch(/never a list/i);
     expect(prompt).not.toMatch(
@@ -528,8 +532,9 @@ describe("crvaUserPrompt", () => {
     );
   });
 
-  it("splits sectors or groups named together only with c1Split", () => {
-    const prompt = crvaUserPrompt("x", { c1Split: true });
+  it("splits sectors or groups named together by default", () => {
+    const prompt = crvaUserPrompt("x");
+    expect(prompt).toBe(crvaUserPrompt("x", { c1Split: true }));
     expect(prompt).toMatch(/hazards the report treats as one stay one item/i);
     expect(prompt).not.toMatch(
       /hazards, groups or sectors the report treats as one/i,

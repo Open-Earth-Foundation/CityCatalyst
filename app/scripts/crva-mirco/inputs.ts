@@ -124,10 +124,10 @@ export const CRVA_GRANULARITY_RULES: string[] = [
 /** Prompt variants. */
 export interface PromptOptions {
   /**
-   * Wave 2.7 C1 split (off by default; wave 2.6 is the baseline): the grouping rule
-   * keeps only hazards together, and sectors or groups named together become one
-   * item each. It fixed merged C1.2a sectors in BA but split groups the BA gold
-   * keeps together (A2.5a, C1.1a); the golds differ on that convention.
+   * C1 split (wave 2.7), on unless false: the grouping rule keeps only hazards
+   * together, and sectors or groups named together become one item each. Default
+   * since BA gold v2 (2026-11-20), which keeps groups named together as separate
+   * rows; false gives the wave 2.6 rules.
    */
   c1Split?: boolean;
 }
@@ -138,7 +138,7 @@ const GROUPING_RULE = CRVA_GRANULARITY_RULES.findIndex((r) =>
 
 /** The granularity rules for the given options. */
 export function granularityRules(options: PromptOptions = {}): string[] {
-  if (!options.c1Split) return CRVA_GRANULARITY_RULES;
+  if (options.c1Split === false) return CRVA_GRANULARITY_RULES;
   return CRVA_GRANULARITY_RULES.flatMap((rule, i) =>
     i === GROUPING_RULE
       ? [
@@ -306,7 +306,7 @@ export function fieldGuideMarkdown(
       const guide = CRVA_FIELD_GUIDE[id];
       return [
         `### ${id} (${CRVA_FIELD_LABELS[id]})`,
-        `Belongs: ${guide.definition}${options.c1Split && C1_SINGLE[id] ? ` ${C1_SINGLE[id]}` : ""}`,
+        `Belongs: ${guide.definition}${options.c1Split !== false && C1_SINGLE[id] ? ` ${C1_SINGLE[id]}` : ""}`,
         `Does not belong: ${guide.notThis}`,
         `Example item (from another report): ${JSON.stringify(guide.example)}`,
       ].join("\n");

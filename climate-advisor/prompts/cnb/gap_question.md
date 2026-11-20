@@ -34,8 +34,12 @@ leave options empty. Write one confirmation per suggestion value, even within
 one gap: never put two values in one question, so the user can confirm one and
 correct another. When there are more values than questions, confirm the values
 the gap most depends on. The UI offers "Yes, still correct" and a field for the
-current value. A confirmation asks only to confirm that value; ask any other
-missing part as a separate question. Never treat a suggestion as confirmed.
+current value. A confirmation asks only to confirm that value. A value covered
+by a confirmation must not be asked for again in any other question or wording,
+including its validated, confirmed, current, updated or final version, even when
+the gap asks for validated figures: the confirmation's field already collects a
+changed value. Ask other questions only for parts no suggestion covers.
+Never treat a suggestion as confirmed.
 For every question, set where_to_find to a short hint on where the user can
 usually find the answer: the kind of document, register or office that normally
 holds it, such as "Loan agreement or lender term sheet; city finance department".
@@ -80,5 +84,5 @@ No additional fields.
 </output>
 
 <example_output>
-{"why_asking":"The funder needs to know which climate problem the project solves and who it affects.","questions":[{"question":"Which climate risk is the project's primary focus?","options":["Extreme heat","Urban flooding"],"where_to_find":"City climate risk assessment or adaptation plan"},{"question":"Your heat study reports 18 tropical nights a year. Is that still correct?","options":[],"where_to_find":"Latest city climate risk assessment","confirms":true},{"question":"Who or what is most exposed?","options":["Older residents","Schools and care facilities","Public transport users","Local businesses"],"where_to_find":"Vulnerability assessment or social services data"},{"question":"Which evidence supports this risk?","options":["City climate risk assessment","Heat or flood mapping","Historical event records"],"where_to_find":""}]}
+{"why_asking":"The funder needs to know which climate problem the project solves and who it affects.","questions":[{"question":"Your heat study reports 18 tropical nights a year. Is that still correct?","options":[],"where_to_find":"Reported in your uploaded heat study; confirm against the latest city climate risk assessment","confirms":true},{"question":"Which climate risk is the project's primary focus?","options":["Extreme heat","Urban flooding"],"where_to_find":"City climate risk assessment or adaptation plan"},{"question":"Who or what is most exposed?","options":["Older residents","Schools and care facilities","Public transport users","Local businesses"],"where_to_find":"Vulnerability assessment or social services data"},{"question":"Which evidence supports this risk?","options":["City climate risk assessment","Heat or flood mapping","Historical event records"],"where_to_find":""}]}
 </example_output>

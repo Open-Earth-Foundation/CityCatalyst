@@ -230,6 +230,32 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
+/**
+ * Scroll offset for the chat column that keeps the newest reply in view.
+ * Follows the bottom while the reply fits. When the reply is taller than the
+ * chat area, stops at the reply's first element so its start is visible.
+ */
+function latestScrollTop(
+  chatScroll: HTMLElement,
+  replyId: string | null,
+): number {
+  const bottom = chatScroll.scrollHeight - chatScroll.clientHeight;
+  const reply = replyId
+    ? chatScroll.querySelector<HTMLElement>(
+        `[data-chat-message="${CSS.escape(replyId)}"]`,
+      )
+    : null;
+  if (!reply) return bottom;
+
+  // Offset of the reply inside the scrollable content, independent of the current scroll.
+  const startOffset =
+    reply.getBoundingClientRect().top -
+    chatScroll.getBoundingClientRect().top +
+    chatScroll.scrollTop;
+  // 16px matches the container padding (p={4}), so the reply's top edge is not clipped.
+  return Math.max(0, Math.min(bottom, startOffset - 16));
+}
+
 export function ConceptNoteChatPanel({
   cityId,
   contextStatus,
@@ -287,6 +313,8 @@ export function ConceptNoteChatPanel({
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
+  // Clima's newest reply, where a tall reply's scroll stops (see latestScrollTop).
+  const latestReplyIdRef = useRef<string | null>(null);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
@@ -314,6 +342,13 @@ export function ConceptNoteChatPanel({
     void requestDraftOverview();
   }, [chatDisabled, draftOverviewPending, requestDraftOverview, threadId]);
 
+  const newestMessage = messages.at(-1);
+  const latestReplyId =
+    newestMessage?.role === "assistant" ? newestMessage.id : null;
+  useEffect(() => {
+    latestReplyIdRef.current = latestReplyId;
+  }, [latestReplyId]);
+
   useEffect(() => {
     if (
       gapAnswer ||
@@ -331,20 +366,26 @@ export function ConceptNoteChatPanel({
       if (!chatScroll) {
         return;
       }
+      // Stopping at a tall reply's start also clears followLatestRef through onScroll,
+      // because the view ends more than 48px above the bottom. Later growth of that reply
+      // then no longer pulls the view down; sending a new message sets followLatestRef again.
       chatScroll.scrollTo({
         behavior: "auto",
-        top: chatScroll.scrollHeight,
+        top: latestScrollTop(chatScroll, latestReplyIdRef.current),
       });
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
   }, [gapAnswer, historyLoading, messages, reasoning, threadId]);
 
-  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  // Visuals resize after they load; keep the newest reply in view if the user follows it.
   const keepLatestInView = useCallback(() => {
     const chatScroll = chatScrollRef.current;
     if (chatScroll && followLatestRef.current) {
-      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+      chatScroll.scrollTo({
+        behavior: "auto",
+        top: latestScrollTop(chatScroll, latestReplyIdRef.current),
+      });
     }
   }, []);
 
@@ -588,6 +629,7 @@ export function ConceptNoteChatPanel({
                   message.choices ||
                   message.role === "user") && (
                   <Box
+                    data-chat-message={message.id}
                     alignSelf={message.role === "user" ? "end" : "start"}
                     maxW="92%"
                     border={message.choices ? "none" : "1px solid"}
@@ -633,25 +675,30 @@ export function ConceptNoteChatPanel({
                     )}
                   </Box>
                 )}
-                {message.visuals?.map((visual, index) =>
-                  visual.panels ? (
-                    <ChatVisualPanels
-                      key={index}
-                      lng={lng}
-                      onHeightChange={keepLatestInView}
-                      panels={visual.panels}
-                      title={visual.title}
-                    />
-                  ) : (
-                    <ChatVisualFrame
-                      key={index}
-                      html={visual.html}
-                      lng={lng}
-                      onHeightChange={keepLatestInView}
-                      title={visual.title}
-                    />
-                  ),
-                )}
+                {/* Each visual wrapper carries the reply's start marker; flexShrink={0} keeps the flex column from collapsing it. */}
+                {message.visuals?.map((visual, index) => (
+                  <Box
+                    key={index}
+                    data-chat-message={message.id}
+                    flexShrink={0}
+                  >
+                    {visual.panels ? (
+                      <ChatVisualPanels
+                        lng={lng}
+                        onHeightChange={keepLatestInView}
+                        panels={visual.panels}
+                        title={visual.title}
+                      />
+                    ) : (
+                      <ChatVisualFrame
+                        html={visual.html}
+                        lng={lng}
+                        onHeightChange={keepLatestInView}
+                        title={visual.title}
+                      />
+                    )}
+                  </Box>
+                ))}
               </Fragment>
             ))}
 

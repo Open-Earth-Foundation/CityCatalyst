@@ -9,13 +9,11 @@ from agents import function_tool
 from app.services.cnb.visual_data import VisualData, check_visual_data
 from app.utils.concept_note_context import VISUAL_RENDER_ACTION
 from app.utils.visual_html import (
-    WAFFLE_CELLS,
     has_visible_content,
     needs_svg,
     smallest_svg_text_px,
     svg_animation_elements,
     unsupported_html_features,
-    waffle_cell_counts,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,15 +46,9 @@ UNSUPPORTED_HTML_HINT = {
     "next_step": "Replace each one: buttons, sliders, text inputs and :target "
     "tabs with radio, checkbox, select or details controls styled with "
     ":checked or :has() and every state precomputed; scripts with the static "
-    "result; foreignObject with SVG <text>; SVG <image>, video, audio and "
-    "external images, fonts, stylesheets and frames with inline SVG shapes, "
-    "inline CSS or one <img src=\"data:...\"> (no srcset); an SVG href "
-    "with \"#id\" of an element in the same visual, only on use, textPath, "
-    "gradients or pattern, with an id that starts with a letter; buttons "
-    "only with popovertarget or commandfor and command naming an existing "
-    "popover or dialog (prefix those ids, e.g. cnb-icon, so the sanitizer "
-    "keeps them); an svg width over 320 px with viewBox=\"0 0 320 H\" and "
-    f"width=\"100%\". Then retry once. {_ANSWER_IN_TEXT}",
+    "result; foreignObject with SVG <text>; external images, fonts, "
+    "stylesheets and frames with inline SVG, inline CSS or data: URLs. Then "
+    f"retry once. {_ANSWER_IN_TEXT}",
 }
 SVG_ANIMATION_HINT = {
     "reason": "SVG animation elements are removed, so the chart would stay in "
@@ -68,11 +60,6 @@ TEXT_TOO_SMALL_HINT = {
     "reason": "Some SVG text would be smaller than 12 px once drawn in the chat.",
     "next_step": "Use viewBox width 320 (150 for mini charts in a 2-column grid) "
     "and font-size of at least 12 (13 in mini charts), then retry once. "
-    f"{_ANSWER_IN_TEXT}",
-}
-WAFFLE_HINT = {
-    "reason": f"A waffle chart must have exactly {WAFFLE_CELLS} cells.",
-    "next_step": "Write it as 10 row elements of 10 cells each, then retry once. "
     f"{_ANSWER_IN_TEXT}",
 }
 
@@ -102,11 +89,6 @@ def _small_text(html: str) -> dict[str, Any] | None:
     return {"smallest_text_px": round(px, 1)}
 
 
-def _waffle_cells(html: str) -> dict[str, Any] | None:
-    wrong = [count for count in waffle_cell_counts(html) if count != WAFFLE_CELLS]
-    return {"cell_counts": wrong} if wrong else None
-
-
 # Static HTML checks in the order they run: (error code, check, hint). A check
 # returns None when the HTML passes, else the details to report.
 VISUAL_HTML_CHECKS: tuple[
@@ -120,7 +102,6 @@ VISUAL_HTML_CHECKS: tuple[
     ("visual_uses_svg_animation", _svg_animation, SVG_ANIMATION_HINT),
     # SVG text drawn below the readable minimum in a phone-width column.
     ("visual_text_too_small", _small_text, TEXT_TOO_SMALL_HINT),
-    ("visual_waffle_cell_count", _waffle_cells, WAFFLE_HINT),
 )
 
 
@@ -165,12 +146,10 @@ async def concept_note_render_visual(
     retry once with viewBox width 320 (150 for mini charts in a 2-column grid)
     and font-size of at least 12 (13 in mini charts), then answer in text.
     Mermaid source without SVG returns visual_needs_svg; scripts, buttons,
-    sliders, text inputs, :target tabs, foreignObject, SVG <image>, video,
-    audio, external files and svg widths over 320 px
-    visual_unsupported_html with the `features` to replace; SVG animation
-    elements visual_uses_svg_animation; and a waffle without exactly 100 cells
-    visual_waffle_cell_count: follow `next_step`, retry once, then answer in
-    text.
+    sliders, text inputs, :target tabs, foreignObject and external files
+    visual_unsupported_html with the `features` to replace; and SVG animation
+    elements visual_uses_svg_animation: follow `next_step`, retry once, then
+    answer in text.
     When the visual shows numbers, pass `data` with every plotted value: its
     unit, its source (document values cite source_index and the page or anchor
     of the concept_note_sources_query excerpt) and its status. Use status

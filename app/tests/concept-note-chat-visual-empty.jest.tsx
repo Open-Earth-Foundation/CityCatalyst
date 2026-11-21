@@ -48,8 +48,6 @@ const VISIBLE = [
   // CSS-only marks: values in ::after, a bar painted by its background.
   '<style>.b::after{content:"Jan 62 mm"}</style><div class="b" style="width:62%"></div>',
   '<div style="background:#2351DC;width:62%;height:20px"></div>',
-  // Empty waffle cells painted by a stylesheet rule.
-  '<style>.c{width:10px;height:10px;background:#087f8c}</style><div><i class="c"></i><i class="c"></i><i class="c"></i></div>',
   // A pictogram drawn only by local <use> references.
   '<svg viewBox="0 0 30 10"><defs><symbol id="h"><path d="M0 0H5"></path></symbol></defs><use href="#h"></use></svg>',
 ];

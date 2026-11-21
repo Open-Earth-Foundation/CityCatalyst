@@ -121,16 +121,11 @@ with a 320-unit viewBox and fonts of at least 12. Mini charts in a 2-column grid
 (viewBox up to 200 wide) are measured at the 140 px width they get on a phone,
 so the model redraws them with a 150-unit viewBox and fonts of at least 13. It
 also rejects Mermaid source without an SVG (`visual_needs_svg`); scripts,
-buttons (except native popover and dialog buttons whose target keeps its id),
-sliders and text inputs, `:target` tabs, `<foreignObject>`, SVG `<image>`,
-video, audio, SVG `href` values the sanitizer drops (anything but `#id` on
-`use`, `textPath`, gradients and `pattern`), a `<use>` whose `#id` names no
-element that keeps its id after sanitizing, external images,
-fonts, stylesheets or frames, which show but cannot work without scripts or
-network access, and an SVG wider than 320 px that no CSS sizes, which runs off
-a phone (`visual_unsupported_html`, listing the `features` to replace); SVG animation
-elements, which the sanitizer removes (`visual_uses_svg_animation`), and a
-waffle chart without exactly 100 cells (`visual_waffle_cell_count`). Each error
+buttons, sliders and text inputs, `:target` tabs, `<foreignObject>` and
+external images, fonts, stylesheets or frames, which show but cannot work
+without scripts or network access (`visual_unsupported_html`, listing the
+`features` to replace); and SVG animation elements, which the sanitizer
+removes (`visual_uses_svg_animation`). Each error
 carries a one-retry hint. The browser checks the rendered result as well. This
 catches cases such as saved visuals from older conversations and content that
 its CSS hides completely. If the browser finds an empty visual, it shows an

@@ -67,41 +67,11 @@ const INLINE_BACKGROUND =
   /(^|;)\s*background(-color|-image)?\s*:\s*(?!transparent|none|rgba\([^)]*,\s*0\s*\))/i;
 const INLINE_SIZE = /(^|;)\s*(width|height)\s*:/i;
 
-// A stylesheet rule that paints a box: a non-transparent background colour or
-// a gradient, e.g. `.cell{background:#087f8c}` on empty waffle cells.
-const CSS_PAINT_RULE =
-  /background(-color|-image)?\s*:\s*(?!transparent|none|rgba\([^)]*,\s*0\s*\)|inherit|initial|unset)[^;}]/i;
-// Caps how many stylesheet selectors are tried against the body.
-const MAX_PAINT_SELECTORS = 200;
 // Painted boxes that make a drawing (bars, cells). One painted box is more
 // often an empty container a script was meant to fill.
 const MIN_PAINTED_MARKS = 3;
 
-/** Whether stylesheet rules paint backgrounds on several elements in `body`. */
-function hasStylesheetPaint(body: HTMLElement, css: string): boolean {
-  let tried = 0;
-  const painted = new Set<Element>();
-  for (const [, selector, declarations] of css.matchAll(
-    /([^{}@]+)\{([^{}]*)\}/g,
-  )) {
-    if (!CSS_PAINT_RULE.test(declarations)) continue;
-    for (const part of selector.split(",")) {
-      // The box itself, not its pseudo-elements; html/body only fill the card.
-      const target = part.replace(/::?(before|after)\b.*$/, "").trim();
-      if (!target || /^(html|body|:root|\*)$/i.test(target)) continue;
-      if (++tried > MAX_PAINT_SELECTORS) return false;
-      try {
-        body.querySelectorAll(target).forEach((el) => painted.add(el));
-        if (painted.size >= MIN_PAINTED_MARKS) return true;
-      } catch {
-        // An unsupported selector says nothing either way.
-      }
-    }
-  }
-  return false;
-}
-
-/** Whether CSS alone draws something: pseudo-element text or painted boxes. */
+/** Whether CSS alone draws something: pseudo-element text or inline-painted boxes. */
 function hasCssDrawing(body: HTMLElement): boolean {
   const doc = body.ownerDocument;
   // The host's own styles (theme, layout) draw nothing by themselves.
@@ -112,15 +82,10 @@ function hasCssDrawing(body: HTMLElement): boolean {
     (style) => (style.textContent ?? "").replace(/\/\*[\s\S]*?\*\//g, ""),
   ).join("\n");
   if (CSS_CONTENT_TEXT.test(css)) return true;
-  if (
-    Array.from(body.querySelectorAll("[style]")).some((element) => {
-      const style = element.getAttribute("style") ?? "";
-      return INLINE_BACKGROUND.test(style) && INLINE_SIZE.test(style);
-    })
-  ) {
-    return true;
-  }
-  return hasStylesheetPaint(body, css);
+  return Array.from(body.querySelectorAll("[style]")).some((element) => {
+    const style = element.getAttribute("style") ?? "";
+    return INLINE_BACKGROUND.test(style) && INLINE_SIZE.test(style);
+  });
 }
 
 /** Same check on an already parsed, sanitized body, without parsing again. */

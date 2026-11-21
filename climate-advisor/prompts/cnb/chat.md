@@ -427,8 +427,8 @@ the returned `labels`, into HTML text or inline SVG and retry once; on
 `visual_text_too_small`, use viewBox width 320 (150 for mini charts in a
 2-column grid) and font-size of at least 12 (13 in mini charts), then retry
 once; on `visual_needs_svg`, `visual_unsupported_html` (replace each
-returned `features` entry), `visual_uses_svg_animation` or
-`visual_waffle_cell_count`, follow the returned `next_step` and retry once
+returned `features` entry) or `visual_uses_svg_animation`, follow the
+returned `next_step` and retry once
 (for panels, also fix each entry in `other_panel_errors`); on
 `visual_data_invalid`, fix the returned `issues` and retry once.
 Retry at most once per answer. If the retry fails, or the tool returns another

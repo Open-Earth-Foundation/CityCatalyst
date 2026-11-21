@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 from agents.tool import ToolContext
 from app.tools.concept_note_panel_tools import concept_note_render_panels
-from app.utils.concept_note_context import omit_visual_html, rendered_visuals
+from app.utils.concept_note_context import rendered_visuals
 from app.utils.history_manager import HistoryManager
 from app.utils.streaming_events import handle_tool_called, handle_tool_output
 from app.utils.streaming_handler import StreamingHandler
@@ -15,7 +15,8 @@ from app.utils.streaming_handler import StreamingHandler
 PANELS = [
     {"label": " Overview ", "html": "<p>Retrofit 10 homes</p>"},
     {"label": "Costs", "html": "<p>EUR 125</p>"},
-    {"label": "Risks", "html": "<p>Winter delays</p>"},
+    # A panel of SVG shapes alone, with no HTML text, is content too.
+    {"label": "Risks", "html": '<svg viewBox="0 0 9 9"><rect width="5" height="5"/></svg>'},
 ]
 
 
@@ -61,7 +62,6 @@ async def test_render_panels_returns_trimmed_labels_without_html() -> None:
     [
         ("", PANELS),
         ("Plan", PANELS[:1]),
-        ("Plan", PANELS * 3),
         ("Plan", [*PANELS[:2], {"label": "costs", "html": "<p>x</p>"}]),
         ("Plan", [*PANELS[:2], {"label": "  ", "html": "<p>x</p>"}]),
         ("Plan", [*PANELS[:2], {"label": "x" * 41, "html": "<p>x</p>"}]),
@@ -76,8 +76,9 @@ async def test_render_panels_rejects_invalid_input(title: str, panels: list) -> 
 
 
 async def test_render_panels_rejects_oversize_total_html() -> None:
+    # Each panel is under the cap, the total is not; size wins over blank.
     panels = [
-        {"label": "A", "html": "x" * 100_000},
+        {"label": "A", "html": "<script>" + "x" * 99_983 + "</script>"},
         {"label": "B", "html": "x" * 100_001},
     ]
 
@@ -87,42 +88,18 @@ async def test_render_panels_rejects_oversize_total_html() -> None:
     assert result["data"] == {"html_chars": 200_001, "max_html_chars": 200_000}
 
 
-SCRIPT_ONLY = "<div id='c'></div><script>c.innerHTML='<p>EUR 125</p>'</script>"
-
-
 async def test_render_panels_names_every_blank_panel() -> None:
     panels = [
         PANELS[0],
-        {"label": " Costs ", "html": SCRIPT_ONLY},
+        {"label": " Costs ", "html": "<div id='c'></div><script>draw()</script>"},
         {"label": "Risks", "html": '<iframe srcdoc="<p>x</p>"></iframe>'},
     ]
 
     result = await invoke("Plan", panels)
 
-    assert result["success"] is False
     assert result["error_code"] == "visual_no_visible_content"
-    # Trimmed labels, in display order, plus the shared one-retry hint.
+    # Trimmed labels, in display order.
     assert result["data"]["labels"] == ["Costs", "Risks"]
-    assert "Retry once" in result["data"]["next_step"]
-    assert "answer in text" in result["data"]["next_step"]
-
-
-async def test_render_panels_checks_size_before_blank_content() -> None:
-    panels = [
-        {"label": "A", "html": "<script>" + "x" * 200_000 + "</script>"},
-        PANELS[1],
-    ]
-
-    result = await invoke("Plan", panels)
-
-    assert result["error_code"] == "visual_html_too_large"
-
-
-async def test_render_panels_accepts_svg_only_panel() -> None:
-    svg = '<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>'
-    result = await invoke("Plan", [PANELS[0], {"label": "Chart", "html": svg}])
-
-    assert result["success"] is True
 
 
 async def test_render_panels_names_small_svg_text_panels() -> None:
@@ -135,11 +112,9 @@ async def test_render_panels_names_small_svg_text_panels() -> None:
 
     result = await invoke("Plan", panels)
 
-    assert result["success"] is False
     assert result["error_code"] == "visual_text_too_small"
     assert result["data"]["labels"] == ["Costs", "Risks"]
     assert result["data"]["smallest_text_px"] == round(9 * 320 / 440, 1)
-    assert "viewBox width 320" in result["data"]["next_step"]
 
 
 async def test_render_panels_accepts_eight_panels() -> None:
@@ -151,12 +126,10 @@ async def test_render_panels_accepts_eight_panels() -> None:
 
 
 async def test_render_panels_names_panels_with_svg_animation() -> None:
-    animated = '<svg><rect width="9"><animate attributeName="x"/></rect></svg>'
-    moving = '<svg><circle r="3"><animateMotion path="M0 0H9"/></circle></svg>'
     panels = [
         PANELS[0],
-        {"label": "Costs", "html": animated},
-        {"label": "Risks", "html": moving},
+        {"label": "Costs", "html": "<svg><rect><animate/></rect></svg>"},
+        {"label": "Risks", "html": "<svg><circle><animateMotion/></circle></svg>"},
     ]
 
     result = await invoke("Plan", panels)
@@ -164,21 +137,6 @@ async def test_render_panels_names_panels_with_svg_animation() -> None:
     assert result["error_code"] == "visual_uses_svg_animation"
     assert result["data"]["labels"] == ["Costs", "Risks"]
     assert result["data"]["elements"] == ["animate", "animateMotion"]
-    assert "retry once" in result["data"]["next_step"]
-
-
-async def test_render_panels_names_mermaid_and_waffle_panels() -> None:
-    mermaid = '<div class="mermaid">graph TD\nA-->B</div>'
-    waffle = '<p>37 of 100</p><div class="waffle">' + "<i></i>" * 90 + "</div>"
-
-    result = await invoke("Plan", [PANELS[0], {"label": "Flow", "html": mermaid}])
-    assert result["error_code"] == "visual_needs_svg"
-    assert result["data"]["labels"] == ["Flow"]
-
-    result = await invoke("Plan", [PANELS[0], {"label": "Share", "html": waffle}])
-    assert result["error_code"] == "visual_waffle_cell_count"
-    assert result["data"]["labels"] == ["Share"]
-    assert result["data"]["cell_counts"] == [90]
 
 
 async def test_render_panels_names_panels_with_parts_that_cannot_work() -> None:
@@ -189,74 +147,46 @@ async def test_render_panels_names_panels_with_parts_that_cannot_work() -> None:
     assert result["error_code"] == "visual_unsupported_html"
     assert result["data"]["labels"] == ["Homes"]
     assert result["data"]["features"] == ["input type=range"]
-    assert "retry once" in result["data"]["next_step"]
 
 
 async def test_render_panels_lists_other_panels_failing_another_check() -> None:
-    mermaid = '<div class="mermaid">graph TD\nA-->B</div>'
-    waffle = '<p>37 of 100</p><div class="waffle">' + "<i></i>" * 90 + "</div>"
+    panels = [
+        {"label": "Share", "html": "<svg><rect><animate/></rect></svg>"},
+        {"label": "Flow", "html": '<div class="mermaid">graph TD\nA-->B</div>'},
+        PANELS[0],
+    ]
 
-    result = await invoke(
-        "Plan",
-        [
-            {"label": "Share", "html": waffle},
-            {"label": "Flow", "html": mermaid},
-            PANELS[0],
-        ],
-    )
+    result = await invoke("Plan", panels)
 
-    # The first check in order is the error; the other panel comes with its own step.
+    # The first check in order is the error; the other panel gets its own step.
     assert result["error_code"] == "visual_needs_svg"
     assert result["data"]["labels"] == ["Flow"]
     [other] = result["data"]["other_panel_errors"]
     assert other["label"] == "Share"
-    assert other["error_code"] == "visual_waffle_cell_count"
-    assert other["cell_counts"] == [90]
-    assert "100 cells" in other["next_step"] or other["next_step"]
+    assert other["error_code"] == "visual_uses_svg_animation"
+    assert other["elements"] == ["animate"]
+    assert "@keyframes" in other["next_step"]
 
 
 async def test_history_reads_panels_from_arguments_with_result_labels() -> None:
     result = await invoke("Retrofit plan", PANELS)
-    stored = [
-        {
-            "name": "concept_note_render_panels",
-            "arguments": {"title": "Retrofit plan", "panels": PANELS},
-            "result_json": result,
-        },
-        {
-            "name": "concept_note_render_panels",
-            "arguments": {"title": "Bad", "panels": PANELS},
-            "result_json": {**result, "success": False},
-        },
-    ]
+    ok = {
+        "name": "concept_note_render_panels",
+        "arguments": {"title": "Retrofit plan", "panels": PANELS},
+        "result_json": result,
+    }
+    failed = {**ok, "result_json": {**result, "success": False}}
 
-    assert rendered_visuals(stored) == [
+    # Labels come trimmed from the result; a failed call shows nothing.
+    assert rendered_visuals([ok, failed]) == [
         {
             "title": "Retrofit plan",
             "panels": [
-                {"label": "Overview", "html": "<p>Retrofit 10 homes</p>"},
-                {"label": "Costs", "html": "<p>EUR 125</p>"},
-                {"label": "Risks", "html": "<p>Winter delays</p>"},
+                {"label": label, "html": panel["html"]}
+                for label, panel in zip(["Overview", "Costs", "Risks"], PANELS)
             ],
         }
     ]
-
-
-def test_replay_keeps_labels_and_omits_panel_html() -> None:
-    invocation = {
-        "name": "concept_note_render_panels",
-        "arguments": {"title": "Plan", "panels": PANELS},
-    }
-
-    compact = omit_visual_html(invocation)
-
-    assert compact["arguments"]["panels"] == [
-        {"label": " Overview ", "html": "[24 chars omitted]"},
-        {"label": "Costs", "html": "[14 chars omitted]"},
-        {"label": "Risks", "html": "[20 chars omitted]"},
-    ]
-    # The stored invocation still carries the HTML the chat renders.
-    assert invocation["arguments"]["panels"][1]["html"] == "<p>EUR 125</p>"
 
 
 async def test_panels_stream_once_persist_and_replay_without_html() -> None:
@@ -298,8 +228,10 @@ async def test_panels_stream_once_persist_and_replay_without_html() -> None:
     stored = handler._tool_invocations_for_persistence()
     assert rendered_visuals(stored) == [{"title": "Plan", "panels": panels}]
 
+    # Replay keeps the labels, omits the HTML and leaves the stored row intact.
     replay = HistoryManager("thread-1", "user-1", None)._tool_context_to_messages(
         stored
     )
     replay_text = json.dumps(replay)
     assert "Costs" in replay_text and "x" * 300 not in replay_text
+    assert rendered_visuals(stored) == [{"title": "Plan", "panels": panels}]

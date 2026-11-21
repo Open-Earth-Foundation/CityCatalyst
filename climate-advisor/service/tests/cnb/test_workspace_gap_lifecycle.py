@@ -27,6 +27,7 @@ from app.persistence.concept_notes.edits import (
     append_revision,
     resolve_filled_information_gaps,
 )
+from app.persistence.concept_notes.gaps import save_partial_answer
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
@@ -764,3 +765,63 @@ async def test_adoption_keeps_existing_records_and_rejects_missing_markers(
         )
     [chapter] = await workspace.list_chapters(run_id=RUN_ID)
     assert len(chapter.gaps) == 1
+
+
+async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> None:
+    """Answers saved from the form stay on the gap until it changes or closes."""
+    saved = "1. Lead partner?\nLincoln Park Neighborhood Council\n\n2. Funding?\nNot decided yet"
+    async with workspace._session_factory() as session, session.begin():
+        # A stale form or another run's gap cannot attach answers.
+        for run_id, version in ((RUN_ID, 2), (uuid4(), 1)):
+            assert not await save_partial_answer(
+                session,
+                run_id=run_id,
+                gap_id=GAP_ID,
+                gap_version=version,
+                answer=saved,
+                user_id="owner",
+            )
+        assert await save_partial_answer(
+            session,
+            run_id=RUN_ID,
+            gap_id=GAP_ID,
+            gap_version=1,
+            answer=f" {saved} ",
+            user_id="teammate",
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    [gap] = chapter.gaps
+    # Saving changes neither the draft nor the gap version a form is bound to.
+    assert (gap.state, gap.version, gap.answered_so_far) == ("open", 1, saved)
+    assert chapter.revision_number == 1
+
+    # Once the gap is answered and resolved, the saved answers no longer show.
+    marker = "[Information needed: Confirm the lead partner.]"
+    answer = "Lincoln Park Neighborhood Council will lead delivery."
+    async with workspace._session_factory() as session, session.begin():
+        row = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=row,
+            before=chapter.body_markdown,
+            after=chapter.body_markdown.replace(marker, answer),
+            changes=[
+                EditChange(
+                    chapter_id=CHAPTER_ID,
+                    chapter_title="Implementation",
+                    change_id=uuid4(),
+                    base_revision=1,
+                    start=chapter.body_markdown.index(marker),
+                    before=marker,
+                    after=answer,
+                    kind="factual",
+                    group_id="lead_partner",
+                    user_input_quote=answer,
+                )
+            ],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(),
+        )
+    [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    assert (after.state, after.answered_so_far) == ("resolved", None)

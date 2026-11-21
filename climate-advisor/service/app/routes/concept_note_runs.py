@@ -36,9 +36,14 @@ from app.models.cnb.funding_catalogue import (
     FundingCatalogueResponse,
     FundingSelectionRequest,
 )
-from app.models.cnb.gap_question import GapQuestionOutput, GapQuestionRequest
+from app.models.cnb.gap_question import (
+    GapAnswersRequest,
+    GapQuestionOutput,
+    GapQuestionRequest,
+)
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
 from app.persistence.concept_notes.edits import applied_gap_answers
+from app.persistence.concept_notes.gaps import save_partial_answer
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -169,7 +174,8 @@ async def propose_gap_question(
                 "question": question,
                 "why_asking": gap.why_asking if gap else "",
                 "previous_answers": previous_answers,
-                "earlier_answers": payload.earlier_answers,
+                # Saved on the gap version, so every device and teammate sees them.
+                "earlier_answers": (gap.answered_so_far or "") if gap else "",
                 "source_suggestions": [
                     suggestion.model_dump() for suggestion in gap.suggestions
                 ]
@@ -183,6 +189,41 @@ async def propose_gap_question(
     if output is None:
         raise HTTPException(status_code=503, detail="Gap question unavailable")
     return output
+
+
+@router.post(
+    "/concept-notes/{run_id}/gaps/{gap_id}/answers",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def save_gap_answers(
+    run_id: UUID,
+    gap_id: UUID,
+    payload: GapAnswersRequest,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> Response:
+    """Save the answers given so far for an open gap version, without a chat turn.
+
+    The draft stays unchanged; the gap lists them as answered_so_far for every
+    viewer, and the next gap question asks only for what they miss.
+    """
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    async with get_cnb_reference_session_factory()() as cnb_session:
+        async with cnb_session.begin():
+            saved = await save_partial_answer(
+                cnb_session,
+                run_id=run_id,
+                gap_id=gap_id,
+                gap_version=payload.gap_version,
+                answer=payload.answers,
+                user_id=user_id,
+            )
+    if not saved:
+        raise HTTPException(status_code=409, detail="Gap is no longer open")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(

@@ -8,6 +8,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    PositiveInt,
     StringConstraints,
     field_validator,
     model_validator,
@@ -27,8 +28,15 @@ class GapQuestionRequest(BaseModel):
     gap_id: UUID | None = None
     question: str = Field(min_length=1, max_length=2000)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
-    # What the user already sent for this gap version; not in the draft yet.
-    earlier_answers: str = Field(default="", max_length=8000)
+
+
+class GapAnswersRequest(BaseModel):
+    """Every answer given so far for one gap version; empty text clears them."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    gap_version: PositiveInt
+    answers: str = Field(default="", max_length=8000)
 
 
 class GapSubQuestion(BaseModel):

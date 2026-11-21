@@ -2,20 +2,21 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock
 from uuid import uuid4
 
 import pytest
 from app.config.settings import Settings, _load_llm_config
 from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
+    GapAnswersRequest,
     GapQuestionOutput,
     GapQuestionRequest,
     GapSubQuestion,
 )
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.persistence.concept_notes.edits import applied_gap_answers
-from app.routes.concept_note_runs import propose_gap_question
+from app.routes.concept_note_runs import propose_gap_question, save_gap_answers
 from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
 from pydantic import ValidationError
@@ -116,6 +117,7 @@ def gap_route(monkeypatch):
                 state="open",
                 question="Original question",
                 why_asking="Needed",
+                answered_so_far="1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet",
                 suggestions=[
                     ConceptNoteGapSuggestion(
                         value="Loan of EUR 2 million", source_refs=["Plan"]
@@ -194,8 +196,10 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert result.questions[0].options == ["Loan", "Grant"]
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
-    # Answers already sent for this gap reach the model, so it asks only the rest.
-    assert context["earlier_answers"] == ""
+    # Answers saved on this gap version reach the model, so it asks only the rest.
+    assert context["earlier_answers"] == (
+        "1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet"
+    )
     # Long chapters are cut around the gap, not from the start.
     assert len(context["chapter_excerpt"]) == 12000
     assert context["chapter_excerpt"].endswith("Original question]")
@@ -225,6 +229,61 @@ async def test_centers_the_excerpt_on_a_marker_formatted_unlike_its_question(
     excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
     assert marker in excerpt
     assert "Before" in excerpt and "After" in excerpt
+
+
+@pytest.mark.parametrize("saved", [True, False])
+async def test_saving_answers_authorizes_and_rejects_a_changed_gap(
+    gap_route, monkeypatch, saved
+):
+    save = AsyncMock(return_value=saved)
+    monkeypatch.setattr("app.routes.concept_note_runs.save_partial_answer", save)
+    # MagicMock supports `async with`, including the session's begin().
+    cnb_session = MagicMock()
+    cnb_session.__aenter__.return_value = cnb_session
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
+        Mock(return_value=Mock(return_value=cnb_session)),
+    )
+    args = {
+        "run_id": gap_route.args["run_id"],
+        "gap_id": gap_route.chapter.gaps[0].gap_id,
+        "payload": GapAnswersRequest(gap_version=3, answers=" 1. Instrument?\nLoan "),
+        "session": AsyncMock(),
+        "user_id": "teammate",
+        "authorization": "Bearer test",
+    }
+    if saved:
+        response = await save_gap_answers(**args)
+        assert response.status_code == 204
+    else:
+        with pytest.raises(HTTPException) as error:
+            await save_gap_answers(**args)
+        assert error.value.status_code == 409
+    gap_route.authorize.assert_awaited_once()
+    assert save.call_args.kwargs == {
+        "run_id": args["run_id"],
+        "gap_id": args["gap_id"],
+        "gap_version": 3,
+        "answer": "1. Instrument?\nLoan",
+        "user_id": "teammate",
+    }
+
+
+async def test_saving_answers_checks_access_before_writing(gap_route, monkeypatch):
+    save = AsyncMock(return_value=True)
+    monkeypatch.setattr("app.routes.concept_note_runs.save_partial_answer", save)
+    gap_route.authorize.side_effect = HTTPException(status_code=403)
+    with pytest.raises(HTTPException) as error:
+        await save_gap_answers(
+            run_id=gap_route.args["run_id"],
+            gap_id=uuid4(),
+            payload=GapAnswersRequest(gap_version=1, answers="x"),
+            session=AsyncMock(),
+            user_id="owner",
+            authorization=None,
+        )
+    assert error.value.status_code == 403
+    save.assert_not_called()
 
 
 async def test_provider_failure_is_explicit_and_retryable(gap_route):

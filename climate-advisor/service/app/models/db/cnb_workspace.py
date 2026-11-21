@@ -266,6 +266,8 @@ class ConceptNoteGapResolution(CnbBase):
     )
     action: Mapped[str] = mapped_column(String(64), nullable=False)
     answer: Mapped[str | None] = mapped_column(Text)
+    # The gap version a partial answer belongs to; other actions leave it empty.
+    gap_version: Mapped[int | None] = mapped_column(Integer)
     actor_user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     source_refs: Mapped[list[str]] = mapped_column(
         JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
@@ -278,7 +280,7 @@ class ConceptNoteGapResolution(CnbBase):
     __table_args__ = (
         CheckConstraint(
             "action IN ('answer', 'correction', 'not_a_gap', "
-            "'defer_as_caveat', 'evidence_update')",
+            "'defer_as_caveat', 'evidence_update', 'partial_answer')",
             name="action_valid",
         ),
         UniqueConstraint(

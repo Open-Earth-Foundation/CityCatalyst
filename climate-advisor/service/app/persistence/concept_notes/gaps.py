@@ -32,6 +32,7 @@ class WorkspaceGapResolutionSnapshot:
     actor_user_id: str
     source_refs: list[str]
     created_at: datetime
+    gap_version: int | None = None
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,8 @@ class WorkspaceGapSnapshot:
     resolution: WorkspaceGapResolutionSnapshot | None
     created_at: datetime
     updated_at: datetime
+    # Partial answers saved for the current open version (see save_partial_answer).
+    answered_so_far: str | None = None
 
 
 async def _chapter_gaps(
@@ -112,8 +115,19 @@ def _snapshot_gap(
             actor_user_id=resolution.actor_user_id,
             source_refs=list(resolution.source_refs or []),
             created_at=resolution.created_at,
+            gap_version=resolution.gap_version,
         )
         if resolution is not None
+        else None
+    )
+    # Saved partial answers count only while the gap is open at their version;
+    # any later resolution or reopening is a newer event and hides them.
+    answered_so_far = (
+        resolution.answer
+        if resolution is not None
+        and resolution.action == "partial_answer"
+        and resolution.gap_version == gap.version
+        and gap.status in {"open", "processing"}
         else None
     )
     return WorkspaceGapSnapshot(
@@ -133,7 +147,44 @@ def _snapshot_gap(
         resolution=resolution_snapshot,
         created_at=gap.created_at,
         updated_at=gap.updated_at,
+        answered_so_far=answered_so_far,
     )
+
+
+async def save_partial_answer(
+    session: AsyncSession,
+    *,
+    run_id: UUID,
+    gap_id: UUID,
+    gap_version: int,
+    answer: str,
+    user_id: str,
+) -> bool:
+    """Save a gap's answers so far as its newest event; empty text clears them.
+
+    Each save holds every answer given so far, so the newest one replaces the
+    rest. Returns False when the gap is not open at that version, so a stale
+    form cannot attach answers to a changed or closed gap.
+    """
+    gap = await session.get(ConceptNoteGap, gap_id, with_for_update=True)
+    if (
+        gap is None
+        or gap.run_id != run_id
+        or gap.status not in {"open", "processing"}
+        or gap.version != gap_version
+    ):
+        return False
+    session.add(
+        ConceptNoteGapResolution(
+            gap_id=gap_id,
+            action="partial_answer",
+            answer=answer.strip() or None,
+            gap_version=gap_version,
+            actor_user_id=user_id,
+            idempotency_key=uuid4(),
+        )
+    )
+    return True
 
 
 def _specific_gap_rationale(

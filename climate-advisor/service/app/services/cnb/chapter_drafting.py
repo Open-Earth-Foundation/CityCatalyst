@@ -1150,6 +1150,7 @@ def _gap_response(gap: WorkspaceGapSnapshot) -> ConceptNoteGapResponse:
             "source_refs": gap.source_refs,
             "version": gap.version,
             "resolution": resolution,
+            "answered_so_far": gap.answered_so_far,
             "created_at": gap.created_at,
             "updated_at": gap.updated_at,
         }

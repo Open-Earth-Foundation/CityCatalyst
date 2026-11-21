@@ -177,9 +177,20 @@ class DraftEditSession:
                         "This proposal exceeds 100 changes; narrow the search scope.",
                     )
             except (EditOperationError, ValueError) as error:
+                code = getattr(error, "code", "invalid_edit")
+                if code == "invalid_user_input" and self.quote_saved_on_other_gap(
+                    replacement.user_input_quote
+                ):
+                    return {
+                        "ok": False,
+                        "code": code,
+                        "operation_index": index,
+                        "message": "This quoted answer was saved for a different gap. Saved answers support only the gap they belong to.",
+                        "recovery": "Omit this operation and any other that relies on the same quote, then resubmit the complete proposal with only changes supported by their own gap's saved answers or new user facts. Do not paste saved answers into the request.",
+                    }
                 return {
                     "ok": False,
-                    "code": getattr(error, "code", "invalid_edit"),
+                    "code": code,
                     "operation_index": index,
                     "message": str(error),
                     "recovery": "Read the affected chapter or search with more context, then submit the complete corrected proposal.",
@@ -217,6 +228,18 @@ class DraftEditSession:
             "chapters": len({change.chapter_id for change in changes}),
             "notices": [notice.model_dump() for notice in notices],
         }
+
+    def quote_saved_on_other_gap(self, quote: str | None) -> bool:
+        """Tell whether a rejected quote is a saved answer of some gap in this draft."""
+        if not quote or not quote.strip():
+            return False
+        return any(
+            quote in saved
+            for chapter in self.chapters.values()
+            for gap in chapter.gaps
+            for saved in (gap.answered_so_far, *gap.accepted_passages)
+            if saved
+        )
 
     def is_gap_transition(
         self, change: PlannedTextChange, chapter: WorkspaceChapterSnapshot

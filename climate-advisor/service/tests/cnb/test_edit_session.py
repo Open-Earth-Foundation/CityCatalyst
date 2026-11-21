@@ -382,6 +382,61 @@ def test_same_gap_marker_duplicates_are_an_atomic_group() -> None:
     )
 
 
+def test_saved_gap_quote_rejects_cross_gap_then_accepts_valid_same_gap_retry() -> None:
+    """A saved answer from another gap is refused whole, then the same-gap edit lands."""
+    location = "[Information needed: Confirm the project location.]"
+    phase = "[Information needed: Confirm the current phase and outcomes.]"
+    saved = "The grant funds planning and design."
+    body = f"Location: {location} Phase: {phase}"
+    current = chapter(body)
+    current.gaps.append(gap("Confirm the project location."))
+    current.gaps.append(
+        replace(gap("Confirm the current phase and outcomes."), answered_so_far=saved)
+    )
+    edits = session([current], "Update the chapter.")
+    location_search = edits.search_draft(location)["search_id"]
+    phase_search = edits.search_draft(phase)["search_id"]
+
+    # The location edit quotes the phase gap's saved answer, so it is refused first.
+    cross_gap = edits.propose_edits(
+        [
+            replacement_for(
+                location_search,
+                "The site is on Lake Street.",
+                user_input_quote=saved,
+            ),
+            replacement_for(
+                phase_search,
+                f"{saved} [Information needed: What measurable outcomes will the phase deliver?]",
+                user_input_quote=saved,
+            ),
+        ]
+    )
+    assert not cross_gap["ok"]
+    assert cross_gap["code"] == "invalid_user_input"
+    assert cross_gap["operation_index"] == 0
+    assert edits.plan is None
+    assert saved not in cross_gap["message"] + cross_gap["recovery"]
+    assert "Omit this operation" in cross_gap["recovery"]
+
+    # The retry omits the unsupported location edit and keeps only the same-gap phase edit.
+    retry = edits.propose_edits(
+        [
+            replacement_for(
+                phase_search,
+                f"{saved} [Information needed: What measurable outcomes will the phase deliver?]",
+                user_input_quote=saved,
+            )
+        ]
+    )
+    assert retry["ok"], retry
+    [change] = edits.plan.changes
+    assert change.before == phase
+    result = replace_anchors(body, edits.plan.changes)
+    assert location in result
+    assert result.startswith(f"Location: {location} Phase: {saved}")
+
+
 def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
     """A factual replacement for one gap-marker search, with exact provenance."""
     values = {"kind": "factual", "group_id": "gap", **kwargs}

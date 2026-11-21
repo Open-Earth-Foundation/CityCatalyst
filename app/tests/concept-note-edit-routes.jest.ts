@@ -78,6 +78,8 @@ const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
 const startChat =
   await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
+const adoptGap =
+  await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/gaps/route");
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -91,6 +93,7 @@ const applyBody = {
   idempotency_key: key,
 };
 const confirmBody = { expected_revision: 2, idempotency_key: key };
+const adoptBody = { marker: "[Information needed: Who signs the agreement?]" };
 const routes = [
   {
     name: "structure-read",
@@ -154,6 +157,13 @@ const routes = [
     method: "POST",
     suffix: `/chapters/${targetId}/confirm`,
     body: confirmBody,
+  },
+  {
+    name: "adopt-gap",
+    handler: adoptGap.POST,
+    method: "POST",
+    suffix: `/chapters/${targetId}/gaps`,
+    body: adoptBody,
   },
   {
     name: "start-chat",
@@ -269,7 +279,9 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    ["read", "apply", "reject", "refine", "confirm"].includes(route.name),
+    ["read", "apply", "reject", "refine", "confirm", "adopt-gap"].includes(
+      route.name,
+    ),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(
@@ -296,6 +308,9 @@ test.each([
   ["confirm", { ...confirmBody, expected_revision: 0 }],
   ["confirm", { ...confirmBody, expected_revision: 1.5 }],
   ["confirm", { ...confirmBody, idempotency_key: "bad" }],
+  ["adopt-gap", { marker: "" }],
+  ["adopt-gap", { marker: "x".repeat(2101) }],
+  ["adopt-gap", { ...adoptBody, user_id: "attacker" }],
 ] as const)("%s rejects invalid body %j", async (name, body) => {
   expect(
     (
@@ -316,7 +331,7 @@ test.each(routes.filter((route) => route.body))(
   },
 );
 
-test.each(["apply", "refine", "confirm"])(
+test.each(["apply", "refine", "confirm", "adopt-gap"])(
   "%s authorizes the run's actual city despite a forged city query",
   async (name) => {
     canAccessCity.mockRejectedValueOnce(
@@ -336,7 +351,7 @@ test.each(["apply", "refine", "confirm"])(
   },
 );
 
-test.each(["apply", "refine", "confirm"])(
+test.each(["apply", "refine", "confirm", "adopt-gap"])(
   "%s stops if the authenticated run lookup returns 404",
   async (name) => {
     upstream.mockResolvedValueOnce(
@@ -350,7 +365,7 @@ test.each(["apply", "refine", "confirm"])(
   },
 );
 
-test.each(["apply", "refine", "confirm", "start-chat"])(
+test.each(["apply", "refine", "confirm", "start-chat", "adopt-gap"])(
   "%s preserves upstream error status, code and detail for the client",
   async (name) => {
     const payload = { code: "stale_base", detail: "The draft has changed" };

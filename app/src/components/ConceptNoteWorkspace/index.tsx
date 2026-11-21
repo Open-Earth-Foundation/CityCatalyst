@@ -39,6 +39,11 @@ import {
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
+import {
+  chapterGapRows,
+  gapRowForMessage,
+  type ChapterGapRow,
+} from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
 import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
@@ -111,6 +116,7 @@ export function ConceptNoteWorkspace({
   >(null);
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
+  const [adoptMarkerGap] = api.useAdoptConceptNoteMarkerGapMutation();
   const [reviewOpen, setReviewOpen] = useState(false);
   // "What next?" guidance: set on funder save, sources ready, drafting complete.
   const [nextStep, setNextStep] = useState<
@@ -413,6 +419,42 @@ export function ConceptNoteWorkspace({
       }).unwrap();
     } catch {
       setWorkspaceMutationError(t("chapter-confirm-error"));
+    }
+  }
+
+  /** Open the gap form; a marker without a gap record gets one first. */
+  async function answerGap(
+    chapter: ConceptNoteDraftChapter,
+    row: ChapterGapRow,
+  ): Promise<void> {
+    const open = (target: ChapterGapRow) =>
+      setGapAnswer({
+        chapterId: chapter.chapter_id,
+        chapterTitle: chapter.title,
+        row: target,
+      });
+    if (row.gap || !row.marker) {
+      open(row);
+      return;
+    }
+    // Climate Advisor records exactly this marker, so the normal form, its
+    // gap binding and acceptance can answer and close it.
+    setWorkspaceMutationError(null);
+    try {
+      const updated = await adoptMarkerGap({
+        runId,
+        chapterId: chapter.chapter_id,
+        marker: row.marker,
+      }).unwrap();
+      const adopted = updated.chapters.find(
+        (item) => item.chapter_id === chapter.chapter_id,
+      );
+      const tracked =
+        adopted && gapRowForMessage(chapterGapRows(adopted), row.marker);
+      if (tracked?.gap) open(tracked);
+      else setWorkspaceMutationError(t("gap-adopt-error"));
+    } catch {
+      setWorkspaceMutationError(t("gap-adopt-error"));
     }
   }
 
@@ -767,13 +809,7 @@ export function ConceptNoteWorkspace({
                   focusFindingKey={reviewFindingKey}
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
-                  onAnswerGap={(chapter, row) =>
-                    setGapAnswer({
-                      chapterId: chapter.chapter_id,
-                      chapterTitle: chapter.title,
-                      row,
-                    })
-                  }
+                  onAnswerGap={(chapter, row) => void answerGap(chapter, row)}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}

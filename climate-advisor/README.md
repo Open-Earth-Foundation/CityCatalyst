@@ -1091,6 +1091,15 @@ same `information_marker_key` (lowercased letter and digit runs, so Markdown
 emphasis, quotes, punctuation, spacing and line breaks do not matter); the web
 app mirrors this key and the marker pattern in `draft-markdown.ts`, so every
 recorded gap opens from its marker.
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/gaps` with `{"marker":
+"[Information needed: ...]"}` tracks a marker that has no gap record (runs
+drafted before structured gaps): it creates one open `critical` gap whose
+question is the marker's text, with the migration rationale sentinel (shown as
+a gap-specific rationale) and a `field_key` of `adopted_` plus a hash of the
+marker key, so a retry returns the same record. A marker that already has an
+open record returns it; a missing marker or a closed record is a 409. The chapter
+text is unchanged. The web app calls it when the user chooses "Answer in chat"
+on such a marker, then opens the normal gap form bound to the new record.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;

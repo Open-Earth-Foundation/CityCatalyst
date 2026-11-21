@@ -72,6 +72,7 @@ import {
   ConceptNoteFunderImportResponse,
   ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
+  AdoptConceptNoteMarkerGapRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteChatThreadListResponse,
@@ -2982,6 +2983,19 @@ export const api = createApi({
           { type: "ConceptNoteEdits", id: runId },
         ],
       }),
+      adoptConceptNoteMarkerGap: builder.mutation<
+        ConceptNoteDraftState,
+        AdoptConceptNoteMarkerGapRequest
+      >({
+        query: ({ runId, chapterId, marker }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/gaps`,
+          method: "POST",
+          body: { marker },
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
       validateConceptNoteChapter: builder.mutation<
         ConceptNoteChapterValidationResponse,
         ValidateConceptNoteChapterRequest
@@ -3174,6 +3188,7 @@ export const {
   useActivateConceptNoteChatThreadMutation,
   useStartConceptNoteDraftMutation,
   useConfirmConceptNoteChapterMutation,
+  useAdoptConceptNoteMarkerGapMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

@@ -28,6 +28,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftResponse,
     ConceptNoteGapResolutionResponse,
     ConceptNoteGapResponse,
+    ConceptNoteMarkerGapRequest,
 )
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
 from app.models.db.concept_note import (
@@ -309,6 +310,22 @@ class ConceptNoteChapterDraftService:
                 expected_revision=payload.expected_revision,
                 idempotency_key=payload.idempotency_key,
                 user_id=run.user_id,
+            )
+        except WorkspaceConflictError as exc:
+            raise ChapterDraftingError(str(exc)) from exc
+        return await self.load_state(run)
+
+    async def adopt_marker_gap(
+        self,
+        *,
+        run: ConceptNoteRun,
+        chapter_id: UUID,
+        payload: ConceptNoteMarkerGapRequest,
+    ) -> ConceptNoteDraftResponse:
+        """Give an unrecorded marker an open gap record, then return the draft."""
+        try:
+            await self._workspace.adopt_marker_gap(
+                run_id=run.run_id, chapter_id=chapter_id, marker=payload.marker
             )
         except WorkspaceConflictError as exc:
             raise ChapterDraftingError(str(exc)) from exc

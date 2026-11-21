@@ -655,3 +655,112 @@ async def test_planning_hides_every_gap_from_a_partial_answer(workspace) -> None
 def test_a_bound_answer_names_its_chapter_and_version() -> None:
     with pytest.raises(ValueError, match="gap_id requires"):
         EditScope(gap_id=GAP_ID, gap_version=1)
+
+
+UNRECORDED = "[Information needed: Who signs the grant agreement?]"
+
+
+async def add_unrecorded_marker(workspace) -> None:
+    """Revision 2 adds a marker that no gap record tracks (a legacy marker)."""
+    async with workspace._session_factory() as session, session.begin():
+        session.add(
+            ConceptNoteChapterRevision(
+                chapter_id=CHAPTER_ID,
+                revision_number=2,
+                author_type="agent",
+                change_type="draft",
+                body_markdown="## Implementation\n\n[Information needed: Confirm the lead partner.]\n\n"
+                f"Signatory: {UNRECORDED}",
+                patch_summary={},
+            )
+        )
+
+
+async def test_adopting_an_unrecorded_marker_creates_one_open_gap(workspace) -> None:
+    """The record pairs with the marker, so the normal form can close it."""
+    await add_unrecorded_marker(workspace)
+    gap_id = await workspace.adopt_marker_gap(
+        run_id=RUN_ID, chapter_id=CHAPTER_ID, marker=UNRECORDED
+    )
+    # A retry, even with other formatting, returns the same record.
+    assert (
+        await workspace.adopt_marker_gap(
+            run_id=RUN_ID,
+            chapter_id=CHAPTER_ID,
+            marker="[Information needed: **who signs the grant agreement**]",
+        )
+        == gap_id
+    )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    adopted = next(gap for gap in chapter.gaps if gap.gap_id == gap_id)
+    assert len(chapter.gaps) == 2
+    assert adopted.question == "Who signs the grant agreement?"
+    assert adopted.state == "open" and adopted.severity == "critical"
+    assert adopted.field_key.startswith("adopted_")
+    # The stored sentinel is shown as a rationale specific to this marker.
+    assert "Who signs the grant agreement?" in adopted.why_asking
+    assert "Implementation" in adopted.why_asking
+    assert chapter.status == "needs_review"
+    assert chapter.body_markdown.endswith(UNRECORDED)
+
+    # Answering it now closes the adopted gap like any other.
+    answer = "Jordan Ellis, City Manager, signs the grant agreement."
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=2,
+        start=chapter.body_markdown.index(UNRECORDED),
+        before=UNRECORDED,
+        after=answer,
+        kind="factual",
+        group_id="signatory",
+        user_input_quote="Jordan Ellis, City Manager",
+    )
+    async with workspace._session_factory() as session, session.begin():
+        row = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=row,
+            before=chapter.body_markdown,
+            after=chapter.body_markdown.replace(UNRECORDED, answer),
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+        )
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert next(gap for gap in after.gaps if gap.gap_id == gap_id).state == "resolved"
+
+
+async def test_adoption_keeps_existing_records_and_rejects_missing_markers(
+    workspace,
+) -> None:
+    # A marker that already has an open record keeps it.
+    assert (
+        await workspace.adopt_marker_gap(
+            run_id=RUN_ID,
+            chapter_id=CHAPTER_ID,
+            marker="[Information needed: Confirm the lead partner.]",
+        )
+        == GAP_ID
+    )
+    with pytest.raises(WorkspaceConflictError, match="no longer in the chapter"):
+        await workspace.adopt_marker_gap(
+            run_id=RUN_ID, chapter_id=CHAPTER_ID, marker=UNRECORDED
+        )
+    with pytest.raises(WorkspaceConflictError, match="unavailable"):
+        await workspace.adopt_marker_gap(
+            run_id=uuid4(),
+            chapter_id=CHAPTER_ID,
+            marker="[Information needed: Confirm the lead partner.]",
+        )
+    async with workspace._session_factory() as session, session.begin():
+        (await session.get(ConceptNoteGap, GAP_ID)).status = "resolved"
+    with pytest.raises(WorkspaceConflictError, match="already closed"):
+        await workspace.adopt_marker_gap(
+            run_id=RUN_ID,
+            chapter_id=CHAPTER_ID,
+            marker="[Information needed: Confirm the lead partner.]",
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert len(chapter.gaps) == 1

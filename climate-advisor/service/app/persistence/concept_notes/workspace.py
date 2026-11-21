@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from hashlib import sha256
 from typing import Any
 from uuid import UUID
 
@@ -19,6 +21,7 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterValidation,
 )
 from app.persistence.concept_notes.gaps import (
+    LEGACY_GENERIC_GAP_RATIONALE,
     _chapter_gaps,
     _dropped_unanswered_gaps,
     _gap_from_output,
@@ -51,12 +54,15 @@ from app.persistence.concept_notes.workspace_validation import (
     _load_validation_context,
 )
 from app.utils.cnb_information_markers import (
+    INFORMATION_NEEDED_PATTERN,
     information_marker_key,
     information_needed_markers,
 )
 from pydantic import ValidationError
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+logger = logging.getLogger(__name__)
 
 
 class WorkspaceConflictError(Exception):
@@ -375,6 +381,78 @@ class ConceptNoteWorkspaceRepository:
             chapter.confirmed_revision_id = latest.revision_id
             chapter.status = "ready"
             chapter.updated_at = datetime.now(UTC)
+
+    async def adopt_marker_gap(
+        self,
+        *,
+        run_id: UUID,
+        chapter_id: UUID,
+        marker: str,
+    ) -> UUID:
+        """Create the open gap record a marker lacks, or return the one it has.
+
+        Runs drafted before structured gaps can hold markers without a record.
+        The new gap uses the normal drafting path (``_gap_from_output``):
+        ``critical`` severity, as the web app already labelled the marker, the
+        migration rationale sentinel (rendered as a gap-specific rationale on
+        read), and a ``field_key`` derived from the marker so a retry finds the
+        same record. Nothing in the chapter text changes.
+
+        Raises:
+            WorkspaceConflictError: If the chapter is unavailable, the latest
+                revision has no such marker, or the marker's gap is closed.
+        """
+        async with self._session_factory() as session, session.begin():
+            # Step 1: lock the chapter and find the marker in its current text.
+            chapter = await _require_chapter(session, chapter_id, lock=True)
+            latest = await _latest_revision(session, chapter_id)
+            if chapter.run_id != run_id or latest is None:
+                raise WorkspaceConflictError("Concept Note chapter is unavailable")
+            key = information_marker_key(marker)
+            current = next(
+                (
+                    item
+                    for item in information_needed_markers(latest.body_markdown)
+                    if information_marker_key(item) == key
+                ),
+                None,
+            )
+            if not key or current is None:
+                raise WorkspaceConflictError("This marker is no longer in the chapter")
+
+            # Step 2: a marker that already has a record keeps it.
+            for gap in await _chapter_gaps(session, chapter_id):
+                if information_marker_key(gap.question) != key:
+                    continue
+                if gap.status not in {"open", "processing"}:
+                    raise WorkspaceConflictError("This marker's gap is already closed")
+                return gap.gap_id
+
+            # Step 3: record exactly this marker as an open gap.
+            question = INFORMATION_NEEDED_PATTERN.fullmatch(current).group(1)
+            try:
+                output = ConceptNoteDraftGapOutput(
+                    field_key=f"adopted_{sha256(key.encode()).hexdigest()[:12]}",
+                    question=question.strip(" \t\r\n*_~`"),
+                    why_asking=LEGACY_GENERIC_GAP_RATIONALE,
+                    severity="critical",
+                )
+            except ValidationError as exc:
+                raise WorkspaceConflictError(
+                    "This marker is too long to track as a gap"
+                ) from exc
+            gap = _gap_from_output(chapter, output)
+            session.add(gap)
+            chapter.status = "needs_review"
+            chapter.updated_at = datetime.now(UTC)
+            await session.flush()
+            logger.info(
+                "Adopted marker as gap run_id=%s chapter_id=%s gap_id=%s",
+                run_id,
+                chapter_id,
+                gap.gap_id,
+            )
+            return gap.gap_id
 
     async def save_revalidated_chapter(
         self,

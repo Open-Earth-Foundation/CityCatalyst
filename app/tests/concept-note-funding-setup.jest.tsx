@@ -14,8 +14,11 @@ import { act, type ReactNode, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteDraftChapter,
   ConceptNoteDraftRunStatus,
 } from "@/util/types";
+import type { ChapterGapRow } from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
+import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 
 const context: ConceptNoteApplicationContext = {
   run_id: "run",
@@ -59,8 +62,14 @@ const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
+const adoptMarkerGap =
+  jest.fn<(request: unknown) => { unwrap: () => Promise<unknown> }>();
+let gapAnswerShown: GapAnswerRequest | null = null;
 jest.unstable_mockModule("@/services/api", () => ({
-  api: { useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}] },
+  api: {
+    useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}],
+    useAdoptConceptNoteMarkerGapMutation: () => [adoptMarkerGap, {}],
+  },
 }));
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data",
@@ -150,24 +159,56 @@ jest.unstable_mockModule(
     selectReviewProposal: () => reviewProposal,
   }),
 );
-// The draft tab's setup button calls the workspace handler under test.
+const MARKER = "[Information needed: Who signs the agreement?]";
+const markerChapter = {
+  chapter_id: "chapter",
+  title: "Applicant",
+  body_markdown: `Signed by ${MARKER}`,
+  gaps: [],
+} as unknown as ConceptNoteDraftChapter;
+const unrecordedRow: ChapterGapRow = {
+  id: "marker-0",
+  question: "Who signs the agreement?",
+  severity: "critical",
+  gap: null,
+  marker: MARKER,
+};
+// The draft tab's buttons call the workspace handlers under test.
 jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
   DraftTab: ({
     nextStep,
     onOpenFundingSetup,
+    onAnswerGap,
   }: {
     nextStep?: ReactNode;
     onOpenFundingSetup: () => void;
+    onAnswerGap: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
   }) => (
     <>
       {nextStep}
       <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
+      <button
+        aria-label="answer-unrecorded-marker"
+        onClick={() => onAnswerGap(markerChapter, unrecordedRow)}
+      />
     </>
   ),
 }));
+jest.unstable_mockModule(
+  "@/components/ConceptNoteWorkspace/chat-panel",
+  () => ({
+    ConceptNoteChatPanel: ({
+      gapAnswer,
+    }: {
+      gapAnswer: GapAnswerRequest | null;
+    }) => {
+      gapAnswerShown = gapAnswer;
+      return null;
+    },
+  }),
+);
 // Keep workspace state; unrelated panels are outside this test.
 for (const [path, name] of [
-  ["chat-panel", "ConceptNoteChatPanel"],
   ["context-tab", "ContextTab"],
   ["structure-tab", "StructureTab"],
   ["export-dialog", "ExportDialog"],
@@ -379,4 +420,42 @@ it("waits for sources before showing ready-to-draft guidance after saving fundin
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
   expect(container.textContent).toContain("next-step-funding-saved-title");
+});
+
+it("records an unrecorded marker as a gap before opening its answer form", async () => {
+  const adopted = {
+    gap_id: "adopted-gap",
+    field_key: "adopted_0123456789ab",
+    question: "Who signs the agreement?",
+    why_asking: "Confirm it so Clima can update the Applicant chapter.",
+    severity: "critical",
+    state: "open",
+    suggestions: [],
+    source_refs: [],
+    version: 1,
+    resolution: null,
+    created_at: "2026-11-20T00:00:00Z",
+    updated_at: "2026-11-20T00:00:00Z",
+  };
+  adoptMarkerGap.mockReturnValue({
+    unwrap: async () => ({
+      chapters: [{ ...markerChapter, gaps: [adopted] }],
+    }),
+  });
+  await clickSetup();
+  const answer = [...container.querySelectorAll("button")].find(
+    (item) => item.getAttribute("aria-label") === "answer-unrecorded-marker",
+  )!;
+  await act(async () => answer.click());
+  expect(adoptMarkerGap).toHaveBeenCalledWith({
+    runId: "run",
+    chapterId: "chapter",
+    marker: MARKER,
+  });
+  // The form opens bound to the new record, so a complete answer can close it.
+  expect(gapAnswerShown?.row).toMatchObject({
+    id: "adopted-gap",
+    marker: MARKER,
+    gap: { gap_id: "adopted-gap", version: 1 },
+  });
 });

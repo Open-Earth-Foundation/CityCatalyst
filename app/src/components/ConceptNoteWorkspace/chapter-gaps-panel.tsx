@@ -19,7 +19,6 @@ import {
   informationMarkerKey,
   missingInformationRanges,
 } from "./draft-markdown";
-import { markerLabel } from "./missing-information";
 
 export interface ChapterGapRow {
   id: string;

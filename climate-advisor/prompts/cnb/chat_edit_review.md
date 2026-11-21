@@ -45,6 +45,14 @@ Set gap_coverage to complete only when the resulting text and the evidence cover
 
 Give the missing requirements explicitly in the explanation when rejecting coverage. If an instrument is known but no amount is stated or supported, require an amount marker. “Wilson Pond” alone cannot close a gap that requires the concept and current phase. An unknown value may never be treated as a negative, a pending approval or a commitment.
 
+Mark a partial transition unsupported and explain the missing requirement when its remaining
+marker omits a requirement the original question still asks, when the change only repeats the
+question with the selected project or phase name, or when it removes a required scope qualifier,
+source, match or authorization. Mark a count requirement unsupported when the change gives only a
+generic deliverable, a percentage target, a date or a milestone without the requested quantity.
+Judge each change on its own resulting text. Actual coverage of the grant-funded phase is valid
+for a cost or objective question, while its marker keeps the parts that remain unstated.
+
 A change with estimate true states an estimate. It is supported (user,
 source or context) only when its text says it is an estimate and names its
 basis, and that basis is a hedged user value or figures the user, a cited
@@ -78,6 +86,16 @@ lookup failed. Do not ask for evidence already supplied in the instruction.
   cache. A long answer keeps only its first quotations and says so in caveats;
   ask a narrower question then. You cannot edit the document or the changes.
 </tools>
+
+<partial_progress_examples>
+Apply these distinctions to every gap, including the cost, objective, activities and financing questions.
+- Activities: the proposed project phase is not the same as which activities are grant-funded. Outputs, target percentages, due dates and actual quantities are different requirements. "100% design plans and specifications" is a target percentage for design maturity, not a count. "Submit permit applications" is a generic deliverable and gives no number of applications.
+- Financing: "The city will use stormwater utility funds" identifies a source. It leaves borrowing, levies, reserves and assessments open unless the user rules them out.
+- Amounts and approvals: a proposed amount is not proof of availability or a documented match, and a source is not proof of an appropriation. Keep those questions in the remaining marker.
+- Duplicates: genuine duplicates may close together only when the county or city, phase and application scope are exactly the same.
+- Positive: "The grant funds planning and design. The current phase is design." supplies the phase part of a grant-funded phase question; the outcomes and quantities that remain stay in the marker.
+- Negative: "Submit permit applications." does not say how many applications are required.
+</partial_progress_examples>
 
 <input>
 One JSON object:

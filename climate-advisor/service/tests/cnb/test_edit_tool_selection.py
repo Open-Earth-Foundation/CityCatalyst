@@ -174,3 +174,72 @@ async def test_auto_scope_edit_request_reaches_the_service_unchanged(monkeypatch
         "The application will be submitted on 15 March 2027."
     )
     assert forwarded.kwargs["recent_messages"] == history
+
+
+def _rendered(prompt_key: str) -> str:
+    """Return the runtime prompt with wrapping collapsed for phrase assertions."""
+    return " ".join(get_settings().llm.prompts.get_prompt(prompt_key).split())
+
+
+def test_gap_edit_prompts_distinguish_related_partial_progress_and_full_coverage():
+    planner = _rendered("cnb_chat_edit_planner")
+    reviewer = _rendered("cnb_chat_edit_review")
+
+    # Both sides share the same worked distinctions for partial and full coverage.
+    for prompt in (planner, reviewer):
+        assert "<partial_progress_examples>" in prompt
+        assert "100% design plans and specifications" in prompt
+        assert "Submit permit applications" in prompt
+        assert "generic deliverable" in prompt
+        assert "The city will use stormwater utility funds" in prompt
+        assert "borrowing, levies, reserves and assessments" in prompt
+        assert "not proof of availability or a documented match" in prompt
+        assert "not proof of an appropriation" in prompt
+        assert "county or city, phase and application scope" in prompt
+
+    assert "A partial transition must be real progress." in planner
+    assert (
+        "repeats the question with the selected project or phase name is no partial "
+        "transition" in planner
+    )
+    assert "Keep valid same-gap work and the exact marker" in planner
+
+    assert "Mark a partial transition unsupported" in reviewer
+    assert "repeats the question with the selected project or phase name" in reviewer
+    assert "Mark a count requirement unsupported" in reviewer
+    assert "Judge each change on its own resulting text." in reviewer
+
+
+def test_saved_answer_edit_prompts_repair_with_same_gap_quote():
+    planner = _rendered("cnb_chat_edit_planner")
+    chat = _rendered("cnb_chat")
+
+    assert (
+        "The changed gap's saved answers (`answered_so_far`) are user input for that "
+        "gap only" in planner
+    )
+    assert "never for another chapter's or gap's change" in planner
+    assert (
+        "propose that same-gap change first, using the verbatim saved passage"
+        in planner
+    )
+    assert (
+        "returns invalid_user_input for a replacement that is not the user's requested "
+        "change" in planner
+    )
+    assert (
+        "remove only that replacement and any other replacement that relies on the same "
+        "quote" in planner
+    )
+    assert (
+        "Return clarification only when nothing grounded remains after that smaller "
+        "attempt." in planner
+    )
+    assert (
+        "Do not include an optional edit in another chapter whose quote is not available "
+        "to its own gap." in planner
+    )
+    assert (
+        "Do not ask the user to paste answers they already saved for a gap when the "
+        "system can use them on that gap" in chat
+    )

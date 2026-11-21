@@ -117,6 +117,7 @@ export function readConceptNoteToolVisual(
 export const GAP_ANSWER_REQUEST_KEYS = [
   "gap-answer-request",
   "gap-answer-complete-request",
+  "gap-answer-estimate-confirm-request",
 ] as const;
 
 // Stand-ins for the template slots; control characters never occur in a translation.

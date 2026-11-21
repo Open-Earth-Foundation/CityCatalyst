@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
@@ -33,7 +34,7 @@ from app.persistence.concept_notes.workspace import (
     WorkspaceConflictError,
 )
 from app.services.cnb.edit_validation import bind_answer_gap
-from sqlalchemy import DefaultClause, delete, select, text
+from sqlalchemy import DefaultClause, delete, select, text, update
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RUN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
@@ -999,6 +1000,116 @@ async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
     assert sorted(answers) == sorted([estimate, confirmed])
 
 
+async def test_saving_answers_for_an_estimate_preserves_its_accepted_resolution(
+    workspace,
+) -> None:
+    """CC-1239: answers saved to confirm an estimate never replace the estimate.
+
+    The accepted estimate stays the gap's resolution while answers are saved
+    and cleared at the caveat version; a complete confirmation then resolves it
+    and clears the saved text.
+    """
+    await _seed_volunteer_gap(workspace)
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    marker = VOLUNTEER_MARKER
+    estimate = "The City estimates 120 volunteers, pending confirmation."
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=before.body_markdown.index(marker),
+        before=marker,
+        after=estimate,
+        kind="factual",
+        group_id="volunteer_count",
+        user_input_quote="roughly 120 volunteers, not confirmed",
+        estimate=True,
+    )
+    estimated_body = before.body_markdown.replace(marker, estimate)
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before.body_markdown,
+            after=estimated_body,
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(),
+        )
+
+    # SQLite's second-resolution now() would tie the estimate with the later
+    # confirmation, so date the estimate event clearly earlier.
+    async with workspace._session_factory() as session, session.begin():
+        await session.execute(
+            update(ConceptNoteGapResolution)
+            .where(
+                ConceptNoteGapResolution.gap_id == GAP_ID,
+                ConceptNoteGapResolution.action == "answer",
+            )
+            .values(created_at=datetime(2020, 1, 1, tzinfo=UTC))
+        )
+
+    saved = "The confirmed figure is 150 volunteers."
+    for answer, expected_previous in ((saved, None), ("", saved)):
+        async with workspace._session_factory() as session, session.begin():
+            assert await save_partial_answer(
+                session,
+                run_id=RUN_ID,
+                gap_id=GAP_ID,
+                gap_version=2,
+                answer=answer,
+                expected_previous=expected_previous,
+                user_id="owner",
+            )
+        [chapter_view] = await workspace.list_chapters(run_id=RUN_ID)
+        [gap] = chapter_view.gaps
+        assert (gap.state, gap.version) == ("caveat", 2)
+        assert gap.resolution.answer == estimate
+        assert gap.answered_so_far == (answer or None)
+        assert chapter_view.body_markdown == before.body_markdown
+
+    # Save the answers again so the complete confirmation starts with them saved.
+    async with workspace._session_factory() as session, session.begin():
+        assert await save_partial_answer(
+            session,
+            run_id=RUN_ID,
+            gap_id=GAP_ID,
+            gap_version=2,
+            answer=saved,
+            expected_previous=None,
+            user_id="owner",
+        )
+    confirmed = "The City confirmed 150 volunteers."
+    confirm = change.model_copy(
+        update={
+            "change_id": uuid4(),
+            "before": estimate,
+            "after": confirmed,
+            "user_input_quote": confirmed,
+            "estimate": False,
+        }
+    )
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=estimated_body,
+            after=estimated_body.replace(estimate, confirmed),
+            changes=[confirm],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(gap_version=2),
+        )
+    [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    assert (after.state, after.version) == ("resolved", 3)
+    assert after.resolution.answer == confirmed
+    assert after.answered_so_far is None
+
+
 def test_an_estimate_is_always_a_factual_change() -> None:
     with pytest.raises(ValueError, match="an estimate is a factual change"):
         EditChange(
@@ -1054,6 +1165,17 @@ async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
             user_id="owner",
             idempotency_key=uuid4(),
             scope=bound_scope(),
+        )
+    # Saved answers on the duplicate never stand in for its accepted estimate.
+    async with workspace._session_factory() as session, session.begin():
+        assert await save_partial_answer(
+            session,
+            run_id=RUN_ID,
+            gap_id=GAP_ID,
+            gap_version=2,
+            answer="Only a partial reply, not the estimate.",
+            expected_previous=None,
+            user_id="owner",
         )
     other_gap = bound_scope(gap_id=uuid4(), gap_version=2)
     for old, new, state in (

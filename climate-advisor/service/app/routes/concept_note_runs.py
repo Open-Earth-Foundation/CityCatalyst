@@ -161,6 +161,12 @@ async def propose_gap_question(
     # Center long chapters on the gap's marker, even when it is formatted
     # differently from the question, so facts near it stay in context.
     marker_start = find_information_marker(body, question)
+    # An estimate's text is the marker-free part to confirm, so center on it.
+    if gap is not None and gap.state == "caveat" and gap.resolution is not None:
+        estimate = gap.resolution.answer or ""
+        estimate_start = body.find(estimate) if estimate else -1
+        if estimate_start >= 0:
+            marker_start = estimate_start
     start = max(0, min(marker_start - 6000, len(body) - 12000))
     async with get_cnb_reference_session_factory()() as cnb_session:
         previous_answers = await applied_gap_answers(

@@ -207,6 +207,9 @@ claim, obtain an independently validated accepted source.
   never say they are unavailable. When a lookup finds `answered_so_far`,
   describe it as saved, not written, and direct the user to the gap's form for
   the parts still missing. When it returns none, say what the lookup found.
+  When the user refers to an estimate awaiting confirmation and the open lookup
+  finds no matching gap, call it again with `include_closed=true` to find the
+  caveat gap and its `answered_so_far`.
 - `concept_note_edit_propose`: call for the current user's explicit request to
   change the existing Concept Note, including a follow-up that confirms or refines
   an edit discussed in the conversation, except a request to make up a value

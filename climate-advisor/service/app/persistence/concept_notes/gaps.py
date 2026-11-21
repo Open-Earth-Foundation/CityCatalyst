@@ -69,14 +69,30 @@ async def _chapter_gaps(
 
 
 async def _latest_gap_resolutions(
-    session: AsyncSession, gap_ids: list[UUID]
+    session: AsyncSession, gap_ids: list[UUID], *, partial: bool
 ) -> dict[UUID, ConceptNoteGapResolution]:
-    """Load the latest resolution for each visible gap in one query."""
+    """Load one batched latest event per gap.
+
+    Non-partial events give the gap's resolution. Partial answers count only at
+    the gap's current version, so answers saved on an earlier version never show.
+    """
     if not gap_ids:
         return {}
+    ranked_query = select(ConceptNoteGapResolution.resolution_id).select_from(
+        ConceptNoteGapResolution
+    )
+    if partial:
+        ranked_query = ranked_query.join(
+            ConceptNoteGap,
+            (ConceptNoteGap.gap_id == ConceptNoteGapResolution.gap_id)
+            & (ConceptNoteGap.version == ConceptNoteGapResolution.gap_version),
+        ).where(ConceptNoteGapResolution.action == "partial_answer")
+    else:
+        ranked_query = ranked_query.where(
+            ConceptNoteGapResolution.action != "partial_answer"
+        )
     ranked = (
-        select(
-            ConceptNoteGapResolution.resolution_id,
+        ranked_query.add_columns(
             func.row_number()
             .over(
                 partition_by=ConceptNoteGapResolution.gap_id,
@@ -103,10 +119,11 @@ async def _latest_gap_resolutions(
 def _snapshot_gap(
     gap: ConceptNoteGap,
     resolution: ConceptNoteGapResolution | None,
+    partial_answer: ConceptNoteGapResolution | None,
     *,
     chapter_title: str,
 ) -> WorkspaceGapSnapshot:
-    """Detach one gap and its latest resolution."""
+    """Detach one gap, its latest non-partial resolution and its saved answers."""
     resolution_snapshot = (
         WorkspaceGapResolutionSnapshot(
             resolution_id=resolution.resolution_id,
@@ -120,14 +137,11 @@ def _snapshot_gap(
         if resolution is not None
         else None
     )
-    # Saved partial answers count only while the gap is open at their version;
-    # any later resolution or reopening is a newer event and hides them.
+    # Saved answers count only while the gap is open or an estimate awaits
+    # confirmation at their version; a clear row exposes null.
     answered_so_far = (
-        resolution.answer
-        if resolution is not None
-        and resolution.action == "partial_answer"
-        and resolution.gap_version == gap.version
-        and gap.status in {"open", "processing"}
+        partial_answer.answer
+        if partial_answer is not None and gap.status in {"open", "processing", "caveat"}
         else None
     )
     return WorkspaceGapSnapshot(
@@ -172,7 +186,7 @@ async def save_partial_answer(
     if (
         gap is None
         or gap.run_id != run_id
-        or gap.status not in {"open", "processing"}
+        or gap.status not in {"open", "processing", "caveat"}
         or gap.version != gap_version
     ):
         return False

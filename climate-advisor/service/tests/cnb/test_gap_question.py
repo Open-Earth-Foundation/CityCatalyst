@@ -118,6 +118,7 @@ def gap_route(monkeypatch):
                 question="Original question",
                 why_asking="Needed",
                 answered_so_far="1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet",
+                resolution=None,
                 suggestions=[
                     ConceptNoteGapSuggestion(
                         value="Loan of EUR 2 million", source_refs=["Plan"]
@@ -299,6 +300,24 @@ async def test_an_estimate_to_confirm_can_still_be_asked(gap_route):
     result = await propose_gap_question(**gap_route.args)
     assert result.questions[0].question == "Instrument?"
     gap_route.generate.assert_called_once()
+
+
+async def test_an_estimate_excerpt_is_centered_on_the_accepted_estimate(gap_route):
+    """CC-1239: the excerpt keeps an estimate beyond the first 12,000 characters."""
+    estimate = "The City estimates 120 volunteers, pending confirmation."
+    gap_route.chapter.gaps[0].state = "caveat"
+    gap_route.chapter.gaps[0].resolution = SimpleNamespace(answer=estimate)
+    gap_route.chapter.body_markdown = (
+        "Filler " * 3000
+        + estimate
+        + " Tail " * 2000
+        + "[Information needed: Original question]"
+    )
+    assert gap_route.chapter.body_markdown.index(estimate) > 12000
+    await propose_gap_question(**gap_route.args)
+    excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
+    assert len(excerpt) == 12000
+    assert estimate in excerpt
 
 
 async def test_provider_failure_is_explicit_and_retryable(gap_route):

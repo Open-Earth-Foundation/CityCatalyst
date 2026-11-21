@@ -557,8 +557,14 @@ export function ConceptNoteChatPanel({
   function answerGap(answer: string, complete: boolean): boolean {
     if (!gapAnswer || chatDisabled) return false;
     // Only a complete answer may replace the marker; that is what closes the gap.
+    // An estimate has no marker left: a complete answer confirms its value.
+    const confirmsEstimate = complete && gapAnswer.row.gap?.state === "caveat";
     const content = t(
-      complete ? "gap-answer-complete-request" : "gap-answer-request",
+      confirmsEstimate
+        ? "gap-answer-estimate-confirm-request"
+        : complete
+          ? "gap-answer-complete-request"
+          : "gap-answer-request",
       {
         chapter: gapAnswer.chapterTitle,
         question: gapAnswer.row.question,

@@ -564,10 +564,18 @@ async def confirm_estimated_gap(
                 continue
             change = next(iter(factual), None)
         else:
+            # The accepted estimate is the latest non-partial event; saved
+            # answers for confirmation never replace it.
             estimate = await session.scalar(
                 select(ConceptNoteGapResolution.answer)
-                .where(ConceptNoteGapResolution.gap_id == gap.gap_id)
-                .order_by(ConceptNoteGapResolution.created_at.desc())
+                .where(
+                    ConceptNoteGapResolution.gap_id == gap.gap_id,
+                    ConceptNoteGapResolution.action != "partial_answer",
+                )
+                .order_by(
+                    ConceptNoteGapResolution.created_at.desc(),
+                    ConceptNoteGapResolution.resolution_id.desc(),
+                )
                 .limit(1)
             )
             change = next(

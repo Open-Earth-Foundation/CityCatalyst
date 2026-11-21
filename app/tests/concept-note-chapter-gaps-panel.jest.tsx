@@ -371,6 +371,69 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
   );
 });
 
+it("keeps an estimate and the answers saved to confirm it in separate blocks", async () => {
+  const estimate =
+    "The request is approximately $2 million; not yet confirmed.";
+  const saved = "Confirmed by the lender: $2 million.";
+  const estimated = {
+    ...gap("d", "caveat"),
+    version: 2,
+    answered_so_far: saved,
+    resolution: {
+      resolution_id: "r-d",
+      action: "answer" as const,
+      answer: estimate,
+      actor_user_id: "owner",
+      source_refs: [],
+      created_at: "2026-09-24T00:00:00Z",
+    },
+  };
+  const withEstimate = { ...chapter, gaps: [estimated] };
+  const rows = chapterGapRows(withEstimate);
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={appTheme}>
+        <ChapterGapsPanel
+          chapter={withEstimate}
+          lng="en"
+          rows={rows}
+          onAnswerGap={jest.fn()}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  await act(async () =>
+    container
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-chapter-gaps-toggle"]',
+      )!
+      .click(),
+  );
+  await act(async () =>
+    document
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-gap-list-item"]',
+      )!
+      .click(),
+  );
+  const estimateBlock = document.querySelector(
+    '[data-testid="concept-note-gap-estimate"]',
+  );
+  const savedBlock = document.querySelector(
+    '[data-testid="concept-note-gap-answered-so-far"]',
+  );
+  expect(estimateBlock?.textContent).toContain(estimate);
+  expect(estimateBlock?.textContent).not.toContain(saved);
+  expect(savedBlock?.textContent).toContain(saved);
+  expect(savedBlock?.textContent).not.toContain(estimate);
+  expect(estimateBlock?.contains(savedBlock ?? null)).toBe(false);
+  expect(savedBlock?.contains(estimateBlock ?? null)).toBe(false);
+  // Let the popover settle its focus before the next test.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  });
+});
+
 it("shows answers saved so far on the marker popover and in the gap list", async () => {
   const saved = "1. Question a?\nGrant\n\n2. Amount?\nNot decided yet";
   const answered = {

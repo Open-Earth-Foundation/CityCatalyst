@@ -29,7 +29,9 @@ const refreshDraft = jest.fn();
 let isGenerating = false;
 const promptI18n = createInstance();
 const t = (key: string, values?: Record<string, unknown>) =>
-  key === "gap-answer-request" || key === "gap-answer-complete-request"
+  key === "gap-answer-request" ||
+  key === "gap-answer-complete-request" ||
+  key === "gap-answer-estimate-confirm-request"
     ? promptI18n.t(key, values)
     : key;
 
@@ -650,6 +652,66 @@ it("asks Clima to replace the gap marker once every question is answered", async
   expect(content).toContain(
     "[Information needed: What is the requested instrument?]",
   );
+  expect(content).not.toContain("marked as missing");
+});
+
+it("previews an estimate confirmation without asking to replace a marker", async () => {
+  const estimate = "The City estimates 120 volunteers, pending confirmation.";
+  const caveatRow = {
+    ...gapAnswer.row,
+    gap: {
+      ...gapAnswer.row.gap!,
+      state: "caveat",
+      version: 2,
+      resolution: {
+        resolution_id: "estimate-event",
+        action: "answer",
+        answer: estimate,
+        actor_user_id: "owner",
+        source_refs: [],
+        created_at: "2026-10-16T00:00:00Z",
+        gap_version: null,
+      },
+    },
+  } as unknown as GapAnswerRequest["row"];
+  let answerSave!: (response: Response) => void;
+  saveAnswers.mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        answerSave = resolve;
+      }),
+  );
+  await renderPanel(contextStatus, "thread", {
+    ...gapAnswer,
+    row: caveatRow,
+  });
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  await writeAnswer(0, "Confirmed 150 volunteers");
+  await writeAnswer(1, "City records, May 2026");
+  await act(async () => previewButton().click());
+  // The estimate is confirmed only after the answers are saved (204).
+  expect(sendMessage).not.toHaveBeenCalled();
+  await act(async () => answerSave({ ok: true, status: 204 } as Response));
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(saveAnswers.mock.invocationCallOrder[0]).toBeLessThan(
+    sendMessage.mock.invocationCallOrder[0],
+  );
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(scope).toMatchObject({
+    gap_id: "financing-gap",
+    gap_version: 2,
+    answer_complete: true,
+  });
+  expect(content).toContain(
+    "My answers:\n1. Which financing instrument?\nConfirmed 150 volunteers\n\n2. What amount?\nCity records, May 2026",
+  );
+  expect(content).toContain("replaces the current estimate using my answers");
+  // An estimate has no marker to replace, so none is quoted or invented.
+  expect(content).not.toContain("[Information needed:");
   expect(content).not.toContain("marked as missing");
 });
 

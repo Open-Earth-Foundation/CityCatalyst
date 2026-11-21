@@ -38,6 +38,7 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
+  missingInformationRanges,
   remarkGapPassages,
   remarkMissingInformation,
 } from "./draft-markdown";
@@ -665,7 +666,9 @@ export function DraftDocumentPanel({
                     onAnswerGap={onAnswerGap}
                   />
                   {chapter.status === "draft" &&
-                    chapter.open_gap_count === 0 && (
+                    chapter.open_gap_count === 0 &&
+                    missingInformationRanges(chapter.body_markdown ?? "")
+                      .length === 0 && (
                       <Button
                         size="xs"
                         variant="solid"

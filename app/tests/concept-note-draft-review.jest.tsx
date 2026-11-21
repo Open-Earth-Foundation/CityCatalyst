@@ -161,6 +161,10 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     ).click();
   });
   expect(onAcceptReviewChange).toHaveBeenCalledWith([change.change_id]);
+  // Review & confirm appears only once the marker is gone.
+  await render({
+    chapters: [{ ...chapter, body_markdown: "Budget is 10." }],
+  });
   await act(async () => {
     const confirm = [...container.querySelectorAll("button")].find((button) =>
       button.textContent?.includes("Review & confirm"),
@@ -170,7 +174,10 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
       container.querySelector('[aria-current="location"]') as HTMLButtonElement
     ).click();
   });
-  expect(onConfirmChapter).toHaveBeenCalledWith(chapter);
+  expect(onConfirmChapter).toHaveBeenCalledWith({
+    ...chapter,
+    body_markdown: "Budget is 10.",
+  });
   expect(onFocusedChapterChange).toHaveBeenCalledWith(chapter.chapter_id);
 });
 
@@ -257,4 +264,120 @@ it("counts only open gaps in the section list, not estimates to confirm", async 
     container.querySelector('[data-testid="concept-note-section-gap-count"]')
       ?.textContent,
   ).toBe("1");
+});
+
+it("hides Review & confirm while a raw multiline marker remains", async () => {
+  const gap = {
+    why_asking: "",
+    severity: "critical",
+    suggestions: [],
+    source_refs: [],
+    created_at: "2026-11-20T10:00:00Z",
+    updated_at: "2026-11-20T10:00:00Z",
+  } as const;
+  const chapterWith = (
+    overrides: Partial<ConceptNoteDraftChapter>,
+  ): ConceptNoteDraftChapter => ({
+    chapter_id: "chapter-1",
+    title: "Budget",
+    template_section_id: "budget",
+    position: 0,
+    required: true,
+    user_locked: false,
+    status: "draft",
+    body_markdown: "Budget is 10.",
+    revision_number: 1,
+    confirmed_body_markdown: null,
+    confirmed_revision_number: null,
+    gaps: [],
+    open_gap_count: 0,
+    caveat_count: 0,
+    ...overrides,
+  });
+  // A marker split across lines and bold text, claimed by a closed record.
+  const multiline =
+    "Budget is pending. [Information needed: **Who pays\nfor the pilot**]";
+  const closedRecord = {
+    ...gap,
+    gap_id: "gap-closed",
+    field_key: "funding",
+    question: "Who pays for the pilot?",
+    state: "resolved",
+    version: 2,
+    resolution: {
+      resolution_id: "resolution-1",
+      action: "answer",
+      answer: "The city pays.",
+      actor_user_id: "owner",
+      source_refs: [],
+      created_at: "2026-11-20T10:00:00Z",
+    },
+  } as const;
+  const caveat = {
+    ...closedRecord,
+    gap_id: "gap-estimate",
+    state: "caveat",
+    question: "Confirm the request amount",
+    resolution: { ...closedRecord.resolution, answer: "About $2 million." },
+  } as const;
+  const focus = {
+    chapterElements: { current: {} },
+    previewElement: { current: null },
+    focusedFindingElement: { current: null },
+    isChapterPanelOpen: true,
+    selectedChapterId: "chapter-1",
+    selectChapter: jest.fn(),
+    toggleChapterPanel: jest.fn(),
+    focusedFinding: null,
+  };
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
+  async function reviewButtonFor(chapter: ConceptNoteDraftChapter) {
+    await act(async () =>
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <DraftDocumentPanel
+            chapters={[chapter]}
+            lng="en"
+            noteName="Tram project"
+            focusFindingKey={null}
+            isConfirmingChapter={false}
+            onConfirmChapter={jest.fn()}
+            focus={focus}
+          />
+        </ChakraProvider>,
+      ),
+    );
+    return [...container.querySelectorAll("button")].find((button) =>
+      button.textContent?.includes("Review & confirm"),
+    );
+  }
+  // An unrecorded multiline marker hides the button.
+  expect(
+    await reviewButtonFor(chapterWith({ body_markdown: multiline })),
+  ).toBeUndefined();
+  // So does a marker whose record is already closed.
+  expect(
+    await reviewButtonFor(
+      chapterWith({
+        body_markdown: `${multiline}\n\nCosts pending. [Information needed: Confirm funding]`,
+        gaps: [closedRecord],
+      }),
+    ),
+  ).toBeUndefined();
+  // An estimate alone does not hide it.
+  expect(
+    await reviewButtonFor(
+      chapterWith({
+        body_markdown: "The request is an estimated $2 million.",
+        gaps: [caveat],
+        caveat_count: 1,
+      }),
+    ),
+  ).toBeDefined();
+  // And the same chapter without markers shows it.
+  expect(
+    await reviewButtonFor(chapterWith({ body_markdown: "Budget is 10." })),
+  ).toBeDefined();
 });

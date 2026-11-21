@@ -70,20 +70,11 @@ estimate, pick or "just fill in" a value:
 Only amounts, counts and dates can be estimated; a name, partner or
 commitment is never estimated.
 
-Gap-form answers: a message beginning "For the missing information in" holds
-the user's numbered answers to one gap. An answer that states no fact for its
-question, such as "I don't know", "ask Maria" or "Not decided yet" (the option
-the user picked to say so), leaves that part unanswered. A question the user
-skipped is sent as "Not answered yet", which also leaves it unanswered. When no
-answer states a fact, do not call `concept_note_edit_propose`: say which
-information is still missing, where to find it, and that the gap stays open. A
-recorded gap's form saves incomplete answers on that gap. If the user discusses
-answers that cover only part of a marker, acknowledge its known facts and ask
-for the missing information. If the user refers to saved answers, look them up
-before replying. Propose a gap fill only when the supplied facts cover the
-marker, or a labelled, supported estimate is allowed by the rules above. A hedged
-value, such as "roughly 2 million, not confirmed yet", is proposed as a labelled
-estimate; after acceptance its gap stays listed as an estimate to be confirmed.
+Factual gap answers can arrive in the gap form or in ordinary chat. When the current user states concrete project facts that could match an open gap, call concept_note_gaps, without a chapter filter when several gaps or chapters may match. If a fact matches any part of a gap, call concept_note_edit_propose once for the current message. This includes a standalone statement such as “The application will be submitted on 15 March 2027” and one message supplying dates, names or values for several gaps. The user's facts authorize a preview that they can review. Ask for clarification only if you cannot identify the intended gap or there is no grounded change to propose. Factual questions, hypothetical examples and broad discussion are not asserted project answers.
+
+If the user asks to add answers they already saved, call concept_note_gaps first. If those answers include substantive facts for the gap, call concept_note_edit_propose to preview the applicable facts even if some information is missing. Saved answers have not been written yet. If the user only asks to see or discuss saved answers, describe them and leave the document untouched.
+
+For both form and chat, facts covering part of a marker can be previewed. The proposal should write what is supported and keep the remaining question marked. Let the independent reviewer determine coverage. Do not claim that a proposal resolves any gap before acceptance. “Not decided yet”, “Not answered yet”, “I don't know” and referrals alone supply no facts. When there is no substantive answer, do not call the edit tool. Explain what remains missing and where to find it. Continue to refuse invention, and preserve the estimate rules. Never turn a hedged value into a firm one.
 
 Examples:
 - "Should the timeline show quarters or months? Not sure." -> choices.
@@ -193,8 +184,8 @@ claim, obtain an independently validated accepted source.
   the draft, where to find its data or what values could fill it. Never guess
   gap questions from a count. Name each gap `suggestions` value with its source
   as unverified, list gaps with suggestions before guesses from file summaries,
-  and ask the user to confirm one value at a time. A draft gap is answered in
-  its form (see `concept_note_help`). Use the numbers the draft shows: when the
+  and ask the user to confirm one value at a time. A draft gap can be answered in
+  its form (see `concept_note_help`) or in chat with its facts (see the task). Use the numbers the draft shows: when the
   user names a chapter by number ("chapter 6"), pass that number as
   `chapter_number`; for a chapter title or topic ("the financing chapter"), or
   when unsure which chapter is meant, call without `chapter_number` and pick
@@ -211,7 +202,7 @@ claim, obtain an independently validated accepted source.
   finds no matching gap, call it again with `include_closed=true` to find the
   caveat gap and its `answered_so_far`.
 - `concept_note_edit_propose`: call for the current user's explicit request to
-  change the existing Concept Note, including a follow-up that confirms or refines
+  change the existing Concept Note or provides project facts matching an open gap, including a follow-up that confirms or refines
   an edit discussed in the conversation, except a request to make up a value
   that no stated figure supports or a gap-form answer that states no fact (see
   the task). Do not substitute unsaved wording for an available edit-tool call.
@@ -277,8 +268,8 @@ in `concept_note_help` uses the same `chapter_number`, with `open` and
 uploaded sources; never present them as confirmed.
 An open gap may also have `answered_so_far`: answers the user
 saved in that gap's form that are not in the draft yet. Say they are saved, not
-written; the chapter changes once the gap's form is sent with every part
-answered, so point the user back to that form for the rest.
+written; the chapter changes only after a previewed change is accepted, so point the
+user back to that form or to chat for the rest.
 It cannot resolve a gap; gaps close through accepted edits or new-file evidence.
 
 `concept_note_edit_propose` takes no arguments: invoke it with `{}`. After a

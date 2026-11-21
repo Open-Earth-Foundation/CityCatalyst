@@ -67,6 +67,20 @@ def test_open_gap_lists_the_answers_saved_so_far():
     assert rows[0]["answered_so_far"] == saved
 
 
+def test_gap_tool_reads_the_narrowed_question_and_rebased_saved_answers():
+    saved = "1. Instrument?\nStormwater utility funds"
+    narrowed = gap(
+        1,
+        "What amount will the city contribute?",
+        answered_so_far=saved,
+    )
+    rows = build_gap_list([chapter(0, "Financing", [narrowed])])["gaps"]
+    # After a narrowing, the listed question is the exact remaining ask and the
+    # saved answers still reach the chat.
+    assert rows[0]["question"] == "What amount will the city contribute?"
+    assert rows[0]["answered_so_far"] == saved
+
+
 def test_open_gap_lists_source_suggestions_with_their_sources():
     found = {"value": "PLN 1.92 billion", "source_refs": ["Investment_Plan"]}
     chapters = [

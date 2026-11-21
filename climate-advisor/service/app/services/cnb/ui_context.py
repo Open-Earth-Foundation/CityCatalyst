@@ -47,7 +47,8 @@ def ui_gap_numbers(chapter: WorkspaceChapterSnapshot) -> dict[UUID, int]:
     ]
     claimed = {information_marker_key(gap.question) for gap in chapter.gaps}
     for marker, key in zip(markers, marker_keys, strict=True):
-        if key not in claimed:
+        # An empty key (punctuation only) gets no record, so it gets no row either.
+        if key and key not in claimed:
             rows.append((marker, None))
             claimed.add(key)
 

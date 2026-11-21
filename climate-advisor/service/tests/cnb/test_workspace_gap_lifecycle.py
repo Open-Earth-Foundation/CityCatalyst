@@ -1206,3 +1206,166 @@ async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
             )
         [after] = await workspace.list_chapters(run_id=RUN_ID)
         assert after.gaps[0].state == state
+
+
+SECOND_CHAPTER_ID = UUID("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
+DELETED_CHAPTER_ID = UUID("ffffffff-ffff-4fff-8fff-ffffffffffff")
+
+
+async def _gap_and_chapter_rows(workspace) -> tuple[dict, dict]:
+    """Snapshot every gap record and chapter row, including timestamps."""
+    async with workspace._session_factory() as session:
+        gaps = (await session.scalars(select(ConceptNoteGap))).all()
+        chapters = (await session.scalars(select(ConceptNoteChapter))).all()
+        return (
+            {
+                gap.gap_id: (
+                    gap.chapter_id,
+                    gap.field_key,
+                    gap.severity,
+                    gap.question,
+                    gap.why_asking,
+                    gap.status,
+                    gap.created_at,
+                    gap.updated_at,
+                )
+                for gap in gaps
+            },
+            {
+                chapter.chapter_id: (chapter.status, chapter.updated_at)
+                for chapter in chapters
+            },
+        )
+
+
+async def test_batch_adopts_every_unrecorded_marker_once(workspace) -> None:
+    """One run-level call gives each unrecorded marker one record per chapter.
+
+    The concurrent-session part of this scenario belongs to the live harness.
+    """
+    long_question = "x" * 2_050
+    body = (
+        "## Implementation\n\n"
+        "[Information needed: Confirm the lead partner.]\n\n"
+        f"Signatory: {UNRECORDED}\n\n"
+        "Again: [Information needed: **who signs the grant agreement**]\n\n"
+        "Budget: [Information needed: Confirm the budget.]\n\n"
+        f"Long: [Information needed: {long_question}]"
+    )
+    second_body = (
+        "## Scope\n\nFunding: " f"{UNRECORDED}\n\nNote: [Information needed: ***]"
+    )
+    async with workspace._session_factory() as session, session.begin():
+        session.add(
+            ConceptNoteChapterRevision(
+                chapter_id=CHAPTER_ID,
+                revision_number=2,
+                author_type="agent",
+                change_type="draft",
+                body_markdown=body,
+                patch_summary={},
+            )
+        )
+        # A closed record keeps its marker closed, so no new record appears.
+        session.add(
+            ConceptNoteGap(
+                gap_id=uuid4(),
+                run_id=RUN_ID,
+                chapter_id=CHAPTER_ID,
+                field_key="budget",
+                severity="noncritical",
+                question="Confirm the budget.",
+                why_asking="The budget must be stated.",
+                status="resolved",
+            )
+        )
+        session.add(
+            ConceptNoteChapter(
+                chapter_id=SECOND_CHAPTER_ID,
+                run_id=RUN_ID,
+                template_section_id="scope",
+                title="Scope",
+                position=1,
+                status="draft",
+                required=True,
+            )
+        )
+        session.add(
+            ConceptNoteChapterRevision(
+                chapter_id=SECOND_CHAPTER_ID,
+                revision_number=1,
+                author_type="agent",
+                change_type="draft",
+                body_markdown=second_body,
+                patch_summary={},
+            )
+        )
+        session.add(
+            ConceptNoteChapter(
+                chapter_id=DELETED_CHAPTER_ID,
+                run_id=RUN_ID,
+                template_section_id="old",
+                title="Old",
+                position=2,
+                status="deleted",
+                required=False,
+            )
+        )
+        session.add(
+            ConceptNoteChapterRevision(
+                chapter_id=DELETED_CHAPTER_ID,
+                revision_number=1,
+                author_type="agent",
+                change_type="draft",
+                body_markdown=f"Old {UNRECORDED}",
+                patch_summary={},
+            )
+        )
+
+    assert await workspace.adopt_legacy_marker_gaps(run_id=RUN_ID) == 3
+    first_gaps, first_chapters = await _gap_and_chapter_rows(workspace)
+
+    chapters = {
+        chapter.chapter_id: chapter
+        for chapter in await workspace.list_chapters(run_id=RUN_ID)
+    }
+    assert set(chapters) == {CHAPTER_ID, SECOND_CHAPTER_ID}
+    first = chapters[CHAPTER_ID]
+    adopted = [gap for gap in first.gaps if gap.field_key.startswith("adopted_")]
+    assert sorted(gap.question for gap in adopted) == sorted(
+        ["Who signs the grant agreement?", long_question]
+    )
+    assert all(gap.severity == "critical" and gap.state == "open" for gap in adopted)
+    assert [gap.question for gap in first.gaps].count("Confirm the budget.") == 1
+    assert "Confirm the lead partner." in [gap.question for gap in first.gaps]
+    assert first.status == "needs_review"
+    assert first.body_markdown == body
+
+    second = chapters[SECOND_CHAPTER_ID]
+    assert [gap.question for gap in second.gaps] == ["Who signs the grant agreement?"]
+    assert second.gaps[0].severity == "critical" and second.gaps[0].state == "open"
+    assert second.status == "needs_review"
+    assert second.body_markdown == second_body
+
+    # Open counts: the existing lead-partner gap plus the two adopted ones here.
+    assert sum(gap.state == "open" for gap in first.gaps) == 3
+    assert sum(gap.state == "open" for gap in second.gaps) == 1
+    assert all(row[0] != DELETED_CHAPTER_ID for row in first_gaps.values())
+
+    # Revisions are untouched, so the second chapter keeps its single revision.
+    async with workspace._session_factory() as session:
+        revisions = (await session.scalars(select(ConceptNoteChapterRevision))).all()
+    assert sorted(
+        (revision.chapter_id, revision.revision_number) for revision in revisions
+    ) == sorted(
+        [
+            (CHAPTER_ID, 1),
+            (CHAPTER_ID, 2),
+            (SECOND_CHAPTER_ID, 1),
+            (DELETED_CHAPTER_ID, 1),
+        ]
+    )
+
+    # A repeat call adds nothing and rewrites no timestamp or identifier.
+    assert await workspace.adopt_legacy_marker_gaps(run_id=RUN_ID) == 0
+    assert await _gap_and_chapter_rows(workspace) == (first_gaps, first_chapters)

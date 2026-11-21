@@ -9,7 +9,10 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 
 from app.models.cnb.concept_note_draft import ConceptNoteMarkerGapRequest
-from app.routes.concept_note_runs import adopt_concept_note_marker_gap
+from app.routes.concept_note_runs import (
+    adopt_concept_note_legacy_marker_gaps,
+    adopt_concept_note_marker_gap,
+)
 from app.services.cnb.chapter_drafting import ChapterDraftingError
 
 MARKER = "[Information needed: Who signs the grant agreement?]"
@@ -71,6 +74,50 @@ async def test_a_missing_or_closed_marker_is_a_conflict(adopt_route):
         await adopt_concept_note_marker_gap(**adopt_route.args)
     assert error.value.status_code == 409
     assert error.value.detail == "This marker's gap is already closed"
+
+
+@pytest.fixture
+def batch_route(monkeypatch):
+    """Batch route arguments with a mocked run check and draft service."""
+    run = SimpleNamespace(run_id=uuid4())
+    authorize = AsyncMock(return_value=run)
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.ConceptNoteRunService",
+        Mock(return_value=SimpleNamespace(get_authorized_run=authorize)),
+    )
+    service = SimpleNamespace(adopt_legacy_marker_gaps=AsyncMock(return_value="draft"))
+    return SimpleNamespace(
+        run=run,
+        authorize=authorize,
+        service=service,
+        args={
+            "run_id": run.run_id,
+            "draft_service": service,
+            "user_id": "owner",
+            "authorization": "Bearer test",
+            "session": AsyncMock(),
+        },
+    )
+
+
+async def test_batch_marker_adoption_authorizes_before_writing(batch_route):
+    batch_route.authorize.side_effect = HTTPException(status_code=403)
+    with pytest.raises(HTTPException) as error:
+        await adopt_concept_note_legacy_marker_gaps(**batch_route.args)
+    assert error.value.status_code == 403
+    batch_route.service.adopt_legacy_marker_gaps.assert_not_called()
+
+
+async def test_batch_marker_adoption_returns_reloaded_run_draft(batch_route):
+    assert await adopt_concept_note_legacy_marker_gaps(**batch_route.args) == "draft"
+    batch_route.authorize.assert_awaited_once_with(
+        run_id=batch_route.run.run_id,
+        requested_user_id="owner",
+        authorization="Bearer test",
+    )
+    batch_route.service.adopt_legacy_marker_gaps.assert_awaited_once_with(
+        run=batch_route.run
+    )
 
 
 @pytest.mark.parametrize("marker", ["", "x" * 2_101])

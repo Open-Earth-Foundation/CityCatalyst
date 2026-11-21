@@ -331,6 +331,16 @@ class ConceptNoteChapterDraftService:
             raise ChapterDraftingError(str(exc)) from exc
         return await self.load_state(run)
 
+    async def adopt_legacy_marker_gaps(
+        self, *, run: ConceptNoteRun
+    ) -> ConceptNoteDraftResponse:
+        """Give every unrecorded marker in the run an open gap, then return the draft."""
+        try:
+            await self._workspace.adopt_legacy_marker_gaps(run_id=run.run_id)
+        except WorkspaceConflictError as exc:
+            raise ChapterDraftingError(str(exc)) from exc
+        return await self.load_state(run)
+
     async def revalidate_after_new_sources(
         self,
         *,

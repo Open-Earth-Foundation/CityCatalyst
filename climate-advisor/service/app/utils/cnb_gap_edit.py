@@ -59,12 +59,50 @@ def marker_question(marker: str) -> str:
     return match.group(1).strip()
 
 
+def occurrence_spans(body: str, text: str) -> list[tuple[int, int]]:
+    """Return every exact, non-overlapping occurrence of estimate text in the chapter."""
+    if not text.strip():
+        return []
+    spans: list[tuple[int, int]] = []
+    start = body.find(text)
+    while start != -1:
+        spans.append((start, start + len(text)))
+        start = body.find(text, start + len(text))
+    return spans
+
+
+def intersects_span(span: tuple[int, int], start: int, end: int) -> bool:
+    """Return whether the half-open range [start, end) touches the span at all."""
+    return span[0] < end and start < span[1]
+
+
 def unambiguous_span(body: str, text: str) -> tuple[int, int] | None:
     """Locate estimate text only when it occurs exactly once in the chapter."""
-    if not text.strip() or body.count(text) != 1:
-        return None
-    start = body.index(text)
-    return start, start + len(text)
+    spans = occurrence_spans(body, text)
+    return spans[0] if len(spans) == 1 else None
+
+
+def estimate_anchor_problem(
+    before: str,
+    after: str,
+    new_estimates: Sequence[str],
+    caveat_estimates: Sequence[str],
+) -> bool:
+    """Return whether a candidate chapter lacks one unique passage for an estimate.
+
+    Each newly estimated text must occur exactly once in the resulting chapter,
+    and no existing caveat estimate may gain a copy it did not already have.
+    """
+    if any(
+        text.strip() and len(occurrence_spans(after, text)) != 1
+        for text in new_estimates
+    ):
+        return True
+    for text in caveat_estimates:
+        after_count = len(occurrence_spans(after, text))
+        if after_count > 1 and after_count > len(occurrence_spans(before, text)):
+            return True
+    return False
 
 
 def marker_edit_shape(before: str, after: str) -> MarkerTransition | None:

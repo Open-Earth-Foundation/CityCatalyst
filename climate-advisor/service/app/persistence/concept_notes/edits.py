@@ -39,9 +39,12 @@ from app.persistence.concept_notes.gaps import (
 )
 from app.utils.cnb_gap_edit import (
     GapEditError,
+    estimate_anchor_problem,
     gap_answer_digest,
+    intersects_span,
     marker_edit_shape,
     marker_question,
+    occurrence_spans,
     unambiguous_span,
     validate_marker_transitions,
 )
@@ -473,8 +476,24 @@ async def resolve_filled_information_gaps(
         validate_marker_transitions(before, after, changes)
     except GapEditError:
         raise _stale_gap() from None
+    estimates = await _caveat_estimates(session, chapter.chapter_id)
+    # The selected set, not just each proposal's own check, must keep estimates unique.
+    if estimate_anchor_problem(
+        before,
+        after,
+        [
+            marker_replacement_text(change.after)
+            for change in changes
+            if change.estimate
+        ],
+        estimates,
+    ):
+        raise EditOperationError(
+            "ambiguous_gap",
+            "Keep one uniquely identifiable estimate passage for this gap. Remove identical repetitions and resubmit the candidate.",
+        )
     unbound = [change for change in changes if not change.gap_bindings]
-    if unbound and await _unbound_gap_edit(session, chapter, before, unbound):
+    if unbound and await _unbound_gap_edit(before, unbound, estimates):
         raise _stale_gap()
 
     bound = [(change, binding) for change in changes for binding in change.gap_bindings]
@@ -493,6 +512,7 @@ async def resolve_filled_information_gaps(
         ).all()
     }
     # Verify every binding before any write; repeated occurrences share one gap.
+    confirmed: dict[UUID, str] = {}
     for change, binding in bound:
         gap = gaps.get(binding.gap_id)
         expected_status = "caveat" if binding.mode == "confirm_estimate" else "open"
@@ -514,12 +534,16 @@ async def resolve_filled_information_gaps(
             estimate = await _latest_estimate(session, gap.gap_id)
             if not _overlaps_estimate(before, estimate, change):
                 raise _stale_gap()
+            confirmed[gap.gap_id] = estimate or ""
         else:
             transition = marker_edit_shape(change.before, change.after)
             if transition is None or information_marker_key(
                 transition.old_marker
             ) != information_marker_key(gap.question):
                 raise _stale_gap()
+    # A confirmation must replace its estimate; leaving the stored text in place is no answer.
+    if any(unambiguous_span(after, text) is not None for text in confirmed.values()):
+        raise _stale_gap()
 
     now = datetime.now(UTC)
     settled: set[UUID] = set()
@@ -586,37 +610,47 @@ async def _latest_estimate(session: AsyncSession, gap_id: UUID) -> str | None:
 
 
 def _overlaps_estimate(body: str, estimate: str | None, change: EditChange) -> bool:
-    """Require the estimate the change confirms to be one unambiguous span of the body."""
+    """Require a replacing change to touch the estimate's one unambiguous span."""
     span = unambiguous_span(body, estimate or "")
     end = change.start + len(change.before)
-    return span is not None and span[0] < end and change.start < span[1]
+    return (
+        bool(change.before)
+        and span is not None
+        and intersects_span(span, change.start, end)
+    )
 
 
-async def _unbound_gap_edit(
-    session: AsyncSession,
-    chapter: ConceptNoteChapter,
-    before: str,
-    changes: list[EditChange],
-) -> bool:
-    """Return whether an unbound change moves a marker or overlaps a caveat estimate."""
-    if any(
-        removed_information_markers(change.before, change.after) for change in changes
-    ):
-        return True
+async def _caveat_estimates(session: AsyncSession, chapter_id: UUID) -> list[str]:
+    """Return the estimate text each caveat gap in the chapter currently states."""
     caveats = (
         await session.scalars(
             select(ConceptNoteGap.gap_id).where(
-                ConceptNoteGap.chapter_id == chapter.chapter_id,
+                ConceptNoteGap.chapter_id == chapter_id,
                 ConceptNoteGap.status == "caveat",
             )
         )
     ).all()
     estimates = [await _latest_estimate(session, gap_id) for gap_id in caveats]
+    return [estimate for estimate in estimates if estimate]
+
+
+async def _unbound_gap_edit(
+    before: str, changes: list[EditChange], estimates: list[str]
+) -> bool:
+    """Return whether an unbound change moves a marker or touches any copy of an estimate.
+
+    Every occurrence counts, including repeated copies that cannot bind, so an
+    unbound write never silently replaces part of a caveat's estimate.
+    """
+    if any(
+        removed_information_markers(change.before, change.after) for change in changes
+    ):
+        return True
     return any(
-        _overlaps_estimate(before, estimate, change)
+        intersects_span(span, change.start, change.start + len(change.before))
         for change in changes
-        if change.kind == "factual"
         for estimate in estimates
+        for span in occurrence_spans(before, estimate)
     )
 
 

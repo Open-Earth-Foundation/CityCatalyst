@@ -1561,6 +1561,143 @@ async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
         assert after.gaps[0].state == state
 
 
+ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
+
+
+async def _caveat_with_estimate(workspace, copies: int) -> None:
+    """Make the seeded gap a caveat whose estimate appears ``copies`` times in the chapter."""
+    await _seed_volunteer_gap(workspace)
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        gap.status = "caveat"
+        gap.version = 2
+        session.add(
+            ConceptNoteGapResolution(
+                gap_id=GAP_ID,
+                action="answer",
+                answer=ESTIMATE,
+                gap_version=2,
+                actor_user_id="owner",
+                source_refs=[],
+                idempotency_key=uuid4(),
+            )
+        )
+        revision = await session.scalar(
+            select(ConceptNoteChapterRevision).where(
+                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
+                ConceptNoteChapterRevision.revision_number == 1,
+            )
+        )
+        revision.body_markdown = "## Implementation\n\n" + "\n\n".join(
+            f"Delivery relies on {ESTIMATE}" for _ in range(copies)
+        )
+
+
+async def _estimate_state(workspace) -> tuple:
+    """Snapshot the revisions, gap version and status, and resolution events for the gap."""
+    async with workspace._session_factory() as session:
+        revisions = (
+            await session.scalars(
+                select(ConceptNoteChapterRevision.revision_number).where(
+                    ConceptNoteChapterRevision.chapter_id == CHAPTER_ID
+                )
+            )
+        ).all()
+        resolutions = (
+            await session.scalars(
+                select(ConceptNoteGapResolution.resolution_id).where(
+                    ConceptNoteGapResolution.gap_id == GAP_ID
+                )
+            )
+        ).all()
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        return sorted(revisions), len(resolutions), gap.version, gap.status
+
+
+@pytest.mark.parametrize("copies", [3, 2])
+async def test_estimate_confirmation_rejects_unbound_duplicate_occurrence_atomically(
+    workspace, copies
+) -> None:
+    """CC-1239: an unbound edit cannot change one copy of a repeated estimate.
+
+    The r1 and r2 transcripts repeated the estimate three and two times. Each
+    copy is ambiguous, so the apply must fail with no revision, gap or
+    resolution written.
+    """
+    await _caveat_with_estimate(workspace, copies)
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    state_before = await _estimate_state(workspace)
+    start = before.body_markdown.index(ESTIMATE)
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=start,
+        before=ESTIMATE,
+        after="The City now estimates 130 volunteers, pending confirmation.",
+        kind="factual",
+        group_id="volunteers",
+        user_input_quote="130 volunteers",
+    )
+    after_body = (
+        before.body_markdown[:start]
+        + change.after
+        + before.body_markdown[start + len(ESTIMATE) :]
+    )
+    with pytest.raises(EditOperationError) as error:
+        await _accept(
+            workspace, before=before.body_markdown, after=after_body, changes=[change]
+        )
+    assert error.value.code == "stale_gap"
+    assert await _estimate_state(workspace) == state_before
+
+
+async def test_confirmed_estimate_updates_prose_version_and_resolution_together(
+    workspace,
+) -> None:
+    """CC-1239: a confirmation replaces the estimate, its prose and its resolution at once.
+
+    The caveat gap resolves at its next version, the chapter gains one revision
+    and the confirmed text replaces the estimate in the prose.
+    """
+    await _caveat_with_estimate(workspace, 1)
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    confirmed = "The City confirmed 150 volunteers."
+    start = before.body_markdown.index(ESTIMATE)
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=start,
+        before=ESTIMATE,
+        after=confirmed,
+        kind="factual",
+        group_id="volunteers",
+        user_input_quote=confirmed,
+        gap_bindings=[gap_binding(version=2, mode="confirm_estimate")],
+    )
+    after_body = before.body_markdown.replace(ESTIMATE, confirmed)
+    await _accept(
+        workspace, before=before.body_markdown, after=after_body, changes=[change]
+    )
+
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert after.body_markdown == after_body
+    assert after.revision_number == before.revision_number + 1
+    assert (after.gaps[0].state, after.gaps[0].version) == ("resolved", 3)
+    async with workspace._session_factory() as session:
+        answers = (
+            await session.scalars(
+                select(ConceptNoteGapResolution.answer).where(
+                    ConceptNoteGapResolution.gap_id == GAP_ID
+                )
+            )
+        ).all()
+    assert sorted(answers) == sorted([ESTIMATE, confirmed])
+
+
 SECOND_CHAPTER_ID = UUID("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
 DELETED_CHAPTER_ID = UUID("ffffffff-ffff-4fff-8fff-ffffffffffff")
 

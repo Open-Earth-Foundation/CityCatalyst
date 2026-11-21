@@ -29,14 +29,18 @@ from app.persistence.concept_notes.workspace_snapshots import (
 from app.utils.cnb_gap_edit import (
     GapEditError,
     MarkerTransition,
+    estimate_anchor_problem,
     gap_answer_digest,
+    intersects_span,
     marker_edit_shape,
+    occurrence_spans,
     unambiguous_span,
     validate_marker_transitions,
 )
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
+    marker_replacement_text,
 )
 
 
@@ -158,6 +162,17 @@ def validated_change(
             "The proposal did not receive a complete semantic review.",
             status_code=422,
         )
+    # A complete confirmation aimed at a gap whose recorded estimate is gone cannot bind.
+    if (
+        anchored.reviewed_gap_coverage == "complete"
+        and not bindings
+        and estimate_missing_for_scope(request.scope, chapter)
+    ):
+        raise EditOperationError(
+            "invalid_target",
+            "The estimate recorded for this gap is no longer in the draft. Reopen the gap to answer its current text.",
+            status_code=422,
+        )
     # Only the independent review's coverage can match the transition's shape.
     if (anchored.reviewed_gap_coverage or "none") != expected_gap_coverage(bindings):
         raise EditOperationError(
@@ -211,6 +226,21 @@ def validate_document_integrity(
             raise EditOperationError(
                 "marker_changed", str(error), status_code=422
             ) from None
+        if estimate_anchor_problem(
+            before,
+            after,
+            [
+                marker_replacement_text(change.after)
+                for change in chapter_changes
+                if change.estimate
+            ],
+            caveat_estimates(chapters[chapter_id]),
+        ):
+            raise EditOperationError(
+                "ambiguous_gap",
+                "Keep one uniquely identifiable estimate passage for this gap. Remove identical repetitions and resubmit the candidate.",
+                status_code=422,
+            )
         heading_pattern = r"^#{1,6} .+$"
         if re.findall(heading_pattern, before, re.MULTILINE) != re.findall(
             heading_pattern, after, re.MULTILINE
@@ -288,15 +318,26 @@ def estimate_bindings(
     estimates for different questions overlap, only the form's gap may bind.
     """
     body = chapter.body_markdown or ""
+    start, end = change.start, change.start + len(change.before)
+    # A repeated estimate cannot be bound, so no change may touch one copy silently.
+    for gap in chapter.gaps:
+        if gap.state != "caveat" or gap.resolution is None:
+            continue
+        spans = occurrence_spans(body, gap.resolution.answer or "")
+        if len(spans) > 1 and any(intersects_span(span, start, end) for span in spans):
+            raise EditOperationError(
+                "ambiguous_gap",
+                "This passage repeats a stored estimate. Keep one uniquely identifiable copy of it and resubmit the change.",
+                status_code=422,
+            )
     if change.kind != "factual" or not change.before.strip():
         return []
-    start, end = change.start, change.start + len(change.before)
     overlapping = []
     for gap in chapter.gaps:
         if gap.state != "caveat" or gap.resolution is None:
             continue
         span = unambiguous_span(body, gap.resolution.answer or "")
-        if span is not None and span[0] < end and start < span[1]:
+        if span is not None and intersects_span(span, start, end):
             overlapping.append(gap)
     if not overlapping:
         return []
@@ -320,6 +361,32 @@ def estimate_bindings(
         for gap in overlapping
         if information_marker_key(gap.question) == chosen
     ]
+
+
+def caveat_estimates(chapter: WorkspaceChapterSnapshot) -> list[str]:
+    """Return the estimate text each caveat gap in the chapter currently states."""
+    return [
+        gap.resolution.answer
+        for gap in chapter.gaps
+        if gap.state == "caveat" and gap.resolution and gap.resolution.answer
+    ]
+
+
+def estimate_missing_for_scope(
+    scope: EditScope, chapter: WorkspaceChapterSnapshot
+) -> bool:
+    """Return whether the form's caveat gap no longer has its recorded estimate in the chapter."""
+    if scope.gap_id is None or scope.focused_chapter_id != chapter.chapter_id:
+        return False
+    body = chapter.body_markdown or ""
+    return any(
+        gap.gap_id == scope.gap_id
+        and gap.state == "caveat"
+        and gap.resolution is not None
+        and gap.resolution.answer
+        and not occurrence_spans(body, gap.resolution.answer)
+        for gap in chapter.gaps
+    )
 
 
 def gap_binding(gap: WorkspaceGapSnapshot, mode: str) -> GapEditBinding:

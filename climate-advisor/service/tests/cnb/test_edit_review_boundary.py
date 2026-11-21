@@ -1793,3 +1793,214 @@ def test_estimate_confirmation_requires_review_of_the_actual_estimate():
             reviewed_plan(current, [unrelated], ["user"], ["complete"]),
         )
     assert error.value.code == "invalid_review"
+
+    # A partial-span confirmation of the unique estimate binds the same gap.
+    partial = {
+        **confirm,
+        "start": current.body_markdown.index("EUR 2 million"),
+        "before": "EUR 2 million",
+        "after": "EUR 2.1 million",
+    }
+    [partial_accepted] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(current, [partial], ["user"], ["complete"]),
+    )
+    assert [binding.mode for binding in partial_accepted.gap_bindings] == [
+        "confirm_estimate"
+    ]
+
+    def answer_resolution(answer: str) -> WorkspaceGapResolutionSnapshot:
+        return WorkspaceGapResolutionSnapshot(
+            resolution_id=uuid4(),
+            action="answer",
+            answer=answer,
+            actor_user_id="owner",
+            source_refs=[],
+            created_at=datetime.now(UTC),
+            gap_version=1,
+        )
+
+    # Two gaps for the same question and estimate bind together.
+    twins = chapter(f"Budget: {estimate}. Schedule: 12 months.")
+    twins.gaps.extend(
+        gap_snapshot(
+            "Confirm the budget.",
+            state="caveat",
+            resolution=answer_resolution(estimate),
+        )
+        for _ in range(2)
+    )
+    [twinned] = validate_edit_plan(
+        request,
+        [twins],
+        reviewed_plan(
+            twins,
+            [{**confirm, "start": twins.body_markdown.index(estimate)}],
+            ["user"],
+            ["complete"],
+        ),
+    )
+    assert [binding.mode for binding in twinned.gap_bindings] == [
+        "confirm_estimate",
+        "confirm_estimate",
+    ]
+
+    # Different questions sharing one estimate: only the form's gap may bind.
+    shared = chapter(f"Budget: {estimate}. Schedule: 12 months.")
+    budget_gap = gap_snapshot(
+        "Confirm the budget.",
+        state="caveat",
+        resolution=answer_resolution(estimate),
+    )
+    shared.gaps.extend(
+        [
+            budget_gap,
+            gap_snapshot(
+                "Confirm the schedule.",
+                state="caveat",
+                resolution=answer_resolution(estimate),
+            ),
+        ]
+    )
+    shared_confirm = [{**confirm, "start": shared.body_markdown.index(estimate)}]
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request,
+            [shared],
+            reviewed_plan(shared, shared_confirm, ["user"], ["complete"]),
+        )
+    assert error.value.code == "ambiguous_gap"
+    scoped = EditProposalRequest(
+        instruction=instruction,
+        scope=EditScope(
+            focused_chapter_id=shared.chapter_id,
+            gap_id=budget_gap.gap_id,
+            gap_version=1,
+        ),
+        idempotency_key=uuid4(),
+    )
+    [bound_one] = validate_edit_plan(
+        scoped,
+        [shared],
+        reviewed_plan(shared, shared_confirm, ["user"], ["complete"]),
+    )
+    assert [binding.gap_id for binding in bound_one.gap_bindings] == [budget_gap.gap_id]
+
+
+def test_edit_plan_rejects_duplicate_candidate_estimate_anchor():
+    """CC-1239: a newly estimated passage must be one uniquely identifiable copy.
+
+    The fill would repeat the estimate already in the chapter, so the candidate
+    is refused before it can reach the reviewer's gap transition.
+    """
+    estimate = "an estimated EUR 2 million"
+    current = chapter(
+        f"Budget: [Information needed: Confirm the budget.]. Summary: {estimate}."
+    )
+    current.gaps.append(gap_snapshot("Confirm the budget."))
+    request = EditProposalRequest(
+        instruction="The budget is about EUR 2 million.", idempotency_key=uuid4()
+    )
+    fill = {
+        "start": current.body_markdown.index("[Information"),
+        "before": "[Information needed: Confirm the budget.]",
+        "after": estimate,
+        "kind": "factual",
+        "group_id": "budget",
+        "user_input_quote": "EUR 2 million",
+        "estimate": True,
+    }
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request, [current], reviewed_plan(current, [fill], ["user"], ["complete"])
+        )
+    assert error.value.code == "ambiguous_gap"
+
+    # A narrowing whose prose copies an existing caveat anchor is refused too.
+    caveat_text = "a provisional schedule of 12 months"
+    narrowing = chapter(
+        f"Plan: {caveat_text}. Gap: [Information needed: Confirm the schedule.]"
+    )
+    narrowing.gaps.extend(
+        [
+            gap_snapshot(
+                "Confirm the budget.",
+                state="caveat",
+                resolution=WorkspaceGapResolutionSnapshot(
+                    resolution_id=uuid4(),
+                    action="answer",
+                    answer=caveat_text,
+                    actor_user_id="owner",
+                    source_refs=[],
+                    created_at=datetime.now(UTC),
+                    gap_version=1,
+                ),
+            ),
+            gap_snapshot("Confirm the schedule."),
+        ]
+    )
+    narrow = {
+        "start": narrowing.body_markdown.index("[Information"),
+        "before": "[Information needed: Confirm the schedule.]",
+        "after": f"[Information needed: Confirm the completion date.] Note: {caveat_text}.",
+        "kind": "factual",
+        "group_id": "schedule",
+        "user_input_quote": caveat_text,
+    }
+    narrowing_request = EditProposalRequest(
+        instruction=f"The schedule is {caveat_text}.", idempotency_key=uuid4()
+    )
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            narrowing_request,
+            [narrowing],
+            reviewed_plan(narrowing, [narrow], ["user"], ["partial"]),
+        )
+    assert error.value.code == "ambiguous_gap"
+
+
+def test_ambiguous_existing_estimate_cannot_be_edited_unbound():
+    """CC-1239: a repeated estimate cannot be edited through an unbound change.
+
+    No gap can be proven as the target of one copy, so the edit is refused for
+    both factual and wording changes instead of rewriting the estimate silently.
+    """
+    estimate = "an estimated EUR 2 million"
+    current = chapter(f"Budget: {estimate}. Finance: {estimate}.")
+    current.gaps.append(
+        gap_snapshot(
+            "Confirm the budget.",
+            state="caveat",
+            resolution=WorkspaceGapResolutionSnapshot(
+                resolution_id=uuid4(),
+                action="answer",
+                answer=estimate,
+                actor_user_id="owner",
+                source_refs=[],
+                created_at=datetime.now(UTC),
+                gap_version=1,
+            ),
+        )
+    )
+    request = EditProposalRequest(
+        instruction="The city confirms EUR 2.1 million.", idempotency_key=uuid4()
+    )
+    start = current.body_markdown.index(estimate)
+    factual = {
+        "start": start,
+        "before": estimate,
+        "after": "EUR 2.1 million, confirmed by the city council",
+        "kind": "factual",
+        "group_id": "budget",
+        "user_input_quote": "EUR 2.1 million",
+    }
+    wording = {**factual, "kind": "wording", "user_input_quote": None}
+    for change in (factual, wording):
+        with pytest.raises(EditOperationError) as error:
+            validate_edit_plan(
+                request,
+                [current],
+                reviewed_plan(current, [change], ["user"], ["complete"]),
+            )
+        assert error.value.code == "ambiguous_gap"

@@ -580,6 +580,24 @@ it("asks Clima to replace the gap marker once every question is answered", async
   expect(content).not.toContain("marked as missing");
 });
 
+it("quotes the marker as the chapter writes it, so a reformatted one is found", async () => {
+  const marker = "[Information needed: **What is the\nrequested instrument**]";
+  await renderPanel(contextStatus, "thread", {
+    ...gapAnswer,
+    row: { ...gapAnswer.row, marker },
+  });
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  await writeAnswer(0, "Blended loan and grant");
+  await writeAnswer(1, "EUR 2 million");
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain(`replaces its complete ${marker} marker`);
+});
+
 it("leaves the gap untouched when answered later and restores the answers on return", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
   await act(async () =>

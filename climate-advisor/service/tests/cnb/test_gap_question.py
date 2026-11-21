@@ -216,6 +216,17 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     gap_route.args["session"].commit.assert_not_called()
 
 
+async def test_centers_the_excerpt_on_a_marker_formatted_unlike_its_question(
+    gap_route,
+):
+    marker = "[Information needed: **original  question?**]"
+    gap_route.chapter.body_markdown = "Before " * 2000 + marker + " After" * 2000
+    await propose_gap_question(**gap_route.args)
+    excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
+    assert marker in excerpt
+    assert "Before" in excerpt and "After" in excerpt
+
+
 async def test_provider_failure_is_explicit_and_retryable(gap_route):
     gap_route.generate.return_value = None
     with pytest.raises(HTTPException) as error:

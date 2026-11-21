@@ -22,6 +22,7 @@ import translations from "@/i18n/locales/en/concept-notes.json";
 import {
   GAP_ANSWER_REQUEST_KEYS,
   GAP_ANSWER_SLOTS,
+  legacyGapAnswerTemplate,
   readConceptNoteThreadMessages,
   readGapAnswerMessage,
   type ConceptNoteChatMessage,
@@ -404,31 +405,81 @@ describe("a sent gap answer in the chat", () => {
 });
 
 describe("readGapAnswerMessage", () => {
-  const templates = () =>
-    GAP_ANSWER_REQUEST_KEYS.map((key) =>
+  // Same templates as the chat panel: the current ones, then the complete request as it was sent before it quoted the marker.
+  const templates = () => {
+    const rendered = GAP_ANSWER_REQUEST_KEYS.map((key) =>
       t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
     );
-  const request = (key: string, values: Record<string, string>) =>
-    t(key, { ...values, interpolation: { escapeValue: false } });
+    return [
+      ...rendered,
+      ...rendered
+        .filter((template) => template.includes(GAP_ANSWER_SLOTS.marker))
+        .map(legacyGapAnswerTemplate),
+    ];
+  };
+  const request = (
+    key: string,
+    values: Record<string, string>,
+    marker = `[Information needed: ${values.question}]`,
+  ) => t(key, { ...values, marker, interpolation: { escapeValue: false } });
+  const values = {
+    chapter: 'Costs & "risks" (2026)',
+    question: "What is the cost?\nInclude VAT [if any].",
+    answer: "1. Cost?\nEUR 2 million\n\n$1 & 2 \\ (raw)",
+  };
 
   it("reads chapter, question and answer from both templates", () => {
-    const values = {
-      chapter: 'Costs & "risks" (2026)',
-      question: "What is the cost?\nInclude VAT [if any].",
-      answer: "1. Cost?\nEUR 2 million\n\n$1 & 2 \\ (raw)",
-    };
     for (const key of GAP_ANSWER_REQUEST_KEYS)
       expect(readGapAnswerMessage(request(key, values), templates())).toEqual(
         values,
       );
   });
 
-  it("does not read a request whose repeated question differs", () => {
+  it("reads a complete request whose marker is formatted unlike its question", () => {
+    const question = "What is the  cost?";
+    const marker = "[Information needed: **What is the\ncost**]";
+    const text = request(
+      "gap-answer-complete-request",
+      { ...values, question },
+      marker,
+    );
+    expect(text).toContain(`replaces its complete ${marker} marker`);
+    expect(readGapAnswerMessage(text, templates())).toEqual({
+      ...values,
+      question,
+    });
+  });
+
+  it("does not read a complete request whose marker is for another question", () => {
+    const text = request(
+      "gap-answer-complete-request",
+      { ...values, question: "What is the cost?" },
+      "[Information needed: Who pays?]",
+    );
+    expect(readGapAnswerMessage(text, templates())).toBeNull();
+  });
+
+  it("reads a complete request sent before the marker was quoted", () => {
+    const text = request("gap-answer-complete-request", {
+      chapter: "Costs",
+      question: "What is the cost?",
+      answer: "EUR 2 million",
+    });
+    expect(text).toContain("complete [Information needed: What is the cost?] marker");
+    expect(readGapAnswerMessage(text, templates())).toEqual({
+      chapter: "Costs",
+      question: "What is the cost?",
+      answer: "EUR 2 million",
+    });
+  });
+
+  it("does not read a legacy request whose repeated question differs", () => {
     const text = request("gap-answer-complete-request", {
       chapter: "Costs",
       question: "What is the cost?",
       answer: "EUR 2 million",
     }).replace("[Information needed: What is the cost?]", "[Other]");
+    expect(text).toContain("complete [Other] marker");
     expect(readGapAnswerMessage(text, templates())).toBeNull();
     expect(readGapAnswerMessage("Hello", templates())).toBeNull();
   });

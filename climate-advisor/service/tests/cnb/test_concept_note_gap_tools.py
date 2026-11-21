@@ -186,7 +186,7 @@ def test_gap_numbers_count_markers_without_records_like_the_draft():
             "[Information needed: Who owns the schoolyards?]",
             # A closed gap's leftover marker gets no row of its own.
             "[Information needed: Old question]",
-            # Differs from its record by punctuation, so the UI cannot match them.
+            # Differs from its record only by punctuation, so it pairs with it.
             "[Information needed: What is the budget]",
             "[Information needed: Where are the cells?]",
         ]
@@ -197,14 +197,28 @@ def test_gap_numbers_count_markers_without_records_like_the_draft():
     assert ui_gap_numbers(snapshot) == {
         located.gap_id: 1,
         no_marker.gap_id: 4,
-        punctuated.gap_id: 5,
+        punctuated.gap_id: 3,
     }
     rows = build_gap_list([snapshot])["gaps"]
     assert [(row["gap_number"], row["question"]) for row in rows] == [
         (1, "Where are the cells?"),
+        (3, "What is the budget."),
         (4, "Who maintains the cells?"),
-        (5, "What is the budget."),
     ]
+
+
+def test_gap_numbers_match_formatted_and_multiline_markers():
+    """A formatted, wrapped marker pairs with its record, which is counted once."""
+    paired = gap(1, "Who signs the annual report?")
+    body = (
+        "[Information needed: Legacy question with no record]\n\n"
+        "[Information needed:  **Who signs the annual\nreport**?]"
+    )
+    snapshot = chapter(0, "Governance", [paired], body=body)
+    assert ui_gap_numbers(snapshot) == {paired.gap_id: 2}
+    result = build_gap_list([snapshot])
+    assert numbered(result["gaps"]) == [(1, 2, "Who signs the annual report?")]
+    assert result["open_total"] == 1
 
 
 def make_tool():

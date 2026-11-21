@@ -14,7 +14,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
 
-const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows } =
+const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows, gapRowForMessage } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
 const { remarkMissingInformation, remarkGapPassages } =
   await import("@/components/ConceptNoteWorkspace/draft-markdown");
@@ -180,6 +180,35 @@ it("matches source passages, keeps unanchored gaps, and does not resurrect resol
   expect(rows[1]?.title).toBe("Timing");
   expect(rows.some((row) => row.id === "c")).toBe(false);
   expect(rows[0]?.severity).toBe("noncritical");
+});
+
+it("pairs a gap with its marker however the marker is formatted", async () => {
+  // Bold, no "?", a curly apostrophe, a double space and a line break.
+  const marker = "[Information needed: **Richfield’s  share\nfor question a**]";
+  const formatted = {
+    ...chapter,
+    body_markdown: `### Costs\n\nCosts pending. ${marker}`,
+    gaps: [
+      { ...gap("a", "open"), question: "Richfield's share for question a?" },
+    ],
+  };
+  const rows = chapterGapRows(formatted);
+  expect(rows).toHaveLength(1);
+  expect(rows[0]).toMatchObject({ id: "a", title: "Costs", marker });
+  expect(rows[0]?.gap?.gap_id).toBe("a");
+
+  // The inline marker opens the recorded gap, not a separate legacy row.
+  await act(async () =>
+    root.render(
+      <ReactMarkdown remarkPlugins={[remarkMissingInformation]}>
+        {formatted.body_markdown}
+      </ReactMarkdown>,
+    ),
+  );
+  const link = container.querySelector<HTMLAnchorElement>(
+    'a[href="#cnb-missing-information"]',
+  );
+  expect(gapRowForMessage(rows, decodeURIComponent(link!.title))?.id).toBe("a");
 });
 
 it("attaches a standalone marker to its actual passage without changing the text", async () => {

@@ -1086,7 +1086,11 @@ same transaction, without a separate interview or background regeneration.
 revision; open critical gaps and any remaining missing-information markers block
 confirmation. Generated markers must match the structured gap questions before
 the chapter is saved; mismatches fail generation rather than producing a chapter
-that can be incorrectly marked Ready.
+that can be incorrectly marked Ready. A marker matches its gap when both have the
+same `information_marker_key` (lowercased letter and digit runs, so Markdown
+emphasis, quotes, punctuation, spacing and line breaks do not matter); the web
+app mirrors this key and the marker pattern in `draft-markdown.ts`, so every
+recorded gap opens from its marker.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;

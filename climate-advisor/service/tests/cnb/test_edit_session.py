@@ -139,6 +139,27 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
     )
 
 
+def test_a_reformatted_or_wrapped_marker_is_filled_through_its_gap_record():
+    marker = "[Information needed: **What is the\nconfirmed budget**]"
+    current = chapter(f"Budget: {marker}")
+    current.gaps.append(
+        SimpleNamespace(question="What is the confirmed budget?", state="open")
+    )
+    edits = session([current], "The confirmed budget is EUR 10 million.")
+    found = edits.search_draft(marker)
+    assert edits.propose_edits(
+        [
+            replacement(
+                found["search_id"], "EUR 10 million", user_input_quote="EUR 10 million"
+            )
+        ]
+    )["ok"]
+    assert (
+        replace_anchors(current.body_markdown, edits.plan.changes)
+        == "Budget: EUR 10 million"
+    )
+
+
 @pytest.mark.parametrize(
     "before,after,expected",
     [

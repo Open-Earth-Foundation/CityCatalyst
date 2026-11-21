@@ -51,6 +51,7 @@ import { ChatChoices } from "./chat-choices";
 import {
   GAP_ANSWER_REQUEST_KEYS,
   GAP_ANSWER_SLOTS,
+  legacyGapAnswerTemplate,
   readGapAnswerMessage,
 } from "./chat-utils";
 import type { ConceptNoteContextPresentation } from "./context-status";
@@ -72,6 +73,11 @@ const COMPOSER_MAX_HEIGHT_PX = 190;
 // or a textarea's caret line, so keep two more lines clear above the gap
 // form's footer for the rest of the option or field.
 const GAP_FOOTER_FOCUS_SLACK_PX = 40;
+
+/** The marker a complete answer replaces, quoted exactly as the chapter has it. */
+function quotedMarker(row: GapAnswerRequest["row"]): string {
+  return row.marker ?? `[Information needed: ${row.question}]`;
+}
 
 const CONNECTION_BADGE: Record<
   ChatConnectionState,
@@ -540,6 +546,7 @@ export function ConceptNoteChatPanel({
       {
         chapter: gapAnswer.chapterTitle,
         question: gapAnswer.row.question,
+        marker: quotedMarker(gapAnswer.row),
         answer,
         interpolation: { escapeValue: false },
       },
@@ -571,6 +578,7 @@ export function ConceptNoteChatPanel({
             t(key, {
               chapter: gapAnswer.chapterTitle,
               question: gapAnswer.row.question,
+              marker: quotedMarker(gapAnswer.row),
               answer: "",
               interpolation: { escapeValue: false },
             }).length,
@@ -578,13 +586,16 @@ export function ConceptNoteChatPanel({
       )
     : 0;
   // Sent gap requests are shown as the user's answers (UserMessageText).
-  const gapTemplates = useMemo(
-    () =>
-      GAP_ANSWER_REQUEST_KEYS.map((key) =>
-        t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
-      ),
-    [t],
-  );
+  const gapTemplates = useMemo(() => {
+    const rendered = GAP_ANSWER_REQUEST_KEYS.map((key) =>
+      t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
+    );
+    // Requests sent before the marker was quoted wrote it from the question.
+    const legacy = rendered
+      .filter((template) => template.includes(GAP_ANSWER_SLOTS.marker))
+      .map(legacyGapAnswerTemplate);
+    return [...rendered, ...legacy];
+  }, [t]);
 
   return (
     <VStack

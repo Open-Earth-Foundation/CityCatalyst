@@ -1,3 +1,5 @@
+import { informationMarkerKey } from "./draft-markdown";
+
 export interface ConceptNoteChatVisual {
   title: string;
   html: string;
@@ -122,7 +124,16 @@ export const GAP_ANSWER_SLOTS = {
   chapter: "\u0001",
   question: "\u0002",
   answer: "\u0003",
+  marker: "\u0004",
 } as const;
+
+/** A complete-request template as sent before it quoted the marker: the marker was written from the question. */
+export function legacyGapAnswerTemplate(template: string): string {
+  return template.replace(
+    GAP_ANSWER_SLOTS.marker,
+    `[Information needed: ${GAP_ANSWER_SLOTS.question}]`,
+  );
+}
 
 export interface GapAnswerMessage {
   chapter: string;
@@ -139,7 +150,7 @@ function gapAnswerPattern(template: string): RegExp {
   );
   const seen = new Set<string>();
   const source = template
-    .split(/([\u0001-\u0003])/)
+    .split(/([\u0001-\u0004])/)
     .map((part) => {
       const name = names[part];
       if (!name) return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -164,7 +175,12 @@ export function readGapAnswerMessage(
 ): GapAnswerMessage | null {
   for (const template of templates) {
     const groups = gapAnswerPattern(template).exec(text)?.groups;
-    if (groups?.chapter && groups.question && groups.answer) {
+    // A quoted marker must pair with the question it was sent for.
+    const pairs =
+      groups?.marker === undefined ||
+      informationMarkerKey(groups.marker) ===
+        informationMarkerKey(groups.question ?? "");
+    if (groups?.chapter && groups.question && groups.answer && pairs) {
       return {
         chapter: groups.chapter,
         question: groups.question,

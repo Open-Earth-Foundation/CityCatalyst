@@ -2,27 +2,21 @@
 
 import logging
 import math
-import re
 from typing import Literal
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    information_needed_markers,
+)
 
 logger = logging.getLogger(__name__)
 
 _OPEN_GAP_STATES = frozenset({"open", "processing"})
 GapSeverity = Literal["critical", "noncritical"]
-
-# Same marker syntax and question matching as the draft preview
-# (`missingInformationRanges` in draft-markdown.ts, `questionText` in
-# chapter-gaps-panel.tsx). Kept separate from `cnb_information_markers`, whose
-# looser key ignores punctuation and would number some gaps differently.
-_UI_MARKER_PATTERN = re.compile(
-    r"\[(Information needed:\s*[^\]\r\n]+)\]", re.IGNORECASE
-)
-_UI_MARKER_PREFIX = re.compile(r"^information needed:\s*", re.IGNORECASE)
 
 
 class UnknownChapterNumberError(ValueError):
@@ -34,11 +28,6 @@ def _chapter_number(chapter: WorkspaceChapterSnapshot) -> int:
     return chapter.position + 1
 
 
-def _ui_question_key(text: str) -> str:
-    """Normalize a marker or gap question like the UI's `questionText`."""
-    return _UI_MARKER_PREFIX.sub("", text, count=1).strip().lower()
-
-
 def ui_gap_numbers(chapter: WorkspaceChapterSnapshot) -> dict[UUID, int]:
     """Number a chapter's open gaps exactly as its gap popover ("Gap 2") does.
 
@@ -48,28 +37,23 @@ def ui_gap_numbers(chapter: WorkspaceChapterSnapshot) -> dict[UUID, int]:
     marker come last. Legacy rows take a number too, so gap numbers can skip.
     Returns gap_id -> number for open gaps only.
     """
-    marker_messages = [
-        match.group(1).strip()
-        for match in _UI_MARKER_PATTERN.finditer(chapter.body_markdown or "")
-    ]
-    marker_keys = [_ui_question_key(message) for message in marker_messages]
+    markers = information_needed_markers(chapter.body_markdown or "")
+    marker_keys = [information_marker_key(marker) for marker in markers]
     # Step 1: open gaps in API order, then markers no gap record (any state) claims.
     rows: list[tuple[str, UUID | None]] = [
         (gap.question, gap.gap_id)
         for gap in chapter.gaps
         if gap.state in _OPEN_GAP_STATES
     ]
-    claimed = {_ui_question_key(gap.question) for gap in chapter.gaps}
-    for message, key in zip(marker_messages, marker_keys, strict=True):
+    claimed = {information_marker_key(gap.question) for gap in chapter.gaps}
+    for marker, key in zip(markers, marker_keys, strict=True):
         if key not in claimed:
-            # Like the UI, a legacy row's question is the message without its prefix.
-            question = _UI_MARKER_PREFIX.sub("", message, count=1).strip()
-            rows.append((question, None))
-            claimed.add(_ui_question_key(question))
+            rows.append((marker, None))
+            claimed.add(key)
 
     # Step 2: stable sort by the first matching marker, unmatched rows last.
     def marker_index(row: tuple[str, UUID | None]) -> int:
-        key = _ui_question_key(row[0])
+        key = information_marker_key(row[0])
         return marker_keys.index(key) if key in marker_keys else len(marker_keys)
 
     rows.sort(key=marker_index)

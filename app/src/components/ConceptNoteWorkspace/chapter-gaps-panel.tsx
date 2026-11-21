@@ -15,7 +15,11 @@ import {
 } from "@/components/ui/popover";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
-import { missingInformationRanges } from "./draft-markdown";
+import {
+  informationMarkerKey,
+  missingInformationRanges,
+} from "./draft-markdown";
+import { markerLabel } from "./missing-information";
 
 export interface ChapterGapRow {
   id: string;
@@ -24,13 +28,8 @@ export interface ChapterGapRow {
   whyAsking?: string;
   severity: "critical" | "noncritical";
   gap: ConceptNoteGap | null;
-}
-
-function questionText(value: string): string {
-  return value
-    .replace(/^information needed:\s*/i, "")
-    .trim()
-    .toLowerCase();
+  /** The marker exactly as written in the chapter, when the row has one. */
+  marker?: string;
 }
 
 /** Open gaps plus unrecorded markers, in document order, titled by their heading. */
@@ -39,7 +38,9 @@ export function chapterGapRows(
 ): ChapterGapRow[] {
   const markdown = chapter.body_markdown ?? "";
   const markers = missingInformationRanges(markdown);
-  const keys = markers.map((marker) => questionText(marker.message));
+  // Same key as Climate Advisor, so a record pairs with its marker however
+  // either one is formatted.
+  const keys = markers.map((marker) => informationMarkerKey(marker.message));
   const rows: ChapterGapRow[] = chapter.gaps
     .filter((gap) => gap.state === "open" || gap.state === "processing")
     .map((gap) => ({
@@ -51,10 +52,10 @@ export function chapterGapRows(
     }));
   // Resolved gaps keep their markers out; legacy markers get their own row.
   for (const { message } of markers) {
-    const key = questionText(message);
+    const key = informationMarkerKey(message);
     if (
       ![...chapter.gaps, ...rows].some(
-        (item) => questionText(item.question) === key,
+        (item) => informationMarkerKey(item.question) === key,
       )
     )
       rows.push({
@@ -65,26 +66,26 @@ export function chapterGapRows(
       });
   }
   const position = (row: ChapterGapRow) => {
-    const index = keys.indexOf(questionText(row.question));
+    const index = keys.indexOf(informationMarkerKey(row.question));
     return index < 0 ? keys.length : index;
   };
   for (const row of rows) {
     const marker = markers[position(row)];
-    if (marker)
-      row.title = markdown
-        .slice(0, marker.start)
-        .match(/^#{1,6}\s+(.+)$/gm)
-        ?.at(-1)
-        ?.replace(/^#{1,6}\s+/, "")
-        .trim();
+    if (!marker) continue;
+    row.marker = markdown.slice(marker.start, marker.end);
+    row.title = markdown
+      .slice(0, marker.start)
+      .match(/^#{1,6}\s+(.+)$/gm)
+      ?.at(-1)
+      ?.replace(/^#{1,6}\s+/, "")
+      .trim();
   }
   return rows.sort((a, b) => position(a) - position(b));
 }
 
 export function gapRowForMessage(rows: ChapterGapRow[], message: string) {
-  return rows.find(
-    (row) => questionText(row.question) === questionText(message),
-  );
+  const key = informationMarkerKey(message);
+  return rows.find((row) => informationMarkerKey(row.question) === key);
 }
 
 interface ChapterGapsPanelProps {

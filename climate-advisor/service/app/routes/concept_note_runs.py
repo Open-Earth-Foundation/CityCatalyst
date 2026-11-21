@@ -62,6 +62,7 @@ from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.message_service import MessageService
 from app.utils.citycatalyst_auth import extract_bearer_token
+from app.utils.cnb_information_markers import find_information_marker
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
     async_start_run as start_mlflow_run,
@@ -148,8 +149,10 @@ async def propose_gap_question(
     if not payload.gap_id and payload.question not in body:
         raise HTTPException(status_code=404, detail="Gap question not found")
     question = gap.question if gap else payload.question
-    # Center long chapters on the gap so facts confirmed near it stay in context.
-    start = max(0, min(body.find(question) - 6000, len(body) - 12000))
+    # Center long chapters on the gap's marker, even when it is formatted
+    # differently from the question, so facts near it stay in context.
+    marker_start = find_information_marker(body, question)
+    start = max(0, min(marker_start - 6000, len(body) - 12000))
     async with get_cnb_reference_session_factory()() as cnb_session:
         previous_answers = await applied_gap_answers(
             cnb_session, run_id=run_id, chapter_id=chapter.chapter_id, question=question

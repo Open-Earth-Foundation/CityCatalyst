@@ -25,6 +25,7 @@ const sendMessage =
   jest.fn<(content: string, scope?: EditScope) => Promise<void>>();
 const closeGap = jest.fn();
 const gapSaved = jest.fn();
+const refreshDraft = jest.fn();
 let isGenerating = false;
 const promptI18n = createInstance();
 const t = (key: string, values?: Record<string, unknown>) =>
@@ -134,6 +135,7 @@ beforeEach(() => {
   sendMessage.mockReset();
   closeGap.mockClear();
   gapSaved.mockClear();
+  refreshDraft.mockClear();
   sendMessage.mockResolvedValue(undefined);
   container = document.createElement("div");
   document.body.append(container);
@@ -160,6 +162,7 @@ function panel(
         gapAnswer={gapAnswer}
         onCloseGap={closeGap}
         onGapAnswersSaved={gapSaved}
+        onRefreshDraft={refreshDraft}
         onAddGapSource={() => {}}
         draftOverviewPending={false}
         lng="en"
@@ -419,6 +422,7 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
     gap_version: 1,
     answers:
       "1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-answered",
+    expected_previous: null,
   });
   expect(gapSaved).toHaveBeenCalledTimes(1);
   expect(closeGap).toHaveBeenCalledTimes(1);
@@ -444,6 +448,40 @@ it("keeps the form open with an error when saving answers fails", async () => {
   );
   expect(closeGap).not.toHaveBeenCalled();
   expect(gapSaved).not.toHaveBeenCalled();
+});
+
+it("keeps the typed answer and never sends chat when a complete save conflicts", async () => {
+  let answerSave!: (response: Response) => void;
+  saveAnswers.mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        answerSave = resolve;
+      }),
+  );
+  const customValue = (index: number) =>
+    subQuestion(index).querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value;
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  await writeAnswer(0, "Blended loan and grant");
+  await writeAnswer(1, "EUR 2 million");
+  await act(async () => previewButton().click());
+  // The save is still pending, so nothing has been sent to chat.
+  expect(sendMessage).not.toHaveBeenCalled();
+  await act(async () => answerSave({ ok: false, status: 409 } as Response));
+  expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+    "gap-save-conflict",
+  );
+  expect(refreshDraft).toHaveBeenCalledTimes(1);
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(closeGap).not.toHaveBeenCalled();
+  expect(customValue(0)).toBe("Blended loan and grant");
+  expect(customValue(1)).toBe("EUR 2 million");
 });
 
 it("shows source-grounded suggestions with their source and adds one to the answer", async () => {
@@ -593,7 +631,14 @@ it("asks Clima to replace the gap marker once every question is answered", async
   await writeAnswer(0, "Blended loan and grant");
   await writeAnswer(1, "EUR 2 million");
   expect(container.textContent).toContain("gap-complete-hint");
+  saveAnswers.mockResolvedValueOnce({ ok: true, status: 204 } as Response);
   await act(async () => previewButton().click());
+  // The answers are saved (204) before the one chat request that replaces the marker.
+  expect(saveAnswers).toHaveBeenCalledTimes(1);
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(saveAnswers.mock.invocationCallOrder[0]).toBeLessThan(
+    sendMessage.mock.invocationCallOrder[0],
+  );
   const [content, scope] = sendMessage.mock.calls[0];
   expect(scope).toMatchObject({
     gap_id: "financing-gap",
@@ -699,7 +744,11 @@ it("leaves the gap untouched when answered later and restores the answers on ret
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 250));
   });
-  expect(savedBody()).toEqual({ gap_version: 1, answers: "" });
+  expect(savedBody()).toEqual({
+    gap_version: 1,
+    answers: "",
+    expected_previous: earlier,
+  });
   expect(gapSaved).toHaveBeenCalledTimes(1);
   expect(
     container.querySelector('[data-testid="concept-note-gap-earlier-answers"]'),

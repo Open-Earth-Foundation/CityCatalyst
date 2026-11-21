@@ -578,6 +578,7 @@
   "gap-acceptance-hint": "Nothing is applied until you accept. Questions left unanswered keep this gap open.",
   "gap-saved-hint": "Saves your answers on this gap for everyone working on this note. Clima updates the chapter once every part is answered.",
   "gap-save-failed": "Your answers could not be saved. Try again.",
+  "gap-save-conflict": "The gap or its saved answers changed. Copy your unsent answers if needed, then reopen this gap to load the latest version.",
   "gap-answers-saved-note": "Answers saved for {{chapter}}. Clima updates the chapter once every part is answered.",
   "gap-answers-saved-dismiss": "Dismiss",
   "gap-answer-too-long": "Your answers are too long to send. Shorten them and try again.",

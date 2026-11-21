@@ -116,6 +116,8 @@ interface ConceptNoteChatPanelProps {
   onDraftOverviewComplete?: () => void;
   /** Answers saved on a gap changed, so the workspace reloads its gaps. */
   onGapAnswersSaved?: () => void;
+  /** Reloads the draft without closing the gap form, after a save conflict. */
+  onRefreshDraft?: () => void;
 }
 
 interface ContextStatusNoticeProps {
@@ -358,6 +360,7 @@ export function ConceptNoteChatPanel({
   onOpenFundingSetup,
   onDraftOverviewComplete,
   onGapAnswersSaved,
+  onRefreshDraft,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
@@ -719,6 +722,7 @@ export function ConceptNoteChatPanel({
             answerLimit={gapAnswerLimit}
             onAnswer={answerGap}
             onSaved={gapAnswersSaved}
+            onRefreshDraft={onRefreshDraft}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
             uploads={uploads}

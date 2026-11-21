@@ -82,7 +82,11 @@ const adoptGap =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/gaps/route");
 const gapAnswers =
   await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
-const gapAnswersBody = { gap_version: 2, answers: "1. Amount?\nEUR 2 million" };
+const gapAnswersBody = {
+  gap_version: 2,
+  answers: "1. Amount?\nEUR 2 million",
+  expected_previous: null,
+};
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {

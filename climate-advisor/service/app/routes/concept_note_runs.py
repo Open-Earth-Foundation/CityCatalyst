@@ -222,10 +222,14 @@ async def save_gap_answers(
                 gap_id=gap_id,
                 gap_version=payload.gap_version,
                 answer=payload.answers,
+                expected_previous=payload.expected_previous,
                 user_id=user_id,
             )
     if not saved:
-        raise HTTPException(status_code=409, detail="Gap is no longer open")
+        raise HTTPException(
+            status_code=409,
+            detail="Gap is no longer open or its saved answers changed",
+        )
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

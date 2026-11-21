@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -158,13 +158,15 @@ async def save_partial_answer(
     gap_id: UUID,
     gap_version: int,
     answer: str,
+    expected_previous: str | None,
     user_id: str,
 ) -> bool:
     """Save a gap's answers so far as its newest event; empty text clears them.
 
     Each save holds every answer given so far, so the newest one replaces the
-    rest. Returns False when the gap is not open at that version, so a stale
-    form cannot attach answers to a changed or closed gap.
+    rest. Returns False when the gap is not open at that version, or when its
+    saved answers are not the text the form last saw, so a stale form cannot
+    attach answers to a changed or closed gap or overwrite newer answers.
     """
     gap = await session.get(ConceptNoteGap, gap_id, with_for_update=True)
     if (
@@ -174,6 +176,32 @@ async def save_partial_answer(
         or gap.version != gap_version
     ):
         return False
+    # The gap row lock serializes saves, so this latest event is current.
+    previous = await session.scalar(
+        select(ConceptNoteGapResolution)
+        .where(
+            ConceptNoteGapResolution.gap_id == gap_id,
+            ConceptNoteGapResolution.action == "partial_answer",
+            ConceptNoteGapResolution.gap_version == gap_version,
+        )
+        .order_by(
+            ConceptNoteGapResolution.created_at.desc(),
+            ConceptNoteGapResolution.resolution_id.desc(),
+        )
+        .limit(1)
+    )
+    if _saved_text(previous.answer if previous else None) != _saved_text(
+        expected_previous
+    ):
+        return False
+    # Postgres now() is the transaction start, so use the wall clock and keep
+    # this save after the one it follows.
+    created_at = datetime.now(UTC)
+    if previous is not None:
+        previous_at = previous.created_at
+        if previous_at.tzinfo is None:
+            previous_at = previous_at.replace(tzinfo=UTC)
+        created_at = max(created_at, previous_at + timedelta(microseconds=1))
     session.add(
         ConceptNoteGapResolution(
             gap_id=gap_id,
@@ -182,9 +210,15 @@ async def save_partial_answer(
             gap_version=gap_version,
             actor_user_id=user_id,
             idempotency_key=uuid4(),
+            created_at=created_at,
         )
     )
     return True
+
+
+def _saved_text(text: str | None) -> str | None:
+    """Compare saved answers as trimmed text, where empty means no answers."""
+    return (text or "").strip() or None
 
 
 def _specific_gap_rationale(

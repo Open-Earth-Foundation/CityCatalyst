@@ -37,6 +37,8 @@ class GapAnswersRequest(BaseModel):
 
     gap_version: PositiveInt
     answers: str = Field(default="", max_length=8000)
+    # The saved answers the form last saw; a save against other text is rejected.
+    expected_previous: str | None = Field(max_length=8000)
 
 
 class GapSubQuestion(BaseModel):

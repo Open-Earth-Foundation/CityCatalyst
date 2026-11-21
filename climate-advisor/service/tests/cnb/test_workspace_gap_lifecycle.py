@@ -779,6 +779,7 @@ async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> 
                 gap_id=GAP_ID,
                 gap_version=version,
                 answer=saved,
+                expected_previous=None,
                 user_id="owner",
             )
         assert await save_partial_answer(
@@ -787,6 +788,7 @@ async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> 
             gap_id=GAP_ID,
             gap_version=1,
             answer=f" {saved} ",
+            expected_previous=None,
             user_id="teammate",
         )
     [chapter] = await workspace.list_chapters(run_id=RUN_ID)
@@ -825,6 +827,53 @@ async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> 
         )
     [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
     assert (after.state, after.answered_so_far) == ("resolved", None)
+
+
+async def _save_answers(workspace, answer: str, expected_previous: str | None) -> bool:
+    async with workspace._session_factory() as session, session.begin():
+        return await save_partial_answer(
+            session,
+            run_id=RUN_ID,
+            gap_id=GAP_ID,
+            gap_version=1,
+            answer=answer,
+            expected_previous=expected_previous,
+            user_id="owner",
+        )
+
+
+async def test_two_open_forms_cannot_overwrite_or_clear_newer_saved_answers(
+    workspace,
+) -> None:
+    """Two forms opened on the same empty gap cannot overwrite each other."""
+    [first_view] = await workspace.list_chapters(run_id=RUN_ID)
+    [second_view] = await workspace.list_chapters(run_id=RUN_ID)
+    assert first_view.gaps[0].answered_so_far is None
+    assert second_view.gaps[0].answered_so_far is None
+
+    assert await _save_answers(workspace, "First form's answer", None)
+    # The second form still expects nothing saved, so both its save and clear fail.
+    assert not await _save_answers(workspace, "Second form's answer", None)
+    assert not await _save_answers(workspace, "", None)
+
+    async with workspace._session_factory() as session:
+        events = await session.scalars(
+            select(ConceptNoteGapResolution).where(
+                ConceptNoteGapResolution.gap_id == GAP_ID,
+                ConceptNoteGapResolution.action == "partial_answer",
+            )
+        )
+        assert [event.answer for event in events] == ["First form's answer"]
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert (chapter.revision_number, chapter.gaps[0].version) == (1, 1)
+    assert chapter.gaps[0].answered_so_far == "First form's answer"
+
+    # A form that reloaded the newer text can save and then clear it.
+    assert await _save_answers(workspace, "Second form's answer", "First form's answer")
+    assert await _save_answers(workspace, "", "Second form's answer")
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert (chapter.revision_number, chapter.gaps[0].version) == (1, 1)
+    assert chapter.gaps[0].answered_so_far is None
 
 
 VOLUNTEER_MARKER = "[Information needed: Confirm the volunteer count.]"

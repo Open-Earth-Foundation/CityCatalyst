@@ -4,7 +4,7 @@
  *   post:
  *     operationId: saveConceptNoteGapAnswers
  *     summary: Save the answers given so far for an open gap version
- *     description: Stores the answers on the gap without changing the draft, so every device and teammate sees them as answered_so_far. Empty answers clear them.
+ *     description: Stores the answers on the gap without changing the draft, so every device and teammate sees them as answered_so_far. Empty answers clear them. The save is rejected unless expected_previous matches the saved answers, so a stale form cannot overwrite or clear newer ones.
  *     tags: [concept-notes]
  *     parameters:
  *       - in: path
@@ -25,7 +25,7 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [gap_version]
+ *             required: [gap_version, expected_previous]
  *             properties:
  *               gap_version:
  *                 type: integer
@@ -34,6 +34,11 @@
  *                 type: string
  *                 maxLength: 8000
  *                 description: Every answer given so far; empty clears the saved answers
+ *               expected_previous:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 8000
+ *                 description: The saved answers the form last saw; null when none were saved. Empty text counts as null.
  *     responses:
  *       204:
  *         description: Answers saved
@@ -42,7 +47,7 @@
  *       403:
  *         description: City or run access denied
  *       409:
- *         description: Gap is no longer open at that version
+ *         description: The gap is no longer open at that version, or its saved answers changed since expected_previous. Nothing is saved; reload the gap before saving again.
  */
 import createHttpError from "http-errors";
 import { z } from "zod";
@@ -54,6 +59,7 @@ const bodySchema = z
   .object({
     gap_version: z.number().int().positive(),
     answers: z.string().max(8000).default(""),
+    expected_previous: z.string().max(8000).nullable(),
   })
   .strict();
 

@@ -247,7 +247,11 @@ async def test_saving_answers_authorizes_and_rejects_a_changed_gap(
     args = {
         "run_id": gap_route.args["run_id"],
         "gap_id": gap_route.chapter.gaps[0].gap_id,
-        "payload": GapAnswersRequest(gap_version=3, answers=" 1. Instrument?\nLoan "),
+        "payload": GapAnswersRequest(
+            gap_version=3,
+            answers=" 1. Instrument?\nLoan ",
+            expected_previous=" 1. Instrument?\nOld ",
+        ),
         "session": AsyncMock(),
         "user_id": "teammate",
         "authorization": "Bearer test",
@@ -265,6 +269,7 @@ async def test_saving_answers_authorizes_and_rejects_a_changed_gap(
         "gap_id": args["gap_id"],
         "gap_version": 3,
         "answer": "1. Instrument?\nLoan",
+        "expected_previous": "1. Instrument?\nOld",
         "user_id": "teammate",
     }
 
@@ -277,7 +282,9 @@ async def test_saving_answers_checks_access_before_writing(gap_route, monkeypatc
         await save_gap_answers(
             run_id=gap_route.args["run_id"],
             gap_id=uuid4(),
-            payload=GapAnswersRequest(gap_version=1, answers="x"),
+            payload=GapAnswersRequest(
+                gap_version=1, answers="x", expected_previous=None
+            ),
             session=AsyncMock(),
             user_id="owner",
             authorization=None,

@@ -2293,18 +2293,25 @@ carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
 `gap_changed` when that gap is no longer open at that version. A partial answer
 may not remove any marker, so the form does not send it to the chat: it saves it
 with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers`
-(`{gap_version, answers}`, 204; 409 when the gap is no longer open at that
-version; empty `answers` clears them). The answers are stored as a
+(`{gap_version, answers, expected_previous}`, 204). `expected_previous` is the
+saved text the form last saw (`null` when none; empty text counts as `null`).
+The save runs only when the newest saved answers still match it, under the gap
+row lock; otherwise it returns 409 with nothing written, which covers both a gap
+that is no longer open at that version and saved answers changed by someone
+else. Empty `answers` clears them. The answers are stored as a
 `partial_answer` row in `concept_note_gap_resolutions` with its `gap_version`,
 and the gap response lists the newest one as `answered_so_far` while the gap is
 open at that version, for every viewer of the run. `concept_note_gaps` shows the
 same field to the chat agent. A complete answer is saved the same way and then
-sent to the chat; it replaces its gap's marker and may also
+sent to the chat, and the chat turn starts only after that 204. A 409 or
+other failure sends nothing and keeps the form and its typed answers; a 409
+also reloads the workspace, and the user reopens the gap to save again. It
+replaces its gap's marker and may also
 fill another chapter's marker that asks for the same information when the
 answers state everything it asks for (duplicate gaps); the planner prompt and
 the semantic review judge that. Acceptance closes the answered gap only at that
-version, plus any duplicate it filled, which hides the saved answers. A failed
-or rejected turn loses nothing, because the answers stay saved. The
+version, plus any duplicate it filled, which hides the saved answers. A rejected
+turn loses nothing, because the answers stay saved. The
 planner and reviewer prompts also forbid replacing a marker with text saying
 the information is missing or undecided.
 Estimates: a hedged answer ("roughly 2 million, not confirmed yet") and, when

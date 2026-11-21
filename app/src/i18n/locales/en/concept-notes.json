@@ -522,6 +522,7 @@
   "chapter-gaps-title_other": "Clima needs {{count}} things for this chapter",
   "chapter-gaps-hint": "Answer a guided question and Clima proposes the edit for you to review.",
   "gap-answer-in-chat": "Answer in chat",
+  "gap-adopting": "Preparing this gap…",
   "gap-adopt-error": "This gap could not be prepared for answering. Reload the draft and try again.",
   "gap-missing-information": "Missing information",
   "gap-why-needed": "Why this is needed",

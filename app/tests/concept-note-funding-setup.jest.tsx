@@ -179,13 +179,19 @@ jest.unstable_mockModule("@/components/ConceptNoteWorkspace/draft-tab", () => ({
     nextStep,
     onOpenFundingSetup,
     onAnswerGap,
+    isAdoptingGap,
+    mutationError,
   }: {
     nextStep?: ReactNode;
     onOpenFundingSetup: () => void;
     onAnswerGap: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
+    isAdoptingGap?: boolean;
+    mutationError?: string | null;
   }) => (
     <>
       {nextStep}
+      {isAdoptingGap && <p role="status">{"gap-adopting"}</p>}
+      {mutationError && <p role="alert">{mutationError}</p>}
       <button aria-label="open-funding-setup" onClick={onOpenFundingSetup} />
       <button
         aria-label="answer-unrecorded-marker"
@@ -458,4 +464,79 @@ it("records an unrecorded marker as a gap before opening its answer form", async
     marker: MARKER,
     gap: { gap_id: "adopted-gap", version: 1 },
   });
+});
+
+it("shows marker adoption progress and only opens the bound form after it succeeds", async () => {
+  const adopted = {
+    gap_id: "adopted-gap",
+    field_key: "adopted_0123456789ab",
+    question: "Who signs the agreement?",
+    why_asking: "Confirm it so Clima can update the Applicant chapter.",
+    severity: "critical",
+    state: "open",
+    suggestions: [],
+    source_refs: [],
+    version: 1,
+    resolution: null,
+    created_at: "2026-11-20T00:00:00Z",
+    updated_at: "2026-11-20T00:00:00Z",
+  };
+  let finishAdoption!: (value: unknown) => void;
+  adoptMarkerGap.mockClear();
+  adoptMarkerGap.mockReturnValue({
+    unwrap: () =>
+      new Promise((resolve) => {
+        finishAdoption = resolve;
+      }),
+  });
+  await clickSetup();
+  const answer = () =>
+    [...container.querySelectorAll("button")].find(
+      (item) => item.getAttribute("aria-label") === "answer-unrecorded-marker",
+    )!;
+  gapAnswerShown = null;
+  await act(async () => answer().click());
+  await act(async () => answer().click());
+  expect(adoptMarkerGap).toHaveBeenCalledTimes(1);
+  expect(container.querySelector('[role="status"]')?.textContent).toBe(
+    "gap-adopting",
+  );
+  expect(gapAnswerShown).toBeNull();
+
+  await act(async () =>
+    finishAdoption({
+      chapters: [{ ...markerChapter, gaps: [adopted] }],
+    }),
+  );
+  expect(container.querySelector('[role="status"]')).toBeNull();
+  expect(gapAnswerShown?.row).toMatchObject({
+    id: "adopted-gap",
+    gap: { gap_id: "adopted-gap", version: 1 },
+  });
+});
+
+it("clears marker adoption progress and displays the error on failure", async () => {
+  let failAdoption!: (error: unknown) => void;
+  adoptMarkerGap.mockClear();
+  adoptMarkerGap.mockReturnValue({
+    unwrap: () =>
+      new Promise((_resolve, reject) => {
+        failAdoption = reject;
+      }),
+  });
+  await clickSetup();
+  gapAnswerShown = null;
+  const answer = [...container.querySelectorAll("button")].find(
+    (item) => item.getAttribute("aria-label") === "answer-unrecorded-marker",
+  )!;
+  await act(async () => answer.click());
+  expect(container.querySelector('[role="status"]')?.textContent).toBe(
+    "gap-adopting",
+  );
+  await act(async () => failAdoption(new Error("network")));
+  expect(container.querySelector('[role="status"]')).toBeNull();
+  expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+    "gap-adopt-error",
+  );
+  expect(gapAnswerShown).toBeNull();
 });

@@ -114,6 +114,9 @@ export function ConceptNoteWorkspace({
   const [workspaceMutationError, setWorkspaceMutationError] = useState<
     string | null
   >(null);
+  // Single-flight: a legacy marker is recorded once, however fast it is clicked.
+  const adoptingGap = useRef(false);
+  const [isAdoptingGap, setIsAdoptingGap] = useState(false);
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
   const [adoptMarkerGap] = api.useAdoptConceptNoteMarkerGapMutation();
@@ -427,6 +430,7 @@ export function ConceptNoteWorkspace({
     chapter: ConceptNoteDraftChapter,
     row: ChapterGapRow,
   ): Promise<void> {
+    if (adoptingGap.current) return;
     const open = (target: ChapterGapRow) =>
       setGapAnswer({
         chapterId: chapter.chapter_id,
@@ -440,6 +444,8 @@ export function ConceptNoteWorkspace({
     // Climate Advisor records exactly this marker, so the normal form, its
     // gap binding and acceptance can answer and close it.
     setWorkspaceMutationError(null);
+    adoptingGap.current = true;
+    setIsAdoptingGap(true);
     try {
       const updated = await adoptMarkerGap({
         runId,
@@ -455,6 +461,9 @@ export function ConceptNoteWorkspace({
       else setWorkspaceMutationError(t("gap-adopt-error"));
     } catch {
       setWorkspaceMutationError(t("gap-adopt-error"));
+    } finally {
+      adoptingGap.current = false;
+      setIsAdoptingGap(false);
     }
   }
 
@@ -814,6 +823,7 @@ export function ConceptNoteWorkspace({
                   onAnswerGap={(chapter, row) => void answerGap(chapter, row)}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
+                  isAdoptingGap={isAdoptingGap}
                   isDraftRunning={isDraftRunning}
                   isConfirmingChapter={confirmChapterState.isLoading}
                   isRetrying={retryBundleState.isLoading}

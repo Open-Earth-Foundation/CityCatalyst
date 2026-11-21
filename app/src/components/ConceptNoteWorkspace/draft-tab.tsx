@@ -44,6 +44,8 @@ interface DraftTabProps extends DraftInlineReviewProps {
   onStartDrafting: () => void;
   highlightStartDrafting?: boolean;
   nextStep?: ReactNode;
+  /** A legacy marker is being recorded as a gap before its form opens. */
+  isAdoptingGap?: boolean;
 }
 
 export function DraftTab(props: DraftTabProps) {
@@ -88,6 +90,11 @@ export function DraftTab(props: DraftTabProps) {
         </Box>
       )}
 
+      {props.isAdoptingGap && (
+        <Text role="status" fontSize="body.sm" color="content.secondary">
+          {t("gap-adopting")}
+        </Text>
+      )}
       {props.mutationError && (
         <Text role="alert" color="sentiment.negativeDefault">
           {props.mutationError}

@@ -14,6 +14,7 @@ from app.utils.visual_html import (
     needs_svg,
     smallest_svg_text_px,
     svg_animation_elements,
+    unsupported_html_features,
     waffle_cell_counts,
 )
 
@@ -40,6 +41,22 @@ NEEDS_SVG_HINT = {
     "Mermaid source shows as text.",
     "next_step": "Draw it as inline SVG with shapes and text labels, then "
     f"retry once. {_ANSWER_IN_TEXT}",
+}
+UNSUPPORTED_HTML_HINT = {
+    "reason": "The chat runs no scripts and loads nothing from the network, so "
+    "the listed `features` would show but do nothing, or stay empty or broken.",
+    "next_step": "Replace each one: buttons, sliders, text inputs and :target "
+    "tabs with radio, checkbox, select or details controls styled with "
+    ":checked or :has() and every state precomputed; scripts with the static "
+    "result; foreignObject with SVG <text>; SVG <image>, video, audio and "
+    "external images, fonts, stylesheets and frames with inline SVG shapes, "
+    "inline CSS or one <img src=\"data:...\"> (no srcset); an SVG href "
+    "with \"#id\" of an element in the same visual, only on use, textPath, "
+    "gradients or pattern, with an id that starts with a letter; buttons "
+    "only with popovertarget or commandfor and command naming an existing "
+    "popover or dialog (prefix those ids, e.g. cnb-icon, so the sanitizer "
+    "keeps them); an svg width over 320 px with viewBox=\"0 0 320 H\" and "
+    f"width=\"100%\". Then retry once. {_ANSWER_IN_TEXT}",
 }
 SVG_ANIMATION_HINT = {
     "reason": "SVG animation elements are removed, so the chart would stay in "
@@ -68,6 +85,11 @@ def _mermaid(html: str) -> dict[str, Any] | None:
     return {} if needs_svg(html) else None
 
 
+def _unsupported(html: str) -> dict[str, Any] | None:
+    features = unsupported_html_features(html)
+    return {"features": features} if features else None
+
+
 def _svg_animation(html: str) -> dict[str, Any] | None:
     elements = svg_animation_elements(html)
     return {"elements": elements} if elements else None
@@ -93,6 +115,8 @@ VISUAL_HTML_CHECKS: tuple[
     # Content only in scripts, iframes or external files leaves a blank card.
     ("visual_no_visible_content", _blank, NO_VISIBLE_CONTENT_HINT),
     ("visual_needs_svg", _mermaid, NEEDS_SVG_HINT),
+    # Scripts, dead controls and network resources show but never work.
+    ("visual_unsupported_html", _unsupported, UNSUPPORTED_HTML_HINT),
     ("visual_uses_svg_animation", _svg_animation, SVG_ANIMATION_HINT),
     # SVG text drawn below the readable minimum in a phone-width column.
     ("visual_text_too_small", _small_text, TEXT_TOO_SMALL_HINT),
@@ -115,8 +139,8 @@ async def concept_note_render_visual(
     `html` must be ONE complete, static HTML document with inline CSS and
     inline SVG. Scripts, links, forms, SVG animation and external resources
     are removed before display, so draw charts as inline SVG and never rely on
-    JavaScript; animate only with CSS @keyframes. Buttons, search boxes and
-    links do not work. Native controls do work without scripts (radio inputs,
+    JavaScript; animate only with CSS @keyframes. Buttons, sliders, search
+    boxes and links do not work. Native controls do work without scripts (radio inputs,
     select, checkbox and details styled with `:checked` or `:has()`);
     precompute every state from the given data. Keep it under about 100 KB
     (hard limit 200,000 characters). Never invent numbers: use only data from
@@ -140,8 +164,11 @@ async def concept_note_render_visual(
     SVG text under 12 px returns visual_text_too_small with `smallest_text_px`:
     retry once with viewBox width 320 (150 for mini charts in a 2-column grid)
     and font-size of at least 12 (13 in mini charts), then answer in text.
-    Mermaid source without SVG returns visual_needs_svg, SVG animation
-    elements visual_uses_svg_animation, and a waffle without exactly 100 cells
+    Mermaid source without SVG returns visual_needs_svg; scripts, buttons,
+    sliders, text inputs, :target tabs, foreignObject, SVG <image>, video,
+    audio, external files and svg widths over 320 px
+    visual_unsupported_html with the `features` to replace; SVG animation
+    elements visual_uses_svg_animation; and a waffle without exactly 100 cells
     visual_waffle_cell_count: follow `next_step`, retry once, then answer in
     text.
     When the visual shows numbers, pass `data` with every plotted value: its

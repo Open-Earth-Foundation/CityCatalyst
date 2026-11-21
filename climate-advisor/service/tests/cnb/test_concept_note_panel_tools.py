@@ -181,6 +181,17 @@ async def test_render_panels_names_mermaid_and_waffle_panels() -> None:
     assert result["data"]["cell_counts"] == [90]
 
 
+async def test_render_panels_names_panels_with_parts_that_cannot_work() -> None:
+    slider = '<input type="range"><p>Avoided 800 tCO2e</p>'
+
+    result = await invoke("Plan", [PANELS[0], {"label": "Homes", "html": slider}])
+
+    assert result["error_code"] == "visual_unsupported_html"
+    assert result["data"]["labels"] == ["Homes"]
+    assert result["data"]["features"] == ["input type=range"]
+    assert "retry once" in result["data"]["next_step"]
+
+
 async def test_render_panels_lists_other_panels_failing_another_check() -> None:
     mermaid = '<div class="mermaid">graph TD\nA-->B</div>'
     waffle = '<p>37 of 100</p><div class="waffle">' + "<i></i>" * 90 + "</div>"

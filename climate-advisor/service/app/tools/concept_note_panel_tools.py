@@ -67,6 +67,9 @@ async def concept_note_render_panels(title: str, panels: list[VisualPanel]) -> s
     `labels` and `smallest_text_px`: retry once with viewBox width 320 (150 for
     mini charts in a 2-column grid) and font-size of at least 12 (13 in mini
     charts), then answer in text. visual_needs_svg (Mermaid source),
+    visual_unsupported_html (scripts, buttons, sliders, :target tabs,
+    foreignObject, SVG <image>, video, audio, external files or svg widths
+    over 320 px, listed in `features`),
     visual_uses_svg_animation and visual_waffle_cell_count also name the
     failing `labels`: follow `next_step`, retry once, then answer in text.
     """

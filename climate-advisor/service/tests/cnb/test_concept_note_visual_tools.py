@@ -7,6 +7,7 @@ from agents.tool import ToolContext
 from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.utils.visual_html import (
     needs_svg,
+    unsupported_html_features,
     smallest_svg_text_px,
     svg_animation_elements,
     waffle_cell_counts,
@@ -200,6 +201,158 @@ async def test_tool_rejects_svg_animation_elements() -> None:
     assert result["data"]["elements"] == ["animate", "animateTransform", "set"]
     assert "@keyframes" in result["data"]["next_step"]
     assert "retry once" in result["data"]["next_step"]
+
+
+DATA_IMG = "data:image/svg+xml;base64,PHN2Zy8+,AA"
+
+
+@pytest.mark.parametrize(
+    ("html", "expected"),
+    [
+        # Each part shows in the chat but does nothing there.
+        ('<p id="v">calculating</p><script>v.textContent="125"</script>', ["script"]),
+        ('<p onclick="go()">Buildings 455</p>', ["script"]),
+        ('<button>Show 2024</button><p>2023: 455</p>', ["button"]),
+        ('<input type="range" min="0" max="10"><output>0</output>', ["input type=range"]),
+        ('<input placeholder="Search"><p>455</p>', ["input type=text"]),
+        ('<style>.t:target{display:block}</style><p class="t" id="a">455</p>', [":target"]),
+        ('<svg viewBox="0 0 320 40"><foreignObject><p>455</p></foreignObject></svg>', ["foreignObject"]),
+        ('<p>Map</p><iframe src="https://example.org/map"></iframe>', ["embedded frame"]),
+        ('<p>Photo</p><img src="https://example.org/a.jpg" alt="site">', ["external resource"]),
+        ('<p>Photo</p><img src="a.jpg">', ["external resource"]),
+        ('<style>@import url("https://fonts.example/x.css")</style><p>455</p>', ["external resource"]),
+        ('<p style="background:url(//cdn.example/x.png)">455</p>', ["external resource"]),
+        ('<link rel="stylesheet" href="x.css"><p>455</p>', ["external resource"]),
+        ('<svg viewBox="0 0 9 9"><image href="https://e.org/i.png"/></svg>', ["svg image"]),
+        # The sanitizer drops these, and the CSP has no media source.
+        (f'<svg viewBox="0 0 9 9"><image href="{DATA_IMG}"/></svg>', ["svg image"]),
+        ('<svg viewBox="0 0 9 9"><use href="#2025"/><use href="#a b"/></svg>', ["svg href"]),
+        # A <use> naming no element draws nothing; a later definition is fine.
+        ('<svg viewBox="0 0 9 9"><symbol id="tree-icon"/><use href="#tree"/></svg>', ["svg href"]),
+        ('<svg viewBox="0 0 9 9"><use href="#t"/><defs><symbol id="t"/></defs></svg>', []),
+        # The sanitizer drops ids that clash with document or form properties.
+        ('<svg viewBox="0 0 9 9"><symbol id="location"/><use href="#location"/></svg>', ["svg href"]),
+        ('<svg viewBox="0 0 9 9"><symbol id="cnb-location"/><use href="#cnb-location"/></svg>', []),
+        ('<button popovertarget="title">Notes</button><div popover id="title">4</div>', ["button"]),
+        # Values are matched trimmed, as the sanitizer trims them.
+        ('<button popovertarget=" title ">Notes</button><div popover id=" title ">4</div>', ["button"]),
+        ('<svg viewBox="0 0 9 9"><symbol id="cnb-b "/><use href=" #cnb-b"/></svg>', []),
+        # An id resolves to its first element, which must be the popover.
+        (
+            '<h3 id="cnb-a">Assumptions</h3><button popovertarget="cnb-a">i</button>'
+            '<div popover id="cnb-a">4</div>',
+            ["button"],
+        ),
+        # image-set() loads its quoted URLs; type() strings are formats.
+        (
+            '<div style="background-image:image-set(\'https://e.org/m.png\' 1x)">Map</div>',
+            ["external resource"],
+        ),
+        (
+            f'<style>.m{{background:image-set("{DATA_IMG}" type("image/svg+xml"))}}</style><p class="m">4</p>',
+            [],
+        ),
+        ('<svg viewBox="0 0 9 9"><rect href="#a"/></svg>', ["svg href"]),
+        ('<svg viewBox="0 0 9 9"><use href="icons.svg#a"/></svg>', ["external resource"]),
+        (f'<video src="{DATA_IMG}"></video><p>455</p>', ["video or audio"]),
+        # A srcset candidate after a comma with no space, and url() in fill.
+        (f'<img srcset="{DATA_IMG} 1x,https://e.org/x.png 2x">', ["external resource", "srcset"]),
+        # Ids are ASCII only, as in the frontend's LOCAL_REFERENCE.
+        ('<svg viewBox="0 0 9 9"><use href="#caf\u00e9"/><g id="caf\u00e9"/></svg>', ["svg href"]),
+        ('<svg viewBox="0 0 9 9"><rect fill="url(https://e.org/p.svg#g)"/></svg>', ["external resource"]),
+        # Native controls, popovers, local references and data: URLs work.
+        ('<input type="radio" id="a" checked><label for="a">2023</label>', []),
+        ('<input type="checkbox" id="s1"><select><option>2023</option></select>', []),
+        ('<button popovertarget="p">Details</button><div popover id="p">455</div>', []),
+        ('<button commandfor="d" command="show-modal">Open</button><dialog id="d">455</dialog>', []),
+        ('<button commandfor="p" command="toggle-popover">i</button><div popover id="p">4</div>', []),
+        # A button whose target is missing or that has no command does nothing.
+        ('<button popovertarget="#m">Show</button><div popover id="m">455</div>', ["button"]),
+        ('<button commandfor="d">Open</button><dialog id="d">455</dialog>', ["button"]),
+        ('<button commandfor="d" command="show-modal">Open</button><div id="d">4</div>', ["button"]),
+        (f'<img src="{DATA_IMG}" alt="ok">', []),
+        # The sanitizer drops srcset, so a data: candidate shows nothing either.
+        (f'<picture><source srcset="{DATA_IMG} 1x"><img alt="x"></picture>', ["srcset"]),
+        (
+            '<svg viewBox="0 0 320 40"><defs><linearGradient id="g"/></defs>'
+            '<rect fill="url(#g)" width="9" height="9"/><use href="#g"/></svg>'
+            "<style>/* :target */ .b{background:url('data:image/png;base64,AA')}</style>",
+            [],
+        ),
+        ('<svg viewBox="0 0 320 40"><stop offset="0"/><text>455</text></svg>', []),
+        # Attributes that only start like a handler, and CSS text in strings.
+        ('<p one-line="true" only="1">455</p>', []),
+        # url() and :target as text: an aria-label and a custom property value.
+        ('<svg viewBox="0 0 9 9" aria-label="Source: url(report)"><rect/></svg>', []),
+        ('<style>.a{--section:target}</style><p class="a">455</p>', []),
+        ('<style>@media (min-width:1px){.t:target{color:red}}</style><p>4</p>', [":target"]),
+        ('<style>@supports selector(:target){.l{color:green}}</style><p class="l">4</p>', []),
+        # A px width over the phone column, unless CSS sizes the svg.
+        ('<svg width="600" height="120"><text>455</text></svg>', ["svg width over 320 px"]),
+        ('<svg width="600px" viewBox="0 0 600 120"><text>455</text></svg>', ["svg width over 320 px"]),
+        ('<svg width="320" height="120" viewBox="0 0 320 120"></svg>', []),
+        ('<svg width="100%" viewBox="0 0 640 120"></svg>', []),
+        ('<svg width="600" height="300" style="width:200px;height:auto"></svg>', []),
+        ('<svg width="600" height="300" style="width:100%;max-width:300px"></svg>', []),
+        ('<style>@media (min-width:1px){.c svg{max-width:100%}}</style><svg width="600"></svg>', []),
+        ('<style>svg:not(.icon){width:100%;height:auto}</style><svg width="480"></svg>', []),
+        ('<style>*{max-width:100%}</style><svg width="480"></svg>', []),
+        # CSS nesting: the parent's width counts before and after a nested rule.
+        (
+            '<style>svg.chart{width:100%;height:auto;& text{font-weight:600}}</style>'
+            '<svg class="chart" width="640"></svg>',
+            [],
+        ),
+        (
+            '<style>svg{& text{font-weight:600} max-width:100%}</style><svg width="640"></svg>',
+            [],
+        ),
+        ('<svg viewBox="0 0 320 90"><svg width="900" height="9"></svg></svg>', []),
+        # A rule sizes the svg by class or id; one for other elements does not.
+        (
+            '<style>.chart{width:100%;max-width:320px;height:auto}</style>'
+            '<svg class="chart wide" width="480" viewBox="0 0 480 200"></svg>',
+            [],
+        ),
+        ('<style>#m{max-width:100%}</style><svg id="m" width="480"></svg>', []),
+        ('<style>div svg.c{max-width:100%}</style><svg class="c" width="480"></svg>', []),
+        ('<style>.card{max-width:320px}</style><svg width="480"></svg>', ["svg width over 320 px"]),
+        ('<style>.chart{max-width:100%}</style><svg class="other" width="480"></svg>', ["svg width over 320 px"]),
+        ('<style>.svg-note{max-width:100%}</style><svg width="480"></svg>', ["svg width over 320 px"]),
+        ('<style>div{width:100%}</style><svg width="480"></svg>', ["svg width over 320 px"]),
+        ('<style>.n::after{content:":target @import url(example)"}</style><p class="n">4</p>', []),
+        ('<style>.n::after{content:"a"}/* @import url(x) */</style><p>455</p>', []),
+        # Local references the sanitizer keeps, with either href spelling.
+        (
+            '<svg viewBox="0 0 9 9"><defs><symbol id="icon"/><path id="arc_1"/>'
+            '<pattern id="p" href="#p0"/></defs><use xlink:href="#icon"/>'
+            '<text><textPath href="#arc_1">Arc</textPath></text></svg>',
+            [],
+        ),
+        # Links are removed but keep their text.
+        ('<p><a href="https://example.org">Source: city report</a></p>', []),
+        ('<style>@import "x.css";</style><p>455</p>', ["external resource"]),
+    ],
+)
+def test_unsupported_html_features(html: str, expected: list[str]) -> None:
+    assert unsupported_html_features(html) == expected
+
+
+async def test_tool_rejects_parts_that_cannot_work_in_the_chat() -> None:
+    html = (
+        '<p>Cost per home: <b id="v">calculating</b></p>'
+        '<button onclick="v.textContent=125">Compute</button>'
+        "<script>v.textContent='EUR 125'</script>"
+    )
+
+    result = await invoke("Cost", html)
+
+    assert result["success"] is False
+    assert result["error_code"] == "visual_unsupported_html"
+    assert result["data"]["features"] == ["button", "script"]
+    assert ":checked" in result["data"]["next_step"]
+    assert "retry once" in result["data"]["next_step"]
+    assert "answer in text" in result["data"]["next_step"]
 
 
 async def test_tool_accepts_css_keyframe_animation() -> None:

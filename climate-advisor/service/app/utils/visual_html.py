@@ -13,6 +13,8 @@ from collections.abc import Iterator
 from html.parser import HTMLParser
 from typing import NamedTuple
 
+from app.utils.dom_clobber_names import DOM_CLOBBER_NAMES
+
 # Elements whose content is never shown: dropped by the sanitizer or not
 # rendered. noscript, canvas and object keep fallback text in the chat, but
 # that text ("enable JavaScript") is not the visual, so it does not count.
@@ -551,6 +553,299 @@ def svg_animation_elements(html: str) -> list[str]:
         for node in _parse_tree(html).walk()
         if node.tag in _SVG_ANIMATION_TAGS
     }
+    return sorted(found)
+
+
+_EMBEDDED_FRAMES = frozenset({"iframe", "frame", "object", "embed"})
+# Inputs that work without scripts; every other type does nothing in the chat.
+_STATIC_INPUTS = frozenset({"radio", "checkbox", "hidden"})
+# The frame's CSP has no media source, so these never play or show a frame.
+_MEDIA = frozenset({"video", "audio"})
+# The sanitizer always drops the href of these, so they draw nothing.
+_SVG_IMAGES = frozenset({"image", "feimage"})
+# The only elements whose href the sanitizer keeps, and only as "#id"
+# (LOCAL_REFERENCE in chat-visual-frame.tsx).
+_LOCAL_REFERENCE_TAGS = frozenset(
+    {"use", "textpath", "lineargradient", "radialgradient", "pattern"}
+)
+_LOCAL_REFERENCE = re.compile(r"#[A-Za-z_][\w.:-]*", re.ASCII)
+# Links are removed with their text kept, so their href is harmless.
+_LINK_TAGS = frozenset({"a", "area"})
+# Event handler attributes a visual would use for interaction (on + event).
+_EVENTS = frozenset(
+    {"click", "dblclick", "change", "input", "submit", "load", "error", "scroll",
+     "wheel", "resize", "select", "toggle", "focus", "blur", "focusin", "focusout",
+     "keydown", "keyup", "keypress", "contextmenu", "animationend",
+     "transitionend", "touchstart", "touchend", "touchmove"}
+    | {f"mouse{e}" for e in ("over", "out", "enter", "leave", "down", "up", "move")}
+    | {f"pointer{e}" for e in ("over", "out", "enter", "leave", "down", "up", "move")}
+)
+# One CSS token that matters here: a url() (its argument quoted or not) or a
+# quoted string, so text inside strings is never read as CSS.
+_CSS_TOKEN = re.compile(
+    r"""url\(\s*(?:"((?:\\.|[^"\\])*)"|'((?:\\.|[^'\\])*)'|([^)\s]*))\s*\)"""
+    r"""|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'""",
+    re.I,
+)
+# Presentation attributes that take a url() (paint servers, filters, markers).
+_URL_ATTRS = frozenset(
+    {"fill", "stroke", "filter", "clip-path", "mask", "marker-start",
+     "marker-mid", "marker-end", "cursor"}
+)
+# The selector in front of each rule block (declarations are skipped).
+_CSS_SELECTOR = re.compile(r"([^{};]*)\{")
+_CSS_IMPORT = re.compile(r"@import\b", re.I)
+# A chart wider than this in px runs off a phone's chat column.
+MAX_FIXED_SVG_PX = 320
+_CSS_SIZES_WIDTH = re.compile(r"(?<![-\w])(?:max-)?width\s*:", re.I)
+_SELECTOR_TOKEN = re.compile(r"[.#]?[\w-]+|\*")
+
+
+def _width_rule_selectors(css: str) -> list[str]:
+    """Return the selector chain of every block that declares width or
+    max-width, nested blocks (CSS nesting, @media) included: each chain joins
+    the block's selector with those of the blocks around it."""
+    chains: list[str] = []
+    stack: list[str] = []
+    text = ""
+    for char in css:
+        if char == "{":
+            # Declarations of the enclosing block may precede a nested rule.
+            declarations, _, selector = text.rpartition(";")
+            if stack and _CSS_SIZES_WIDTH.search(declarations):
+                chains.append(" ".join(stack))
+            stack.append(selector.strip())
+            text = ""
+        elif char == "}":
+            if stack and _CSS_SIZES_WIDTH.search(text):
+                chains.append(" ".join(stack))
+            if stack:
+                stack.pop()
+            text = ""
+        else:
+            text += char
+    return chains
+
+
+def _sized_by_css(attrs: dict[str, str | None], rules: list[str]) -> bool:
+    """Return whether CSS may give this svg a width or max-width: its own
+    style, or any width rule whose selector mentions svg, *, or the svg's
+    class or id. Deliberately generous: a rule that only applies in some
+    contexts still counts, so a responsive chart is never rejected."""
+    if _CSS_SIZES_WIDTH.search(attrs.get("style") or ""):
+        return True
+    names = {"svg", "*"}
+    names.update(f".{name}" for name in (attrs.get("class") or "").split())
+    if attrs.get("id"):
+        names.add(f"#{attrs['id']}")
+    return any(
+        token.lower() in names or token in names
+        for selector in rules
+        for token in _SELECTOR_TOKEN.findall(selector)
+    )
+_CSS_TARGET = re.compile(r":target\b", re.I)
+
+
+def _is_external(url: str) -> bool:
+    """Return whether a URL needs the network (anything but data: or #id)."""
+    url = url.strip().lower()
+    return not (url.startswith(("data:", "#")) or url == "")
+
+
+_IMAGE_SET = re.compile(r"(?:-webkit-)?image-set\(", re.I)
+_QUOTED = re.compile(r"""(type\(\s*)?("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')""", re.I)
+
+
+def _image_set_urls(css: str) -> list[str]:
+    """Return the quoted URLs inside image-set(), which loads them like url();
+    the strings inside type() are formats, not URLs."""
+    urls: list[str] = []
+    for start in _IMAGE_SET.finditer(css):
+        depth, index = 1, start.end()
+        while index < len(css) and depth:
+            depth += {"(": 1, ")": -1}.get(css[index], 0)
+            index += 1
+        for match in _QUOTED.finditer(css, start.end(), index):
+            if not match.group(1):
+                urls.append(match.group(2)[1:-1])
+    return urls
+
+
+def _scan_css(css: str) -> tuple[list[str], str]:
+    """Return the URLs CSS loads (url() and image-set() strings) and the CSS
+    without strings or urls."""
+    css = _CSS_COMMENT.sub("", css)
+    urls: list[str] = _image_set_urls(css)
+
+    def replace(match: re.Match[str]) -> str:
+        if match.group(0)[:4].lower() == "url(":
+            urls.append(match.group(1) or match.group(2) or match.group(3) or "")
+            return " "
+        return '""'
+
+    rest = _CSS_TOKEN.sub(replace, css)
+    return urls, rest
+
+
+def _srcset_urls(value: str) -> list[str]:
+    """Split a srcset like the browser: a URL runs to whitespace, then
+    descriptors run to the next comma (a data: URL keeps its own commas)."""
+    urls, index, size = [], 0, len(value)
+    while index < size:
+        while index < size and (value[index].isspace() or value[index] == ","):
+            index += 1
+        start = index
+        while index < size and not value[index].isspace():
+            index += 1
+        url = value[start:index]
+        if url.endswith(","):
+            url = url.rstrip(",")
+        else:
+            while index < size and value[index] != ",":
+                index += 1
+        if url:
+            urls.append(url)
+    return urls
+
+
+_POPOVER_COMMANDS = frozenset({"toggle-popover", "show-popover", "hide-popover"})
+_DIALOG_COMMANDS = frozenset({"show-modal", "close", "request-close"})
+
+
+def _native_button_works(
+    attrs: dict[str, str | None], popovers: set[str], dialogs: set[str]
+) -> bool:
+    """Whether a button opens or closes a popover or dialog by itself."""
+    # The sanitizer trims attribute values, so targets are matched trimmed.
+    target = attrs.get("popovertarget")
+    if target is not None:
+        return target.strip() in popovers
+    target = attrs.get("commandfor")
+    command = (attrs.get("command") or "").strip().lower()
+    if target is None:
+        return False
+    target = target.strip()
+    return (target in popovers and command in _POPOVER_COMMANDS) or (
+        target in dialogs and command in _DIALOG_COMMANDS
+    )
+
+
+def unsupported_html_features(html: str) -> list[str]:
+    """Return the parts of a visual that show but cannot work in the chat.
+
+    The chat frame runs no scripts and allows no network access. A script
+    leaves its placeholder text, a button or range slider does nothing, a
+    :target tab never switches (links are removed), foreignObject labels
+    vanish, an SVG <image>, video or audio stays empty, and an external
+    image, font, stylesheet or frame stays empty or broken. Popover and
+    dialog buttons (popovertarget, commandfor) work, and SVG href works only
+    as "#id" on use, textPath, gradients and pattern, as in the sanitizer.
+    """
+    found: set[str] = set()
+    css: list[str] = []
+    inline_css: list[str] = []
+    wide_svgs: list[dict[str, str | None]] = []
+    buttons: list[dict[str, str | None]] = []
+    use_targets: list[str] = []
+    ids: set[str] = set()
+    popovers: set[str] = set()
+    dialogs: set[str] = set()
+    nested: set[int] = set()
+    for node in _parse_tree(html).walk():
+        # The sanitizer trims ids and drops those such as "title" or
+        # "location", so nothing can point at them in the chat. A reference
+        # resolves to the first element with the id, in document order.
+        element_id = (node.attrs.get("id") or "").strip()
+        if (
+            element_id
+            and element_id not in DOM_CLOBBER_NAMES
+            and element_id not in ids
+        ):
+            ids.add(element_id)
+            if "popover" in node.attrs:
+                popovers.add(element_id)
+            if node.tag == "dialog":
+                dialogs.add(element_id)
+        if node.tag == "svg" and id(node) not in nested:
+            nested.update(id(inner) for inner in node.walk() if inner is not node)
+            width = _to_px(node.attrs.get("width"))
+            if width is not None and width > MAX_FIXED_SVG_PX:
+                wide_svgs.append(node.attrs)
+        tag, attrs = node.tag, node.attrs
+        if tag == "script" or any(
+            name.startswith("on") and name[2:] in _EVENTS for name in attrs
+        ):
+            found.add("script")
+        if tag in _EMBEDDED_FRAMES:
+            found.add("embedded frame")
+        elif tag == "foreignobject":
+            found.add("foreignObject")
+        elif tag in _MEDIA:
+            found.add("video or audio")
+        elif tag in _SVG_IMAGES:
+            found.add("svg image")
+        elif tag == "button":
+            buttons.append(attrs)
+        elif tag == "input":
+            kind = (attrs.get("type") or "text").strip().lower()
+            if kind not in _STATIC_INPUTS:
+                found.add(f"input type={kind}")
+        elif tag == "link":
+            found.add("external resource")
+        if tag == "style":
+            css.extend(node.texts)
+        for name, value in attrs.items():
+            value = value or ""
+            if name == "style":
+                inline_css.append(value)
+            elif name == "srcset":
+                # The sanitizer drops srcset, so even data: candidates vanish.
+                found.add("srcset")
+                if any(_is_external(url) for url in _srcset_urls(value)):
+                    found.add("external resource")
+            elif name == "src" and tag in ("img", "source"):
+                if _is_external(value):
+                    found.add("external resource")
+            elif name in ("href", "xlink:href") and tag not in _LINK_TAGS | {"link"}:
+                if tag in _SVG_IMAGES:
+                    continue
+                value = value.strip()
+                if _is_external(value):
+                    found.add("external resource")
+                elif not (
+                    tag in _LOCAL_REFERENCE_TAGS and _LOCAL_REFERENCE.fullmatch(value)
+                ):
+                    found.add("svg href")
+                elif tag == "use":
+                    use_targets.append(value[1:])
+            elif name in _URL_ATTRS and "url(" in value.lower():
+                if any(_is_external(url) for url in _scan_css(value)[0]):
+                    found.add("external resource")
+    # A <use> whose #id names nothing draws nothing (e.g. a missing icon).
+    if any(target not in ids for target in use_targets):
+        found.add("svg href")
+    # Native popover and dialog buttons work without scripts, but only with
+    # an existing target and a command that target supports.
+    if any(not _native_button_works(attrs, popovers, dialogs) for attrs in buttons):
+        found.add("button")
+    urls, rest = _scan_css("\n".join(css))
+    # A px width over the column runs off a phone unless CSS sizes that svg
+    # (its inline style, or a rule matching it by tag, class or id).
+    sizing_rules = _width_rule_selectors(rest)
+    if any(not _sized_by_css(attrs, sizing_rules) for attrs in wide_svgs):
+        found.add(f"svg width over {MAX_FIXED_SVG_PX} px")
+    inline_urls = _scan_css(";".join(inline_css))[0]
+    # At-rule headers such as @supports selector(:target) only test support.
+    if any(
+        _CSS_TARGET.search(selector)
+        for selector in _CSS_SELECTOR.findall(rest)
+        if not selector.lstrip().startswith("@")
+    ):
+        found.add(":target")
+    if _CSS_IMPORT.search(rest) or any(
+        _is_external(url) for url in urls + inline_urls
+    ):
+        found.add("external resource")
     return sorted(found)
 
 

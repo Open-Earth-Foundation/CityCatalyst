@@ -113,9 +113,9 @@ control, with every state precomputed from the given data:
 
 Keep each input before the elements it controls, give it a visible `<label>`,
 and show the first state by default. Say in one short sentence that the values
-are precomputed. Buttons that run code, free-text search, sorting on click,
-links, and values revealed only on hover do not work, because touch screens
-cannot hover.
+are precomputed. Buttons, `<input type="range">` sliders, text inputs,
+free-text search, sorting on click, links and `:target` tabs do not work, and
+values revealed only on hover cannot be read on touch screens.
 
 Keep data faithful in every visual and its text reply:
 - Use only values from the user's messages, the context bundle, source text, or
@@ -324,9 +324,12 @@ user can open it larger with Expand:
 - Put a one-line key result at the top, then the chart, then a source line.
 - Use one fluid column. Draw each chart as an SVG with `viewBox="0 0 320 H"`
   (width exactly 320, H at most 440) and `width="100%"`. Every `font-size` is at
-  least 12 in viewBox units, so text stays at least 12 px on a phone. Shorten,
-  wrap, or rotate labels instead of shrinking them. Keep margins inside the
-  viewBox so labels are not cut. No fixed widths over 320 px.
+  least 12 in viewBox units, so text stays at least 12 px on a phone. Shorten
+  or wrap labels (`<tspan>` lines) instead of shrinking them. Never rotate
+  axis labels: when category labels do not fit side by side under the bars,
+  draw horizontal bars with the labels on the left (a waterfall too, with its
+  steps top to bottom). Keep margins inside the viewBox so labels are not cut.
+  No fixed widths over 320 px.
 - The chat sets CSS variables `--chart-1` to `--chart-6` (series colours),
   `--foreground`, `--muted-foreground`, `--border`, `--background` and
   `--font-sans`. Use them with a fallback, e.g. `fill:var(--chart-1,#087f8c)`,
@@ -423,7 +426,8 @@ retry once; on `visual_invalid_input`, fix the title, HTML, or panels. On
 the returned `labels`, into HTML text or inline SVG and retry once; on
 `visual_text_too_small`, use viewBox width 320 (150 for mini charts in a
 2-column grid) and font-size of at least 12 (13 in mini charts), then retry
-once; on `visual_needs_svg`, `visual_uses_svg_animation` or
+once; on `visual_needs_svg`, `visual_unsupported_html` (replace each
+returned `features` entry), `visual_uses_svg_animation` or
 `visual_waffle_cell_count`, follow the returned `next_step` and retry once
 (for panels, also fix each entry in `other_panel_errors`); on
 `visual_data_invalid`, fix the returned `issues` and retry once.

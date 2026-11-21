@@ -964,6 +964,77 @@ it("keeps an undecided answer explicit instead of selecting an invented fact", a
   );
 });
 
+it("saves c14 facts without sending an edit request and distinguishes skipped from undecided", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "The funder needs the concept, phase and budget.",
+      questions: [
+        {
+          question: "Which concept is proposed?",
+          options: ["Wilson Pond Concept A", "Wilson Pond Concept B"],
+        },
+        { question: "What is the project phase?", options: ["Design"] },
+        {
+          question: "What is the budget?",
+          options: ["$2,000,000", "$3,000,000"],
+        },
+        { question: "Who leads delivery?", options: [] },
+      ],
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
+      .click(),
+  );
+  await act(async () =>
+    subQuestion(1)
+      .querySelector<HTMLInputElement>('input[value="unknown"]')!
+      .click(),
+  );
+  await act(async () =>
+    subQuestion(2)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
+      .click(),
+  );
+  // The fourth question stays untouched, so the form saves rather than sends.
+  expect(previewButton().textContent).toBe("gap-save-answers");
+  await act(async () => previewButton().click());
+
+  expect(saveAnswers).toHaveBeenCalledTimes(1);
+  expect(saveAnswers.mock.calls[0][0]).toBe(
+    "/api/v1/concept-notes/run/gaps/financing-gap/answers/",
+  );
+  expect(savedBody()).toEqual({
+    gap_version: 1,
+    answers: [
+      "1. Which concept is proposed?",
+      "Wilson Pond Concept A",
+      "",
+      "2. What is the project phase?",
+      "gap-not-decided",
+      "",
+      "3. What is the budget?",
+      "$2,000,000",
+      "",
+      "4. Who leads delivery?",
+      "gap-not-answered",
+    ].join("\n"),
+    expected_previous: null,
+  });
+  // Saving never starts a chat turn, so no chapter preview is dispatched.
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(gapSaved).toHaveBeenCalledTimes(1);
+  expect(closeGap).toHaveBeenCalledTimes(1);
+  await renderPanel(contextStatus, "thread", null);
+  expect(
+    container.querySelector('[data-testid="concept-note-gap-saved-note"]')
+      ?.textContent,
+  ).toContain("gap-answers-saved-note");
+});
+
 it("cancels stale generation when another gap is opened", async () => {
   let resolveOld!: (value: Response) => void;
   fetchQuestion.mockImplementationOnce(

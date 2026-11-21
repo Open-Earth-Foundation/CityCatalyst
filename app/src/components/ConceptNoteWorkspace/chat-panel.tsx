@@ -101,6 +101,8 @@ interface ConceptNoteChatPanelProps {
   /** The run's uploads, so gap source refs show as document names. */
   uploads?: ConceptNoteUploadResponse[];
   draftOverviewPending: boolean;
+  /** Unrecorded markers are being given gap records; sends wait for them. */
+  legacyGapSyncPending?: boolean;
   lng: string;
   onOpenContext: () => void;
   runId: string;
@@ -346,6 +348,7 @@ export function ConceptNoteChatPanel({
   onAddGapSource,
   uploads,
   draftOverviewPending,
+  legacyGapSyncPending = false,
   lng,
   onOpenContext,
   runId,
@@ -402,7 +405,11 @@ export function ConceptNoteChatPanel({
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
-    contextBlocked || !threadId || historyLoading || isGenerating;
+    contextBlocked ||
+    !threadId ||
+    historyLoading ||
+    isGenerating ||
+    legacyGapSyncPending;
   // The gap form replaces the chat notices that explain a held send, so it
   // gets the reason itself, from the same conditions as chatDisabled.
   const gapDisabledReason = !threadId
@@ -417,7 +424,9 @@ export function ConceptNoteChatPanel({
         ? t("gap-preview-disabled-loading")
         : isGenerating
           ? t("gap-preview-disabled-replying")
-          : undefined;
+          : legacyGapSyncPending
+            ? t("gap-adopting")
+            : undefined;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";

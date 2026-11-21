@@ -2996,6 +2996,16 @@ export const api = createApi({
           { type: "ConceptNoteDraft", id: runId },
         ],
       }),
+      /** Refetch the draft after this; it carries no tag, so the reload is explicit. */
+      adoptConceptNoteLegacyMarkerGaps: builder.mutation<
+        ConceptNoteDraftState,
+        { runId: string }
+      >({
+        query: ({ runId }) => ({
+          url: `concept-notes/${runId}/gaps/adopt-markers`,
+          method: "POST",
+        }),
+      }),
       validateConceptNoteChapter: builder.mutation<
         ConceptNoteChapterValidationResponse,
         ValidateConceptNoteChapterRequest
@@ -3189,6 +3199,7 @@ export const {
   useStartConceptNoteDraftMutation,
   useConfirmConceptNoteChapterMutation,
   useAdoptConceptNoteMarkerGapMutation,
+  useAdoptConceptNoteLegacyMarkerGapsMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

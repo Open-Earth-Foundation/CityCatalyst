@@ -80,6 +80,8 @@ const startChat =
   await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
 const adoptGap =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/gaps/route");
+const adoptLegacyGaps =
+  await import("@/app/api/v1/concept-notes/[runId]/gaps/adopt-markers/route");
 const gapAnswers =
   await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
 const gapAnswersBody = {
@@ -171,6 +173,13 @@ const routes = [
     method: "POST",
     suffix: `/chapters/${targetId}/gaps`,
     body: adoptBody,
+  },
+  {
+    name: "adopt-legacy-gaps",
+    handler: adoptLegacyGaps.POST,
+    method: "POST",
+    suffix: "/gaps/adopt-markers",
+    body: undefined,
   },
   {
     name: "gap-answers",
@@ -391,6 +400,42 @@ test.each(["apply", "refine", "confirm", "adopt-gap"])(
     expect(canAccessCity).not.toHaveBeenCalled();
   },
 );
+
+test("adopt-legacy-gaps keeps the proxy's public error contract", async () => {
+  // The run proxy returns only the public code/message shape, never raw detail.
+  upstream.mockImplementation(async ({ path }) =>
+    path === `/v1/concept-notes/${runId}`
+      ? Response.json({ city_id: cityId })
+      : Response.json({ detail: "Internal drafting error" }, { status: 409 }),
+  );
+  const response = await request(
+    routes.find((route) => route.name === "adopt-legacy-gaps")!,
+  );
+  expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({ detail: "" });
+});
+
+test("adopt-legacy-gaps forwards no body and ignores client-supplied markers or users", async () => {
+  const response = await request(
+    routes.find((route) => route.name === "adopt-legacy-gaps")!,
+    {
+      body: { marker: "[Information needed: Who signs?]", user_id: "attacker" },
+      query: `city_id=${otherCity}&user_id=attacker`,
+    },
+  );
+  expect(response.status).toBe(200);
+  expect(upstream).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      path: `/v1/concept-notes/${runId}/gaps/adopt-markers`,
+      method: "POST",
+      searchParams: { user_id: session.user.id },
+    }),
+  );
+  expect(upstream.mock.lastCall?.[0].body).toBeUndefined();
+  expect(canAccessCity).toHaveBeenCalledWith(session, cityId, {
+    includeResource: false,
+  });
+});
 
 test.each(["apply", "refine", "confirm", "start-chat", "adopt-gap"])(
   "%s preserves upstream error status, code and detail for the client",

@@ -58,7 +58,9 @@ export function chapterGapRows(
   // Resolved gaps keep their markers out; legacy markers get their own row.
   for (const { message } of markers) {
     const key = informationMarkerKey(message);
+    // An empty key (punctuation only) gets no record, so it gets no row.
     if (
+      key &&
       ![...chapter.gaps, ...rows].some(
         (item) => informationMarkerKey(item.question) === key,
       )

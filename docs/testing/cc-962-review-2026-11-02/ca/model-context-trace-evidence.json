@@ -1,0 +1,947 @@
+{
+  "readAt": "2026-11-01T19:24:38.282005+00:00",
+  "method": "Read-only MLflow traces from existing runs; no model calls. Only source fields retained.",
+  "runs": [
+    {
+      "key": "UC02-r2",
+      "turn": 2,
+      "run_id": "07d548d287f04d338e83ace5f9e56216",
+      "traces": [
+        {
+          "trace_id": "tr-55c1f086f411ac4244504d60b6186546",
+          "spans": [
+            {
+              "name": "Climate Advisor Turn",
+              "span_type": "CHAIN",
+              "inputType": "dict",
+              "inputKeys": [
+                "user_message",
+                "system_prompts"
+              ]
+            },
+            {
+              "name": "AgentRunner.run_streamed",
+              "span_type": "AGENT",
+              "inputType": "list",
+              "inputKeys": null
+            },
+            {
+              "name": "Climate Advisor Stationary Energy Context Chat",
+              "span_type": "CHAIN",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Climate Advisor",
+              "span_type": "AGENT",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Unknown",
+              "span_type": "CHAIN",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Generation",
+              "span_type": "CHAT_MODEL",
+              "inputType": "list",
+              "inputKeys": null
+            },
+            {
+              "name": "AsyncCompletions",
+              "span_type": "CHAT_MODEL",
+              "inputType": "dict",
+              "inputKeys": [
+                "model",
+                "messages",
+                "tools",
+                "temperature",
+                "top_p",
+                "frequency_penalty",
+                "presence_penalty",
+                "max_tokens",
+                "tool_choice",
+                "response_format",
+                "parallel_tool_calls",
+                "stream"
+              ]
+            }
+          ],
+          "draftContexts": [
+            {
+              "span": "Climate Advisor Turn",
+              "field": "/system_prompts/2f1b807a22978e275d77563672550e22d903a9510da3b19fa8ed71fd9db0c479/content",
+              "inventory": {
+                "year": 2022,
+                "inventory_type": "gpc_basic_plus"
+              },
+              "budget": {
+                "source_data_included": false,
+                "max_normalized_rows_per_candidate": 3,
+                "chat_baseline": true
+              },
+              "candidateCount": 62,
+              "residentialCandidates": [
+                {
+                  "dataset_year": 2015,
+                  "geography_match": "country",
+                  "source_scope": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "source_data_omitted": true,
+                  "normalized_rows": [
+                    {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "residentialProposals": [
+                {
+                  "row": {
+                    "gases": [
+                      {
+                        "gwp": 28,
+                        "gas_name": "CH4",
+                        "activity_value": null,
+                        "emissions_value": 19335,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 541380,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 1,
+                        "gas_name": "CO2",
+                        "activity_value": null,
+                        "emissions_value": 1111223686,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 1111223686,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 265,
+                        "gas_name": "N2O",
+                        "activity_value": null,
+                        "emissions_value": 21659,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 5739635,
+                        "emissionfactor_datasource": null
+                      }
+                    ],
+                    "activity_name": "total-fuel-consumption",
+                    "activity_units": null,
+                    "methodology_name": null,
+                    "emissions_geometry": null,
+                    "activity_subcategory_type": {
+                      "residential-building-type": "building-type-all",
+                      "residential-building-fuel-type": "fuel-type-all"
+                    }
+                  },
+                  "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                }
+              ],
+              "explicitEmissionUnitsInContext": [
+                {
+                  "path": "/ui_context/focused_decision_review/proposal/proposed_value/row/emissions_unit",
+                  "value": "kgco2e"
+                }
+              ],
+              "kgCO2MentionsInContext": 1,
+              "focusedDecisionReview": {
+                "proposal_id": "3b76fcb1-9cd4-4913-829d-75cdd0a30f41",
+                "proposal": {
+                  "proposal_id": "3b76fcb1-9cd4-4913-829d-75cdd0a30f41",
+                  "draft_run_id": "4dbf0273-287f-4fb7-bcc2-5020b9226ff3",
+                  "target_ref": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "current_value": null,
+                  "recommended_candidate_id": "1ba30b3c-1aba-4f48-a397-0a8d323eccd7",
+                  "recommended_datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6",
+                  "alternative_candidate_ids": [],
+                  "proposed_value": {
+                    "row": {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      },
+                      "emissions_value_100yr": "1117504701",
+                      "emissions_unit": "kgco2e",
+                      "co2eq_years": 100
+                    },
+                    "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                  },
+                  "rationale": "Single applicable source; value taken directly from the connected dataset (no model inference).",
+                  "status": "ready",
+                  "confidence_score": null,
+                  "created_at": "2026-11-01T11:02:37.065689Z",
+                  "updated_at": "2026-11-01T11:02:37.065689Z"
+                },
+                "label": "Residential buildings / Emissions from fuel combustion within the city boundary / Scope 1",
+                "status": "ready",
+                "recommendedOption": {
+                  "id": "1ba30b3c-1aba-4f48-a397-0a8d323eccd7",
+                  "action": "accept",
+                  "label": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa",
+                  "shortLabel": "SEEG",
+                  "meta": "2015 / country",
+                  "value": "1.11 MtCO₂e",
+                  "recommended": true,
+                  "datasourceId": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                },
+                "alternativeOptions": [],
+                "leaveDraftOption": {
+                  "id": "leave_draft",
+                  "action": "leave_draft",
+                  "label": "Leave empty",
+                  "shortLabel": "Leave empty",
+                  "meta": "Set a notation key later",
+                  "value": "Set a notation key later",
+                  "recommended": false
+                },
+                "kind": "single_source"
+              }
+            },
+            {
+              "span": "AgentRunner.run_streamed",
+              "field": "/0/content",
+              "inventory": {
+                "year": 2022,
+                "inventory_type": "gpc_basic_plus"
+              },
+              "budget": {
+                "source_data_included": false,
+                "max_normalized_rows_per_candidate": 3,
+                "chat_baseline": true
+              },
+              "candidateCount": 62,
+              "residentialCandidates": [
+                {
+                  "dataset_year": 2015,
+                  "geography_match": "country",
+                  "source_scope": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "source_data_omitted": true,
+                  "normalized_rows": [
+                    {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "residentialProposals": [
+                {
+                  "row": {
+                    "gases": [
+                      {
+                        "gwp": 28,
+                        "gas_name": "CH4",
+                        "activity_value": null,
+                        "emissions_value": 19335,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 541380,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 1,
+                        "gas_name": "CO2",
+                        "activity_value": null,
+                        "emissions_value": 1111223686,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 1111223686,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 265,
+                        "gas_name": "N2O",
+                        "activity_value": null,
+                        "emissions_value": 21659,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 5739635,
+                        "emissionfactor_datasource": null
+                      }
+                    ],
+                    "activity_name": "total-fuel-consumption",
+                    "activity_units": null,
+                    "methodology_name": null,
+                    "emissions_geometry": null,
+                    "activity_subcategory_type": {
+                      "residential-building-type": "building-type-all",
+                      "residential-building-fuel-type": "fuel-type-all"
+                    }
+                  },
+                  "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                }
+              ],
+              "explicitEmissionUnitsInContext": [
+                {
+                  "path": "/ui_context/focused_decision_review/proposal/proposed_value/row/emissions_unit",
+                  "value": "kgco2e"
+                }
+              ],
+              "kgCO2MentionsInContext": 1,
+              "focusedDecisionReview": {
+                "proposal_id": "3b76fcb1-9cd4-4913-829d-75cdd0a30f41",
+                "proposal": {
+                  "proposal_id": "3b76fcb1-9cd4-4913-829d-75cdd0a30f41",
+                  "draft_run_id": "4dbf0273-287f-4fb7-bcc2-5020b9226ff3",
+                  "target_ref": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "current_value": null,
+                  "recommended_candidate_id": "1ba30b3c-1aba-4f48-a397-0a8d323eccd7",
+                  "recommended_datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6",
+                  "alternative_candidate_ids": [],
+                  "proposed_value": {
+                    "row": {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      },
+                      "emissions_value_100yr": "1117504701",
+                      "emissions_unit": "kgco2e",
+                      "co2eq_years": 100
+                    },
+                    "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                  },
+                  "rationale": "Single applicable source; value taken directly from the connected dataset (no model inference).",
+                  "status": "ready",
+                  "confidence_score": null,
+                  "created_at": "2026-11-01T11:02:37.065689Z",
+                  "updated_at": "2026-11-01T11:02:37.065689Z"
+                },
+                "label": "Residential buildings / Emissions from fuel combustion within the city boundary / Scope 1",
+                "status": "ready",
+                "recommendedOption": {
+                  "id": "1ba30b3c-1aba-4f48-a397-0a8d323eccd7",
+                  "action": "accept",
+                  "label": "Sistema de Estimativa de Emissão de Gases do Efeito Estufa",
+                  "shortLabel": "SEEG",
+                  "meta": "2015 / country",
+                  "value": "1.11 MtCO₂e",
+                  "recommended": true,
+                  "datasourceId": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                },
+                "alternativeOptions": [],
+                "leaveDraftOption": {
+                  "id": "leave_draft",
+                  "action": "leave_draft",
+                  "label": "Leave empty",
+                  "shortLabel": "Leave empty",
+                  "meta": "Set a notation key later",
+                  "value": "Set a notation key later",
+                  "recommended": false
+                },
+                "kind": "single_source"
+              }
+            }
+          ],
+          "displayValueEvidence": [
+            {
+              "span": "Climate Advisor Turn",
+              "field": "/system_prompts/2f1b807a22978e275d77563672550e22d903a9510da3b19fa8ed71fd9db0c479/content",
+              "excerpt": "ortLabel\": \"SEEG\", \"meta\": \"2015 / country\", \"value\": \"1.11 MtCO₂e\", \"recommended\": true, \"datasourc"
+            },
+            {
+              "span": "AgentRunner.run_streamed",
+              "field": "/0/content",
+              "excerpt": "ortLabel\": \"SEEG\", \"meta\": \"2015 / country\", \"value\": \"1.11 MtCO₂e\", \"recommended\": true, \"datasourc"
+            }
+          ],
+          "modelPromptReferences": [
+            {
+              "span": "Generation",
+              "field": "/0/content",
+              "reference": "[System prompt reference: 2f1b807a22978e275d77563672550e22d903a9510da3b19fa8ed71fd9db0c479. Open root span d39905fff5d58345 > Inputs > system_prompts.]"
+            },
+            {
+              "span": "Generation",
+              "field": "/3/content",
+              "reference": "[System prompt reference: cd6ab084ad7a930c0a33cfabcfb1de116cea1df2f7b313befaf625119c4c5319. Open root span d39905fff5d58345 > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/0/content",
+              "reference": "[System prompt reference: 2f1b807a22978e275d77563672550e22d903a9510da3b19fa8ed71fd9db0c479. Open root span d39905fff5d58345 > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/3/content",
+              "reference": "[System prompt reference: cd6ab084ad7a930c0a33cfabcfb1de116cea1df2f7b313befaf625119c4c5319. Open root span d39905fff5d58345 > Inputs > system_prompts.]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "UC03-r2",
+      "turn": 4,
+      "run_id": "60afada4c50145019aaa925e7388cb39",
+      "traces": [
+        {
+          "trace_id": "tr-cb2fe8f0b0b9f01fd2745138a13e8fb2",
+          "spans": [
+            {
+              "name": "Climate Advisor Turn",
+              "span_type": "CHAIN",
+              "inputType": "dict",
+              "inputKeys": [
+                "user_message",
+                "system_prompts"
+              ]
+            },
+            {
+              "name": "AgentRunner.run_streamed",
+              "span_type": "AGENT",
+              "inputType": "list",
+              "inputKeys": null
+            },
+            {
+              "name": "Climate Advisor Stationary Energy Context Chat",
+              "span_type": "CHAIN",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Climate Advisor",
+              "span_type": "AGENT",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Unknown",
+              "span_type": "CHAIN",
+              "inputType": "NoneType",
+              "inputKeys": null
+            },
+            {
+              "name": "Generation",
+              "span_type": "CHAT_MODEL",
+              "inputType": "list",
+              "inputKeys": null
+            },
+            {
+              "name": "AsyncCompletions",
+              "span_type": "CHAT_MODEL",
+              "inputType": "dict",
+              "inputKeys": [
+                "model",
+                "messages",
+                "tools",
+                "temperature",
+                "top_p",
+                "frequency_penalty",
+                "presence_penalty",
+                "max_tokens",
+                "tool_choice",
+                "response_format",
+                "parallel_tool_calls",
+                "stream"
+              ]
+            }
+          ],
+          "draftContexts": [
+            {
+              "span": "Climate Advisor Turn",
+              "field": "/system_prompts/fec502b7e0f42f490c0b13fa9d2b16c6d48efa2af31e92c6a32d81384d0bc01a/content",
+              "inventory": {
+                "year": 2022,
+                "inventory_type": "gpc_basic_plus"
+              },
+              "budget": {
+                "source_data_included": false,
+                "max_normalized_rows_per_candidate": 3,
+                "chat_baseline": true
+              },
+              "candidateCount": 62,
+              "residentialCandidates": [
+                {
+                  "dataset_year": 2015,
+                  "geography_match": "country",
+                  "source_scope": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "source_data_omitted": true,
+                  "normalized_rows": [
+                    {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "residentialProposals": [
+                {
+                  "row": {
+                    "gases": [
+                      {
+                        "gwp": 28,
+                        "gas_name": "CH4",
+                        "activity_value": null,
+                        "emissions_value": 19335,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 541380,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 1,
+                        "gas_name": "CO2",
+                        "activity_value": null,
+                        "emissions_value": 1111223686,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 1111223686,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 265,
+                        "gas_name": "N2O",
+                        "activity_value": null,
+                        "emissions_value": 21659,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 5739635,
+                        "emissionfactor_datasource": null
+                      }
+                    ],
+                    "activity_name": "total-fuel-consumption",
+                    "activity_units": null,
+                    "methodology_name": null,
+                    "emissions_geometry": null,
+                    "activity_subcategory_type": {
+                      "residential-building-type": "building-type-all",
+                      "residential-building-fuel-type": "fuel-type-all"
+                    }
+                  },
+                  "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                }
+              ],
+              "explicitEmissionUnitsInContext": [],
+              "kgCO2MentionsInContext": 0,
+              "focusedDecisionReview": null
+            },
+            {
+              "span": "AgentRunner.run_streamed",
+              "field": "/0/content",
+              "inventory": {
+                "year": 2022,
+                "inventory_type": "gpc_basic_plus"
+              },
+              "budget": {
+                "source_data_included": false,
+                "max_normalized_rows_per_candidate": 3,
+                "chat_baseline": true
+              },
+              "candidateCount": 62,
+              "residentialCandidates": [
+                {
+                  "dataset_year": 2015,
+                  "geography_match": "country",
+                  "source_scope": {
+                    "scope_id": "503d4c60-3ff0-3d2b-9ea0-6fb5b0078031",
+                    "sector_id": "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
+                    "scope_name": "Scope 1",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
+                    "subcategory_id": "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
+                    "subsector_name": "Residential Buildings",
+                    "subcategory_name": "Emissions From Fuel Combustion Within The City Boundary",
+                    "sector_reference_number": "I",
+                    "subsector_reference_number": "I.1",
+                    "subcategory_reference_number": "I.1.1"
+                  },
+                  "source_data_omitted": true,
+                  "normalized_rows": [
+                    {
+                      "gases": [
+                        {
+                          "gwp": 28,
+                          "gas_name": "CH4",
+                          "activity_value": null,
+                          "emissions_value": 19335,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 541380,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 1,
+                          "gas_name": "CO2",
+                          "activity_value": null,
+                          "emissions_value": 1111223686,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 1111223686,
+                          "emissionfactor_datasource": null
+                        },
+                        {
+                          "gwp": 265,
+                          "gas_name": "N2O",
+                          "activity_value": null,
+                          "emissions_value": 21659,
+                          "emissionfactor_value": null,
+                          "emissions_value_20yr": 0,
+                          "emissions_value_100yr": 5739635,
+                          "emissionfactor_datasource": null
+                        }
+                      ],
+                      "activity_name": "total-fuel-consumption",
+                      "activity_units": null,
+                      "methodology_name": null,
+                      "emissions_geometry": null,
+                      "activity_subcategory_type": {
+                        "residential-building-type": "building-type-all",
+                        "residential-building-fuel-type": "fuel-type-all"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "residentialProposals": [
+                {
+                  "row": {
+                    "gases": [
+                      {
+                        "gwp": 28,
+                        "gas_name": "CH4",
+                        "activity_value": null,
+                        "emissions_value": 19335,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 541380,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 1,
+                        "gas_name": "CO2",
+                        "activity_value": null,
+                        "emissions_value": 1111223686,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 1111223686,
+                        "emissionfactor_datasource": null
+                      },
+                      {
+                        "gwp": 265,
+                        "gas_name": "N2O",
+                        "activity_value": null,
+                        "emissions_value": 21659,
+                        "emissionfactor_value": null,
+                        "emissions_value_20yr": 0,
+                        "emissions_value_100yr": 5739635,
+                        "emissionfactor_datasource": null
+                      }
+                    ],
+                    "activity_name": "total-fuel-consumption",
+                    "activity_units": null,
+                    "methodology_name": null,
+                    "emissions_geometry": null,
+                    "activity_subcategory_type": {
+                      "residential-building-type": "building-type-all",
+                      "residential-building-fuel-type": "fuel-type-all"
+                    }
+                  },
+                  "datasource_id": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+                }
+              ],
+              "explicitEmissionUnitsInContext": [],
+              "kgCO2MentionsInContext": 0,
+              "focusedDecisionReview": null
+            }
+          ],
+          "displayValueEvidence": [],
+          "modelPromptReferences": [
+            {
+              "span": "Generation",
+              "field": "/0/content",
+              "reference": "[System prompt reference: fec502b7e0f42f490c0b13fa9d2b16c6d48efa2af31e92c6a32d81384d0bc01a. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "Generation",
+              "field": "/3/content",
+              "reference": "[System prompt reference: c61fefec410ade82ed14a2663098eab6411f7a983835465b2729fecfdd2b3df9. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "Generation",
+              "field": "/6/content",
+              "reference": "[System prompt reference: 166deab6ab546233872caa1ab3661bac552ceb20c2c05efa8f6f42254bf4994b. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "Generation",
+              "field": "/9/content",
+              "reference": "[System prompt reference: 7c0ea76d93b4d04345eb459e9ef272e42ccacf64f25b72c1cc142adca6419f9c. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/0/content",
+              "reference": "[System prompt reference: fec502b7e0f42f490c0b13fa9d2b16c6d48efa2af31e92c6a32d81384d0bc01a. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/3/content",
+              "reference": "[System prompt reference: c61fefec410ade82ed14a2663098eab6411f7a983835465b2729fecfdd2b3df9. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/6/content",
+              "reference": "[System prompt reference: 166deab6ab546233872caa1ab3661bac552ceb20c2c05efa8f6f42254bf4994b. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            },
+            {
+              "span": "AsyncCompletions",
+              "field": "/messages/9/content",
+              "reference": "[System prompt reference: 7c0ea76d93b4d04345eb459e9ef272e42ccacf64f25b72c1cc142adca6419f9c. Open root span b3d596e6dca6cb3f > Inputs > system_prompts.]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "at": "2026-11-01T02:14:17.067Z",
+  "count": 15,
+  "recordings": [
+    {
+      "id": "SC01",
+      "run": 1,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r1-results\\SC01-r1.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r1-results\\verified-frame.png",
+      "seconds": 9.04,
+      "bytes": 239940,
+      "sha256": "4c781e57b32c5cd021c66a18b5c7cbbc84fad57aff1a93f610f45093548c11f2",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r1-results\\results-readback.json"
+    },
+    {
+      "id": "SC01",
+      "run": 2,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r2-results\\SC01-r2.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r2-results\\verified-frame.png",
+      "seconds": 9.12,
+      "bytes": 243239,
+      "sha256": "8998e87491fdfb3f322f6caed89c649fca0677e723c08dc97001cbeffbf85eb9",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r2-results\\results-readback.json"
+    },
+    {
+      "id": "SC01",
+      "run": 3,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r3-results\\SC01-r3.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r3-results\\verified-frame.png",
+      "seconds": 9.48,
+      "bytes": 256619,
+      "sha256": "07107393167130a197a551ee5a06e928e0bb7bef53eefa2ec3c1e5fc0f05cbf3",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC01-r3-results\\results-readback.json"
+    },
+    {
+      "id": "SC03",
+      "run": 1,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r1-results\\SC03-r1.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r1-results\\verified-frame.png",
+      "seconds": 12.84,
+      "bytes": 290497,
+      "sha256": "06e3318e36d02639c16665bea0b23720d1bc2ee86059ab73fbb45445b985d8e2",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r1-results\\results-readback.json"
+    },
+    {
+      "id": "SC03",
+      "run": 2,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r2-results\\SC03-r2.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r2-results\\verified-frame.png",
+      "seconds": 13.12,
+      "bytes": 319608,
+      "sha256": "4809897342b0fc4bbb46c0f029e089b6c161295202e8a2be7816bed6052cbc9a",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r2-results\\results-readback.json"
+    },
+    {
+      "id": "SC03",
+      "run": 3,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r3-results\\SC03-r3.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r3-results\\verified-frame.png",
+      "seconds": 12.76,
+      "bytes": 272952,
+      "sha256": "c90f4e6dfd30fefa754dca61058a0afd77e3422ad74d4000602b74637bab1d8e",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC03-r3-results\\results-readback.json"
+    },
+    {
+      "id": "SC05",
+      "run": 1,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r1-results\\SC05-r1.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r1-results\\verified-frame.png",
+      "seconds": 12.72,
+      "bytes": 232373,
+      "sha256": "3bc46b5476097f6370ac404340e99334d44d217c5a4e59c65241550f86cde223",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r1-results\\results-readback.json"
+    },
+    {
+      "id": "SC05",
+      "run": 2,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r2-results\\SC05-r2.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r2-results\\verified-frame.png",
+      "seconds": 13.36,
+      "bytes": 267464,
+      "sha256": "3db43077ee4b639ccf5ab039cb5302021049c3243d3357a3a5cfe25e3a1f8f93",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r2-results\\results-readback.json"
+    },
+    {
+      "id": "SC05",
+      "run": 3,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r3-results\\SC05-r3.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r3-results\\verified-frame.png",
+      "seconds": 13.24,
+      "bytes": 317664,
+      "sha256": "5315cf1a2acc3f267ce8eb6323bef4ec878732a94141328528d08eafbf391b38",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC05-r3-results\\results-readback.json"
+    },
+    {
+      "id": "SC07",
+      "run": 1,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r1-results\\SC07-r1.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r1-results\\verified-frame.png",
+      "seconds": 12.76,
+      "bytes": 313767,
+      "sha256": "f0bb82f954e5cb420091985b69fac2f4c5bcdc9f94904ef49af237ba3b15f7a6",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r1-results\\results-readback.json"
+    },
+    {
+      "id": "SC07",
+      "run": 2,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r2-results\\SC07-r2.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r2-results\\verified-frame.png",
+      "seconds": 12.8,
+      "bytes": 286323,
+      "sha256": "a555fd5c161e85c427c4a20c1e96fabfcc35cc3f8df98ae661d38c62d8a82547",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r2-results\\results-readback.json"
+    },
+    {
+      "id": "SC07",
+      "run": 3,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r3-results\\SC07-r3.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r3-results\\verified-frame.png",
+      "seconds": 12.76,
+      "bytes": 273725,
+      "sha256": "7ea46e3e274ff9da9115cfae9d557f1115cd518ed52eb0f5c6e813ca6f918c3c",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC07-r3-results\\results-readback.json"
+    },
+    {
+      "id": "SC12",
+      "run": 1,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r1-results\\SC12-r1.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r1-results\\verified-frame.png",
+      "seconds": 16.8,
+      "bytes": 1157407,
+      "sha256": "580069fad2bc53cb8d0111447e1f5916c84e01e6e754cc42a3e57a1a55a992c1",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r1-results\\results-readback.json"
+    },
+    {
+      "id": "SC12",
+      "run": 2,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r2-results\\SC12-r2.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r2-results\\verified-frame.png",
+      "seconds": 17.44,
+      "bytes": 1175091,
+      "sha256": "3b53d91efe3087f01f2c9af3741f1eb3ea9b5130449059e8e1f20787fe332694",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r2-results\\results-readback.json"
+    },
+    {
+      "id": "SC12",
+      "run": 3,
+      "video": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r3-results\\SC12-r3.mp4",
+      "frame": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r3-results\\verified-frame.png",
+      "seconds": 16.64,
+      "bytes": 1154422,
+      "sha256": "82531b857e8abd14fb9794a2cfd4e38c1d33c9f1da3beaa872caa80203cf9067",
+      "readback": "C:\\Users\\WBW\\Documents\\GitHub\\CityCatalyst\\output\\browser-demo-recording\\cc962-dev-20261101\\SC12-r3-results\\results-readback.json"
+    }
+  ]
+}

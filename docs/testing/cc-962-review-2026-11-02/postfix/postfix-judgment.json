@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "judge": {
+    "requested_model": "GPT-6.1 Terra",
+    "role": "Independent frozen-packet LLM-as-judge",
+    "delegation_used": false
+  },
+  "input": {
+    "file": "judge-packet.json",
+    "commit": "5c04cc616466cdc1b0f550588cd00f4f252b5106",
+    "execution_files_read": [],
+    "other_artifacts_read": [],
+    "basis": "Only the packet was read. Provider/runtime and unchanged-inventory facts are accepted as supplied oracle/check evidence, not independently re-executed by this judge."
+  },
+  "scope": "Narrow post-fix retest of catalogue-derived 2015/national provenance leakage, with separate answer-quality and goal-completion assessments.",
+  "rubric": {
+    "provenance_regression": "Pass: applicable source year/geography and assistant descriptions agree with 2022/city oracle; fail: wrong catalogue-derived metadata is asserted; partial: mixed correct/incorrect provenance; blocked: insufficient context/evidence.",
+    "answer_quality": "Pass: requested material explanations agree with packet evidence, with honest limitations; partial: useful grounded answer with an identified factual/presentation defect or unresolved material claim; fail: misleading or unusable response; blocked: no evaluable answer. A pass is bounded by packet coverage and is not a claim of universal factual perfection.",
+    "goal_completion": "UC01: prepare a review draft, identify connected sources/category coverage and explain fit checks, without inventory save. UC02: prepare draft and explain I.1.1 origin/year/value/fit/limitations, without inventory save. Pass allows a separately recorded presentation defect when the exact requested value and source explanation are delivered. Consent to prepare the draft is intended behavior. Saving, inventory creation/import, and obtaining unavailable fuel quantities are not required.",
+    "aggregation": "Unit is one clean conversation. Six total: UC01-r2/r3/r4 and UC02-r1/r2/r3. Supplemental UC01-r1 excluded. Count pass/partial/fail/blocked per dimension; no weights, percentages, overall numerical score, or per-turn averaging."
+  },
+  "oracle": {
+    "city": "São Paulo",
+    "year": 2022,
+    "geography": "city",
+    "category": "I.1.1",
+    "provider": "SEEG",
+    "expectedKg": 1117504701,
+    "correctMtRoundedTo2Decimals": 1.12,
+    "yearProvenance": "Request /SEEG/city/BR SAO/2022/I.1.1; provider body has no own year/geography fields.",
+    "renderingCaveat": "Existing UI formatter truncates and shows 1.11 Mt. Judge full exact kg separately; do not silently treat 1.11 as correct rounding or blame model arithmetic without evidence.",
+    "saveExpected": false
+  },
+  "shared_evidence": {
+    "candidate_metadata": "All six runs contain the applicable residential SEEG candidate with dataset_year=2022, geography_match=city, source_scope I.1.1. All applicable candidates in each run have 2022/city metadata.",
+    "year_basis": "The oracle locates provenance in request /SEEG/city/BR SAO/2022/I.1.1. The provider body has no independent year/geography fields; do not imply it independently self-certifies them.",
+    "residential_value": {
+      "kgCO2e": 1117504701,
+      "MtCO2e_exact": 1.117504701,
+      "MtCO2e_rounded_2dp": 1.12,
+      "gas_check": "1,111,223,686 CO2 + 19,335 CH4 * 28 + 21,659 N2O * 265 = 1,117,504,701 kgCO2e",
+      "gas_check_pass": true
+    },
+    "upstream_display": "In every clean run the request review option and final UI display 1.11 MtCO₂e. This is the existing truncation described by the oracle. UC02-r2/r3 repeat it in assistant text. The evidence does not establish independent model calculation as the cause.",
+    "coverage": "SEEG: I.1.1/I.2.1/I.3.1/I.4.1/I.5.1. EPE: I.1.2/.3, I.2.2/.3, I.3.2/.3, I.5.2/.3. GEM I.7.1 and OGIM I.8.1 carry NO with explanation There are no facilities found in the city boundary. I.4.2/.3/.4 and I.6.1/.2/.3 have no applicable source candidate.",
+    "no_save": "Each packet run.checks.inventoryUnchanged is true. Draft/UI language including Current action / Accepted is not evidence of a persisted inventory write.",
+    "activity_limitation": "I.1.1 activity units, gas activity quantities, methodology_name and emission factors are null. All-residential/all-fuel classifications and 100-year GWP 1/28/265 are present. Honest disclosure of absent quantities is appropriate."
+  },
+  "runs": [
+    {
+      "id": "UC01-r2",
+      "scenario": "UC01",
+      "packet_hash": "aeb4b1a2ab335feefc3041549ae25f1db9afdef30416c21a3a8843c1a063518c",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "pass",
+        "reason": "Names connected SEEG/EPE sources, category/scope coverage and GEM/OGIM NO evidence; identifies unmatched rows and year/geography/unit checks. Missing fuel activity is disclosed, not fabricated."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC01-r2].turns[3].assistant",
+          "turn": 4,
+          "quote": "The applicable **SEEG, EPE, Global Energy Monitor, and OGIM** entries are matched to **2022**, the selected inventory year."
+        },
+        {
+          "path": "runs[id=UC01-r2].turns[3].assistant",
+          "turn": 4,
+          "quote": "Each applicable entry is matched at the **São Paulo city** level—not merely national or state level."
+        },
+        {
+          "path": "runs[id=UC01-r2].turns[3].assistant",
+          "turn": 4,
+          "quote": "**SEEG** provides emissions by gas for fuel-combustion categories; activity quantities are not supplied in these proposals."
+        }
+      ],
+      "evidence": {
+        "candidate_id": "247021fe-bf01-4e86-92d3-b947839cd4ee",
+        "proposal_id": "0f52d077-176e-4c3c-abb5-623ffbd67ca1",
+        "draft_run_id": "15a072ca-706e-46e4-8f9e-bbebfa78aad0",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": null
+      },
+      "caveats": [],
+      "runtime_flow_quality": null
+    },
+    {
+      "id": "UC01-r3",
+      "scenario": "UC01",
+      "packet_hash": "3a424f3f3307dace9c3ea35995619906cf6ce2978627c00849acd1fc8c24a632",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "pass",
+        "reason": "Names connected SEEG/EPE sources, category/scope coverage and GEM/OGIM NO evidence; identifies unmatched rows and year/geography/unit checks. Missing fuel activity is disclosed, not fabricated."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC01-r3].turns[3].assistant",
+          "turn": 4,
+          "quote": "The applicable **SEEG** and **EPE** candidates are both city-level and match 2022, so they are the strongest fit in this draft."
+        },
+        {
+          "path": "runs[id=UC01-r3].turns[2].assistant",
+          "turn": 3,
+          "quote": "There are no applicable connected sources for Energy Industries Scope 2 and Scope 3, electricity generation supplied to the grid, or the Non-Specified Sources rows."
+        },
+        {
+          "path": "runs[id=UC01-r3].turns[3].assistant",
+          "turn": 4,
+          "quote": "SEEG’s fuel-combustion proposals provide emissions but do not include activity quantities or units in this draft."
+        }
+      ],
+      "evidence": {
+        "candidate_id": "f7e0fce4-953e-44ac-994e-3667793efd97",
+        "proposal_id": "493704a7-7aa5-4ce9-b061-5c50761d81e7",
+        "draft_run_id": "2288537a-6fdb-4c1e-a05a-236e6cbbf5e6",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": null
+      },
+      "caveats": [
+        "Accepted candidates is loose wording; packet proposals are ready, not proof of an acceptance or inventory save."
+      ],
+      "runtime_flow_quality": null
+    },
+    {
+      "id": "UC01-r4",
+      "scenario": "UC01",
+      "packet_hash": "274cb22df118e2222bd9820594760d14af8f83fa2b3fe508edd4eb8fcbe9c8ef",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "pass",
+        "reason": "Names connected SEEG/EPE sources, category/scope coverage and GEM/OGIM NO evidence; identifies unmatched rows and year/geography/unit checks. Missing fuel activity is disclosed, not fabricated."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC01-r4].turns[3].assistant",
+          "turn": 4,
+          "quote": "The applicable **SEEG** and **EPE** records are for **2022**, matching this inventory year."
+        },
+        {
+          "path": "runs[id=UC01-r4].turns[3].assistant",
+          "turn": 4,
+          "quote": "Each applicable record is matched at the **São Paulo city** level—not national or population-downscaled data."
+        },
+        {
+          "path": "runs[id=UC01-r4].turns[2].assistant",
+          "turn": 3,
+          "quote": "**Scope 3:** transmission-and-distribution losses associated with those same electricity uses"
+        }
+      ],
+      "evidence": {
+        "candidate_id": "9a0bcd8f-b459-4a51-b60c-ba085a103861",
+        "proposal_id": "8151951d-e01a-47a6-af3b-5ac7cedc8e4a",
+        "draft_run_id": "d76aa2ca-96df-47c8-a889-70fe1d370718",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": null
+      },
+      "caveats": [
+        "T3 uses e4a26780-4828-4180-a42b-83c61baeb90d; T4 and final proposals use d76aa2ca-96df-47c8-a889-70fe1d370718. Each turn review context has 2022 / city and 1117504701 kg. This judgment does not infer why the run changed or certify single-draft continuity."
+      ],
+      "runtime_flow_quality": {
+        "verdict": "partial",
+        "reason": "Parent separately verified a duplicate draft artifact; see separately_supplied_runtime_observation. Frozen answer/provenance/goal grades are unchanged."
+      }
+    },
+    {
+      "id": "UC02-r1",
+      "scenario": "UC02",
+      "packet_hash": "c31772b72a0338975edb1d1db24eb335c2963afcd5886ae0b1e5e08ce5ddc5f5",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "pass",
+        "reason": "Gives SEEG, São Paulo/city, 2022, correct exact I.1.1 emissions, category fit and absent fuel-activity/disaggregation limits."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC02-r1].turns[1].assistant",
+          "turn": 2,
+          "quote": "a city-level source for **2022**, matching the inventory year."
+        },
+        {
+          "path": "runs[id=UC02-r1].turns[1].assistant",
+          "turn": 2,
+          "quote": "**1,117,504,701 kgCO₂e** (about **1.12 MtCO₂e**, 100-year GWP)."
+        },
+        {
+          "path": "runs[id=UC02-r1].turns[2].assistant",
+          "turn": 3,
+          "quote": "SEEG provides emissions, but **does not provide underlying fuel-consumption quantities or units** for this row."
+        }
+      ],
+      "evidence": {
+        "candidate_id": "ff7b9b83-2dc8-448e-9105-4e5ed4a67a66",
+        "proposal_id": "66068bca-0c42-41e8-b66e-64a4f15fe853",
+        "draft_run_id": "de2076b8-b781-4ed4-8f1b-15bba5816693",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": true
+      },
+      "caveats": [],
+      "runtime_flow_quality": null
+    },
+    {
+      "id": "UC02-r2",
+      "scenario": "UC02",
+      "packet_hash": "d6dc81fb5035639a4093b8ab8c5461c6eca5728e11068ac16b143166f7231424",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "partial",
+        "reason": "Gives SEEG, São Paulo/city, 2022, correct exact I.1.1 emissions, category fit and absent fuel-activity/disaggregation limits. However, 1.11 MtCO₂e is the upstream truncated display, not correct two-decimal rounding of 1.117504701 MtCO₂e; answer quality is partial."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC02-r2].turns[1].assistant",
+          "turn": 2,
+          "quote": "**Data origin:** SEEG connected city-level dataset for São Paulo"
+        },
+        {
+          "path": "runs[id=UC02-r2].turns[1].assistant",
+          "turn": 2,
+          "quote": "**Year:** **2022**, matching the inventory year"
+        },
+        {
+          "path": "runs[id=UC02-r2].turns[1].assistant",
+          "turn": 2,
+          "quote": "**1,117,504,701 kgCO₂e** (about **1.11 MtCO₂e**, 100-year GWP)"
+        },
+        {
+          "path": "runs[id=UC02-r2].turns[2].assistant",
+          "turn": 3,
+          "quote": "The source record does not provide a methodology field or emission factors, so document it as a connected source estimate rather than a locally calculated inventory result."
+        }
+      ],
+      "evidence": {
+        "candidate_id": "696fab0f-f9db-4e2a-b3fc-72cd207dc60c",
+        "proposal_id": "01af92e4-26ee-483c-a251-2d3791e4c353",
+        "draft_run_id": "c3135715-7365-4b76-b36b-fccd1649c63d",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": false
+      },
+      "caveats": [
+        "Correct exact kg value remains intact. Origin of the repeated short display is visible upstream; independent model arithmetic causality is unmeasurable."
+      ],
+      "runtime_flow_quality": null
+    },
+    {
+      "id": "UC02-r3",
+      "scenario": "UC02",
+      "packet_hash": "49a51ee20d612d166aa1a9d60dfe515cd57516d91367b9d886dd11067148622f",
+      "provenance_regression": {
+        "verdict": "pass",
+        "reason": "2022/city provenance is stated and supported by the applicable candidate and turn review metadata; no incorrect 2015/national attribution is asserted."
+      },
+      "answer_quality": {
+        "verdict": "partial",
+        "reason": "Gives SEEG, São Paulo/city, 2022, correct exact I.1.1 emissions, category fit and absent fuel-activity/disaggregation limits. However, 1.11 MtCO₂e is the upstream truncated display, not correct two-decimal rounding of 1.117504701 MtCO₂e; answer quality is partial."
+      },
+      "goal_completion": {
+        "verdict": "pass",
+        "reason": "Requested draft/review explanation is delivered; source-backed proposals exist and inventoryUnchanged=true. No save was requested."
+      },
+      "quotes": [
+        {
+          "path": "runs[id=UC02-r3].turns[1].assistant",
+          "turn": 2,
+          "quote": "city-level data for **São Paulo, 2022**, matching the inventory year."
+        },
+        {
+          "path": "runs[id=UC02-r3].turns[1].assistant",
+          "turn": 2,
+          "quote": "**1,117,504,701 kgCO₂e** (100-year AR5), or about **1.11 MtCO₂e**."
+        },
+        {
+          "path": "runs[id=UC02-r3].turns[2].assistant",
+          "turn": 3,
+          "quote": "SEEG supplies emissions by gas but no fuel-consumption quantity or unit for this proposal"
+        },
+        {
+          "path": "runs[id=UC02-r3].turns[2].assistant",
+          "turn": 3,
+          "quote": "the Stationary Energy workflow uses a fuel-consumption approach aligned with GPC guidance and IPCC Tier 1 conventions."
+        }
+      ],
+      "evidence": {
+        "candidate_id": "599ff349-c636-45e4-af04-cb7c7a34daee",
+        "proposal_id": "782dcfa3-ea9a-4811-8346-b9edf10fbced",
+        "draft_run_id": "10185c9d-29ab-4322-bc0b-07822fd86823",
+        "dataset_year": 2022,
+        "geography_match": "city",
+        "exact_kgCO2e": 1117504701,
+        "packet_checks": {
+          "freshDraft": true,
+          "residentialSourcePresent": true,
+          "residentialMetadataCorrect": true,
+          "inventoryUnchanged": true
+        },
+        "assistant_Mt_rounded_correctly": false
+      },
+      "caveats": [
+        "Workflow-level GPC/IPCC Tier 1 statement is not independently verified by source methodology_name=null; no contradiction is established.",
+        "Correct exact kg value remains intact. Origin of the repeated short display is visible upstream; independent model arithmetic causality is unmeasurable."
+      ],
+      "runtime_flow_quality": null
+    }
+  ],
+  "counts": {
+    "denominator": 6,
+    "provenance_regression": {
+      "pass": 6,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    "answer_quality": {
+      "pass": 4,
+      "partial": 2,
+      "fail": 0,
+      "blocked": 0
+    },
+    "goal_completion": {
+      "pass": 6,
+      "partial": 0,
+      "fail": 0,
+      "blocked": 0
+    },
+    "by_scenario": {
+      "UC01": {
+        "denominator": 3,
+        "provenance_pass": 3,
+        "answer_quality_pass": 3,
+        "answer_quality_partial": 0,
+        "goal_completion_pass": 3
+      },
+      "UC02": {
+        "denominator": 3,
+        "provenance_pass": 3,
+        "answer_quality_pass": 1,
+        "answer_quality_partial": 2,
+        "goal_completion_pass": 3
+      }
+    },
+    "UC02_exact_kg_correct": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "UC02_assistant_Mt_rounding_correct": {
+      "numerator": 1,
+      "denominator": 3
+    },
+    "clean_UI_I_1_1_truncated_display_present": {
+      "numerator": 6,
+      "denominator": 6
+    },
+    "weighted_score": null,
+    "overall_accuracy_percentage": null,
+    "independent_model_arithmetic_error_rate": null
+  },
+  "supplemental": {
+    "id": "UC01-r1",
+    "included_in_clean_counts": false,
+    "provenance_regression": {
+      "verdict": "pass",
+      "scope": "Evaluable restored-context turn 4 only; not a clean end-to-end run.",
+      "reason": "Restored-context answer states 2022/city and category fit; packet checks confirm correct metadata."
+    },
+    "answer_quality": {
+      "verdict": "partial",
+      "reason": "Restored-context guidance is useful and aligned. The coverage question on a new thread receives a fresh-consent request rather than source coverage, so the whole recovered conversation is incomplete."
+    },
+    "goal_completion": {
+      "verdict": "partial",
+      "reason": "Draft exists and inventory is unchanged, but the source/category coverage question is not answered in that submitted turn. The later fit-check answer does not fully replace it."
+    },
+    "separate_product_fault_assessment": {
+      "verdict": "blocked",
+      "established": null,
+      "reason": "Insufficient controlled evidence to attribute a separate product fault. Initial Enter happened during auto-summary streaming and the question was not submitted. Recovery coverage request then used a different thread without a draft_run_id; the next request restored the original thread with a draft run and obtained relevant guidance. This establishes incomplete setup/context at the problematic request, not its unseen underlying cause. It also does not prove that a product problem is impossible.",
+      "initial_thread": "833620cd-a360-44ad-b8ca-a573f074fb03",
+      "recovery_coverage_thread": "3cbdba76-c3c1-4304-94e2-9eb6d0c7997a",
+      "recovery_coverage_draft_run_id": null,
+      "restored_thread": "833620cd-a360-44ad-b8ca-a573f074fb03",
+      "restored_draft_run_id": "b712018f-1fc1-4b60-8d35-0a8ec2a13f36"
+    },
+    "quotes": [
+      {
+        "path": "supplemental.turns[2].assistant",
+        "turn": 3,
+        "quote": "I need to start a draft review for the selected 2022 inventory. Would you like me to start it?"
+      },
+      {
+        "path": "supplemental.turns[3].assistant",
+        "turn": 4,
+        "quote": "The usable SEEG and EPE candidates match the **2022** inventory year."
+      },
+      {
+        "path": "supplemental.turns[3].assistant",
+        "turn": 4,
+        "quote": "The currently focused proposal is a 2022, city-level **SEEG** estimate for **Scope 1 residential fuel combustion**"
+      }
+    ],
+    "packet_checks": {
+      "freshDraft": true,
+      "residentialSourcePresent": true,
+      "residentialMetadataCorrect": true,
+      "inventoryUnchanged": true
+    },
+    "harness_evidence": {
+      "reason": "The harness pressed Enter while the automatic draft-ready summary was still streaming. The filled question was not submitted. Continue the same conversation after waiting for the submit button.",
+      "at": "2026-11-02T00:30:31.764Z",
+      "originalStatus": "interrupted",
+      "originalError": "page.waitForResponse: Timeout 60000ms exceeded while waiting for event \"response\"",
+      "unsentTurns": [
+        {
+          "prompt": "Which of these sources can help us, and which stationary energy categories do they cover?",
+          "at": "2026-11-02T00:27:39.905Z"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Six conversations support this regression result on one city/year/category setup; they do not establish all-city or future-run reliability.",
+    "No live API, database, code, browser, auth, environment, or private fixture artifacts were inspected by this judge.",
+    "General advice and workflow-level GPC/IPCC claims are not an independent audit of the source methodology. UC02-r3 workflow Tier 1 statement cannot be verified from a null source methodology field; this is an evidence limit, not proof that the statement is false.",
+    "UC01-r3 says accepted candidates in turn 4; the frozen proposals remain ready and the inventory check says unchanged. Do not read this wording as proof of a user acceptance decision or save.",
+    "UC01-r4 has different draft run IDs between turns 3 and 4; both contexts contain the correct I.1.1 metadata/value. Continuity and cause are not resolved by this packet. Parent-supplied runtime evidence separately confirms duplicate persisted draft artifacts; see the separate runtime note."
+  ],
+  "conclusion": "Provenance regression passes all six clean conversations: no reproduced catalogue-derived 2015/national attribution. Requested discovery/provenance goals were completed without inventory writes. Complete-answer quality has two partials because UC02-r2/r3 repeat 1.11 MtCO2e, while the exact value rounds to 1.12. Supplemental recovery is not sufficient evidence of a separate product fault. A separately parent-verified UC01-r4 duplicate-draft observation is recorded as partial flow quality; its cause and introduction by this patch are not established.",
+  "separately_supplied_runtime_observation": {
+    "run_id": "UC01-r4",
+    "evidence_status": "Separately supplied and verified by parent agent; not independently read or re-executed by this judge. Excluded from the frozen-packet answer/provenance scoring basis.",
+    "reference": "runtime-observations.json (parent-owned runtime evidence artifact)",
+    "flow_quality_verdict": "partial",
+    "observations": [
+      "Parent reports two persisted ready draft runs for the same inventory and same thread: e4a26780-4828-4180-a42b-83c61baeb90d at 00:33:03.675 and d76aa2ca-96df-47c8-a889-70fe1d370718 at 00:33:20.390.",
+      "Parent reports the natural four-turn sequence had no additional New draft action; T2 SSE emitted one stationary_energy_start_draft result for the first run with continue_request=true, followed by browser POST /stationary-energy-drafts/start/201 creating the second run without an additional scripted action.",
+      "Parent reports final UI visibly lists two Working drafts."
+    ],
+    "interpretation": "The separately verified duplicate draft artifact justifies partial flow quality while the requested source-discovery goal, assistant answer quality and corrected provenance remain passes. Underlying cause and whether the provenance patch introduced this behavior are not established.",
+    "root_cause": null,
+    "introduced_by_provenance_patch": null
+  }
+}

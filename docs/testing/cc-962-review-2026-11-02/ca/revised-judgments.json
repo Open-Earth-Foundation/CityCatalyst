@@ -1,0 +1,2761 @@
+{
+  "revision": "conditional-review-2026-11-02",
+  "method": {
+    "original": "gpt-6.1-terra",
+    "revision": "Parent-agent evidence-based adjudication using the user-clarified scope; no new LLM-judge run."
+  },
+  "trials": [
+    {
+      "key": "UA02-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację 73886df4-7f89-5306-9a65-7acaeb0278ce, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "The existing 2024 inventory was already open. CA guided continued work, and the before/after readback confirmed that existing records were preserved.",
+      "findings": []
+    },
+    {
+      "key": "UA02-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację c63eed27-bdc0-524d-9926-0b74a43903f0, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "The existing 2024 inventory was already open. CA guided continued work, and the before/after readback confirmed that existing records were preserved.",
+      "findings": []
+    },
+    {
+      "key": "UA02-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Początkowy i końcowy URL wskazuje inwentaryzację e6cfec20-af2b-5166-af48-b79f9aad5cb5, zgodną z jedynym rekordem 2024 w odczycie. Końcowy widok pokazuje Brzeg Nadziei (test), Year: 2024 i 1.8 MtCO₂e. Cztery wartości 2024 i stan przed/po są niezmienione; właściwy rok był już otwarty, bez potrzeby ponownego otwierania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "The existing 2024 inventory was already open. CA guided continued work, and the before/after readback confirmed that existing records were preserved.",
+      "findings": []
+    },
+    {
+      "key": "UB01-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Correct figures and caveats were supplied across the conversation; paragraph placement does not negate task completion.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures.",
+      "findings": []
+    },
+    {
+      "key": "UB01-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Correct figures and caveats were supplied across the conversation; paragraph placement does not negate task completion.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures.",
+      "findings": []
+    },
+    {
+      "key": "UB01-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Correct figures and caveats were supplied across the conversation; paragraph placement does not negate task completion.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1 800 000 ton to 1 800 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary2024",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 000 ton to 900 000 000 kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_share",
+          "provided": true,
+          "quote": "50%",
+          "turn": 1,
+          "observedCanonical": 50,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "900 mln / 1 800 mln kg = 50%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Inventory year 2024",
+          "verdict": "correct",
+          "quote": "2024 r.",
+          "turn": 1,
+          "reason": "Rok jest jawnie wskazany."
+        },
+        {
+          "target": "Stationary Energy is the largest recorded sector",
+          "verdict": "correct",
+          "quote": "energii stacjonarnej",
+          "turn": 1,
+          "reason": "W tym samym zdaniu określono największy udział; 900 mln kg przewyższa inne sektory."
+        },
+        {
+          "target": "Missing IPPU/AFOLU is not proof of zero or complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej odpowiedzi wskazano również AFOLU i odmówiono uznania wyniku za pełny."
+        }
+      ],
+      "summary": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures.",
+      "findings": []
+    },
+    {
+      "key": "UB02-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "na podstawie samych emisji nie można jednoznacznie stwierdzić, że mieszkańcy zużyli więcej energii.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "The year comparison, recorded totals and distinction between change and causation were correct. A caveat stated earlier does not have to be repeated in every suggested sentence to pass this task.",
+      "findings": []
+    },
+    {
+      "key": "UB02-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "Nie wprost.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "The year comparison, recorded totals and distinction between change and causation were correct. A caveat stated earlier does not have to be repeated in every suggested sentence to pass this task.",
+      "findings": []
+    },
+    {
+      "key": "UB02-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "W rozmowie podano obie sumy, różnicę i procent względem 2023 r., wskazano brakujące sektory oraz brak dowodu przyczynowego; odczyty before/after nie wykazują zmian danych.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "total2023",
+          "provided": true,
+          "quote": "1 500 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1500000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,5 mln ton = 1,5 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "total2024",
+          "provided": true,
+          "quote": "1 800 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 1800000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "1,8 mln ton = 1,8 mld kg.",
+          "scored": true
+        },
+        {
+          "key": "delta",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 2,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Różnica wynosi 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "change",
+          "provided": true,
+          "quote": "20%",
+          "turn": 2,
+          "observedCanonical": 20,
+          "canonicalUnit": "percent",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "300 000 / 1 500 000 = 20%.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Both years belong to the same city",
+          "verdict": "correct",
+          "quote": "Brzegu Nadziei",
+          "turn": 1,
+          "reason": "W tej samej odpowiedzi porównano inwentaryzacje 2023 i 2024 tego miasta; stany before wiążą oba lata z tym samym city_id."
+        },
+        {
+          "target": "2023 is the percentage-change base",
+          "verdict": "correct",
+          "quote": "20% względem 2023 r.",
+          "turn": 2,
+          "reason": "Podstawa procentu jest wskazana wprost."
+        },
+        {
+          "target": "Recorded increase does not prove its cause",
+          "verdict": "correct",
+          "quote": "Nie wprost.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca jednoznaczny wniosek o większym zużyciu i wskazuje inne możliwe przyczyny."
+        }
+      ],
+      "summary": "The year comparison, recorded totals and distinction between change and causation were correct. A caveat stated earlier does not have to be repeated in every suggested sentence to pass this task.",
+      "findings": []
+    },
+    {
+      "key": "UB03-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są obie kwoty i zastrzeżenie, lecz odpowiedź myląco sugeruje wypełnienie energii mimo 9% w UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Suma 900 tys. t i ostrzeżenie o brakach są poprawne, lecz występuje mylące twierdzenie o wypełnieniu sektora.",
+          "materialErrors": [
+            {
+              "claim": "energia stacjonarna jest wypełniona, a brakujące sektory wskazano gdzie indziej",
+              "reason": "To sugeruje, że braków w energii nie ma lub dotyczą tylko innych sektorów; widok 2024 podaje Stationary energy 9% completed. Samo zastrzeżenie o możliwych brakach nie usuwa tego mylącego sformułowania.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.ui final: Stationary energy, 9% completed; before.values: tylko I.1.1 i I.1.2 w sektorze."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e**\n- **Zakres 2:** **300 000 tCO₂e**\n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e**\n- **Zakres 2:** **300 000 tCO₂e**\n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie można jednak na tej podstawie jednoznacznie stwierdzić, że nie brakuje żadnych danych źródłowych w tym sektorze.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Figures correct; the statement that the sector was filled was unsupported.",
+      "findings": [
+        {
+          "turn": 3,
+          "title": "Sector completeness overstated",
+          "origin": "CA response",
+          "observed": "Stationary energy described as filled, with gaps elsewhere.",
+          "expected": "The recorded UI showed Stationary energy at 9% complete.",
+          "reason": "Correct totals do not establish that all sector rows are complete.",
+          "evidence": "Recorded final UI and inventory rows I.1.1 / I.1.2."
+        }
+      ]
+    },
+    {
+      "key": "UB03-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Są wartości, wyjaśnienie zakresów i ostrzeżenie, że suma zapisów nie oznacza kompletności; dokładny procent pozostaje sporny między narzędziem a UI.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej  \n\nWidoczne emisje w obu zakresach dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — 66,7% emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — 33,3% emisji energii stacjonarnej  \n\nWidoczne emisje w obu zakresach dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie oznacza to jednak, że sektor jest kompletny.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Passed: figures, scopes and caveats were correct. The 9%/10% status difference is unresolved and excluded from failure scoring.",
+      "findings": []
+    },
+    {
+      "key": "UB03-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Są obie kwoty i zastrzeżenie, lecz odpowiedź bez podstaw przypisuje całą pozycję zakresu 2 elektryczności.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Wyjaśnia bezpośrednie emisje i emisje energii sieciowej; bez dowodu zawęża całe 300 tys. t do elektryczności.",
+          "materialErrors": [
+            {
+              "claim": "jedna trzecia z zakupionej energii elektrycznej",
+              "reason": "Przypisanie całej pozycji zakresu 2 wyłącznie elektryczności nie wynika ze zsumowanej pozycji I.1.2; zakres 2 może obejmować również ciepło/chłód.",
+              "kind": "other",
+              "origin": "model",
+              "evidence": "Frozen reference I.1.2: 300 000 000 kg, brak wyszczególnienia nośnika; inventory_emissions_context zwraca podsektor i zakres, bez nośnika."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "scope1",
+          "provided": true,
+          "quote": "600 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 600000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 1, I.1.1 = 600 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "scope2",
+          "provided": true,
+          "quote": "300 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 300000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Zakres 2, I.1.2 = 300 mln kg.",
+          "scored": true
+        },
+        {
+          "key": "stationary_total",
+          "provided": true,
+          "quote": "900 000 tCO₂e",
+          "turn": 1,
+          "observedCanonical": 900000000,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dwa zapisy razem dają 900 mln kg.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "600000 tonnes is residential Scope 1",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — **66,7%** emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — **33,3%** emisji energii stacjonarnej  \n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 1 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.1."
+        },
+        {
+          "target": "300000 tonnes is residential Scope 2",
+          "verdict": "correct",
+          "quote": "Zakres 1:** **600 000 tCO₂e** — **66,7%** emisji energii stacjonarnej  \n- **Zakres 2:** **300 000 tCO₂e** — **33,3%** emisji energii stacjonarnej  \n\nObie wartości dotyczą przede wszystkim budynków mieszkalnych.",
+          "turn": 1,
+          "reason": "Zakres 2 z kwotą jest w tej samej odpowiedzi powiązany z budynkami mieszkalnymi; odpowiada I.1.2."
+        },
+        {
+          "target": "Two rows do not prove the complete sector",
+          "verdict": "correct",
+          "quote": "Nie oznacza to jednak, że sektor jest kompletny.",
+          "turn": 3,
+          "reason": "Odpowiedź odrzuca pewność kompletności; inne twierdzenia w tej samej turze oceniono oddzielnie."
+        }
+      ],
+      "summary": "Figures correct; the energy carrier was inferred without supporting detail. The UI/tool percentage difference is not scored as a proven error.",
+      "findings": [
+        {
+          "turn": 2,
+          "title": "Energy carrier inferred without evidence",
+          "origin": "CA response",
+          "observed": "The full 300,000 t Scope 2 row attributed to electricity.",
+          "expected": "The frozen I.1.2 aggregate does not identify the energy carrier.",
+          "reason": "The explanation should preserve the level of detail available in the inventory.",
+          "evidence": "frozen-reference.json and the recorded emissions-context tool result."
+        }
+      ]
+    },
+    {
+      "key": "UB04-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Poprawnie prosi o mianownik, którego nie otrzymał w wyniku narzędzia; jednak niesłusznie stwierdza, że nie ma go w danych produktu.",
+          "materialErrors": [
+            {
+              "claim": "nie jest dostępna w danych inwentaryzacyjnych",
+              "reason": "Brak populacji w zwróconym kontekście emisji nie dowodzi braku danych w produkcie; niezależny stan i widok zawierają 100 000 mieszkańców.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.before.population: 100000 w 2024; evidence.ui final: 100K Total Population; wywołania z tury 1 nie zwracają odczytu populacji."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Gotowy wskaźnik bez liczby ludności nie został podany; prośba o mianownik jest uzasadniona."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca rocznie",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji.",
+          "scored": true
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca/rok",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podana przez Ciebie liczba",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "The calculations passed. The only flagged issue is saying population was absent from the inventory when it was only absent from CA’s current context.",
+      "findings": [
+        {
+          "turn": 1,
+          "title": "Tool visibility confused with product data availability",
+          "origin": "CA response / limited context",
+          "observed": "Population said to be unavailable in the inventory.",
+          "expected": "The product UI and saved state contain 100,000 residents; CA had not received that field in its current tool result.",
+          "reason": "Asking for the denominator was reasonable. Claiming that the product lacks it was too strong. The subsequent calculations were correct.",
+          "evidence": "Recorded before.population and final UI: 100K Total Population."
+        }
+      ]
+    },
+    {
+      "key": "UB04-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji.",
+          "scored": true
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podanej przez Ciebie populacji",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "Passed: 18 and 15 tCO₂e per resident were calculated correctly.",
+      "findings": []
+    },
+    {
+      "key": "UB04-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Wyliczono oba wskaźniki na podstawie sprawdzonych sum i jawnego założenia użytkownika; wskazano ograniczenie pokrycia. Dane before/after bez zmian.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Poprawnie prosi o mianownik, którego nie otrzymał w wyniku narzędzia; jednak niesłusznie stwierdza, że nie ma go w danych produktu.",
+          "materialErrors": [
+            {
+              "claim": "tej wartości nie ma obecnie w danych inwentaryzacji",
+              "reason": "Brak populacji w wyniku narzędzia nie dowodzi jej braku w produkcie; dane i widok pokazują 100 000.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.before.population: 100000 w 2024; evidence.ui final: 100K Total Population; kontekst emisji nie zwraca populacji."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Gotowy wskaźnik bez liczby ludności nie został podany; prośba o mianownik jest uzasadniona."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "per_capita2024",
+          "provided": true,
+          "quote": "18 t CO₂e na mieszkańca rocznie",
+          "turn": 2,
+          "observedCanonical": 18,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2024: 1 800 000 t / 100 000 osób = 18 t/os. w roku inwentaryzacji.",
+          "scored": true
+        },
+        {
+          "key": "per_capita2023",
+          "provided": true,
+          "quote": "15 t CO₂e/mieszkańca/rok",
+          "turn": 3,
+          "observedCanonical": 15,
+          "canonicalUnit": "tCO2e/person/year",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "2023: 1 500 000 t / 100 000 osób = 15 t/os. w roku inwentaryzacji.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Population given by user must not be claimed as independently read",
+          "verdict": "correct",
+          "quote": "podaną przez Ciebie liczbę",
+          "turn": 2,
+          "reason": "W odpowiedzi określono populację jako podaną przez użytkownika; stan before niezależnie potwierdza tę wartość."
+        },
+        {
+          "target": "Per capita values do not prove complete coverage",
+          "verdict": "correct",
+          "quote": "IPPU",
+          "turn": 3,
+          "reason": "W tej samej odpowiedzi wyjaśniono brak danych IPPU i AFOLU oraz ograniczenie wyniku."
+        }
+      ],
+      "summary": "The calculations passed. The only flagged issue is saying population was absent from the inventory when it was only absent from CA’s current context.",
+      "findings": [
+        {
+          "turn": 1,
+          "title": "Tool visibility confused with product data availability",
+          "origin": "CA response / limited context",
+          "observed": "Population said to be unavailable in the inventory.",
+          "expected": "The product UI and saved state contain 100,000 residents; CA had not received that field in its current tool result.",
+          "reason": "Asking for the denominator was reasonable. Claiming that the product lacks it was too strong. The subsequent calculations were correct.",
+          "evidence": "Recorded before.population and final UI: 100K Total Population."
+        }
+      ]
+    },
+    {
+      "key": "UB05-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "The gap review and next steps were provided. In run 2, NO was conditional and the full answer requested verification of occurrence; no notation was applied. The isolated wording is not sufficient to fail the task.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Passed: the gaps and next steps were useful. The UI/tool status difference remains unconfirmed and is not scored as an error.",
+      "findings": []
+    },
+    {
+      "key": "UB05-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "The gap review and next steps were provided. In run 2, NO was conditional and the full answer requested verification of occurrence; no notation was applied. The isolated wording is not sufficient to fail the task.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Passed: the NO suggestion was conditional, the answer asked the user to verify whether the activity occurs, and nothing was changed. The prior failure finding is withdrawn.",
+      "findings": [
+        {
+          "turn": 3,
+          "severity": "observation",
+          "title": "Conditional guidance — failure finding withdrawn",
+          "origin": "Full-answer reassessment",
+          "observed": "CA conditionally suggested considering NO, then explicitly asked the user to establish whether the activity occurs.",
+          "expected": "Read the conditional wording together with the final verification steps. No NO notation was applied.",
+          "reason": "The isolated clause does not establish a material failure in this full answer. The user was told to verify occurrence, and inventory data remained unchanged. Answer and task pass.",
+          "evidence": "UB05-r2 recorded turn 3 and unchanged inventory readback."
+        }
+      ]
+    },
+    {
+      "key": "UB05-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "The gap review and next steps were provided. In run 2, NO was conditional and the full answer requested verification of occurrence; no notation was applied. The isolated wording is not sufficient to fail the task.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [],
+      "summary": "Passed: the gaps and next steps were useful. The UI/tool status difference remains unconfirmed and is not scored as an error.",
+      "findings": []
+    },
+    {
+      "key": "UC01-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "The consent/search mechanism completed, but the overall source-discovery task is partial because wrong supplied provenance misleads the user about data suitability. Confirmation is not penalized.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "insufficient",
+          "reason": "Brak tekstu, transport nie ukończył odpowiedzi. Zdarzenia potwierdzają uruchomienie generowania szkicu; późniejszy szkic jest gotowy.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Treść odpowiedzi na prośbę w tej turze."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "SEEG** — dane krajowe z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "Wszystkie dostępne dane są krajowe i starsze niż inwentarz 2022: SEEG pochodzi z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Partially successful: the confirmed search produced a ready 21-proposal draft without saving. The supplied source descriptions contain wrong year/geography metadata, so the overall source-discovery task remains partial. Confirmation is expected behavior.",
+      "findings": [
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b"
+            ],
+            "pl": [
+              "\\b2015\\b"
+            ]
+          }
+        },
+        {
+          "turn": 4,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b"
+            ],
+            "pl": [
+              "\\b2015\\b"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "UC01-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "The consent/search mechanism completed, but the overall source-discovery task is partial because wrong supplied provenance misleads the user about data suitability. Confirmation is not penalized.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "wszystkie mają dopasowanie na poziomie kraju, a nie bezpośrednio miasta, i dotyczą lat wcześniejszych niż inwentarz 2022",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "Nie są to dane bezpośrednio dla São Paulo",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Partially successful: the confirmed search produced a ready 21-proposal draft without saving. The supplied source descriptions contain wrong year/geography metadata, so the overall source-discovery task remains partial. Confirmation is expected behavior.",
+      "findings": [
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b"
+            ],
+            "pl": [
+              "\\b2015\\b"
+            ]
+          }
+        },
+        {
+          "turn": 4,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "2014[–-]2019"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "2014[–-]2019"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "UC01-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "The consent/search mechanism completed, but the overall source-discovery task is partial because wrong supplied provenance misleads the user about data suitability. Confirmation is not penalized.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "SEEG (2015, poziom kraju)",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "dostępne dane są krajowe i starsze: SEEG z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Partially successful: the confirmed search produced a ready 21-proposal draft without saving. The supplied source descriptions contain wrong year/geography metadata, so the overall source-discovery task remains partial. Confirmation is expected behavior.",
+      "findings": [
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b"
+            ],
+            "pl": [
+              "\\b2015\\b"
+            ]
+          }
+        },
+        {
+          "turn": 4,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b"
+            ],
+            "pl": [
+              "\\b2015\\b"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "UC02-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** krajowy (Brazylia)",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok źródła:** 2015",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "źródło ma zasięg **krajowy**, a nie miejski",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "dotyczy **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1 117 504 701 kg CO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dokładna suma i jednostka zgadzają się z niezależnym SEEG; przybliżenie 1,12 Mt ma właściwą precyzję.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok źródła:** 2015",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** krajowy (Brazylia)",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "I.1.1 — budynki mieszkalne, zakres 1",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG, I.1.1 and the exact kg total are correct. The model was given inventory.year = 2022 and source.dataset_year = 2015 / country. That supplied source metadata conflicts with the verified city-specific 2022 record.",
+      "findings": [
+        {
+          "turn": 2,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        },
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "UC02-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** poziom krajowy (Brazylia)",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok źródła:** 2015",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "Źródło ma zasięg **krajowy dla Brazylii**",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "pochodzi z **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1,117,504,701 kgCO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "The required exact value and unit are correct. The additional 1.11 Mt display label was supplied by the UI formatter, which truncates decimals. It is a non-penalizing UI observation, not an established independent LLM arithmetic error.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok źródła:** 2015",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** poziom krajowy (Brazylia)",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "budynków mieszkalnych, zakres 1 (I.1.1)",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG, I.1.1 and the exact kg total are correct. The model was given inventory.year = 2022 and source.dataset_year = 2015 / country. That supplied source metadata conflicts with the verified city-specific 2022 record. The 1.11 Mt text was already formatted in the UI context; its attribution to LLM arithmetic is withdrawn.",
+      "findings": [
+        {
+          "turn": 2,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        },
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        },
+        {
+          "turn": 2,
+          "severity": "observation",
+          "title": "UI truncation repeated in the answer — no LLM penalty",
+          "origin": "UI formatter and supplied context",
+          "observed": "The focused UI option already contains value = 1.11 MtCO₂e before the model answers.",
+          "expected": "The exact 1,117,504,701 kg value is correct. It equals 1.117504701 Mt; nearest rounding gives 1.12, while the UI formatter truncates to 1.11.",
+          "reason": "The actual formatter slices decimal digits. The model input includes that preformatted display string. The independent LLM arithmetic finding is withdrawn; the required exact-value check passes.",
+          "evidence": "model-context-audit.json: formatter reproduction and UC02-r2 provider-linked prompt snapshot."
+        }
+      ]
+    },
+    {
+      "key": "UC02-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** krajowy dla Brazylii",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok danych:** **2015**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "źródło ma dopasowanie **krajowe (Brazylia)**",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "propozycja opiera się na danych z **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1,117,504,701 kgCO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dokładna suma i jednostka zgadzają się z niezależnym SEEG; przybliżenie 1,12 Mt ma właściwą precyzję.",
+          "scored": true
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok danych:** **2015**",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** krajowy dla Brazylii",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "budynków mieszkalnych — zakres 1 (I.1.1)",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG, I.1.1 and the exact kg total are correct. The model was given inventory.year = 2022 and source.dataset_year = 2015 / country. That supplied source metadata conflicts with the verified city-specific 2022 record.",
+      "findings": [
+        {
+          "turn": 2,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        },
+        {
+          "turn": 3,
+          "title": "Incorrect source metadata supplied to CA",
+          "origin": "CC candidate metadata / context",
+          "observed": "Inventory year = 2022; source candidate = 2015 / country. CA repeats the candidate description.",
+          "expected": "The verified SEEG residential and commercial records concern São Paulo, 2022, at city level.",
+          "reason": "2022 is the target inventory year, not the source-candidate year in the prompt. The traced model input supplies 2015 / country; it omits raw source_data. The context builder uses catalogue startYear and coverage. This is an upstream provenance problem, not an independent LLM hallucination.",
+          "evidence": "model-context-audit.json; MLflow provider-linked system snapshot; frozen provider I.1.1 / I.2.1 responses.",
+          "patterns": {
+            "en": [
+              "\\b2015\\b",
+              "\\bnational\\b"
+            ],
+            "pl": [
+              "\\b2015\\b",
+              "\\bkrajow\\p{L}*"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "UC03-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Independent readback confirms the selected SEEG I.1.1 row at 1,117,504,701 kgCO₂e and no other changed rows. Repeating the number in prose is not a condition of successful saving.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 5,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 6,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał kwoty zapisu; brak nie oznacza zera.",
+          "scored": false,
+          "scoreDisposition": "Optional saved-total recap, excluded from accuracy denominator; the actual save is verified separately."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — zakres 1 (I.1.1)",
+          "turn": 6,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 6,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Pozostałe wiersze nie zostały zapisane",
+          "turn": 6,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched.",
+      "findings": []
+    },
+    {
+      "key": "UC03-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Independent readback confirms the selected SEEG I.1.1 row at 1,117,504,701 kgCO₂e and no other changed rows. Repeating the number in prose is not a condition of successful saving.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał łącznej zapisanej wartości z jednostką. Poszczególne liczby gazów bez jednostek nie stanowią tego wyniku.",
+          "scored": false,
+          "scoreDisposition": "Optional saved-total recap, excluded from accuracy denominator; the actual save is verified separately."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — zakres 1 (I.1.1)",
+          "turn": 4,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 4,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Nadal wymaga decyzji **14 propozycji**",
+          "turn": 4,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched. The unit-availability finding is withdrawn: this current model snapshot lacked the unit even though the UI draft had it.",
+      "findings": [
+        {
+          "turn": 4,
+          "severity": "observation",
+          "title": "Unit missing from model context — finding withdrawn",
+          "origin": "UI enrichment / CA persisted-context mismatch",
+          "observed": "The current post-save model snapshot has no emissions_unit and no kgco2 mentions; no focused UI review remains.",
+          "expected": "The UI-facing GET response separately enriches gas rows with emissions_unit = kgco2e. That enriched row was not in this current model snapshot.",
+          "reason": "The previous assessment used the UI-enriched draft as if it were identical to model context. CA receives no hallucination penalty for reporting an unavailable field. The save and answer assessment both pass.",
+          "evidence": "model-context-audit.json; UC03-r2 actual model trace; CC draft-emissions.ts enrichment."
+        }
+      ]
+    },
+    {
+      "key": "UC03-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Independent readback confirms the selected SEEG I.1.1 row at 1,117,504,701 kgCO₂e and no other changed rows. Repeating the number in prose is not a condition of successful saving.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał kwoty zapisu; brak nie oznacza zera.",
+          "scored": false,
+          "scoreDisposition": "Optional saved-total recap, excluded from accuracy denominator; the actual save is verified separately."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — Zakres 1 (I.1.1)",
+          "turn": 4,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 4,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Nadal czeka na Twoją decyzję — 14 propozycji ze źródłami",
+          "turn": 4,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched.",
+      "findings": []
+    },
+    {
+      "key": "UC04-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "insufficient",
+          "reason": "Brak tekstu i przerwany transport; w tej turze nie ma zdarzenia narzędzia. Kontynuacja w tym samym wątku później wyświetliła potwierdzenie.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Treść odpowiedzi na prośbę w tej turze."
+          ]
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 5,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 6,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nic nie zostało jeszcze zapisane do inwentarza",
+          "turn": 6,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "W wersji roboczej pozostaje jedna przyjęta propozycja",
+          "turn": 6,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Passed: cancellation prevented the save and no inventory values changed. The original interruption/recovery evidence remains preserved.",
+      "findings": []
+    },
+    {
+      "key": "UC04-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nie zapisano jeszcze nic do inwentarza",
+          "turn": 4,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "Zachowana jest jedna **tymczasowo zaakceptowana** pozycja",
+          "turn": 4,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Passed: cancellation prevented the save and no inventory values changed. The original interruption/recovery evidence remains preserved.",
+      "findings": []
+    },
+    {
+      "key": "UC04-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nic nie zostało jeszcze zapisane do inwentarza",
+          "turn": 4,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "W bieżącym szkicu przeglądu pozostaje jedna etapowana decyzja",
+          "turn": 4,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Passed: cancellation prevented the save and no inventory values changed. The original interruption/recovery evidence remains preserved.",
+      "findings": []
+    },
+    {
+      "key": "UC05-r1",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable.",
+      "findings": []
+    },
+    {
+      "key": "UC05-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable.",
+      "findings": []
+    },
+    {
+      "key": "UC05-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "No confirmed material factual error under the clarified feature scope; presentation preferences and unresolved status differences are not failures.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable.",
+      "findings": []
+    }
+  ]
+}

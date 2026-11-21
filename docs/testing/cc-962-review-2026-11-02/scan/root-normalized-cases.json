@@ -1,0 +1,61 @@
+{
+  "scaled": [
+    {
+      "emissions_value": "1000000",
+      "emissions_unit": "tCO2e",
+      "scale_factor": "0.1",
+      "issue": null
+    }
+  ],
+  "empty": [],
+  "multi": [
+    {
+      "emissions_value_100yr": "100000",
+      "emissions_unit": "kgCO2e"
+    },
+    {
+      "emissions_value_100yr": "400000",
+      "emissions_unit": "kgCO2e"
+    }
+  ],
+  "gasMulti": [
+    {
+      "methodology_name": "direct-measure",
+      "emissions_geometry": null,
+      "activity_name": "Synthetic activity",
+      "activity_units": "kg",
+      "activity_subcategory_type": null,
+      "gases": [
+        {
+          "gas_name": "CO2",
+          "emissions_value": 100000,
+          "emissionfactor_value": 1,
+          "emissionfactor_source": "Synthetic fixture",
+          "activity_value": 100000,
+          "gwp": 1,
+          "emissions_value_100yr": 100000,
+          "emissions_value_20yr": 100000
+        }
+      ]
+    },
+    {
+      "methodology_name": "direct-measure",
+      "emissions_geometry": null,
+      "activity_name": "Synthetic activity",
+      "activity_units": "kg",
+      "activity_subcategory_type": null,
+      "gases": [
+        {
+          "gas_name": "CO2",
+          "emissions_value": 400000,
+          "emissionfactor_value": 1,
+          "emissionfactor_source": "Synthetic fixture",
+          "activity_value": 400000,
+          "gwp": 1,
+          "emissions_value_100yr": 400000,
+          "emissions_value_20yr": 400000
+        }
+      ]
+    }
+  ]
+}

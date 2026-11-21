@@ -1,0 +1,135 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "rootChecks": {
+    "uniqueExistingTests": 140,
+    "pytestCore": 91,
+    "pytestAuthAndObservability": 12,
+    "jest": 37,
+    "allPassed": true,
+    "productionCodeChanged": false,
+    "liveModelRuns": 0,
+    "browserRuns": 0,
+    "deployedMlflowReadbacks": 0,
+    "localMlflowExportTests": 9
+  },
+  "confirmedProbeGroups": [
+    "A01 selected-source failed replacement destroys prior value; no-force control preserves it; manual backend variant reproduced with form-contract fixture",
+    "A02 downscaling mismatch with real Decimal",
+    "A03 kg value incorrectly labelled tCO2e in totals fallback",
+    "A04 empty records hides usable totals",
+    "A05 first-record proposal ignores later rows",
+    "ROOT-gas-record-display: actual API gases[] shape returns no emissions label",
+    "ROOT-multi-source-classification: totals 500000 and 1000000 kg with identical first records produce needs_review, expected conflict",
+    "O02 actual route and apiHandler return 200 for anonymous/unrelated-user with mocked DB and zero PermissionService calls",
+    "O06 pre-run telemetry labels general chat, active-run control labels SE",
+    "O10 case-folded manual backend units Mt/mt both return 1000000 tonnes (contract ambiguity, UI unreachable)",
+    "O03 real save orchestration keeps mocked CC first-phase write and CA pending state after second-phase exception; first-phase failure control has no write",
+    "F16 real canEditInventory grants PUBLIC_READER to a non-member on a public inventory; same private inventory is denied. No real SE product commit."
+  ],
+  "harnessProblems": [
+    {
+      "problem": "First Python probe addressed proposed_value.emissions_value_100yr directly",
+      "result": "KeyError; corrected harness to read proposed_value.row; application unchanged"
+    },
+    {
+      "problem": "Fault probe initially imported SaveStationaryEnergyDraftRequest from the generic requests module",
+      "result": "ImportError; corrected harness to use the class already imported by the real draft service. No application change."
+    },
+    {
+      "problem": "PermissionTypes re-exports UserRole; first public-reader probe did not supply its source enum",
+      "result": "TypeError; corrected harness to extract real UserRole/Roles enums from util/types.ts. No application change."
+    }
+  ],
+  "relatedIssues": [
+    {
+      "id": "CC-950",
+      "title": "Upload Inventory flow: automated backtest on the CC-951 golden set",
+      "status": "Todo",
+      "url": "https://linear.app/openearth/issue/CC-950/upload-inventory-flow-automated-backtest-on-the-cc-951-golden-set",
+      "attachments": [
+        {
+          "id": "e4e9ff1d-5174-4b31-8a66-4c684374cbb5",
+          "title": "30-60-90 · GHGI G3-N1",
+          "subtitle": "2026-11 · Structured formats robust: backtest running on all structured files (not only eCRF)",
+          "url": "https://funga.openearth.dev/roadmap?view=plan&row=30-60-90%20%C2%B7%20GHGI%7CG3-N1"
+        }
+      ]
+    },
+    {
+      "id": "CC-951",
+      "title": "Map inventory formats across the C40 & GCoM corpus and build the test set",
+      "status": "In Progress",
+      "url": "https://linear.app/openearth/issue/CC-951/map-inventory-formats-across-the-c40-and-gcom-corpus-and-build-the",
+      "attachments": [
+        {
+          "id": "10d3bba0-5c0d-4fb8-946d-9ca9d116eb43",
+          "title": "30-60-90 · GHGI G3-N2",
+          "subtitle": "2026-11 · Format support policy decided ('supported', 'supported with review', 'not supported'). Decision on bulk-loading pilot city inventories vs. cities uploading their own.",
+          "url": "https://funga.openearth.dev/roadmap?view=plan&row=30-60-90%20%C2%B7%20GHGI%7CG3-N2"
+        },
+        {
+          "id": "6f540a3e-c672-43f7-9a5f-af1913e33eae",
+          "title": "30-60-90 · GHGI G3-O2",
+          "subtitle": "2026-10 · Complete measurement and scope with GCoM/C40 sample files. \nCC-951 test set + answer keys handed to Cephas. \n\nIngestion spec v0 shared, incl. draft support policy and GCoM's AI guardrails (e",
+          "url": "https://funga.openearth.dev/roadmap?view=plan&row=30-60-90%20%C2%B7%20GHGI%7CG3-O2"
+        }
+      ]
+    },
+    {
+      "id": "CC-967",
+      "title": "Stationary Energy: Clima asks for city and year instead of starting the run from chat",
+      "status": "Done",
+      "url": "https://linear.app/openearth/issue/CC-967/stationary-energy-clima-asks-for-city-and-year-instead-of-starting-the",
+      "attachments": [
+        {
+          "id": "71c23671-f59e-4ee5-85bb-f2baf521c1fb",
+          "title": "PR #3219: Start the Stationary Energy run from chat and resume the request",
+          "subtitle": null,
+          "url": "https://github.com/Open-Earth-Foundation/CityCatalyst/pull/3219"
+        }
+      ]
+    },
+    {
+      "id": "CC-953",
+      "title": "Implement generic file ingestion spine",
+      "status": "In Progress",
+      "url": "https://linear.app/openearth/issue/CC-953/implement-generic-file-ingestion-spine",
+      "attachments": []
+    },
+    {
+      "id": "CC-960",
+      "title": "Upload Inventory flow: GHGI import rules and fixes to the current flow",
+      "status": "Done",
+      "url": "https://linear.app/openearth/issue/CC-960/upload-inventory-flow-ghgi-import-rules-and-fixes-to-the-current-flow",
+      "attachments": [
+        {
+          "id": "eaaf21e2-479e-4de6-8c79-0253e6a6e5c0",
+          "title": "30-60-90 · GHGI G3-O1",
+          "subtitle": "2026-10 · Structured formats – eCRF import correct. Order: CC-944 → CC-1011 → CC-1012 → CC-1013, re-tested on the 3 DPC files. \nAccuracy today (rows with right GPC ref, scope and value ÷ rows expected",
+          "url": "https://funga.openearth.dev/roadmap?view=plan&row=30-60-90%20%C2%B7%20GHGI%7CG3-O1"
+        }
+      ]
+    }
+  ],
+  "relatedIssueInterpretation": {
+    "goldenDataset": "CC-951 (In Progress), not CC-950",
+    "backtest": "CC-950 (Todo); 2026-10-28 comment by Milan: manual on-demand report script, not automatic CI unit test",
+    "preRun": "CC-967 Done, linked PR3219; old bug should be a regression-control scenario, not assumed current failure",
+    "spine": "CC-953 In Progress; missing agentic import is planned integration work",
+    "uiImport": "CC-960 Done; do not reclassify all historical UI import defects as current"
+  },
+  "boundaries": [
+    "No live model runs, browser/staging writes, deployed MLflow readback or real PostgreSQL backtest",
+    "Existing tests: 140 passed; targeted bug probes are additional and not counted as existing application passes",
+    "Probe DB/transport dependencies are fixtures; numerical normalization and Decimal use real code",
+    "F09 restart recovery remains source-level evidence",
+    "F14 tool-surface contract and F15 error masking are not counted as proven permission bypasses",
+    "Golden dataset is CC-951; no accessible answer-key bundle found in inspected sources, not a claim of global nonexistence"
+  ],
+  "rejectedFindings": [
+    {
+      "id": "F07",
+      "reason": "GET enrichStationaryEnergyDraftCO2e populates emissions before UI; parent counterevidence refutes missing-value claim for normal GET flow. First-row F06 remains."
+    }
+  ]
+}

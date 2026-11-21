@@ -1,0 +1,157 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "checkedAt": "2026-11-01T00:02:27.710Z",
+  "sourceFiles": {
+    "app/src/backend/agentic/ghgi/stationary-energy/scope.ts": "503e24e99b2f45b686654a94183ef96d74954bae00c3ac0552dc7907a2210032",
+    "app/src/util/big_int.ts": "53268f040f6c0d0863be07f212f5967900299762aa1e7a1499ca452b214307d0",
+    "app/src/backend/DataSourceService.ts": "2a448e3f13f324f0ec0154209ad90a025bf7fc873b59f53d516ec76843897911",
+    "app/src/backend/agentic/ghgi/stationary-energy/commit.ts": "22b77615ea2a6600c8523d720244b55d48cbd7aff4ad1044e636d1d7e37f078b",
+    "app/src/backend/agentic/ghgi/stationary-energy/context.ts": "48e18637659a4dfb5c651ad4dc25660f752b95876968901675d71653bf66242d",
+    "app/src/components/StationaryEnergyDraft/utils.ts": "2b37d874e52bff5cdd7f9a9faf3d4273d459fcfce7beaa8fb6469082ceb1608f",
+    "app/src/backend/agentic/ghgi/stationary-energy/draft-emissions.ts": "98f897e120c639dd961527015297a9eb3293d668caaee46bbe0d6fb6d7c9c7f8",
+    "app/src/util/api.ts": "8f708f411cbcac5a504c3797472143ace6463681e54945e2d38022950de7f622",
+    "app/src/app/api/v1/datasource/[inventoryId]/route.ts": "91e7a05e4d9926a0d525b9ae7b69e3140801658aa9fa6db6f7586e2666942451",
+    "app/src/util/types.ts": "1225eeae6ba65511beb513e559ccfb9617fd7b9eaa6ed5ac86be7c28dac48a87",
+    "app/src/backend/permissions/PermissionTypes.ts": "bb59f5e5aef639e2ec0778124e5b178d67f092b83e1fa23033238d36076dedd7",
+    "app/src/backend/permissions/PermissionService.ts": "a4583f5f16740fb191d80a86f928ceac8314632a1e71b45df3e9077f32f3875a"
+  },
+  "findings": [
+    {
+      "id": "A01-selected",
+      "status": "reproduced-with-mocked-db",
+      "result": {
+        "proposal_id": "p-1",
+        "decision_version": 1,
+        "selected_source_id": "source-1",
+        "status": "failed",
+        "issue": "synthetic source failure"
+      },
+      "oldValueExists": false,
+      "events": [
+        "destroy-old",
+        "retrieve-failed"
+      ]
+    },
+    {
+      "id": "A01-control",
+      "status": "control-passed",
+      "forceReplace": false,
+      "oldValueExists": true,
+      "events": []
+    },
+    {
+      "id": "A01-manual",
+      "status": "reproduced-with-mocked-db-and-form-contract",
+      "result": {
+        "proposal_id": "manual-1",
+        "decision_version": 1,
+        "manual_value": 12.5,
+        "manual_unit": "tCO2e",
+        "status": "failed",
+        "issue": "synthetic create failure"
+      },
+      "oldValueExists": false,
+      "events": [
+        "destroy-old",
+        "create-failed"
+      ]
+    },
+    {
+      "id": "A02",
+      "status": "reproduced-with-real-decimal",
+      "preview": {
+        "emissions_value": "1000000",
+        "emissions_unit": "tCO2e",
+        "scale_factor": "0.1",
+        "issue": null
+      },
+      "committedKgCO2e": "100000",
+      "approvedToCommittedRatio": 10
+    },
+    {
+      "id": "A03",
+      "status": "contract-mismatch-reproduced",
+      "rawInputKg": 1000000,
+      "normalizedUnit": "tCO2e",
+      "normalizedValue": "1000000",
+      "correctUnscaledTonnes": 1000
+    },
+    {
+      "id": "A04",
+      "status": "normalizer-reproduced",
+      "availableTotalKg": 1000000,
+      "normalizedRows": []
+    },
+    {
+      "id": "ROOT-gas-record-display",
+      "status": "real-api-shape-reproduced",
+      "inputRecordShape": "DataSourceActivityDataRecord with gases[]",
+      "firstRecordKgCO2e": 100000,
+      "totalKgCO2e": 500000,
+      "uiEmissionsLabel": null,
+      "uiFallbackFromCaller": "draft-value-no-source"
+    },
+    {
+      "id": "ROOT-gas-record-display-counterevidence",
+      "status": "F07-rejected-as-end-to-end-UI-defect",
+      "getRouteEnrichmentAddsValue": "100000",
+      "normalizedUnit": "kgco2e",
+      "uiLabelIsPresent": true,
+      "remainingDefect": "F06: enriched proposal still contains only the first 100000 kg record, not total 500000 kg",
+      "boundary": "Real GET enrichment function; CO2-only calculator dependency and final text formatting are fixture adapters. No browser run."
+    },
+    {
+      "id": "O02-anonymous",
+      "status": "real-handler-and-wrapper-reproduced",
+      "httpStatus": 200,
+      "returnedFixtureSource": "Private inventory fixture source",
+      "permissionCalls": 0
+    },
+    {
+      "id": "O02-unrelated-user",
+      "status": "real-handler-and-wrapper-reproduced",
+      "httpStatus": 200,
+      "returnedFixtureSource": "Private inventory fixture source",
+      "permissionCalls": 0
+    },
+    {
+      "id": "O10",
+      "status": "backend-unit-ambiguity-reproduced",
+      "lowerMt": {
+        "value": 1000000,
+        "unit": "units-tonnes"
+      },
+      "upperMt": {
+        "value": 1000000,
+        "unit": "units-tonnes"
+      },
+      "tonnesControl": {
+        "value": 1,
+        "unit": "units-tonnes"
+      },
+      "boundary": "Manual override backend only; current UI has no manual unit input. Product must define accepted unit semantics."
+    },
+    {
+      "id": "ROOT-public-reader-edit",
+      "status": "real-permission-service-reproduced",
+      "publicInventoryCanEdit": {
+        "hasAccess": true,
+        "userRole": "PUBLIC_READER",
+        "organizationId": "foreign-org",
+        "resource": {
+          "inventoryId": "public-fixture",
+          "isPublic": true,
+          "cityId": "foreign-city"
+        }
+      },
+      "membershipLookupsBeforeGrant": 0,
+      "privateInventoryControl": "denied-403",
+      "boundary": "Real PermissionService and role enum; inventory/resource loaders and membership lookup mocked. No real product write or browser reachability check."
+    }
+  ],
+  "environment": {
+    "node": "v24.22.1",
+    "decimalVersion": "10.6.0"
+  },
+  "boundary": "Real pinned TS functions, real Decimal and scope matcher; mocked DB/transport/history/webhooks. Manual form contract is a fixture. No browser, PostgreSQL, deployment or LLM execution."
+}

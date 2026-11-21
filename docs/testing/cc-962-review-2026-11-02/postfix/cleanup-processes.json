@@ -1,0 +1,20 @@
+[
+  {
+    "result": "SUCCESS: The process with PID 80580 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 38596 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 71296 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 84168 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 91712 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 44944 (child process of PID 2808) has been terminated.\nSUCCESS: The process with PID 2808 (child process of PID 94748) has been terminated.\nSUCCESS: The process with PID 94748 (child process of PID 75264) has been terminated.",
+    "pid": 94748,
+    "exitCode": 0,
+    "name": "web"
+  },
+  {
+    "result": "SUCCESS: The process with PID 18112 (child process of PID 103268) has been terminated.\nSUCCESS: The process with PID 103268 (child process of PID 80196) has been terminated.\nSUCCESS: The process with PID 80196 (child process of PID 75264) has been terminated.",
+    "pid": 80196,
+    "exitCode": 0,
+    "name": "ca"
+  },
+  {
+    "result": "SUCCESS: The process with PID 24800 (child process of PID 75264) has been terminated.",
+    "pid": 24800,
+    "exitCode": 0,
+    "name": "cc-db-forward"
+  }
+]

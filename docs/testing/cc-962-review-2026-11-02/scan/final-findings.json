@@ -1,0 +1,1184 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "catalog": [
+    {
+      "id": "F01",
+      "title": "Nieudana lub nieaktualna zamiana źródła usuwa poprzednią wartość",
+      "type": "bug",
+      "severity": "P1",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "A01",
+        "O01"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Wywołanie forceReplace usuwa stary InventoryValue przed fetch/transaction. Awaria nowego źródła lub manual create pozostawia brak starej wartości. Aktywny lub wznowiony draft może również nadpisać edycję współpracownika.",
+      "limitations": "DB i transport były atrapami; wariant manual ma atrapę kontraktu formularza. Nie wykonano próby PostgreSQL.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 131,
+          "lineEnd": 139,
+          "claim": "applySource is called with forceReplace=true"
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 511,
+          "lineEnd": 552,
+          "claim": "destroy poprzedza fetch i transakcję."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 213,
+          "lineEnd": 237,
+          "claim": "Manual override: destroy, then createActivity separately"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 160,
+          "lineEnd": 170,
+          "claim": "Wypełnione pola filtrowane przy starcie."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 514,
+          "lineEnd": 530,
+          "claim": "With forceReplace, the existing InventoryValue is destroyed without a version entry"
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 532,
+          "lineEnd": 575,
+          "claim": "Source fetch and the creating transaction happen after the destroy"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 161,
+          "lineEnd": 169,
+          "claim": "Filled refs are filtered at draft time only"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 1484,
+          "lineEnd": 1541,
+          "claim": "Staleness compares source sets only"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 1045,
+          "lineEnd": 1229,
+          "claim": "Save performs no target-emptiness or staleness check"
+        },
+        {
+          "path": "app/src/app/api/v1/datasource/[inventoryId]/route.ts",
+          "lineStart": 303,
+          "lineEnd": 313,
+          "claim": "UI connect path does not use forceReplace"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 379,
+          "lineEnd": 394,
+          "claim": "Notation path rejects rows that already have emissions (contrast)"
+        }
+      ]
+    },
+    {
+      "id": "F02",
+      "title": "Odczyt źródeł inventory pomija kontrolę dostępu",
+      "type": "bug",
+      "severity": "P1",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "O02"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Rzeczywisty GET i apiHandler zwróciły HTTP 200 dla braku sesji oraz obcego użytkownika; PermissionService nie został wywołany. Dotyczy odczytu dopasowanych źródeł, nie dowodu dostępu do wszystkich zapisanych wartości inventory.",
+      "limitations": "Rzeczywista logika handlera/wrappera, lecz baza i dane źródeł były syntetyczne. Sibling sector GET potwierdzony w kodzie; brak próby na wdrożeniu.",
+      "evidence": [
+        {
+          "path": "app/src/app/api/v1/datasource/[inventoryId]/route.ts",
+          "lineStart": 10,
+          "lineEnd": 10,
+          "claim": "Swagger: no explicit authentication is enforced"
+        },
+        {
+          "path": "app/src/app/api/v1/datasource/[inventoryId]/route.ts",
+          "lineStart": 100,
+          "lineEnd": 145,
+          "claim": "GET has no session or permission check"
+        },
+        {
+          "path": "app/src/app/api/v1/datasource/[inventoryId]/route.ts",
+          "lineStart": 246,
+          "lineEnd": 251,
+          "claim": "POST checks canEditInventory (contrast)"
+        },
+        {
+          "path": "app/src/app/api/v1/datasource/[inventoryId]/[sectorId]/route.ts",
+          "lineStart": 97,
+          "lineEnd": 104,
+          "claim": "Sector GET has no permission check"
+        },
+        {
+          "path": "app/src/util/api.ts",
+          "lineStart": 325,
+          "lineEnd": 461,
+          "claim": "apiHandler proceeds with a null session"
+        },
+        {
+          "path": "app/src/proxy.ts",
+          "lineStart": 70,
+          "lineEnd": 115,
+          "claim": "/api paths only get CORS headers"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/cc_inventory_wrappers.py",
+          "lineStart": 54,
+          "lineEnd": 77,
+          "claim": "The tool takes a model-supplied inventory_id"
+        },
+        {
+          "path": "climate-advisor/service/app/services/citycatalyst_client.py",
+          "lineStart": 1265,
+          "lineEnd": 1268,
+          "claim": "The CA client calls /api/v1/datasource/{inventory_id}/"
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "title": "Podgląd i zapis rozchodzą się po skalowaniu populacji",
+      "type": "bug",
+      "severity": "P1",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "A02"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Propozycja zachowuje surowe 1 000 000 kg przy scaleFactor 0,1, a commit zapisuje 100 000 kg. Użytkownik powinien zatwierdzać tę samą fizyczną wartość, która trafi do inventory.",
+      "limitations": "Realny Decimal i bieżący normalizer/commit/builder; brak pełnej ścieżki przeglądarki.",
+      "evidence": [
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 898,
+          "lineEnd": 914,
+          "claim": "Współczynnik dodawany jako metadana."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 742,
+          "lineEnd": 749,
+          "claim": "Brak mnożenia."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 463,
+          "lineEnd": 479,
+          "claim": "Propozycja kopiuje wiersz."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 339,
+          "lineEnd": 377,
+          "claim": "Formatter bez skali."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Commit mnoży i zapisuje."
+        }
+      ]
+    },
+    {
+      "id": "F04",
+      "title": "Fallback totals opisuje kilogramy etykietą tCO2e",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "A03"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Liczba kg jest kopiowana bez przeliczenia jako tCO2e. Obecne obejście UI traktuje tco2e jak raw kg, ale model i utrwalony kontrakt nadal dostają sprzeczną jednostkę.",
+      "limitations": "Dotyczy ścieżki totals fallback. Nie oznacza, że każda widoczna liczba jest tysiąckrotnie błędna.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 742,
+          "lineEnd": 749,
+          "claim": "Błędna etykieta jednostki."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 15,
+          "lineEnd": 15,
+          "claim": "tco2e w RAW_KG_EMISSIONS_UNITS."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 348,
+          "lineEnd": 357,
+          "claim": "Obejście formattera."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_chat_context.py",
+          "lineStart": 65,
+          "lineEnd": 99,
+          "claim": "Wiersze i propozycje w kontekście czatu."
+        },
+        {
+          "path": "app/tests/stationary-energy-draft-display.jest.ts",
+          "lineStart": 180,
+          "lineEnd": 207,
+          "claim": "Test utrwala obejście UI."
+        }
+      ]
+    },
+    {
+      "id": "F05",
+      "title": "Puste records ukrywa prawidłowy total źródła",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "A04"
+      ],
+      "rootEvidence": "root-python-probe-results.json",
+      "description": "records=[] kończy normalizację; totals nie zostaje użyty, a builder daje gap mimo dostępnej wartości. Global API liczy totals i szczegóły odrębnymi zapytaniami.",
+      "limitations": "Syntetyczny zgodny kontrakt; nie sprawdzono częstości tego kształtu w danych produkcyjnych.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 723,
+          "lineEnd": 749,
+          "claim": "Pusta tablica pomija totals."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 61,
+          "lineEnd": 74,
+          "claim": "Użyteczność tylko normalized_rows."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 122,
+          "lineEnd": 148,
+          "claim": "Powstaje gap."
+        }
+      ]
+    },
+    {
+      "id": "F06",
+      "title": "Tylko pierwszy rekord decyduje o propozycji i zgodności źródeł",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "A05"
+      ],
+      "rootEvidence": "root-python-probe-results.json",
+      "description": "Z dwóch rekordów 100 000 + 400 000 kg propozycja bierze pierwszy. Dwa źródła z sumami 500 000 i 1 000 000 kg są uznane za needs_review zamiast conflict, jeśli pierwszy rekord jest jednakowy.",
+      "limitations": "Potwierdzono także kształt gases[] z kontraktu Global API; brak live danych referencyjnych.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+          "lineStart": 730,
+          "lineEnd": 731,
+          "claim": "Lista records."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "Pierwszy wiersz w propozycji."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/flow-review.ts",
+          "lineStart": 678,
+          "lineEnd": 686,
+          "claim": "Pierwszy wiersz alternatywnego źródła."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+          "lineStart": 430,
+          "lineEnd": 454,
+          "claim": "Wyświetlenie wartości propozycji."
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 546,
+          "lineEnd": 558,
+          "claim": "Zapis total."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_proposal_builder.py",
+          "lineStart": 258,
+          "lineEnd": 276,
+          "claim": "Porównanie pierwszego użytecznego rekordu"
+        }
+      ]
+    },
+    {
+      "id": "F07",
+      "title": "Gotowa propozycja z gases[] nie pokazuje wartości emisji",
+      "type": "rejected",
+      "severity": "—",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "refuted",
+      "aliases": [],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Surowy formatter zwraca null dla gases[], ale rzeczywista trasa GET woła enrichStationaryEnergyDraftCO2e i uzupełnia wartość przed UI. Sonda pełniejszej ścieżki odrzuciła wniosek o brakującej etykiecie jako aktualnym defekcie. Pozostaje F06: wzbogacony podgląd obejmuje tylko pierwszy rekord.",
+      "limitations": "Nie policzono jako otwartej usterki. Kontrdowód używa realnego GET enrichment z kontrolowanym CO2-only kalkulatorem i adapterem formatowania.",
+      "evidence": [
+        {
+          "path": "app/src/app/api/v1/stationary-energy-drafts/[draftRunId]/route.ts",
+          "lineStart": 46,
+          "lineEnd": 49,
+          "claim": "GET enrichment przed UI"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/draft-emissions.ts",
+          "lineStart": 6,
+          "lineEnd": 44,
+          "claim": "Uzupełnia CO2e dla gases[]"
+        }
+      ]
+    },
+    {
+      "id": "F08",
+      "title": "Częściowy zapis pozostawia różny stan w CA i CC",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "O03"
+      ],
+      "rootEvidence": "root-fault-probe-results.json",
+      "description": "Po udanej fazie źródeł i błędzie fazy notation keys orkiestracja nie utrwala wyników w CA. W sondzie fake CC zachował zapis, CA pozostało pending_cc_commit; kontrola błędu pierwszej fazy nie zapisywała nic.",
+      "limitations": "Realna orkiestracja, lecz transport/repository i przygotowanie commit rows są atrapami. Nie uruchomiono HTTP/real rollback.",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 1133,
+          "lineEnd": 1208,
+          "claim": "Two sequential CC commits"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 1216,
+          "lineEnd": 1229,
+          "claim": "Results are persisted only after both phases"
+        },
+        {
+          "path": "climate-advisor/service/app/routes/stationary_energy_drafts.py",
+          "lineStart": 200,
+          "lineEnd": 210,
+          "claim": "Rollback on any exception"
+        },
+        {
+          "path": "climate-advisor/service/app/services/citycatalyst_client.py",
+          "lineStart": 832,
+          "lineEnd": 838,
+          "claim": "Timeout is datasource_timeout"
+        },
+        {
+          "path": "climate-advisor/service/app/services/citycatalyst_client.py",
+          "lineStart": 138,
+          "lineEnd": 141,
+          "claim": "datasource_timeout = max(timeout, 90)"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 46,
+          "lineEnd": 61,
+          "claim": "Rows are committed sequentially"
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-save.ts",
+          "lineStart": 116,
+          "lineEnd": 134,
+          "claim": "UI shows an error on exception"
+        }
+      ]
+    },
+    {
+      "id": "F09",
+      "title": "Przerwany draft może pozostać generating i odpytuje się bez końca",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "new",
+      "aliases": [
+        "O04"
+      ],
+      "rootEvidence": null,
+      "description": "Generation jest zadaniem asyncio w procesie, bez lease/heartbeat/startup recovery; frontend odpytuje co 2 s. Retry jest dopuszczone dla generating, bez wykazanego zabezpieczenia przed drugim workerem.",
+      "limitations": "Restartu poda ani równoległych workerów nie odtworzono; to dowód z kodu, nie pomiar wdrożenia.",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 94,
+          "lineEnd": 106,
+          "claim": "In-process background task"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 193,
+          "lineEnd": 197,
+          "claim": "Retry is only blocked for reviewed/saved/partially_saved"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 1419,
+          "lineEnd": 1425,
+          "claim": "Review and save return 409 while generating"
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-draft-session.ts",
+          "lineStart": 194,
+          "lineEnd": 222,
+          "claim": "Unbounded 2 s polling"
+        },
+        {
+          "path": "climate-advisor/service/app/persistence/concept_notes/context_bundle.py",
+          "lineStart": 489,
+          "lineEnd": 520,
+          "claim": "CNB stale recovery (contrast)"
+        }
+      ]
+    },
+    {
+      "id": "F10",
+      "title": "Tury SE przed startem draftu mają tagi zwykłego czatu",
+      "type": "bug",
+      "severity": "P2",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "O06"
+      ],
+      "rootEvidence": "root-python-probe-results.json",
+      "description": "ChatWorkflowContext bez run ID daje prompt_name=chat i ca_agentic_flow=false, choć powierzchnia pre-run wybiera prompt SE. Kontrola z run ID daje stationary_energy_review.",
+      "limitations": "Sonda funkcji telemetry oraz źródła wyboru promptu; nie odczytano tej tury ze wdrożonego MLflow.",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/utils/chat_workflow_context.py",
+          "lineStart": 62,
+          "lineEnd": 95,
+          "claim": "Telemetry ignores the SE surface flag"
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 162,
+          "lineEnd": 168,
+          "claim": "The SE surface selects the SE prompt"
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 353,
+          "lineEnd": 359,
+          "claim": "Agent instructions = stationary_energy_review"
+        },
+        {
+          "path": "climate-advisor/service/app/utils/streaming_agent.py",
+          "lineStart": 50,
+          "lineEnd": 64,
+          "claim": "SE surface is detected from the request marker"
+        },
+        {
+          "path": "climate-advisor/service/app/utils/streaming_agent.py",
+          "lineStart": 137,
+          "lineEnd": 150,
+          "claim": "MLflow tags come from workflow_context"
+        },
+        {
+          "path": "climate-advisor/service/app/utils/streaming_telemetry.py",
+          "lineStart": 82,
+          "lineEnd": 101,
+          "claim": "Trace metadata and tags come from workflow_context"
+        },
+        {
+          "path": "climate-advisor/service/app/utils/streaming_runner.py",
+          "lineStart": 108,
+          "lineEnd": 133,
+          "claim": "Agents SDK trace metadata comes from workflow_context"
+        }
+      ]
+    },
+    {
+      "id": "F11",
+      "title": "Ogólny prompt nie określa ograniczeń i routingu GHGI",
+      "type": "prompt-gap",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "still-valid",
+      "aliases": [
+        "A06",
+        "O05"
+      ],
+      "rootEvidence": null,
+      "description": "Brakuje jawnej instrukcji o braku upload/create/import/edit/import-job read oraz przekierowaniu do importu UI lub SE. Poprzednia luka S11 pozostaje.",
+      "limitations": "Nie odtworzono nowej halucynacji modelu; stare zgłoszenie upload PDF nie jest bieżącym wynikiem live.",
+      "evidence": [
+        {
+          "path": "climate-advisor/prompts/chat.md",
+          "lineStart": 15,
+          "lineEnd": 68,
+          "claim": "Routing and output rules only; no limits section"
+        },
+        {
+          "path": "climate-advisor/prompts/tools/default_tool_policy.md",
+          "lineStart": 1,
+          "lineEnd": 26,
+          "claim": "Polityka odczytów."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 278,
+          "lineEnd": 287,
+          "claim": "Start SE wymaga powierzchni SE."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 353,
+          "lineEnd": 368,
+          "claim": "Wybór promptu."
+        },
+        {
+          "path": "climate-advisor/prompts/core.md",
+          "lineStart": 22,
+          "lineEnd": 30,
+          "claim": "No capability limits"
+        },
+        {
+          "path": "app/src/backend/FileValidatorService.ts",
+          "lineStart": 18,
+          "lineEnd": 18,
+          "claim": "Real accepted import formats: xlsx, csv, pdf"
+        }
+      ]
+    },
+    {
+      "id": "F12",
+      "title": "Backend manual override składa Mt i mt do tej samej skali",
+      "type": "contract-risk",
+      "severity": "P3",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "O10"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Oba aliasy normalizują się do ×1 000 000 ton; t ma kontrolnie ×1. Zgodność z jednostką mt rozumianą w UI jako metric tonne wymaga jednoznacznego kontraktu.",
+      "limitations": "Ścieżka API/backend, bez obecnego pola manual input w UI. Część semantyki wymaga decyzji Product/Data; nie wykazano błędnego zwykłego zapisu UI.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 311,
+          "lineEnd": 358,
+          "claim": "Case-folded unit map"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/commit.ts",
+          "lineStart": 224,
+          "lineEnd": 237,
+          "claim": "Gas recorded as CO2"
+        },
+        {
+          "path": "app/src/app/api/v1/stationary-energy-drafts/[draftRunId]/review/route.ts",
+          "lineStart": 21,
+          "lineEnd": 22,
+          "claim": "Free-string manual_unit"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_review.py",
+          "lineStart": 411,
+          "lineEnd": 439,
+          "claim": "Manual rows are forwarded to CC"
+        }
+      ]
+    },
+    {
+      "id": "F13",
+      "title": "Historia nie wiąże jawnie zapisu agenta z workflow",
+      "type": "audit-gap",
+      "severity": "P3",
+      "evidenceLevel": "code",
+      "baselineStatus": "corrected",
+      "aliases": [
+        "O11"
+      ],
+      "rootEvidence": null,
+      "description": "Historia create istnieje. Zapis nie przekazuje etykiety pochodzenia agent/UI ani identyfikatora workflow; usunięcie poprzedniej wartości bez delete version jest częścią F01.",
+      "limitations": "Brak etykiety nie jest dowodem całkowitego braku historii. Nie przeprowadzono restore/history E2E.",
+      "evidence": [
+        {
+          "path": "app/src/backend/VersionHistoryService.ts",
+          "lineStart": 80,
+          "lineEnd": 90,
+          "claim": "label option is available"
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 567,
+          "lineEnd": 575,
+          "claim": "No label is passed"
+        },
+        {
+          "path": "app/src/backend/DataSourceService.ts",
+          "lineStart": 521,
+          "lineEnd": 525,
+          "claim": "Unversioned destroy"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 131,
+          "lineEnd": 160,
+          "claim": "Draft trace_id = request id"
+        }
+      ]
+    },
+    {
+      "id": "F14",
+      "title": "Narzędzia katalogu pojawiają się na powierzchni SE poza jej promptem",
+      "type": "verification-gap",
+      "severity": "P3",
+      "evidenceLevel": "conditional",
+      "baselineStatus": "new",
+      "aliases": [
+        "O09"
+      ],
+      "rootEvidence": null,
+      "description": "Przy odpowiednim context/token narzędzia native_input są dodawane również w SE. Trzeba ustalić, czy jest to zamierzony zakres, i pokryć faktyczny zestaw narzędzi testem.",
+      "limitations": "Brak dowodu nieuprawnionego dostępu lub niepoprawnej odpowiedzi live; pozostaje pytaniem o kontrakt powierzchni.",
+      "evidence": [
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 369,
+          "lineEnd": 372,
+          "claim": "Catalog tools are always extended"
+        },
+        {
+          "path": "climate-advisor/service/app/utils/streaming_context.py",
+          "lineStart": 274,
+          "lineEnd": 305,
+          "claim": "Catalog context is built for any authenticated request"
+        },
+        {
+          "path": "climate-advisor/service/tests/test_stationary_energy_pre_run_chat.py",
+          "lineStart": 208,
+          "lineEnd": 227,
+          "claim": "Test has no catalog context"
+        }
+      ]
+    },
+    {
+      "id": "F15",
+      "title": "Korekta baseline: brak dostępu i brak inventory mają różne błędy",
+      "type": "baseline-correction",
+      "severity": "P3",
+      "evidenceLevel": "code",
+      "baselineStatus": "corrected",
+      "aliases": [
+        "O12"
+      ],
+      "rootEvidence": null,
+      "description": "Warstwa uprawnień odróżnia 403 od 404, a wrapper przekazuje status do modelu. Stary opis identycznej odpowiedzi jest nieprawdziwy.",
+      "limitations": "Nie zaliczono automatycznie do bugów/security bypass: wymaganie maskowania istnienia nie jest uzgodnione.",
+      "evidence": [
+        {
+          "path": "app/src/backend/permissions/PermissionService.ts",
+          "lineStart": 117,
+          "lineEnd": 150,
+          "claim": "404 vs 403"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/inventory_context_tools.py",
+          "lineStart": 75,
+          "lineEnd": 95,
+          "claim": "Status is passed to the model"
+        }
+      ]
+    },
+    {
+      "id": "F16",
+      "title": "PUBLIC_READER otrzymuje prawo edycji publicznego inventory",
+      "type": "bug",
+      "severity": "P1",
+      "evidenceLevel": "local-test",
+      "baselineStatus": "new",
+      "aliases": [
+        "H-PUB",
+        "SO12"
+      ],
+      "rootEvidence": "root-node-probe-results.json",
+      "description": "Rzeczywisty PermissionService.canEditInventory przyznał hasAccess=true i PUBLIC_READER zalogowanemu użytkownikowi spoza organizacji, bez odczytu członkostwa. Kontrola prywatnego inventory odmówiła 403. Ścieżki allowed-capabilities i commit SE używają tego samego canEditInventory.",
+      "limitations": "Baza i ładowanie resource były atrapami. Potwierdzono błędny grant w autoryzatorze oraz callery; nie wykonano pełnego zapisu SE ani sprawdzenia osiągalności UI na wdrożeniu.",
+      "evidence": [
+        {
+          "path": "app/src/backend/permissions/PermissionService.ts",
+          "lineStart": 93,
+          "lineEnd": 103,
+          "claim": "Public access przed membership"
+        },
+        {
+          "path": "app/src/backend/permissions/PermissionService.ts",
+          "lineStart": 187,
+          "lineEnd": 215,
+          "claim": "PUBLIC_READER"
+        },
+        {
+          "path": "app/src/backend/permissions/PermissionService.ts",
+          "lineStart": 380,
+          "lineEnd": 388,
+          "claim": "canEditInventory deleguje do canAccessInventory"
+        },
+        {
+          "path": "app/src/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route.ts",
+          "lineStart": 29,
+          "lineEnd": 40,
+          "claim": "Commit ufa canEditInventory"
+        }
+      ]
+    },
+    {
+      "id": "G01",
+      "title": "Agentowy import nie ma kompletnej ścieżki start/status/confirm",
+      "type": "planned-gap",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "still-valid",
+      "aliases": [
+        "A08",
+        "O14"
+      ],
+      "rootEvidence": null,
+      "description": "Jest fundament IngestRunner i katalog GHGI inventory, ale brak produkcyjnego podłączenia agentowego importu, trwałego store, approve/resume i kompletnego pluginu GHGI na tym commicie.",
+      "limitations": "Planowana integracja CC-953/CC-991/CC-993, nie nowa regresja UI importu.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 84,
+          "lineEnd": 100,
+          "claim": "Tylko status/emissions."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 150,
+          "lineEnd": 161,
+          "claim": "inventory_import kataloguje inventory."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/source-adapters.ts",
+          "lineStart": 73,
+          "lineEnd": 96,
+          "claim": "Adapter nie czyta import job."
+        },
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 142,
+          "lineEnd": 187,
+          "claim": "Validate/Decide/awaiting_review."
+        },
+        {
+          "path": "app/src/backend/ingest/plugins/TestIngestPlugin.ts",
+          "lineStart": 5,
+          "lineEnd": 11,
+          "claim": "Fixture plugin."
+        },
+        {
+          "path": "app/src/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route.ts",
+          "lineStart": 373,
+          "lineEnd": 443,
+          "claim": "UI auth/mapping/approval."
+        },
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 37,
+          "lineEnd": 87,
+          "claim": "Only enqueue/run"
+        },
+        {
+          "path": "app/src/backend/ingest/IngestRunner.ts",
+          "lineStart": 153,
+          "lineEnd": 172,
+          "claim": "Review stops at awaiting_review"
+        },
+        {
+          "path": "app/src/backend/ingest/store.ts",
+          "lineStart": 29,
+          "lineEnd": 43,
+          "claim": "Store interface"
+        },
+        {
+          "path": "app/src/backend/ingest/MemoryIngestStore.ts",
+          "lineStart": 9,
+          "lineEnd": 9,
+          "claim": "Only the in-memory store"
+        },
+        {
+          "path": "app/docs/GenericFileIngestionArchitecture.md",
+          "lineStart": 455,
+          "lineEnd": 467,
+          "claim": "Planned ingest.start/status/confirm (CC-993)"
+        },
+        {
+          "path": "app/docs/GenericFileIngestionArchitecture.md",
+          "lineStart": 514,
+          "lineEnd": 545,
+          "claim": "Agents cannot bypass Decide/Commit; confirm binding fields"
+        },
+        {
+          "path": "app/src/components/ChatBot/ChatInput.tsx",
+          "lineStart": 33,
+          "lineEnd": 77,
+          "claim": "No file input"
+        }
+      ]
+    },
+    {
+      "id": "G02",
+      "title": "Pełna agentowa ścieżka GHGI i fallbacki nie są dostępne",
+      "type": "planned-gap",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "still-valid",
+      "aliases": [
+        "A07",
+        "O15"
+      ],
+      "rootEvidence": null,
+      "description": "Brak agentowego create i osiągalnych manual/assisted/research/upload fallbacków oraz agentowego zapisu sektorów poza SE. Backend manual override już istnieje.",
+      "limitations": "Dla obecnego czatu poprawnym wynikiem scenariusza jest uczciwy routing/odmowa, nie zmyślony sukces.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Query-only."
+        },
+        {
+          "path": "app/src/components/Cards/SectorCard.tsx",
+          "lineStart": 52,
+          "lineEnd": 55,
+          "claim": "Agentic CTA only for stationary-energy"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Tool pack bez manual/upload/research."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 105,
+          "lineEnd": 117,
+          "claim": "Manual backend istnieje."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "claim": "NO/NE/IE/C."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 4,
+          "lineEnd": 10,
+          "claim": "SE-only capabilities"
+        }
+      ]
+    },
+    {
+      "id": "G03",
+      "title": "Brak narzędzi publish, CDP i restore",
+      "type": "planned-gap",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "still-valid",
+      "aliases": [
+        "A07",
+        "O15"
+      ],
+      "rootEvidence": null,
+      "description": "W obecnym toolset nie ma tych komend z wymaganym potwierdzeniem.",
+      "limitations": "Planowany zakres, nie dowód zepsutej istniejącej funkcji.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/registry.ts",
+          "lineStart": 71,
+          "lineEnd": 124,
+          "claim": "Query-only."
+        },
+        {
+          "path": "app/src/components/Cards/SectorCard.tsx",
+          "lineStart": 52,
+          "lineEnd": 55,
+          "claim": "Agentic CTA only for stationary-energy"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 731,
+          "lineEnd": 749,
+          "claim": "Tool pack bez manual/upload/research."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 105,
+          "lineEnd": 117,
+          "claim": "Manual backend istnieje."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/notation-keys.ts",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "claim": "NO/NE/IE/C."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 4,
+          "lineEnd": 10,
+          "claim": "SE-only capabilities"
+        }
+      ]
+    },
+    {
+      "id": "G04",
+      "title": "Potwierdzenia SE nie mają wspólnego wiązania preview i wersji decyzji",
+      "type": "planned-gap",
+      "severity": "P2",
+      "evidenceLevel": "code",
+      "baselineStatus": "still-valid",
+      "aliases": [
+        "A09",
+        "O08"
+      ],
+      "rootEvidence": null,
+      "description": "Są własne karty i staging CA, ale brak wspólnej immutable pending action/preflight-confirm-result i pełnego podglądu wierszy/wartości na karcie save. Toolset nadal jest składany ręcznie.",
+      "limitations": "Product commit nadal wymaga kliknięcia UI. Nie wykazano zapisu produktu bez potwierdzenia.",
+      "evidence": [
+        {
+          "path": "app/src/backend/agentic/ghgi/stationary-energy/registry.ts",
+          "lineStart": 48,
+          "lineEnd": 66,
+          "claim": "Metadane confirmation/scope/schema."
+        },
+        {
+          "path": "climate-advisor/service/app/services/agent_service.py",
+          "lineStart": 369,
+          "lineEnd": 438,
+          "claim": "Ręczna kompozycja."
+        },
+        {
+          "path": "app/src/backend/agentic/native-input-catalog/registry.ts",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "claim": "Finite common registry odczytów."
+        },
+        {
+          "path": "app/src/components/StationaryEnergyDraft/use-stationary-energy-review-confirmations.ts",
+          "lineStart": 62,
+          "lineEnd": 83,
+          "claim": "UI confirm→save."
+        },
+        {
+          "path": "app/src/app/api/v1/stationary-energy-drafts/[draftRunId]/save/route.ts",
+          "lineStart": 11,
+          "lineEnd": 35,
+          "claim": "Brak pending-action ID i oczekiwanej wersji decyzji."
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 277,
+          "lineEnd": 332,
+          "claim": "No server-side confirmation check"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 429,
+          "lineEnd": 473,
+          "claim": "Bulk notation apply has no confirmation check"
+        },
+        {
+          "path": "climate-advisor/service/app/tools/stationary_energy_review_tools.py",
+          "lineStart": 669,
+          "lineEnd": 720,
+          "claim": "Save confirmation returns only a message key and counts"
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_agent_review.py",
+          "lineStart": 787,
+          "lineEnd": 818,
+          "claim": "Summary = counts"
+        },
+        {
+          "path": "app/src/i18n/locales/en/stationary-energy-agentic.json",
+          "lineStart": 155,
+          "lineEnd": 158,
+          "claim": "Generic card text"
+        },
+        {
+          "path": "climate-advisor/prompts/stationary_energy_review.md",
+          "lineStart": 71,
+          "lineEnd": 85,
+          "claim": "Confirmation comes from runtime ui_context"
+        }
+      ]
+    },
+    {
+      "id": "V01",
+      "title": "Scenariusze live i backtest na answer keys pozostają niewykonane",
+      "type": "verification-gap",
+      "severity": "P2",
+      "evidenceLevel": "not-run",
+      "baselineStatus": "unverified",
+      "aliases": [
+        "A10",
+        "O07",
+        "O13"
+      ],
+      "rootEvidence": null,
+      "description": "GE/UW/PV/DA/ST nie zostały zmierzone na modelu. Potrzebne są seed stagingu, wykonanie scenariuszy i identyfikowalny zestaw CC-951 z answer keys dla backtestu CC-950.",
+      "limitations": "Nie znaleziono zestawu w sprawdzonym kodzie/odczytanych ticketach; nie twierdzimy, że nie istnieje nigdzie.",
+      "evidence": [
+        {
+          "path": "docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md",
+          "lineStart": 1,
+          "lineEnd": 7,
+          "claim": "Dokument definiuje scenariusze."
+        },
+        {
+          "path": "climate-advisor/k8s/deployment-test.yml",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "claim": "MLFLOW_ENABLED=true w repo."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 130,
+          "lineEnd": 159,
+          "claim": "Draft.trace_id=request ID."
+        },
+        {
+          "path": "climate-advisor/service/app/middleware/request_context.py",
+          "lineStart": 13,
+          "lineEnd": 25,
+          "claim": "Nagłówek albo UUID."
+        },
+        {
+          "path": "climate-advisor/service/app/utils/conversation_observability.py",
+          "lineStart": 194,
+          "lineEnd": 214,
+          "claim": "MLflow root.trace_id."
+        },
+        {
+          "path": "climate-advisor/service/tests/test_conversation_observability.py",
+          "lineStart": 31,
+          "lineEnd": 55,
+          "claim": "Istnieją lokalne export tests wymagające plików, niewykonane."
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/context.ts",
+          "lineStart": 120,
+          "lineEnd": 132,
+          "claim": "kgCO2e field names"
+        },
+        {
+          "path": "app/src/backend/agentic/ghgi/inventory/context.ts",
+          "lineStart": 431,
+          "lineEnd": 442,
+          "claim": "Total in kg as a string"
+        },
+        {
+          "path": "climate-advisor/prompts/chat.md",
+          "lineStart": 62,
+          "lineEnd": 62,
+          "claim": "No unit rule"
+        },
+        {
+          "path": "app/tests/api/internal-ca-service-auth.jest.ts",
+          "lineStart": 51,
+          "lineEnd": 51,
+          "claim": "commitAcceptedStationaryEnergyRows is mocked"
+        }
+      ]
+    },
+    {
+      "id": "V02",
+      "title": "Wdrożony MLflow i korelacja identyfikatorów nie zostały odczytane",
+      "type": "verification-gap",
+      "severity": "P2",
+      "evidenceLevel": "not-run",
+      "baselineStatus": "unverified",
+      "aliases": [
+        "A10"
+      ],
+      "rootEvidence": "root-auth-observability-pytest.log",
+      "description": "Dziewięć lokalnych testów wykonało realny eksport/readback MLflow SQLite/artifacts. Wdrożona konfiguracja i powiązanie draft/request ID z MLflow trace ID wymagają osobnej próby.",
+      "limitations": "Lokalny eksport nie dowodzi działania konkretnego dev/test/prod ani poprawnego tagowania pre-run (F10).",
+      "evidence": [
+        {
+          "path": "docs/testing/cc-962-rescan-2026-11-01/baseline-10-scenarios-2026-10-26.md",
+          "lineStart": 1,
+          "lineEnd": 7,
+          "claim": "Dokument definiuje scenariusze."
+        },
+        {
+          "path": "climate-advisor/k8s/deployment-test.yml",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "claim": "MLFLOW_ENABLED=true w repo."
+        },
+        {
+          "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_draft_service.py",
+          "lineStart": 130,
+          "lineEnd": 159,
+          "claim": "Draft.trace_id=request ID."
+        },
+        {
+          "path": "climate-advisor/service/app/middleware/request_context.py",
+          "lineStart": 13,
+          "lineEnd": 25,
+          "claim": "Nagłówek albo UUID."
+        },
+        {
+          "path": "climate-advisor/service/app/utils/conversation_observability.py",
+          "lineStart": 194,
+          "lineEnd": 214,
+          "claim": "MLflow root.trace_id."
+        },
+        {
+          "path": "climate-advisor/service/tests/test_conversation_observability.py",
+          "lineStart": 31,
+          "lineEnd": 55,
+          "claim": "Istnieją lokalne export tests wymagające plików, niewykonane."
+        }
+      ]
+    },
+    {
+      "id": "V03",
+      "title": "Dwie nowe hipotezy wymagają osobnych prób",
+      "type": "verification-gap",
+      "severity": "P2",
+      "evidenceLevel": "not-run",
+      "baselineStatus": "new",
+      "aliases": [
+        "SO09",
+        "SO11-A3"
+      ],
+      "rootEvidence": null,
+      "description": "Do odtworzenia: równoległe saves mogą oba wykonać commit; po revoke chat właściciela może nadal ładować zapisany snapshot CA. Odczyt snapshotu wymaga też doprecyzowania polityki retencji/uprawnień.",
+      "limitations": "Nie uznano za potwierdzone bugi. F16 z trzeciej hipotezy został odrębnie potwierdzony lokalnie.",
+      "evidence": []
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-11-01T00:14:16.295525+00:00",
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "rawCandidates": 45,
+  "perAuthor": {
+    "Astra": 15,
+    "Opus": 15,
+    "Sol": 15
+  },
+  "selected": 15,
+  "notSelected": 30,
+  "rawAssertions": 222,
+  "selectedAssertions": 72,
+  "allExecutionStatus": "not-run",
+  "runtimeMetricValues": "unmeasured",
+  "existingTestsPassed": 140,
+  "catalogItems": 23,
+  "rejectedFindings": [
+    "F07"
+  ],
+  "newApplicationCodeChanges": 0,
+  "liveModelRuns": 0,
+  "browserRuns": 0,
+  "selectionMethod": "Coverage-constrained selection, not a claim that the largest scalar scores alone win. Five dimensions 0-4: riskCoverage×3 + distinctiveness×2 + userRelevance + oracleClarity×3 + repeatability, max 40. No model quotas; candidates evaluated by coverage and evidence."
+}

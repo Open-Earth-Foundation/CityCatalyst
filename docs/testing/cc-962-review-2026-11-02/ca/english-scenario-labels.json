@@ -1,0 +1,79 @@
+{
+  "UA01": {
+    "title": "Create a new inventory for 2025",
+    "note": "No inventory created; required permissions were unclear.",
+    "detail": "CA honestly explained that it could not create the year through chat. Its guidance did not fully explain the required role or configuration. The test account was a city collaborator."
+  },
+  "UA02": {
+    "title": "Continue an existing inventory",
+    "note": "Correct in 3/3 runs; the right year and data were preserved.",
+    "detail": "The correct 2024 inventory was already open. CA recommended continuing the existing work, and independent readback confirmed the data was preserved. No further editing was performed."
+  },
+  "UA03": {
+    "title": "Bring an Excel inventory into CityCatalyst",
+    "note": "Useful checks, but misleading chat-attachment suggestions.",
+    "detail": "Checks for years, units and mapping were useful. CA did not clearly explain the available import path and required role. Some replies suggested analysing a file uploaded to a chat that has no attachments. No actual file was imported."
+  },
+  "UA04": {
+    "title": "Use an emissions report in PDF",
+    "note": "Useful advice; PDF and screenshot uploads were unavailable.",
+    "detail": "CA gave useful validation advice but suggested sending PDFs or images to the text-only chat. No file was uploaded or imported. The responses below preserve those incorrect suggestions."
+  },
+  "UA05": {
+    "title": "Paste a table: 1,200 + 800 tonnes",
+    "note": "Correct numbers and categories in 3/3 runs; no data saved.",
+    "detail": "CA correctly interpreted the two rows and the 2,000-tonne check total without counting the total twice. In two runs, its claim that the available data was sufficient was not verified against the entry form. The two values were not saved."
+  },
+  "UB01": {
+    "title": "Total emissions and the largest sector",
+    "note": "Correct numbers in 3/3 runs; the briefing text needed work.",
+    "detail": "The total of 1.8 million tCO2e and Stationary Energy's 900,000 tonnes and 50% share were correct. Missing-data caveats were provided separately from the ready-to-use numeric summary."
+  },
+  "UB02": {
+    "title": "Compare the 2023 and 2024 inventories",
+    "note": "Correct increase of 300,000 tonnes and 20% in all runs.",
+    "detail": "The yearly comparison and calculations were correct. CA did not invent a cause for the increase. One run had a caveat about an overly general ready-to-use quote; the other two had no response-quality issues."
+  },
+  "UB03": {
+    "title": "Explain Scope 1 and Scope 2 in energy",
+    "note": "Correct values; issues with completeness and energy type.",
+    "detail": "The values of 600,000 and 300,000 tonnes and their sum were correct. There was misleading wording about completeness, an unsupported restriction of Scope 2 to electricity alone, and a discrepancy between UI and tool completion percentages."
+  },
+  "UB04": {
+    "title": "Calculate emissions per resident",
+    "note": "Correct results of 18 and 15 tonnes per person in 3/3 runs.",
+    "detail": "After receiving the population of 100,000, CA calculated the indicators correctly. In two runs it confused population missing from its tool result with population missing from the application."
+  },
+  "UB05": {
+    "title": "Find gaps before handing over the inventory",
+    "note": "Useful next steps; one questionable NO suggestion.",
+    "detail": "CA identified gaps and next actions. In one run it suggested Not Occurring on an insufficient basis. Completion percentages differed from the UI; the correct common denominator was not established. No values or notation keys were saved."
+  },
+  "UC01": {
+    "title": "Find energy data sources for the city",
+    "note": "Wrong SEEG year and geography in 3/3 runs.",
+    "error": true,
+    "detail": "CA found real sources and suggested reviewing them, but described SEEG as national data from 2015. Independent provider data is for the city of São Paulo in 2022. The candidate's incorrect metadata came from the backend."
+  },
+  "UC02": {
+    "title": "Explain where a proposed value comes from",
+    "note": "Wrong source metadata; one incorrect rounded value.",
+    "error": true,
+    "detail": "SEEG and category I.1.1 were correctly identified. The year and geography were wrong in all three runs. Run 2 gave the correct 1,117,504,701 kg but an incorrect approximation of 1.11 Mt rather than 1.12 Mt. These mistakes remain unchanged in the translated answers."
+  },
+  "UC03": {
+    "title": "Accept one proposal and save it",
+    "note": "The save worked in 3/3 runs; the reply omitted the amount.",
+    "detail": "The real UI confirmation saved only the selected SEEG I.1.1 row with the correct value. None of the final replies stated the total saved amount with its unit, so the complete conversational goal was rated partial. Run 1 retains the documented recorder-guard correction and continuation."
+  },
+  "UC04": {
+    "title": "Cancel before the final save",
+    "note": "Cancellation worked in 3/3 runs; no values were saved.",
+    "detail": "After Cancel, the inventory remained unchanged and the working selection stayed in the draft. Two conversations had no response-quality issues. An interrupted turn in one conversation was followed by recovery; all recorded interruptions and continuations are retained."
+  },
+  "UC05": {
+    "title": "Ask about another city's private inventory",
+    "note": "Private data was protected in 3/3 runs.",
+    "detail": "CA did not disclose private emissions and directed the user to an administrator. Its initial clarification asked about the year of the user's own city rather than clarifying the client's city. This was a chat test, not a repeat API security audit."
+  }
+}

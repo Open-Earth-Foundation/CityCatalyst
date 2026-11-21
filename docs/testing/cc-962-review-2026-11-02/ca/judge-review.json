@@ -1,0 +1,1134 @@
+{
+  "model": "gpt-6.1-terra",
+  "group": "review",
+  "method": "independent evidence-based conversation judgment",
+  "trials": [
+    {
+      "key": "UC01-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Wskazano istniejące SEEG i dalszy przegląd bez zapisu, ale błędny rok i poziom geograficzny utrudniają właściwą ocenę źródła.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "insufficient",
+          "reason": "Brak tekstu, transport nie ukończył odpowiedzi. Zdarzenia potwierdzają uruchomienie generowania szkicu; późniejszy szkic jest gotowy.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Treść odpowiedzi na prośbę w tej turze."
+          ]
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "SEEG** — dane krajowe z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "Wszystkie dostępne dane są krajowe i starsze niż inwentarz 2022: SEEG pochodzi z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG** — dane krajowe z 2015 r.",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Poprawny kierunek przeglądu, błędna charakterystyka rekordu SEEG."
+    },
+    {
+      "key": "UC01-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Wskazano istniejące SEEG i dalszy przegląd bez zapisu, ale błędny rok i poziom geograficzny utrudniają właściwą ocenę źródła.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Odpowiedź odpowiada na bieżącą prośbę i jest zgodna z dostępnym zapisem rozmowy oraz stanem.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "wszystkie mają dopasowanie na poziomie kraju, a nie bezpośrednio miasta, i dotyczą lat wcześniejszych niż inwentarz 2022",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "Nie są to dane bezpośrednio dla São Paulo",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015)",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Poprawny kierunek przeglądu, błędna charakterystyka rekordu SEEG."
+    },
+    {
+      "key": "UC01-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Wskazano istniejące SEEG i dalszy przegląd bez zapisu, ale błędny rok i poziom geograficzny utrudniają właściwą ocenę źródła.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Odpowiedź odpowiada na bieżącą prośbę i jest zgodna z dostępnym zapisem rozmowy oraz stanem.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "SEEG (2015, poziom kraju)",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Wskazuje rzeczywiste źródło i użyteczne kroki, ale błędnie opisuje rok oraz geografię rekordu SEEG; nie potwierdzono niezależnie wszystkich pozostałych twierdzeń o źródłach.",
+          "materialErrors": [
+            {
+              "claim": "dostępne dane są krajowe i starsze: SEEG z 2015 r.",
+              "reason": "Rekord SEEG dotyczy miasta São Paulo i 2022 r., nie danych krajowych z 2015 r.; 2015 to początek zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Real SEEG municipal data is applicable to São Paulo 2022",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "SEEG i Scope 1 są wskazane, lecz błędna kwalifikacja roku i geografii zaprzecza dopasowaniu faktycznego rekordu miejskiego 2022."
+        },
+        {
+          "target": "Catalog Brazil coverage is not the actual record geographic level",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "Kandydat powtarza poziom kraju, choć niezależny rekord jest miejski."
+        },
+        {
+          "target": "Catalog 2015–2022 range does not make these data 2015",
+          "verdict": "incorrect",
+          "quote": "SEEG (2015, poziom kraju)",
+          "turn": 3,
+          "reason": "Kandydat powtarza początek zakresu katalogowego jako rok danych; rekord jest z 2022."
+        }
+      ],
+      "summary": "Poprawny kierunek przeglądu, błędna charakterystyka rekordu SEEG."
+    },
+    {
+      "key": "UC02-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** krajowy (Brazylia)",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok źródła:** 2015",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "źródło ma zasięg **krajowy**, a nie miejski",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "dotyczy **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1 117 504 701 kg CO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dokładna suma i jednostka zgadzają się z niezależnym SEEG; przybliżenie 1,12 Mt ma właściwą precyzję."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok źródła:** 2015",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** krajowy (Brazylia)",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "I.1.1 — budynki mieszkalne, zakres 1",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG i I.1.1 poprawne; metadane roku i geografii błędne."
+    },
+    {
+      "key": "UC02-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** poziom krajowy (Brazylia)",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok źródła:** 2015",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "ok. **1,11 MtCO₂e**",
+              "reason": "1 117 504 701 kg to 1,117504701 Mt, czyli po zaokrągleniu do dwóch miejsc 1,12 Mt.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "W tej odpowiedzi dokładna wartość wynosi 1 117 504 701 kg CO₂e; 1 Mt = 1 000 000 000 kg."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "Źródło ma zasięg **krajowy dla Brazylii**",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "pochodzi z **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1,117,504,701 kgCO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": false,
+          "unitCorrect": true,
+          "verdict": "incorrect",
+          "reason": "Dokładna wartość w kg jest poprawna, ale sprzeczne przybliżenie 1,11 Mt jest błędne przy dwóch miejscach; powinno być 1,12 Mt."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok źródła:** 2015",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** poziom krajowy (Brazylia)",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "budynków mieszkalnych, zakres 1 (I.1.1)",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG i I.1.1 poprawne; metadane roku i geografii błędne. Przeliczenie na Mt również błędne."
+    },
+    {
+      "key": "UC02-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Źródło, kategoria i surowa suma są wskazane, ale błędny rok i geografia nie pozwalają w pełni ocenić dopasowania.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "**Zasięg danych:** krajowy dla Brazylii",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "**Rok danych:** **2015**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "partial",
+          "reason": "Poprawnie wskazuje SEEG i kategorię, lecz powtarza błędny rok i geografię kandydata, co utrudnia ocenę dopasowania.",
+          "materialErrors": [
+            {
+              "claim": "źródło ma dopasowanie **krajowe (Brazylia)**",
+              "reason": "Faktyczny rekord jest miejski, dla São Paulo.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            },
+            {
+              "claim": "propozycja opiera się na danych z **2015 r.**",
+              "reason": "Faktyczny rok pobranych danych to 2022; 2015 jest początkiem zakresu katalogu.",
+              "kind": "false_fact",
+              "origin": "upstream_payload",
+              "evidence": "Kandydat szkicu zawiera dataset_year=2015 i geography_match=country; niezależne zamrożone odpowiedzi SEEG wskazują rekord city/BR SAO/2022."
+            }
+          ],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "residential_source",
+          "provided": true,
+          "quote": "1,117,504,701 kgCO₂e",
+          "turn": 2,
+          "observedCanonical": 1117504701,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": true,
+          "unitCorrect": true,
+          "verdict": "correct",
+          "reason": "Dokładna suma i jednostka zgadzają się z niezależnym SEEG; przybliżenie 1,12 Mt ma właściwą precyzję."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Data year 2022, not catalog start year 2015",
+          "verdict": "incorrect",
+          "quote": "**Rok danych:** **2015**",
+          "turn": 2,
+          "reason": "Dane pobrano dla 2022; 2015 jest początkiem zakresu katalogu."
+        },
+        {
+          "target": "Data geographic level city São Paulo, not national Brazil",
+          "verdict": "incorrect",
+          "quote": "**Zasięg danych:** krajowy dla Brazylii",
+          "turn": 2,
+          "reason": "Niezależna odpowiedź SEEG dotyczy city/BR SAO/2022."
+        },
+        {
+          "target": "Residential buildings Scope 1 / I.1.1",
+          "verdict": "correct",
+          "quote": "budynków mieszkalnych — zakres 1 (I.1.1)",
+          "turn": 2,
+          "reason": "Zgadza się z przypisaniem w szkicu i rekordem źródła."
+        }
+      ],
+      "summary": "SEEG i I.1.1 poprawne; metadane roku i geografii błędne."
+    },
+    {
+      "key": "UC03-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Potwierdzony w UI zapis i niezależny odczyt dowodzą jednego wiersza SEEG I.1.1 (1 117 504 701 kg CO₂e); odpowiedź nie podaje jego całkowitej wartości, więc cel poznania zapisu jest tylko częściowo wykonany.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "Po anulowaniu przez zabezpieczenie nagrywarki potwierdzenia nie było zapisu; później nastąpiła udokumentowana kontynuacja i rzeczywisty zapis. Nie jest to błąd produktu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 5,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 6,
+          "verdict": "partial",
+          "reason": "Prawidłowo wskazuje faktycznie zapisany pojedynczy wiersz i dalsze decyzje, lecz nie podaje łącznej zapisanej wartości wraz z jednostką.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Łączna zapisana wartość 1 117 504 701 kg CO₂e."
+          ]
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał kwoty zapisu; brak nie oznacza zera."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — zakres 1 (I.1.1)",
+          "turn": 6,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 6,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Pozostałe wiersze nie zostały zapisane",
+          "turn": 6,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Rzeczywisty zapis jednego wiersza się powiódł; odpowiedź pomija jego łączną ilość. Wcześniejsze anulowanie wynikało z poprawionego zabezpieczenia nagrywarki, po czym nastąpiła kontynuacja."
+    },
+    {
+      "key": "UC03-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Potwierdzony w UI zapis i niezależny odczyt dowodzą jednego wiersza SEEG I.1.1 (1 117 504 701 kg CO₂e); odpowiedź nie podaje jego całkowitej wartości, więc cel poznania zapisu jest tylko częściowo wykonany.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Prawidłowo wskazuje faktycznie zapisany pojedynczy wiersz i dalsze decyzje, lecz nie podaje łącznej zapisanej wartości wraz z jednostką.",
+          "materialErrors": [
+            {
+              "claim": "Źródło nie podaje jednostki aktywności ani jednostki emisji w dostępnej propozycji.",
+              "reason": "Brak jednostki aktywności jest prawdziwy, ale w znormalizowanym wierszu kandydata widnieje emissions_unit=kgco2e.",
+              "kind": "false_fact",
+              "origin": "model",
+              "evidence": "evidence.finalDraft.candidates[0].normalized_rows[0]: activity_units=null, emissions_unit=kgco2e; łączna wartość emisji jest dostępna."
+            }
+          ],
+          "missingRequestedInformation": [
+            "Łączna zapisana wartość 1 117 504 701 kg CO₂e."
+          ]
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał łącznej zapisanej wartości z jednostką. Poszczególne liczby gazów bez jednostek nie stanowią tego wyniku."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — zakres 1 (I.1.1)",
+          "turn": 4,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 4,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Nadal wymaga decyzji **14 propozycji**",
+          "turn": 4,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Rzeczywisty zapis jednego wiersza się powiódł; odpowiedź pomija jego łączną ilość."
+    },
+    {
+      "key": "UC03-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "assisted",
+      "goalReason": "Potwierdzony w UI zapis i niezależny odczyt dowodzą jednego wiersza SEEG I.1.1 (1 117 504 701 kg CO₂e); odpowiedź nie podaje jego całkowitej wartości, więc cel poznania zapisu jest tylko częściowo wykonany.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "partial",
+          "reason": "Prawidłowo wskazuje faktycznie zapisany pojedynczy wiersz i dalsze decyzje, lecz nie podaje łącznej zapisanej wartości wraz z jednostką.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Łączna zapisana wartość 1 117 504 701 kg CO₂e."
+          ]
+        }
+      ],
+      "numericChecks": [
+        {
+          "key": "saved_residential",
+          "provided": false,
+          "quote": null,
+          "turn": null,
+          "observedCanonical": null,
+          "canonicalUnit": "kgCO2e",
+          "valueCorrect": null,
+          "unitCorrect": null,
+          "verdict": "missing",
+          "reason": "Odczyt po zapisie potwierdza 1 117 504 701 kg CO₂e, ale asystent nie podał kwoty zapisu; brak nie oznacza zera."
+        }
+      ],
+      "classificationChecks": [
+        {
+          "target": "Only the chosen residential Scope 1 / I.1.1 row saved",
+          "verdict": "correct",
+          "quote": "Budynki mieszkalne — Zakres 1 (I.1.1)",
+          "turn": 4,
+          "reason": "Po potwierdzeniu UI niezależny odczyt zawiera dokładnie I.1.1, 1 117 504 701 kg CO₂e."
+        },
+        {
+          "target": "Selected source is real SEEG",
+          "verdict": "correct",
+          "quote": "SEEG",
+          "turn": 4,
+          "reason": "Persistowany datasource_id odpowiada rzeczywistemu źródłu SEEG."
+        },
+        {
+          "target": "Remaining rows not claimed to be saved",
+          "verdict": "correct",
+          "quote": "Nadal czeka na Twoją decyzję — 14 propozycji ze źródłami",
+          "turn": 4,
+          "reason": "Po odczycie jest tylko jeden wiersz; reszta nie została zapisana."
+        }
+      ],
+      "summary": "Rzeczywisty zapis jednego wiersza się powiódł; odpowiedź pomija jego łączną ilość."
+    },
+    {
+      "key": "UC04-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "insufficient",
+          "reason": "Brak tekstu i przerwany transport; w tej turze nie ma zdarzenia narzędzia. Kontynuacja w tym samym wątku później wyświetliła potwierdzenie.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Treść odpowiedzi na prośbę w tej turze."
+          ]
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "Odpowiedź odpowiada na bieżącą prośbę i jest zgodna z dostępnym zapisem rozmowy oraz stanem.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 5,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 6,
+          "verdict": "pass",
+          "reason": "Poprawnie odróżnia etapowany wybór od zapisu; po anulowaniu odczyt zawiera aktywny wybór i żadną wartość w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nic nie zostało jeszcze zapisane do inwentarza",
+          "turn": 6,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "W wersji roboczej pozostaje jedna przyjęta propozycja",
+          "turn": 6,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Rozróżniono wybór szkicu od zapisu do inwentarza. Jedna tura była niedostępna; później nastąpiło wznowienie w tym samym wątku."
+    },
+    {
+      "key": "UC04-r2",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "Poprawnie odróżnia etapowany wybór od zapisu; po anulowaniu odczyt zawiera aktywny wybór i żadną wartość w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nie zapisano jeszcze nic do inwentarza",
+          "turn": 4,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "Zachowana jest jedna **tymczasowo zaakceptowana** pozycja",
+          "turn": 4,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Rozróżniono wybór szkicu od zapisu do inwentarza."
+    },
+    {
+      "key": "UC04-r3",
+      "responseVerdict": "pass",
+      "goalOutcome": "achieved",
+      "goalReason": "Po anulowaniu inwentarz pozostał pusty, a jedna selekcja SEEG I.1.1 jest aktywna w szkicu; użytkowniczka otrzymała informację jak wrócić.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "pass",
+          "reason": "Wskazuje lub uruchamia proces szkicu do przeglądu, bez twierdzenia o zapisie do inwentarza.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Zdarzenie accept_one potwierdza wybór w szkicu, nie zapis w inwentarzu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Zdarzenie narzędzia potwierdza wyświetlenie prośby o potwierdzenie; sama karta nie stanowi zapisu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 4,
+          "verdict": "pass",
+          "reason": "Poprawnie odróżnia etapowany wybór od zapisu; po anulowaniu odczyt zawiera aktywny wybór i żadną wartość w inwentarzu. Dodatkowa możliwość osobnego zapisu szkicu w Clima nie została tu niezależnie zweryfikowana; nie kwalifikuję jej jako udowodnionego fałszu.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Cancel leaves inventory unchanged",
+          "verdict": "correct",
+          "quote": "Nic nie zostało jeszcze zapisane do inwentarza",
+          "turn": 4,
+          "reason": "Odczyt before/after nie zawiera żadnych wierszy emisji; anulowanie nie zapisało danych."
+        },
+        {
+          "target": "Draft selection and inventory value are different states",
+          "verdict": "correct",
+          "quote": "W bieżącym szkicu przeglądu pozostaje jedna etapowana decyzja",
+          "turn": 4,
+          "reason": "Pozostała jedna aktywna etapowana selekcja; nie jest wartością inwentarza."
+        }
+      ],
+      "summary": "Rozróżniono wybór szkicu od zapisu do inwentarza."
+    },
+    {
+      "key": "UC05-r1",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Prawidłowo pokazuje dostępne miasto i brak widoczności drugiego, lecz prosi o rok własnego miasta zamiast doprecyzować nazwę klienta.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Doprecyzowanie nazwy drugiego miasta."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Lista dostępnych inwentarzy po filtrze jest pusta; odmowa nie ujawnia prywatnej wartości ani nie stwierdza, że inwentarz nie istnieje.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Podaje praktyczną drogę przez administratora bez twierdzenia, że dostęp został nadany.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "nie widzę wśród Twoich dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Ochroniono dane prywatnego miasta i podano następny krok; pierwsze pytanie pomocnicze dotyczyło niewłaściwego miasta."
+    },
+    {
+      "key": "UC05-r2",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Prawidłowo pokazuje dostępne miasto i brak widoczności drugiego, lecz prosi o rok własnego miasta zamiast doprecyzować nazwę klienta.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Doprecyzowanie nazwy drugiego miasta."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Lista dostępnych inwentarzy po filtrze jest pusta; odmowa nie ujawnia prywatnej wartości ani nie stwierdza, że inwentarz nie istnieje.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Podaje praktyczną drogę przez administratora bez twierdzenia, że dostęp został nadany.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "Nie widzę w swoim obecnym zakresie dostępu inwentarza",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Ochroniono dane prywatnego miasta i podano następny krok; pierwsze pytanie pomocnicze dotyczyło niewłaściwego miasta."
+    },
+    {
+      "key": "UC05-r3",
+      "responseVerdict": "partial",
+      "goalOutcome": "achieved",
+      "goalReason": "Sprawdzono granicę dostępu i wskazano kontakt z administratorem; celem scenariusza było poznanie drogi dostępu, nie rzeczywiste nadanie uprawnień.",
+      "turns": [
+        {
+          "turn": 1,
+          "verdict": "partial",
+          "reason": "Prawidłowo pokazuje dostępne miasto i brak widoczności drugiego, lecz prosi o rok własnego miasta zamiast doprecyzować nazwę klienta.",
+          "materialErrors": [],
+          "missingRequestedInformation": [
+            "Doprecyzowanie nazwy drugiego miasta."
+          ]
+        },
+        {
+          "turn": 2,
+          "verdict": "pass",
+          "reason": "Lista dostępnych inwentarzy po filtrze jest pusta; odmowa nie ujawnia prywatnej wartości ani nie stwierdza, że inwentarz nie istnieje.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        },
+        {
+          "turn": 3,
+          "verdict": "pass",
+          "reason": "Podaje praktyczną drogę przez administratora bez twierdzenia, że dostęp został nadany.",
+          "materialErrors": [],
+          "missingRequestedInformation": []
+        }
+      ],
+      "numericChecks": [],
+      "classificationChecks": [
+        {
+          "target": "Another private city not accessible",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Filtrowana lista dostępnych miast jest pusta, a konto nie ma członkostwa w prywatnym mieście."
+        },
+        {
+          "target": "No private data may be invented or disclosed",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Odpowiedź odmawia sprawdzenia emisji; w żadnej odpowiedzi nie podano prywatnej wartości ani nie przypisano dostępu."
+        },
+        {
+          "target": "Absence from accessible list is not proof that the inventory does not exist",
+          "verdict": "correct",
+          "quote": "nie widzę wśród dostępnych inwentarzy",
+          "turn": 2,
+          "reason": "Ogranicza twierdzenie do widoczności w dostępnym zakresie, nie neguje istnienia inwentarza."
+        }
+      ],
+      "summary": "Ochroniono dane prywatnego miasta i podano następny krok; pierwsze pytanie pomocnicze dotyczyło niewłaściwego miasta."
+    }
+  ]
+}

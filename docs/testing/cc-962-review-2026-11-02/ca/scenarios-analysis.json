@@ -1,0 +1,155 @@
+{
+  "author": "UB01–UB05",
+  "personaSummary": "Miejski analityk przygotowujący rzetelną notatkę GHGI dla przełożonej; korzysta z istniejących inwentaryzacji miasta i rozróżnia wyniki od luk danych.",
+  "productUnderstanding": {
+    "summary": "CityCatalyst wspiera miasta w inwentaryzacji emisji zgodnej z GPC oraz w dalszym planowaniu. Clima jest asystentem rozmownym; widoki GHGI służą m.in. do przeglądu wyników, postępu i wprowadzania danych. Opis kierunku agentowego nie jest gwarancją dostępności wszystkich działań.",
+    "codeEvidence": [
+      "climate-advisor/service/app/services/agent_service.py i tools/inventory_context_tools.py: przy wymaganym kontekście użytkownika ogólny czat rejestruje odczyt dostępnych inwentaryzacji, statusu i emisji; narzędzia są odczytowe i mogą zwrócić błąd.",
+      "app/src/backend/agentic/ghgi/inventory/context.ts: kontekst emisji zawiera sumę w kgCO2e, sektory i do 10 największych pozycji z podsektorem i zakresem; status zawiera zagregowany postęp. Nie jest to gwarancja pełnej tabeli wszystkich pozycji ani danych ludności w tym konkretnym kontekście.",
+      "docs/AgenticModuleScope.md: istniejące widoki produktu i osobny, częściowo zaimplementowany przepływ Stationary Energy należy odróżnić od planowanych ogólnych działań agentowych. Dostępność w danym wdrożeniu nie została sprawdzona."
+    ],
+    "evaluation": "Poniższe wartości to niezależna referencja dla przygotowanego stanu, a nie wynik wykonania. Każdy scenariusz prowadzić trzy razy w osobnych nowych wątkach i równoważnym stanie; reakcję dostosować do rzeczywistej odpowiedzi CA. Sprawdzić stan danych przed przebiegiem i po nim osobno od oceny rozmowy."
+  },
+  "scenarios": [
+    {
+      "id": "UB01",
+      "title": "Jednozdaniowy obraz emisji dla przełożonej",
+      "persona": "Analityk miejski przygotowujący pierwszą stronę notatki o emisjach.",
+      "businessGoal": "Uzyskać nadające się do notatki podsumowanie sumy i udziału największego sektora za 2024 r., z zastrzeżeniem zakresu danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Przygotowuję krótką informację dla przełożonej. Ile wynoszą emisje w naszej inwentaryzacji za 2024 rok i który sektor ma największy udział?",
+        {"goal": "Doprecyzować liczbę, mianownik udziału i gotowy tekst.", "exampleText": "Możesz podać wielkość tego sektora i ułożyć z tego dwa zdania do notatki?", "condition": "Po odpowiedzi z wynikiem; jeśli CA nie uzyska danych, poproś o wskazanie miejsca sprawdzenia wyniku zamiast zakładać liczby."},
+        {"goal": "Ocenić, jak bezpiecznie opisać ograniczenia wyniku.", "exampleText": "Czy mogę napisać, że to pełny obraz emisji miasta?", "condition": "Po uzyskaniu podsumowania albo wskazówek, gdzie je sprawdzić."}
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: identyfikuje miasto i rok, podaje wynik i największy sektor z jednostką oraz udziałem w sumie zapisanych emisji; nie nazywa wyniku pełnym obrazem przy brakujących danych.",
+        "Jeśli odczyt nie jest dostępny, uczciwie mówi o ograniczeniu i kieruje do wyników wybranej inwentaryzacji bez wymyślania liczb; to może być poprawna odpowiedź, ale sama nie realizuje celu liczbowego.",
+        "Ukończenie celu: użytkownik ma dwa poprawne zdania z sumą, największym sektorem, jego udziałem i zastrzeżeniem niekompletności, oparte na sprawdzonych danych; samo wskazanie widoku nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "2024: 1 800 000 tCO2e = 1 800 000 000 kgCO2e; energia stacjonarna 900 000 tCO2e = 50% tej sumy.",
+        "Transport 600 000 tCO2e, odpady 300 000 tCO2e; udziały w zapisanej sumie odpowiednio 33,33% i 16,67%, jeśli CA je podaje.",
+        "IPPU, AFOLU i inne pozycje nie są wprowadzone: brak danych nie dowodzi zerowych emisji ani kompletności."
+      ],
+      "expectedUiInteractions": ["Otworzyć nowy czat w kontekście właściwego miasta; w razie potrzeby wybrać 2024 i odczytać widok wyników. Bez edycji lub publikacji."],
+      "mustNotClaim": ["Inwentaryzacja obejmuje wszystkie emisje miasta lub brakujące sektory mają zero.", "Wynik pochodzi z konkretnego źródła, którego nie potwierdzono."],
+      "allowedProductChanges": ["Nowy wątek i wiadomości czatu; brak zmian danych inwentaryzacji."],
+      "evidenceNeeded": ["Pełny zapis rozmowy i widoczne miasto/rok.", "Niezależny odczyt zapisanych wyników i braków dla 2024 przed i po rozmowie; wynik notatki oraz informacja, czy cel osiągnięto."],
+      "whyThisIsRealistic": "Przełożona potrzebuje krótkiej liczby i priorytetu sektorowego, ale opis musi uczciwie ujawniać ograniczenia."
+    },
+    {
+      "id": "UB02",
+      "title": "Porównanie roczne bez mylenia wzrostu z przyczyną",
+      "persona": "Analityk wyjaśniający przełożonej zmianę między edycjami inwentaryzacji.",
+      "businessGoal": "Przygotować porównanie sum 2023 i 2024 oraz poprawną interpretację zmiany bez przypisywania nieznanej przyczyny.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Przełożona pyta, jak zmieniły się emisje naszego miasta między inwentaryzacjami 2023 i 2024. Możesz to porównać?",
+        {"goal": "Uzyskać zmianę bezwzględną i procentową na właściwej podstawie.", "exampleText": "O ile to się zmieniło w tonach i w procentach względem 2023 roku?", "condition": "Po odpowiedzi; jeśli jednego roku nie udało się odczytać, najpierw poproś o pomoc w znalezieniu tego roku w aplikacji."},
+        {"goal": "Oddzielić obserwowaną różnicę od jej przyczyny i porównywalności.", "exampleText": "Czy na tej podstawie mogę stwierdzić, że mieszkańcy zużyli więcej energii? Co powinnam zaznaczyć w notatce?", "condition": "Po ustaleniu porównania albo ograniczenia odczytu."}
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: odnosi wyniki do właściwych lat, oblicza zmianę na bazie 2023 i odróżnia wzrost zapisanych emisji od nieustalonej przyczyny; uwzględnia luki i potrzebę sprawdzenia porównywalności metod oraz zakresu.",
+        "Jeśli nie ma dostępu do obu lat, nie wymyśla drugiego wyniku, tylko wyjaśnia brak i wskazuje sposób odczytu w produkcie; taka odpowiedź jest poprawna, ale samodzielnie nie kończy porównania.",
+        "Ukończenie celu: oba sprawdzone wyniki, zmiana w tCO2e i procentach oraz ostrożne zdanie o interpretacji są dostępne użytkownikowi."
+      ],
+      "accuracyChecks": [
+        "2023: 1 500 000 tCO2e; 2024: 1 800 000 tCO2e; różnica +300 000 tCO2e; 300 000 / 1 500 000 = +20%.",
+        "W obu latach populacja 100 000, BASIC+ / AR6; obie inwentaryzacje mają braki. Sama liczba nie potwierdza zmiany aktywności ani jej przyczyny.",
+        "Sprawdzić, że wartości pobrano dla tego samego miasta, a lata nie zostały zamienione."
+      ],
+      "expectedUiInteractions": ["W razie potrzeby przełączyć wybrany rok i obejrzeć wyniki obu istniejących inwentaryzacji; nie tworzyć nowej."],
+      "mustNotClaim": ["Znana jest przyczyna wzrostu lub porównanie jest kompletne bez sprawdzenia zakresu danych.", "Zmiana wynosi 16,67% względem 2023 r. albo stanowi redukcję."],
+      "allowedProductChanges": ["Nowy wątek, wiadomości i wybór roku w interfejsie; bez zmian wartości."],
+      "evidenceNeeded": ["Rozmowa wraz z opisem przełączeń roku i widocznymi kontekstami.", "Odczyt wyników obu lat przed i po przebiegu; zapis końcowego porównania i ocena realizacji celu."],
+      "whyThisIsRealistic": "Porównanie rok do roku jest typowym pytaniem kierownictwa, a zmiana wyniku nie wyjaśnia sama swojej przyczyny."
+    },
+    {
+      "id": "UB03",
+      "title": "Co naprawdę oznaczają zakresy w energii",
+      "persona": "Analityk przygotowujący odpowiedź na pytanie wydziału energii.",
+      "businessGoal": "Wyjaśnić przełożonej znaczenie oraz wartości zakresów 1 i 2 energii stacjonarnej dla 2024 r. w granicach dostępnych danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "W wynikach za 2024 rok chcę lepiej zrozumieć energię stacjonarną. Ile przypada na zakres 1, a ile na zakres 2?",
+        {"goal": "Wyjaśnić różnicę pojęć na zrozumiałym przykładzie, bez domysłów o konkretnych paliwach.", "exampleText": "Jak mam prostym językiem wyjaśnić przełożonej różnicę między tymi zakresami?", "condition": "Po odpowiedzi liczbowej albo informacji o braku szczegółów."},
+        {"goal": "Upewnić się, czy podział wyczerpuje sektor w dostępnych danych.", "exampleText": "Czy te liczby składają się na cały wynik energii i czy oznacza to, że nie brakuje nam tam żadnych danych?", "condition": "Po omówieniu zakresów; jeśli nie da się ich ustalić, zapytaj, gdzie sprawdzić szczegóły w aplikacji."}
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: odróżnia emisje bezpośrednie z użytkowania paliw w mieście od emisji związanych z dostarczoną energią sieciową; dla dostępnych wartości podaje właściwe jednostki i łączną sumę bez twierdzenia, że każdy zakres jest kompletny.",
+        "Szczegółowy odczyt może nie być dostępny z danego kontekstu: uczciwe wskazanie ograniczenia i widoku pozycji energii jest poprawne, ale cel liczbowy nie jest osiągnięty bez weryfikowalnych wartości.",
+        "Ukończenie celu: poprawne obie liczby, ich relacja do zapisanej sumy sektora oraz objaśnienie i zastrzeżenie o brakach są dostępne do przekazania."
+      ],
+      "accuracyChecks": [
+        "W 2024 zapisane I.1.1 = 600 000 000 kgCO2e = 600 000 tCO2e (zakres 1), I.1.2 = 300 000 000 kgCO2e = 300 000 tCO2e (zakres 2), obie pozycje w podsektorze budynków mieszkalnych.",
+        "Suma zapisanej energii stacjonarnej = 900 000 tCO2e; zakresy 1 i 2 stanowią odpowiednio 2/3 i 1/3 tej sumy, nie całkowitych emisji miasta.",
+        "Te dwie zapisane pozycje nie dowodzą, że pozostałe podsektory i wymagane zakresy są zerowe lub kompletne; nie przypisywać danych konkretnemu paliwu ani dostawcy."
+      ],
+      "expectedUiInteractions": ["W razie potrzeby otworzyć wyniki lub szczegóły energii stacjonarnej dla 2024; nie uruchamiać zapisu ani nie zmieniać istniejących pozycji."],
+      "mustNotClaim": ["Zakres 2 oznacza emisje bezpośrednie ze spalania na miejscu.", "Istnienie dwóch wartości potwierdza pełną kompletność sektora."],
+      "allowedProductChanges": ["Nowy wątek i wiadomości; nawigacja po widokach odczytowych bez zmian danych."],
+      "evidenceNeeded": ["Pełna rozmowa z rokiem, sektorami i jednostkami.", "Niezależny odczyt pozycji zakresów i sumy energii oraz stan przed i po; ocena kompletności celu osobno od uczciwego ograniczenia CA."],
+      "whyThisIsRealistic": "Przy przeglądzie wyników energetycznych kierownictwo potrzebuje zarówno rozróżnienia zakresów, jak i ostrzeżenia o lukach."
+    },
+    {
+      "id": "UB04",
+      "title": "Wskaźnik na mieszkańca i kontrola jednostek",
+      "persona": "Analityk redagujący wskaźnik do miejskiej informacji rocznej.",
+      "businessGoal": "Uzyskać zrozumiały wskaźnik emisji na osobę w 2024 i 2023 z przejrzystą podstawą oraz bez pomylenia kg z tonami.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Do notatki potrzebuję emisji na jednego mieszkańca za 2024 rok, z jednostką. Możesz to obliczyć i powiedzieć, z jakich danych korzystasz?",
+        {"goal": "Uzyskać weryfikowalny mianownik lub dostarczyć go, jeśli CA go nie widzi.", "exampleText": "W danych miasta mam 100 tysięcy mieszkańców. Czy przy tej liczbie możesz przeliczyć wynik i pokazać działanie?", "condition": "Użyj, jeśli CA nie może zweryfikować liczby mieszkańców; jeśli może, zamiast tego poproś o pokazanie rachunku i źródła ludności."},
+        {"goal": "Porównać wskaźnik z poprzednim rokiem i zachować ostrożność wobec luk.", "exampleText": "A ile wynosił ten wskaźnik w 2023 roku przy tej samej liczbie mieszkańców? Czy mogę go traktować jako pełny wynik dla miasta?", "condition": "Po uzyskaniu wskaźnika albo wyjaśnienia, jak zdobyć potrzebne dane."}
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: jawnie podaje rok, łączną emisję, populację, działanie i jednostkę tCO2e na osobę; jeśli populacja pochodzi od użytkownika, przedstawia ją jako założenie, nie jako sprawdzony odczyt aplikacji.",
+        "Przy braku dostępu do emisji lub wiarygodnego mianownika prosi o dane albo wskazuje ich miejsce i nie udaje, że je odczytał; poprawne ujawnienie ograniczenia nie oznacza ukończenia celu.",
+        "Ukończenie celu: oba wskaźniki są wyliczone ze sprawdzonych sum i właściwej populacji albo jawnie oznaczonego poprawnego założenia oraz opatrzone zastrzeżeniem o niepełnych danych."
+      ],
+      "accuracyChecks": [
+        "2024: 1 800 000 tCO2e / 100 000 osób = 18 tCO2e/osobę/rok = 18 000 kgCO2e/osobę/rok.",
+        "2023: 1 500 000 tCO2e / 100 000 osób = 15 tCO2e/osobę/rok; wzrost 3 tCO2e/osobę, czyli 20%, jeśli podano.",
+        "Populacja wynosi 100 000 w każdym roku; osobno zaznaczyć, czy CA ją odczytał, czy otrzymał w rozmowie. Wynik dotyczy zapisanych emisji i nie dowodzi pełnego bilansu."
+      ],
+      "expectedUiInteractions": ["Jeśli potrzebne, obejrzeć profil ludności i wyniki właściwych lat; nie edytować populacji ani emisji."],
+      "mustNotClaim": ["18 kgCO2e/osobę jako odpowiednik 18 tCO2e/osobę.", "Liczba ludności została odczytana z aplikacji, jeśli przekazał ją użytkownik i brak niezależnego potwierdzenia."],
+      "allowedProductChanges": ["Nowy wątek i wiadomości; wybór roku i nawigacja bez zapisu danych."],
+      "evidenceNeeded": ["Rozmowa i pochodzenie każdej użytej liczby ludności.", "Odczyt populacji i sum obu lat oraz kontrola jednostek; stan danych przed i po; wskazanie, czy gotowy wskaźnik osiągnięto."],
+      "whyThisIsRealistic": "Wskaźnik na mieszkańca trafia do publicznych podsumowań, więc jednostki i podstawa obliczeń mają znaczenie."
+    },
+    {
+      "id": "UB05",
+      "title": "Luki przed oddaniem inwentaryzacji",
+      "persona": "Analityk planujący z przełożoną uzupełnienie danych GHGI.",
+      "businessGoal": "Ustalić, czego nie można jeszcze uznać za kompletne, i przygotować praktyczną listę kolejnych kroków przed przekazaniem notatki.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Zanim przekażę przełożonej wyniki za 2024 rok, chciałabym sprawdzić kompletność naszej inwentaryzacji. Które obszary mają luki?",
+        {"goal": "Ustalić znaczenie widocznych braków dla brakujących sektorów.", "exampleText": "A co z procesami przemysłowymi oraz rolnictwem i użytkowaniem gruntów? Czy brak wartości oznacza, że emisje są tam zerowe?", "condition": "Po pierwszej odpowiedzi; jeżeli CA nie widzi szczegółowego statusu, poproś o pokazanie, gdzie można go sprawdzić."},
+        {"goal": "Przełożyć diagnozę na pracę zespołu bez samodzielnego zapisywania danych przez CA.", "exampleText": "Jakie konkretne dane i źródła powinnam zebrać oraz gdzie w aplikacji sprawdzić lub uzupełnić te luki? Na razie niczego nie zmieniaj.", "condition": "Po rozpoznaniu braków albo wyjaśnieniu ograniczeń odczytu."}
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: podaje zweryfikowane braki lub uczciwie ogranicza szczegółowość do danych, które widzi; odróżnia brak pozycji od zera, nieoszacowania i niestosowania oraz nie uznaje całości za kompletną.",
+        "Proponuje praktyczne kroki: przejrzeć status i wymagane pozycje według zakresu inwentaryzacji, uzyskać od właściwych jednostek dane aktywności, rok, jednostki, źródło i metodę/współczynniki, następnie zweryfikować i wprowadzić dane albo uzasadnione oznaczenia w widokach GHGI; nie przypisuje niepotwierdzonych źródeł do konkretnych rekordów.",
+        "Uczciwe wskazanie, że zagregowany status nie daje pełnej listy pozycji, jest poprawne. Ukończenie celu wymaga ustalenia rzeczywistych braków na dostępnym poziomie i listy następnych kroków; ogólny opis bez identyfikacji braków nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "2024: istnieją tylko I.1.1, I.1.2, II.1.1 i III.1.1 z ledgeru; IPPU, AFOLU i wiele innych pozycji nie mają wartości. Nie wyprowadzać dokładnego procentu kompletności z liczby tych czterech pozycji.",
+        "Wartości 900 000 tCO2e energii, 600 000 tCO2e transportu, 300 000 tCO2e odpadów nie dowodzą kompletności tych sektorów.",
+        "BASIC+ / AR6 to kontekst inwentaryzacji; dokładne wymagane pozycje i oznaczenia sprawdzić w aktualnym widoku postępu, nie wywnioskowywać ich wyłącznie z braku liczby."
+      ],
+      "expectedUiInteractions": ["Otworzyć status/postęp GHGI 2024 i ewentualnie szczegóły brakujących sektorów; jedynie obejrzeć dostępne opcje uzupełnienia, bez zatwierdzania czy zapisu."],
+      "mustNotClaim": ["Brak danych dowodzi zerowych emisji, nie występuje dany sektor albo cała inwentaryzacja jest gotowa.", "Dane, oznaczenia lub źródła zostały dodane lub zweryfikowane, jeśli do tego nie doszło."],
+      "allowedProductChanges": ["Nowy wątek i wiadomości oraz odczytowa nawigacja; brak zapisu wartości, oznaczeń, źródeł i publikacji."],
+      "evidenceNeeded": ["Rozmowa, widoczne obszary postępu i konkretna lista działań dla zespołu.", "Niezależny odczyt zapisanych pozycji oraz statusu przed i po; odnotowanie braków, których nie udało się ustalić, i ocena ukończenia celu."],
+      "whyThisIsRealistic": "Przed przekazaniem wyniku analityk musi wiedzieć, komu zlecić zebranie brakujących informacji i jakie ograniczenia przekazać kierownictwu."
+    }
+  ]
+}

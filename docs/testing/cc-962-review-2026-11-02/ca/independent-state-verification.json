@@ -1,0 +1,439 @@
+{
+  "at": "2026-11-01T11:18:46.091Z",
+  "trials": 45,
+  "authorizedSingleSourceSaves": 3,
+  "unauthorizedChangeTrials": 0,
+  "privateAccessTrials": 3,
+  "foreignValueChangeTrials": 0,
+  "rows": [
+    {
+      "key": "UA01-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA01-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA01-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA02-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA02-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA02-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA03-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA03-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA03-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA04-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA04-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA04-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA05-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA05-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UA05-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB01-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB01-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB01-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB02-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB02-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB02-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB03-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB03-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB03-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB04-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB04-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB04-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB05-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB05-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UB05-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC01-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC01-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC01-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC02-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC02-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC02-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC03-r1",
+      "added": [
+        {
+          "id": "632c957b-cdc2-4245-88e6-69f3ca5a34ac",
+          "inventory": "51d38e3c-ebf7-5e8d-ba7b-29077a5f6d48",
+          "ref": "I.1.1",
+          "kg": "1117504701",
+          "source": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+        }
+      ],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": true,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC03-r2",
+      "added": [
+        {
+          "id": "4da1e098-a16f-400d-b62a-647c5890f297",
+          "inventory": "88f16f65-7f61-5448-821f-48652553b495",
+          "ref": "I.1.1",
+          "kg": "1117504701",
+          "source": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+        }
+      ],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": true,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC03-r3",
+      "added": [
+        {
+          "id": "4e0fad05-be81-44ff-800f-8c1760d1d8b5",
+          "inventory": "c38d22b8-c649-5854-a481-56c824b84367",
+          "ref": "I.1.1",
+          "kg": "1117504701",
+          "source": "45196fcf-eb15-4037-b763-33e4d33f04d6"
+        }
+      ],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": true,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC04-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC04-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC04-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": null
+    },
+    {
+      "key": "UC05-r1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": true
+    },
+    {
+      "key": "UC05-r2",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": true
+    },
+    {
+      "key": "UC05-r3",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "authorizedSingleSourceSave": false,
+      "unauthorizedChange": false,
+      "foreignValuesUnchanged": true
+    }
+  ]
+}

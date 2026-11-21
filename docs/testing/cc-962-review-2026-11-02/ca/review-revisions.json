@@ -1,0 +1,309 @@
+{
+  "revision": "conditional-review-2026-11-02",
+  "contextAudit": "model-context-audit.json",
+  "changesSincePreviousReview": [
+    {
+      "key": "UB05-r2",
+      "before": {
+        "answer": "partial",
+        "task": "assisted",
+        "numeric": []
+      },
+      "after": {
+        "answer": "pass",
+        "task": "achieved",
+        "numeric": []
+      },
+      "reason": "Passed: the NO suggestion was conditional, the answer asked the user to verify whether the activity occurs, and nothing was changed. The prior failure finding is withdrawn."
+    }
+  ],
+  "withdrawnFindings": [
+    "UC02-r2: upstream UI truncation, not established LLM arithmetic",
+    "UC03-r2: unit absent from actual current model context",
+    "UB05-r2: conditional advice with explicit occurrence verification; no NO applied"
+  ],
+  "policy": "# CC-962 — conversation evaluation after model-context verification\n\nThis report supersedes the previous scope review. It uses the original recordings from 1 November 2026 and a read-only inspection of the existing MLflow provider-call traces. No conversation or LLM judge was rerun. Original Terra 6.1 judgments, execution files and translated conversations remain preserved; the revisions below are evidence-based parent-agent adjudications.\n\nReassessment on 2 November 2026 also withdraws the UB05-r2 failure flag: the NO guidance was conditional, included explicit occurrence verification, and did not change the inventory. UB05 now passes all three runs. The population omission is structural in the inventory-emissions tool contract; the model did not receive the population field despite its presence in the application. The SEEG metadata fix is requested separately; original source-provenance results remain partial until new post-fix conversations are verified.\n\n## Scored scope\n\n**11 scenarios × 3 conversations = 33 scored conversations.** UA01 (inventory creation), UA03 (Excel import), UA04 (PDF upload) and UA05 (pasted-table import/save) remain excluded at the user's request as unsupported actions, not failures of a supported workflow. Their recordings remain archived.\n\nTask completion and answer accuracy are distinct. Required confirmation is expected behavior. Editorial preferences, optional saved-total recaps and unresolved UI/tool percentages do not alone fail a conversation. Factual problems originating in supplied data are recorded separately from independent model mistakes.\n\n",
+  "method": {
+    "original": "gpt-6.1-terra",
+    "revision": "Parent-agent evidence-based adjudication using the user-clarified scope; no new LLM-judge run."
+  },
+  "excluded": [
+    {
+      "id": "UA01",
+      "title": "Create a new inventory for 2025",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA01-r1",
+        "UA01-r2",
+        "UA01-r3"
+      ]
+    },
+    {
+      "id": "UA03",
+      "title": "Bring an Excel inventory into CityCatalyst",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA03-r1",
+        "UA03-r2",
+        "UA03-r3"
+      ]
+    },
+    {
+      "id": "UA04",
+      "title": "Use an emissions report in PDF",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA04-r1",
+        "UA04-r2",
+        "UA04-r3"
+      ]
+    },
+    {
+      "id": "UA05",
+      "title": "Paste a table: 1,200 + 800 tonnes",
+      "reason": "Requested action is outside the supported Clima feature scope; excluded at user request, not a product failure.",
+      "trials": [
+        "UA05-r1",
+        "UA05-r2",
+        "UA05-r3"
+      ]
+    }
+  ],
+  "revisions": [
+    {
+      "key": "UB01-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures."
+    },
+    {
+      "key": "UB01-r2",
+      "original": {
+        "responseVerdict": "pass",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures."
+    },
+    {
+      "key": "UB01-r3",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "The requested figures and caveats were provided across the conversation. Their paragraph placement and omission of a repeated city name are editorial preferences, not factual failures."
+    },
+    {
+      "key": "UB02-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "The year comparison, recorded totals and distinction between change and causation were correct. A caveat stated earlier does not have to be repeated in every suggested sentence to pass this task."
+    },
+    {
+      "key": "UB03-r2",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: figures, scopes and caveats were correct. The 9%/10% status difference is unresolved and excluded from failure scoring."
+    },
+    {
+      "key": "UB05-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: the gaps and next steps were useful. The UI/tool status difference remains unconfirmed and is not scored as an error."
+    },
+    {
+      "key": "UB05-r2",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: the NO suggestion was conditional, the answer asked the user to verify whether the activity occurs, and nothing was changed. The prior failure finding is withdrawn."
+    },
+    {
+      "key": "UB05-r3",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: the gaps and next steps were useful. The UI/tool status difference remains unconfirmed and is not scored as an error."
+    },
+    {
+      "key": "UC03-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched."
+    },
+    {
+      "key": "UC03-r2",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched. The unit-availability finding is withdrawn: this current model snapshot lacked the unit even though the UI draft had it."
+    },
+    {
+      "key": "UC03-r3",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "assisted"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: exactly one selected row was saved at 1,117,504,701 kgCO₂e; other rows were untouched."
+    },
+    {
+      "key": "UC04-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: cancellation prevented the save and no inventory values changed. The original interruption/recovery evidence remains preserved."
+    },
+    {
+      "key": "UC05-r1",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable."
+    },
+    {
+      "key": "UC05-r2",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable."
+    },
+    {
+      "key": "UC05-r3",
+      "original": {
+        "responseVerdict": "partial",
+        "goalOutcome": "achieved"
+      },
+      "revised": {
+        "responseVerdict": "pass",
+        "goalOutcome": "achieved"
+      },
+      "reason": "Passed: no inaccessible emissions were disclosed or invented. CA correctly explained the access boundary and the administrator/invitation route. The accessible-city alternative is acceptable."
+    }
+  ],
+  "evidenceHashes": {
+    "UA01-r1/execution.json": "2ed48791dc9397c1cb98a586825175251ad5399c18ad6c9cde12dc034b6501c8",
+    "UA01-r2/execution.json": "264fab76b662d85789d429248263369786fe0106731f615d5529f9d606d51c28",
+    "UA01-r3/execution.json": "7bfc9720eac8308e733b6a89c2d16bb5a5a2cafcd861ccb3b4b34aac1bc92b03",
+    "UA02-r1/execution.json": "9b2408276b49c1894ec71cfb901b8552fb0e9d5833de21f16e7a785f4435344e",
+    "UA02-r2/execution.json": "263a39159f3b46407141895beb21fe56d0499229397576bfe089e39791a8ce74",
+    "UA02-r3/execution.json": "03530ebc03275af56d48c7994e85359582a0a874c9b1ccc6a12ba3c25fb48162",
+    "UA03-r1/execution.json": "378c0a373107ead52d47b7e8fc4f7c24092b188971aa920bd89ba480af5a91d5",
+    "UA03-r2/execution.json": "47430bb58c539b7002844b5dbbace866583cf82f738c692f59400e3ce2a9c457",
+    "UA03-r3/execution.json": "3d2373b3f88dae46bd27ae805b9664895eb047c666874c72c904e7d67217f747",
+    "UA04-r1/execution.json": "1187d1d8cc7a2dbe6fc56239e1d6ad494e4ad5f989c64d8b5c5792fd925b84e1",
+    "UA04-r2/execution.json": "a98c2c933ae18ca3e5b82a2d01ab1e710ae25652ccda056682a07998af2a3f2e",
+    "UA04-r3/execution.json": "0a2665ad282febb71ecfb35c8544cbd02ad284dbdf92f11d94478c25c35f7ecc",
+    "UA05-r1/execution.json": "0e558d44f07126a9d2d946cd61cdbe83498c8c0dc8e69ed7fc1fb797dbc58fcb",
+    "UA05-r2/execution.json": "07f3ce14634be6f0bb5671342a8fe85f8c11e05c85163c757f606f25bbc32e28",
+    "UA05-r3/execution.json": "b1906babb9b34e16dd93f44a17b3bfa6dfd826901237d060eefefbbe55711154",
+    "UB01-r1/execution.json": "c89c440e4e96d72a72d1c4ef242893237843eae8dc2e9e8035f90bc285b29bd7",
+    "UB01-r2/execution.json": "f73783c655e4b9e57e22d7144e2ad394840b6360e935050444ab4a3391e48e3d",
+    "UB01-r3/execution.json": "d6ded1172b46967e32b1167f533b90dffcfb19bf8cace1158bb3c7c82326988f",
+    "UB02-r1/execution.json": "8f4d8e49415db71f642c1a7e822a12add661ecce3934a2f40200858a1fce76b0",
+    "UB02-r2/execution.json": "fce3fc8a13bb6333f8ceb9b98cda78ecbc655c5caa19faa9ecd5f5a2eac3aad2",
+    "UB02-r3/execution.json": "92e4555260e69520b285e1a29d7f138e869233ee8bab75dfcd5d1e7ceda67e49",
+    "UB03-r1/execution.json": "a3a19932cd23352a64b95bb608f8bd0a7ffdde58ec65d8882ac1e09952c766ee",
+    "UB03-r2/execution.json": "da06535c8aaf1b6d41e8eb62ba47a696d16be1cb8de6690f9e6e38c31c3399bc",
+    "UB03-r3/execution.json": "33fd9c2728f97ce89c3751d861d4354eff0037a58ad6d2f0ca724c24fbbc598e",
+    "UB04-r1/execution.json": "62d41a060c4780e9f468a263deecd7c309a08b0dec90a606a8275d39616b93ed",
+    "UB04-r2/execution.json": "7f026f8a33ce9027d12c4a2314db6b1ecf660315995957dde752a3c4244341dd",
+    "UB04-r3/execution.json": "90ea18039343ba567cb400086aaec0ccce7534d5ed3c4525ad09f27367b3444a",
+    "UB05-r1/execution.json": "c50486c6cd63e914231741a2fda0a68098329464fa7b1cf56440f3aa58379d9a",
+    "UB05-r2/execution.json": "84ad3b15d603051d9da5c87ffccc0816c70819f13747fbad8218d290860e4633",
+    "UB05-r3/execution.json": "0552a1729820e38f4dde41a5ff980a435c1a98fd3ae9c8370cdc2fb926161cd2",
+    "UC01-r1/execution.json": "c5b3ad54907a1a1c252f2aca184ddc13b3f5b8c7c95fa29e2bb68528f5b117b8",
+    "UC01-r2/execution.json": "20515637672a3e864e23cfaf5c9bcd783753a1ee38865a181734ca544f913ba9",
+    "UC01-r3/execution.json": "b144032037bb95ca866ee75d584483cefb41bb47882c7be5978b1d6307dec88c",
+    "UC02-r1/execution.json": "c0b99f4dd238e698f61d29aee9250cb20ab948bd50ef08b72491dff4af3f9abd",
+    "UC02-r2/execution.json": "e8fc45568a185f1229a35284a44d58eecdab82558545778c508a868dc0f5f39c",
+    "UC02-r3/execution.json": "080d4af0b5ea1753cdcf475fb33d8521b43e2763d86c4193fae661ced1b99de9",
+    "UC03-r1/execution.json": "dcffb4d83d858a02f2b56aebf3114dbd5fb50eeaaeaaab16d81720ce6d8b3171",
+    "UC03-r2/execution.json": "b42021407d6e1e8c9fdb1c5353409b9f5968f269b18622fb5c02a41801ff93e0",
+    "UC03-r3/execution.json": "870f03cb5db1ee92b822cae2dacc6de42206238f56fe081e1b7b85e543dd731e",
+    "UC04-r1/execution.json": "99163a9f9fc50e3fc1c87eb91ca94d73179b77dd7caf18671732b569cf436786",
+    "UC04-r2/execution.json": "f4ba0d1c8ace46d5e5cd87b66a02033ad82f012948e00ce10aee8a90d2f079d7",
+    "UC04-r3/execution.json": "1691ea9d138014898d1a2e1fd3b2d25ff48786ead8b2f979033b0c7a55a67464",
+    "UC05-r1/execution.json": "a14aca448e3c1c08bc25f21cfefb19697c3e351d94bd04123026c799da0c4a88",
+    "UC05-r2/execution.json": "781d31d391e539a27221b96c222d01c09c498f138e237e1ede8d5f4ac8ee3165",
+    "UC05-r3/execution.json": "398ec4b1926cbc9cd4e485d2aa9cdd12876d54dda588ac9f1a85fbb9e70fbf7f",
+    "transcripts-en-onboarding.json": "c5cd12fb9907b202f00b490a4fde82244219b618a02b9ba0ab60b091a3b726f1",
+    "transcripts-en-analysis.json": "9a0b6976faeef0acdadc3d3f336c589ee6ccc780991cb2b7313f0bcbf4916b80",
+    "transcripts-en-review.json": "eda188851a10c89454f887913d908c9c76c05af5805782e55b7f24368b42ca78",
+    "consolidated-judgments.json": "2a2362a30c9c7cc509e341b42817c47d2295c98bd4f13887a7cf0c25a915f1e0",
+    "final-metrics.json": "76e171d6ae6aba866e58f95eadc6308e6dde7879abc4597c9876f1323cfbd11a",
+    "source-provider-reference.json": "55f452c5c1efbf7fb77d9ad27c993fa8194bcf9a3f119f8fff27fac6993d1b32",
+    "independent-state-verification.json": "0d4d6d66ef00c786ba166d486696a99768366423cdb3fb7562b4ddba6c8e469e"
+  },
+  "originalEvidenceUnchanged": true
+}

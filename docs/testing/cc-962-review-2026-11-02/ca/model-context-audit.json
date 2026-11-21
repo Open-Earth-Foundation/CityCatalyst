@@ -1,0 +1,90 @@
+{
+  "revision": "context-audit-2026-11-01",
+  "basis": "Existing MLflow provider-call trace references resolve to root system-prompt snapshots; recorded UI requests and frozen provider responses. No CA/LLM rerun.",
+  "sourceMetadata": {
+    "inventoryYear": 2022,
+    "modelCandidate": {
+      "dataset_year": 2015,
+      "geography_match": "country"
+    },
+    "modelUIOptionMeta": "2015 / country",
+    "providerRecord": {
+      "city": "São Paulo",
+      "year": 2022,
+      "geographicLevel": "city"
+    },
+    "sourceDataOmitted": true,
+    "cause": "CC candidate metadata uses catalogue startYear and country-level catalogue coverage. Inventory year and source dataset year are distinct fields.",
+    "traceId": "tr-55c1f086f411ac4244504d60b6186546",
+    "runId": "07d548d287f04d338e83ace5f9e56216"
+  },
+  "displayApproximation": {
+    "exactKg": 1117504701,
+    "exactMt": 1.117504701,
+    "suppliedToModel": "1.11 MtCO₂e",
+    "actualUIFormatterResult": "1.11 MtCO₂e",
+    "nearestTwoDecimalRounding": "1.12 MtCO₂e",
+    "cause": "The UI formatNumber implementation slices decimal digits; the preformatted value is included in focused_decision_review.recommendedOption.value. Independent LLM arithmetic failure is not established.",
+    "scoring": "Exact required kg value is correct. Truncated display approximation is retained as a non-penalizing UI presentation observation."
+  },
+  "postSaveUnit": {
+    "UIEnrichedUnit": "kgco2e",
+    "explicitEmissionUnitsInCurrentModelContext": 0,
+    "kgCO2MentionsInCurrentModelContext": 0,
+    "focusedDecisionReviewPresent": false,
+    "sourceDataIncluded": false,
+    "cause": "The CC GET route enriches gas rows with emissions_value_100yr and kgco2e for the UI. CA builds its chat snapshot from persisted gas rows, which lack that field. After saving, there is no focused pending UI review to supply the enriched row.",
+    "scoring": "Withdraw the unit-availability hallucination finding. The current model snapshot did not contain the unit.",
+    "traceId": "tr-cb2fe8f0b0b9f01fd2745138a13e8fb2",
+    "runId": "60afada4c50145019aaa925e7388cb39"
+  },
+  "scoreDecisions": {
+    "UC01": {
+      "answer": "partial",
+      "task": "assisted",
+      "reason": "Search mechanism works after consent; the overall source-discovery result is partially successful because supplied provenance is misleading."
+    },
+    "UC03": {
+      "answer": "pass in all 3 runs",
+      "task": "achieved in all 3 runs"
+    },
+    "UC05": {
+      "answer": "pass in all 3 runs",
+      "task": "achieved in all 3 runs"
+    }
+  },
+  "codeReferences": [
+    {
+      "path": "app/src/backend/agentic/ghgi/stationary-energy/context.ts",
+      "line": 550
+    },
+    {
+      "path": "app/src/components/StationaryEnergyDraft/flow-review.ts",
+      "line": 670
+    },
+    {
+      "path": "app/src/components/StationaryEnergyDraft/utils.ts",
+      "line": 339
+    },
+    {
+      "path": "app/src/util/helpers.ts",
+      "line": 306
+    },
+    {
+      "path": "app/src/util/helpers.ts",
+      "line": 451
+    },
+    {
+      "path": "app/src/backend/agentic/ghgi/stationary-energy/draft-emissions.ts",
+      "line": 42
+    },
+    {
+      "path": "climate-advisor/service/app/services/stationary_energy/stationary_energy_chat_context.py",
+      "line": 78
+    },
+    {
+      "path": "climate-advisor/service/app/utils/streaming_prompt.py",
+      "line": 39
+    }
+  ]
+}

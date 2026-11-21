@@ -1,0 +1,33 @@
+{
+  "inventoryCounts": [
+    {
+      "inventory_id": "203bfdb6-dede-403d-b5ff-55b87fd3e25f",
+      "values": 0
+    },
+    {
+      "inventory_id": "36ee560c-05b7-434a-be30-59370c352ae8",
+      "values": 0
+    },
+    {
+      "inventory_id": "3c8387ae-fcfd-4aa0-847b-3894eafa24e5",
+      "values": 0
+    },
+    {
+      "inventory_id": "56eec29d-b52d-465e-befd-8e21484f238d",
+      "values": 0
+    },
+    {
+      "inventory_id": "a5c6d607-6dd1-4af2-9c4f-06280de3eaf0",
+      "values": 0
+    },
+    {
+      "inventory_id": "e1f822d9-9e7a-40db-88ed-f0580cfe6c35",
+      "values": 0
+    },
+    {
+      "inventory_id": "eafb4b06-785d-4484-bc3e-9464854861ad",
+      "values": 0
+    }
+  ],
+  "noInventoryWrites": true
+}

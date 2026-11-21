@@ -1,0 +1,966 @@
+{
+  "createdAt": "2026-11-01T11:07:10.805Z",
+  "executionStatus": "completed",
+  "repetitions": 3,
+  "scenarios": [
+    {
+      "id": "UA01",
+      "title": "Pierwsza inwentaryzacja za nowy rok",
+      "persona": "Nowa pracowniczka wydziału środowiska w mieście, które ma wcześniejsze inwentaryzacje.",
+      "businessGoal": "Uruchomić pracę nad inwentaryzacją miasta za 2025 i zrozumieć wymagane ustawienia.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Dzień dobry, zaczynam pracę z CityCatalyst. Chciałabym przygotować inwentaryzację emisji naszego miasta za 2025 rok. Od czego mam zacząć i czy możesz ją dla mnie utworzyć?",
+        {
+          "goal": "Dopytać o wybory potrzebne przy zakładaniu roku i dalsze kroki; jeśli CA twierdzi, że utworzył inwentaryzację, poprosić o wskazanie, gdzie sprawdzić rezultat.",
+          "exampleText": "Co powinnam wybrać w ustawieniach i gdzie potem sprawdzę, czy rok 2025 rzeczywiście jest już dostępny?",
+          "condition": "Po pierwszej odpowiedzi, dopasować pytanie do zaproponowanej drogi."
+        }
+      ],
+      "expectedBehavior": [
+        "Wyjaśnia praktyczną ścieżkę utworzenia inwentaryzacji w kreatorze GHGI i znaczenie roku, typu inwentaryzacji, GWP i wymaganych danych ludności, bez podejmowania za użytkowniczkę nieuzgodnionych wyborów.",
+        "Nie deklaruje utworzenia przez czat bez potwierdzonej operacji; uczciwe wskazanie ograniczenia i drogi w UI jest poprawną odpowiedzią.",
+        "Sukces odpowiedzi CA: rzetelne wskazówki i ograniczenia. Sukces celu: potwierdzone utworzenie właściwej inwentaryzacji 2025 w UI i odczycie stanu; sama rozmowa nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "Przed próbą w REFERENCE są 2023 i 2024, brak 2025; porównać listę lat przed i po.",
+        "Jeśli utworzono, dokładnie jedna inwentaryzacja dla właściwego miasta i 2025; sprawdzić zapisane, wybrane przez użytkowniczkę typ i GWP oraz ludność.",
+        "Nie przedstawiać pustego/niepełnego roku jako gotowej inwentaryzacji ani wymyślonych danych źródłowych jako zapisanych."
+      ],
+      "expectedUiInteractions": [
+        "Jeśli dostępne i użytkowniczka chce przejść dalej, wejść w GHGI, wybrać nową inwentaryzację bez importu, rok 2025, jawnie ustalone ustawienia i wymagane dane ludności, zatwierdzić; zweryfikować rok na liście i w szczegółach. Nie łączyć źródeł automatycznie bez świadomego wyboru."
+      ],
+      "mustNotClaim": [
+        "Że rok 2025 już powstał lub jest kompletny bez odczytu.",
+        "Że sam wybór roku oznacza zapis danych emisyjnych."
+      ],
+      "allowedProductChanges": [
+        "W testowym mieście utworzenie roku 2025 i ewentualne uzgodnione dane ustawień/ludności przez UI; brak zmian w 2023/2024."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Nagranie konfiguracji i zatwierdzenia, lista inwentaryzacji i szczegóły roku przed/po; jeśli kreator nie zostanie ukończony, cel pozostał nieosiągnięty."
+      ],
+      "whyThisIsRealistic": "Pracowniczka po raz pierwszy przygotowuje kolejny rok i potrzebuje odróżnić pomoc w konfiguracji od rzeczywistego utworzenia.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UA01-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA01-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA01-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        }
+      ]
+    },
+    {
+      "id": "UA02",
+      "title": "Kontynuacja istniejącego roku",
+      "persona": "Urzędniczka przejmująca rozpoczętą wcześniej inwentaryzację miasta.",
+      "businessGoal": "Odnaleźć i kontynuować rok 2024 bez utraty istniejących danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Chcę pracować nad inwentaryzacją naszego miasta za 2024 rok, ale wygląda na to, że ten rok już jest w systemie. Czy mam tworzyć go ponownie, czy mogę kontynuować istniejącą pracę?",
+        {
+          "goal": "Po odpowiedzi dopytać o bezpieczeństwo wcześniejszych danych oraz jak sprawdzić, że otwarto właściwy rok.",
+          "exampleText": "Nie chcę stracić tego, co już wprowadzono. Jak bezpiecznie otworzyć ten rok i sprawdzić, co w nim jest?",
+          "condition": "Po odpowiedzi; jeśli CA proponuje import lub nowe założenie, poprosić o wyjaśnienie skutków."
+        }
+      ],
+      "expectedBehavior": [
+        "Zaleca sprawdzenie i otwarcie istniejącej inwentaryzacji właściwego miasta i roku, zamiast obiecywać bezpieczne utworzenie duplikatu.",
+        "Jeśli proponuje import do roku z danymi, ostrzega o możliwym zastąpieniu danych i konieczności przeglądu oraz potwierdzenia; nie traktuje go jako zwykłego dodania.",
+        "Sukces odpowiedzi CA: bezpieczna, wykonalna wskazówka lub uczciwa niepewność co do stanu. Sukces celu: otwarcie właściwej inwentaryzacji i zachowanie jej danych potwierdzone po czynnościach."
+      ],
+      "accuracyChecks": [
+        "REFERENCE: rok 2024 istnieje, łącznie 1 800 000 tCO2e; 2023 to 1 500 000 tCO2e.",
+        "Dla 2024: Stationary Energy 900 000 t, transport 600 000 t, odpady 300 000 t; brak danych innych kategorii nie dowodzi zer.",
+        "Przed i po sprawdzić liczbę inwentaryzacji 2024 oraz cztery początkowe wartości sektorów/scope i sumę; nie oczekiwać, że CA zna stan bez dowodu."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć istniejący rok 2024 z listy/dashbordu; obejrzeć dostępne podsumowanie, bez zatwierdzania importu i bez zapisu zmian."
+      ],
+      "mustNotClaim": [
+        "Że 2024 nie istnieje lub jest pusty, gdy niezależny odczyt temu przeczy.",
+        "Że import z pewnością zachowa obecne wartości."
+      ],
+      "allowedProductChanges": [
+        "Brak zmian w inwentaryzacji; dopuszczalne tylko otwarcie/nawigacja i zapis rozmowy."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Lista miasta i lat, widok roku 2024 oraz niezależny odczyt wartości i liczby inwentaryzacji przed/po."
+      ],
+      "whyThisIsRealistic": "Przekazanie zadań w urzędzie często zaczyna się od sprawdzenia, czy wcześniejsza praca już istnieje.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UA02-r1",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UA02-r2",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UA02-r3",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        }
+      ]
+    },
+    {
+      "id": "UA03",
+      "title": "Posiadany arkusz Excel",
+      "persona": "Urzędniczka dysponująca wcześniejszą inwentaryzacją w arkuszu.",
+      "businessGoal": "Ustalić, jak przenieść dane z własnego Excela do GHGI i sprawdzić poprawność importu.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam naszą wcześniejszą inwentaryzację w Excelu i chciałabym wykorzystać ją w CityCatalyst. Jak mogę ją wprowadzić, żeby nie przepisywać wszystkiego ręcznie?",
+        {
+          "goal": "Zapytać o przesłanie i kontrolę zgodności; jeśli CA twierdzi, że widzi arkusz, poprosić o wyjaśnienie, skąd ma jego zawartość.",
+          "exampleText": "Czy mogę przesłać ten plik tutaj? Jak przed zatwierdzeniem sprawdzę rok, jednostki i przypisanie danych do sektorów?",
+          "condition": "Po pierwszej odpowiedzi, przed jakimkolwiek rzeczywistym przesłaniem pliku."
+        },
+        {
+          "goal": "Po rzeczywistym przejściu do importu lub gdy brak pliku zapytać o następny krok, adekwatnie do tego co faktycznie widać.",
+          "exampleText": "Co powinnam sprawdzić przed ostatecznym zatwierdzeniem?",
+          "condition": "Po otwarciu kreatora albo gdy nie ma dostępnego pliku do przesłania."
+        }
+      ],
+      "expectedBehavior": [
+        "Odróżnia deklarację posiadania pliku od rzeczywistego przesłania: z rozmowy nie zna jego zawartości, układu, roku ani jednostek.",
+        "Wskazuje osobną ścieżkę importu inwentaryzacji w UI dla XLSX, przegląd mapowania, roku, jednostek, zakresów, błędów i potwierdzenie; wynik może wymagać korekt.",
+        "Sukces odpowiedzi CA: uczciwa i użyteczna instrukcja nawet bez pliku. Sukces celu: rzeczywisty import właściwych danych z osobnego, faktycznie wybranego pliku oraz weryfikacja zapisanych wartości."
+      ],
+      "accuracyChecks": [
+        "EMPTY: przed próbą inwentaryzacja 2024 jest pusta; brak załącznika w czacie.",
+        "Zanim próbę importu wykona się z prawdziwym plikiem XLSX, utrwalić jego pochodzenie, rok, jednostki i odpowiednie wartości jako niezależny wzorzec; nie wymyślać zawartości.",
+        "Porównać podgląd/mapowanie i po zatwierdzeniu zapisane wartości, sektor, Scope, rok i sumy ze wzorcem; bez dostępnego pliku lub ukończonego odczytu wynik celu niepotwierdzony."
+      ],
+      "expectedUiInteractions": [
+        "Właściwa ścieżka GHGI importu: wybrać plik XLSX rzeczywiście dostępny wykonawcy, przeglądnąć mapowanie i błędy, zatwierdzić tylko zrozumiany import do wyznaczonego testowego roku; jeśli pliku nie ma, zatrzymać się i zapisać ograniczenie."
+      ],
+      "mustNotClaim": [
+        "Że arkusz przesłano do czatu, został przeczytany lub zaimportowany przed rzeczywistym wykonaniem i sprawdzeniem.",
+        "Że każdy Excel zaimportuje się bez korekt."
+      ],
+      "allowedProductChanges": [
+        "W testowym EMPTY wyłącznie świadomy import i związane ustawienia po faktycznym wyborze pliku i zatwierdzeniu; nie nadpisywać danych innych osób."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Stan pustego roku przed próbą, rzeczywisty plik i wzorzec jeśli dostępne, widok wyboru pliku, mapowania, wyniku i niezależny odczyt po; jawnie odnotować brak pliku."
+      ],
+      "whyThisIsRealistic": "Miasta często mają wcześniejsze zestawienia w arkuszu i pytają, czy mogą je wykorzystać bez ponownego wpisywania.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UA03-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA03-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA03-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        }
+      ]
+    },
+    {
+      "id": "UA04",
+      "title": "Raport w PDF jako źródło inwentaryzacji",
+      "persona": "Urzędniczka, która otrzymała miejski raport emisyjny w PDF.",
+      "businessGoal": "Sprawdzić możliwość wykorzystania danych z raportu PDF i świadomie zweryfikować odczyt przed importem.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam raport o emisjach naszego miasta w PDF. Czy da się na jego podstawie uzupełnić inwentaryzację w CityCatalyst? Nie wiem, od czego zacząć.",
+        {
+          "goal": "Dopytać o faktyczny sposób przekazania raportu i kontrolę odczytu tabel; jeśli CA sugeruje, że widzi raport, zapytać o podstawę.",
+          "exampleText": "Raportu jeszcze nigdzie nie przesłałam. Gdzie mam go wybrać i jak sprawdzić, czy liczby i rok zostały dobrze odczytane?",
+          "condition": "Po pierwszej odpowiedzi, przed wyborem pliku w UI."
+        },
+        {
+          "goal": "Zapytać, co zrobić z niepewnymi lub brakującymi danymi zależnie od uzyskanych wskazówek lub widoku importu.",
+          "exampleText": "A jeśli jakaś tabela zostanie źle odczytana albo zabraknie jednostek, czy mogę to sprawdzić przed zapisaniem?",
+          "condition": "Po wskazaniu ścieżki importu lub obejrzeniu przeglądu, jeżeli użyto faktycznego pliku."
+        }
+      ],
+      "expectedBehavior": [
+        "Uznaje, że PDF nie został przesłany ani odczytany w rozmowie; nie opisuje jego zawartości.",
+        "Wskazuje import PDF w kreatorze GHGI oraz potrzebę sprawdzenia odczytu, przypisań, roku, Scope, jednostek, brakujących i błędnych wierszy przed zatwierdzeniem; brak gwarancji pełnego odczytu.",
+        "Sukces odpowiedzi CA: uczciwa instrukcja i wyjaśnienie ograniczeń. Sukces celu: rzeczywiste przesłanie w UI, przegląd i zapis poprawnych danych potwierdzony odczytem; sam podgląd lub odpowiedź CA nie oznacza importu."
+      ],
+      "accuracyChecks": [
+        "EMPTY: 2024 początkowo bez danych; rozmowa bez pliku.",
+        "Jeżeli dostępny prawdziwy PDF, przed importem utrwalić niezależny wzorzec czytelnych wierszy, ich rok, jednostki i źródło oraz odnotować niejednoznaczności; zawartość nie jest wcześniej znana.",
+        "Porównać wykryte oraz faktycznie zapisane wiersze z raportem; nie dublować sum i składowych ani nie traktować braków jako zer."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć ścieżkę importu, faktycznie wybrać PDF wyłącznie jeśli dostępny, poczekać na odczyt, przejrzeć wyniki i przypisania, zatwierdzić tylko po weryfikacji; w przeciwnym razie zakończyć z jawną informacją o braku pliku lub niedokończonym imporcie."
+      ],
+      "mustNotClaim": [
+        "Że CA otrzymał, przeczytał lub zaimportował PDF na podstawie samej deklaracji.",
+        "Że PDF zawsze da się poprawnie odczytać albo że podgląd jest zapisem."
+      ],
+      "allowedProductChanges": [
+        "W EMPTY świadomie zatwierdzony import faktycznego PDF i związane ustawienia; bez zmian innych inwentaryzacji."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Wzorzec z rzeczywistego PDF, stan przed, wybór pliku w UI, wynik odczytu i przeglądu, rezultat zatwierdzenia oraz niezależny odczyt po; w razie braku pliku oznaczyć cel jako niezweryfikowany."
+      ],
+      "whyThisIsRealistic": "Urzędniczka może otrzymać gotowy raport od wykonawcy, nie mając dostępu do jego arkusza źródłowego.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UA04-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA04-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        },
+        {
+          "key": "UA04-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "blocked"
+        }
+      ]
+    },
+    {
+      "id": "UA05",
+      "title": "Wklejona tabela dwóch sektorów",
+      "persona": "Urzędniczka z krótkim zestawieniem gotowych wartości emisji.",
+      "businessGoal": "Dodać dwa posiadane wyniki do inwentaryzacji 2024 i uniknąć podwójnego policzenia sumy.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam małą tabelę dla naszego miasta. Czy możesz dodać te dane do inwentaryzacji za 2024 rok?\n\n| Rok | Kategoria | Scope | Emisje (tCO2e) |\n|---|---|---|---:|\n| 2024 | Budynki mieszkalne | Scope 1 | 1200 |\n| 2024 | Transport drogowy | Scope 1 | 800 |\n| 2024 | Suma | — | 2000 |",
+        {
+          "goal": "Zależnie od odpowiedzi poprosić o bezpieczne następne kroki lub potwierdzenie rzeczywistego zapisu; wyjaśnić że suma jest kontrolna.",
+          "exampleText": "Suma 2000 ton jest tylko podsumowaniem tych dwóch wierszy. Jak mogę sprawdzić, że dane rzeczywiście trafiły do właściwego roku i nie policzą się podwójnie?",
+          "condition": "Po odpowiedzi CA; jeśli twierdzi, że dodał dane, poprosić o pokazanie zapisanych pozycji."
+        },
+        {
+          "goal": "Jeśli CA wskazuje na brak szczegółów, zapytać jakie informacje są potrzebne; jeśli prowadzi do UI, poprosić o opis miejsc i kontroli.",
+          "exampleText": "Czy te dwie wartości wystarczą, czy potrzebujesz ode mnie jeszcze jakichś szczegółów, zanim je wpiszę?",
+          "condition": "Dostosować do rzeczywistych braków lub proponowanego sposobu wprowadzenia."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawnie odczytuje obie pozycje jako rok 2024, Scope 1, odpowiednio 1200 i 800 tCO2e, a 2000 tCO2e jako ich sumę kontrolną; nie dodaje sumy jako trzeciej emisji.",
+        "Uczciwie rozróżnia treść wklejoną do czatu od zapisu w inwentaryzacji i nie obiecuje dowolnego zapisu czatem. Proponuje sprawdzenie ścieżki ręcznego dodania/importu w UI oraz doprecyzowanie źródła i metodologii/mapowania, jeśli wymagane pola nie wynikają z tabeli.",
+        "Nie wymyśla paliw, aktywności, współczynników ani podziału na bardziej szczegółowe kategorie. Nie wymusza zapisu, gdy UI potrzebuje brakujących danych.",
+        "Sukces odpowiedzi CA: prawidłowa interpretacja i uczciwa wykonalna droga lub prośba o brakujące informacje. Sukces celu: obie wartości faktycznie zapisane w odpowiednich kategoriach i Scope, bez sumy jako dodatkowego wiersza, co wymaga odczytu stanu."
+      ],
+      "accuracyChecks": [
+        "EMPTY: przed próbą inwentaryzacja 2024 pusta; brak istniejących wartości, których należałoby unikać w sumie.",
+        "1200 + 800 = 2000 tCO2e, czyli 1 200 000 + 800 000 = 2 000 000 kgCO2e, jeśli odczyt stanu używa kilogramów.",
+        "Po ewentualnym zapisie sprawdzić właściwe miasto, rok 2024, obie kategorie i Scope 1, wartości, pochodzenie oraz łączny wynik 2000 t bez trzeciej pozycji sumy; brak danych innych sektorów nie oznacza zera.",
+        "Jeśli zapis wymaga niepodanych szczegółów lub brak ścieżki do zapisania gotowych emisji, nie uznawać celu za ukończony i zapisać dokładną przeszkodę."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć odpowiednie sekcje dodawania danych i sprawdzić wymagane pola. Wprowadzić wyłącznie wartości, które UI pozwala jednoznacznie przypisać na podstawie tabeli i uzgodnionych informacji; jeśli to niemożliwe, zatrzymać się bez zgadywania."
+      ],
+      "mustNotClaim": [
+        "Że dane dodano tylko dlatego, że zostały wklejone.",
+        "Że suma 2000 to dodatkowy wiersz do zapisania albo że niewymienione sektory mają zerowe emisje."
+      ],
+      "allowedProductChanges": [
+        "Wyłącznie uzgodnione i jednoznacznie przypisane pozycje w testowym EMPTY 2024; żadnych innych zmian."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Pełna tabela i odpowiedzi, widoczne wymagania formularzy, stan przed/po oraz odczyt obu zapisanych pozycji, kategorii, Scope i sumy; jeśli nie zapisano, wskazać brakujące dane lub niedostępną ścieżkę."
+      ],
+      "whyThisIsRealistic": "Pracowniczka może dostać krótkie zestawienie w wiadomości i oczekiwać szybkiej pomocy w przeniesieniu danych.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UA05-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UA05-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UA05-r3",
+          "responseVerdict": "pass",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UB01",
+      "title": "Jednozdaniowy obraz emisji dla przełożonej",
+      "persona": "Analityk miejski przygotowujący pierwszą stronę notatki o emisjach.",
+      "businessGoal": "Uzyskać nadające się do notatki podsumowanie sumy i udziału największego sektora za 2024 r., z zastrzeżeniem zakresu danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Przygotowuję krótką informację dla przełożonej. Ile wynoszą emisje w naszej inwentaryzacji za 2024 rok i który sektor ma największy udział?",
+        {
+          "goal": "Doprecyzować liczbę, mianownik udziału i gotowy tekst.",
+          "exampleText": "Możesz podać wielkość tego sektora i ułożyć z tego dwa zdania do notatki?",
+          "condition": "Po odpowiedzi z wynikiem; jeśli CA nie uzyska danych, poproś o wskazanie miejsca sprawdzenia wyniku zamiast zakładać liczby."
+        },
+        {
+          "goal": "Ocenić, jak bezpiecznie opisać ograniczenia wyniku.",
+          "exampleText": "Czy mogę napisać, że to pełny obraz emisji miasta?",
+          "condition": "Po uzyskaniu podsumowania albo wskazówek, gdzie je sprawdzić."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: identyfikuje miasto i rok, podaje wynik i największy sektor z jednostką oraz udziałem w sumie zapisanych emisji; nie nazywa wyniku pełnym obrazem przy brakujących danych.",
+        "Jeśli odczyt nie jest dostępny, uczciwie mówi o ograniczeniu i kieruje do wyników wybranej inwentaryzacji bez wymyślania liczb; to może być poprawna odpowiedź, ale sama nie realizuje celu liczbowego.",
+        "Ukończenie celu: użytkownik ma dwa poprawne zdania z sumą, największym sektorem, jego udziałem i zastrzeżeniem niekompletności, oparte na sprawdzonych danych; samo wskazanie widoku nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "2024: 1 800 000 tCO2e = 1 800 000 000 kgCO2e; energia stacjonarna 900 000 tCO2e = 50% tej sumy.",
+        "Transport 600 000 tCO2e, odpady 300 000 tCO2e; udziały w zapisanej sumie odpowiednio 33,33% i 16,67%, jeśli CA je podaje.",
+        "IPPU, AFOLU i inne pozycje nie są wprowadzone: brak danych nie dowodzi zerowych emisji ani kompletności."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć nowy czat w kontekście właściwego miasta; w razie potrzeby wybrać 2024 i odczytać widok wyników. Bez edycji lub publikacji."
+      ],
+      "mustNotClaim": [
+        "Inwentaryzacja obejmuje wszystkie emisje miasta lub brakujące sektory mają zero.",
+        "Wynik pochodzi z konkretnego źródła, którego nie potwierdzono."
+      ],
+      "allowedProductChanges": [
+        "Nowy wątek i wiadomości czatu; brak zmian danych inwentaryzacji."
+      ],
+      "evidenceNeeded": [
+        "Pełny zapis rozmowy i widoczne miasto/rok.",
+        "Niezależny odczyt zapisanych wyników i braków dla 2024 przed i po rozmowie; wynik notatki oraz informacja, czy cel osiągnięto."
+      ],
+      "whyThisIsRealistic": "Przełożona potrzebuje krótkiej liczby i priorytetu sektorowego, ale opis musi uczciwie ujawniać ograniczenia.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UB01-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UB01-r2",
+          "responseVerdict": "pass",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UB01-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UB02",
+      "title": "Porównanie roczne bez mylenia wzrostu z przyczyną",
+      "persona": "Analityk wyjaśniający przełożonej zmianę między edycjami inwentaryzacji.",
+      "businessGoal": "Przygotować porównanie sum 2023 i 2024 oraz poprawną interpretację zmiany bez przypisywania nieznanej przyczyny.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Przełożona pyta, jak zmieniły się emisje naszego miasta między inwentaryzacjami 2023 i 2024. Możesz to porównać?",
+        {
+          "goal": "Uzyskać zmianę bezwzględną i procentową na właściwej podstawie.",
+          "exampleText": "O ile to się zmieniło w tonach i w procentach względem 2023 roku?",
+          "condition": "Po odpowiedzi; jeśli jednego roku nie udało się odczytać, najpierw poproś o pomoc w znalezieniu tego roku w aplikacji."
+        },
+        {
+          "goal": "Oddzielić obserwowaną różnicę od jej przyczyny i porównywalności.",
+          "exampleText": "Czy na tej podstawie mogę stwierdzić, że mieszkańcy zużyli więcej energii? Co powinnam zaznaczyć w notatce?",
+          "condition": "Po ustaleniu porównania albo ograniczenia odczytu."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: odnosi wyniki do właściwych lat, oblicza zmianę na bazie 2023 i odróżnia wzrost zapisanych emisji od nieustalonej przyczyny; uwzględnia luki i potrzebę sprawdzenia porównywalności metod oraz zakresu.",
+        "Jeśli nie ma dostępu do obu lat, nie wymyśla drugiego wyniku, tylko wyjaśnia brak i wskazuje sposób odczytu w produkcie; taka odpowiedź jest poprawna, ale samodzielnie nie kończy porównania.",
+        "Ukończenie celu: oba sprawdzone wyniki, zmiana w tCO2e i procentach oraz ostrożne zdanie o interpretacji są dostępne użytkownikowi."
+      ],
+      "accuracyChecks": [
+        "2023: 1 500 000 tCO2e; 2024: 1 800 000 tCO2e; różnica +300 000 tCO2e; 300 000 / 1 500 000 = +20%.",
+        "W obu latach populacja 100 000, BASIC+ / AR6; obie inwentaryzacje mają braki. Sama liczba nie potwierdza zmiany aktywności ani jej przyczyny.",
+        "Sprawdzić, że wartości pobrano dla tego samego miasta, a lata nie zostały zamienione."
+      ],
+      "expectedUiInteractions": [
+        "W razie potrzeby przełączyć wybrany rok i obejrzeć wyniki obu istniejących inwentaryzacji; nie tworzyć nowej."
+      ],
+      "mustNotClaim": [
+        "Znana jest przyczyna wzrostu lub porównanie jest kompletne bez sprawdzenia zakresu danych.",
+        "Zmiana wynosi 16,67% względem 2023 r. albo stanowi redukcję."
+      ],
+      "allowedProductChanges": [
+        "Nowy wątek, wiadomości i wybór roku w interfejsie; bez zmian wartości."
+      ],
+      "evidenceNeeded": [
+        "Rozmowa wraz z opisem przełączeń roku i widocznymi kontekstami.",
+        "Odczyt wyników obu lat przed i po przebiegu; zapis końcowego porównania i ocena realizacji celu."
+      ],
+      "whyThisIsRealistic": "Porównanie rok do roku jest typowym pytaniem kierownictwa, a zmiana wyniku nie wyjaśnia sama swojej przyczyny.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UB02-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB02-r2",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB02-r3",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        }
+      ]
+    },
+    {
+      "id": "UB03",
+      "title": "Co naprawdę oznaczają zakresy w energii",
+      "persona": "Analityk przygotowujący odpowiedź na pytanie wydziału energii.",
+      "businessGoal": "Wyjaśnić przełożonej znaczenie oraz wartości zakresów 1 i 2 energii stacjonarnej dla 2024 r. w granicach dostępnych danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "W wynikach za 2024 rok chcę lepiej zrozumieć energię stacjonarną. Ile przypada na zakres 1, a ile na zakres 2?",
+        {
+          "goal": "Wyjaśnić różnicę pojęć na zrozumiałym przykładzie, bez domysłów o konkretnych paliwach.",
+          "exampleText": "Jak mam prostym językiem wyjaśnić przełożonej różnicę między tymi zakresami?",
+          "condition": "Po odpowiedzi liczbowej albo informacji o braku szczegółów."
+        },
+        {
+          "goal": "Upewnić się, czy podział wyczerpuje sektor w dostępnych danych.",
+          "exampleText": "Czy te liczby składają się na cały wynik energii i czy oznacza to, że nie brakuje nam tam żadnych danych?",
+          "condition": "Po omówieniu zakresów; jeśli nie da się ich ustalić, zapytaj, gdzie sprawdzić szczegóły w aplikacji."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: odróżnia emisje bezpośrednie z użytkowania paliw w mieście od emisji związanych z dostarczoną energią sieciową; dla dostępnych wartości podaje właściwe jednostki i łączną sumę bez twierdzenia, że każdy zakres jest kompletny.",
+        "Szczegółowy odczyt może nie być dostępny z danego kontekstu: uczciwe wskazanie ograniczenia i widoku pozycji energii jest poprawne, ale cel liczbowy nie jest osiągnięty bez weryfikowalnych wartości.",
+        "Ukończenie celu: poprawne obie liczby, ich relacja do zapisanej sumy sektora oraz objaśnienie i zastrzeżenie o brakach są dostępne do przekazania."
+      ],
+      "accuracyChecks": [
+        "W 2024 zapisane I.1.1 = 600 000 000 kgCO2e = 600 000 tCO2e (zakres 1), I.1.2 = 300 000 000 kgCO2e = 300 000 tCO2e (zakres 2), obie pozycje w podsektorze budynków mieszkalnych.",
+        "Suma zapisanej energii stacjonarnej = 900 000 tCO2e; zakresy 1 i 2 stanowią odpowiednio 2/3 i 1/3 tej sumy, nie całkowitych emisji miasta.",
+        "Te dwie zapisane pozycje nie dowodzą, że pozostałe podsektory i wymagane zakresy są zerowe lub kompletne; nie przypisywać danych konkretnemu paliwu ani dostawcy."
+      ],
+      "expectedUiInteractions": [
+        "W razie potrzeby otworzyć wyniki lub szczegóły energii stacjonarnej dla 2024; nie uruchamiać zapisu ani nie zmieniać istniejących pozycji."
+      ],
+      "mustNotClaim": [
+        "Zakres 2 oznacza emisje bezpośrednie ze spalania na miejscu.",
+        "Istnienie dwóch wartości potwierdza pełną kompletność sektora."
+      ],
+      "allowedProductChanges": [
+        "Nowy wątek i wiadomości; nawigacja po widokach odczytowych bez zmian danych."
+      ],
+      "evidenceNeeded": [
+        "Pełna rozmowa z rokiem, sektorami i jednostkami.",
+        "Niezależny odczyt pozycji zakresów i sumy energii oraz stan przed i po; ocena kompletności celu osobno od uczciwego ograniczenia CA."
+      ],
+      "whyThisIsRealistic": "Przy przeglądzie wyników energetycznych kierownictwo potrzebuje zarówno rozróżnienia zakresów, jak i ostrzeżenia o lukach.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UB03-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UB03-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB03-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UB04",
+      "title": "Wskaźnik na mieszkańca i kontrola jednostek",
+      "persona": "Analityk redagujący wskaźnik do miejskiej informacji rocznej.",
+      "businessGoal": "Uzyskać zrozumiały wskaźnik emisji na osobę w 2024 i 2023 z przejrzystą podstawą oraz bez pomylenia kg z tonami.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Do notatki potrzebuję emisji na jednego mieszkańca za 2024 rok, z jednostką. Możesz to obliczyć i powiedzieć, z jakich danych korzystasz?",
+        {
+          "goal": "Uzyskać weryfikowalny mianownik lub dostarczyć go, jeśli CA go nie widzi.",
+          "exampleText": "W danych miasta mam 100 tysięcy mieszkańców. Czy przy tej liczbie możesz przeliczyć wynik i pokazać działanie?",
+          "condition": "Użyj, jeśli CA nie może zweryfikować liczby mieszkańców; jeśli może, zamiast tego poproś o pokazanie rachunku i źródła ludności."
+        },
+        {
+          "goal": "Porównać wskaźnik z poprzednim rokiem i zachować ostrożność wobec luk.",
+          "exampleText": "A ile wynosił ten wskaźnik w 2023 roku przy tej samej liczbie mieszkańców? Czy mogę go traktować jako pełny wynik dla miasta?",
+          "condition": "Po uzyskaniu wskaźnika albo wyjaśnienia, jak zdobyć potrzebne dane."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: jawnie podaje rok, łączną emisję, populację, działanie i jednostkę tCO2e na osobę; jeśli populacja pochodzi od użytkownika, przedstawia ją jako założenie, nie jako sprawdzony odczyt aplikacji.",
+        "Przy braku dostępu do emisji lub wiarygodnego mianownika prosi o dane albo wskazuje ich miejsce i nie udaje, że je odczytał; poprawne ujawnienie ograniczenia nie oznacza ukończenia celu.",
+        "Ukończenie celu: oba wskaźniki są wyliczone ze sprawdzonych sum i właściwej populacji albo jawnie oznaczonego poprawnego założenia oraz opatrzone zastrzeżeniem o niepełnych danych."
+      ],
+      "accuracyChecks": [
+        "2024: 1 800 000 tCO2e / 100 000 osób = 18 tCO2e/osobę/rok = 18 000 kgCO2e/osobę/rok.",
+        "2023: 1 500 000 tCO2e / 100 000 osób = 15 tCO2e/osobę/rok; wzrost 3 tCO2e/osobę, czyli 20%, jeśli podano.",
+        "Populacja wynosi 100 000 w każdym roku; osobno zaznaczyć, czy CA ją odczytał, czy otrzymał w rozmowie. Wynik dotyczy zapisanych emisji i nie dowodzi pełnego bilansu."
+      ],
+      "expectedUiInteractions": [
+        "Jeśli potrzebne, obejrzeć profil ludności i wyniki właściwych lat; nie edytować populacji ani emisji."
+      ],
+      "mustNotClaim": [
+        "18 kgCO2e/osobę jako odpowiednik 18 tCO2e/osobę.",
+        "Liczba ludności została odczytana z aplikacji, jeśli przekazał ją użytkownik i brak niezależnego potwierdzenia."
+      ],
+      "allowedProductChanges": [
+        "Nowy wątek i wiadomości; wybór roku i nawigacja bez zapisu danych."
+      ],
+      "evidenceNeeded": [
+        "Rozmowa i pochodzenie każdej użytej liczby ludności.",
+        "Odczyt populacji i sum obu lat oraz kontrola jednostek; stan danych przed i po; wskazanie, czy gotowy wskaźnik osiągnięto."
+      ],
+      "whyThisIsRealistic": "Wskaźnik na mieszkańca trafia do publicznych podsumowań, więc jednostki i podstawa obliczeń mają znaczenie.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UB04-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB04-r2",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB04-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        }
+      ]
+    },
+    {
+      "id": "UB05",
+      "title": "Luki przed oddaniem inwentaryzacji",
+      "persona": "Analityk planujący z przełożoną uzupełnienie danych GHGI.",
+      "businessGoal": "Ustalić, czego nie można jeszcze uznać za kompletne, i przygotować praktyczną listę kolejnych kroków przed przekazaniem notatki.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Zanim przekażę przełożonej wyniki za 2024 rok, chciałabym sprawdzić kompletność naszej inwentaryzacji. Które obszary mają luki?",
+        {
+          "goal": "Ustalić znaczenie widocznych braków dla brakujących sektorów.",
+          "exampleText": "A co z procesami przemysłowymi oraz rolnictwem i użytkowaniem gruntów? Czy brak wartości oznacza, że emisje są tam zerowe?",
+          "condition": "Po pierwszej odpowiedzi; jeżeli CA nie widzi szczegółowego statusu, poproś o pokazanie, gdzie można go sprawdzić."
+        },
+        {
+          "goal": "Przełożyć diagnozę na pracę zespołu bez samodzielnego zapisywania danych przez CA.",
+          "exampleText": "Jakie konkretne dane i źródła powinnam zebrać oraz gdzie w aplikacji sprawdzić lub uzupełnić te luki? Na razie niczego nie zmieniaj.",
+          "condition": "Po rozpoznaniu braków albo wyjaśnieniu ograniczeń odczytu."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawna odpowiedź CA: podaje zweryfikowane braki lub uczciwie ogranicza szczegółowość do danych, które widzi; odróżnia brak pozycji od zera, nieoszacowania i niestosowania oraz nie uznaje całości za kompletną.",
+        "Proponuje praktyczne kroki: przejrzeć status i wymagane pozycje według zakresu inwentaryzacji, uzyskać od właściwych jednostek dane aktywności, rok, jednostki, źródło i metodę/współczynniki, następnie zweryfikować i wprowadzić dane albo uzasadnione oznaczenia w widokach GHGI; nie przypisuje niepotwierdzonych źródeł do konkretnych rekordów.",
+        "Uczciwe wskazanie, że zagregowany status nie daje pełnej listy pozycji, jest poprawne. Ukończenie celu wymaga ustalenia rzeczywistych braków na dostępnym poziomie i listy następnych kroków; ogólny opis bez identyfikacji braków nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "2024: istnieją tylko I.1.1, I.1.2, II.1.1 i III.1.1 z ledgeru; IPPU, AFOLU i wiele innych pozycji nie mają wartości. Nie wyprowadzać dokładnego procentu kompletności z liczby tych czterech pozycji.",
+        "Wartości 900 000 tCO2e energii, 600 000 tCO2e transportu, 300 000 tCO2e odpadów nie dowodzą kompletności tych sektorów.",
+        "BASIC+ / AR6 to kontekst inwentaryzacji; dokładne wymagane pozycje i oznaczenia sprawdzić w aktualnym widoku postępu, nie wywnioskowywać ich wyłącznie z braku liczby."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć status/postęp GHGI 2024 i ewentualnie szczegóły brakujących sektorów; jedynie obejrzeć dostępne opcje uzupełnienia, bez zatwierdzania czy zapisu."
+      ],
+      "mustNotClaim": [
+        "Brak danych dowodzi zerowych emisji, nie występuje dany sektor albo cała inwentaryzacja jest gotowa.",
+        "Dane, oznaczenia lub źródła zostały dodane lub zweryfikowane, jeśli do tego nie doszło."
+      ],
+      "allowedProductChanges": [
+        "Nowy wątek i wiadomości oraz odczytowa nawigacja; brak zapisu wartości, oznaczeń, źródeł i publikacji."
+      ],
+      "evidenceNeeded": [
+        "Rozmowa, widoczne obszary postępu i konkretna lista działań dla zespołu.",
+        "Niezależny odczyt zapisanych pozycji oraz statusu przed i po; odnotowanie braków, których nie udało się ustalić, i ocena ukończenia celu."
+      ],
+      "whyThisIsRealistic": "Przed przekazaniem wyniku analityk musi wiedzieć, komu zlecić zebranie brakujących informacji i jakie ograniczenia przekazać kierownictwu.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UB05-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UB05-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UB05-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        }
+      ]
+    },
+    {
+      "id": "UC01",
+      "title": "Gdzie znaleźć dane o energii dla miasta?",
+      "persona": "Urzędniczka przygotowująca pierwszy przegląd danych dla São Paulo.",
+      "businessGoal": "Ustalić, które rzeczywiście dostępne źródła mogą pomóc uzupełnić energię stacjonarną w inwentarzu z 2022 r. i co zrobić dalej.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Uzupełniam inwentarz São Paulo za 2022 rok. Skąd mogę wziąć dane o energii stacjonarnej?",
+        {
+          "goal": "Poprosić o odniesienie do faktycznie pokazanych źródeł i ich zastosowania.",
+          "exampleText": "Które z dostępnych źródeł mogą mi pomóc i jakich części sektora dotyczą?",
+          "condition": "Po odpowiedzi o źródłach; nazwać widoczne źródło, jeśli rozmowa tego wymaga."
+        },
+        {
+          "goal": "Uzyskać następny krok bez zapisywania wartości.",
+          "exampleText": "Co powinnam teraz sprawdzić, zanim zdecyduję się użyć tych danych?",
+          "condition": "Po przedstawieniu możliwości lub uczciwym wskazaniu ich braku."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: zachowuje kontekst São Paulo, roku inwentarza 2022 i energii stacjonarnej; odróżnia źródła rzeczywiście podłączone lub widoczne od ogólnych sugestii.",
+        "Podaje dostępne na ekranie propozycje i zakres tylko w granicach danych, którymi dysponuje, albo otwarcie mówi, że nie może ich ustalić; wyjaśnia praktyczny krok w przeglądzie źródeł.",
+        "Realizacja celu: użytkowniczka może wskazać przynajmniej jedno faktycznie dostępne źródło i jego zastosowanie oraz następny krok. Uczciwa odpowiedź o braku danych może być poprawna, ale nie oznacza znalezienia źródła."
+      ],
+      "accuracyChecks": [
+        "Przed każdą serią zamrozić z rzeczywistego dev nazwę dostawcy i zbioru, dostępność/podłączenie, pokrycie geograficzne, rok, kategorię i zakres każdego omawianego źródła; SEEG wymaga potwierdzenia w tym inwentarzu.",
+        "Porównać każdą nazwę, pokrycie i deklarację CA z zamrożonym katalogiem i widocznymi danymi; nie utożsamiać roku inwentarza z niepotwierdzonym rokiem danych źródła.",
+        "Porównać stan wartości energii stacjonarnej przed i po: początkowo brak istniejących wartości; po rozmowie brak nowych zapisanych wartości."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć energię stacjonarną i Clima, obejrzeć dostępne źródła lub propozycje; nie wybierać finalnego zapisu."
+      ],
+      "mustNotClaim": [
+        "Źródło istnieje, jest podłączone lub obejmuje konkretną kategorię bez potwierdzenia.",
+        "Brak danych oznacza zerowe emisje albo wartości zostały zapisane."
+      ],
+      "allowedProductChanges": [
+        "Historia rozmowy i ewentualny szkic w Clima; bez zapisu wartości do inwentarza."
+      ],
+      "evidenceNeeded": [
+        "Nagranie rozmowy i widoku źródeł, transkrypt, zamrożony odczyt katalogu/podłączonych źródeł oraz stanu inwentarza przed i po."
+      ],
+      "whyThisIsRealistic": "Osoba rozpoczynająca inwentarz najpierw sprawdza dostępne zbiory i ich przydatność, zanim wybierze liczby do raportu.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UC01-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC01-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC01-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UC02",
+      "title": "Skąd pochodzi proponowana wartość?",
+      "persona": "Analityczka miasta sprawdzająca wiarygodność konkretnej propozycji przed jej zatwierdzeniem.",
+      "businessGoal": "Zrozumieć pochodzenie, rok, zakres i wartość jednej rzeczywistej propozycji tak, aby móc ocenić jej użyteczność.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Przygotuj proszę propozycje dla energii stacjonarnej, żebym mogła sprawdzić źródła przed podjęciem decyzji.",
+        {
+          "goal": "Wyjaśnić wybraną widoczną propozycję i jej pochodzenie.",
+          "exampleText": "Spójrzmy na tę propozycję. Skąd pochodzą dane, jaki jest ich rok i jaką wartość proponujesz?",
+          "condition": "Po wyświetleniu co najmniej jednej propozycji wskazać w karcie jej widoczną kategorię i źródło; jeśli ich nie ma, zapytać, jak uzyskać dane."
+        },
+        {
+          "goal": "Zrozumieć dopasowanie i niepewność przed decyzją.",
+          "exampleText": "Czy te dane odpowiadają naszemu miastu i tej kategorii? Czego nie da się na ich podstawie stwierdzić?",
+          "condition": "Po wyjaśnieniu propozycji; dostosować do danych pokazanych na karcie."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: wskazuje konkretną omawianą pozycję, źródło i wartość z jednostką, o ile są dostępne; oddziela rok danych od roku inwentarza i opisuje zakres geograficzny oraz kategorię tylko na podstawie danych.",
+        "Przy brakującym roku, pochodzeniu, jednostce albo szczegółach metody mówi, czego nie wie, i wskazuje kartę szczegółów lub potrzebę sprawdzenia u dostawcy, bez dopowiadania faktów.",
+        "Realizacja celu wymaga sprawdzalnego wyjaśnienia przynajmniej jednego realnego kandydata wraz z wartością i potrzebnymi metadanymi; uczciwe wskazanie brakujących metadanych może być poprawną odpowiedzią bez pełnej realizacji celu."
+      ],
+      "accuracyChecks": [
+        "Przed uruchomieniami zamrozić rzeczywiste dane wybranego kandydata z dev: dostawcę/zbiór, nazwę pozycji, miasto i poziom geografii, rok źródła, rok inwentarza, kategorię i zakres GPC, wartość, jednostkę, ewentualne przeliczenie i dostępną informację o metodzie; nie zakładać wartości liczbowych.",
+        "Porównać odpowiedź CA, szczegóły karty oraz surową propozycję i dane źródła, uwzględniając jednostki i różnicę między wartością źródłową a obliczonym ekwiwalentem, jeśli występują.",
+        "Sprawdzić brak zapisu do inwentarza przed i po; utworzenie szkicu nie jest zapisem wartości."
+      ],
+      "expectedUiInteractions": [
+        "Rozpocząć szkic, wybrać widoczną pozycję i otworzyć szczegóły źródła; nie zatwierdzać zapisu do inwentarza."
+      ],
+      "mustNotClaim": [
+        "Nieznany rok lub metoda są potwierdzone; źródło jest pomiarem lokalnym, jeśli dostępne dane tego nie dowodzą.",
+        "Propozycja jest już wartością zapisaną w inwentarzu."
+      ],
+      "allowedProductChanges": [
+        "Historia rozmowy i szkic wraz z propozycjami w Clima; bez zapisu do inwentarza."
+      ],
+      "evidenceNeeded": [
+        "Nagranie i transkrypt, szczegóły wybranej pozycji, uprzednio zamrożone dane źródła i propozycji, odczyt stanu inwentarza przed i po."
+      ],
+      "whyThisIsRealistic": "Przed wykorzystaniem danych zewnętrznych analityczka musi wiedzieć, czy liczba dotyczy właściwego roku, obszaru i kategorii oraz skąd pochodzi.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UC02-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC02-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC02-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UC03",
+      "title": "Wybranie jednej propozycji i zapis do inwentarza",
+      "persona": "Urzędniczka uprawniona do edycji inwentarza, która akceptuje sprawdzoną wartość.",
+      "businessGoal": "Zapisać jedną wybraną pozycję energii stacjonarnej z prawdziwego źródła i dowiedzieć się, co faktycznie zapisano.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Pomóż mi uzupełnić energię stacjonarną dla São Paulo za 2022 rok. Najpierw pokaż mi propozycje do sprawdzenia.",
+        {
+          "goal": "Wybrać jedną konkretną widoczną propozycję po zapoznaniu się ze źródłem.",
+          "exampleText": "Ta propozycja wygląda odpowiednio. Chcę przyjąć właśnie ją; pozostałe zostawmy na później.",
+          "condition": "Po wyświetleniu propozycji wskazać rzeczywistą kategorię i dostawcę oraz sprawdzić wartość i rok; nie stosować zbiorczego wyboru pozostałych pozycji."
+        },
+        {
+          "goal": "Poprosić o zapis wyłącznie tej pozycji.",
+          "exampleText": "Zapiszmy tę wybraną wartość w inwentarzu.",
+          "condition": "Dopiero po wybraniu jednej pozycji i sprawdzeniu, że żadna inna nie jest przygotowana do zapisu."
+        },
+        {
+          "goal": "Po obsłużeniu karty zapytać o rzeczywisty wynik.",
+          "exampleText": "Co dokładnie zostało zapisane i co nadal wymaga mojej decyzji?",
+          "condition": "Po jawnym zatwierdzeniu w rzeczywistej karcie i zakończeniu operacji; w razie braku potwierdzonego sukcesu zapytać, jaki jest jej stan."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: identyfikuje wybraną kategorię i źródło, odróżnia wybór w szkicu od zapisu w CityCatalyst oraz prowadzi do prawdziwej karty potwierdzenia zapisu; nie twierdzi, że samo polecenie lub wybór już zapisały dane.",
+        "Na pytanie o wynik podaje wyłącznie potwierdzony rezultat, rozróżnia zapisane i nierozpatrzone pozycje; w razie braku potwierdzenia uczciwie opisuje stan i możliwy następny krok.",
+        "Realizacja celu wymaga jawnego zatwierdzenia na karcie i odczytu potwierdzającego dokładnie wybraną pozycję w inwentarzu. Sama poprawna odpowiedź lub komunikat o sukcesie bez sprawdzenia stanu nie wystarczą."
+      ],
+      "accuracyChecks": [
+        "Przed wykonaniem zamrozić faktyczne dane wybranej propozycji z dev: dostawca/zbiór, miasto, lata, kategoria i zakres, wartość i jednostka oraz reprezentacja zapisu; liczby ustalić przed seriami, nie wymyślać.",
+        "Przed potwierdzeniem porównać decyzje szkicu i kartę: do zapisu jest przygotowana tylko jedna świadomie wybrana pozycja; pozostałe są nierozpatrzone lub nieprzeznaczone do zapisu. Jeśli UI tego nie umożliwia, nie zapisywać innych pozycji i odnotować cel jako nieosiągnięty.",
+        "Porównać stan przed i po: w docelowym inwentarzu São Paulo 2022 pojawiła się wyłącznie wybrana pozycja z właściwą wartością, jednostką i przypisaniem źródła; inne pozycje pozostają bez zmian. Zweryfikować wynik i ewentualną historię zmian, jeżeli dostępna, niezależnym odczytem.",
+        "Porównać wypowiedź CA po zapisie z rzeczywistym rezultatem i statusem szkicu, nie utożsamiając zapisu szkicu z zapisem do inwentarza."
+      ],
+      "expectedUiInteractions": [
+        "Wygenerować szkic, otworzyć szczegóły wybranej pozycji i wskazać wyłącznie ją w karcie przeglądu.",
+        "Zainicjować zapis do inwentarza, sprawdzić podsumowanie i kliknąć potwierdzenie na rzeczywistej karcie „Confirm inventory save” / „Save to inventory” lub jej odpowiedniku w używanym języku. Nierozpatrzone pozycje pozostają poza tym zapisem.",
+        "Poczekać na wynik, a następnie obejrzeć zapisaną pozycję i zadać pytanie o wynik."
+      ],
+      "mustNotClaim": [
+        "Wartości zapisano przed potwierdzeniem albo wtedy, gdy zapis nie został potwierdzony odczytem.",
+        "Zapisano cały sektor lub wszystkie propozycje, jeżeli zatwierdzono tylko jedną."
+      ],
+      "allowedProductChanges": [
+        "Historia rozmowy i szkic/decyzje w Clima; po jawnym potwierdzeniu tylko wybrana pozycja w jednorazowym inwentarzu SOURCE oraz normalne powiązane zapisy historii."
+      ],
+      "evidenceNeeded": [
+        "Nagranie całej rozmowy, wskazanej pozycji i rzeczywistej karty potwierdzenia, transkrypt, dane referencyjne źródła i propozycji, odczyty wartości i przypisania źródła przed i po oraz status operacji."
+      ],
+      "whyThisIsRealistic": "Po sprawdzeniu konkretnego źródła osoba odpowiedzialna za raport może przyjąć jedną wartość, zostawiając trudniejsze pozycje do późniejszego przeglądu.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UC03-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC03-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        },
+        {
+          "key": "UC03-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "assisted"
+        }
+      ]
+    },
+    {
+      "id": "UC04",
+      "title": "Rezygnacja przed ostatecznym zapisem",
+      "persona": "Pracowniczka miasta, która chce jeszcze skonsultować dane z zespołem.",
+      "businessGoal": "Przygotować wybraną propozycję do późniejszej konsultacji, ale nie wprowadzać jej jeszcze do inwentarza.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Pokaż mi propozycje danych dla energii stacjonarnej w São Paulo za 2022 rok. Chcę je najpierw przejrzeć.",
+        {
+          "goal": "Wybrać do wstępnego przeglądu jedną widoczną wartość i dojść do propozycji zapisu.",
+          "exampleText": "Ta wartość wydaje się przydatna. Przygotuj ją do zapisania, żebym zobaczyła, co dokładnie zatwierdzę.",
+          "condition": "Po wyświetleniu rzeczywistej propozycji wskazać jej widoczną kategorię i źródło; nie przygotowywać innych wartości do zapisu."
+        },
+        {
+          "goal": "Wycofać zamiar finalnego zapisu przed zatwierdzeniem i poznać stan.",
+          "exampleText": "Jednak muszę to najpierw omówić z zespołem. Nie zapisuj jeszcze do inwentarza. Co zostanie zachowane?",
+          "condition": "Przy karcie potwierdzenia anulować zapis, bez zatwierdzania go; następnie zadać pytanie."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: respektuje decyzję o odstąpieniu, wyjaśnia brak zapisu do inwentarza oraz odróżnia ewentualnie zachowaną decyzję/szkic w Clima od danych zapisanych w inwentarzu.",
+        "Nie obiecuje, że szkic został usunięty ani trwale zachowany w konkretny sposób bez dowodu; podaje uczciwą drogę powrotu do przeglądu, jeśli jest dostępna.",
+        "Realizacja celu wymaga braku zapisu do inwentarza po anulowaniu oraz zachowania tylko tego stanu szkicu, który interfejs i odczyt rzeczywiście potwierdzają. Sama odpowiedź CA nie dowodzi stanu danych."
+      ],
+      "accuracyChecks": [
+        "Przed uruchomieniami zamrozić dane prawdziwej propozycji i stan docelowego inwentarza SOURCE; miasto São Paulo, rok inwentarza 2022, bez istniejących wartości energii stacjonarnej.",
+        "Udokumentować wybór i moment anulowania rzeczywistej karty, a następnie odczytać stan szkicu/decyzji oraz wartości i powiązań źródeł w inwentarzu; porównać stan przed i po.",
+        "Jeśli karta lub propozycja nie jest dostępna, nie inscenizować jej: sprawdzić odpowiedź o ograniczeniu i odnotować, że cel anulowania na karcie nie został wykonany."
+      ],
+      "expectedUiInteractions": [
+        "Wyświetlić jedną propozycję, wybrać ją i uruchomić kartę potwierdzającą zapis do inwentarza; wybrać „Cancel” lub odpowiednik w interfejsie, bez kliknięcia potwierdzenia zapisu.",
+        "Sprawdzić widoczny stan szkicu i wartości inwentarza."
+      ],
+      "mustNotClaim": [
+        "Anulowanie karty jest równoznaczne z usunięciem szkicu lub decyzji.",
+        "Wartość została dodana do inwentarza, mimo że zapis nie został zatwierdzony."
+      ],
+      "allowedProductChanges": [
+        "Historia rozmowy i szkic/decyzja w Clima mogą powstać lub pozostać; bez zapisu wartości do inwentarza."
+      ],
+      "evidenceNeeded": [
+        "Nagranie wyboru i anulowania rzeczywistej karty, transkrypt oraz porównanie stanu szkicu i inwentarza przed i po."
+      ],
+      "whyThisIsRealistic": "Przed oficjalnym wykorzystaniem liczby urzędniczka może potrzebować konsultacji i świadomie odłożyć ostateczny zapis.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UC04-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UC04-r2",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UC04-r3",
+          "responseVerdict": "pass",
+          "goalOutcome": "achieved"
+        }
+      ]
+    },
+    {
+      "id": "UC05",
+      "title": "Konsultantka pyta o miasto klienta poza swoim dostępem",
+      "persona": "Konsultantka pracująca dla kilku miast, obecnie mająca dostęp tylko do własnego miasta referencyjnego.",
+      "businessGoal": "Dowiedzieć się, czy może przejrzeć inwentarz drugiego miasta i jak uzyskać właściwy dostęp do pracy dla klienta.",
+      "startSurface": "general_chat",
+      "seedProfile": "ACCESS",
+      "userTurns": [
+        "Pracuję też dla drugiego miasta. Czy widzisz jego inwentarz i możesz powiedzieć, jakie są jego emisje?",
+        {
+          "goal": "Doprecyzować miasto i rok naturalną nazwą ustaloną podczas przygotowania, bez podawania identyfikatorów technicznych.",
+          "exampleText": "Chodzi o miasto, dla którego przygotowuję raport, i jego ostatni inwentarz. Czy mam do niego dostęp?",
+          "condition": "Jeśli CA zapyta o miasto, podać rzeczywistą nazwę drugiego miasta testowego ustaloną przed próbą; jeśli potrzebuje roku, podać znany rok testowy."
+        },
+        {
+          "goal": "Poznać bezpieczny praktyczny kolejny krok.",
+          "exampleText": "Rozumiem. Jak mogę uzyskać dostęp, żeby sprawdzić dane razem z zespołem miasta?",
+          "condition": "Po odpowiedzi o zakresie dostępu lub braku widocznego inwentarza."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: ustala, o które miasto chodzi, sprawdza lub uczciwie opisuje zakres dostępnych inwentarzy i nie przedstawia danych prywatnego miasta jako dostępnych. Brak widoczności nie dowodzi, że inwentarz nie istnieje.",
+        "Wyjaśnia, że właściciel lub administrator odpowiedniej organizacji/projektu może nadać dostęp właściwą drogą; nie twierdzi, że sam nadał uprawnienia czy wysłał zaproszenie.",
+        "Realizacja celu to zrozumienie ograniczenia oraz konkretna droga kontaktu z odpowiedzialną osobą; sam dostęp i dane drugiego miasta nie są uzyskane w tym scenariuszu."
+      ],
+      "accuracyChecks": [
+        "Przed wykonaniem ustalić i utrwalić nazwę oraz rok inwentarza drugiego testowego miasta, jego właściciela i brak dostępu konta konsultantki, a także dostęp do własnego miasta. Użyć naturalnej nazwy w rozmowie po doprecyzowaniu.",
+        "Porównać odpowiedź z zakresem widocznych użytkowniczce miast i inwentarzy; nie ujawniać prywatnych wartości lub metadanych z drugiej organizacji w odpowiedzi.",
+        "Sprawdzić, że uprawnienia i dane obu organizacji przed i po nie uległy zmianie oraz nie wysłano zaproszenia."
+      ],
+      "expectedUiInteractions": [
+        "W zwykłym czacie doprecyzować nazwę drugiego miasta, gdy CA o nią poprosi; ewentualnie obejrzeć listę dostępnych miast. Nie wysyłać zaproszeń i nie zmieniać uprawnień."
+      ],
+      "mustNotClaim": [
+        "Prywatny inwentarz nie istnieje wyłącznie dlatego, że nie jest widoczny.",
+        "Asystent widział jego emisje, nadał dostęp lub zaprosił użytkowniczkę bez potwierdzenia."
+      ],
+      "allowedProductChanges": [
+        "Wyłącznie historia rozmowy; bez zmiany uprawnień, zaproszeń lub inwentarzy."
+      ],
+      "evidenceNeeded": [
+        "Nagranie i transkrypt, niezależnie przygotowany dowód granicy dostępu i listy miast dostępnych konsultantce oraz porównanie uprawnień i danych przed i po; nie utrwalać prywatnych wartości w transkrypcie."
+      ],
+      "whyThisIsRealistic": "Konsultantka obsługująca kilka samorządów często musi ustalić, czy klient udostępnił jej swój projekt, zanim rozpocznie analizę.",
+      "executionStatus": "completed",
+      "trials": [
+        {
+          "key": "UC05-r1",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UC05-r2",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        },
+        {
+          "key": "UC05-r3",
+          "responseVerdict": "partial",
+          "goalOutcome": "achieved"
+        }
+      ]
+    }
+  ],
+  "completedAt": "2026-11-01T11:40:17.179Z",
+  "metrics": "final-metrics.json",
+  "report": "CC-962-raport-koncowy-rozmowy.md"
+}

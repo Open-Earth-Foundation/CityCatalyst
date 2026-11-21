@@ -1,0 +1,149 @@
+{
+  "author": "UC01–UC05",
+  "personaSummary": "Osoby przygotowujące miejskie inwentarze GPC oraz konsultantka współpracująca z kilkoma miastami. Podejmują decyzje o jakości i pochodzeniu danych, korzystając z Clima i zwykłych ekranów CityCatalyst.",
+  "productUnderstanding": "CityCatalyst wspiera miasta w przygotowaniu inwentarza emisji GPC i dalszym planowaniu działań klimatycznych. Clima pomaga odczytać kontekst inwentarza oraz w częściowo wdrożonym procesie energii stacjonarnej przygotować propozycje z podłączonych danych. Propozycja, decyzja w szkicu i rzeczywisty zapis do inwentarza są różnymi stanami; zapis wymaga przeglądu i potwierdzenia w interfejsie. Kod zawiera odczyty dostępnych inwentarzy i ich podsumowań, ale zakres zależy od uprawnień i dostępności funkcji na dev. Przed każdą z trzech niezależnych rozmów danego scenariusza należy odtworzyć równoważny stan, rozpocząć nową rozmowę oraz utrwalić rzeczywiste odpowiedzi; nie są to wyniki wykonania. W SOURCE przed rozmowami należy osobno utrwalić w dowodzie tylko do odczytu faktyczne dostępne dane katalogowe, podłączone źródła i wartości; preferowane jest SEEG, jeśli rzeczywiście jest dostępne dla São Paulo 2022. Jeśli nie ma odpowiedniej propozycji, należy uczciwie odnotować brak możliwości wykonania celu, bez zastępowania źródła fikcyjnym lub uznawania zapisu za wykonany.",
+  "scenarios": [
+    {
+      "id": "UC01",
+      "title": "Gdzie znaleźć dane o energii dla miasta?",
+      "persona": "Urzędniczka przygotowująca pierwszy przegląd danych dla São Paulo.",
+      "businessGoal": "Ustalić, które rzeczywiście dostępne źródła mogą pomóc uzupełnić energię stacjonarną w inwentarzu z 2022 r. i co zrobić dalej.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Uzupełniam inwentarz São Paulo za 2022 rok. Skąd mogę wziąć dane o energii stacjonarnej?",
+        {"goal": "Poprosić o odniesienie do faktycznie pokazanych źródeł i ich zastosowania.", "exampleText": "Które z dostępnych źródeł mogą mi pomóc i jakich części sektora dotyczą?", "condition": "Po odpowiedzi o źródłach; nazwać widoczne źródło, jeśli rozmowa tego wymaga."},
+        {"goal": "Uzyskać następny krok bez zapisywania wartości.", "exampleText": "Co powinnam teraz sprawdzić, zanim zdecyduję się użyć tych danych?", "condition": "Po przedstawieniu możliwości lub uczciwym wskazaniu ich braku."}
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: zachowuje kontekst São Paulo, roku inwentarza 2022 i energii stacjonarnej; odróżnia źródła rzeczywiście podłączone lub widoczne od ogólnych sugestii.",
+        "Podaje dostępne na ekranie propozycje i zakres tylko w granicach danych, którymi dysponuje, albo otwarcie mówi, że nie może ich ustalić; wyjaśnia praktyczny krok w przeglądzie źródeł.",
+        "Realizacja celu: użytkowniczka może wskazać przynajmniej jedno faktycznie dostępne źródło i jego zastosowanie oraz następny krok. Uczciwa odpowiedź o braku danych może być poprawna, ale nie oznacza znalezienia źródła."
+      ],
+      "accuracyChecks": [
+        "Przed każdą serią zamrozić z rzeczywistego dev nazwę dostawcy i zbioru, dostępność/podłączenie, pokrycie geograficzne, rok, kategorię i zakres każdego omawianego źródła; SEEG wymaga potwierdzenia w tym inwentarzu.",
+        "Porównać każdą nazwę, pokrycie i deklarację CA z zamrożonym katalogiem i widocznymi danymi; nie utożsamiać roku inwentarza z niepotwierdzonym rokiem danych źródła.",
+        "Porównać stan wartości energii stacjonarnej przed i po: początkowo brak istniejących wartości; po rozmowie brak nowych zapisanych wartości."
+      ],
+      "expectedUiInteractions": ["Otworzyć energię stacjonarną i Clima, obejrzeć dostępne źródła lub propozycje; nie wybierać finalnego zapisu."],
+      "mustNotClaim": ["Źródło istnieje, jest podłączone lub obejmuje konkretną kategorię bez potwierdzenia.", "Brak danych oznacza zerowe emisje albo wartości zostały zapisane."],
+      "allowedProductChanges": ["Historia rozmowy i ewentualny szkic w Clima; bez zapisu wartości do inwentarza."],
+      "evidenceNeeded": ["Nagranie rozmowy i widoku źródeł, transkrypt, zamrożony odczyt katalogu/podłączonych źródeł oraz stanu inwentarza przed i po."],
+      "whyThisIsRealistic": "Osoba rozpoczynająca inwentarz najpierw sprawdza dostępne zbiory i ich przydatność, zanim wybierze liczby do raportu."
+    },
+    {
+      "id": "UC02",
+      "title": "Skąd pochodzi proponowana wartość?",
+      "persona": "Analityczka miasta sprawdzająca wiarygodność konkretnej propozycji przed jej zatwierdzeniem.",
+      "businessGoal": "Zrozumieć pochodzenie, rok, zakres i wartość jednej rzeczywistej propozycji tak, aby móc ocenić jej użyteczność.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Przygotuj proszę propozycje dla energii stacjonarnej, żebym mogła sprawdzić źródła przed podjęciem decyzji.",
+        {"goal": "Wyjaśnić wybraną widoczną propozycję i jej pochodzenie.", "exampleText": "Spójrzmy na tę propozycję. Skąd pochodzą dane, jaki jest ich rok i jaką wartość proponujesz?", "condition": "Po wyświetleniu co najmniej jednej propozycji wskazać w karcie jej widoczną kategorię i źródło; jeśli ich nie ma, zapytać, jak uzyskać dane."},
+        {"goal": "Zrozumieć dopasowanie i niepewność przed decyzją.", "exampleText": "Czy te dane odpowiadają naszemu miastu i tej kategorii? Czego nie da się na ich podstawie stwierdzić?", "condition": "Po wyjaśnieniu propozycji; dostosować do danych pokazanych na karcie."}
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: wskazuje konkretną omawianą pozycję, źródło i wartość z jednostką, o ile są dostępne; oddziela rok danych od roku inwentarza i opisuje zakres geograficzny oraz kategorię tylko na podstawie danych.",
+        "Przy brakującym roku, pochodzeniu, jednostce albo szczegółach metody mówi, czego nie wie, i wskazuje kartę szczegółów lub potrzebę sprawdzenia u dostawcy, bez dopowiadania faktów.",
+        "Realizacja celu wymaga sprawdzalnego wyjaśnienia przynajmniej jednego realnego kandydata wraz z wartością i potrzebnymi metadanymi; uczciwe wskazanie brakujących metadanych może być poprawną odpowiedzią bez pełnej realizacji celu."
+      ],
+      "accuracyChecks": [
+        "Przed uruchomieniami zamrozić rzeczywiste dane wybranego kandydata z dev: dostawcę/zbiór, nazwę pozycji, miasto i poziom geografii, rok źródła, rok inwentarza, kategorię i zakres GPC, wartość, jednostkę, ewentualne przeliczenie i dostępną informację o metodzie; nie zakładać wartości liczbowych.",
+        "Porównać odpowiedź CA, szczegóły karty oraz surową propozycję i dane źródła, uwzględniając jednostki i różnicę między wartością źródłową a obliczonym ekwiwalentem, jeśli występują.",
+        "Sprawdzić brak zapisu do inwentarza przed i po; utworzenie szkicu nie jest zapisem wartości."
+      ],
+      "expectedUiInteractions": ["Rozpocząć szkic, wybrać widoczną pozycję i otworzyć szczegóły źródła; nie zatwierdzać zapisu do inwentarza."],
+      "mustNotClaim": ["Nieznany rok lub metoda są potwierdzone; źródło jest pomiarem lokalnym, jeśli dostępne dane tego nie dowodzą.", "Propozycja jest już wartością zapisaną w inwentarzu."],
+      "allowedProductChanges": ["Historia rozmowy i szkic wraz z propozycjami w Clima; bez zapisu do inwentarza."],
+      "evidenceNeeded": ["Nagranie i transkrypt, szczegóły wybranej pozycji, uprzednio zamrożone dane źródła i propozycji, odczyt stanu inwentarza przed i po."],
+      "whyThisIsRealistic": "Przed wykorzystaniem danych zewnętrznych analityczka musi wiedzieć, czy liczba dotyczy właściwego roku, obszaru i kategorii oraz skąd pochodzi."
+    },
+    {
+      "id": "UC03",
+      "title": "Wybranie jednej propozycji i zapis do inwentarza",
+      "persona": "Urzędniczka uprawniona do edycji inwentarza, która akceptuje sprawdzoną wartość.",
+      "businessGoal": "Zapisać jedną wybraną pozycję energii stacjonarnej z prawdziwego źródła i dowiedzieć się, co faktycznie zapisano.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Pomóż mi uzupełnić energię stacjonarną dla São Paulo za 2022 rok. Najpierw pokaż mi propozycje do sprawdzenia.",
+        {"goal": "Wybrać jedną konkretną widoczną propozycję po zapoznaniu się ze źródłem.", "exampleText": "Ta propozycja wygląda odpowiednio. Chcę przyjąć właśnie ją; pozostałe zostawmy na później.", "condition": "Po wyświetleniu propozycji wskazać rzeczywistą kategorię i dostawcę oraz sprawdzić wartość i rok; nie stosować zbiorczego wyboru pozostałych pozycji."},
+        {"goal": "Poprosić o zapis wyłącznie tej pozycji.", "exampleText": "Zapiszmy tę wybraną wartość w inwentarzu.", "condition": "Dopiero po wybraniu jednej pozycji i sprawdzeniu, że żadna inna nie jest przygotowana do zapisu."},
+        {"goal": "Po obsłużeniu karty zapytać o rzeczywisty wynik.", "exampleText": "Co dokładnie zostało zapisane i co nadal wymaga mojej decyzji?", "condition": "Po jawnym zatwierdzeniu w rzeczywistej karcie i zakończeniu operacji; w razie braku potwierdzonego sukcesu zapytać, jaki jest jej stan."}
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: identyfikuje wybraną kategorię i źródło, odróżnia wybór w szkicu od zapisu w CityCatalyst oraz prowadzi do prawdziwej karty potwierdzenia zapisu; nie twierdzi, że samo polecenie lub wybór już zapisały dane.",
+        "Na pytanie o wynik podaje wyłącznie potwierdzony rezultat, rozróżnia zapisane i nierozpatrzone pozycje; w razie braku potwierdzenia uczciwie opisuje stan i możliwy następny krok.",
+        "Realizacja celu wymaga jawnego zatwierdzenia na karcie i odczytu potwierdzającego dokładnie wybraną pozycję w inwentarzu. Sama poprawna odpowiedź lub komunikat o sukcesie bez sprawdzenia stanu nie wystarczą."
+      ],
+      "accuracyChecks": [
+        "Przed wykonaniem zamrozić faktyczne dane wybranej propozycji z dev: dostawca/zbiór, miasto, lata, kategoria i zakres, wartość i jednostka oraz reprezentacja zapisu; liczby ustalić przed seriami, nie wymyślać.",
+        "Przed potwierdzeniem porównać decyzje szkicu i kartę: do zapisu jest przygotowana tylko jedna świadomie wybrana pozycja; pozostałe są nierozpatrzone lub nieprzeznaczone do zapisu. Jeśli UI tego nie umożliwia, nie zapisywać innych pozycji i odnotować cel jako nieosiągnięty.",
+        "Porównać stan przed i po: w docelowym inwentarzu São Paulo 2022 pojawiła się wyłącznie wybrana pozycja z właściwą wartością, jednostką i przypisaniem źródła; inne pozycje pozostają bez zmian. Zweryfikować wynik i ewentualną historię zmian, jeżeli dostępna, niezależnym odczytem.",
+        "Porównać wypowiedź CA po zapisie z rzeczywistym rezultatem i statusem szkicu, nie utożsamiając zapisu szkicu z zapisem do inwentarza."
+      ],
+      "expectedUiInteractions": ["Wygenerować szkic, otworzyć szczegóły wybranej pozycji i wskazać wyłącznie ją w karcie przeglądu.", "Zainicjować zapis do inwentarza, sprawdzić podsumowanie i kliknąć potwierdzenie na rzeczywistej karcie „Confirm inventory save” / „Save to inventory” lub jej odpowiedniku w używanym języku. Nierozpatrzone pozycje pozostają poza tym zapisem.", "Poczekać na wynik, a następnie obejrzeć zapisaną pozycję i zadać pytanie o wynik."],
+      "mustNotClaim": ["Wartości zapisano przed potwierdzeniem albo wtedy, gdy zapis nie został potwierdzony odczytem.", "Zapisano cały sektor lub wszystkie propozycje, jeżeli zatwierdzono tylko jedną."],
+      "allowedProductChanges": ["Historia rozmowy i szkic/decyzje w Clima; po jawnym potwierdzeniu tylko wybrana pozycja w jednorazowym inwentarzu SOURCE oraz normalne powiązane zapisy historii."],
+      "evidenceNeeded": ["Nagranie całej rozmowy, wskazanej pozycji i rzeczywistej karty potwierdzenia, transkrypt, dane referencyjne źródła i propozycji, odczyty wartości i przypisania źródła przed i po oraz status operacji."],
+      "whyThisIsRealistic": "Po sprawdzeniu konkretnego źródła osoba odpowiedzialna za raport może przyjąć jedną wartość, zostawiając trudniejsze pozycje do późniejszego przeglądu."
+    },
+    {
+      "id": "UC04",
+      "title": "Rezygnacja przed ostatecznym zapisem",
+      "persona": "Pracowniczka miasta, która chce jeszcze skonsultować dane z zespołem.",
+      "businessGoal": "Przygotować wybraną propozycję do późniejszej konsultacji, ale nie wprowadzać jej jeszcze do inwentarza.",
+      "startSurface": "stationary_energy",
+      "seedProfile": "SOURCE",
+      "userTurns": [
+        "Pokaż mi propozycje danych dla energii stacjonarnej w São Paulo za 2022 rok. Chcę je najpierw przejrzeć.",
+        {"goal": "Wybrać do wstępnego przeglądu jedną widoczną wartość i dojść do propozycji zapisu.", "exampleText": "Ta wartość wydaje się przydatna. Przygotuj ją do zapisania, żebym zobaczyła, co dokładnie zatwierdzę.", "condition": "Po wyświetleniu rzeczywistej propozycji wskazać jej widoczną kategorię i źródło; nie przygotowywać innych wartości do zapisu."},
+        {"goal": "Wycofać zamiar finalnego zapisu przed zatwierdzeniem i poznać stan.", "exampleText": "Jednak muszę to najpierw omówić z zespołem. Nie zapisuj jeszcze do inwentarza. Co zostanie zachowane?", "condition": "Przy karcie potwierdzenia anulować zapis, bez zatwierdzania go; następnie zadać pytanie."}
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: respektuje decyzję o odstąpieniu, wyjaśnia brak zapisu do inwentarza oraz odróżnia ewentualnie zachowaną decyzję/szkic w Clima od danych zapisanych w inwentarzu.",
+        "Nie obiecuje, że szkic został usunięty ani trwale zachowany w konkretny sposób bez dowodu; podaje uczciwą drogę powrotu do przeglądu, jeśli jest dostępna.",
+        "Realizacja celu wymaga braku zapisu do inwentarza po anulowaniu oraz zachowania tylko tego stanu szkicu, który interfejs i odczyt rzeczywiście potwierdzają. Sama odpowiedź CA nie dowodzi stanu danych."
+      ],
+      "accuracyChecks": [
+        "Przed uruchomieniami zamrozić dane prawdziwej propozycji i stan docelowego inwentarza SOURCE; miasto São Paulo, rok inwentarza 2022, bez istniejących wartości energii stacjonarnej.",
+        "Udokumentować wybór i moment anulowania rzeczywistej karty, a następnie odczytać stan szkicu/decyzji oraz wartości i powiązań źródeł w inwentarzu; porównać stan przed i po.",
+        "Jeśli karta lub propozycja nie jest dostępna, nie inscenizować jej: sprawdzić odpowiedź o ograniczeniu i odnotować, że cel anulowania na karcie nie został wykonany."
+      ],
+      "expectedUiInteractions": ["Wyświetlić jedną propozycję, wybrać ją i uruchomić kartę potwierdzającą zapis do inwentarza; wybrać „Cancel” lub odpowiednik w interfejsie, bez kliknięcia potwierdzenia zapisu.", "Sprawdzić widoczny stan szkicu i wartości inwentarza."],
+      "mustNotClaim": ["Anulowanie karty jest równoznaczne z usunięciem szkicu lub decyzji.", "Wartość została dodana do inwentarza, mimo że zapis nie został zatwierdzony."],
+      "allowedProductChanges": ["Historia rozmowy i szkic/decyzja w Clima mogą powstać lub pozostać; bez zapisu wartości do inwentarza."],
+      "evidenceNeeded": ["Nagranie wyboru i anulowania rzeczywistej karty, transkrypt oraz porównanie stanu szkicu i inwentarza przed i po."],
+      "whyThisIsRealistic": "Przed oficjalnym wykorzystaniem liczby urzędniczka może potrzebować konsultacji i świadomie odłożyć ostateczny zapis."
+    },
+    {
+      "id": "UC05",
+      "title": "Konsultantka pyta o miasto klienta poza swoim dostępem",
+      "persona": "Konsultantka pracująca dla kilku miast, obecnie mająca dostęp tylko do własnego miasta referencyjnego.",
+      "businessGoal": "Dowiedzieć się, czy może przejrzeć inwentarz drugiego miasta i jak uzyskać właściwy dostęp do pracy dla klienta.",
+      "startSurface": "general_chat",
+      "seedProfile": "ACCESS",
+      "userTurns": [
+        "Pracuję też dla drugiego miasta. Czy widzisz jego inwentarz i możesz powiedzieć, jakie są jego emisje?",
+        {"goal": "Doprecyzować miasto i rok naturalną nazwą ustaloną podczas przygotowania, bez podawania identyfikatorów technicznych.", "exampleText": "Chodzi o miasto, dla którego przygotowuję raport, i jego ostatni inwentarz. Czy mam do niego dostęp?", "condition": "Jeśli CA zapyta o miasto, podać rzeczywistą nazwę drugiego miasta testowego ustaloną przed próbą; jeśli potrzebuje roku, podać znany rok testowy."},
+        {"goal": "Poznać bezpieczny praktyczny kolejny krok.", "exampleText": "Rozumiem. Jak mogę uzyskać dostęp, żeby sprawdzić dane razem z zespołem miasta?", "condition": "Po odpowiedzi o zakresie dostępu lub braku widocznego inwentarza."}
+      ],
+      "expectedBehavior": [
+        "Poprawność CA: ustala, o które miasto chodzi, sprawdza lub uczciwie opisuje zakres dostępnych inwentarzy i nie przedstawia danych prywatnego miasta jako dostępnych. Brak widoczności nie dowodzi, że inwentarz nie istnieje.",
+        "Wyjaśnia, że właściciel lub administrator odpowiedniej organizacji/projektu może nadać dostęp właściwą drogą; nie twierdzi, że sam nadał uprawnienia czy wysłał zaproszenie.",
+        "Realizacja celu to zrozumienie ograniczenia oraz konkretna droga kontaktu z odpowiedzialną osobą; sam dostęp i dane drugiego miasta nie są uzyskane w tym scenariuszu."
+      ],
+      "accuracyChecks": [
+        "Przed wykonaniem ustalić i utrwalić nazwę oraz rok inwentarza drugiego testowego miasta, jego właściciela i brak dostępu konta konsultantki, a także dostęp do własnego miasta. Użyć naturalnej nazwy w rozmowie po doprecyzowaniu.",
+        "Porównać odpowiedź z zakresem widocznych użytkowniczce miast i inwentarzy; nie ujawniać prywatnych wartości lub metadanych z drugiej organizacji w odpowiedzi.",
+        "Sprawdzić, że uprawnienia i dane obu organizacji przed i po nie uległy zmianie oraz nie wysłano zaproszenia."
+      ],
+      "expectedUiInteractions": ["W zwykłym czacie doprecyzować nazwę drugiego miasta, gdy CA o nią poprosi; ewentualnie obejrzeć listę dostępnych miast. Nie wysyłać zaproszeń i nie zmieniać uprawnień."],
+      "mustNotClaim": ["Prywatny inwentarz nie istnieje wyłącznie dlatego, że nie jest widoczny.", "Asystent widział jego emisje, nadał dostęp lub zaprosił użytkowniczkę bez potwierdzenia."],
+      "allowedProductChanges": ["Wyłącznie historia rozmowy; bez zmiany uprawnień, zaproszeń lub inwentarzy."],
+      "evidenceNeeded": ["Nagranie i transkrypt, niezależnie przygotowany dowód granicy dostępu i listy miast dostępnych konsultantce oraz porównanie uprawnień i danych przed i po; nie utrwalać prywatnych wartości w transkrypcie."],
+      "whyThisIsRealistic": "Konsultantka obsługująca kilka samorządów często musi ustalić, czy klient udostępnił jej swój projekt, zanim rozpocznie analizę."
+    }
+  ]
+}

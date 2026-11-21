@@ -1,0 +1,22 @@
+{
+  "pinnedHead": "fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9",
+  "checkedAt": "2026-10-31T23:52:42.161487+00:00",
+  "sourceSha256": "5af416384cb8650cc2c0f568f789c9de8aa40bda2d99708d713a85c4e3c01108",
+  "fault": {
+    "failFirst": false,
+    "productLedger": [
+      "source-row-committed-in-fake-cc"
+    ],
+    "caCommitStatus": "pending_cc_commit",
+    "persistedCaResultUpdates": 0,
+    "exception": "synthetic second-phase failure"
+  },
+  "control": {
+    "failFirst": true,
+    "productLedger": [],
+    "caCommitStatus": "pending_cc_commit",
+    "persistedCaResultUpdates": 0,
+    "exception": "synthetic first-phase failure"
+  },
+  "boundary": "Real save orchestration with mocked CC transport/repository, prerequisites and commit-row builder. No PostgreSQL, HTTP route, real rollback or live product commit was executed."
+}

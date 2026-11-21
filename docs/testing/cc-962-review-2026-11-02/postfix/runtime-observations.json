@@ -1,0 +1,108 @@
+{
+  "duplicateDraft": {
+    "status": "observed-once",
+    "inventory": "36ee560c-05b7-434a-be30-59370c352ae8",
+    "draftRows": [
+      {
+        "draft_run_id": "e4a26780-4828-4180-a42b-83c61baeb90d",
+        "thread_id": "6fe97a8f-b2ba-4735-ac71-c913c3bf6aae",
+        "inventory_id": "36ee560c-05b7-434a-be30-59370c352ae8",
+        "status": "ready",
+        "created_at": "2026-11-02T00:33:03.675289+00:00"
+      },
+      {
+        "draft_run_id": "d76aa2ca-96df-47c8-a889-70fe1d370718",
+        "thread_id": "6fe97a8f-b2ba-4735-ac71-c913c3bf6aae",
+        "inventory_id": "36ee560c-05b7-434a-be30-59370c352ae8",
+        "status": "ready",
+        "created_at": "2026-11-02T00:33:20.390154+00:00"
+      }
+    ],
+    "userActions": [
+      "I am completing S\u00e3o Paulo\u2019s inventory for 2022. Where can I get stationary energy data?",
+      "Yes, prepare a draft for review and show me the available sources. Do not save anything to the inventory yet.",
+      "Which of these sources can help us, and which stationary energy categories do they cover?",
+      "Before I use them, what should I check about their year, geographic coverage and fit for our inventory?"
+    ],
+    "browserStartRequests": [
+      {
+        "at": "2026-11-02T00:33:32.984Z",
+        "method": "POST",
+        "url": "/api/v1/stationary-energy-drafts/start/",
+        "status": 201
+      }
+    ],
+    "toolStartResult": "T2 SSE stationary_energy_start_draft succeeded with e4a26780-4828-4180-a42b-83c61baeb90d and continue_request:true",
+    "explicitNewDraftClicksAfterOpening": 0,
+    "rootCause": "Not established; no attribution to the provenance patch"
+  },
+  "allOwnDraftRows": [
+    {
+      "draft_run_id": "b712018f-1fc1-4b60-8d35-0a8ec2a13f36",
+      "thread_id": "833620cd-a360-44ad-b8ca-a573f074fb03",
+      "inventory_id": "3c8387ae-fcfd-4aa0-847b-3894eafa24e5",
+      "status": "ready",
+      "created_at": "2026-11-02T00:27:16.626236+00:00"
+    },
+    {
+      "draft_run_id": "de2076b8-b781-4ed4-8f1b-15bba5816693",
+      "thread_id": "32cf53ef-acca-4554-86d1-be857f28b0ab",
+      "inventory_id": "56eec29d-b52d-465e-befd-8e21484f238d",
+      "status": "ready",
+      "created_at": "2026-11-02T00:27:42.886638+00:00"
+    },
+    {
+      "draft_run_id": "c3135715-7365-4b76-b36b-fccd1649c63d",
+      "thread_id": "8dc158b7-7bf4-4ab6-9019-fc8955399fde",
+      "inventory_id": "a5c6d607-6dd1-4af2-9c4f-06280de3eaf0",
+      "status": "ready",
+      "created_at": "2026-11-02T00:29:08.04269+00:00"
+    },
+    {
+      "draft_run_id": "15a072ca-706e-46e4-8f9e-bbebfa78aad0",
+      "thread_id": "1b11c549-a1ed-4223-aa9c-2a22cd6fc79a",
+      "inventory_id": "e1f822d9-9e7a-40db-88ed-f0580cfe6c35",
+      "status": "ready",
+      "created_at": "2026-11-02T00:30:19.520858+00:00"
+    },
+    {
+      "draft_run_id": "10185c9d-29ab-4322-bc0b-07822fd86823",
+      "thread_id": "979faab0-f9c9-4976-975e-92a9fd4c2f92",
+      "inventory_id": "eafb4b06-785d-4484-bc3e-9464854861ad",
+      "status": "ready",
+      "created_at": "2026-11-02T00:30:19.742441+00:00"
+    },
+    {
+      "draft_run_id": "2288537a-6fdb-4c1e-a05a-236e6cbbf5e6",
+      "thread_id": "6f6a6fc0-1e03-4794-9568-156885733f91",
+      "inventory_id": "203bfdb6-dede-403d-b5ff-55b87fd3e25f",
+      "status": "ready",
+      "created_at": "2026-11-02T00:31:53.776722+00:00"
+    },
+    {
+      "draft_run_id": "e4a26780-4828-4180-a42b-83c61baeb90d",
+      "thread_id": "6fe97a8f-b2ba-4735-ac71-c913c3bf6aae",
+      "inventory_id": "36ee560c-05b7-434a-be30-59370c352ae8",
+      "status": "ready",
+      "created_at": "2026-11-02T00:33:03.675289+00:00"
+    },
+    {
+      "draft_run_id": "d76aa2ca-96df-47c8-a889-70fe1d370718",
+      "thread_id": "6fe97a8f-b2ba-4735-ac71-c913c3bf6aae",
+      "inventory_id": "36ee560c-05b7-434a-be30-59370c352ae8",
+      "status": "ready",
+      "created_at": "2026-11-02T00:33:20.390154+00:00"
+    }
+  ],
+  "rounding": {
+    "affectedRuns": [
+      "UC02-r2",
+      "UC02-r3"
+    ],
+    "expectedExactKg": 1117504701,
+    "expectedMtRoundedTo2Decimals": 1.12,
+    "quotedMt": 1.11,
+    "UIShowsTruncatedValue": true,
+    "independentLLMMathErrorProven": false
+  }
+}

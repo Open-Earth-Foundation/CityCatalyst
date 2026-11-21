@@ -1,0 +1,138 @@
+[
+  {
+    "datasourceId": "54e965a4-3bd0-4f6a-a425-e843bb955712",
+    "ref": "I.2.1",
+    "url": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/BR SAO/2022/I.2.1",
+    "status": 200,
+    "at": "2026-11-01T10:42:34.228Z",
+    "body": {
+      "totals": {
+        "emissions": {
+          "co2_mass": "77257952",
+          "co2_co2eq": "77257952.00000000",
+          "ch4_mass": "1360",
+          "ch4_co2eq_100yr": "38080.00000000",
+          "ch4_co2eq_20yr": "0",
+          "n2o_mass": "1263",
+          "n2o_co2eq_100yr": "334695.00000000",
+          "n2o_co2eq_20yr": "0",
+          "co2eq_100yr": "77630727",
+          "co2eq_20yr": "0",
+          "gpc_quality": "medium"
+        }
+      },
+      "records": [
+        {
+          "methodology_name": null,
+          "emissions_geometry": null,
+          "activity_name": "total-fuel-consumed",
+          "activity_units": null,
+          "activity_subcategory_type": {
+            "commercial-building-type": "type-all",
+            "commercial-building-fuel-type": "fuel-type-all"
+          },
+          "gases": [
+            {
+              "gas_name": "CH4",
+              "emissions_value": 1360,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 28,
+              "emissions_value_100yr": 38080,
+              "emissions_value_20yr": 0
+            },
+            {
+              "gas_name": "CO2",
+              "emissions_value": 77257952,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 1,
+              "emissions_value_100yr": 77257952,
+              "emissions_value_20yr": 0
+            },
+            {
+              "gas_name": "N2O",
+              "emissions_value": 1263,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 265,
+              "emissions_value_100yr": 334695,
+              "emissions_value_20yr": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "datasourceId": "45196fcf-eb15-4037-b763-33e4d33f04d6",
+    "ref": "I.1.1",
+    "url": "https://ccglobal.openearth.dev/api/v1/source/SEEG/city/BR SAO/2022/I.1.1",
+    "status": 200,
+    "at": "2026-11-01T10:42:34.493Z",
+    "body": {
+      "totals": {
+        "emissions": {
+          "co2_mass": "1111223686",
+          "co2_co2eq": "1111223686.00000000",
+          "ch4_mass": "19335",
+          "ch4_co2eq_100yr": "541380.00000000",
+          "ch4_co2eq_20yr": "0",
+          "n2o_mass": "21659",
+          "n2o_co2eq_100yr": "5739635.00000000",
+          "n2o_co2eq_20yr": "0",
+          "co2eq_100yr": "1117504701",
+          "co2eq_20yr": "0",
+          "gpc_quality": "medium"
+        }
+      },
+      "records": [
+        {
+          "methodology_name": null,
+          "emissions_geometry": null,
+          "activity_name": "total-fuel-consumption",
+          "activity_units": null,
+          "activity_subcategory_type": {
+            "residential-building-type": "building-type-all",
+            "residential-building-fuel-type": "fuel-type-all"
+          },
+          "gases": [
+            {
+              "gas_name": "CH4",
+              "emissions_value": 19335,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 28,
+              "emissions_value_100yr": 541380,
+              "emissions_value_20yr": 0
+            },
+            {
+              "gas_name": "CO2",
+              "emissions_value": 1111223686,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 1,
+              "emissions_value_100yr": 1111223686,
+              "emissions_value_20yr": 0
+            },
+            {
+              "gas_name": "N2O",
+              "emissions_value": 21659,
+              "emissionfactor_value": null,
+              "emissionfactor_datasource": null,
+              "activity_value": null,
+              "gwp": 265,
+              "emissions_value_100yr": 5739635,
+              "emissions_value_20yr": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

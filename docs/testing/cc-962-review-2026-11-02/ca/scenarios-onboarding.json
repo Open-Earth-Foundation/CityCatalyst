@@ -1,0 +1,229 @@
+{
+  "author": "UA01–UA05",
+  "personaSummary": "Urzędniczka miejska rozpoczynająca pracę z CityCatalyst, odpowiedzialna za przygotowanie inwentaryzacji emisji gazów cieplarnianych. Posługuje się pojęciami roku, sektorów i Scope, lecz nie jest programistką.",
+  "productUnderstanding": "CityCatalyst wspiera miasta w inwentaryzacji GHGI zgodnej z GPC; Clima jest asystentem. Kreator aplikacji pozwala skonfigurować rok, typ, GWP i dane ludności oraz wybrać ścieżkę importu; import XLSX/CSV/PDF wymaga osobnego interfejsu i przeglądu. Ogólny czat ma pole tekstowe, a nie potwierdzone załączniki. Kod przewiduje ograniczony workflow przeglądu Stationary Energy; nie należy zakładać, że ogólny czat tworzy inwentaryzację, odczytuje plik lub zapisuje dowolne dane. Źródło: wskazany brief, README i docs/AgenticModuleScope.md oraz odczyt kodu przypiętego checkoutu fb6a0d0004d9a25df2e12ff837c7b5feaaca82a9; rzeczywiste wdrożenie może się różnić.",
+  "scenarios": [
+    {
+      "id": "UA01",
+      "title": "Pierwsza inwentaryzacja za nowy rok",
+      "persona": "Nowa pracowniczka wydziału środowiska w mieście, które ma wcześniejsze inwentaryzacje.",
+      "businessGoal": "Uruchomić pracę nad inwentaryzacją miasta za 2025 i zrozumieć wymagane ustawienia.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Dzień dobry, zaczynam pracę z CityCatalyst. Chciałabym przygotować inwentaryzację emisji naszego miasta za 2025 rok. Od czego mam zacząć i czy możesz ją dla mnie utworzyć?",
+        {
+          "goal": "Dopytać o wybory potrzebne przy zakładaniu roku i dalsze kroki; jeśli CA twierdzi, że utworzył inwentaryzację, poprosić o wskazanie, gdzie sprawdzić rezultat.",
+          "exampleText": "Co powinnam wybrać w ustawieniach i gdzie potem sprawdzę, czy rok 2025 rzeczywiście jest już dostępny?",
+          "condition": "Po pierwszej odpowiedzi, dopasować pytanie do zaproponowanej drogi."
+        }
+      ],
+      "expectedBehavior": [
+        "Wyjaśnia praktyczną ścieżkę utworzenia inwentaryzacji w kreatorze GHGI i znaczenie roku, typu inwentaryzacji, GWP i wymaganych danych ludności, bez podejmowania za użytkowniczkę nieuzgodnionych wyborów.",
+        "Nie deklaruje utworzenia przez czat bez potwierdzonej operacji; uczciwe wskazanie ograniczenia i drogi w UI jest poprawną odpowiedzią.",
+        "Sukces odpowiedzi CA: rzetelne wskazówki i ograniczenia. Sukces celu: potwierdzone utworzenie właściwej inwentaryzacji 2025 w UI i odczycie stanu; sama rozmowa nie wystarcza."
+      ],
+      "accuracyChecks": [
+        "Przed próbą w REFERENCE są 2023 i 2024, brak 2025; porównać listę lat przed i po.",
+        "Jeśli utworzono, dokładnie jedna inwentaryzacja dla właściwego miasta i 2025; sprawdzić zapisane, wybrane przez użytkowniczkę typ i GWP oraz ludność.",
+        "Nie przedstawiać pustego/niepełnego roku jako gotowej inwentaryzacji ani wymyślonych danych źródłowych jako zapisanych."
+      ],
+      "expectedUiInteractions": [
+        "Jeśli dostępne i użytkowniczka chce przejść dalej, wejść w GHGI, wybrać nową inwentaryzację bez importu, rok 2025, jawnie ustalone ustawienia i wymagane dane ludności, zatwierdzić; zweryfikować rok na liście i w szczegółach. Nie łączyć źródeł automatycznie bez świadomego wyboru."
+      ],
+      "mustNotClaim": [
+        "Że rok 2025 już powstał lub jest kompletny bez odczytu.",
+        "Że sam wybór roku oznacza zapis danych emisyjnych."
+      ],
+      "allowedProductChanges": [
+        "W testowym mieście utworzenie roku 2025 i ewentualne uzgodnione dane ustawień/ludności przez UI; brak zmian w 2023/2024."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Nagranie konfiguracji i zatwierdzenia, lista inwentaryzacji i szczegóły roku przed/po; jeśli kreator nie zostanie ukończony, cel pozostał nieosiągnięty."
+      ],
+      "whyThisIsRealistic": "Pracowniczka po raz pierwszy przygotowuje kolejny rok i potrzebuje odróżnić pomoc w konfiguracji od rzeczywistego utworzenia."
+    },
+    {
+      "id": "UA02",
+      "title": "Kontynuacja istniejącego roku",
+      "persona": "Urzędniczka przejmująca rozpoczętą wcześniej inwentaryzację miasta.",
+      "businessGoal": "Odnaleźć i kontynuować rok 2024 bez utraty istniejących danych.",
+      "startSurface": "general_chat",
+      "seedProfile": "REFERENCE",
+      "userTurns": [
+        "Chcę pracować nad inwentaryzacją naszego miasta za 2024 rok, ale wygląda na to, że ten rok już jest w systemie. Czy mam tworzyć go ponownie, czy mogę kontynuować istniejącą pracę?",
+        {
+          "goal": "Po odpowiedzi dopytać o bezpieczeństwo wcześniejszych danych oraz jak sprawdzić, że otwarto właściwy rok.",
+          "exampleText": "Nie chcę stracić tego, co już wprowadzono. Jak bezpiecznie otworzyć ten rok i sprawdzić, co w nim jest?",
+          "condition": "Po odpowiedzi; jeśli CA proponuje import lub nowe założenie, poprosić o wyjaśnienie skutków."
+        }
+      ],
+      "expectedBehavior": [
+        "Zaleca sprawdzenie i otwarcie istniejącej inwentaryzacji właściwego miasta i roku, zamiast obiecywać bezpieczne utworzenie duplikatu.",
+        "Jeśli proponuje import do roku z danymi, ostrzega o możliwym zastąpieniu danych i konieczności przeglądu oraz potwierdzenia; nie traktuje go jako zwykłego dodania.",
+        "Sukces odpowiedzi CA: bezpieczna, wykonalna wskazówka lub uczciwa niepewność co do stanu. Sukces celu: otwarcie właściwej inwentaryzacji i zachowanie jej danych potwierdzone po czynnościach."
+      ],
+      "accuracyChecks": [
+        "REFERENCE: rok 2024 istnieje, łącznie 1 800 000 tCO2e; 2023 to 1 500 000 tCO2e.",
+        "Dla 2024: Stationary Energy 900 000 t, transport 600 000 t, odpady 300 000 t; brak danych innych kategorii nie dowodzi zer.",
+        "Przed i po sprawdzić liczbę inwentaryzacji 2024 oraz cztery początkowe wartości sektorów/scope i sumę; nie oczekiwać, że CA zna stan bez dowodu."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć istniejący rok 2024 z listy/dashbordu; obejrzeć dostępne podsumowanie, bez zatwierdzania importu i bez zapisu zmian."
+      ],
+      "mustNotClaim": [
+        "Że 2024 nie istnieje lub jest pusty, gdy niezależny odczyt temu przeczy.",
+        "Że import z pewnością zachowa obecne wartości."
+      ],
+      "allowedProductChanges": [
+        "Brak zmian w inwentaryzacji; dopuszczalne tylko otwarcie/nawigacja i zapis rozmowy."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Lista miasta i lat, widok roku 2024 oraz niezależny odczyt wartości i liczby inwentaryzacji przed/po."
+      ],
+      "whyThisIsRealistic": "Przekazanie zadań w urzędzie często zaczyna się od sprawdzenia, czy wcześniejsza praca już istnieje."
+    },
+    {
+      "id": "UA03",
+      "title": "Posiadany arkusz Excel",
+      "persona": "Urzędniczka dysponująca wcześniejszą inwentaryzacją w arkuszu.",
+      "businessGoal": "Ustalić, jak przenieść dane z własnego Excela do GHGI i sprawdzić poprawność importu.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam naszą wcześniejszą inwentaryzację w Excelu i chciałabym wykorzystać ją w CityCatalyst. Jak mogę ją wprowadzić, żeby nie przepisywać wszystkiego ręcznie?",
+        {
+          "goal": "Zapytać o przesłanie i kontrolę zgodności; jeśli CA twierdzi, że widzi arkusz, poprosić o wyjaśnienie, skąd ma jego zawartość.",
+          "exampleText": "Czy mogę przesłać ten plik tutaj? Jak przed zatwierdzeniem sprawdzę rok, jednostki i przypisanie danych do sektorów?",
+          "condition": "Po pierwszej odpowiedzi, przed jakimkolwiek rzeczywistym przesłaniem pliku."
+        },
+        {
+          "goal": "Po rzeczywistym przejściu do importu lub gdy brak pliku zapytać o następny krok, adekwatnie do tego co faktycznie widać.",
+          "exampleText": "Co powinnam sprawdzić przed ostatecznym zatwierdzeniem?",
+          "condition": "Po otwarciu kreatora albo gdy nie ma dostępnego pliku do przesłania."
+        }
+      ],
+      "expectedBehavior": [
+        "Odróżnia deklarację posiadania pliku od rzeczywistego przesłania: z rozmowy nie zna jego zawartości, układu, roku ani jednostek.",
+        "Wskazuje osobną ścieżkę importu inwentaryzacji w UI dla XLSX, przegląd mapowania, roku, jednostek, zakresów, błędów i potwierdzenie; wynik może wymagać korekt.",
+        "Sukces odpowiedzi CA: uczciwa i użyteczna instrukcja nawet bez pliku. Sukces celu: rzeczywisty import właściwych danych z osobnego, faktycznie wybranego pliku oraz weryfikacja zapisanych wartości."
+      ],
+      "accuracyChecks": [
+        "EMPTY: przed próbą inwentaryzacja 2024 jest pusta; brak załącznika w czacie.",
+        "Zanim próbę importu wykona się z prawdziwym plikiem XLSX, utrwalić jego pochodzenie, rok, jednostki i odpowiednie wartości jako niezależny wzorzec; nie wymyślać zawartości.",
+        "Porównać podgląd/mapowanie i po zatwierdzeniu zapisane wartości, sektor, Scope, rok i sumy ze wzorcem; bez dostępnego pliku lub ukończonego odczytu wynik celu niepotwierdzony."
+      ],
+      "expectedUiInteractions": [
+        "Właściwa ścieżka GHGI importu: wybrać plik XLSX rzeczywiście dostępny wykonawcy, przeglądnąć mapowanie i błędy, zatwierdzić tylko zrozumiany import do wyznaczonego testowego roku; jeśli pliku nie ma, zatrzymać się i zapisać ograniczenie."
+      ],
+      "mustNotClaim": [
+        "Że arkusz przesłano do czatu, został przeczytany lub zaimportowany przed rzeczywistym wykonaniem i sprawdzeniem.",
+        "Że każdy Excel zaimportuje się bez korekt."
+      ],
+      "allowedProductChanges": [
+        "W testowym EMPTY wyłącznie świadomy import i związane ustawienia po faktycznym wyborze pliku i zatwierdzeniu; nie nadpisywać danych innych osób."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Stan pustego roku przed próbą, rzeczywisty plik i wzorzec jeśli dostępne, widok wyboru pliku, mapowania, wyniku i niezależny odczyt po; jawnie odnotować brak pliku."
+      ],
+      "whyThisIsRealistic": "Miasta często mają wcześniejsze zestawienia w arkuszu i pytają, czy mogą je wykorzystać bez ponownego wpisywania."
+    },
+    {
+      "id": "UA04",
+      "title": "Raport w PDF jako źródło inwentaryzacji",
+      "persona": "Urzędniczka, która otrzymała miejski raport emisyjny w PDF.",
+      "businessGoal": "Sprawdzić możliwość wykorzystania danych z raportu PDF i świadomie zweryfikować odczyt przed importem.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam raport o emisjach naszego miasta w PDF. Czy da się na jego podstawie uzupełnić inwentaryzację w CityCatalyst? Nie wiem, od czego zacząć.",
+        {
+          "goal": "Dopytać o faktyczny sposób przekazania raportu i kontrolę odczytu tabel; jeśli CA sugeruje, że widzi raport, zapytać o podstawę.",
+          "exampleText": "Raportu jeszcze nigdzie nie przesłałam. Gdzie mam go wybrać i jak sprawdzić, czy liczby i rok zostały dobrze odczytane?",
+          "condition": "Po pierwszej odpowiedzi, przed wyborem pliku w UI."
+        },
+        {
+          "goal": "Zapytać, co zrobić z niepewnymi lub brakującymi danymi zależnie od uzyskanych wskazówek lub widoku importu.",
+          "exampleText": "A jeśli jakaś tabela zostanie źle odczytana albo zabraknie jednostek, czy mogę to sprawdzić przed zapisaniem?",
+          "condition": "Po wskazaniu ścieżki importu lub obejrzeniu przeglądu, jeżeli użyto faktycznego pliku."
+        }
+      ],
+      "expectedBehavior": [
+        "Uznaje, że PDF nie został przesłany ani odczytany w rozmowie; nie opisuje jego zawartości.",
+        "Wskazuje import PDF w kreatorze GHGI oraz potrzebę sprawdzenia odczytu, przypisań, roku, Scope, jednostek, brakujących i błędnych wierszy przed zatwierdzeniem; brak gwarancji pełnego odczytu.",
+        "Sukces odpowiedzi CA: uczciwa instrukcja i wyjaśnienie ograniczeń. Sukces celu: rzeczywiste przesłanie w UI, przegląd i zapis poprawnych danych potwierdzony odczytem; sam podgląd lub odpowiedź CA nie oznacza importu."
+      ],
+      "accuracyChecks": [
+        "EMPTY: 2024 początkowo bez danych; rozmowa bez pliku.",
+        "Jeżeli dostępny prawdziwy PDF, przed importem utrwalić niezależny wzorzec czytelnych wierszy, ich rok, jednostki i źródło oraz odnotować niejednoznaczności; zawartość nie jest wcześniej znana.",
+        "Porównać wykryte oraz faktycznie zapisane wiersze z raportem; nie dublować sum i składowych ani nie traktować braków jako zer."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć ścieżkę importu, faktycznie wybrać PDF wyłącznie jeśli dostępny, poczekać na odczyt, przejrzeć wyniki i przypisania, zatwierdzić tylko po weryfikacji; w przeciwnym razie zakończyć z jawną informacją o braku pliku lub niedokończonym imporcie."
+      ],
+      "mustNotClaim": [
+        "Że CA otrzymał, przeczytał lub zaimportował PDF na podstawie samej deklaracji.",
+        "Że PDF zawsze da się poprawnie odczytać albo że podgląd jest zapisem."
+      ],
+      "allowedProductChanges": [
+        "W EMPTY świadomie zatwierdzony import faktycznego PDF i związane ustawienia; bez zmian innych inwentaryzacji."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Wzorzec z rzeczywistego PDF, stan przed, wybór pliku w UI, wynik odczytu i przeglądu, rezultat zatwierdzenia oraz niezależny odczyt po; w razie braku pliku oznaczyć cel jako niezweryfikowany."
+      ],
+      "whyThisIsRealistic": "Urzędniczka może otrzymać gotowy raport od wykonawcy, nie mając dostępu do jego arkusza źródłowego."
+    },
+    {
+      "id": "UA05",
+      "title": "Wklejona tabela dwóch sektorów",
+      "persona": "Urzędniczka z krótkim zestawieniem gotowych wartości emisji.",
+      "businessGoal": "Dodać dwa posiadane wyniki do inwentaryzacji 2024 i uniknąć podwójnego policzenia sumy.",
+      "startSurface": "general_chat",
+      "seedProfile": "EMPTY",
+      "userTurns": [
+        "Mam małą tabelę dla naszego miasta. Czy możesz dodać te dane do inwentaryzacji za 2024 rok?\n\n| Rok | Kategoria | Scope | Emisje (tCO2e) |\n|---|---|---|---:|\n| 2024 | Budynki mieszkalne | Scope 1 | 1200 |\n| 2024 | Transport drogowy | Scope 1 | 800 |\n| 2024 | Suma | — | 2000 |",
+        {
+          "goal": "Zależnie od odpowiedzi poprosić o bezpieczne następne kroki lub potwierdzenie rzeczywistego zapisu; wyjaśnić że suma jest kontrolna.",
+          "exampleText": "Suma 2000 ton jest tylko podsumowaniem tych dwóch wierszy. Jak mogę sprawdzić, że dane rzeczywiście trafiły do właściwego roku i nie policzą się podwójnie?",
+          "condition": "Po odpowiedzi CA; jeśli twierdzi, że dodał dane, poprosić o pokazanie zapisanych pozycji."
+        },
+        {
+          "goal": "Jeśli CA wskazuje na brak szczegółów, zapytać jakie informacje są potrzebne; jeśli prowadzi do UI, poprosić o opis miejsc i kontroli.",
+          "exampleText": "Czy te dwie wartości wystarczą, czy potrzebujesz ode mnie jeszcze jakichś szczegółów, zanim je wpiszę?",
+          "condition": "Dostosować do rzeczywistych braków lub proponowanego sposobu wprowadzenia."
+        }
+      ],
+      "expectedBehavior": [
+        "Poprawnie odczytuje obie pozycje jako rok 2024, Scope 1, odpowiednio 1200 i 800 tCO2e, a 2000 tCO2e jako ich sumę kontrolną; nie dodaje sumy jako trzeciej emisji.",
+        "Uczciwie rozróżnia treść wklejoną do czatu od zapisu w inwentaryzacji i nie obiecuje dowolnego zapisu czatem. Proponuje sprawdzenie ścieżki ręcznego dodania/importu w UI oraz doprecyzowanie źródła i metodologii/mapowania, jeśli wymagane pola nie wynikają z tabeli.",
+        "Nie wymyśla paliw, aktywności, współczynników ani podziału na bardziej szczegółowe kategorie. Nie wymusza zapisu, gdy UI potrzebuje brakujących danych.",
+        "Sukces odpowiedzi CA: prawidłowa interpretacja i uczciwa wykonalna droga lub prośba o brakujące informacje. Sukces celu: obie wartości faktycznie zapisane w odpowiednich kategoriach i Scope, bez sumy jako dodatkowego wiersza, co wymaga odczytu stanu."
+      ],
+      "accuracyChecks": [
+        "EMPTY: przed próbą inwentaryzacja 2024 pusta; brak istniejących wartości, których należałoby unikać w sumie.",
+        "1200 + 800 = 2000 tCO2e, czyli 1 200 000 + 800 000 = 2 000 000 kgCO2e, jeśli odczyt stanu używa kilogramów.",
+        "Po ewentualnym zapisie sprawdzić właściwe miasto, rok 2024, obie kategorie i Scope 1, wartości, pochodzenie oraz łączny wynik 2000 t bez trzeciej pozycji sumy; brak danych innych sektorów nie oznacza zera.",
+        "Jeśli zapis wymaga niepodanych szczegółów lub brak ścieżki do zapisania gotowych emisji, nie uznawać celu za ukończony i zapisać dokładną przeszkodę."
+      ],
+      "expectedUiInteractions": [
+        "Otworzyć odpowiednie sekcje dodawania danych i sprawdzić wymagane pola. Wprowadzić wyłącznie wartości, które UI pozwala jednoznacznie przypisać na podstawie tabeli i uzgodnionych informacji; jeśli to niemożliwe, zatrzymać się bez zgadywania."
+      ],
+      "mustNotClaim": [
+        "Że dane dodano tylko dlatego, że zostały wklejone.",
+        "Że suma 2000 to dodatkowy wiersz do zapisania albo że niewymienione sektory mają zerowe emisje."
+      ],
+      "allowedProductChanges": [
+        "Wyłącznie uzgodnione i jednoznacznie przypisane pozycje w testowym EMPTY 2024; żadnych innych zmian."
+      ],
+      "evidenceNeeded": [
+        "Osobny nowy wątek i równoważny stan początkowy dla każdej z trzech prób; zapisać pełny transkrypt, czynności w UI oraz niezależne odczyty stanu przed i po. Nie przypisywać rezultatu bez dowodu.",
+        "Pełna tabela i odpowiedzi, widoczne wymagania formularzy, stan przed/po oraz odczyt obu zapisanych pozycji, kategorii, Scope i sumy; jeśli nie zapisano, wskazać brakujące dane lub niedostępną ścieżkę."
+      ],
+      "whyThisIsRealistic": "Pracowniczka może dostać krótkie zestawienie w wiadomości i oczekiwać szybkiej pomocy w przeniesieniu danych."
+    }
+  ]
+}

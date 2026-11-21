@@ -94,8 +94,10 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     cannot start a document change in the next turn. Use "propose_edit" only
     when the user already asked to change the document and the card just
     settles how; choosing then prepares a proposed change for review, never
-    applies it. Rewrites the user asked to "choose from" are "reply" unless
-    they asked to put the chosen one into the document.
+    applies it. Every "propose_edit" option is a change; never add a
+    "keep unchanged" or "not now" option to it. Rewrites the user asked to
+    "choose from" are "reply" unless they asked to put the chosen one into the
+    document.
     Use when concrete choices make a clarification or next-step decision
     easier for the user, and always when the user asks for options or
     alternatives to choose from, such as rewrites; then each option holds one

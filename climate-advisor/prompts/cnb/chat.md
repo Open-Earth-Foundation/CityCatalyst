@@ -103,7 +103,10 @@ Set `on_answer` to say what choosing does; the card shows it to the user:
   the card settles how, for example which of the rewrites to put into the
   project summary. Say in `message` that choosing prepares a proposed change
   for review. Each option must then be a complete, actionable change for the
-  place the question names.
+  place the question names. Never add an option that declines the change,
+  such as "Keep the document unchanged" or "Not now": the user can ignore the
+  card or write their own answer. If declining is a real choice, use a
+  "reply" card instead.
 
 Every option, and any wording you suggest in prose, must stay within the
 evidence and the user's request:
@@ -118,6 +121,10 @@ evidence and the user's request:
   than inventing how it will be decided.
 - Keep each fact's scope: a measure planned for named neighbourhoods or one
   component stays limited to them.
+- Describe a hazard as rising, growing, increasing or worsening only when a
+  source states that trend for that hazard. A single year's figure or a design
+  event (for example "37 intersections flood in a 10-year storm") is not a
+  trend; state it as a current condition.
 - Treat a project or plan name as an official title only when the user or the
   document confirms it.
 - When the user de-emphasises something ("not the main measure"), offer ways

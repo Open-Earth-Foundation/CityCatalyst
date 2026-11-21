@@ -17,7 +17,6 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
     EditReviewObjection,
-    EditScope,
     PlannedTextChange,
 )
 from app.models.cnb.concept_note_structure import (
@@ -32,6 +31,19 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterRevision,
     ConceptNoteGap,
     ConceptNoteGapResolution,
+)
+from app.persistence.concept_notes.gaps import (
+    carry_forward_saved_answer,
+    latest_partial_answer,
+    record_accepted_narrowing,
+)
+from app.utils.cnb_gap_edit import (
+    GapEditError,
+    gap_answer_digest,
+    marker_edit_shape,
+    marker_question,
+    unambiguous_span,
+    validate_marker_transitions,
 )
 from app.utils.cnb_information_markers import (
     information_marker_key,
@@ -382,7 +394,6 @@ class ConceptNoteEditRepository:
                         changes=changes,
                         user_id=user_id,
                         idempotency_key=request.idempotency_key,
-                        scope=proposal.scope,
                     )
                     revision = await append_revision(
                         session,
@@ -450,65 +461,89 @@ async def resolve_filled_information_gaps(
     changes: list[EditChange],
     user_id: str,
     idempotency_key: UUID,
-    scope: EditScope | None = None,
 ) -> None:
-    """Close structured gaps whose accepted grounded edits replace their markers.
+    """Apply each reviewed gap transition exactly once, or reject the whole set.
 
-    A partial gap-form answer closes nothing. A complete one closes its gap only
-    at the version answered, and may close other open gaps it also fills.
+    Every bound gap is locked and must still match its version, status and saved
+    answers. The assembled chapter must hold exactly the reviewed marker sequence.
+    A change without bindings may not move a marker or confirm an estimate, so a
+    proposal from before gap binding must be regenerated.
     """
-    removed = removed_information_markers(before, after)
-    if not removed:
-        await confirm_estimated_gap(
-            session,
-            chapter=chapter,
-            changes=changes,
-            user_id=user_id,
-            idempotency_key=idempotency_key,
-            scope=scope,
-        )
-        return
+    try:
+        validate_marker_transitions(before, after, changes)
+    except GapEditError:
+        raise _stale_gap() from None
+    unbound = [change for change in changes if not change.gap_bindings]
+    if unbound and await _unbound_gap_edit(session, chapter, before, unbound):
+        raise _stale_gap()
 
-    gaps = list(
-        (
+    bound = [(change, binding) for change in changes for binding in change.gap_bindings]
+    gap_ids = sorted({binding.gap_id for _, binding in bound}, key=str)
+    if not gap_ids:
+        return
+    gaps = {
+        gap.gap_id: gap
+        for gap in (
             await session.scalars(
                 select(ConceptNoteGap)
-                .where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id,
-                    ConceptNoteGap.status.in_(["open", "caveat"]),
-                )
+                .where(ConceptNoteGap.gap_id.in_(gap_ids))
+                .order_by(ConceptNoteGap.gap_id)
                 .with_for_update()
             )
         ).all()
-    )
-    if scope is not None and scope.gap_id is not None:
-        gaps = [
-            gap
-            for gap in gaps
-            if scope.answer_complete
-            and (gap.gap_id != scope.gap_id or gap.version == scope.gap_version)
-        ]
-    gaps_by_key = {information_marker_key(gap.question): gap for gap in gaps}
-    now = datetime.now(UTC)
-    resolved_gap_ids: set[UUID] = set()
-    for marker in removed:
-        gap = gaps_by_key.get(information_marker_key(marker))
-        change = next(
-            (
-                change
-                for change in changes
-                if marker in change.before
-                and marker not in change.after
-                and marker_replacement_text(change.after)
-            ),
-            None,
+    }
+    # Verify every binding before any write; repeated occurrences share one gap.
+    for change, binding in bound:
+        gap = gaps.get(binding.gap_id)
+        expected_status = "caveat" if binding.mode == "confirm_estimate" else "open"
+        if (
+            gap is None
+            or gap.chapter_id != chapter.chapter_id
+            or gap.status != expected_status
+            or gap.version != binding.gap_version
+        ):
+            raise _stale_gap()
+        saved = await latest_partial_answer(
+            session, gap_id=gap.gap_id, gap_version=gap.version
         )
-        if gap is None or change is None:
-            raise EditOperationError(
-                "stale_gap",
-                "The information gap changed. Generate a fresh proposal before applying.",
+        if gap_answer_digest(saved.answer if saved else None) != (
+            binding.saved_answers_digest
+        ):
+            raise _stale_gap()
+        if binding.mode == "confirm_estimate":
+            estimate = await _latest_estimate(session, gap.gap_id)
+            if not _overlaps_estimate(before, estimate, change):
+                raise _stale_gap()
+        else:
+            transition = marker_edit_shape(change.before, change.after)
+            if transition is None or information_marker_key(
+                transition.old_marker
+            ) != information_marker_key(gap.question):
+                raise _stale_gap()
+
+    now = datetime.now(UTC)
+    settled: set[UUID] = set()
+    for change, binding in bound:
+        gap = gaps[binding.gap_id]
+        if gap.gap_id in settled:
+            continue
+        settled.add(gap.gap_id)
+        if binding.mode == "narrow":
+            # The gap stays open on its remaining question, keeping the same identity.
+            previous_version = gap.version
+            record_accepted_narrowing(
+                gap, previous_question=gap.question, passage=change.after
             )
-        if gap.gap_id in resolved_gap_ids:
+            gap.question = marker_question(
+                marker_edit_shape(change.before, change.after).new_marker
+            )
+            gap.version += 1
+            gap.suggestions = []
+            gap.source_refs = []
+            gap.updated_at = now
+            await carry_forward_saved_answer(
+                session, gap=gap, previous_version=previous_version
+            )
             continue
         # A labelled estimate fills the marker but stays visible as a caveat.
         gap.status = "caveat" if change.estimate else "resolved"
@@ -524,85 +559,65 @@ async def resolve_filled_information_gaps(
                 idempotency_key=idempotency_key,
             )
         )
-        resolved_gap_ids.add(gap.gap_id)
 
 
-async def confirm_estimated_gap(
+def _stale_gap() -> EditOperationError:
+    """Report that the reviewed gap state no longer holds; nothing is written."""
+    return EditOperationError(
+        "stale_gap",
+        "The information gap changed. Generate a fresh proposal before applying.",
+    )
+
+
+async def _latest_estimate(session: AsyncSession, gap_id: UUID) -> str | None:
+    """Return the estimate a caveat gap currently states, from its latest non-partial event."""
+    return await session.scalar(
+        select(ConceptNoteGapResolution.answer)
+        .where(
+            ConceptNoteGapResolution.gap_id == gap_id,
+            ConceptNoteGapResolution.action != "partial_answer",
+        )
+        .order_by(
+            ConceptNoteGapResolution.created_at.desc(),
+            ConceptNoteGapResolution.resolution_id.desc(),
+        )
+        .limit(1)
+    )
+
+
+def _overlaps_estimate(body: str, estimate: str | None, change: EditChange) -> bool:
+    """Require the estimate the change confirms to be one unambiguous span of the body."""
+    span = unambiguous_span(body, estimate or "")
+    end = change.start + len(change.before)
+    return span is not None and span[0] < end and change.start < span[1]
+
+
+async def _unbound_gap_edit(
     session: AsyncSession,
-    *,
     chapter: ConceptNoteChapter,
+    before: str,
     changes: list[EditChange],
-    user_id: str,
-    idempotency_key: UUID,
-    scope: EditScope | None,
-) -> None:
-    """Close estimate (caveat) gaps once a complete answer replaces their text.
-
-    An estimate has no marker left, so its gap is bound through the gap form
-    scope instead. A duplicate caveat gap in this chapter (the same estimate
-    written for another chapter's gap) closes when a change replaces part of
-    its estimate text. A confirmed value resolves a gap; a new estimate keeps
-    it a caveat at a new version.
-    """
-    if scope is None or scope.gap_id is None or not scope.answer_complete:
-        return
-    factual = [change for change in changes if change.kind == "factual"]
-    gaps = (
+) -> bool:
+    """Return whether an unbound change moves a marker or overlaps a caveat estimate."""
+    if any(
+        removed_information_markers(change.before, change.after) for change in changes
+    ):
+        return True
+    caveats = (
         await session.scalars(
-            select(ConceptNoteGap)
-            .where(
+            select(ConceptNoteGap.gap_id).where(
                 ConceptNoteGap.chapter_id == chapter.chapter_id,
                 ConceptNoteGap.status == "caveat",
             )
-            .with_for_update()
         )
     ).all()
-    now = datetime.now(UTC)
-    for gap in gaps:
-        if gap.gap_id == scope.gap_id:
-            if gap.version != scope.gap_version:
-                continue
-            change = next(iter(factual), None)
-        else:
-            # The accepted estimate is the latest non-partial event; saved
-            # answers for confirmation never replace it.
-            estimate = await session.scalar(
-                select(ConceptNoteGapResolution.answer)
-                .where(
-                    ConceptNoteGapResolution.gap_id == gap.gap_id,
-                    ConceptNoteGapResolution.action != "partial_answer",
-                )
-                .order_by(
-                    ConceptNoteGapResolution.created_at.desc(),
-                    ConceptNoteGapResolution.resolution_id.desc(),
-                )
-                .limit(1)
-            )
-            change = next(
-                (
-                    change
-                    for change in factual
-                    if estimate
-                    and change.before.strip()
-                    and change.before.strip() in estimate
-                ),
-                None,
-            )
-        if change is None:
-            continue
-        gap.status = "caveat" if change.estimate else "resolved"
-        gap.version += 1
-        gap.updated_at = now
-        session.add(
-            ConceptNoteGapResolution(
-                gap_id=gap.gap_id,
-                action="answer",
-                answer=change.after.strip(),
-                actor_user_id=user_id,
-                source_refs=list(dict.fromkeys(change.source_refs)),
-                idempotency_key=idempotency_key,
-            )
-        )
+    estimates = [await _latest_estimate(session, gap_id) for gap_id in caveats]
+    return any(
+        _overlaps_estimate(before, estimate, change)
+        for change in changes
+        if change.kind == "factual"
+        for estimate in estimates
+    )
 
 
 async def lock_run(session: AsyncSession, run_id: UUID) -> None:

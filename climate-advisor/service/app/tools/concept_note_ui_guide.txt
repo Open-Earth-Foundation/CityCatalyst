@@ -14,7 +14,12 @@ CNB
    └─ Tabs
       ├─ "{draft_tab}"
       │  ├─ "{draft_sections}": chapter navigation, not a separate view
-      │  └─ Document: read-only preview beside the chat; no download required
+      │  ├─ Document: read-only preview beside the chat; no download required
+      │  └─ Missing-information marker → "{gap_answer}": short questions with
+      │     "Where to find it" hints, "{gap_source_suggestions}" (unverified
+      │     values from uploads, each with "{gap_use}" to add it to the answer),
+      │     then a previewed chapter change the user accepts. This is where
+      │     a draft gap is answered.
       ├─ "{structure_tab}": local preview changes; not saved
       └─ "{context_tab}"
          ├─ "{funder_profile}" → "{funding_change}" (or "{funding_browse}" when unselected)

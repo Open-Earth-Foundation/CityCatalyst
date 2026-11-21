@@ -54,7 +54,10 @@ import {
   EDIT_INSTRUCTION_MAX_CHARS,
   type EditScope,
 } from "@/util/concept-note-edit-types";
-import type { ConceptNoteDraftState } from "@/util/types";
+import type {
+  ConceptNoteDraftState,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 // About eight lines of composer text before it scrolls.
 const COMPOSER_MAX_HEIGHT_PX = 190;
@@ -78,6 +81,8 @@ interface ConceptNoteChatPanelProps {
   gapAnswer: GapAnswerRequest | null;
   onCloseGap: () => void;
   onAddGapSource: () => void;
+  /** The run's uploads, so gap source refs show as document names. */
+  uploads?: ConceptNoteUploadResponse[];
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
@@ -238,6 +243,7 @@ export function ConceptNoteChatPanel({
   gapAnswer,
   onCloseGap,
   onAddGapSource,
+  uploads,
   draftOverviewPending,
   lng,
   onOpenContext,
@@ -399,9 +405,15 @@ export function ConceptNoteChatPanel({
       },
     );
     if (content.length > EDIT_INSTRUCTION_MAX_CHARS) return false;
+    const { gap } = gapAnswer.row;
     const scope: EditScope = {
       kind: "auto",
       focused_chapter_id: gapAnswer.chapterId,
+      ...(gap && {
+        gap_id: gap.gap_id,
+        gap_version: gap.version,
+        answer_complete: complete,
+      }),
     };
     onCloseGap();
     onOpenDraft?.();
@@ -463,6 +475,7 @@ export function ConceptNoteChatPanel({
             fontSize="18px"
             fontWeight="semibold"
             color="content.primary"
+            truncate
           >
             {t("clima")}
           </Text>
@@ -490,7 +503,9 @@ export function ConceptNoteChatPanel({
               bg={CONNECTION_BADGE[connection].color}
             />
           )}
-          <Text fontSize="label.sm">
+          {/* The side-by-side chat column is too narrow for the label until xl;
+              the dot stays and screen readers still hear the status. */}
+          <Text fontSize="label.sm" srOnly={{ md: true, xl: false }}>
             {t(CONNECTION_BADGE[connection].label)}
           </Text>
         </HStack>
@@ -530,6 +545,7 @@ export function ConceptNoteChatPanel({
             onAnswer={answerGap}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
+            uploads={uploads}
           />
         ) : (
           <>

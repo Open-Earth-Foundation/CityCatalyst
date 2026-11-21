@@ -116,6 +116,9 @@ def build_gap_list(
                 "severity": gap.severity,
                 "state": gap.state,
             }
+            # Unverified values the drafter found in uploaded sources for this gap.
+            if gap.state in _OPEN_GAP_STATES and gap.suggestions:
+                item["suggestions"] = gap.suggestions
             # Name the files whose evidence filled a gap during source revalidation.
             resolution = gap.resolution
             if (

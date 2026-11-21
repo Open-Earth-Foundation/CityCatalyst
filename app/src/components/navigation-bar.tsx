@@ -270,7 +270,11 @@ export function NavigationBar({
                 </Heading>
               </Link>
               {moduleName && (
-                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
+                <Box
+                  display={{ base: "none", md: "flex" }}
+                  alignItems="center"
+                  gap={2}
+                >
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -286,7 +290,11 @@ export function NavigationBar({
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
+        <Box
+          display="flex"
+          gap={{ base: "12px", md: "48px" }}
+          alignItems="center"
+        >
           {children}
           <Box display="flex" gap={{ base: "8px", md: "32px" }}>
             <MenuRoot
@@ -384,6 +392,7 @@ export function NavigationBar({
                 >
                   <MenuTrigger asChild>
                     <Button
+                      aria-label={currentOrganizationName}
                       color="base.light"
                       minW="auto"
                       minH="48px"
@@ -407,7 +416,9 @@ export function NavigationBar({
                       >
                         <Icon as={MdCardTravel} boxSize={4} />
                       </Box>
+                      {/* Names show from lg: at md they push the bar past the screen. */}
                       <Text
+                        display={{ base: "none", lg: "block" }}
                         maxW="140px"
                         overflow="hidden"
                         textOverflow="ellipsis"
@@ -480,6 +491,7 @@ export function NavigationBar({
                 >
                   <MenuTrigger asChild whiteSpace="nowrap" textTransform="none">
                     <Button
+                      aria-label={session.user?.name ?? undefined}
                       variant="ghost"
                       px="8px"
                       minH="48px"
@@ -496,7 +508,7 @@ export function NavigationBar({
                           src={session.user?.image}
                         />
                         <Text
-                          display={{ base: "none", md: "block" }}
+                          display={{ base: "none", lg: "block" }}
                           maxW="56"
                           color="base.light"
                           overflow="hidden"

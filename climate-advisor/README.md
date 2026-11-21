@@ -660,7 +660,11 @@ Each proposal permits up to 100 draft searches, shared across repair attempts,
 configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. The planner and
+only affected chapters, with at most 12 reviews concurrently
+(`cnb_edits.max_concurrency`), so a whole-document edit is reviewed in one wave.
+When review asks for a repair, a chapter whose changes come back unchanged and
+were fully supported keeps its earlier review instead of being reviewed again.
+The planner and
 the reviewers draw on the same evidence: `run_context.source_excerpts` lists every
 quotation the selected sources keep for any template chapter, deduplicated (each
 reviewer receives the quotations of the sources its changes cite; when a large
@@ -2240,9 +2244,41 @@ The standalone suggestions below are hidden while the latest message has choices
 `POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
-in the same chapter are skipped), each with zero or two to five answer categories.
+in the same chapter are skipped), each with zero or two to five answer categories
+and a `where_to_find` hint (kind of document or office, never a citation). Options
+never include catch-all choices such as Other, Both or A combination; when
+several options can apply, the question sets `multiple: true` (up to 8 options)
+and the UI shows checkboxes. The
+gap's source suggestions are sent as unverified values: each value gets its own
+confirmation (`confirms: true`, no options), for which the UI shows its own
+"still correct" choice and a field for the changed value, and no other question
+asks for a confirmed value again. A reply with more than 4 questions is trimmed to
+the first 4 instead of failing; the dropped parts stay open for the next round.
+A question with options asks one choice about one thing; values and per-item
+statuses get their own free-text questions, and questions are never conditional.
+`earlier_answers` carries what the user already sent for this gap version but
+is not in the draft yet (for example when a partial answer got a clarification);
+the model asks only for what they miss and may return no questions when they
+cover the gap. The form sends earlier and new answers together, so a gap with
+more parts than four questions can still be completed over several rounds.
+When the chapter says the work behind a part does not exist yet (a study,
+survey, permit decision, rating or design not commissioned or pending), the
+questions ask for its timing, owner and any interim estimate, never its results.
+When the chapter, accepted or earlier answers, or source values disagree on a
+value, the questions ask which one is correct instead of picking one.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
+The form's edit request binds the answer to its gap: `concept_note_edit.scope`
+carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
+`gap_changed` when that gap is no longer open at that version. A partial answer
+may not remove any marker. A complete one replaces its gap's marker and may also
+fill another chapter's marker that asks for the same information when the
+answers state everything it asks for (duplicate gaps); the planner prompt and
+the semantic review judge that. Acceptance closes the answered gap only at that
+version, plus any duplicate it filled. The browser keeps sent answers for the
+gap version until it closes, so a failed or rejected turn loses nothing. The
+planner and reviewer prompts also forbid replacing a marker with text saying
+the information is missing or undecided.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

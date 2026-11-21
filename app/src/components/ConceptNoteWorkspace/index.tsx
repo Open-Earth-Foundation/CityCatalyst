@@ -348,6 +348,17 @@ export function ConceptNoteWorkspace({
     draftSyncedFor.current = reviewIdentity;
     void refetchDraft();
   }, [draftBehind, reviewIdentity, refetchDraft]);
+  // A form answer fails when its gap was answered or changed elsewhere; reload the
+  // gaps once so reopening the form shows the current version, not the same error.
+  const gapChangedId = edits.proposals.find(
+    (proposal) => proposal.error_code === "gap_changed",
+  )?.proposal_id;
+  const gapSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gapChangedId || gapSyncedFor.current === gapChangedId) return;
+    gapSyncedFor.current = gapChangedId;
+    void refetchDraft();
+  }, [gapChangedId, refetchDraft]);
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {
@@ -523,6 +534,7 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               gapAnswer={gapAnswer}
               onCloseGap={() => setGapAnswer(null)}
+              uploads={uploads}
               onAddGapSource={() => {
                 setTab("context");
                 setUploadPickerRequest((value) => value + 1);

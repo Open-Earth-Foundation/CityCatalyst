@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 from app.config.settings import Settings, _load_llm_config
+from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
     GapQuestionOutput,
     GapQuestionRequest,
@@ -22,20 +23,45 @@ from tests.test_concept_note_lifecycle import _workspace_repository
 
 
 @pytest.mark.parametrize(
-    "options", [["Loan"], ["Loan", " loan "], ["", "Grant"], ["x"] * 6]
+    "options",
+    [["Loan"], ["Loan", " loan "], ["", "Grant"], [f"Source {i}" for i in range(9)]],
 )
 def test_rejects_single_or_invalid_choices(options):
     with pytest.raises(ValidationError):
         GapSubQuestion(question="Instrument?", options=options)
 
 
-@pytest.mark.parametrize("count", [0, 5])
-def test_requires_one_to_four_questions(count):
+def test_confirmation_takes_its_choices_from_the_ui():
+    question = GapSubQuestion(question="Still EUR 2m?", options=[], confirms=True)
+    assert question.confirms
+    # Model-written choices would bring back a "changed" answer with no value.
     with pytest.raises(ValidationError):
-        GapQuestionOutput(
-            why_asking="Support needed",
-            questions=[{"question": f"Part {i}?", "options": []} for i in range(count)],
+        GapSubQuestion(
+            question="Still EUR 2m?", options=["Yes", "No"], confirms=True
         )
+
+
+def test_several_answers_need_options_to_select():
+    sources = [f"Source {i}" for i in range(8)]
+    question = GapSubQuestion(question="Sources?", options=sources, multiple=True)
+    assert question.multiple
+    # Free text already takes several answers, so the flag is dropped, not fatal.
+    assert not GapSubQuestion(question="Amount?", options=[], multiple=True).multiple
+
+
+def test_no_questions_when_earlier_answers_cover_the_gap():
+    # Used to fail as a 503; the UI then lets the earlier answers complete the gap.
+    output = GapQuestionOutput(why_asking="Already answered", questions=[])
+    assert output.questions == []
+
+
+def test_keeps_the_first_four_questions_instead_of_failing():
+    # Two confirmations plus three open parts once turned the whole set into a 503.
+    output = GapQuestionOutput(
+        why_asking="Support needed",
+        questions=[{"question": f"Part {i}?", "options": []} for i in range(5)],
+    )
+    assert [q.question for q in output.questions] == [f"Part {i}?" for i in range(4)]
 
 
 async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
@@ -43,8 +69,14 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
     output = {
         "why_asking": "Support needed",
         "questions": [
-            {"question": "Instrument?", "options": ["Loan", "Grant", "Guarantee"]},
-            {"question": "Amount?", "options": []},
+            {
+                "question": "Instrument?",
+                "options": ["Loan", "Grant", "Guarantee"],
+                "where_to_find": "Loan agreement or lender term sheet",
+                "confirms": False,
+                "multiple": False,
+            },
+            {"question": "Amount?", "options": [], "where_to_find": "", "confirms": False, "multiple": False},
         ],
     }
     client = AsyncMock()
@@ -84,6 +116,11 @@ def gap_route(monkeypatch):
                 state="open",
                 question="Original question",
                 why_asking="Needed",
+                suggestions=[
+                    ConceptNoteGapSuggestion(
+                        value="Loan of EUR 2 million", source_refs=["Plan"]
+                    )
+                ],
             )
         ],
     )
@@ -157,6 +194,8 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert result.questions[0].options == ["Loan", "Grant"]
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
+    # Answers already sent for this gap reach the model, so it asks only the rest.
+    assert context["earlier_answers"] == ""
     # Long chapters are cut around the gap, not from the start.
     assert len(context["chapter_excerpt"]) == 12000
     assert context["chapter_excerpt"].endswith("Original question]")
@@ -168,6 +207,12 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     }
     # Whole entries: truncating would drop later answers and undecided parts.
     assert context["previous_answers"] == ["Earlier answer " * 300]
+    # Source-grounded values let the model confirm instead of asking from scratch.
+    assert context["source_suggestions"] == [
+        {"value": "Loan of EUR 2 million", "source_refs": ["Plan"]}
+    ]
+    # Hints are optional, so an older model reply without them still validates.
+    assert result.questions[0].where_to_find == ""
     gap_route.args["session"].commit.assert_not_called()
 
 

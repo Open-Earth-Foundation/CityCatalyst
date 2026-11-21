@@ -17,6 +17,7 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
     EditReviewObjection,
+    EditScope,
     PlannedTextChange,
 )
 from app.models.cnb.concept_note_structure import (
@@ -381,6 +382,7 @@ class ConceptNoteEditRepository:
                         changes=changes,
                         user_id=user_id,
                         idempotency_key=request.idempotency_key,
+                        scope=proposal.scope,
                     )
                     revision = await append_revision(
                         session,
@@ -448,8 +450,13 @@ async def resolve_filled_information_gaps(
     changes: list[EditChange],
     user_id: str,
     idempotency_key: UUID,
+    scope: EditScope | None = None,
 ) -> None:
-    """Close structured gaps whose accepted grounded edits replace their markers."""
+    """Close structured gaps whose accepted grounded edits replace their markers.
+
+    A partial gap-form answer closes nothing. A complete one closes its gap only
+    at the version answered, and may close other open gaps it also fills.
+    """
     removed = removed_information_markers(before, after)
     if not removed:
         return
@@ -466,6 +473,13 @@ async def resolve_filled_information_gaps(
             )
         ).all()
     )
+    if scope is not None and scope.gap_id is not None:
+        gaps = [
+            gap
+            for gap in gaps
+            if scope.answer_complete
+            and (gap.gap_id != scope.gap_id or gap.version == scope.gap_version)
+        ]
     gaps_by_key = {information_marker_key(gap.question): gap for gap in gaps}
     now = datetime.now(UTC)
     resolved_gap_ids: set[UUID] = set()

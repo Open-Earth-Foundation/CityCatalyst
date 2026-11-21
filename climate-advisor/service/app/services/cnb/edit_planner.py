@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+from uuid import UUID
 from collections.abc import Callable
 from typing import Any
 
@@ -198,6 +199,11 @@ class ConceptNoteEditPlanner:
             )
             # One answer cache per operation; each agent run gets its own lookup limit.
             lookup_cache: SourceLookupCache = {}
+            # A repair resubmits the whole proposal; a chapter whose changes are
+            # unchanged and were fully supported keeps its review.
+            approved: dict[
+                tuple[UUID, str], tuple[list[PlannedTextChange], ChapterEditReview]
+            ] = {}
             for attempt in range(budget.cnb_edits.max_review_repairs + 1):
                 session.plan = None
                 if (
@@ -288,6 +294,19 @@ class ConceptNoteEditPlanner:
                 ) -> tuple[list[PlannedTextChange], ChapterEditReview]:
                     """Review the actual resolved text; the only tool reads sources."""
                     nonlocal completed
+                    key = (
+                        chapter.chapter_id,
+                        json.dumps(
+                            [
+                                change.model_dump(mode="json")
+                                for change in chapter_changes[chapter.chapter_id]
+                            ],
+                            sort_keys=True,
+                        ),
+                    )
+                    if key in approved:
+                        completed += 1
+                        return approved[key]
                     async with limit:
                         # A per-chapter agent gives each review its own lookup limit.
                         reviewer = Agent(
@@ -391,6 +410,7 @@ class ConceptNoteEditPlanner:
                             completed=completed,
                             total=len(affected),
                         )
+                        approved[key] = (changes, review)
                         return changes, review
 
                 logger.info(

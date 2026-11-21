@@ -14,7 +14,15 @@ from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 START = datetime(2026, 9, 25, tzinfo=UTC)
 
 
-def gap(minute, question, *, severity="critical", state="open", resolution=None):
+def gap(
+    minute,
+    question,
+    *,
+    severity="critical",
+    state="open",
+    resolution=None,
+    suggestions=(),
+):
     return SimpleNamespace(
         gap_id=uuid4(),
         created_at=START + timedelta(minutes=minute),
@@ -23,7 +31,26 @@ def gap(minute, question, *, severity="critical", state="open", resolution=None)
         severity=severity,
         state=state,
         resolution=resolution,
+        suggestions=list(suggestions),
     )
+
+
+def test_open_gap_lists_source_suggestions_with_their_sources():
+    found = {"value": "PLN 1.92 billion", "source_refs": ["Investment_Plan"]}
+    chapters = [
+        chapter(
+            1,
+            "Financing",
+            [
+                gap(1, "Total cost", suggestions=[found]),
+                gap(2, "Old cost", state="dismissed", suggestions=[found]),
+            ],
+        )
+    ]
+    rows = build_gap_list(chapters, include_closed=True)["gaps"]
+    assert rows[0]["suggestions"] == [found]
+    # Suggestions guide open work only; closed gaps don't repeat stale values.
+    assert "suggestions" not in rows[1]
 
 
 def chapter(position, title, gaps, *, status="needs_review"):

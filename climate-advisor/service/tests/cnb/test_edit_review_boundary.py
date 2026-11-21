@@ -250,7 +250,10 @@ async def test_reviewer_feedback_repairs_and_rechecks_the_complete_candidate(rej
         request, [current, second], {}
     )
     assert len(editor_inputs) == rejections + 1
-    assert len(reviewer_inputs) == 2 * (rejections + 1)
+    # The second chapter's unchanged, supported changes keep their first review;
+    # every changed candidate is reviewed again.
+    assert len(reviewer_inputs) == rejections + 3
+    assert [item["chapter"]["position"] for item in reviewer_inputs].count(1) == 2
     assert all(c.after == "10" and c.semantic_support == "preserved" for c in plan.changes)
     assert len(validate_edit_plan(request, [current, second], plan)) == 2
     assert current.body_markdown == "ten schools"

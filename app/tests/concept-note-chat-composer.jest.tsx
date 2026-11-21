@@ -19,6 +19,7 @@ import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWor
 import type { EditController } from "@/components/ConceptNoteWorkspace/document-review";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
+import type { ConceptNoteUploadResponse } from "@/util/types";
 
 const sendMessage =
   jest.fn<(content: string, scope?: EditScope) => Promise<void>>();
@@ -138,31 +139,42 @@ afterEach(async () => {
   globalThis.fetch = originalFetch;
 });
 
+function panel(
+  status = contextStatus,
+  threadId: string | null = "thread",
+  gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
+) {
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <ConceptNoteChatPanel
+        cityId="city"
+        contextStatus={status}
+        composerRequest={null}
+        gapAnswer={gapAnswer}
+        onCloseGap={closeGap}
+        onAddGapSource={() => {}}
+        draftOverviewPending={false}
+        lng="en"
+        onOpenContext={() => {}}
+        runId="run"
+        threadId={threadId}
+        editScope={{ kind: "document" } as never}
+        edits={edits}
+        uploads={uploads}
+      />
+    </ChakraProvider>
+  );
+}
+
 async function renderPanel(
   status = contextStatus,
   threadId: string | null = "thread",
   gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
 ): Promise<void> {
   await act(async () => {
-    root.render(
-      <ChakraProvider value={defaultSystem}>
-        <ConceptNoteChatPanel
-          cityId="city"
-          contextStatus={status}
-          composerRequest={null}
-          gapAnswer={gapAnswer}
-          onCloseGap={closeGap}
-          onAddGapSource={() => {}}
-          draftOverviewPending={false}
-          lng="en"
-          onOpenContext={() => {}}
-          runId="run"
-          threadId={threadId}
-          editScope={{ kind: "document" } as never}
-          edits={edits}
-        />
-      </ChakraProvider>,
-    );
+    root.render(panel(status, threadId, gapAnswer, uploads));
   });
   if (gapAnswer)
     await act(async () => {
@@ -325,6 +337,7 @@ beforeEach(() => {
         {
           question: "Which financing instrument?",
           options: ["Loan", "Grant", "Guarantee"],
+          where_to_find: "Loan agreement or lender term sheet",
         },
         { question: "What amount?", options: [] },
       ],
@@ -384,10 +397,11 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
   expect(container.textContent).toContain("gap-acceptance-hint");
   await act(async () => preview.click());
   const [content, scope] = sendMessage.mock.calls[0];
-  // A partial answer keeps the gap's marker, so the gap stays open.
-  expect(content).toContain(
-    "My answer:\n1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-decided",
-  );
+  // A partial answer keeps the gap's marker, so the gap stays open. The
+  // unanswered question is left out, not sent as "Not decided yet".
+  expect(content).toContain("My answer:\n1. Which financing instrument?\nLoan");
+  expect(content).not.toContain("What amount?");
+  expect(content).not.toContain("gap-not-decided");
   expect(content).toContain(
     "Keep any information I have not supplied marked as missing",
   );
@@ -395,11 +409,152 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
   expect(content).toContain(gapAnswer.row.question);
   expect(content).not.toContain("investment-plan");
   expect(content).not.toContain("grant-application");
+  // A partial answer is bound to its gap version but may not close the gap.
   expect(scope).toEqual({
     kind: "auto",
     focused_chapter_id: "financing-chapter",
+    gap_id: "financing-gap",
+    gap_version: 1,
+    answer_complete: false,
   });
   expect(closeGap).toHaveBeenCalledTimes(1);
+});
+
+it("shows source-grounded suggestions with their source and adds one to the answer", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const box = container.querySelector<HTMLElement>(
+    '[data-testid="concept-note-gap-source-suggestions"]',
+  )!;
+  expect(box.textContent).toContain("Loan");
+  expect(box.textContent).toContain("gap-source-label");
+  // Each question says where its answer is usually found, when there is a hint.
+  const hints = container.querySelectorAll(
+    '[data-testid="concept-note-gap-where-to-find"]',
+  );
+  expect(hints).toHaveLength(1);
+  expect(subQuestion(0).contains(hints[0])).toBe(true);
+  const use = [...box.querySelectorAll("button")];
+  expect(use).toHaveLength(2);
+  // Source text alone is enough to send, even with no question answered yet.
+  expect(previewButton().disabled).toBe(true);
+  await act(async () => use[1].click());
+  expect(use[1].disabled).toBe(true);
+  expect(previewButton().disabled).toBe(false);
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain("Grant");
+  expect(content).not.toContain("gap-not-decided");
+  expect(content).toContain("marked as missing");
+});
+
+it("names each source by its uploaded document and file type, or a readable label", async () => {
+  const krakowGap = structuredClone(gapAnswer);
+  krakowGap.row.gap!.suggestions = [
+    {
+      value: "Reported total project value: PLN 1.92 billion.",
+      source_refs: ["Krakow_KST_IV_Investment_Plan"],
+    },
+    { value: "Lifecycle cost", source_refs: ["Annex_7_Cost_Breakdown"] },
+  ];
+  await renderPanel(contextStatus, "thread", krakowGap, [
+    {
+      uploadId: "upload",
+      status: "ready",
+      filename: "Krakow_KST_IV_Investment_Plan.pdf",
+      sourceLabel: "Krakow_KST_IV_Investment_Plan",
+    },
+  ]);
+  const lines = [
+    ...container.querySelectorAll(
+      '[data-testid="concept-note-gap-source-suggestions"] p',
+    ),
+  ].map((line) => line.textContent);
+  expect(lines).toContain(
+    "gap-source-label Krakow KST IV Investment Plan · PDF",
+  );
+  // No upload matches, so the label is humanized and no file type is invented.
+  expect(lines).toContain("gap-source-label Annex 7 Cost Breakdown");
+  expect(container.textContent).not.toContain("_");
+});
+
+it("needs the current value before a changed source value counts as answered", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "Confirm the instrument.",
+      questions: [
+        { question: "Is the loan still planned?", options: [], confirms: true },
+      ],
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const radios = [
+    ...subQuestion(0).querySelectorAll<HTMLInputElement>('input[type="radio"]'),
+  ].map((radio) => radio.value);
+  // One fixed "still correct" choice, no preselection, no free-text "Other".
+  expect(radios).toEqual(["0", "custom", "unknown"]);
+  expect(subQuestion(0).textContent).toContain("gap-confirm-yes");
+  expect(subQuestion(0).textContent).toContain("gap-confirm-changed");
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
+      .click(),
+  );
+  // "Changed" without the new value is not an answer.
+  expect(previewButton().disabled).toBe(true);
+  await writeAnswer(0, "A EUR 3 million grant");
+  expect(container.textContent).toContain("gap-complete-hint");
+});
+
+it("lets the user pick every option that applies when several can", async () => {
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      why_asking: "The funder needs every co-financing source.",
+      questions: [
+        {
+          question: "Which co-financing sources apply?",
+          options: ["EU cohesion funds", "National budget", "City budget"],
+          multiple: true,
+        },
+      ],
+    }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const boxes = () => [
+    ...subQuestion(0).querySelectorAll<HTMLInputElement>(
+      'input[type="checkbox"]',
+    ),
+  ];
+  expect(subQuestion(0).querySelector('input[type="radio"]')).toBeNull();
+  expect(boxes().map((box) => box.value)).toEqual([
+    "0",
+    "1",
+    "2",
+    "custom",
+    "unknown",
+  ]);
+  await act(async () => boxes()[0].click());
+  await act(async () => boxes()[2].click());
+  await act(async () => boxes()[3].click());
+  // An empty "Other" does not undo the options already selected.
+  expect(previewButton().disabled).toBe(false);
+  await writeAnswer(0, "EIB loan");
+  // "Not decided yet" clears the other selections, and choosing again clears it.
+  await act(async () => boxes()[4].click());
+  expect(
+    boxes()
+      .filter((box) => box.checked)
+      .map((box) => box.value),
+  ).toEqual(["unknown"]);
+  await act(async () => boxes()[0].click());
+  await act(async () => boxes()[2].click());
+  await act(async () => boxes()[3].click());
+  await act(async () => previewButton().click());
+  const [content] = sendMessage.mock.calls[0];
+  expect(content).toContain(
+    "1. Which co-financing sources apply?\nEU cohesion funds; City budget; EIB loan",
+  );
 });
 
 it("asks Clima to replace the gap marker once every question is answered", async () => {
@@ -413,7 +568,11 @@ it("asks Clima to replace the gap marker once every question is answered", async
   await writeAnswer(1, "EUR 2 million");
   expect(container.textContent).toContain("gap-complete-hint");
   await act(async () => previewButton().click());
-  const [content] = sendMessage.mock.calls[0];
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(scope).toMatchObject({
+    gap_id: "financing-gap",
+    answer_complete: true,
+  });
   expect(content).toContain(
     "My answers:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
   );
@@ -453,11 +612,125 @@ it("leaves the gap untouched when answered later and restores the answers on ret
     )!.value,
   ).toBe("EUR 2 million");
 
-  // A sent answer clears the draft, so the next visit starts fresh.
+  // A sent answer stays saved: the next round asks only for what it misses
+  // and sends it again with the new answers, so a failed turn loses nothing.
+  // Like the workspace, closing the gap unmounts the form in the same update.
+  closeGap.mockImplementationOnce(() =>
+    root.render(panel(contextStatus, "thread", null)),
+  );
   await act(async () => previewButton().click());
+  const [firstRequest] = sendMessage.mock.calls[0];
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(fetchQuestion).toHaveBeenCalledTimes(2);
+  const earlier = JSON.parse(
+    fetchQuestion.mock.calls[1][1].body,
+  ).earlier_answers;
+  expect(earlier).toContain("2. What amount?\nEUR 2 million");
+  expect(firstRequest).toContain(earlier);
+  expect(
+    container.querySelector('[data-testid="concept-note-gap-earlier-answers"]')
+      ?.textContent,
+  ).toContain("EUR 2 million");
+  await writeAnswer(1, "EUR 3 million from the city budget");
+  await act(async () => previewButton().click());
+  const [secondRequest] = sendMessage.mock.calls[1];
+  expect(secondRequest).toContain(earlier);
+  expect(secondRequest).toContain("EUR 3 million from the city budget");
+
+  // Starting over drops the earlier answers and asks the gap afresh.
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const startOver = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "gap-earlier-answers-clear",
+  )!;
+  await act(async () => startOver.click());
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(
+    JSON.parse(fetchQuestion.mock.calls.at(-1)![1].body).earlier_answers,
+  ).toBe("");
+  expect(
+    container.querySelector('[data-testid="concept-note-gap-earlier-answers"]'),
+  ).toBeNull();
+
+  // A closed gap gets a new version, which starts fresh.
+  const nextVersion = structuredClone(gapAnswer);
+  nextVersion.row.gap!.version = 2;
+  await renderPanel(contextStatus, "thread", null);
+  const fetches = fetchQuestion.mock.calls.length;
+  await renderPanel(contextStatus, "thread", nextVersion);
+  expect(fetchQuestion).toHaveBeenCalledTimes(fetches + 1);
+  expect(
+    JSON.parse(fetchQuestion.mock.calls.at(-1)![1].body).earlier_answers,
+  ).toBe("");
+});
+
+it("keeps a saved fallback answer when reopening brings generated questions", async () => {
+  sessionStorage.setItem(
+    "cnb-gap-draft:run:financing-chapter:financing-gap:1",
+    JSON.stringify({
+      question: null,
+      choices: { 0: "custom" },
+      customAnswers: { [`0:${gapAnswer.row.question}`]: "Loan" },
+      details: "",
+      sent: "",
+    }),
+  );
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(subQuestion(0).textContent).toContain("Which financing instrument?");
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-details"]',
+    )!.value,
+  ).toBe("Loan");
+});
+
+it("keeps the fallback answer in place when a retry fails again", async () => {
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await writeAnswer(0, "Loan");
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  const retry = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "gap-retry-question",
+  )!;
+  await act(async () => retry.click());
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toBe("Loan");
+  // It still answers the recorded gap itself, so it can still close it.
+  expect(container.textContent).toContain("gap-complete-hint");
+});
+
+it("lets earlier answers alone complete the gap when nothing is missing", async () => {
+  sessionStorage.setItem(
+    "cnb-gap-draft:run:financing-chapter:financing-gap:1",
+    JSON.stringify({
+      question: null,
+      choices: {},
+      customAnswers: {},
+      details: "",
+      sent: "1. Which financing instrument?\nLoan",
+    }),
+  );
+  fetchQuestion.mockResolvedValue({
+    ok: true,
+    json: async () => ({ why_asking: "Covered.", questions: [] }),
+  } as Response);
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(subQuestion(0)).toBeUndefined();
+  expect(container.textContent).toContain("gap-earlier-answers-cover");
+  expect(container.textContent).toContain("gap-complete-hint");
+  await act(async () => previewButton().click());
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(content).toContain("1. Which financing instrument?\nLoan");
+  expect(scope).toMatchObject({ answer_complete: true });
 });
 
 it("offers free text for gaps without suggestions and blocks submission while Clima is busy", async () => {
@@ -487,7 +760,7 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
 });
 
-it("falls back to free text on failure and drops it when a retry changes the question", async () => {
+it("falls back to free text on failure and keeps it as details when a retry changes the question", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(container.querySelector('[role="alert"]')?.textContent).toContain(
@@ -516,7 +789,15 @@ it("falls back to free text on failure and drops it when a retry changes the que
       '[data-testid="concept-note-gap-custom-answer"]',
     )!.value,
   ).toBe("");
-  expect(previewButton().disabled).toBe(true);
+  // The typed text is not attached to the new question, but it is not lost.
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-details"]',
+    )!.value,
+  ).toBe("Loan");
+  await act(async () => previewButton().click());
+  expect(sendMessage.mock.calls[0][0]).toContain("Loan");
+  expect(sendMessage.mock.calls[0][0]).not.toContain("What completion year?");
 });
 
 it("counts down the shared edit limit and stops answers before it is exceeded", async () => {

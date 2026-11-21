@@ -165,6 +165,12 @@ async def propose_gap_question(
                 "question": question,
                 "why_asking": gap.why_asking if gap else "",
                 "previous_answers": previous_answers,
+                "earlier_answers": payload.earlier_answers,
+                "source_suggestions": [
+                    suggestion.model_dump() for suggestion in gap.suggestions
+                ]
+                if gap
+                else [],
             },
             "cnb_gap_question",
             GapQuestionOutput,

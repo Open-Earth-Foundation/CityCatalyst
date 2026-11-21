@@ -490,7 +490,7 @@ export function GapAnswerForm({
   const submitBlocked =
     (disabled && !saveOnly) ||
     loading ||
-    closed ||
+    closed !== null ||
     saving ||
     !answered ||
     charsLeft < 0;

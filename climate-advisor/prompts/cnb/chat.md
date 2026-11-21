@@ -159,6 +159,11 @@ claim, obtain an independently validated accepted source.
   lists. Refer to an open gap as "chapter N, gap M" with its question (a closed
   gap by chapter and question), and name its severity by `label` ("Required"
   or "Optional"), never "critical" or "noncritical".
+  When the user refers to answers they already gave or saved for a gap, call
+  it before anything else: those answers are the gap's `answered_so_far`, so
+  never say they are unavailable. When a lookup finds `answered_so_far`,
+  describe it as saved, not written, and direct the user to the gap's form for
+  the parts still missing. When it returns none, say what the lookup found.
 - `concept_note_edit_propose`: call for the current user's explicit request to
   change the existing Concept Note, including a follow-up that confirms or refines
   an edit discussed in the conversation. Do not substitute unsaved wording for

@@ -1,16 +1,38 @@
 """Exercise agent selections against exact snapshots and protected draft content."""
 
 from dataclasses import replace
-from types import SimpleNamespace
-from uuid import uuid4
+from datetime import UTC, datetime
+from uuid import UUID, uuid4
 
 import pytest
 
 from app.config.settings import CnbEditPromptBudgetConfig
 from app.models.cnb.concept_note_edits import DraftReplacement, EditProposalRequest
 from app.persistence.concept_notes.edits import replace_anchors
+from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
+
+
+def gap(
+    question: str, state: str = "open", gap_id: UUID | None = None
+) -> WorkspaceGapSnapshot:
+    """A structured gap as the workspace projects it, for marker pairing tests."""
+    now = datetime.now(UTC)
+    return WorkspaceGapSnapshot(
+        gap_id=gap_id or uuid4(),
+        field_key="field",
+        question=question,
+        why_asking="Needed for the chapter.",
+        severity="critical",
+        state=state,
+        suggestions=[],
+        source_refs=[],
+        version=1,
+        resolution=None,
+        created_at=now,
+        updated_at=now,
+    )
 
 
 def chapter(body: str, position: int = 0) -> WorkspaceChapterSnapshot:
@@ -116,7 +138,7 @@ def test_invalid_correction_clears_previous_candidate_and_overlaps_fail_early():
 
 def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
     current = chapter("Budget: [Information needed: confirmed budget]")
-    current.gaps.append(SimpleNamespace(question="confirmed budget", state="open"))
+    current.gaps.append(gap("confirmed budget"))
     edits = session([current], "The confirmed budget is EUR 10 million.")
     partial = edits.search_draft("confirmed budget")
     assert (
@@ -142,9 +164,7 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
 def test_a_reformatted_or_wrapped_marker_is_filled_through_its_gap_record():
     marker = "[Information needed: **What is the\nconfirmed budget**]"
     current = chapter(f"Budget: {marker}")
-    current.gaps.append(
-        SimpleNamespace(question="What is the confirmed budget?", state="open")
-    )
+    current.gaps.append(gap("What is the confirmed budget?"))
     edits = session([current], "The confirmed budget is EUR 10 million.")
     found = edits.search_draft(marker)
     assert edits.propose_edits(
@@ -204,3 +224,165 @@ def test_search_ids_and_match_ids_cannot_be_reused_across_other_searches():
         == "invalid_selection"
     )
     assert edits.propose_edits([replacement("invented")])["code"] == "invalid_search"
+
+
+@pytest.mark.parametrize(
+    ("body", "search", "replacement", "extra_gaps", "code"),
+    [
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "The city will use stormwater utility funds. [Information needed: What amount will the city contribute?]",
+            [],
+            None,
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "[Information needed: What amount will the city contribute?]",
+            [],
+            "protected_markers",
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "Stormwater funds. [Information needed: What amount?] [Information needed: Who signs?]",
+            [],
+            "protected_markers",
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.] Other [Information needed: Who signs?]",
+            "[Information needed: Confirm the instrument and amount.] Other",
+            "Stormwater funds. [Information needed: What amount?] Other",
+            [],
+            "protected_markers",
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "Stormwater funds. [Information needed: Who signs?]",
+            ["Who signs?"],
+            "protected_markers",
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "Stormwater funds. Information needed: What amount?]",
+            [],
+            "protected_markers",
+        ),
+        (
+            "Finance: [Information needed: Confirm the instrument and amount.]",
+            "[Information needed: Confirm the instrument and amount.]",
+            "Stormwater funds. [Information needed: What amount?]",
+            "untracked",
+            "protected_markers",
+        ),
+    ],
+)
+def test_partial_gap_change_requires_one_exact_new_marker_and_factual_prose(
+    body, search, replacement, extra_gaps, code
+) -> None:
+    """A narrowing keeps exactly one new marker and only the changed marker's anchor."""
+    current = chapter(body)
+    if extra_gaps != "untracked":
+        current.gaps.append(gap("Confirm the instrument and amount."))
+        for question in extra_gaps:
+            current.gaps.append(gap(question))
+    edits = session([current], "The city will use stormwater utility funds.")
+    found = edits.search_draft(search)
+    result = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                replacement,
+                user_input_quote="The city will use stormwater utility funds",
+            )
+        ]
+    )
+    if code is None:
+        assert result["ok"], result
+        [change] = edits.plan.changes
+        assert change.start == body.index(search)
+        assert replace_anchors(body, edits.plan.changes) == body.replace(
+            search, replacement
+        )
+    else:
+        # A marker edit that is not an exact, bound transition stays protected.
+        assert not result["ok"]
+        assert result["code"] == code
+
+
+def test_a_plain_edit_may_not_introduce_a_broken_or_new_marker() -> None:
+    """Outside a gap transition, no replacement may add a marker or a broken prefix."""
+    current = chapter("Finance: the budget is open.")
+    edits = session([current], "The budget is open.")
+    found = edits.search_draft("Finance:")
+    broken = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                "Finance: [Information needed: budget",
+                kind="wording",
+            )
+        ]
+    )
+    assert not broken["ok"] and broken["code"] == "marker_changed"
+    assert edits.plan is None
+
+
+def test_locked_target_marker_is_never_a_gap_transition() -> None:
+    current = replace(
+        chapter("Finance: [Information needed: Confirm the amount.]"),
+        user_locked=True,
+    )
+    current.gaps.append(gap("Confirm the amount."))
+    edits = session([current], "The amount is EUR 2 million.")
+    found = edits.search_draft("[Information needed: Confirm the amount.]")
+    result = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"], "EUR 2 million", user_input_quote="EUR 2 million"
+            )
+        ]
+    )
+    assert result["code"] == "locked_chapters"
+
+
+def test_same_gap_marker_duplicates_are_an_atomic_group() -> None:
+    marker = "[Information needed: Who signs?]"
+    current = chapter(f"A {marker} and B {marker}")
+    current.gaps.append(gap("Who signs?"))
+    edits = session([current], "The Mayor signs.")
+    found = edits.search_draft(marker)
+    partial = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                "The Mayor signs.",
+                match_ids=[found["matches"][0]["match_id"]],
+                user_input_quote="The Mayor signs.",
+            )
+        ]
+    )
+    assert not partial["ok"] and partial["code"] == "marker_changed"
+    complete = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                "The Mayor signs.",
+                replace_all=True,
+                user_input_quote="The Mayor signs.",
+            )
+        ]
+    )
+    assert complete["ok"], complete
+    assert replace_anchors(current.body_markdown, edits.plan.changes) == (
+        "A The Mayor signs. and B The Mayor signs."
+    )
+
+
+def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
+    """A factual replacement for one gap-marker search, with exact provenance."""
+    values = {"kind": "factual", "group_id": "gap", **kwargs}
+    return DraftReplacement(search_id=search_id, replacement=text, **values)

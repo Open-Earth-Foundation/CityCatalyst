@@ -27,29 +27,13 @@ to identify a passage. The server trims unchanged context from the displayed dif
 Preserve unrelated meaning, headings, locked content, and information-needed
 markers. replace_all excludes protected occurrences and reports their counts.
 Those exclusions remain visible with the proposal; never describe them as changed.
-When the user supplies information that an `[Information needed: ...]` marker
-asks for, that marker must disappear. Search its COMPLETE marker text and
-replace the whole marker with a sentence that states the supplied fact, using a
-selected match, kind "factual", and user_input_quote set to the user's words.
-Search the whole document for every marker that asks for the same information
-and fill each one, and replace placeholders such as "To be confirmed" that stand
-for the same value. When the instruction answers one quoted marker from the gap
-form, replace that marker, and replace another marker only when it asks for the
-same information and the answers state everything it asks for; leave every
-other marker unchanged.
-A marker is filled only by the information it asks for: never replace it with
-text saying that information is missing, unknown, not provided or still to be
-decided; keep the marker instead. Never leave a marker asking for a value the edited text now
-states, and never add the value next to a marker that still asks for it. Each
-marker asks for one thing; when the user's words answer only part of a marker's
-question, leave that marker and its chapter unchanged and, if nothing else was
-requested, return clarification asking for the rest. A partial change inside a
-marker is not a gap fill. Do not rewrite marker questions for a cosmetic rename.
-See `<gap_fill_example>`.
-An answer that states no fact, such as "I don't know", "ask Maria" or "Not
-decided yet" (the gap form's text for a question left unanswered), answers
-nothing: never write it into the document, and never write that the
-information is undecided, unknown or pending.
+A form answer and an ordinary chat message can both supply facts for open gaps. A form's focus identifies its primary target. The text of the gap and the supplied evidence determine coverage, regardless of how many form questions were answered. Read each relevant chapter, including other chapters when the facts match their gaps. Make one replacement per gap. Search for and select the complete literal marker.
+
+For each marker, compare the entire original question and current question with the user's new facts, the same gap's saved answers, and its accepted passages. Keep earlier accepted facts that are still needed for the original question. A user correction takes precedence over older answers. Use source and run-context evidence only under the existing provenance rules. A reference to a place, a topic or a selection is evidence only for what it explicitly establishes.
+
+Full coverage: replace the marker with grounded prose that supplies the rest of the answer. The resulting chapter must state every requested part of the original scope. Apply the same test independently to any other marker with a similar question. Partial coverage: replace the complete old marker with prose giving the new supported facts and exactly one new `[Information needed: …]` marker in the same position asking only for all remaining parts. Preserve every unanswered requirement of the original scope and omit every part that the chapter now states. A labelled estimate may be written with a remainder when its confirmation is still requested there. If the user supplies no substantive fact for a gap, leave its marker untouched. Use clarification only when there is no supported edit to propose.
+
+“Not decided yet”, “Not answered yet”, “I don't know” and “ask Maria” do not supply a missing fact. A selected form category is a choice, and its wording may be generic. Express any explicit choice as natural project-specific prose. Never paste option labels, form questions or instructions into the draft as answers. An unambiguous name or domain term can appear in a grounded sentence. A label such as “Combine these measures” supplies no details by itself. Never infer a concept letter, amount, phase, approval or commitment from it.
 Estimates: a user value given with a hedge ("roughly 2 million, not confirmed
 yet", "about 500 households") is an estimate. When the user asks you to
 estimate or fill in a value, you may also derive one from figures that the
@@ -60,7 +44,8 @@ and name its basis ("an estimated $2 million, the City's unconfirmed figure";
 "an estimated USD 23.8 million, the sum of the component costs stated in the
 plan"), and set estimate to true on that replacement. An estimate fills its
 marker like any answer; the gap then stays listed as an estimate to be
-confirmed. Never estimate without such a basis: a value that no one states and
+confirmed. A remainder that still needs confirmation keeps one marker, as the
+partial coverage rule above requires. Never estimate without such a basis: a value that no one states and
 no stated figure yields is invented, so write nothing for it and return
 clarification naming the value that is needed.
 A chapter gap with state "caveat" has its `estimate` already in the text. When
@@ -141,7 +126,7 @@ Input is a JSON object containing:
   nullable manual_population ({population, year, source: "user_entered"}),
   funder_context, document_context and similar_projects. No source storage
   identities are supplied.
-- chapters (array): position (zero-based), title, description, required, custom, revision, locked and focused.
+- chapters (array): position (zero-based), title, description, required, custom, revision, locked, focused and open_gaps (editable gap questions with their state, for choosing target chapters).
   Focus is a hint, not a restriction on the user's requested scope.
 - prior_proposal (object or null): original instruction, verified user_inputs, and
   proposed_structure (ordered chapter_position/title/description objects or null).
@@ -162,9 +147,10 @@ Input is a JSON object containing:
   when no matches exist; do not guess. A replace-all operation uses the complete
   stored search result even when the displayed matches are truncated.
 - read_chapter: read current and confirmed text, revision, gaps (question,
-  state, and for a "caveat" gap the `estimate` text already in the chapter) and
-  prior proposed changes for a chapter in the catalogue. Use for contextual
-  edits and refinements.
+  original_question, accepted_passages, answered_so_far, is_bound_answer, state,
+  and for a "caveat" gap the `estimate` text already in the chapter) and prior
+  proposed changes for a chapter in the catalogue. Use for contextual edits and
+  refinements.
 - query_source: re-read one selected source in full and return verified exact
   quotations (found, excerpts with text and page or heading, caveats) for one
   focused question. Use when run_context.source_excerpts lacks a fact you need.
@@ -179,25 +165,7 @@ Input is a JSON object containing:
 </tools>
 
 <gap_fill_example>
-Instruction: "The Riverside drainage project runs from 1 March 2026 to 31 December 2028."
-Chapter 0 contains "[Information needed: Confirm the planned start and end dates
-of the Riverside drainage project.]". Chapter 3 contains a schedule row
-"| Implementation period | To be confirmed |" and "[Information needed: Confirm
-the construction start date for the Riverside drainage project.]".
-
-1. search_draft {"text": "Information needed", "chapter_positions": null}
-   finds every marker; only the chapter 0 marker asks for the project period.
-2. search_draft {"text": "[Information needed: Confirm the planned start and end dates of the Riverside drainage project.]", "chapter_positions": [0]}
-   and search_draft {"text": "| Implementation period | To be confirmed |", "chapter_positions": [3]}.
-3. propose_edits {"replacements": [
-   {"search_id": "<first search>", "match_ids": ["<match>"], "replacement": "The Riverside drainage project will run from 1 March 2026 to 31 December 2028.", "kind": "factual", "group_id": "project_period", "source_refs": [], "user_input_quote": "runs from 1 March 2026 to 31 December 2028"},
-   {"search_id": "<second search>", "match_ids": ["<match>"], "replacement": "| Implementation period | 1 March 2026 to 31 December 2028 |", "kind": "factual", "group_id": "project_period", "source_refs": [], "user_input_quote": "runs from 1 March 2026 to 31 December 2028"}]}
-
-Chapter 0 after the edit: "The Riverside drainage project will run from 1 March
-2026 to 31 December 2028." with no marker left. The construction start marker
-stays because the user did not give that date. Wrong: "Project period: 1 March
-2026 to 31 December 2028. [Information needed: Confirm the planned start and end
-dates of the Riverside drainage project.]"
+Example: `[Information needed: State the local financing instrument and amount.]` with “The city will use stormwater utility funds” becomes `The city will use its stormwater utility funds for its contribution. [Information needed: What amount will the city contribute?]`. “The city's contribution is USD 2,500,000” in a later message replaces only the remaining marker, leaving the instrument in the chapter. “Wilson Pond” gives the location alone. A gap asking about the financing for a selected concept and phase still needs those particulars unless the user or cited evidence supplies them.
 </gap_fill_example>
 
 <output>

@@ -40,10 +40,11 @@ class EditScope(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     kind: Literal["auto"] = "auto"
     focused_chapter_id: UUID | None = None
-    # A gap-form answer is bound to the gap version the user answered; only a
-    # complete answer may replace that gap's marker and close it.
+    # A gap-form answer is bound to the gap version the user answered. It names
+    # the question for the planner; it never grants permission or proves coverage.
     gap_id: UUID | None = None
     gap_version: PositiveInt | None = None
+    # UI hint only, kept for wire compatibility; the reviewed transition decides.
     answer_complete: bool = False
 
     @model_validator(mode="after")
@@ -121,6 +122,10 @@ class PlannedTextChange(ChapterPlannedTextChange):
     semantic_support: Literal["preserved", "user", "source", "context"] | None = Field(
         default=None, exclude=True
     )
+    # Assigned only by the independent review, and checked against the transition.
+    reviewed_gap_coverage: Literal["complete", "partial", "none"] | None = Field(
+        default=None, exclude=True
+    )
 
 
 class EditSemanticDecision(BaseModel):
@@ -129,6 +134,8 @@ class EditSemanticDecision(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     change_index: int = Field(ge=0, le=99)
     support: Literal["preserved", "user", "source", "context", "unsupported"]
+    # Whether the resulting text covers every requested part of the gap's question.
+    gap_coverage: Literal["complete", "partial", "none"] = "none"
     explanation: str = Field(min_length=1, max_length=1000)
 
 
@@ -226,6 +233,16 @@ class EditContextSnapshot(BaseModel):
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+class GapEditBinding(BaseModel):
+    """Exact gap identity, version and saved answers that one change was reviewed against."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    gap_id: UUID
+    gap_version: PositiveInt
+    mode: Literal["fill", "narrow", "confirm_estimate"]
+    saved_answers_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class EditChange(PlannedTextChange):
     """A reviewed replacement with server-assigned identity and real chapter title."""
 
@@ -234,6 +251,8 @@ class EditChange(PlannedTextChange):
     base_revision: PositiveInt
     source_snapshots: list[EditSourceSnapshot] = Field(default_factory=list)
     context_snapshots: list[EditContextSnapshot] = Field(default_factory=list)
+    # Server-derived only; the planner can never supply these identities.
+    gap_bindings: list[GapEditBinding] = Field(default_factory=list)
 
 
 class EditApplyRequest(BaseModel):

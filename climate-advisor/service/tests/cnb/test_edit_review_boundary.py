@@ -40,6 +40,10 @@ from app.models.cnb.concept_note_edits import (
     EditScope,
     PlannedTextChange,
 )
+from app.persistence.concept_notes.gaps import (
+    WorkspaceGapResolutionSnapshot,
+    WorkspaceGapSnapshot,
+)
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_planner import (
@@ -47,9 +51,15 @@ from app.services.cnb.edit_planner import (
     bind_semantic_review,
     build_planner_input,
     fit_review_evidence,
+    gap_coverage_review,
+    gap_review_targets,
     unavailable_source_lookup,
 )
-from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
+from app.services.cnb.edit_validation import (
+    context_snapshot,
+    gap_bindings_for_change,
+    validate_edit_plan,
+)
 from app.utils.cnb_progress import bind_cnb_progress
 
 
@@ -956,7 +966,7 @@ def chapter(body: str) -> WorkspaceChapterSnapshot:
     )
 
 
-def reviewed_plan(current, changes, supports):
+def reviewed_plan(current, changes, supports, coverages=None):
     resolved = [
         PlannedTextChange(**change, chapter_id=current.chapter_id) for change in changes
     ]
@@ -965,6 +975,7 @@ def reviewed_plan(current, changes, supports):
             {
                 "change_index": index,
                 "support": support,
+                "gap_coverage": (coverages or ["none"] * len(supports))[index],
                 "explanation": "Reviewed in chapter and instruction context",
             }
             for index, support in enumerate(supports)
@@ -1502,3 +1513,283 @@ def test_context_snapshot_changes_when_citycatalyst_data_changes():
     assert before == context_snapshot(CITY_CONTEXT, "city")
     assert before != context_snapshot(updated, "city")
     assert context_snapshot(CITY_CONTEXT, "manual_population") is None
+
+
+def gap_snapshot(
+    question: str,
+    *,
+    state: str = "open",
+    answered: str | None = None,
+    original: str | None = None,
+    passages: tuple[str, ...] = (),
+    resolution: WorkspaceGapResolutionSnapshot | None = None,
+) -> WorkspaceGapSnapshot:
+    """A structured gap projection with its saved answers and accepted lineage."""
+    now = datetime.now(UTC)
+    return WorkspaceGapSnapshot(
+        gap_id=uuid4(),
+        field_key="field",
+        question=question,
+        why_asking="Needed for the chapter.",
+        severity="critical",
+        state=state,
+        suggestions=[],
+        source_refs=[],
+        version=1,
+        resolution=resolution,
+        created_at=now,
+        updated_at=now,
+        answered_so_far=answered,
+        original_question=original,
+        accepted_passages=passages,
+    )
+
+
+FINANCE_MARKER = "[Information needed: Confirm the instrument and amount.]"
+AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
+FUNDS = "The city will use stormwater utility funds"
+
+
+def finance_chapter() -> WorkspaceChapterSnapshot:
+    current = chapter(f"Finance: {FINANCE_MARKER}")
+    current.gaps.append(gap_snapshot("Confirm the instrument and amount."))
+    return current
+
+
+def test_reviewer_coverage_must_match_the_change_shape():
+    current = finance_chapter()
+    instruction = f"{FUNDS} and contribute USD 2,500,000."
+    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
+    start = current.body_markdown.index(FINANCE_MARKER)
+    full_fill = {
+        "start": start,
+        "before": FINANCE_MARKER,
+        "after": f"{FUNDS} and USD 2,500,000.",
+        "kind": "factual",
+        "group_id": "finance",
+        "user_input_quote": "USD 2,500,000",
+    }
+    partial_fill = PlannedTextChange(**full_fill, chapter_id=current.chapter_id)
+    bindings = [gap_bindings_for_change(partial_fill, current, request.scope)]
+    # A full fill the reviewer calls partial is a concrete objection, never accepted.
+    repaired = gap_coverage_review(
+        [partial_fill],
+        bindings,
+        ChapterEditReview(
+            decisions=[
+                {
+                    "change_index": 0,
+                    "support": "user",
+                    "gap_coverage": "partial",
+                    "explanation": "Reviewed",
+                }
+            ]
+        ),
+    )
+    [objection] = repaired.decisions
+    assert objection.support == "unsupported"
+    assert "Keep one marker for the missing part." in objection.explanation
+    with pytest.raises(EditOperationError) as error:
+        bind_semantic_review([partial_fill], repaired)
+    assert error.value.code == "unsupported_edit"
+
+    [fill] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(current, [full_fill], ["user"], coverages=["complete"]),
+    )
+    assert [binding.mode for binding in fill.gap_bindings] == ["fill"]
+
+    # A narrowing is the bounded repair: partial coverage passes with its own group.
+    narrow = {
+        "start": start,
+        "before": FINANCE_MARKER,
+        "after": f"{FUNDS}. {AMOUNT_MARKER}",
+        "kind": "factual",
+        "group_id": "finance",
+        "user_input_quote": FUNDS,
+    }
+    [change] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(current, [narrow], ["user"], coverages=["partial"]),
+    )
+    assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
+    assert change.group_id.startswith("gap-")
+    # Claiming complete coverage for a narrowing is a mismatched review.
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request,
+            [current],
+            reviewed_plan(current, [narrow], ["user"], coverages=["complete"]),
+        )
+    assert error.value.code == "invalid_review"
+
+
+def test_review_uses_original_scope_and_accepted_history_for_a_second_round_fill():
+    current = chapter(f"Finance: {AMOUNT_MARKER}")
+    current.gaps.append(
+        gap_snapshot(
+            "What amount will the city contribute?",
+            original="Confirm the instrument and amount.",
+            passages=(f"{FUNDS}.",),
+        )
+    )
+    instruction = "The city contribution is USD 2,500,000."
+    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
+    payload = build_planner_input(request, current, {})
+    [gap_payload] = payload["chapter"]["gaps"]
+    assert gap_payload["original_question"] == "Confirm the instrument and amount."
+    assert gap_payload["accepted_passages"] == [f"{FUNDS}."]
+    assert gap_payload["is_bound_answer"] is False
+
+    fill = PlannedTextChange(
+        chapter_id=current.chapter_id,
+        start=current.body_markdown.index(AMOUNT_MARKER),
+        before=AMOUNT_MARKER,
+        after="USD 2,500,000.",
+        kind="factual",
+        group_id="amount",
+        user_input_quote="USD 2,500,000",
+    )
+    bindings = gap_bindings_for_change(fill, current, request.scope)
+    [target] = gap_review_targets(fill, current, bindings)
+    assert target["original_question"] == "Confirm the instrument and amount."
+    assert target["accepted_passages"] == [f"{FUNDS}."]
+    assert target["remaining_marker"] is None
+    [accepted] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(
+            current, [fill.model_dump(exclude={"chapter_id"})], ["user"], ["complete"]
+        ),
+    )
+    assert accepted.gap_bindings[0].mode == "fill"
+
+
+def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():
+    current = chapter(
+        "Lead: [Information needed: Confirm the lead partner.] "
+        "Budget: [Information needed: Confirm the budget.]"
+    )
+    current.gaps.extend(
+        [
+            gap_snapshot("Confirm the lead partner.", answered="Lincoln Park Council"),
+            gap_snapshot("Confirm the budget.", answered="EUR 4 million"),
+        ]
+    )
+    request = EditProposalRequest(instruction="Other text.", idempotency_key=uuid4())
+    lead = PlannedTextChange(
+        chapter_id=current.chapter_id,
+        start=current.body_markdown.index(
+            "[Information needed: Confirm the lead partner.]"
+        ),
+        before="[Information needed: Confirm the lead partner.]",
+        after="Lincoln Park Council will lead.",
+        kind="factual",
+        group_id="lead",
+        user_input_quote="EUR 4 million",
+    )
+    bindings = gap_bindings_for_change(lead, current, request.scope)
+    [target] = gap_review_targets(lead, current, bindings)
+    assert target["saved_answers"] == "Lincoln Park Council"
+    # The budget's saved answer is evidence for the budget gap only.
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request,
+            [current],
+            reviewed_plan(
+                current,
+                [lead.model_dump(exclude={"chapter_id"})],
+                ["user"],
+                ["complete"],
+            ),
+        )
+    assert error.value.code == "invalid_user_input"
+
+    budget = PlannedTextChange(
+        chapter_id=current.chapter_id,
+        start=current.body_markdown.index("[Information needed: Confirm the budget.]"),
+        before="[Information needed: Confirm the budget.]",
+        after="The budget is EUR 4 million.",
+        kind="factual",
+        group_id="budget",
+        user_input_quote="EUR 4 million",
+    )
+    [accepted] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(
+            current, [budget.model_dump(exclude={"chapter_id"})], ["user"], ["complete"]
+        ),
+    )
+    assert accepted.gap_bindings[0].mode == "fill"
+
+
+def test_estimate_confirmation_requires_review_of_the_actual_estimate():
+    estimate = "an estimated EUR 2 million, the City's unconfirmed figure"
+    current = chapter(f"Budget: {estimate}. Schedule: 12 months.")
+    current.gaps.append(
+        gap_snapshot(
+            "Confirm the budget.",
+            state="caveat",
+            resolution=WorkspaceGapResolutionSnapshot(
+                resolution_id=uuid4(),
+                action="answer",
+                answer=estimate,
+                actor_user_id="owner",
+                source_refs=[],
+                created_at=datetime.now(UTC),
+                gap_version=1,
+            ),
+        )
+    )
+    instruction = "The city confirms EUR 2.1 million and 14 months."
+    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
+    confirm = {
+        "start": current.body_markdown.index(estimate),
+        "before": estimate,
+        "after": "EUR 2.1 million, confirmed by the city council",
+        "kind": "factual",
+        "group_id": "budget",
+        "user_input_quote": "EUR 2.1 million",
+    }
+    # Without a reviewed confirmation the caveat keeps its estimate.
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request, [current], reviewed_plan(current, [confirm], ["user"])
+        )
+    assert error.value.code == "invalid_review"
+
+    [accepted] = validate_edit_plan(
+        request,
+        [current],
+        reviewed_plan(current, [confirm], ["user"], ["complete"]),
+    )
+    assert [binding.mode for binding in accepted.gap_bindings] == ["confirm_estimate"]
+
+    # An unrelated factual edit, even inside a request bound to the caveat, never resolves it.
+    unrelated = {
+        "start": current.body_markdown.index("12 months"),
+        "before": "12 months",
+        "after": "14 months",
+        "kind": "factual",
+        "group_id": "schedule",
+        "user_input_quote": "14 months",
+    }
+    bound = EditProposalRequest(
+        instruction=instruction,
+        scope=EditScope(
+            focused_chapter_id=current.chapter_id,
+            gap_id=current.gaps[0].gap_id,
+            gap_version=1,
+        ),
+        idempotency_key=uuid4(),
+    )
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            bound,
+            [current],
+            reviewed_plan(current, [unrelated], ["user"], ["complete"]),
+        )
+    assert error.value.code == "invalid_review"

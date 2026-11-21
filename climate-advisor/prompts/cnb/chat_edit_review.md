@@ -36,8 +36,14 @@ Classify each change:
   commitment/caveat, reversed a negation, filled an unknown without support,
   replaced an `[Information needed: ...]` marker with text saying the
   information is missing, unknown, not provided or undecided, replaced a marker
-  with text that does not state everything that marker asks for, or exceeded
-  the request. Generic "make it clearer" never authorizes those changes.
+  with text that drops any uncovered part of a missing-information question, or
+  exceeded the request. Generic "make it clearer" never authorizes those changes.
+
+Independently audit each change with server-provided gap_targets. If one replacement has multiple estimate targets, audit every target and approve the transition only when each is fully covered. Compare every requirement in its original and current question with the actual resulting chapter, including the text outside the replacement. Count only facts supported by the current user's words, saved human answers for this same gap, reviewed accepted passages whose substance the resulting chapter still states, or authorized cited evidence. A claim that the form is complete, a candidate sentence that sounds plausible, a topic match, and the contents of the marker itself supply no evidence. Earlier accepted passages are evidence only for the corresponding gap. Check that a reused answer still applies to this scope and has not been corrected.
+
+Set gap_coverage to complete only when the resulting text and the evidence cover every requested part, and to partial only when the change writes grounded information and one remaining marker asks for exactly all and only the uncovered parts. For a labelled estimate with a remaining marker, the estimate must retain its basis and the marker must still request verification of that value and any other outstanding parts. If partial evidence is used to remove the marker, set gap_coverage to partial and support to unsupported. An estimate-confirmation edit must replace the actual estimate with the confirmed or corrected value for the same subject. Set coverage to none for changes with no gap_targets and for unchanged or unsupported gap answers with no coverage. In all cases reject borrowed option wording presented as a fact, invented specifics, and loss of qualifiers.
+
+Give the missing requirements explicitly in the explanation when rejecting coverage. If an instrument is known but no amount is stated or supported, require an amount marker. “Wilson Pond” alone cannot close a gap that requires the concept and current phase. An unknown value may never be treated as a negative, a pending approval or a commitment.
 
 A change with estimate true states an estimate. It is supported (user,
 source or context) only when its text says it is an estimate and names its
@@ -78,7 +84,8 @@ One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown and
-  gaps (question, state, and for a "caveat" gap its current estimate text).
+  gaps (question, original_question, accepted_passages, answered_so_far, state,
+  and for a "caveat" gap its current estimate text).
 - run_context (object): selected_sources, source_excerpts and available
   contextual data, without backend identities or fingerprints. source_excerpts
   holds every exact quotation that the sources cited by these changes keep for
@@ -97,7 +104,11 @@ One JSON object:
 - is_focused_chapter (boolean): non-binding focus hint.
 - changes (array): indexed by zero-based position; exact start, before, after,
   kind, group_id, source_refs, user_input_quote, context_refs and estimate
-  (boolean: the change states a labelled estimate) from the proposal.
+  (boolean: the change states a labelled estimate) from the proposal. gap_targets
+  lists each gap transition or matched estimate the change makes: mode (fill,
+  narrow or confirm_estimate), exact_text (the old marker or estimate), question,
+  original_question, accepted_passages, saved_answers and remaining_marker (null
+  when none). A change with no gap_targets answers no gap.
 </input>
 
 <output>
@@ -108,9 +119,10 @@ Return only ChapterEditReview JSON:
 - decisions (array, 1–100): exactly one per input change.
   - change_index (integer, 0–99): position in changes.
   - support (string): preserved, user, source, context, or unsupported.
+  - gap_coverage (string): complete, partial, or none, as defined above.
   - explanation (string, 1–1000 characters): concise semantic justification.
 </output>
 
 <example_output>
-{"decisions":[{"change_index":0,"support":"preserved","explanation":"The shorter opening retains the riverbank restoration, flood-resilient park and improved paths without adding a commitment."}]}
+{"decisions":[{"change_index":0,"support":"preserved","gap_coverage":"none","explanation":"The shorter opening retains the riverbank restoration, flood-resilient park and improved paths without adding a commitment."}]}
 </example_output>

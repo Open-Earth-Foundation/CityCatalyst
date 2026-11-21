@@ -19,12 +19,19 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
     EditReviewObjection,
+    GapEditBinding,
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
-from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
+from app.services.cnb.edit_validation import (
+    expected_gap_coverage,
+    gap_bindings_for_change,
+    prior_user_inputs,
+    recent_user_inputs,
+)
+from app.utils.cnb_gap_edit import marker_edit_shape
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_draft_tools import (
     SourceLookup,
@@ -150,6 +157,16 @@ class ConceptNoteEditPlanner:
                     "revision": chapter.revision_number,
                     "locked": chapter.user_locked,
                     "focused": chapter.chapter_id == request.scope.focused_chapter_id,
+                    # Editable gap questions let a bare fact target several chapters.
+                    "open_gaps": (
+                        []
+                        if chapter.user_locked
+                        else [
+                            {"question": gap.question, "state": gap.state}
+                            for gap in chapter.gaps
+                            if gap.state in {"open", "caveat"}
+                        ]
+                    ),
                 }
                 for chapter in chapters
             ],
@@ -328,6 +345,11 @@ class ConceptNoteEditPlanner:
                             output_type=ChapterEditReview,
                         )
                         changes = chapter_changes[chapter.chapter_id]
+                        # Derived from the same snapshot the proposal tools validated.
+                        bindings = [
+                            gap_bindings_for_change(change, chapter, request.scope)
+                            for change in changes
+                        ]
                         chapter_input = chapter_inputs[chapter.position]
                         # A source claim is judged against its cited sources, so the
                         # reviewer gets those sources' quotations from every chapter.
@@ -344,8 +366,15 @@ class ConceptNoteEditPlanner:
                                 ],
                             },
                             "changes": [
-                                change.model_dump(exclude={"chapter_id"})
-                                for change in changes
+                                {
+                                    **change.model_dump(exclude={"chapter_id"}),
+                                    "gap_targets": gap_review_targets(
+                                        change, chapter, change_bindings
+                                    ),
+                                }
+                                for change, change_bindings in zip(
+                                    changes, bindings, strict=True
+                                )
                             ],
                         }
                         # Large rewrites can leave no room for every quotation; the
@@ -386,6 +415,7 @@ class ConceptNoteEditPlanner:
                             if isinstance(raw_review, str)
                             else ChapterEditReview.model_validate(raw_review)
                         )
+                        review = gap_coverage_review(changes, bindings, review)
                         # Collect semantic objections, but never retry incomplete reviews.
                         try:
                             changes = bind_semantic_review(changes, review)
@@ -555,6 +585,10 @@ def build_planner_input(
             "gaps": [
                 {
                     "question": gap.question,
+                    "original_question": gap.original_question or gap.question,
+                    "accepted_passages": list(gap.accepted_passages),
+                    "answered_so_far": gap.answered_so_far,
+                    "is_bound_answer": request.scope.gap_id == gap.gap_id,
                     "state": gap.state,
                     **(
                         {"estimate": gap.resolution.answer}
@@ -668,6 +702,74 @@ def document_source_excerpts(sources: list[dict[str, Any]]) -> list[dict[str, An
     return excerpts
 
 
+def gap_review_targets(
+    change: PlannedTextChange,
+    chapter: WorkspaceChapterSnapshot,
+    bindings: list[GapEditBinding],
+) -> list[dict[str, Any]]:
+    """Describe each gap transition for the reviewer, with server-derived facts only."""
+    shape = marker_edit_shape(change.before, change.after)
+    targets = []
+    for binding in bindings:
+        gap = next(item for item in chapter.gaps if item.gap_id == binding.gap_id)
+        estimate = binding.mode == "confirm_estimate"
+        targets.append(
+            {
+                "mode": binding.mode,
+                "exact_text": (
+                    gap.resolution.answer
+                    if estimate and gap.resolution
+                    else (shape.old_marker if shape else change.before)
+                ),
+                "question": gap.question,
+                "original_question": gap.original_question or gap.question,
+                "accepted_passages": list(gap.accepted_passages),
+                "saved_answers": gap.answered_so_far,
+                "remaining_marker": shape.new_marker if shape else None,
+            }
+        )
+    return targets
+
+
+def gap_coverage_review(
+    changes: list[PlannedTextChange],
+    bindings: list[list[GapEditBinding]],
+    review: ChapterEditReview,
+) -> ChapterEditReview:
+    """Turn a gap-coverage mismatch into an indexed objection for the repair loop."""
+    decisions = []
+    for decision in review.decisions:
+        if not 0 <= decision.change_index < len(changes) or (
+            decision.support == "unsupported"
+        ):
+            decisions.append(decision)
+            continue
+        expected = expected_gap_coverage(bindings[decision.change_index])
+        objection = _coverage_objection(expected, decision.gap_coverage)
+        if objection is None:
+            decisions.append(decision)
+        else:
+            decisions.append(
+                decision.model_copy(
+                    update={"support": "unsupported", "explanation": objection}
+                )
+            )
+    return ChapterEditReview(decisions=decisions)
+
+
+def _coverage_objection(expected: str, reported: str) -> str | None:
+    """Name the mismatch between a transition's shape and the reviewer's coverage."""
+    if expected == reported:
+        return None
+    if expected == "complete":
+        if reported == "partial":
+            return "The replacement leaves part of this gap unanswered. Keep one marker for the missing part."
+        return "The replacement does not establish coverage of this gap's question. Supply every requested part or keep its marker."
+    if expected == "partial":
+        return "This change keeps part of the gap open. Report its coverage as partial and keep exactly one marker for the missing part."
+    return "This change is not an answer to a missing-information question. Report its gap coverage as none."
+
+
 def bind_semantic_review(
     changes: list[PlannedTextChange],
     review: ChapterEditReview,
@@ -688,6 +790,11 @@ def bind_semantic_review(
             status_code=422,
         )
     return [
-        change.model_copy(update={"semantic_support": decision.support})
+        change.model_copy(
+            update={
+                "semantic_support": decision.support,
+                "reviewed_gap_coverage": decision.gap_coverage,
+            }
+        )
         for change, decision in zip(changes, decisions, strict=True)
     ]

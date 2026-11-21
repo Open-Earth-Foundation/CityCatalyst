@@ -16,7 +16,8 @@ from app.models.cnb.concept_note_edits import (
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import (
-    is_information_gap_fill,
+    gap_bindings_for_change,
+    gap_evidence_inputs,
     validate_document_integrity,
     validate_provenance,
 )
@@ -140,7 +141,7 @@ class DraftEditSession:
                     reason = protected_reason(
                         match.chapter, change.start, change.before
                     )
-                    if reason == "protected_markers" and is_information_gap_fill(
+                    if reason == "protected_markers" and self.is_gap_transition(
                         change, match.chapter
                     ):
                         reason = None
@@ -156,12 +157,18 @@ class DraftEditSession:
                             (match.chapter.position, match.start, match.text)
                         )
                         continue
+                    bindings = gap_bindings_for_change(
+                        change, match.chapter, self.request.scope
+                    )
                     validate_provenance(
                         change,
                         self.request.instruction,
                         self.run_context,
                         change.kind == "factual",
-                        prior_inputs=self.prior_inputs,
+                        prior_inputs=[
+                            *self.prior_inputs,
+                            *gap_evidence_inputs(bindings, match.chapter),
+                        ],
                     )
                     changes.append(change)
                 if len(changes) > 100:
@@ -210,6 +217,17 @@ class DraftEditSession:
             "chapters": len({change.chapter_id for change in changes}),
             "notices": [notice.model_dump() for notice in notices],
         }
+
+    def is_gap_transition(
+        self, change: PlannedTextChange, chapter: WorkspaceChapterSnapshot
+    ) -> bool:
+        """Allow a marker match to bypass protection only as an exact, bound transition."""
+        if not removed_information_markers(change.before, change.after):
+            return False
+        try:
+            return bool(gap_bindings_for_change(change, chapter, self.request.scope))
+        except EditOperationError:
+            return False
 
     def select_matches(self, replacement: DraftReplacement) -> list[DraftMatch]:
         """Reject unknown or ambiguous selections instead of guessing an occurrence."""

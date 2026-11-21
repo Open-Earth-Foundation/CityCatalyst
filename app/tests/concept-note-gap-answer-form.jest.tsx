@@ -333,12 +333,14 @@ describe("G-06: typed text is never silently lost", () => {
     expect(details()!.value).toContain("EUR 2.5 million concessional loan");
     expect(container.textContent).toContain(en("gap-answer-moved"));
     expect(savedDraft()).toContain("EUR 2.5 million concessional loan");
-    // Partial answers to a recorded gap are saved on it, with the moved text.
+    // The partial answer is saved on the gap, then previewed with the moved text.
     await act(async () => preview()!.click());
-    expect(onAnswer).not.toHaveBeenCalled();
-    expect(onSaved.mock.calls[0][0]).toContain(
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer.mock.calls[0][0]).toContain(
       "EUR 2.5 million concessional loan",
     );
+    expect(onAnswer.mock.calls[0][1]).toBe(false);
+    expect(onSaved).not.toHaveBeenCalled();
   });
 
   it("keeps a fallback answer saved for later when reopening generates questions", async () => {
@@ -455,10 +457,10 @@ describe("G-80 and Escape: keyboard", () => {
     // Enter in a text field still adds a line instead of being blocked.
     expect((await key(customField(1)!, "Enter")).defaultPrevented).toBe(false);
     expect(onAnswer).not.toHaveBeenCalled();
-    // Preview is the way to send; a partial answer to a recorded gap is saved.
+    // Preview is the way to send: it saves the answers, then sends them.
     await act(async () => preview()!.click());
-    expect(onSaved).toHaveBeenCalledTimes(1);
-    expect(onAnswer).not.toHaveBeenCalled();
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onSaved).not.toHaveBeenCalled();
   });
 
   it("does not let Enter on a checkbox submit the form", async () => {
@@ -629,5 +631,124 @@ describe("G-32 and G-34: a disabled Preview says why", () => {
     await pick(0, "1");
     expect(preview()!.disabled).toBe(false);
     expect(byTestId("concept-note-gap-preview-reason")).toBeNull();
+  });
+});
+
+describe("B4: the form and chat deliver facts and ask only what remains", () => {
+  /** The body of the first request whose URL contains `path`. */
+  const requestBody = (path: string) => {
+    const call = fetchQuestion.mock.calls.find(([url]) =>
+      String(url).includes(path),
+    );
+    return JSON.parse(String(call?.[1]?.body ?? "null"));
+  };
+
+  it("previews partial answers after saving them with CAS", async () => {
+    await mount();
+    await pick(0, "0");
+    await act(async () => preview()!.click());
+    const saved = requestBody("/answers");
+    expect(saved).toMatchObject({ gap_version: 1, expected_previous: null });
+    // Saved first, then sent with the very text that was saved.
+    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onAnswer.mock.calls[0][0]).toBe(saved.answers);
+    expect(onAnswer.mock.calls[0][1]).toBe(false);
+  });
+
+  it("saves on the secondary action without starting a chat turn", async () => {
+    await mount();
+    await pick(0, "0");
+    await act(async () => button(en("gap-save-answers"))!.click());
+    expect(onSaved).toHaveBeenCalledTimes(1);
+    expect(onSaved.mock.calls[0][0]).toContain("Selected category: Loan");
+    expect(onAnswer).not.toHaveBeenCalled();
+  });
+
+  it("does not send on a stale answer save and preserves the input", async () => {
+    await mount();
+    await pick(0, "custom");
+    await setValue(customField(0)!, "EUR 2 million");
+    fetchQuestion.mockImplementation((url) =>
+      String(url).includes("/answers") ? reply(409) : reply(200, QUESTIONS),
+    );
+    await act(async () => preview()!.click());
+    expect(onAnswer).not.toHaveBeenCalled();
+    expect(customField(0)!.value).toBe("EUR 2 million");
+    expect(container.textContent).toContain(en("gap-save-conflict"));
+  });
+
+  it("reopens a narrowed gap with one remaining question", async () => {
+    fetchQuestion.mockImplementation(() =>
+      reply(200, {
+        why_asking: "The amount is still needed.",
+        questions: [
+          {
+            question: "What amount will the city contribute?",
+            options: [],
+          },
+        ],
+      }),
+    );
+    await mount();
+    expect(
+      container.querySelectorAll(
+        '[data-testid="concept-note-gap-subquestion"]',
+      ),
+    ).toHaveLength(1);
+    expect(card(0).textContent).toContain(
+      "What amount will the city contribute?",
+    );
+    expect(card(0).textContent).not.toContain("Loan");
+    // The bound gap's persisted question is the server's, so none is sent.
+    expect(requestBody("/gap-question")).toEqual({
+      chapter_id: "financing-chapter",
+      gap_id: "financing-gap",
+      language: "en",
+    });
+  });
+
+  it("distinguishes user typed text from selected categories and unavailable answers", async () => {
+    await mount();
+    await pick(0, "1");
+    await pick(1, "custom");
+    await setValue(customField(1)!, "EUR 2 million");
+    await act(async () => preview()!.click());
+    expect(onAnswer.mock.calls[0][0]).toContain(
+      "1. Which financing instrument?\nSelected category: Grant",
+    );
+    expect(onAnswer.mock.calls[0][0]).toContain(
+      "2. What amount?\nEUR 2 million",
+    );
+    // A sent form closes, so the explicit "Not decided yet" uses a new one.
+    await unmount();
+    sessionStorage.clear();
+    await mount();
+    await pick(0, "unknown");
+    await pick(1, "custom");
+    await setValue(customField(1)!, "EUR 2 million");
+    await act(async () => preview()!.click());
+    expect(onAnswer.mock.calls[1][0]).toContain(
+      `1. Which financing instrument?\n${en("gap-not-decided")}`,
+    );
+    expect(onAnswer.mock.calls[1][0]).not.toContain("Selected category");
+  });
+
+  it("looks up a long tracked question by ID without sending its text", async () => {
+    const longQuestion = "Describe the funding source in detail. ".repeat(80);
+    const longRequest: GapAnswerRequest = {
+      ...request,
+      row: {
+        ...request.row,
+        question: longQuestion,
+        gap: { ...request.row.gap!, question: longQuestion },
+      },
+    };
+    await mount({ request: longRequest });
+    const body = requestBody("/gap-question");
+    expect(body.gap_id).toBe("financing-gap");
+    expect(body).not.toHaveProperty("question");
+    expect(String(fetchQuestion.mock.calls[0][1]?.body)).not.toContain(
+      "Describe the funding source",
+    );
   });
 });

@@ -1496,6 +1496,8 @@ export interface ConceptNoteGap {
   resolution: ConceptNoteGapResolution | null;
   /** Answers saved from the gap form for this open version, not in the draft yet. */
   answered_so_far?: string | null;
+  /** The question is a narrowed remainder: one free-text answer, no model call. */
+  has_accepted_narrowing?: boolean;
   created_at: string;
   updated_at: string;
 }

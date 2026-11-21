@@ -18,7 +18,7 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [chapter_id, gap_id, question]
+ *             required: [chapter_id, gap_id]
  *             properties:
  *               chapter_id:
  *                 type: string
@@ -31,6 +31,7 @@
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 2000
+ *                 description: Required only when gap_id is null (a legacy inline marker); a bound gap uses its persisted question.
  *               language:
  *                 type: string
  *                 default: en
@@ -58,13 +59,17 @@ const bodySchema = z
   .object({
     chapter_id: z.string().uuid(),
     gap_id: z.string().uuid().nullable(),
-    question: z.string().trim().min(1).max(2000),
+    question: z.string().trim().min(1).max(2000).optional(),
     language: z
       .string()
       .regex(/^[a-z]{2}(?:-[A-Za-z]{2})?$/)
       .default("en"),
   })
-  .strict();
+  .strict()
+  .refine((body) => body.gap_id !== null || body.question !== undefined, {
+    message: "question is required when gap_id is null",
+    path: ["question"],
+  });
 
 export const POST = apiHandler(async (req, { session, params }) => {
   if (!session?.user?.id) {

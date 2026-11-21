@@ -125,6 +125,33 @@ function typedAnswers(
   });
 }
 
+/** The question a numbered answer block answers, which identifies it across saves. */
+function blockQuestion(block: string): string {
+  return block.replace(/^\d+\. /, "").split("\n")[0];
+}
+
+/**
+ * Joins saved answers, the new answer blocks and the added details. A new block
+ * replaces the saved block for the same question, and a block already saved
+ * word for word is not written again.
+ */
+function joinAnswerBlocks(
+  earlier: string,
+  blocks: string[],
+  details: string,
+): string {
+  const saved = earlier ? earlier.split(/\n\n(?=\d+\. )/) : [];
+  const kept = saved.filter(
+    (chunk) =>
+      !blocks.some(
+        (block) =>
+          block !== chunk && blockQuestion(block) === blockQuestion(chunk),
+      ),
+  );
+  const added = blocks.filter((block) => !saved.includes(block));
+  return [...kept, ...added, details].filter(Boolean).join("\n\n");
+}
+
 /** Adds moved answers to the details the user already wrote. */
 function joinDetails(details: string, moved: string[]): string {
   return [details.trim(), ...moved].filter(Boolean).join("\n\n");
@@ -253,19 +280,21 @@ export function GapAnswerForm({
   // question keeps every selected value, comma-separated.
   const picked = (index: number) =>
     (choices[index] ?? "").split(",").filter(Boolean);
-  const answers = questions.map(({ options, multiple }, index) => {
+  const answers = questions.map(({ options, multiple, confirms }, index) => {
     const custom = customAnswers[answerKey(index)]?.trim();
     // Choosing to write an answer counts only once it is written; other
     // selected options of a multiple-answer question still count.
     if (picked(index).includes("custom") && !custom && !multiple)
       return undefined;
-    const values = picked(index).flatMap((choice) =>
-      choice === "custom"
-        ? [custom]
-        : choice === "unknown"
-          ? []
-          : [options[Number(choice)]],
-    );
+    const values = picked(index).flatMap((choice) => {
+      if (choice === "custom") return [custom];
+      if (choice === "unknown") return [];
+      const option = options[Number(choice)];
+      // A confirmation's "Yes" confirms the source value; it is not a category.
+      return confirms
+        ? [option]
+        : [t("gap-selected-category", { value: option })];
+    });
     return values.filter(Boolean).join("; ") || undefined;
   });
   // "Not decided yet" excludes every other selection.
@@ -282,12 +311,10 @@ export function GapAnswerForm({
   // legacy inline markers (no gap record) are answered without replacing them.
   // The unavailable fallback asks the original gap itself, so its answer covers it.
   const complete = request.row.gap !== null && answers.every(Boolean);
-  // A partial answer to a recorded gap is saved on it instead of sent to chat:
-  // the planner may not change a marker for part of its question.
-  const saveOnly = request.row.gap !== null && !complete;
-  // Source text the user added counts as an answer, so it can be sent alone.
+  // Any entered answer, added detail or saved answer can be previewed: the
+  // proposal writes what is supported and keeps the rest marked.
   const answered =
-    answers.some(Boolean) || Boolean(details.trim()) || coveredEarlier;
+    answers.some(Boolean) || Boolean(details.trim()) || Boolean(earlier);
   const sourceSuggestions = request.row.gap?.suggestions ?? [];
   // A skipped question is sent apart from an explicit "Not decided yet", so
   // neither reads as the other.
@@ -297,16 +324,17 @@ export function GapAnswerForm({
         ? "gap-not-decided"
         : "gap-not-answered",
     );
-  const answerText = [
+  const answerText = joinAnswerBlocks(
     earlier,
-    ...questions.map(
-      ({ question: text }, index) =>
-        `${index + 1}. ${text}\n${answers[index] ?? missing(index)}`,
-    ),
+    questions.flatMap(({ question: text }, index) => {
+      if (answers[index]) return [`${index + 1}. ${text}\n${answers[index]}`];
+      // A skipped part adds nothing once saved answers exist, so its
+      // placeholder cannot stand in for them; explicit "Not decided yet" stays.
+      if (earlier && !picked(index).includes("unknown")) return [];
+      return [`${index + 1}. ${text}\n${missing(index)}`];
+    }),
     details.trim(),
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  );
   const charsLeft = answerLimit - answerText.length;
   // The longest value a field may hold within the shared limit. Filling an
   // empty field also costs (a "\n\n" or "; " separator) or frees (the
@@ -375,12 +403,11 @@ export function GapAnswerForm({
   const undecided =
     questions.length > 0 &&
     questions.every((_, index) => choices[index] === "unknown");
-  const previewReason =
-    disabled && !saveOnly
-      ? disabledReason
-      : !loading && !answered && undecided
-        ? t("gap-preview-needs-answer")
-        : undefined;
+  const previewReason = disabled
+    ? disabledReason
+    : !loading && !answered && undecided
+      ? t("gap-preview-needs-answer")
+      : undefined;
 
   /** Save every answer given so far on the gap version, against the text last seen. */
   async function saveAnswers(answers: string): Promise<SaveResult> {
@@ -423,7 +450,10 @@ export function GapAnswerForm({
             body: JSON.stringify({
               chapter_id: request.chapterId,
               gap_id: request.row.gap?.gap_id ?? null,
-              question: request.row.question,
+              // A recorded gap's persisted question is authoritative, so its text is not sent.
+              question: request.row.gap?.gap_id
+                ? undefined
+                : request.row.question,
               language: lng,
             }),
             signal: controller.signal,
@@ -486,9 +516,25 @@ export function GapAnswerForm({
     headingRef.current?.closest("form")?.scrollIntoView({ block: "start" });
   }, []);
 
+  /** Saves the answers on the gap for everyone, without starting a chat turn. */
+  async function saveSoFar() {
+    setSaving(true);
+    const result = await saveAnswers(answerText);
+    if (!bound.current) return;
+    setSaving(false);
+    setSaveResult(result);
+    if (result !== "saved") {
+      if (result === "conflict") onRefreshDraft?.();
+      return;
+    }
+    // The answers wait on the gap; the chapter changes only when a preview is accepted.
+    saveDraft(draftKey, null);
+    onSaved(answerText);
+  }
+
   // Shared by the submit handler and the button, so both refuse the same states.
   const submitBlocked =
-    (disabled && !saveOnly) ||
+    disabled ||
     loading ||
     closed !== null ||
     saving ||
@@ -526,13 +572,6 @@ export function GapAnswerForm({
         if (result !== "saved") {
           // Nothing was sent; the form keeps its input for copying.
           if (result === "conflict") onRefreshDraft?.();
-          return;
-        }
-        if (saveOnly) {
-          // The chapter changes once every part is answered; until then the
-          // answers wait on the gap, visible to everyone working on the note.
-          saveDraft(draftKey, null);
-          onSaved(answerText);
           return;
         }
         // The answers are on the gap now, so the draft shows them even when
@@ -1104,7 +1143,7 @@ export function GapAnswerForm({
               aria-describedby={previewReason ? `${id}-reason` : undefined}
               data-testid="concept-note-gap-preview"
             >
-              {t(saveOnly ? "gap-save-answers" : "gap-preview-change")}
+              {t("gap-preview-change")}
             </Button>
             {previewReason && (
               <Text
@@ -1117,19 +1156,39 @@ export function GapAnswerForm({
                 {previewReason}
               </Text>
             )}
+            {request.row.gap && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={
+                  loading ||
+                  closed !== null ||
+                  saving ||
+                  !answered ||
+                  charsLeft < 0
+                }
+                onClick={saveSoFar}
+                data-testid="concept-note-gap-save-answers"
+              >
+                {t("gap-save-answers")}
+              </Button>
+            )}
             <Text
               fontSize="label.sm"
               color="content.tertiary"
               textAlign="center"
             >
-              {t(
-                complete
-                  ? "gap-complete-hint"
-                  : saveOnly
-                    ? "gap-saved-hint"
-                    : "gap-acceptance-hint",
-              )}
+              {t("gap-acceptance-hint")}
             </Text>
+            {request.row.gap && (
+              <Text
+                fontSize="label.sm"
+                color="content.tertiary"
+                textAlign="center"
+              >
+                {t("gap-saved-hint")}
+              </Text>
+            )}
           </VStack>
         )}
       </VStack>

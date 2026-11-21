@@ -940,3 +940,72 @@ def test_an_estimate_is_always_a_factual_change() -> None:
             user_input_quote="about 2 million",
             estimate=True,
         )
+
+
+async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
+    workspace,
+) -> None:
+    """CC-1239: the same estimate in another chapter closes with its confirmation.
+
+    The fixture gap holds an estimate written for another chapter's gap. A
+    complete answer to that other gap that replaces the estimate text here
+    resolves it; a change outside the estimate text leaves it a caveat.
+    """
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    marker = "[Information needed: Confirm the lead partner.]"
+    estimate = "an estimated 120 volunteers, the City's unconfirmed figure"
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=before.body_markdown.index(marker),
+        before=marker,
+        after=f"Delivery relies on {estimate}.",
+        kind="factual",
+        group_id="volunteers",
+        user_input_quote="roughly 120 volunteers, not confirmed",
+        estimate=True,
+    )
+    estimated_body = before.body_markdown.replace(marker, change.after)
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before.body_markdown,
+            after=estimated_body,
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(),
+        )
+    other_gap = bound_scope(gap_id=uuid4(), gap_version=2)
+    for old, new, state in (
+        ("## Implementation", "## Delivery", "caveat"),
+        (estimate, "150 volunteers, confirmed by the City", "resolved"),
+    ):
+        confirm = change.model_copy(
+            update={
+                "change_id": uuid4(),
+                "start": estimated_body.index(old),
+                "before": old,
+                "after": new,
+                "user_input_quote": new,
+                "estimate": False,
+            }
+        )
+        async with workspace._session_factory() as session, session.begin():
+            chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+            await resolve_filled_information_gaps(
+                session,
+                chapter=chapter,
+                before=estimated_body,
+                after=estimated_body.replace(old, new),
+                changes=[confirm],
+                user_id="owner",
+                idempotency_key=uuid4(),
+                scope=other_gap,
+            )
+        [after] = await workspace.list_chapters(run_id=RUN_ID)
+        assert after.gaps[0].state == state

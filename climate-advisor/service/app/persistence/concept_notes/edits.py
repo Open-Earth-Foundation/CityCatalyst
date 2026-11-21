@@ -536,42 +536,65 @@ async def confirm_estimated_gap(
     idempotency_key: UUID,
     scope: EditScope | None,
 ) -> None:
-    """Close an estimate (caveat) gap once a complete answer replaces its text.
+    """Close estimate (caveat) gaps once a complete answer replaces their text.
 
     An estimate has no marker left, so its gap is bound through the gap form
-    scope instead. A confirmed value resolves it; a new estimate keeps it a
-    caveat at a new version.
+    scope instead. A duplicate caveat gap in this chapter (the same estimate
+    written for another chapter's gap) closes when a change replaces part of
+    its estimate text. A confirmed value resolves a gap; a new estimate keeps
+    it a caveat at a new version.
     """
     if scope is None or scope.gap_id is None or not scope.answer_complete:
         return
-    change = next((change for change in changes if change.kind == "factual"), None)
-    if change is None:
-        return
-    gap = await session.scalar(
-        select(ConceptNoteGap)
-        .where(
-            ConceptNoteGap.gap_id == scope.gap_id,
-            ConceptNoteGap.chapter_id == chapter.chapter_id,
-            ConceptNoteGap.status == "caveat",
-            ConceptNoteGap.version == scope.gap_version,
+    factual = [change for change in changes if change.kind == "factual"]
+    gaps = (
+        await session.scalars(
+            select(ConceptNoteGap)
+            .where(
+                ConceptNoteGap.chapter_id == chapter.chapter_id,
+                ConceptNoteGap.status == "caveat",
+            )
+            .with_for_update()
         )
-        .with_for_update()
-    )
-    if gap is None:
-        return
-    gap.status = "caveat" if change.estimate else "resolved"
-    gap.version += 1
-    gap.updated_at = datetime.now(UTC)
-    session.add(
-        ConceptNoteGapResolution(
-            gap_id=gap.gap_id,
-            action="answer",
-            answer=change.after.strip(),
-            actor_user_id=user_id,
-            source_refs=list(dict.fromkeys(change.source_refs)),
-            idempotency_key=idempotency_key,
+    ).all()
+    now = datetime.now(UTC)
+    for gap in gaps:
+        if gap.gap_id == scope.gap_id:
+            if gap.version != scope.gap_version:
+                continue
+            change = next(iter(factual), None)
+        else:
+            estimate = await session.scalar(
+                select(ConceptNoteGapResolution.answer)
+                .where(ConceptNoteGapResolution.gap_id == gap.gap_id)
+                .order_by(ConceptNoteGapResolution.created_at.desc())
+                .limit(1)
+            )
+            change = next(
+                (
+                    change
+                    for change in factual
+                    if estimate
+                    and change.before.strip()
+                    and change.before.strip() in estimate
+                ),
+                None,
+            )
+        if change is None:
+            continue
+        gap.status = "caveat" if change.estimate else "resolved"
+        gap.version += 1
+        gap.updated_at = now
+        session.add(
+            ConceptNoteGapResolution(
+                gap_id=gap.gap_id,
+                action="answer",
+                answer=change.after.strip(),
+                actor_user_id=user_id,
+                source_refs=list(dict.fromkeys(change.source_refs)),
+                idempotency_key=idempotency_key,
+            )
         )
-    )
 
 
 async def lock_run(session: AsyncSession, run_id: UUID) -> None:

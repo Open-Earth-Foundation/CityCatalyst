@@ -2319,9 +2319,10 @@ chapter shows "N estimates to confirm", and the export preflight names them;
 they do not block export. "Confirm in chat" opens the gap form for a caveat gap
 (the gap-question route accepts `caveat`); the planner sees the gap's current
 `estimate` and replaces it, and accepting a complete bound answer resolves the
-gap (or keeps it a caveat at a new version for a new estimate). A value no one
-states and no stated figure yields is never estimated, and names, partners and
-commitments are never estimated.
+gap (or keeps it a caveat at a new version for a new estimate), together with
+any caveat gap in another chapter whose estimate text the same answer replaces.
+A value no one states and no stated figure yields is never estimated, and
+names, partners and commitments are never estimated.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

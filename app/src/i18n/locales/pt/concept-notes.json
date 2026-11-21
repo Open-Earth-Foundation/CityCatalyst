@@ -748,6 +748,7 @@
   "gap-earlier-answers": "Salvas para esta lacuna. Elas são enviadas novamente com suas novas respostas, então responda apenas o que ainda falta.",
   "gap-earlier-answers-clear": "Recomeçar sem elas",
   "gap-earlier-answers-cover": "Suas respostas anteriores cobrem todas as partes desta lacuna",
+  "gap-additional-details": "Detalhes adicionais",
   "gap-source-suggestions": "Encontrado nas suas fontes",
   "gap-source-suggestions-hint": "Valores encontrados nos seus arquivos enviados, ainda não confirmados. « Usar » adiciona um deles aos seus detalhes adicionais; confirme-o nas perguntas abaixo.",
   "gap-source-label": "Fonte:",

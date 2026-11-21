@@ -748,6 +748,7 @@
   "gap-earlier-answers": "Guardadas para esta brecha. Se envían de nuevo junto con sus nuevas respuestas, así que responda solo lo que aún falta.",
   "gap-earlier-answers-clear": "Empezar de nuevo sin ellas",
   "gap-earlier-answers-cover": "Sus respuestas anteriores cubren todas las partes de esta brecha",
+  "gap-additional-details": "Detalles adicionales",
   "gap-source-suggestions": "Encontrado en sus fuentes",
   "gap-source-suggestions-hint": "Valores encontrados en sus archivos cargados, aún no confirmados. «Usar» añade uno a sus detalles adicionales; confírmelo en las preguntas de abajo.",
   "gap-source-label": "Fuente:",

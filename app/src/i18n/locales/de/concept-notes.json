@@ -748,6 +748,7 @@
   "gap-earlier-answers": "Für diese Lücke gespeichert. Sie werden zusammen mit Ihren neuen Antworten erneut gesendet, beantworten Sie daher nur, was noch fehlt.",
   "gap-earlier-answers-clear": "Ohne sie neu beginnen",
   "gap-earlier-answers-cover": "Ihre früheren Antworten decken jeden Teil dieser Lücke ab",
+  "gap-additional-details": "Zusätzliche Details",
   "gap-source-suggestions": "In Ihren Quellen gefunden",
   "gap-source-suggestions-hint": "Werte aus Ihren hochgeladenen Dateien, noch nicht bestätigt. „Verwenden“ fügt einen davon Ihren zusätzlichen Details hinzu; bestätigen Sie ihn in den Fragen unten.",
   "gap-source-label": "Quelle:",

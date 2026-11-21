@@ -194,17 +194,27 @@ export function GapAnswerForm({
   const answered =
     answers.some(Boolean) || Boolean(details.trim()) || coveredEarlier;
   const sourceSuggestions = request.row.gap?.suggestions ?? [];
-  const answerText = [
-    earlier,
-    ...questions.map(
-      ({ question: text }, index) =>
-        `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
-    ),
-    details.trim(),
-  ]
+  // Unanswered questions are left out: only a chosen "Not decided yet" says so,
+  // and the rest stays missing instead of becoming an "undecided" fact.
+  const lines = questions.map(({ question: text }, index) => {
+    const answer =
+      answers[index] ??
+      (picked(index).includes("unknown") ? t("gap-not-decided") : undefined);
+    return answer && `${index + 1}. ${text}\n${answer}`;
+  });
+  const answerText = [earlier, ...lines, details.trim()]
     .filter(Boolean)
     .join("\n\n");
-  const charsLeft = answerLimit - answerText.length;
+  // An unanswered question still reserves its line, so answering it later
+  // cannot push the text past the limit.
+  const reserved = questions.reduce(
+    (sum, { question: text }, index) =>
+      lines[index]
+        ? sum
+        : sum + `\n\n${index + 1}. ${text}\n${t("gap-not-decided")}`.length,
+    0,
+  );
+  const charsLeft = answerLimit - answerText.length - reserved;
   // Fields stop accepting text once the shared limit is used up.
   const fieldMax = (value: string) =>
     Math.min(2000, value.length + Math.max(0, charsLeft));
@@ -265,6 +275,22 @@ export function GapAnswerForm({
     draft,
     earlier,
   ]);
+
+  // Text typed into the fallback question would be hidden once generated
+  // questions replace it (after Retry or on reopening), so it moves to details.
+  const fallbackKey = `0:${request.row.question}`;
+  const orphaned =
+    !loading && questions[0]?.question !== request.row.question
+      ? (customAnswers[fallbackKey]?.trim() ?? "")
+      : "";
+  // Adjusted during render, so the hidden text is never saved or shown stale.
+  if (orphaned) {
+    setDetails((current) =>
+      [orphaned, current.trim()].filter(Boolean).join("\n\n"),
+    );
+    const { [fallbackKey]: _moved, ...rest } = customAnswers;
+    setCustomAnswers(rest);
+  }
 
   useEffect(() => {
     if (loading) return;

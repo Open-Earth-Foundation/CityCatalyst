@@ -475,6 +475,7 @@ export function ConceptNoteChatPanel({
             fontSize="18px"
             fontWeight="semibold"
             color="content.primary"
+            truncate
           >
             {t("clima")}
           </Text>
@@ -502,7 +503,9 @@ export function ConceptNoteChatPanel({
               bg={CONNECTION_BADGE[connection].color}
             />
           )}
-          <Text fontSize="label.sm">
+          {/* The side-by-side chat column is too narrow for the label until xl;
+              the dot stays and screen readers still hear the status. */}
+          <Text fontSize="label.sm" srOnly={{ md: true, xl: false }}>
             {t(CONNECTION_BADGE[connection].label)}
           </Text>
         </HStack>

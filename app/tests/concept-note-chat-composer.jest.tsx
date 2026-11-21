@@ -397,10 +397,11 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
   expect(container.textContent).toContain("gap-acceptance-hint");
   await act(async () => preview.click());
   const [content, scope] = sendMessage.mock.calls[0];
-  // A partial answer keeps the gap's marker, so the gap stays open.
-  expect(content).toContain(
-    "My answer:\n1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-decided",
-  );
+  // A partial answer keeps the gap's marker, so the gap stays open. The
+  // unanswered question is left out, not sent as "Not decided yet".
+  expect(content).toContain("My answer:\n1. Which financing instrument?\nLoan");
+  expect(content).not.toContain("What amount?");
+  expect(content).not.toContain("gap-not-decided");
   expect(content).toContain(
     "Keep any information I have not supplied marked as missing",
   );
@@ -441,7 +442,8 @@ it("shows source-grounded suggestions with their source and adds one to the answ
   expect(previewButton().disabled).toBe(false);
   await act(async () => previewButton().click());
   const [content] = sendMessage.mock.calls[0];
-  expect(content).toContain("2. What amount?\ngap-not-decided\n\nGrant");
+  expect(content).toContain("Grant");
+  expect(content).not.toContain("gap-not-decided");
   expect(content).toContain("marked as missing");
 });
 
@@ -665,6 +667,47 @@ it("leaves the gap untouched when answered later and restores the answers on ret
   ).toBe("");
 });
 
+it("keeps a saved fallback answer when reopening brings generated questions", async () => {
+  sessionStorage.setItem(
+    "cnb-gap-draft:run:financing-chapter:financing-gap:1",
+    JSON.stringify({
+      question: null,
+      choices: { 0: "custom" },
+      customAnswers: { [`0:${gapAnswer.row.question}`]: "Loan" },
+      details: "",
+      sent: "",
+    }),
+  );
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  expect(subQuestion(0).textContent).toContain("Which financing instrument?");
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-details"]',
+    )!.value,
+  ).toBe("Loan");
+});
+
+it("keeps the fallback answer in place when a retry fails again", async () => {
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await writeAnswer(0, "Loan");
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  const retry = [...container.querySelectorAll("button")].find(
+    (button) => button.textContent === "gap-retry-question",
+  )!;
+  await act(async () => retry.click());
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-custom-answer"]',
+    )!.value,
+  ).toBe("Loan");
+  // It still answers the recorded gap itself, so it can still close it.
+  expect(container.textContent).toContain("gap-complete-hint");
+});
+
 it("lets earlier answers alone complete the gap when nothing is missing", async () => {
   sessionStorage.setItem(
     "cnb-gap-draft:run:financing-chapter:financing-gap:1",
@@ -717,7 +760,7 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
 });
 
-it("falls back to free text on failure and drops it when a retry changes the question", async () => {
+it("falls back to free text on failure and keeps it as details when a retry changes the question", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(container.querySelector('[role="alert"]')?.textContent).toContain(
@@ -746,7 +789,15 @@ it("falls back to free text on failure and drops it when a retry changes the que
       '[data-testid="concept-note-gap-custom-answer"]',
     )!.value,
   ).toBe("");
-  expect(previewButton().disabled).toBe(true);
+  // The typed text is not attached to the new question, but it is not lost.
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-details"]',
+    )!.value,
+  ).toBe("Loan");
+  await act(async () => previewButton().click());
+  expect(sendMessage.mock.calls[0][0]).toContain("Loan");
+  expect(sendMessage.mock.calls[0][0]).not.toContain("What completion year?");
 });
 
 it("counts down the shared edit limit and stops answers before it is exceeded", async () => {

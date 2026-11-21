@@ -226,6 +226,11 @@ class ConceptNoteGap(CnbBase):
     status: Mapped[str] = mapped_column(
         String(64), nullable=False, default="open", server_default="open"
     )
+    # Original question and reviewed accepted passages after accepted narrowing;
+    # SQL NULL and a JSON null both mean the gap has no narrowing progress.
+    answer_progress: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONBCompat(), nullable=True
+    )
     version: Mapped[int] = mapped_column(
         Integer, nullable=False, default=1, server_default="1"
     )

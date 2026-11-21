@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from unittest.mock import MagicMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -14,21 +15,31 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditScope,
 )
+from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
+from app.models.db.cnb_reference import CnbFundedProject, CnbFunder
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
     ConceptNoteEvidenceLink,
+    ConceptNoteExport,
     ConceptNoteGap,
     ConceptNoteGapResolution,
+    ConceptNoteMatchedProject,
 )
 from app.persistence.concept_notes.edits import (
     EditOperationError,
     append_revision,
     resolve_filled_information_gaps,
 )
-from app.persistence.concept_notes.gaps import save_partial_answer
+from app.persistence.concept_notes.gaps import (
+    _reconcile_evidence_gaps,
+    _update_gap_from_output,
+    carry_forward_saved_answer,
+    record_accepted_narrowing,
+    save_partial_answer,
+)
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
     WorkspaceConflictError,
@@ -57,6 +68,12 @@ async def workspace(tmp_path):
         ConceptNoteChapterReview.__table__,
         ConceptNoteChapterValidation.__table__,
         ConceptNoteEvidenceLink.__table__,
+        ConceptNoteEditProposal.__table__,
+        ConceptNoteEditApplication.__table__,
+        ConceptNoteExport.__table__,
+        CnbFunder.__table__,
+        CnbFundedProject.__table__,
+        ConceptNoteMatchedProject.__table__,
     ]
     postgres_defaults = []
     for table in tables:
@@ -1369,3 +1386,182 @@ async def test_batch_adopts_every_unrecorded_marker_once(workspace) -> None:
     # A repeat call adds nothing and rewrites no timestamp or identifier.
     assert await workspace.adopt_legacy_marker_gaps(run_id=RUN_ID) == 0
     assert await _gap_and_chapter_rows(workspace) == (first_gaps, first_chapters)
+
+
+def test_accepted_passages_strip_markers_and_keep_the_original_scope() -> None:
+    """Progress keeps the first scope, marker-free passages and no duplicates."""
+    gap = ConceptNoteGap(question="Who leads and when?", answer_progress=None)
+    record_accepted_narrowing(
+        gap,
+        previous_question="Who leads and when?",
+        passage="Lincoln Park leads. [Information needed: When does it start?]",
+    )
+    record_accepted_narrowing(
+        gap,
+        previous_question="When does it start?",
+        passage="Lincoln Park leads.",
+    )
+    record_accepted_narrowing(
+        gap,
+        previous_question="When does it start?",
+        passage="The budget is set.",
+    )
+    assert gap.answer_progress == {
+        "original_question": "Who leads and when?",
+        "accepted_passages": ["Lincoln Park leads.", "The budget is set."],
+    }
+
+
+async def test_narrowing_carries_saved_answers_to_the_new_version_without_creating_a_resolution(
+    workspace,
+) -> None:
+    """An accepted narrowing moves saved answers to the new version, not a resolution."""
+    saved = "Lincoln Park Neighborhood Council will lead delivery."
+    assert await _save_answers(workspace, saved, None)
+    passage = "Lincoln Park Neighborhood Council will lead delivery."
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID, with_for_update=True)
+        previous_question = gap.question
+        gap.version = 2
+        gap.question = "Confirm the delivery budget."
+        record_accepted_narrowing(
+            gap, previous_question=previous_question, passage=passage
+        )
+        assert await carry_forward_saved_answer(session, gap=gap, previous_version=1)
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    [narrowed] = chapter.gaps
+    assert (narrowed.gap_id, narrowed.state, narrowed.version) == (GAP_ID, "open", 2)
+    assert narrowed.question == "Confirm the delivery budget."
+    assert narrowed.answered_so_far == saved
+    assert narrowed.resolution is None
+    assert narrowed.original_question == "Confirm the lead partner."
+    assert narrowed.accepted_passages == (passage,)
+
+    async with workspace._session_factory() as session, session.begin():
+        non_partial = await session.scalar(
+            select(ConceptNoteGapResolution.resolution_id).where(
+                ConceptNoteGapResolution.gap_id == GAP_ID,
+                ConceptNoteGapResolution.action != "partial_answer",
+            )
+        )
+        # The stale form still holds no saved text, so its save is refused.
+        stale = await save_partial_answer(
+            session,
+            run_id=RUN_ID,
+            gap_id=GAP_ID,
+            gap_version=2,
+            answer="A newer answer",
+            expected_previous=None,
+            user_id="owner",
+        )
+    assert non_partial is None
+    assert stale is False
+
+
+async def test_carry_forward_leaves_a_clear_gap_clear(workspace) -> None:
+    """With no saved answers at the previous version, nothing is carried forward."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        gap.version = 2
+        assert not await carry_forward_saved_answer(
+            session, gap=gap, previous_version=1
+        )
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.gaps[0].answered_so_far is None
+
+
+def test_redraft_resets_progress_only_when_gap_scope_changes_or_reopens() -> None:
+    """A changed normalized question or a reopen starts a new specification."""
+    progress = {
+        "original_question": "Confirm the lead partner.",
+        "accepted_passages": ["Lincoln Park leads."],
+    }
+
+    def gap_with_progress(status: str = "open") -> ConceptNoteGap:
+        return ConceptNoteGap(
+            gap_id=GAP_ID,
+            run_id=RUN_ID,
+            chapter_id=CHAPTER_ID,
+            field_key="lead_partner",
+            severity="critical",
+            question="Confirm the lead partner.",
+            why_asking="The delivery model must name an accountable partner.",
+            suggestions=[],
+            source_refs=[],
+            status=status,
+            version=2,
+            answer_progress=dict(progress),
+        )
+
+    def output(
+        question: str, why_asking: str | None = None
+    ) -> ConceptNoteDraftGapOutput:
+        return ConceptNoteDraftGapOutput(
+            field_key="lead_partner",
+            question=question,
+            why_asking=why_asking
+            or "The delivery model must name an accountable partner.",
+            severity="critical",
+            suggestions=[],
+        )
+
+    # Spelling and presentation of the same question keep the lineage.
+    same_question = gap_with_progress()
+    assert _update_gap_from_output(
+        same_question, output("confirm the lead partner", "Name the partner.")
+    )
+    assert same_question.answer_progress == progress
+
+    # A different normalized question is a new original for that scope.
+    new_scope = gap_with_progress()
+    _update_gap_from_output(new_scope, output("Confirm the delivery budget."))
+    assert new_scope.answer_progress is None
+
+    # Reopening a resolved row resets it; an open row keeps its lineage.
+    session = MagicMock()
+    reopened = gap_with_progress(status="resolved")
+    _reconcile_evidence_gaps(
+        session, None, [reopened], [output("Confirm the lead partner.")], [], set()
+    )
+    assert (reopened.status, reopened.answer_progress) == ("open", None)
+    still_open = gap_with_progress()
+    _reconcile_evidence_gaps(
+        session, None, [still_open], [output("Confirm the lead partner.")], [], set()
+    )
+    assert still_open.answer_progress == progress
+
+
+async def test_working_copy_keeps_gap_answer_progress_with_independent_identity(
+    workspace,
+) -> None:
+    """A working copy carries gap progress as an independent copy, not a link."""
+    progress = {
+        "original_question": "Confirm the lead partner.",
+        "accepted_passages": ["Lincoln Park Neighborhood Council will lead delivery."],
+    }
+    [source_before] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    assert (source_before.original_question, source_before.accepted_passages) == (
+        None,
+        (),
+    )
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        gap.answer_progress = progress
+
+    destination_id = uuid4()
+    await workspace.copy_working_copy(
+        source_run_id=RUN_ID, destination_run_id=destination_id
+    )
+    [source] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    [copied] = (await workspace.list_chapters(run_id=destination_id))[0].gaps
+    expected = (progress["original_question"], tuple(progress["accepted_passages"]))
+    assert copied.gap_id != source.gap_id
+    assert (copied.original_question, copied.accepted_passages) == expected
+    assert (source.original_question, source.accepted_passages) == expected
+
+    # Clearing the copy's progress does not change the source gap.
+    async with workspace._session_factory() as session, session.begin():
+        copied_row = await session.get(ConceptNoteGap, copied.gap_id)
+        copied_row.answer_progress = None
+    [source_after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    assert source_after.accepted_passages == expected[1]

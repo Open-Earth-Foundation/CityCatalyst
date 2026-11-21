@@ -16,6 +16,10 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    marker_replacement_text,
+)
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -53,6 +57,10 @@ class WorkspaceGapSnapshot:
     updated_at: datetime
     # Partial answers saved for the current open version (see save_partial_answer).
     answered_so_far: str | None = None
+    # Set once an accepted narrowing has occurred; the original scope and the
+    # reviewed passages written so far for this gap, in version order.
+    original_question: str | None = None
+    accepted_passages: tuple[str, ...] = ()
 
 
 async def _chapter_gaps(
@@ -144,6 +152,7 @@ def _snapshot_gap(
         if partial_answer is not None and gap.status in {"open", "processing", "caveat"}
         else None
     )
+    progress = gap.answer_progress if isinstance(gap.answer_progress, dict) else {}
     return WorkspaceGapSnapshot(
         gap_id=gap.gap_id,
         field_key=gap.field_key,
@@ -162,6 +171,35 @@ def _snapshot_gap(
         created_at=gap.created_at,
         updated_at=gap.updated_at,
         answered_so_far=answered_so_far,
+        original_question=progress.get("original_question"),
+        accepted_passages=tuple(
+            str(passage) for passage in progress.get("accepted_passages") or ()
+        ),
+    )
+
+
+async def latest_partial_answer(
+    session: AsyncSession,
+    *,
+    gap_id: UUID,
+    gap_version: int,
+) -> ConceptNoteGapResolution | None:
+    """Return the newest saved partial answer for one gap version.
+
+    Ordering matches the workspace read: created_at, then resolution_id.
+    """
+    return await session.scalar(
+        select(ConceptNoteGapResolution)
+        .where(
+            ConceptNoteGapResolution.gap_id == gap_id,
+            ConceptNoteGapResolution.action == "partial_answer",
+            ConceptNoteGapResolution.gap_version == gap_version,
+        )
+        .order_by(
+            ConceptNoteGapResolution.created_at.desc(),
+            ConceptNoteGapResolution.resolution_id.desc(),
+        )
+        .limit(1)
     )
 
 
@@ -191,18 +229,8 @@ async def save_partial_answer(
     ):
         return False
     # The gap row lock serializes saves, so this latest event is current.
-    previous = await session.scalar(
-        select(ConceptNoteGapResolution)
-        .where(
-            ConceptNoteGapResolution.gap_id == gap_id,
-            ConceptNoteGapResolution.action == "partial_answer",
-            ConceptNoteGapResolution.gap_version == gap_version,
-        )
-        .order_by(
-            ConceptNoteGapResolution.created_at.desc(),
-            ConceptNoteGapResolution.resolution_id.desc(),
-        )
-        .limit(1)
+    previous = await latest_partial_answer(
+        session, gap_id=gap_id, gap_version=gap_version
     )
     if _saved_text(previous.answer if previous else None) != _saved_text(
         expected_previous
@@ -228,6 +256,62 @@ async def save_partial_answer(
         )
     )
     return True
+
+
+async def carry_forward_saved_answer(
+    session: AsyncSession,
+    *,
+    gap: ConceptNoteGap,
+    previous_version: int,
+) -> bool:
+    """Copy the saved answers of the previous version onto the gap's new version.
+
+    The caller applies an accepted narrowing: it holds the gap row lock and has
+    already moved ``gap.version`` to the new version. The new partial_answer event
+    keeps the saved text and the actor of the newest saved event, with its own
+    idempotency key, and creates no non-partial resolution. An empty or missing
+    saved answer leaves the gap clear. Returns True when an event was added.
+    """
+    previous = await latest_partial_answer(
+        session, gap_id=gap.gap_id, gap_version=previous_version
+    )
+    if previous is None or _saved_text(previous.answer) is None:
+        return False
+    session.add(
+        ConceptNoteGapResolution(
+            gap_id=gap.gap_id,
+            action="partial_answer",
+            answer=previous.answer,
+            gap_version=gap.version,
+            actor_user_id=previous.actor_user_id,
+            idempotency_key=uuid4(),
+            created_at=datetime.now(UTC),
+        )
+    )
+    return True
+
+
+def record_accepted_narrowing(
+    gap: ConceptNoteGap,
+    *,
+    previous_question: str,
+    passage: str,
+) -> None:
+    """Record one reviewed accepted passage and keep the original scope.
+
+    The original question is the first scope narrowed and is kept afterward.
+    The passage has its markers removed, and an exact duplicate is not added
+    again. The mapping is replaced as a whole so JSONB change tracking sees it.
+    """
+    progress = gap.answer_progress if isinstance(gap.answer_progress, dict) else {}
+    passages = [str(item) for item in progress.get("accepted_passages") or ()]
+    text = marker_replacement_text(passage)
+    if text and text not in passages:
+        passages.append(text)
+    gap.answer_progress = {
+        "original_question": progress.get("original_question") or previous_question,
+        "accepted_passages": passages,
+    }
 
 
 def _saved_text(text: str | None) -> str | None:
@@ -398,6 +482,8 @@ def _reconcile_evidence_gaps(
         reopened = gap.status == "resolved"
         if reopened:
             gap.status = "open"
+            # A reopened gap is a new scope, so its accepted lineage restarts.
+            gap.answer_progress = None
             session.add(
                 ConceptNoteGapResolution(
                     gap_id=gap.gap_id,
@@ -437,6 +523,10 @@ def _update_gap_from_output(
     )
     if not changed:
         return False
+    # Only a changed normalized question starts a new specification, so
+    # presentation-only redrafts keep the accepted lineage.
+    if information_marker_key(gap.question) != information_marker_key(output.question):
+        gap.answer_progress = None
     gap.question = output.question
     gap.why_asking = output.why_asking
     gap.severity = output.severity

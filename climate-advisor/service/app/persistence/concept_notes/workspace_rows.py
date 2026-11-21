@@ -147,6 +147,7 @@ async def _copy_gaps(
             source_refs=list(gap.source_refs),
             status=gap.status,
             version=gap.version,
+            answer_progress=deepcopy(gap.answer_progress),
         )
         session.add(destination)
         await session.flush()

@@ -223,6 +223,10 @@ in `concept_note_help` uses the same `chapter_number`, with `open` and
 `filled_from` with that file's `source_label`. An open gap may have
 `suggestions`, each with `value` and `source_refs`: unverified values found in
 uploaded sources; never present them as confirmed.
+An open gap may also have `answered_so_far`: answers the user
+saved in that gap's form that are not in the draft yet. Say they are saved, not
+written; the chapter changes once the gap's form is sent with every part
+answered, so point the user back to that form for the rest.
 It cannot resolve a gap; gaps close through accepted edits or new-file evidence.
 
 `concept_note_edit_propose` takes no arguments: invoke it with `{}`. After a

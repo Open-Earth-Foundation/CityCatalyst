@@ -26,6 +26,7 @@ def gap(
     state="open",
     resolution=None,
     suggestions=(),
+    answered_so_far=None,
 ):
     return SimpleNamespace(
         gap_id=uuid4(),
@@ -36,6 +37,7 @@ def gap(
         state=state,
         resolution=resolution,
         suggestions=list(suggestions),
+        answered_so_far=answered_so_far,
     )
 
 
@@ -54,6 +56,15 @@ def chapter(position, title, gaps, *, status="needs_review", body=None):
 
 def numbered(rows):
     return [(row["chapter_number"], row["gap_number"], row["question"]) for row in rows]
+
+
+def test_open_gap_lists_the_answers_saved_so_far():
+    saved = "1. Lead partner?\nLincoln Park Neighborhood Council"
+    rows = build_gap_list(
+        [chapter(0, "Delivery", [gap(1, "Lead partner", answered_so_far=saved)])]
+    )["gaps"]
+    # The chat can see what a teammate already saved in the gap form.
+    assert rows[0]["answered_so_far"] == saved
 
 
 def test_open_gap_lists_source_suggestions_with_their_sources():

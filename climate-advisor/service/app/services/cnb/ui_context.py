@@ -182,6 +182,9 @@ def build_gap_list(
             # Unverified values the drafter found in uploaded sources for this gap.
             if gap.state in _OPEN_GAP_STATES and gap.suggestions:
                 item["suggestions"] = gap.suggestions
+            # Partial answers the user saved from the gap form, not in the draft yet.
+            if gap.answered_so_far:
+                item["answered_so_far"] = gap.answered_so_far
             # Name the files whose evidence filled a gap during source revalidation.
             resolution = gap.resolution
             if (

@@ -25,9 +25,10 @@ Do not ask about anything already confirmed in the current chapter, in
 previous_answers or in earlier_answers; ask only for what is still unconfirmed.
 When earlier_answers already cover every part of the gap, return an empty
 questions list. Never repeat an
-already answered question in different words. A part answered "Not decided yet",
-or described in the chapter as not yet decided, confirmed or estimated, is still
-unconfirmed: ask for it again, and ask for it before new follow-up details.
+already answered question in different words. A part answered "Not decided yet"
+or "Not answered yet", or described in the chapter as not yet decided, confirmed
+or estimated, is still unconfirmed: ask for it again, and ask for it before new
+follow-up details.
 Some parts cannot be answered yet because the work that produces them does not
 exist: the chapter or earlier answers say a study, assessment, survey, permit
 decision, rating or design is not commissioned, not started, still being
@@ -99,9 +100,9 @@ Input is a JSON object with:
   gap, newest first; only the parts the user accepted into the draft, so anything
   missing from them is still unconfirmed. Empty when the gap has not been answered
   before.
-- earlier_answers (string): answers the user already sent for this gap that are
-  not in the draft yet, for example because they did not cover every part. Treat
-  what they state as answered; empty when there are none.
+- earlier_answers (string): answers the user saved for this gap that are not in
+  the draft yet, because they did not cover every part. Treat what they state as
+  answered; empty when there are none.
 - source_suggestions (array): values found in the user's uploaded sources for
   this gap, each with value (string) and source_refs (array of source labels).
   Empty when the sources hold nothing for this gap.

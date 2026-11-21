@@ -2276,11 +2276,11 @@ asks for a confirmed value again. A reply with more than 4 questions is trimmed 
 the first 4 instead of failing; the dropped parts stay open for the next round.
 A question with options asks one choice about one thing; values and per-item
 statuses get their own free-text questions, and questions are never conditional.
-`earlier_answers` carries what the user already sent for this gap version but
-is not in the draft yet (for example when a partial answer got a clarification);
-the model asks only for what they miss and may return no questions when they
-cover the gap. The form sends earlier and new answers together, so a gap with
-more parts than four questions can still be completed over several rounds.
+`earlier_answers` in the model input holds the answers saved on this gap version
+(`answered_so_far`, below); the route reads them from the gap, not from the
+browser. The model asks only for what they miss and may return no questions when
+they cover the gap. The form sends earlier and new answers together, so a gap
+with more parts than four questions can still be completed over several rounds.
 When the chapter says the work behind a part does not exist yet (a study,
 survey, permit decision, rating or design not commissioned or pending), the
 questions ask for its timing, owner and any interim estimate, never its results.
@@ -2291,12 +2291,20 @@ Generation failures return 503; browser disconnect cancels generation.
 The form's edit request binds the answer to its gap: `concept_note_edit.scope`
 carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
 `gap_changed` when that gap is no longer open at that version. A partial answer
-may not remove any marker. A complete one replaces its gap's marker and may also
+may not remove any marker, so the form does not send it to the chat: it saves it
+with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers`
+(`{gap_version, answers}`, 204; 409 when the gap is no longer open at that
+version; empty `answers` clears them). The answers are stored as a
+`partial_answer` row in `concept_note_gap_resolutions` with its `gap_version`,
+and the gap response lists the newest one as `answered_so_far` while the gap is
+open at that version, for every viewer of the run. `concept_note_gaps` shows the
+same field to the chat agent. A complete answer is saved the same way and then
+sent to the chat; it replaces its gap's marker and may also
 fill another chapter's marker that asks for the same information when the
 answers state everything it asks for (duplicate gaps); the planner prompt and
 the semantic review judge that. Acceptance closes the answered gap only at that
-version, plus any duplicate it filled. The browser keeps sent answers for the
-gap version until it closes, so a failed or rejected turn loses nothing. The
+version, plus any duplicate it filled, which hides the saved answers. A failed
+or rejected turn loses nothing, because the answers stay saved. The
 planner and reviewer prompts also forbid replacing a marker with text saying
 the information is missing or undecided.
 

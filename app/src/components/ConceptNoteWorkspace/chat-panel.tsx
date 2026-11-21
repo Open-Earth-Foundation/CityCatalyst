@@ -114,6 +114,8 @@ interface ConceptNoteChatPanelProps {
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
   onDraftOverviewComplete?: () => void;
+  /** Answers saved on a gap changed, so the workspace reloads its gaps. */
+  onGapAnswersSaved?: () => void;
 }
 
 interface ContextStatusNoticeProps {
@@ -355,9 +357,12 @@ export function ConceptNoteChatPanel({
   onOpenDraft,
   onOpenFundingSetup,
   onDraftOverviewComplete,
+  onGapAnswersSaved,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [input, setInput] = useState("");
+  // Chapter whose gap answers were just saved without a chat turn.
+  const [savedGapChapter, setSavedGapChapter] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
   const {
@@ -537,6 +542,14 @@ export function ConceptNoteChatPanel({
     await sendChatMessage(content);
   }
 
+  /** Saved answers wait on the gap; the chat says so instead of starting a turn. */
+  function gapAnswersSaved(answers: string): void {
+    onGapAnswersSaved?.();
+    if (!gapAnswer || !answers) return;
+    setSavedGapChapter(gapAnswer.chapterTitle);
+    onCloseGap();
+  }
+
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
   function answerGap(answer: string, complete: boolean): boolean {
     if (!gapAnswer || chatDisabled) return false;
@@ -705,6 +718,7 @@ export function ConceptNoteChatPanel({
             disabledReason={gapDisabledReason}
             answerLimit={gapAnswerLimit}
             onAnswer={answerGap}
+            onSaved={gapAnswersSaved}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
             uploads={uploads}
@@ -818,6 +832,38 @@ export function ConceptNoteChatPanel({
                 ))}
               </Fragment>
             ))}
+
+            {savedGapChapter && (
+              <HStack
+                role="status"
+                align="start"
+                justify="space-between"
+                gap={2}
+                px={3}
+                py={2.5}
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg="background.neutral"
+                data-testid="concept-note-gap-saved-note"
+              >
+                <Text fontSize="body.sm" lineHeight="22px">
+                  {t("gap-answers-saved-note", {
+                    chapter: savedGapChapter,
+                    interpolation: { escapeValue: false },
+                  })}
+                </Text>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  flexShrink={0}
+                  onClick={() => setSavedGapChapter(null)}
+                >
+                  {t("gap-answers-saved-dismiss")}
+                </Button>
+              </HStack>
+            )}
 
             {draft && (
               <DraftingProgressCard

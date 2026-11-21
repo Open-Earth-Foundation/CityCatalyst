@@ -46,10 +46,15 @@ interface GapAnswerFormProps {
   answerLimit: number;
   /**
    * complete is true when every question has a substantive answer. Returns
-   * false when the request is too long to send. Sent answers stay saved for
-   * this gap version until it closes, so a failed or rejected turn loses nothing.
+   * false when the request is too long to send. Sent answers are also saved on
+   * the gap version, so a failed or rejected turn loses nothing.
    */
   onAnswer: (answer: string, complete: boolean) => boolean;
+  /**
+   * The gap's saved answers changed: non-empty after "Save answers so far"
+   * (the form is done), empty after "Start over without them".
+   */
+  onSaved: (answers: string) => void;
   onClose: () => void;
   onAddSource: () => void;
   uploads?: ConceptNoteUploadResponse[];
@@ -69,13 +74,13 @@ interface GapQuestion {
   }[];
 }
 
-/** Answers kept for the browser session until their gap version closes. */
+/** Unsent answers kept for the browser session ("Save for later"). */
 interface GapDraft {
   question: GapQuestion | null;
   choices: Record<number, string>;
   customAnswers: Record<string, string>;
   details: string;
-  /** Everything already sent for this gap version; later rounds ask only what it misses. */
+  /** Sent answers an older form kept here; read once, then dropped on the next write. */
   sent?: string;
 }
 
@@ -148,6 +153,7 @@ export function GapAnswerForm({
   disabledReason,
   answerLimit,
   onAnswer,
+  onSaved,
   onClose,
   onAddSource,
   uploads = [],
@@ -157,15 +163,24 @@ export function GapAnswerForm({
   // A new gap version starts fresh, since earlier answers may no longer fit it.
   const draftKey = `cnb-gap-draft:${runId}:${request.chapterId}:${request.row.gap?.gap_id ?? request.row.question}:${request.row.gap?.version}`;
   const [draft] = useState(() => readDraft(draftKey));
-  // A draft saved during the unavailable fallback has no generated questions,
-  // so reopening asks new ones; its typed answer moves to the details.
+  // Answers saved on this gap version, by anyone, are sent again with new ones;
+  // the server asks only for what they miss.
+  const savedAnswers = request.row.gap?.answered_so_far ?? "";
+  // A draft from before saves moved sent answers into the browser; they stay
+  // here for review when the server has none, and are never sent to the model.
+  const legacySent =
+    typeof draft?.sent === "string" ? draft.sent.trim() : "";
   const fallbackAnswers =
     draft && !draft.question
       ? typedAnswers(draft.choices, draft.customAnswers, false)
       : [];
-  // Answers already sent are included again; new questions cover what they miss.
-  const [sent, setSent] = useState(draft?.sent ?? "");
-  const [earlier, setEarlier] = useState(sent);
+  const movedAnswers = [
+    ...fallbackAnswers,
+    ...(legacySent && !savedAnswers ? [legacySent] : []),
+  ];
+  const [earlier, setEarlier] = useState(savedAnswers);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [question, setQuestion] = useState<GapQuestion | null>(
     draft?.question ?? null,
   );
@@ -182,14 +197,14 @@ export function GapAnswerForm({
     fallbackAnswers.length ? {} : (draft?.customAnswers ?? {}),
   );
   const [details, setDetails] = useState(
-    fallbackAnswers.length
-      ? joinDetails(draft?.details ?? "", fallbackAnswers)
+    movedAnswers.length
+      ? joinDetails(draft?.details ?? "", movedAnswers)
       : (draft?.details ?? ""),
   );
   // Tells the user why their answer now sits in the details field. It stays
   // until the form closes: autoresize re-fires input events on programmatic
   // changes, so "the user edited it" cannot be told apart reliably.
-  const [moved, setMoved] = useState(fallbackAnswers.length > 0);
+  const [moved, setMoved] = useState(movedAnswers.length > 0);
   // The field whose last paste or keystroke went past its length limit.
   const [cutField, setCutField] = useState<string | null>(null);
   const [showRequest, setShowRequest] = useState(false);
@@ -245,15 +260,26 @@ export function GapAnswerForm({
   // legacy inline markers (no gap record) are answered without replacing them.
   // The unavailable fallback asks the original gap itself, so its answer covers it.
   const complete = request.row.gap !== null && answers.every(Boolean);
+  // A partial answer to a recorded gap is saved on it instead of sent to chat:
+  // the planner may not change a marker for part of its question.
+  const saveOnly = request.row.gap !== null && !complete;
   // Source text the user added counts as an answer, so it can be sent alone.
   const answered =
     answers.some(Boolean) || Boolean(details.trim()) || coveredEarlier;
   const sourceSuggestions = request.row.gap?.suggestions ?? [];
+  // A skipped question is sent apart from an explicit "Not decided yet", so
+  // neither reads as the other.
+  const missing = (index: number) =>
+    t(
+      picked(index).includes("unknown")
+        ? "gap-not-decided"
+        : "gap-not-answered",
+    );
   const answerText = [
     earlier,
     ...questions.map(
       ({ question: text }, index) =>
-        `${index + 1}. ${text}\n${answers[index] ?? t("gap-not-decided")}`,
+        `${index + 1}. ${text}\n${answers[index] ?? missing(index)}`,
     ),
     details.trim(),
   ]
@@ -272,7 +298,7 @@ export function GapAnswerForm({
   const customMax = (index: number) =>
     fieldMax(
       customAnswers[answerKey(index)] ?? "",
-      answers[index] ? 2 : -t("gap-not-decided").length,
+      answers[index] ? 2 : -missing(index).length,
     );
   // A textarea's maxLength drops extra text silently, so remember a paste or
   // keystroke that did not fit and say so under that field.
@@ -327,11 +353,31 @@ export function GapAnswerForm({
   const undecided =
     questions.length > 0 &&
     questions.every((_, index) => choices[index] === "unknown");
-  const previewReason = disabled
-    ? disabledReason
+  const previewReason =
+    disabled && !saveOnly
+      ? disabledReason
     : !loading && !answered && undecided
       ? t("gap-preview-needs-answer")
       : undefined;
+
+  /** Save every answer given so far on the gap version; false when it fails. */
+  async function saveAnswers(answers: string): Promise<boolean> {
+    const { gap } = request.row;
+    if (!gap) return false;
+    try {
+      const response = await fetch(
+        `/api/v1/concept-notes/${runId}/gaps/${gap.gap_id}/answers/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gap_version: gap.version, answers }),
+        },
+      );
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
 
   useEffect(() => {
     // Reopening an unsent draft keeps its questions, so its answers still match.
@@ -349,7 +395,6 @@ export function GapAnswerForm({
               gap_id: request.row.gap?.gap_id ?? null,
               question: request.row.question,
               language: lng,
-              earlier_answers: earlier,
             }),
             signal: controller.signal,
           },
@@ -400,11 +445,11 @@ export function GapAnswerForm({
   useEffect(() => {
     saveDraft(
       draftKey,
-      answered || details.trim() || sent
-        ? { question, choices, customAnswers, details, sent }
+      answered || details.trim()
+        ? { question, choices, customAnswers, details }
         : null,
     );
-  }, [draftKey, answered, question, choices, customAnswers, details, sent]);
+  }, [draftKey, answered, question, choices, customAnswers, details]);
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
@@ -427,22 +472,36 @@ export function GapAnswerForm({
         )
           onClose();
       }}
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        if (disabled || loading || closed || !answered) return;
+        if (
+          (disabled && !saveOnly) ||
+          loading ||
+          closed ||
+          saving ||
+          !answered ||
+          charsLeft < 0
+        )
+          return;
+        if (saveOnly) {
+          // The chapter changes once every part is answered; until then the
+          // answers wait on the gap, visible to everyone working on the note.
+          setSaving(true);
+          const saved = await saveAnswers(answerText);
+          setSaving(false);
+          setSaveFailed(!saved);
+          if (!saved) return;
+          saveDraft(draftKey, null);
+          onSaved(answerText);
+          return;
+        }
         const accepted = onAnswer(answerText, complete);
         setTooLong(!accepted);
         if (!accepted) return;
-        // Keep what was sent; the next round asks only for what it misses.
-        // Saved here, not by the effect: sending closes the form right away.
-        saveDraft(draftKey, {
-          question: null,
-          choices: {},
-          customAnswers: {},
-          details: "",
-          sent: answerText,
-        });
-        setSent(answerText);
+        // Also saved on the gap, so a failed or rejected turn loses nothing.
+        // The draft is cleared here, not by the effect: sending closes the form.
+        void saveAnswers(answerText);
+        saveDraft(draftKey, null);
         setQuestion(null);
         setChoices({});
         setCustomAnswers({});
@@ -602,10 +661,17 @@ export function GapAnswerForm({
               type="button"
               variant="ghost"
               size="xs"
-              onClick={() => {
+              disabled={saving}
+              onClick={async () => {
+                // Clearing applies to everyone, since the answers are on the gap.
+                setSaving(true);
+                const cleared = await saveAnswers("");
+                setSaving(false);
+                setSaveFailed(!cleared);
+                if (!cleared) return;
+                onSaved("");
                 keepTypedAnswers();
                 setEarlier("");
-                setSent("");
                 setQuestion(null);
                 setChoices({});
                 setLoading(true);
@@ -949,13 +1015,13 @@ export function GapAnswerForm({
             borderTop="1px solid"
             borderColor="border.neutral"
           >
-            {tooLong && (
+            {(tooLong || saveFailed) && (
               <Text
                 role="alert"
                 fontSize="body.sm"
                 color="sentiment.negativeDefault"
               >
-                {t("gap-answer-too-long")}
+                {t(tooLong ? "gap-answer-too-long" : "gap-save-failed")}
               </Text>
             )}
             {!loading && charsLeft < 2000 && (
@@ -983,11 +1049,17 @@ export function GapAnswerForm({
             <Button
               type="submit"
               bg="content.link"
-              disabled={disabled || loading || !answered || charsLeft < 0}
+              disabled={
+                (disabled && !saveOnly) ||
+                loading ||
+                saving ||
+                !answered ||
+                charsLeft < 0
+              }
               aria-describedby={previewReason ? `${id}-reason` : undefined}
               data-testid="concept-note-gap-preview"
             >
-              {t("gap-preview-change")}
+              {t(saveOnly ? "gap-save-answers" : "gap-preview-change")}
             </Button>
             {previewReason && (
               <Text
@@ -1005,7 +1077,13 @@ export function GapAnswerForm({
               color="content.tertiary"
               textAlign="center"
             >
-              {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
+              {t(
+                complete
+                  ? "gap-complete-hint"
+                  : saveOnly
+                    ? "gap-saved-hint"
+                    : "gap-acceptance-hint",
+              )}
             </Text>
           </VStack>
         )}

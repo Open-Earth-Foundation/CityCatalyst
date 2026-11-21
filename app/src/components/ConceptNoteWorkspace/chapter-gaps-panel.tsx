@@ -174,6 +174,32 @@ function GapDetails({
         <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
           {row.question}
         </Text>
+        {row.gap?.answered_so_far && (
+          <Box
+            mt={4}
+            pt={3}
+            borderTop="1px solid"
+            borderColor="border.neutral"
+            data-testid="concept-note-gap-answered-so-far"
+          >
+            <Text fontSize="body.sm" fontWeight="semibold">
+              {t("gap-answered-so-far")}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.tertiary">
+              {t("gap-answered-so-far-hint")}
+            </Text>
+            <Text
+              mt={1}
+              fontSize="body.sm"
+              lineHeight="22px"
+              color="content.secondary"
+              whiteSpace="pre-wrap"
+              overflowWrap="anywhere"
+            >
+              {row.gap.answered_so_far}
+            </Text>
+          </Box>
+        )}
         {row.whyAsking && (
           <Box mt={4} pt={3} borderTop="1px solid" borderColor="border.neutral">
             <Text fontSize="body.sm" fontWeight="semibold">
@@ -551,6 +577,8 @@ export function ChapterGapsPanel({
                           lineClamp={1}
                         >
                           {t(severityKey(row))}
+                          {row.gap?.answered_so_far &&
+                            ` · ${t("gap-answered-so-far")}`}
                           {row.title && (
                             <>
                               {" · "}

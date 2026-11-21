@@ -34,13 +34,9 @@
  *               language:
  *                 type: string
  *                 default: en
- *               earlier_answers:
- *                 type: string
- *                 maxLength: 8000
- *                 description: Answers already sent for this gap version, so only missing parts are asked
  *     responses:
  *       200:
- *         description: Up to four questions, each with zero or two to eight options; none when earlier answers cover the gap
+ *         description: Up to four questions, each with zero or two to eight options, asking only what the gap's saved answers miss; none when they cover the gap
  *       401:
  *         description: Authentication required
  *       403:
@@ -67,7 +63,6 @@ const bodySchema = z
       .string()
       .regex(/^[a-z]{2}(?:-[A-Za-z]{2})?$/)
       .default("en"),
-    earlier_answers: z.string().max(8000).default(""),
   })
   .strict();
 

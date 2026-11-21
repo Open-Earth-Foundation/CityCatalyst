@@ -583,6 +583,7 @@ export function ConceptNoteWorkspace({
               }}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
+              onGapAnswersSaved={() => void refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");

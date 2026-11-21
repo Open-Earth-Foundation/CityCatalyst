@@ -1462,7 +1462,12 @@ export type ConceptNoteGapSeverity = "critical" | "noncritical";
 export type ConceptNoteGapState =
   "open" | "processing" | "resolved" | "dismissed" | "caveat";
 export type ConceptNoteGapResolutionAction =
-  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+  | "answer"
+  | "correction"
+  | "not_a_gap"
+  | "defer_as_caveat"
+  | "evidence_update"
+  | "partial_answer";
 
 export interface ConceptNoteGapSuggestion {
   value: string;
@@ -1489,6 +1494,8 @@ export interface ConceptNoteGap {
   source_refs: string[];
   version: number;
   resolution: ConceptNoteGapResolution | null;
+  /** Answers saved from the gap form for this open version, not in the draft yet. */
+  answered_so_far?: string | null;
   created_at: string;
   updated_at: string;
 }

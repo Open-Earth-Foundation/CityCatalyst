@@ -292,3 +292,51 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
     "concept-note-gap-answer-heading",
   );
 });
+
+it("shows answers saved so far on the marker popover and in the gap list", async () => {
+  const saved = "1. Question a?\nGrant\n\n2. Amount?\nNot decided yet";
+  const answered = {
+    ...chapter,
+    gaps: [{ ...gap("a", "open"), answered_so_far: saved }, gap("b", "open")],
+  };
+  const rows = chapterGapRows(answered);
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={appTheme}>
+        <ChapterGapMarker
+          chapter={answered}
+          lng="en"
+          row={rows[0]!}
+          number={1}
+        />
+        <ChapterGapsPanel chapter={answered} lng="en" rows={rows} />
+      </ChakraProvider>,
+    ),
+  );
+  await act(async () =>
+    container
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-gap-marker"]',
+      )!
+      .click(),
+  );
+  // Saved answers are visible to everyone who opens the gap, not yet in the text.
+  const box = document.querySelector(
+    '[data-testid="concept-note-gap-answered-so-far"]',
+  );
+  expect(box?.textContent).toContain("gap-answered-so-far");
+  expect(box?.textContent).toContain("gap-answered-so-far-hint");
+  expect(box?.textContent).toContain("2. Amount?\nNot decided yet");
+  await act(async () =>
+    container
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-chapter-gaps-toggle"]',
+      )!
+      .click(),
+  );
+  const items = [
+    ...document.querySelectorAll('[data-testid="concept-note-gap-list-item"]'),
+  ].map((item) => item.textContent);
+  expect(items[0]).toContain("gap-severity-critical · gap-answered-so-far");
+  expect(items[1]).not.toContain("gap-answered-so-far");
+});

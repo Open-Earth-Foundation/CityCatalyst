@@ -80,6 +80,9 @@ const startChat =
   await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
 const adoptGap =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/gaps/route");
+const gapAnswers =
+  await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
+const gapAnswersBody = { gap_version: 2, answers: "1. Amount?\nEUR 2 million" };
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -166,6 +169,13 @@ const routes = [
     body: adoptBody,
   },
   {
+    name: "gap-answers",
+    handler: gapAnswers.POST,
+    method: "POST",
+    suffix: `/gaps/${targetId}/answers`,
+    body: gapAnswersBody,
+  },
+  {
     name: "start-chat",
     handler: startChat.POST,
     method: "POST",
@@ -210,6 +220,7 @@ function request(
         runId,
         proposalId: targetId,
         chapterId: targetId,
+        gapId: targetId,
         ...options.params,
       }),
     },
@@ -279,14 +290,17 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    ["read", "apply", "reject", "refine", "confirm", "adopt-gap"].includes(
+    ["read", "apply", "reject", "refine", "confirm", "adopt-gap", "gap-answers"].includes(
       route.name,
     ),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(
-    (await request(route, { params: { proposalId: "bad", chapterId: "bad" } }))
-      .status,
+    (
+      await request(route, {
+        params: { proposalId: "bad", chapterId: "bad", gapId: "bad" },
+      })
+    ).status,
   ).toBe(400);
   expect(upstream).not.toHaveBeenCalled();
 });
@@ -311,6 +325,9 @@ test.each([
   ["adopt-gap", { marker: "" }],
   ["adopt-gap", { marker: "x".repeat(2101) }],
   ["adopt-gap", { ...adoptBody, user_id: "attacker" }],
+  ["gap-answers", { answers: "x" }],
+  ["gap-answers", { ...gapAnswersBody, gap_version: 0 }],
+  ["gap-answers", { ...gapAnswersBody, user_id: "attacker" }],
 ] as const)("%s rejects invalid body %j", async (name, body) => {
   expect(
     (

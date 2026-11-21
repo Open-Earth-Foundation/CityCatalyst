@@ -338,4 +338,5 @@ def resolve_change(
         source_refs=replacement.source_refs,
         user_input_quote=replacement.user_input_quote,
         context_refs=replacement.context_refs,
+        estimate=replacement.estimate,
     )

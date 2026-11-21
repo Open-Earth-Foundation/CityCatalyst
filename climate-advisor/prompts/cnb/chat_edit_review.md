@@ -39,6 +39,15 @@ Classify each change:
   with text that does not state everything that marker asks for, or exceeded
   the request. Generic "make it clearer" never authorizes those changes.
 
+A change with estimate true states an estimate. It is supported (user,
+source or context) only when its text says it is an estimate and names its
+basis, and that basis is a hedged user value or figures the user, a cited
+source or a context section state, with the arithmetic done correctly; an
+estimate without a basis, or a hedged user value stated as firm, is
+unsupported. Text that says a part is undecided, unknown or pending when the
+user's answer for it was only "Not decided yet" or stated no fact is
+unsupported.
+
 Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and
 assertion must match. Preserve independent facts sharing a number. Prior assistant
@@ -69,7 +78,7 @@ One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown and
-  gaps.
+  gaps (question, state, and for a "caveat" gap its current estimate text).
 - run_context (object): selected_sources, source_excerpts and available
   contextual data, without backend identities or fingerprints. source_excerpts
   holds every exact quotation that the sources cited by these changes keep for
@@ -87,8 +96,8 @@ One JSON object:
 - prior_proposal (object or null): earlier user inputs and unaccepted proposals.
 - is_focused_chapter (boolean): non-binding focus hint.
 - changes (array): indexed by zero-based position; exact start, before, after,
-  kind, group_id, source_refs, user_input_quote and context_refs from the
-  proposal.
+  kind, group_id, source_refs, user_input_quote, context_refs and estimate
+  (boolean: the change states a labelled estimate) from the proposal.
 </input>
 
 <output>

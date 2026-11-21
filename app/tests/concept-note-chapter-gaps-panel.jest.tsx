@@ -89,6 +89,80 @@ it("lists only open gaps and falls back to marker messages", () => {
   expect(fallback[0]?.severity).toBe("critical");
 });
 
+it("keeps an accepted estimate listed as to be confirmed, after the open gaps", async () => {
+  const estimated = {
+    ...gap("d", "caveat"),
+    version: 2,
+    resolution: {
+      resolution_id: "r-d",
+      action: "answer" as const,
+      answer: "The request is approximately $2 million; not yet confirmed.",
+      actor_user_id: "owner",
+      source_refs: [],
+      created_at: "2026-09-24T00:00:00Z",
+    },
+  };
+  const withEstimate = { ...chapter, gaps: [estimated, ...chapter.gaps] };
+  const rows = chapterGapRows(withEstimate);
+  // No marker is left for an estimate, so it follows the open gaps.
+  expect(rows.map((row) => row.id)).toEqual(["a", "b", "d"]);
+  const onAnswerGap = jest.fn();
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={appTheme}>
+        <ChapterGapsPanel
+          chapter={withEstimate}
+          lng="en"
+          rows={rows}
+          onAnswerGap={onAnswerGap}
+        />
+        {/* Stand-in for the answer form heading that opens in the chat panel. */}
+        <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
+      </ChakraProvider>,
+    ),
+  );
+  const panel = container.querySelector(
+    '[data-testid="concept-note-chapter-gaps"]',
+  );
+  // Estimates are not counted as open gaps.
+  expect(panel?.textContent).toContain('chapter-open-gaps:{"count":2}');
+  await act(async () =>
+    container
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-chapter-gaps-toggle"]',
+      )!
+      .click(),
+  );
+  const items = [
+    ...document.querySelectorAll<HTMLButtonElement>(
+      '[data-testid="concept-note-gap-list-item"]',
+    ),
+  ];
+  expect(items.at(-1)?.textContent).toContain("gap-state-caveat");
+  await act(async () => items.at(-1)!.click());
+  const details = document.querySelector(
+    '[data-testid="concept-note-chapter-gap"]',
+  );
+  expect(details?.getAttribute("data-state")).toBe("caveat");
+  expect(
+    document.querySelector('[data-testid="concept-note-gap-estimate"]')
+      ?.textContent,
+  ).toContain("approximately $2 million");
+  const confirm = document.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-chapter-gap-answer"]',
+  )!;
+  expect(confirm.textContent).toContain("gap-confirm-in-chat");
+  await act(async () => confirm.click());
+  expect(onAnswerGap).toHaveBeenCalledWith(withEstimate, rows[2]);
+  // Let the closing popover hand focus to the form before the next test.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  });
+  expect(document.activeElement?.getAttribute("data-testid")).toBe(
+    "concept-note-gap-answer-heading",
+  );
+});
+
 it("keeps counts visible and opens only the selected question with its rationale", async () => {
   const onAnswerGap = jest.fn();
   await act(async () =>
@@ -120,6 +194,10 @@ it("keeps counts visible and opens only the selected question with its rationale
   );
   await act(async () => {
     toggle?.click();
+  });
+  // Let the popover finish its own initial focus before choosing a row.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
   const rows = document.querySelectorAll(
     '[data-testid="concept-note-gap-list-item"]',

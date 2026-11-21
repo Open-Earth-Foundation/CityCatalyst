@@ -2307,6 +2307,21 @@ version, plus any duplicate it filled, which hides the saved answers. A failed
 or rejected turn loses nothing, because the answers stay saved. The
 planner and reviewer prompts also forbid replacing a marker with text saying
 the information is missing or undecided.
+Estimates: a hedged answer ("roughly 2 million, not confirmed yet") and, when
+the user asks for a value, one derived from figures the draft, a source or the
+user state (such as a sum of component costs) may fill a marker as a labelled
+estimate that names its basis. The planner marks that replacement
+`estimate: true` (a factual change); the reviewer rejects an estimate without a
+label or basis. Accepting it moves the gap to the existing `caveat` state
+(resolution `answer`, the estimate text) instead of `resolved`. The gap list
+keeps caveat gaps after the open ones as "Estimate — to be confirmed", the
+chapter shows "N estimates to confirm", and the export preflight names them;
+they do not block export. "Confirm in chat" opens the gap form for a caveat gap
+(the gap-question route accepts `caveat`); the planner sees the gap's current
+`estimate` and replaces it, and accepting a complete bound answer resolves the
+gap (or keeps it a caveat at a new version for a new estimate). A value no one
+states and no stated figure yields is never estimated, and names, partners and
+commitments are never estimated.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

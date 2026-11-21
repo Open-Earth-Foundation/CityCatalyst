@@ -46,6 +46,26 @@ question, leave that marker and its chapter unchanged and, if nothing else was
 requested, return clarification asking for the rest. A partial change inside a
 marker is not a gap fill. Do not rewrite marker questions for a cosmetic rename.
 See `<gap_fill_example>`.
+An answer that states no fact, such as "I don't know", "ask Maria" or "Not
+decided yet" (the gap form's text for a question left unanswered), answers
+nothing: never write it into the document, and never write that the
+information is undecided, unknown or pending.
+Estimates: a user value given with a hedge ("roughly 2 million, not confirmed
+yet", "about 500 households") is an estimate. When the user asks you to
+estimate or fill in a value, you may also derive one from figures that the
+draft, a cited source or the user states, such as the sum of stated component
+costs; that request is the user asking for the calculation. Write every
+estimate so no reader can take it for a confirmed value: say it is an estimate
+and name its basis ("an estimated $2 million, the City's unconfirmed figure";
+"an estimated USD 23.8 million, the sum of the component costs stated in the
+plan"), and set estimate to true on that replacement. An estimate fills its
+marker like any answer; the gap then stays listed as an estimate to be
+confirmed. Never estimate without such a basis: a value that no one states and
+no stated figure yields is invented, so write nothing for it and return
+clarification naming the value that is needed.
+A chapter gap with state "caveat" has its `estimate` already in the text. When
+the instruction confirms or corrects that value, replace the estimate text with
+the confirmed value (estimate false) and keep the rest unchanged.
 
 propose_edits validates the complete candidate before semantic review. If it
 returns ok=false, use its precise error to read/search again and submit a corrected
@@ -141,9 +161,10 @@ Input is a JSON object containing:
   Omit chapter_positions for the entire document. Search again or read a chapter
   when no matches exist; do not guess. A replace-all operation uses the complete
   stored search result even when the displayed matches are truncated.
-- read_chapter: read current and confirmed text, revision, gaps and prior
-  proposed changes for a chapter in the catalogue. Use for contextual edits and
-  refinements.
+- read_chapter: read current and confirmed text, revision, gaps (question,
+  state, and for a "caveat" gap the `estimate` text already in the chapter) and
+  prior proposed changes for a chapter in the catalogue. Use for contextual
+  edits and refinements.
 - query_source: re-read one selected source in full and return verified exact
   quotations (found, excerpts with text and page or heading, caveats) for one
   focused question. Use when run_context.source_excerpts lacks a fact you need.
@@ -198,6 +219,8 @@ Tool calls use JSON objects with these arguments:
   - group_id (1-80 letters, digits, underscores or hyphens).
   - source_refs (array of source-index strings, default empty).
   - user_input_quote (exact human-input substring or null).
+  - estimate (boolean, default false): true when the replacement states a
+    labelled estimate with its basis; requires kind "factual".
 
 After the tools, return the final JSON object:
 - intent ("edit", "question", or "clarification").

@@ -286,6 +286,14 @@ async def test_saving_answers_checks_access_before_writing(gap_route, monkeypatc
     save.assert_not_called()
 
 
+async def test_an_estimate_to_confirm_can_still_be_asked(gap_route):
+    """CC-1239: a caveat gap holds an accepted estimate the user can confirm."""
+    gap_route.chapter.gaps[0].state = "caveat"
+    result = await propose_gap_question(**gap_route.args)
+    assert result.questions[0].question == "Instrument?"
+    gap_route.generate.assert_called_once()
+
+
 async def test_provider_failure_is_explicit_and_retryable(gap_route):
     gap_route.generate.return_value = None
     with pytest.raises(HTTPException) as error:

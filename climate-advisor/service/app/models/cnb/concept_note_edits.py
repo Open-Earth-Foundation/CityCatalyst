@@ -93,12 +93,17 @@ class ChapterPlannedTextChange(BaseModel):
         max_length=len(EDIT_CONTEXT_LABELS),
         description="Run context sections (CityCatalyst data or user-entered population) supporting the change.",
     )
+    # The text states a labelled estimate (a hedged user value or a value derived
+    # from cited figures); a gap it fills becomes a caveat, not resolved.
+    estimate: bool = False
 
     @model_validator(mode="after")
     def validate_change(self) -> PlannedTextChange:
         """Reject no-ops and require a provenance claim for factual changes."""
         if self.before == self.after:
             raise ValueError("a change must alter the selected text")
+        if self.estimate and self.kind != "factual":
+            raise ValueError("an estimate is a factual change")
         if self.kind == "factual" and not (
             self.source_refs or self.user_input_quote or self.context_refs
         ):
@@ -165,6 +170,7 @@ class DraftReplacement(BaseModel):
     context_refs: list[EditContextSection] = Field(
         default_factory=list, max_length=len(EDIT_CONTEXT_LABELS)
     )
+    estimate: bool = False
 
 
 class EditAgentOutput(BaseModel):

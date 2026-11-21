@@ -148,7 +148,10 @@ async def propose_gap_question(
     if chapter is None:
         raise HTTPException(status_code=404, detail="Chapter not found")
     gap = next((item for item in chapter.gaps if item.gap_id == payload.gap_id), None)
-    if payload.gap_id and (gap is None or gap.state not in {"open", "processing"}):
+    # A caveat gap holds an estimate that the user can still confirm.
+    if payload.gap_id and (
+        gap is None or gap.state not in {"open", "processing", "caveat"}
+    ):
         raise HTTPException(status_code=409, detail="Gap is no longer open")
     body = chapter.body_markdown or ""
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.

@@ -161,6 +161,7 @@ def validated_change(
         )
     factual = (
         anchored.kind == "factual"
+        or anchored.estimate
         or anchored.semantic_support in {"user", "source", "context"}
         or fills_information_gap
     )

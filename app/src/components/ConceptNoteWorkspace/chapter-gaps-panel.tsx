@@ -32,7 +32,13 @@ export interface ChapterGapRow {
   marker?: string;
 }
 
-/** Open gaps plus unrecorded markers, in document order, titled by their heading. */
+/** A caveat gap holds an accepted estimate that still needs confirming. */
+export const isEstimate = (row: ChapterGapRow) => row.gap?.state === "caveat";
+
+/**
+ * Open gaps plus unrecorded markers, in document order, titled by their
+ * heading. Estimates have no marker left, so they follow the open gaps.
+ */
 export function chapterGapRows(
   chapter: ConceptNoteDraftChapter,
 ): ChapterGapRow[] {
@@ -42,7 +48,7 @@ export function chapterGapRows(
   // either one is formatted.
   const keys = markers.map((marker) => informationMarkerKey(marker.message));
   const rows: ChapterGapRow[] = chapter.gaps
-    .filter((gap) => gap.state === "open" || gap.state === "processing")
+    .filter((gap) => ["open", "processing", "caveat"].includes(gap.state))
     .map((gap) => ({
       id: gap.gap_id,
       question: gap.question,
@@ -66,6 +72,8 @@ export function chapterGapRows(
       });
   }
   const position = (row: ChapterGapRow) => {
+    // Estimates have no marker; they always follow the open gaps.
+    if (isEstimate(row)) return keys.length + 1;
     const index = keys.indexOf(informationMarkerKey(row.question));
     return index < 0 ? keys.length : index;
   };
@@ -136,12 +144,14 @@ function GapDetails({
   onAnswer?: () => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
+  const estimate = isEstimate(row) ? row.gap?.resolution?.answer : undefined;
   return (
     <Flex
       direction="column"
       minH={0}
       data-testid="concept-note-chapter-gap"
       data-severity={row.severity}
+      data-state={row.gap?.state}
     >
       <PopoverTitle
         fontFamily="heading"
@@ -161,7 +171,7 @@ function GapDetails({
           {t("gap-number", { number })}
         </chakra.span>
         {" · "}
-        {t(severityKey(row))}
+        {t(isEstimate(row) ? "gap-state-caveat" : severityKey(row))}
       </Text>
       {/* Only the long text scrolls, so "Answer in chat" stays in view below it. */}
       <Box
@@ -174,6 +184,25 @@ function GapDetails({
         <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
           {row.question}
         </Text>
+        {estimate && (
+          <Box
+            mt={3}
+            px={3}
+            py={2}
+            bg="sentiment.warningOverlay"
+            borderLeft="3px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            data-testid="concept-note-gap-estimate"
+          >
+            <Text fontSize="label.sm" fontWeight="semibold">
+              {t("gap-current-estimate")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary">
+              {estimate}
+            </Text>
+          </Box>
+        )}
         {row.gap?.answered_so_far && (
           <Box
             mt={4}
@@ -230,7 +259,7 @@ function GapDetails({
           onClick={onAnswer}
         >
           <Icon as={LuMessageSquare} />
-          {t("gap-answer-in-chat")}
+          {t(isEstimate(row) ? "gap-confirm-in-chat" : "gap-answer-in-chat")}
         </Button>
       )}
     </Flex>
@@ -427,7 +456,9 @@ export function ChapterGapsPanel({
   const answering = useRef(false);
   const selected = rows.find((row) => row.id === selectedId);
   if (!rows.length) return null;
-  const required = rows.filter((row) => row.severity === "critical").length;
+  // Estimates stay listed, but they are not open gaps.
+  const openRows = rows.filter((row) => !isEstimate(row));
+  const required = openRows.filter((row) => row.severity === "critical").length;
   return (
     <Flex
       data-testid="concept-note-chapter-gaps"
@@ -436,12 +467,24 @@ export function ChapterGapsPanel({
       gap={2}
       flexWrap="wrap"
     >
-      <Text fontSize="label.sm" fontWeight="semibold" color="content.primary">
-        {t("chapter-open-gaps", { count: rows.length })}
-      </Text>
-      <Text fontSize="label.sm" color="content.tertiary">
-        {t("gap-counts", { required, optional: rows.length - required })}
-      </Text>
+      {/* The chapter header already counts estimates ("chapter-caveats"). */}
+      {openRows.length > 0 && (
+        <>
+          <Text
+            fontSize="label.sm"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {t("chapter-open-gaps", { count: openRows.length })}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("gap-counts", {
+              required,
+              optional: openRows.length - required,
+            })}
+          </Text>
+        </>
+      )}
       <PopoverRoot
         lazyMount
         open={open}
@@ -516,7 +559,7 @@ export function ChapterGapsPanel({
           ) : (
             <>
               <PopoverTitle fontSize="body.sm" fontWeight="semibold" pr={6}>
-                {t("chapter-open-gaps", { count: rows.length })}
+                {t("chapter-open-gaps", { count: openRows.length })}
               </PopoverTitle>
               {/* The list scrolls inside the popover when the chapter has many gaps. */}
               <Box
@@ -573,10 +616,18 @@ export function ChapterGapsPanel({
                         <Text
                           mt={1}
                           fontSize="label.sm"
-                          color="content.tertiary"
+                          color={
+                            isEstimate(row)
+                              ? "sentiment.warningFg"
+                              : "content.tertiary"
+                          }
                           lineClamp={1}
                         >
-                          {t(severityKey(row))}
+                          {t(
+                            isEstimate(row)
+                              ? "gap-state-caveat"
+                              : severityKey(row),
+                          )}
                           {row.gap?.answered_so_far &&
                             ` · ${t("gap-answered-so-far")}`}
                           {row.title && (

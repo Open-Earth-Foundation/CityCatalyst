@@ -551,8 +551,18 @@ def build_planner_input(
             "revision": chapter.revision_number,
             "body_markdown": chapter.body_markdown,
             "confirmed_body_markdown": chapter.confirmed_body_markdown,
+            # A caveat gap's estimate is in the text; a confirmed value replaces it.
             "gaps": [
-                {"question": gap.question, "state": gap.state} for gap in chapter.gaps
+                {
+                    "question": gap.question,
+                    "state": gap.state,
+                    **(
+                        {"estimate": gap.resolution.answer}
+                        if gap.state == "caveat" and gap.resolution
+                        else {}
+                    ),
+                }
+                for gap in chapter.gaps
             ],
         },
         "run_context": omit_context_identifiers(context),
@@ -575,6 +585,7 @@ def build_planner_input(
                                 "group_id",
                                 "user_input_quote",
                                 "context_refs",
+                                "estimate",
                             },
                         ),
                         # Rebind verified snapshots after source reordering; never replay IDs.

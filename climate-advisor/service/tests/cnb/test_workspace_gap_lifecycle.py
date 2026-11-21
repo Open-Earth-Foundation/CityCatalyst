@@ -825,3 +825,118 @@ async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> 
         )
     [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
     assert (after.state, after.answered_so_far) == ("resolved", None)
+
+
+async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
+    workspace,
+) -> None:
+    """CC-1239: a labelled estimate fills the marker but leaves a caveat gap.
+
+    A later complete answer bound to that caveat gap replaces the estimate
+    text (no marker is left) and resolves it.
+    """
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    marker = "[Information needed: Confirm the lead partner.]"
+    estimate = "The lead partner is expected to be the Lincoln Park Neighborhood Council (an estimate, not yet confirmed)."
+    change = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=before.body_markdown.index(marker),
+        before=marker,
+        after=estimate,
+        kind="factual",
+        group_id="lead_partner",
+        user_input_quote="probably Lincoln Park Neighborhood Council, not confirmed",
+        estimate=True,
+    )
+    estimated_body = before.body_markdown.replace(marker, estimate)
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before.body_markdown,
+            after=estimated_body,
+            changes=[change],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(),
+        )
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert after.gaps[0].state == "caveat"
+    assert after.gaps[0].version == 2
+    assert after.gaps[0].resolution.answer == estimate
+
+    # A partial or stale answer leaves the estimate as it is.
+    confirmed = "Lincoln Park Neighborhood Council will lead delivery."
+    confirm = change.model_copy(
+        update={
+            "change_id": uuid4(),
+            "before": estimate,
+            "after": confirmed,
+            "user_input_quote": confirmed,
+            "estimate": False,
+        }
+    )
+    for scope in (
+        bound_scope(gap_version=2, answer_complete=False),
+        bound_scope(gap_version=1),
+    ):
+        async with workspace._session_factory() as session, session.begin():
+            chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+            await resolve_filled_information_gaps(
+                session,
+                chapter=chapter,
+                before=estimated_body,
+                after=estimated_body.replace(estimate, confirmed),
+                changes=[confirm],
+                user_id="owner",
+                idempotency_key=uuid4(),
+                scope=scope,
+            )
+        [after] = await workspace.list_chapters(run_id=RUN_ID)
+        assert after.gaps[0].state == "caveat"
+
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=estimated_body,
+            after=estimated_body.replace(estimate, confirmed),
+            changes=[confirm],
+            user_id="owner",
+            idempotency_key=uuid4(),
+            scope=bound_scope(gap_version=2),
+        )
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    assert after.gaps[0].state == "resolved"
+    assert after.gaps[0].version == 3
+    async with workspace._session_factory() as session:
+        answers = (
+            await session.scalars(
+                select(ConceptNoteGapResolution.answer).where(
+                    ConceptNoteGapResolution.gap_id == GAP_ID
+                )
+            )
+        ).all()
+    assert sorted(answers) == sorted([estimate, confirmed])
+
+
+def test_an_estimate_is_always_a_factual_change() -> None:
+    with pytest.raises(ValueError, match="an estimate is a factual change"):
+        EditChange(
+            chapter_id=CHAPTER_ID,
+            chapter_title="Implementation",
+            change_id=uuid4(),
+            base_revision=1,
+            start=0,
+            before="old",
+            after="about 2 million",
+            kind="wording",
+            group_id="amount",
+            user_input_quote="about 2 million",
+            estimate=True,
+        )

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -23,6 +23,8 @@ class ThreadMessageResponse(BaseModel):
     # Successful CNB render-visual results stored with this message.
     visuals: list[ThreadMessageVisual] = []
     choices: list[str] | None = None
+    # What choosing does: "reply" answers only; "propose_edit" prepares a change.
+    choice_action: Literal["reply", "propose_edit"] | None = None
 
 
 class ThreadMessagesResponse(BaseModel):

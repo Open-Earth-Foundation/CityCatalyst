@@ -1,18 +1,22 @@
 """Atomically bind explicit card replies to the latest saved CNB question."""
 
 import logging
+import re
+import string
 from datetime import UTC, datetime, timedelta
+from typing import Any
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
 from app.services.message_service import MessageService
-from app.tools.concept_note_question import saved_question_choices
+from app.tools.concept_note_question import saved_question, saved_question_choices
 from app.utils.concept_note_context import extract_concept_note_run_id
 
 logger = logging.getLogger(__name__)
@@ -202,3 +206,140 @@ async def release_question_reply(
     except Exception:
         # Keep a failed release closed until the crashed-request lease expires.
         logger.exception("Failed to release CNB question reply claim")
+
+
+# Cards the chat planner may need to resolve "option B" or "that one".
+RECENT_CARD_LIMIT = 3
+RECENT_CARD_SCAN = 24
+# "option B", "choice (c)" or a bare capital after a verb: "go with B instead".
+LETTER_REFERENCES = (
+    re.compile(
+        r"\b(?:option|choice|alternative)\s*\(?([a-l])\)?(?![\w'])", re.IGNORECASE
+    ),
+    re.compile(
+        r"\b(?:[Gg]o with|[Uu]se|[Pp]ick|[Cc]hoose|[Tt]ake)\s+([A-L])"
+        r"(?=\s*(?:$|[.,;:!?)]|instead\b|please\b))"
+    ),
+)
+
+
+def _same_answer(left: str, right: str) -> bool:
+    return " ".join(left.split()).casefold() == " ".join(right.split()).casefold()
+
+
+def chosen_label(card: dict[str, Any], text: str) -> str | None:
+    """Return the label of the option the text repeats exactly, if any."""
+    for option in card["options"]:
+        if _same_answer(option["text"], text):
+            return option["label"]
+    return None
+
+
+async def recent_question_cards(
+    session_factory: async_sessionmaker[AsyncSession] | None,
+    *,
+    thread_id: UUID | str,
+    user_id: str,
+) -> list[dict[str, Any]]:
+    """Load the latest saved cards, oldest first, with the user's answer to each.
+
+    Each card has message_id, question, labelled options, on_answer, answer
+    (the user's next message or None) and selected_label (when that answer
+    repeats an option exactly).
+    """
+    if session_factory is None:
+        return []
+    try:
+        async with session_factory() as session:
+            rows = list(
+                await session.scalars(
+                    select(Message)
+                    .where(Message.thread_id == UUID(str(thread_id)))
+                    .order_by(Message.created_at.desc(), Message.message_id.desc())
+                    .limit(RECENT_CARD_SCAN)
+                )
+            )
+    except SQLAlchemyError:
+        # Cards only add context; the turn continues without them.
+        logger.warning("Could not load CNB question cards thread_id=%s", thread_id)
+        return []
+    rows.reverse()
+    cards: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        if row.role != MessageRole.ASSISTANT or str(row.user_id) != str(user_id):
+            continue
+        question = saved_question(row.tools_used)
+        if question is None:
+            continue
+        following = rows[index + 1] if index + 1 < len(rows) else None
+        answer = (
+            following.text
+            if following is not None and following.role == MessageRole.USER
+            else None
+        )
+        card: dict[str, Any] = {
+            "message_id": str(row.message_id),
+            "question": question.message,
+            "options": [
+                {"label": label, "text": text}
+                for label, text in zip(string.ascii_uppercase, question.options)
+            ],
+            "on_answer": question.on_answer,
+            "answer": answer,
+        }
+        card["selected_label"] = chosen_label(card, answer) if answer else None
+        cards.append(card)
+    return cards[-RECENT_CARD_LIMIT:]
+
+
+def answers_reply_only_card(cards: list[dict[str, Any]], content: str) -> bool:
+    """True when this message picks an option of the latest card that only asks.
+
+    Such a choice answers the question; it never starts a document change.
+    A custom answer or a choice on an edit card keeps the normal edit path.
+    """
+    if not cards:
+        return False
+    latest = cards[-1]
+    return (
+        latest["on_answer"] == "reply"
+        and latest["answer"] is not None
+        and _same_answer(latest["answer"], content)
+        and latest["selected_label"] is not None
+    )
+
+
+def referenced_options(cards: list[dict[str, Any]], instruction: str) -> list[str]:
+    """Options the user picked: an exact click, or "option B" on the latest card."""
+    if not cards:
+        return []
+    chosen = [
+        option["text"]
+        for card in cards
+        for option in card["options"]
+        if option["label"] == card["selected_label"]
+    ]
+    latest = cards[-1]
+    labels = {
+        match.upper()
+        for pattern in LETTER_REFERENCES
+        for match in pattern.findall(instruction)
+    }
+    chosen.extend(
+        option["text"] for option in latest["options"] if option["label"] in labels
+    )
+    return list(dict.fromkeys(chosen))
+
+
+def planner_question_cards(cards: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Project cards for the edit planner without storage identifiers."""
+    return [
+        {
+            "question": card["question"],
+            "options": card["options"],
+            "choosing_prepares_edit": card["on_answer"] == "propose_edit",
+            "user_answer": card["answer"],
+            "selected_label": card["selected_label"],
+        }
+        for card in cards
+    ]

@@ -1,7 +1,7 @@
 """Present a CNB question in the assistant message without changing the document."""
 
 import logging
-from typing import Annotated
+from typing import Annotated, Literal
 
 from agents import function_tool
 from pydantic import (
@@ -15,6 +15,9 @@ from pydantic import (
 logger = logging.getLogger(__name__)
 # No length cap: an option may be a complete alternative, such as a rewrite.
 Answer = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+# What choosing an option does; the card shows it and the server enforces it.
+OnAnswer = Literal["reply", "propose_edit"]
+INVALID_QUESTION_PREFIX = "INVALID_QUESTION_ARGUMENTS:"
 
 
 class ConceptNoteQuestion(BaseModel):
@@ -24,6 +27,8 @@ class ConceptNoteQuestion(BaseModel):
         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4000)
     ]
     options: list[Answer] = Field(min_length=2, max_length=12)
+    # Cards saved before on_answer existed only ever answered the question.
+    on_answer: OnAnswer = "reply"
 
     @field_validator("options")
     @classmethod
@@ -34,8 +39,8 @@ class ConceptNoteQuestion(BaseModel):
         return values
 
 
-def saved_question_choices(tools: object) -> list[str] | None:
-    """Expose validated answer labels from history, never raw tool results."""
+def saved_question(tools: object) -> ConceptNoteQuestion | None:
+    """Read the validated card from history, never raw tool results."""
     if not isinstance(tools, list):
         return None
     for tool in reversed(tools):
@@ -45,20 +50,52 @@ def saved_question_choices(tools: object) -> list[str] | None:
         ):
             continue
         try:
-            return ConceptNoteQuestion.model_validate(tool.get("result_json")).options
+            return ConceptNoteQuestion.model_validate(tool.get("result_json"))
         except ValidationError:
             return None
     return None
 
 
-# A malformed question must surface the existing retry UI, not end as an empty reply.
-@function_tool(failure_error_function=None)
+def saved_question_choices(tools: object) -> list[str] | None:
+    """Expose validated answer labels from history."""
+    question = saved_question(tools)
+    return question.options if question else None
+
+
+def question_argument_error(_ctx: object, error: Exception) -> str:
+    """Return invalid arguments to the model so it can correct them and ask again."""
+    logger.warning("Rejected invalid CNB question arguments: %s", type(error).__name__)
+    return (
+        f"{INVALID_QUESTION_PREFIX} The card was not shown. Correct the arguments "
+        "and call concept_note_ask_question again, or answer in plain text. "
+        f"Error: {error}"
+    )
+
+
+def is_question_output(output: object) -> bool:
+    """Only a validated card may end the turn; an argument error must not."""
+    try:
+        ConceptNoteQuestion.model_validate_json(str(output))
+    except ValidationError:
+        return False
+    return True
+
+
+# Invalid arguments go back to the model; only a valid card ends the turn.
+@function_tool(failure_error_function=question_argument_error)
 async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     """End this turn with an interactive question inside the assistant message.
 
     message contains your concise user-facing explanation and ONE question as
     Markdown. options contains 2-12 contextual answer texts as plain text, without
     letter prefixes or Markdown. The UI adds A/B/C labels and a free-text answer automatically.
+    on_answer says what choosing an option does, and the UI tells the user:
+    "reply" (default choice) only answers the question; choosing an option then
+    cannot start a document change in the next turn. Use "propose_edit" only
+    when the user already asked to change the document and the card just
+    settles how; choosing then prepares a proposed change for review, never
+    applies it. Rewrites the user asked to "choose from" are "reply" unless
+    they asked to put the chosen one into the document.
     Use when concrete choices make a clarification or next-step decision
     easier for the user, and always when the user asks for options or
     alternatives to choose from, such as rewrites; then each option holds one
@@ -70,8 +107,7 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     are not choosing yet, even if they say "options" or "alternatives".
     Do not use for direct answers, acknowledgements, or open-ended questions.
     It is optional, including after a previous choice.
-    It only presents choices;
-    it never edits the document, submits anything, or authorizes another tool.
+    It only presents choices; it never edits the document or submits anything.
     """
     logger.info("Presenting CNB question with %d options", len(question.options))
     return question.model_dump_json()

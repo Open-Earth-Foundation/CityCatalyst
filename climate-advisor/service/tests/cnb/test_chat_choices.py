@@ -4,11 +4,13 @@ import json
 from types import SimpleNamespace
 
 import pytest
-from agents import ModelBehaviorError
 from agents.tool_context import ToolContext
+from app.services.agent_service import stop_at_valid_question
 from app.tools.concept_note_question import (
+    INVALID_QUESTION_PREFIX,
     ConceptNoteQuestion,
     concept_note_ask_question,
+    saved_question,
     saved_question_choices,
 )
 from app.utils.streaming_events import handle_tool_output
@@ -50,18 +52,61 @@ async def test_requested_alternatives_remain_individually_selectable_in_history(
     ) == options
 
 
+def tool_result(name: str, output: str) -> SimpleNamespace:
+    return SimpleNamespace(tool=SimpleNamespace(name=name), output=output)
+
+
 @pytest.mark.asyncio
-async def test_invalid_tool_arguments_raise_instead_of_finishing_an_empty_reply():
-    with pytest.raises(ModelBehaviorError):
-        await concept_note_ask_question.on_invoke_tool(
-            ToolContext(
-                context=None,
-                tool_name="concept_note_ask_question",
-                tool_call_id="test",
-                tool_arguments="",
-            ),
-            json.dumps({"question": {"message": "Which?", "options": ["Yes", "yes"]}}),
-        )
+async def test_invalid_tool_arguments_go_back_to_the_model_without_ending_the_turn():
+    output = await concept_note_ask_question.on_invoke_tool(
+        ToolContext(
+            context=None,
+            tool_name="concept_note_ask_question",
+            tool_call_id="test",
+            tool_arguments="",
+        ),
+        json.dumps({"question": {"message": "Which?", "options": ["Yes", "yes"]}}),
+    )
+    assert output.startswith(INVALID_QUESTION_PREFIX)
+    assert "distinct" in output
+    # The model gets the error and another step instead of an empty reply.
+    behavior = stop_at_valid_question(
+        None, [tool_result("concept_note_ask_question", output)]
+    )
+    assert behavior.is_final_output is False
+
+
+def test_a_valid_card_ends_the_turn():
+    card = json.dumps({"message": "Which?", "options": ["Yes", "No"]})
+    behavior = stop_at_valid_question(
+        None,
+        [
+            tool_result("concept_note_edit_propose", "{}"),
+            tool_result("concept_note_ask_question", card),
+        ],
+    )
+    assert behavior.is_final_output is True
+    assert behavior.final_output == card
+
+
+def test_on_answer_defaults_to_reply_and_older_cards_stay_answerable():
+    question = ConceptNoteQuestion(message="Which?", options=["Yes", "No"])
+    assert question.on_answer == "reply"
+    saved = saved_question(
+        [
+            {
+                "name": "concept_note_ask_question",
+                "result_json": {"message": "Which?", "options": ["Yes", "No"]},
+            }
+        ]
+    )
+    assert saved is not None and saved.on_answer == "reply"
+    edit = ConceptNoteQuestion(
+        message="Which version should I put in?",
+        options=["Short", "Long"],
+        on_answer="propose_edit",
+    )
+    assert json.loads(edit.model_dump_json())["on_answer"] == "propose_edit"
 
 
 @pytest.mark.asyncio

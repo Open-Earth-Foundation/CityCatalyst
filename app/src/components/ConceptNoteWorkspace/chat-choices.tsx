@@ -2,13 +2,15 @@
 
 import { useId, useRef, useState } from "react";
 import { chakra, Flex, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
-import { LuArrowRight, LuCheck } from "react-icons/lu";
+import { LuArrowRight, LuCheck, LuFilePen } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import { EDIT_INSTRUCTION_MAX_CHARS } from "@/util/concept-note-edit-types";
+import type { ConceptNoteChoiceAction } from "./chat-utils";
 
 /** Suggested and custom replies stay inside the message that asked the question. */
 export function ChatChoices({
   choices,
+  choiceAction = "reply",
   disabled,
   answered,
   selectedAnswer,
@@ -18,6 +20,8 @@ export function ChatChoices({
   onReply,
 }: {
   choices: string[];
+  /** "propose_edit" cards prepare a proposed change; the card says so. */
+  choiceAction?: ConceptNoteChoiceAction;
   disabled: boolean;
   answered: boolean;
   selectedAnswer?: string;
@@ -28,6 +32,7 @@ export function ChatChoices({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const tooLongId = useId();
+  const proposesEditId = useId();
   const [sending, setSending] = useState(false);
   const submitting = useRef(false);
   const locked = disabled || answered || sending;
@@ -58,11 +63,28 @@ export function ChatChoices({
       mt={3}
       data-testid="concept-note-chat-choices"
     >
+      {choiceAction === "propose_edit" && (
+        <Flex
+          id={proposesEditId}
+          gap={2}
+          align="flex-start"
+          fontSize="label.sm"
+          color="content.secondary"
+          mb={1}
+          data-testid="concept-note-chat-choices-proposes-edit"
+        >
+          <Icon as={LuFilePen} boxSize={3.5} flexShrink={0} mt="2px" />
+          <Text>{t("chat-choices-proposes-edit")}</Text>
+        </Flex>
+      )}
       <VStack
         align="stretch"
         gap={0}
         role="group"
         aria-label={t("chat-choices-label")}
+        aria-describedby={
+          choiceAction === "propose_edit" ? proposesEditId : undefined
+        }
       >
         {choices.map((choice, index) => (
           <chakra.button

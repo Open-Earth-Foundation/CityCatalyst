@@ -17,6 +17,10 @@ from app.services.agent_service import AgentService
 from app.services.cnb.draft_overview import (
     draft_overview_instructions,
 )
+from app.services.cnb.question_reply import (
+    answers_reply_only_card,
+    recent_question_cards,
+)
 from app.utils.mlflow_logging import (
     log_json_artifact,
     log_tags,
@@ -78,6 +82,25 @@ async def prepare_stream_agent(
         if concept_note_run_id and isinstance(edit_context, dict)
         else None
     )
+    # Cards tell the planner what "option B" or "that one" means, and a pick on
+    # a card that only asks a question answers it instead of editing the draft.
+    question_cards = (
+        await recent_question_cards(
+            handler.session_factory,
+            thread_id=handler.thread_id,
+            user_id=str(handler.user_id),
+        )
+        if edit_request is not None and handler.thread_id
+        else []
+    )
+    if edit_request is not None and answers_reply_only_card(
+        question_cards, payload.content
+    ):
+        logger.info(
+            "CNB card answer keeps the document unchanged thread_id=%s",
+            handler.thread_id,
+        )
+        edit_request = None
     handler.concept_note_edit_request = edit_request
     # The CNB frontend sends its active language so help quotes visible labels.
     concept_note_ui_locale = (
@@ -111,6 +134,7 @@ async def prepare_stream_agent(
         native_input_catalog_context=native_input_catalog_context,
         concept_note_edit_request=edit_request,
         concept_note_edit_history=concept_note_edit_history,
+        concept_note_question_cards=question_cards if edit_request else [],
         concept_note_ui_locale=concept_note_ui_locale,
     )
 

@@ -11,7 +11,7 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.services.agent_service import AgentService
+from app.services.agent_service import AgentService, stop_at_valid_question
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import get_settings
@@ -115,9 +115,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
         agent = await service.create_agent()
         assert [tool.name for tool in agent.tools] == expected_tools
-        assert agent.tool_use_behavior == {
-            "stop_at_tool_names": ["concept_note_ask_question"]
-        }
+        assert agent.tool_use_behavior is stop_at_valid_question
         if edit_enabled:
             assert agent.tools[-1].params_json_schema["properties"] == {}
         assert service.active_instructions == settings.llm.prompts.compose_prompt(

@@ -65,6 +65,8 @@ class ConceptNoteEditPlanner:
         prior_proposal: EditProposalResponse | None = None,
         recent_messages: list[dict[str, str]] | None = None,
         source_lookup: SourceLookup = unavailable_source_lookup,
+        question_cards: list[dict[str, Any]] | None = None,
+        chosen_options: list[str] | None = None,
     ) -> EditPlanOutput:
         """Bound the complete tool loop and semantic review by one operation deadline.
 
@@ -82,6 +84,8 @@ class ConceptNoteEditPlanner:
                     prior_proposal,
                     recent_messages,
                     source_lookup,
+                    question_cards or [],
+                    chosen_options or [],
                 )
         except TimeoutError:
             raise EditOperationError(
@@ -104,6 +108,8 @@ class ConceptNoteEditPlanner:
         prior_proposal: EditProposalResponse | None,
         recent_messages: list[dict[str, str]] | None,
         source_lookup: SourceLookup,
+        question_cards: list[dict[str, Any]],
+        chosen_options: list[str],
     ) -> EditPlanOutput:
         """Repair rejected candidates within one deadline, reviewing each independently."""
         prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_planner")
@@ -138,6 +144,8 @@ class ConceptNoteEditPlanner:
         payload = {
             "instruction": request.instruction,
             "recent_messages": first["recent_messages"],
+            "question_cards": question_cards,
+            "chosen_options": chosen_options,
             "run_context": first["run_context"],
             "chapters": [
                 {
@@ -180,7 +188,11 @@ class ConceptNoteEditPlanner:
             request,
             chapters,
             run_context,
-            [*prior_user_inputs(prior_proposal), *recent_user_inputs(recent_messages)],
+            [
+                *prior_user_inputs(prior_proposal),
+                *recent_user_inputs(recent_messages),
+                *chosen_options,
+            ],
             max_searches=budget.cnb_edits.max_searches,
         )
         options = build_openrouter_client_options(
@@ -324,6 +336,8 @@ class ConceptNoteEditPlanner:
                                     if excerpt["source_index"] in cited
                                 ],
                             },
+                            "question_cards": question_cards,
+                            "chosen_options": chosen_options,
                             "changes": [
                                 change.model_dump(exclude={"chapter_id"})
                                 for change in changes

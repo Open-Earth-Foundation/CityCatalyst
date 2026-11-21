@@ -656,7 +656,7 @@ function finishChoiceHistory() {
     choiceQuestion("next-question"),
   ];
 }
-it("keeps an inline draft after option submission and recovers it without replacing or sending composer text", async () => {
+it("moves an inline draft into the composer when an option is picked instead", async () => {
   messages = [choiceQuestion()];
   await renderPanel();
   await typeInline("  Draft paragraph\nSecond paragraph  ");
@@ -665,24 +665,19 @@ it("keeps an inline draft after option submission and recovers it without replac
     container.querySelector<HTMLButtonElement>("button[aria-pressed]")!.click(),
   );
   expect(sendMessage).toHaveBeenCalledWith("Budget", undefined, "question");
+  // Nothing typed is lost, and nothing extra is sent.
+  expect(composer().value).toBe(
+    "Existing composer draft\n\nDraft paragraph\nSecond paragraph",
+  );
   finishChoiceHistory();
   await renderPanel();
-  expect(
-    container.querySelector('[data-testid="concept-note-saved-answer-draft"]')
-      ?.textContent,
-  ).toContain("Draft paragraph\nSecond paragraph");
-  const recover = [...container.querySelectorAll("button")].find(
-    (b) => b.textContent === "chat-choices-use-draft",
-  )!;
-  await act(async () => recover.click());
   expect(composer().value).toBe(
-    "Existing composer draft\n\n  Draft paragraph\nSecond paragraph  ",
+    "Existing composer draft\n\nDraft paragraph\nSecond paragraph",
   );
-  expect(document.activeElement).toBe(composer());
-  expect(sendMessage).toHaveBeenCalledTimes(1);
   expect(
     container.querySelector('[data-testid="concept-note-saved-answer-draft"]'),
   ).toBeNull();
+  expect(sendMessage).toHaveBeenCalledTimes(1);
 });
 it("keeps the unsent inline draft when the main composer sends another message", async () => {
   messages = [choiceQuestion()];
@@ -817,4 +812,46 @@ it("announces a finished suggested-answer question politely", async () => {
   isGenerating = true;
   await renderPanel();
   expect(status.textContent).toBe("");
+});
+it("keeps a card open when its answer was not sent and labels the answer", async () => {
+  messages = [
+    choiceQuestion(),
+    { id: "answer", role: "user", text: "Budget", unsent: true },
+  ];
+  await renderPanel();
+  expect(
+    container.querySelector('[data-testid="concept-note-chat-unsent"]')
+      ?.textContent,
+  ).toBe("chat-message-unsent");
+  const options = container.querySelectorAll<HTMLButtonElement>(
+    "button[aria-pressed]",
+  );
+  // Not selected and still answerable, so the user can choose again.
+  expect([...options].map((option) => option.disabled)).toEqual([false, false]);
+  expect(options[0].getAttribute("aria-pressed")).toBe("false");
+  expect(
+    container.querySelector(
+      '[data-testid="concept-note-chat-choices"] textarea',
+    ),
+  ).not.toBeNull();
+});
+it("says when choosing an answer prepares a proposed change", async () => {
+  messages = [{ ...choiceQuestion(), choiceAction: "propose_edit" }];
+  await renderPanel();
+  const note = container.querySelector(
+    '[data-testid="concept-note-chat-choices-proposes-edit"]',
+  );
+  expect(note?.textContent).toBe("chat-choices-proposes-edit");
+  expect(
+    container
+      .querySelector('[aria-label="chat-choices-label"]')
+      ?.getAttribute("aria-describedby"),
+  ).toBe(note?.id);
+  messages = [choiceQuestion()];
+  await renderPanel();
+  expect(
+    container.querySelector(
+      '[data-testid="concept-note-chat-choices-proposes-edit"]',
+    ),
+  ).toBeNull();
 });

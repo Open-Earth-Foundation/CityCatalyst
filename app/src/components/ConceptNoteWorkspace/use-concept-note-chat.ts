@@ -17,6 +17,7 @@ import {
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
   readConceptNoteToolVisual,
+  readConceptNoteChoiceAction,
   readConceptNoteChoices,
 } from "./chat-utils";
 
@@ -45,6 +46,8 @@ interface ChatTurn {
   options?: Record<string, unknown>;
   overview: boolean;
   completed?: boolean;
+  /** A saved message whose reply never arrived, found when history loaded. */
+  resumed?: boolean;
 }
 
 function chatErrorKey(
@@ -116,6 +119,8 @@ export function useConceptNoteChat({
   const [connectionFailed, setConnectionFailed] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [failedTurn, setFailedTurn] = useState<ChatTurn | null>(null);
+  // The latest saved message has no reply, for example after a reload mid-turn.
+  const [replyMissing, setReplyMissing] = useState(false);
   const [overviewFailed, setOverviewFailed] = useState(false);
   const [historyAttempt, setHistoryAttempt] = useState(0);
   const staleQuestionThreadRef = useRef<string | null>(null);
@@ -161,9 +166,12 @@ export function useConceptNoteChat({
       const choices = readConceptNoteChoices(result);
       const assistantId = assistantMessageIdRef.current;
       if (choices && assistantId) {
+        const choiceAction = readConceptNoteChoiceAction(result.on_answer);
         setMessages((current) =>
           current.map((message) =>
-            message.id === assistantId ? { ...message, choices } : message,
+            message.id === assistantId
+              ? { ...message, choices, choiceAction }
+              : message,
           ),
         );
       }
@@ -274,6 +282,15 @@ export function useConceptNoteChat({
         code === CONTEXT_NOT_READY || requestRejected
           ? pendingUserMessageIdRef.current
           : null;
+      // No response at all: the request most likely never reached Clima, so
+      // the answer is marked as not sent and its card can be answered again.
+      const unsentUserMessageId =
+        code !== STREAM_STALLED_CODE &&
+        details !== undefined &&
+        !details.streamStarted &&
+        status === undefined
+          ? pendingUserMessageIdRef.current
+          : null;
       if (assistantMessageId) {
         setMessages((current) =>
           current
@@ -287,7 +304,9 @@ export function useConceptNoteChat({
             .map((message) =>
               message.id === assistantMessageId
                 ? { ...message, choices: undefined }
-                : message,
+                : message.id === unsentUserMessageId
+                  ? { ...message, unsent: true }
+                  : message,
             ),
         );
       }
@@ -361,21 +380,47 @@ export function useConceptNoteChat({
         const payload: unknown = await response.json();
         if (controller.signal.aborted) return;
         failedAssistantMessageIdRef.current = null;
-        setMessages(readConceptNoteThreadMessages(payload));
+        const loaded = readConceptNoteThreadMessages(payload);
+        setMessages(loaded);
         setMessagesThreadId(threadId);
+        // A turn that stopped before Clima replied leaves the user's message last.
+        const unanswered = loaded.at(-1);
+        const card = loaded.at(-2);
+        const missing =
+          unanswered?.role === "user" &&
+          staleQuestionThreadRef.current !== threadId;
+        setReplyMissing(missing);
         setError(
           staleQuestionThreadRef.current === threadId
             ? t("chat-question-stale")
-            : null,
+            : missing
+              ? t("chat-reply-missing")
+              : null,
         );
         setConnectionFailed(false);
-        setFailedTurn(null);
+        setFailedTurn(
+          missing && unanswered
+            ? {
+                content: unanswered.text,
+                context:
+                  card?.choices && card.questionMessageId
+                    ? {
+                        concept_note_question_message_id:
+                          card.questionMessageId,
+                      }
+                    : {},
+                overview: false,
+                resumed: true,
+              }
+            : null,
+        );
         setRetrying(false);
       } catch (requestError) {
         if (
           !(requestError instanceof Error) ||
           requestError.name !== "AbortError"
         ) {
+          setReplyMissing(false);
           setMessages([]);
           setMessagesThreadId(threadId);
           setError(t("chat-history-error"));
@@ -447,7 +492,12 @@ export function useConceptNoteChat({
 
   // Repeats whatever failed: the history load, the overview, or the last turn.
   async function retry(): Promise<void> {
-    if (!threadId || isGenerating || retrying || !connectionFailed) {
+    if (
+      !threadId ||
+      isGenerating ||
+      retrying ||
+      (!connectionFailed && !replyMissing)
+    ) {
       return;
     }
     if (!failedTurn) {
@@ -463,6 +513,16 @@ export function useConceptNoteChat({
     // when it is still the latest stored message.
     await streamReply({
       ...failedTurn,
+      context:
+        failedTurn.resumed && editScope
+          ? {
+              ...failedTurn.context,
+              concept_note_edit: {
+                scope: editScope,
+                idempotency_key: crypto.randomUUID(),
+              },
+            }
+          : failedTurn.context,
       options: { ...failedTurn.options, concept_note_turn: "retry" },
     });
   }
@@ -475,6 +535,7 @@ export function useConceptNoteChat({
     currentTurnRef.current = turn;
     turn.completed = false;
     staleQuestionThreadRef.current = null;
+    setReplyMissing(false);
     // Anything sent after a failure is the attempt to reconnect.
     if (connectionFailed) setRetrying(true);
     // The failed reply was never saved; drop its partial text so it is not shown twice.
@@ -483,7 +544,13 @@ export function useConceptNoteChat({
     const assistantMessageId = crypto.randomUUID();
     assistantMessageIdRef.current = assistantMessageId;
     setMessages((current) => [
-      ...current.filter((message) => message.id !== failedAssistantId),
+      ...current
+        .filter((message) => message.id !== failedAssistantId)
+        // A new message replaces an unsent one; Retry sends the unsent one.
+        .filter((message) => !(userMessage && message.unsent))
+        .map((message) =>
+          message.unsent ? { ...message, unsent: false } : message,
+        ),
       ...(userMessage ? [userMessage] : []),
       { id: assistantMessageId, role: "assistant", text: "" },
     ]);
@@ -544,7 +611,10 @@ export function useConceptNoteChat({
   return {
     connection,
     error: visibleError,
-    canRetry: connection === "error" && Boolean(visibleError) && !isGenerating,
+    canRetry:
+      (connection === "error" || (replyMissing && Boolean(failedTurn))) &&
+      Boolean(visibleError) &&
+      !isGenerating,
     overviewFailed,
     historyLoading,
     isGenerating,

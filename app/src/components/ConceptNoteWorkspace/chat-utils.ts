@@ -11,6 +11,19 @@ export interface ConceptNoteChatMessage {
   text: string;
   visuals?: ConceptNoteChatVisual[];
   choices?: string[];
+  /** What choosing an option does: answer only, or prepare a proposed change. */
+  choiceAction?: ConceptNoteChoiceAction;
+  /** The request never reached Clima; the message is shown but not saved. */
+  unsent?: boolean;
+}
+
+export type ConceptNoteChoiceAction = "reply" | "propose_edit";
+
+/** Cards saved before the action existed only answered the question. */
+export function readConceptNoteChoiceAction(
+  value: unknown,
+): ConceptNoteChoiceAction {
+  return value === "propose_edit" ? "propose_edit" : "reply";
 }
 
 /** The same bounded tool contract is used by the stream and saved history. */
@@ -152,6 +165,7 @@ export function readConceptNoteThreadMessages(
                 name: "concept_note_ask_question",
                 options: message.choices,
               }),
+              choiceAction: readConceptNoteChoiceAction(message.choice_action),
             }
           : {}),
       },

@@ -666,3 +666,121 @@ it("replaces the unsaved partial reply when Retry starts", async () => {
     chat.messages.filter((message) => message.role === "user"),
   ).toHaveLength(1);
 });
+
+async function remountWithHistory(messages: unknown[]) {
+  await act(async () => root.unmount());
+  historyMessages = messages;
+  root = createRoot(document.createElement("div"));
+  await act(async () => root.render(<Harness />));
+}
+
+it("marks an answer that never reached Clima as not sent, then sends it on Retry", async () => {
+  await act(async () => chat.sendMessage("Budget"));
+  // No response at all: the request did not reach the service.
+  await act(async () =>
+    streamOptions.onError?.("Failed to fetch", undefined, {
+      streamStarted: false,
+    }),
+  );
+  const answer = chat.messages.find((message) => message.role === "user");
+  expect(answer?.unsent).toBe(true);
+  expect(chat.canRetry).toBe(true);
+
+  await act(async () => chat.retry());
+  expect(lastRequestBody()).toMatchObject({
+    content: "Budget",
+    options: { concept_note_turn: "retry" },
+  });
+  expect(chat.messages.find((message) => message.role === "user")?.unsent).toBe(
+    false,
+  );
+});
+
+it("replaces an unsent answer when the user answers again instead", async () => {
+  await act(async () => chat.sendMessage("Budget"));
+  await act(async () =>
+    streamOptions.onError?.("Failed to fetch", undefined, {
+      streamStarted: false,
+    }),
+  );
+  await act(async () => chat.sendMessage("Partners"));
+  expect(
+    chat.messages
+      .filter((message) => message.role === "user")
+      .map((message) => message.text),
+  ).toEqual(["Partners"]);
+});
+
+it("keeps server failures as sent: Clima may already have saved them", async () => {
+  await act(async () => chat.sendMessage("Budget"));
+  await act(async () =>
+    streamOptions.onError?.("Bad gateway", undefined, {
+      status: 502,
+      streamStarted: false,
+    }),
+  );
+  expect(
+    chat.messages.find((message) => message.role === "user")?.unsent,
+  ).toBeUndefined();
+});
+
+it("reads whether choosing an option prepares a proposed change", async () => {
+  await act(async () => chat.sendMessage("Shorten the summary"));
+  await act(async () => {
+    streamOptions.onMessage?.("Which version should I put in?");
+    streamOptions.onToolResult?.({
+      name: "concept_note_ask_question",
+      options: ["Short", "Shorter"],
+      on_answer: "propose_edit",
+    });
+    streamOptions.onComplete?.();
+  });
+  expect(chat.messages.at(-1)?.choiceAction).toBe("propose_edit");
+
+  await remountWithHistory([
+    {
+      message_id: "card",
+      role: "assistant",
+      text: "Which one?",
+      choices: ["Short", "Shorter"],
+    },
+  ]);
+  // Cards saved before the action existed only answered the question.
+  expect(chat.messages.at(-1)?.choiceAction).toBe("reply");
+});
+
+it("offers Retry when the last saved message has no reply", async () => {
+  await remountWithHistory([
+    {
+      message_id: "card",
+      role: "assistant",
+      text: "Which format?",
+      choices: ["Table", "Bullets"],
+    },
+    { message_id: "answer", role: "user", text: "Table" },
+  ]);
+  expect(chat.error).toBe("chat-reply-missing");
+  // The connection itself is fine; only this turn is unfinished.
+  expect(chat.connection).toBe("connected");
+  expect(chat.canRetry).toBe(true);
+
+  await act(async () => chat.retry());
+  expect(lastRequestBody()).toMatchObject({
+    content: "Table",
+    context: { concept_note_question_message_id: "card" },
+    options: { concept_note_turn: "retry" },
+  });
+  // Retry repeats the saved message instead of adding a second bubble.
+  expect(
+    chat.messages.filter((message) => message.role === "user"),
+  ).toHaveLength(1);
+});
+
+it("does not offer Retry when the last message is Clima's", async () => {
+  await remountWithHistory([
+    { message_id: "q", role: "user", text: "Hello" },
+    { message_id: "a", role: "assistant", text: "Hi" },
+  ]);
+  expect(chat.error).toBeNull();
+  expect(chat.canRetry).toBe(false);
+});

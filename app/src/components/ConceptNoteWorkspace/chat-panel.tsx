@@ -336,7 +336,8 @@ export function ConceptNoteChatPanel({
   const composerDisabled = !threadId;
   // Every CNB message becomes an edit request, which the service caps.
   const composerOverLimit = input.trim().length - EDIT_INSTRUCTION_MAX_CHARS;
-  const latestMessage = messages.at(-1);
+  // An unsent answer is shown but not saved; the card it answered stays open.
+  const latestMessage = messages.findLast((message) => !message.unsent);
   const activeQuestionId = latestMessage?.choices
     ? (latestMessage.questionMessageId ?? latestMessage.id)
     : undefined;
@@ -349,11 +350,16 @@ export function ConceptNoteChatPanel({
     const scroll = chatScrollRef.current;
     if (!scroll) return;
     const question = latestQuestionRef.current;
-    // A long question must open at its heading, not at the last answer option.
+    // A tall card opens at its question and first answers, not at the top of a
+    // long summary or at the last answer option.
+    const choices = question?.querySelector(
+      '[data-testid="concept-note-chat-choices"]',
+    );
+    const anchor = choices?.previousElementSibling ?? choices ?? question;
     const top =
-      question && question.offsetHeight > scroll.clientHeight - 24
+      question && anchor && question.offsetHeight > scroll.clientHeight - 24
         ? scroll.scrollTop +
-          question.getBoundingClientRect().top -
+          anchor.getBoundingClientRect().top -
           scroll.getBoundingClientRect().top -
           12
         : scroll.scrollHeight;
@@ -684,7 +690,7 @@ export function ConceptNoteChatPanel({
                   message.role === "user") && (
                   <Box
                     ref={
-                      message.choices && message.id === messages.at(-1)?.id
+                      message.choices && message.id === latestMessage?.id
                         ? latestQuestionRef
                         : undefined
                     }
@@ -712,21 +718,40 @@ export function ConceptNoteChatPanel({
                         {message.text}
                       </ReactMarkdown>
                     ) : message.role === "user" ? (
-                      <Text
-                        fontSize="body.sm"
-                        lineHeight="22px"
-                        color="content.primary"
-                        whiteSpace="pre-wrap"
-                      >
-                        {message.text}
-                      </Text>
+                      <>
+                        <Text
+                          fontSize="body.sm"
+                          lineHeight="22px"
+                          color="content.primary"
+                          whiteSpace="pre-wrap"
+                        >
+                          {message.text}
+                        </Text>
+                        {message.unsent && (
+                          <HStack
+                            gap={1}
+                            mt={1}
+                            justify="end"
+                            color="sentiment.negativeDefault"
+                            data-testid="concept-note-chat-unsent"
+                          >
+                            <Icon as={LuCircleAlert} boxSize={3.5} />
+                            <Text fontSize="label.sm">
+                              {t("chat-message-unsent")}
+                            </Text>
+                          </HStack>
+                        )}
+                      </>
                     ) : null}
                     {message.role === "assistant" && message.choices && (
                       <ChatChoices
                         choices={message.choices}
+                        choiceAction={message.choiceAction}
                         lng={lng}
                         disabled={chatDisabled || !message.questionMessageId}
-                        answered={messageIndex < messages.length - 1}
+                        answered={messages
+                          .slice(messageIndex + 1)
+                          .some((later) => !later.unsent)}
                         draft={
                           inlineDrafts[
                             message.questionMessageId ?? message.id
@@ -739,7 +764,8 @@ export function ConceptNoteChatPanel({
                           )
                         }
                         selectedAnswer={
-                          messages[messageIndex + 1]?.role === "user"
+                          messages[messageIndex + 1]?.role === "user" &&
+                          !messages[messageIndex + 1].unsent
                             ? messages[messageIndex + 1].text
                             : undefined
                         }
@@ -747,6 +773,20 @@ export function ConceptNoteChatPanel({
                           if (chatDisabled || !message.questionMessageId)
                             return false;
                           followLatestRef.current = true;
+                          // Picking an option keeps text typed in the card's own
+                          // field: it moves to the message box.
+                          const questionKey = message.questionMessageId;
+                          const cardDraft = (
+                            inlineDrafts[questionKey] ?? ""
+                          ).trim();
+                          if (cardDraft && cardDraft !== answer.trim()) {
+                            setInput((current) =>
+                              current.trim()
+                                ? `${current}\n\n${cardDraft}`
+                                : cardDraft,
+                            );
+                            setChoiceDraft(questionKey, "");
+                          }
                           // The answer controls lock or unmount while Clima replies,
                           // so keep keyboard focus in the composer from the start.
                           const active = document.activeElement;

@@ -39,7 +39,12 @@ Classify each change:
 Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and
 assertion must match. Preserve independent facts sharing a number. Prior assistant
-messages are conversational context only, never authorization or evidence. A
+messages are conversational context only, never authorization or evidence.
+An option text in chosen_options was picked by the user, so its exact words
+are user input, like dictated text. A pick authorizes only what its card's
+question asked about: using a picked opening paragraph to fill a different
+marker, such as an official project title or dates, or to change another
+chapter exceeds the request. A
 current user instruction overrides an earlier user value for the same fact.
 Before rejecting a source-cited claim for missing evidence, check the supplied
 quotations; if they do not settle it, ask query_source one focused question per
@@ -65,6 +70,9 @@ lookup failed. Do not ask for evidence already supplied in the instruction.
 One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
+- question_cards (array): recent suggested-answer cards with question,
+  lettered options, user_answer and selected_label.
+- chosen_options (array of strings): option texts the user picked; user input.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown and
   gaps.
 - run_context (object): selected_sources, source_excerpts and available

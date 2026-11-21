@@ -2232,6 +2232,21 @@ explicitly explain the card limit and use a complete plain-text list, or clearly
 numbered batches with the remaining count and instructions to continue.
 Conflicting point estimates remain separate unless source evidence supports a
 range; an uncertainty caveat alone does not justify deriving one.
+Each card has `on_answer`: `reply` (default; also assumed for cards saved
+before the field existed) or `propose_edit`. Picking an option of the latest
+`reply` card answers the question only: CNB does not register
+`concept_note_edit_propose` for that turn, so it cannot start a document change.
+A custom answer, or a pick on a `propose_edit` card, keeps the normal edit path.
+When an edit is planned, the planner and the semantic reviewer receive the last
+three cards (`question_cards`: question, lettered options, the user's answer and
+the matching label) so "option B" or "that one" resolves without asking again.
+`chosen_options` lists option texts the user picked, by click or by a letter
+reference such as "go with option B"; their exact words count as user input
+for `user_input_quote`. A pick authorizes only what its card asked about; it
+must not fill unrelated markers such as a project title or dates.
+If the model sends invalid card arguments, the error goes back to the model,
+which can correct them or answer in text; only a valid card ends the turn.
+History returns the mode as `choice_action`.
 Clicking an option immediately sends its full text. The arrow or Enter sends
 a custom answer. Both carry `context.concept_note_question_message_id`: use
 `message_id` from history or `done.assistant_message_id` when `history_saved`

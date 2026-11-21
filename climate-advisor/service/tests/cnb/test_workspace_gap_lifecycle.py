@@ -827,6 +827,30 @@ async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> 
     assert (after.state, after.answered_so_far) == ("resolved", None)
 
 
+VOLUNTEER_MARKER = "[Information needed: Confirm the volunteer count.]"
+
+
+async def _seed_volunteer_gap(workspace) -> None:
+    """Make the seeded gap a numeric volunteer-count gap for estimate tests.
+
+    Only the estimate tests call this, so the shared fixture stays unchanged
+    for the other tests.
+    """
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        gap.field_key = "volunteer_count"
+        gap.question = "Confirm the volunteer count."
+        revision = await session.scalar(
+            select(ConceptNoteChapterRevision).where(
+                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
+                ConceptNoteChapterRevision.revision_number == 1,
+            )
+        )
+        revision.body_markdown = revision.body_markdown.replace(
+            "[Information needed: Confirm the lead partner.]", VOLUNTEER_MARKER
+        )
+
+
 async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
     workspace,
 ) -> None:
@@ -835,9 +859,10 @@ async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
     A later complete answer bound to that caveat gap replaces the estimate
     text (no marker is left) and resolves it.
     """
+    await _seed_volunteer_gap(workspace)
     [before] = await workspace.list_chapters(run_id=RUN_ID)
-    marker = "[Information needed: Confirm the lead partner.]"
-    estimate = "The lead partner is expected to be the Lincoln Park Neighborhood Council (an estimate, not yet confirmed)."
+    marker = VOLUNTEER_MARKER
+    estimate = "The City estimates 120 volunteers, pending confirmation."
     change = EditChange(
         chapter_id=CHAPTER_ID,
         chapter_title="Implementation",
@@ -847,8 +872,8 @@ async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
         before=marker,
         after=estimate,
         kind="factual",
-        group_id="lead_partner",
-        user_input_quote="probably Lincoln Park Neighborhood Council, not confirmed",
+        group_id="volunteer_count",
+        user_input_quote="roughly 120 volunteers, not confirmed",
         estimate=True,
     )
     estimated_body = before.body_markdown.replace(marker, estimate)
@@ -870,7 +895,7 @@ async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
     assert after.gaps[0].resolution.answer == estimate
 
     # A partial or stale answer leaves the estimate as it is.
-    confirmed = "Lincoln Park Neighborhood Council will lead delivery."
+    confirmed = "The City confirmed 150 volunteers."
     confirm = change.model_copy(
         update={
             "change_id": uuid4(),
@@ -951,8 +976,9 @@ async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
     complete answer to that other gap that replaces the estimate text here
     resolves it; a change outside the estimate text leaves it a caveat.
     """
+    await _seed_volunteer_gap(workspace)
     [before] = await workspace.list_chapters(run_id=RUN_ID)
-    marker = "[Information needed: Confirm the lead partner.]"
+    marker = VOLUNTEER_MARKER
     estimate = "an estimated 120 volunteers, the City's unconfirmed figure"
     change = EditChange(
         chapter_id=CHAPTER_ID,

@@ -290,9 +290,15 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    ["read", "apply", "reject", "refine", "confirm", "adopt-gap", "gap-answers"].includes(
-      route.name,
-    ),
+    [
+      "read",
+      "apply",
+      "reject",
+      "refine",
+      "confirm",
+      "adopt-gap",
+      "gap-answers",
+    ].includes(route.name),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(

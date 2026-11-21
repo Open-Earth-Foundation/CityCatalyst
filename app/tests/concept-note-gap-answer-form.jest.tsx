@@ -33,6 +33,7 @@ let root: Root;
 let container: HTMLDivElement;
 const fetchQuestion = jest.fn<typeof fetch>();
 const onAnswer = jest.fn<(answer: string, complete: boolean) => boolean>();
+const onSaved = jest.fn<(answers: string) => void>();
 const onClose = jest.fn();
 const originals = {
   fetch: globalThis.fetch,
@@ -123,6 +124,7 @@ beforeEach(() => {
   globalThis.fetch = fetchQuestion;
   onAnswer.mockReset();
   onAnswer.mockReturnValue(true);
+  onSaved.mockReset();
   onClose.mockReset();
   container = document.createElement("div");
   document.body.append(container);
@@ -147,6 +149,7 @@ async function mount(props: FormProps = {}): Promise<void> {
           disabled={false}
           answerLimit={8000}
           onAnswer={onAnswer}
+          onSaved={onSaved}
           onClose={onClose}
           onAddSource={() => {}}
           {...props}
@@ -330,8 +333,10 @@ describe("G-06: typed text is never silently lost", () => {
     expect(details()!.value).toContain("EUR 2.5 million concessional loan");
     expect(container.textContent).toContain(en("gap-answer-moved"));
     expect(savedDraft()).toContain("EUR 2.5 million concessional loan");
+    // Partial answers to a recorded gap are saved on it, with the moved text.
     await act(async () => preview()!.click());
-    expect(onAnswer.mock.calls[0][0]).toContain(
+    expect(onAnswer).not.toHaveBeenCalled();
+    expect(onSaved.mock.calls[0][0]).toContain(
       "EUR 2.5 million concessional loan",
     );
   });
@@ -363,7 +368,6 @@ describe("G-06: typed text is never silently lost", () => {
           "1:What amount?": "EUR 2 million",
         },
         details: "",
-        sent: "1. Who applies?\nThe city",
       }),
     );
     fetchQuestion.mockImplementation(() =>
@@ -372,14 +376,47 @@ describe("G-06: typed text is never silently lost", () => {
         questions: [{ question: "What is the total cost?", options: [] }],
       }),
     );
-    await mount();
+    await mount({
+      request: {
+        ...request,
+        row: {
+          ...request.row,
+          gap: {
+            ...request.row.gap!,
+            answered_so_far: "1. Who applies?\nThe city",
+          },
+        },
+      },
+    });
     expect(fetchQuestion).not.toHaveBeenCalled();
     await act(async () => button(en("gap-earlier-answers-clear"))!.click());
     await settle();
+    expect(onSaved).toHaveBeenCalledWith("");
     expect(card(0).textContent).toContain("What is the total cost?");
     expect(details()!.value).toBe(
       "Which financing instrument?\nGreen bond\n\nWhat amount?\nEUR 2 million",
     );
+  });
+
+  it("preserves a pre-integration sent draft as editable details", async () => {
+    const sent = "1. Who applies?\nThe city";
+    sessionStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        question: null,
+        choices: {},
+        customAnswers: {},
+        details: "",
+        sent,
+      }),
+    );
+    await mount();
+    // Shown for review, but the server has no saved answers to send to the model.
+    expect(details()!.value).toBe(sent);
+    expect(container.textContent).toContain(en("gap-answer-moved"));
+    for (const [, init] of fetchQuestion.mock.calls)
+      expect(String(init?.body ?? "")).not.toContain("Who applies");
+    expect(savedDraft()).not.toContain('"sent"');
   });
 });
 
@@ -418,9 +455,10 @@ describe("G-80 and Escape: keyboard", () => {
     // Enter in a text field still adds a line instead of being blocked.
     expect((await key(customField(1)!, "Enter")).defaultPrevented).toBe(false);
     expect(onAnswer).not.toHaveBeenCalled();
-    // Preview is the way to send.
+    // Preview is the way to send; a partial answer to a recorded gap is saved.
     await act(async () => preview()!.click());
-    expect(onAnswer).toHaveBeenCalledTimes(1);
+    expect(onSaved).toHaveBeenCalledTimes(1);
+    expect(onAnswer).not.toHaveBeenCalled();
   });
 
   it("does not let Enter on a checkbox submit the form", async () => {
@@ -460,7 +498,7 @@ describe("G-80 and Escape: keyboard", () => {
 });
 
 describe("G-84: the shared limit counts separators and says when text is cut", () => {
-  // "1. What amount?\nNot decided yet" is 31 characters.
+  // "1. What amount?\nNot answered yet" is 32 characters.
   const ONE_FREE = {
     why_asking: "Amount.",
     questions: [{ question: "What amount?", options: [] }],
@@ -482,7 +520,7 @@ describe("G-84: the shared limit counts separators and says when text is cut", (
     expect(onAnswer.mock.calls[0][0]).toHaveLength(LIMIT);
   });
 
-  it("frees the 'Not decided yet' filler when an empty answer is filled", async () => {
+  it("frees the 'Not answered yet' filler when an empty answer is filled", async () => {
     fetchQuestion.mockImplementation(() => reply(200, ONE_FREE));
     await mount({ answerLimit: LIMIT });
     // 100 - "1. What amount?\n" (16)
@@ -560,6 +598,8 @@ describe("G-32 and G-34: a disabled Preview says why", () => {
       disabledReason: "Clima is still replying.",
     });
     await pick(0, "0");
+    await pick(1, "custom");
+    await setValue(customField(1)!, "EUR 2 million");
     const reason = byTestId("concept-note-gap-preview-reason")!;
     expect(preview()!.disabled).toBe(true);
     expect(reason.textContent).toBe("Clima is still replying.");
@@ -570,6 +610,8 @@ describe("G-32 and G-34: a disabled Preview says why", () => {
   it("works without a reason from the parent", async () => {
     await mount({ disabled: true });
     await pick(0, "0");
+    await pick(1, "custom");
+    await setValue(customField(1)!, "EUR 2 million");
     expect(preview()!.disabled).toBe(true);
     expect(byTestId("concept-note-gap-preview-reason")).toBeNull();
   });

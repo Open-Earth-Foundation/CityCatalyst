@@ -168,8 +168,7 @@ export function GapAnswerForm({
   const savedAnswers = request.row.gap?.answered_so_far ?? "";
   // A draft from before saves moved sent answers into the browser; they stay
   // here for review when the server has none, and are never sent to the model.
-  const legacySent =
-    typeof draft?.sent === "string" ? draft.sent.trim() : "";
+  const legacySent = typeof draft?.sent === "string" ? draft.sent.trim() : "";
   const fallbackAnswers =
     draft && !draft.question
       ? typedAnswers(draft.choices, draft.customAnswers, false)
@@ -356,9 +355,9 @@ export function GapAnswerForm({
   const previewReason =
     disabled && !saveOnly
       ? disabledReason
-    : !loading && !answered && undecided
-      ? t("gap-preview-needs-answer")
-      : undefined;
+      : !loading && !answered && undecided
+        ? t("gap-preview-needs-answer")
+        : undefined;
 
   /** Save every answer given so far on the gap version; false when it fails. */
   async function saveAnswers(answers: string): Promise<boolean> {

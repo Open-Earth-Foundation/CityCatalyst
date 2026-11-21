@@ -154,6 +154,13 @@ const gapAnswer: GapAnswerRequest = {
   },
 };
 
+// A marker with no gap record: its partial answers still go to the chat. A
+// recorded gap saves partial answers on the gap instead (see the composer tests).
+const legacyGapAnswer: GapAnswerRequest = {
+  ...gapAnswer,
+  row: { ...gapAnswer.row, gap: null },
+};
+
 beforeAll(async () => {
   await i18n.init({
     lng: "en",
@@ -298,8 +305,11 @@ async function writeAnswer(index: number, value: string): Promise<void> {
 }
 
 /** Answers the form partly (one question) or completely, then sends it. */
-async function sendGapAnswer(complete: boolean): Promise<string> {
-  await render(gapAnswer);
+async function sendGapAnswer(
+  complete: boolean,
+  request: GapAnswerRequest = gapAnswer,
+): Promise<string> {
+  await render(request);
   await act(async () =>
     subQuestion(0)
       .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
@@ -333,7 +343,7 @@ describe("a sent gap answer in the chat", () => {
     {
       complete: false,
       answers:
-        "1. Which financing instrument?\nLoan\n\n2. What amount?\nNot decided yet",
+        "1. Which financing instrument?\nLoan\n\n2. What amount?\nNot answered yet",
       instruction: "Keep any information I have not supplied marked as missing",
     },
     {
@@ -346,11 +356,15 @@ describe("a sent gap answer in the chat", () => {
   ])(
     "shows the answers, not the instruction (complete: $complete), live and after a reload",
     async ({ complete, answers, instruction }) => {
-      const content = await sendGapAnswer(complete);
+      const content = await sendGapAnswer(
+        complete,
+        complete ? gapAnswer : legacyGapAnswer,
+      );
       // Clima still receives the whole instruction.
       expect(content).toContain(instruction);
       expect(content).toContain("Do not apply changes without my acceptance.");
-      expect(sent[0][1]).toMatchObject({ answer_complete: complete });
+      // Only a recorded gap binds its answer; a legacy marker has no gap to bind.
+      expect(sent[0][1]?.answer_complete).toBe(complete ? true : undefined);
 
       const live = byTestId("concept-note-gap-answer-message")!;
       expect(visibleBubble(live)).toEqual({
@@ -465,7 +479,9 @@ describe("readGapAnswerMessage", () => {
       question: "What is the cost?",
       answer: "EUR 2 million",
     });
-    expect(text).toContain("complete [Information needed: What is the cost?] marker");
+    expect(text).toContain(
+      "complete [Information needed: What is the cost?] marker",
+    );
     expect(readGapAnswerMessage(text, templates())).toEqual({
       chapter: "Costs",
       question: "What is the cost?",
@@ -510,7 +526,7 @@ describe("focus when the gap form closes", () => {
   });
 
   it("moves focus to the chat composer after a send", async () => {
-    await sendGapAnswer(false);
+    await sendGapAnswer(true);
     expect(document.activeElement).toBe(composer());
   });
 

@@ -20,14 +20,25 @@ MAX_QUESTIONS = 4
 
 
 class GapQuestionRequest(BaseModel):
-    """Identify the chapter and gap; question also supports legacy inline markers."""
+    """Identify the chapter and gap; question supports legacy inline markers only.
+
+    A bound gap's persisted question is authoritative, so a supplied question is
+    ignored and may be omitted.
+    """
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     chapter_id: UUID
     gap_id: UUID | None = None
-    question: str = Field(min_length=1, max_length=2000)
+    question: str | None = Field(default=None, max_length=2000)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
+
+    @model_validator(mode="after")
+    def require_question_for_legacy_marker(self) -> "GapQuestionRequest":
+        """Only an unbound inline marker has no persisted question to read."""
+        if self.gap_id is None and not self.question:
+            raise ValueError("question is required when gap_id is omitted")
+        return self
 
 
 class GapAnswersRequest(BaseModel):
@@ -46,8 +57,9 @@ class GapSubQuestion(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    # The prompt asks for 160; the margin keeps one long question from failing the set.
-    question: str = Field(min_length=1, max_length=240)
+    # The prompt asks for 160; a narrowed gap returns its exact remaining question,
+    # which may be as long as the persisted marker question.
+    question: str = Field(min_length=1, max_length=2000)
     # The prompt asks for five (eight for a checklist); the margin keeps one
     # longer list from failing the set.
     options: list[

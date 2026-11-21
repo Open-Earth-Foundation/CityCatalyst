@@ -119,6 +119,7 @@ def gap_route(monkeypatch):
                 why_asking="Needed",
                 answered_so_far="1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet",
                 resolution=None,
+                has_accepted_narrowing=False,
                 suggestions=[
                     ConceptNoteGapSuggestion(
                         value="Loan of EUR 2 million", source_refs=["Plan"]
@@ -219,6 +220,59 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     # Hints are optional, so an older model reply without them still validates.
     assert result.questions[0].where_to_find == ""
     gap_route.args["session"].commit.assert_not_called()
+
+
+async def test_narrowed_gap_returns_only_the_literal_remaining_question(gap_route):
+    gap = gap_route.chapter.gaps[0]
+    gap.has_accepted_narrowing = True
+    gap.question = "What amount will the city contribute?"
+    gap.why_asking = ""
+    gap_route.args["payload"].question = None
+    result = await propose_gap_question(**gap_route.args)
+    # The persisted remainder is asked as one free-text field, with no model call.
+    assert result.questions == [
+        GapSubQuestion(question="What amount will the city contribute?", options=[])
+    ]
+    assert result.questions[0].confirms is False
+    assert result.questions[0].multiple is False
+    assert result.why_asking == "This information is required to complete the chapter."
+    gap_route.generate.assert_not_called()
+    gap_route.previous.assert_not_called()
+    # Reading the remainder writes nothing, so reopening the form changes no gap.
+    gap_route.args["session"].commit.assert_not_called()
+
+
+async def test_bound_question_uses_full_server_text_when_client_omits_question(
+    gap_route,
+):
+    long_question = "Describe the funding source and its amount. " * 60
+    gap = gap_route.chapter.gaps[0]
+    gap.question = long_question.strip()
+    gap_route.chapter.body_markdown = (
+        "Before " * 2000 + f"[Information needed: {gap.question}]" + " After" * 2000
+    )
+    gap_route.args["payload"].question = None
+    await propose_gap_question(**gap_route.args)
+    context = gap_route.generate.call_args.args[1]
+    assert len(context["question"]) > 2000
+    assert context["question"] == gap.question
+    assert f"[Information needed: {gap.question}]" in context["chapter_excerpt"]
+
+
+def test_unbound_question_still_requires_a_capped_question():
+    chapter_id = uuid4()
+    with pytest.raises(ValidationError):
+        GapQuestionRequest(chapter_id=chapter_id, question=None)
+    with pytest.raises(ValidationError):
+        GapQuestionRequest(chapter_id=chapter_id, question="q" * 2001)
+    # A bound gap may omit the question, and an older bound payload still validates.
+    assert GapQuestionRequest(chapter_id=chapter_id, gap_id=uuid4()).question is None
+    assert (
+        GapQuestionRequest(
+            chapter_id=chapter_id, gap_id=uuid4(), question="q" * 2000
+        ).question
+        == "q" * 2000
+    )
 
 
 async def test_centers_the_excerpt_on_a_marker_formatted_unlike_its_question(

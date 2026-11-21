@@ -40,10 +40,14 @@ from app.models.cnb.gap_question import (
     GapAnswersRequest,
     GapQuestionOutput,
     GapQuestionRequest,
+    GapSubQuestion,
 )
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
 from app.persistence.concept_notes.edits import applied_gap_answers
-from app.persistence.concept_notes.gaps import save_partial_answer
+from app.persistence.concept_notes.gaps import (
+    LEGACY_GENERIC_GAP_RATIONALE,
+    save_partial_answer,
+)
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -153,11 +157,21 @@ async def propose_gap_question(
         gap is None or gap.state not in {"open", "processing", "caveat"}
     ):
         raise HTTPException(status_code=409, detail="Gap is no longer open")
+    # A narrowed gap asks exactly its persisted remainder, so no model call is needed.
+    if (
+        gap is not None
+        and gap.state in {"open", "processing"}
+        and gap.has_accepted_narrowing
+    ):
+        return GapQuestionOutput(
+            why_asking=(gap.why_asking or LEGACY_GENERIC_GAP_RATIONALE)[:240],
+            questions=[GapSubQuestion(question=gap.question, options=[])],
+        )
     body = chapter.body_markdown or ""
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
     if not payload.gap_id and payload.question not in body:
         raise HTTPException(status_code=404, detail="Gap question not found")
-    question = gap.question if gap else payload.question
+    question = gap.question if gap else payload.question or ""
     # Center long chapters on the gap's marker, even when it is formatted
     # differently from the question, so facts near it stay in context.
     marker_start = find_information_marker(body, question)

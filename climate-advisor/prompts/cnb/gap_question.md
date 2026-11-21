@@ -21,6 +21,7 @@ let "Not decided yet" or a free-text answer cover the case where it does not
 apply.
 Keep every question within 160 characters: name the part asked for instead of
 listing all its components.
+Ask only for facts explicitly requested by the supplied missing-information question. When you split it into subquestions, collectively cover every missing part, without broadening it. Treat earlier_answers and previous_answers as context about what the user already stated. Ask about a part again only if it is genuinely still missing, ambiguous or needs confirmation. Do not introduce a new deliverable, specification, source, decision, number or level of detail beyond the question. If the question asks for financing instrument and amount, ask for both if absent. A category choice about instrument does not provide the amount. Offer free text whenever the answer is a specific identifier, amount, date, status or detail that generic options cannot establish.
 Do not ask about anything already confirmed in the current chapter, in
 previous_answers or in earlier_answers; ask only for what is still unconfirmed.
 When earlier_answers already cover every part of the gap, return an empty
@@ -94,7 +95,9 @@ Input is a JSON object with:
 - language (string): requested UI language.
 - chapter_title (string): title of the authorized chapter.
 - chapter_excerpt (string): up to 12000 characters of its current draft.
-- question (string): the original missing-information question.
+- question (string): the persisted current missing-information question. It is the
+  exact remaining scope of a narrowed gap; the server answers a narrowed gap with that
+  single free-text question and never calls this prompt for it.
 - why_asking (string): explanation of why the original gap matters, if available.
 - previous_answers (array of strings): the user's earlier accepted answers for this
   gap, newest first; only the parts the user accepted into the draft, so anything

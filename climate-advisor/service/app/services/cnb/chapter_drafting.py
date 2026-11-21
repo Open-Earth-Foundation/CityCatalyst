@@ -1161,6 +1161,8 @@ def _gap_response(gap: WorkspaceGapSnapshot) -> ConceptNoteGapResponse:
             "version": gap.version,
             "resolution": resolution,
             "answered_so_far": gap.answered_so_far,
+            "has_accepted_narrowing": gap.original_question is not None
+            or bool(gap.accepted_passages),
             "created_at": gap.created_at,
             "updated_at": gap.updated_at,
         }

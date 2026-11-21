@@ -123,6 +123,8 @@ class ConceptNoteGapResponse(BaseModel):
     resolution: ConceptNoteGapResolutionResponse | None = None
     # Partial answers saved for this open gap version, not in the draft yet.
     answered_so_far: str | None = None
+    # Internal progress flag: the question is a narrowed remainder, not the marker.
+    has_accepted_narrowing: bool = False
     created_at: datetime
     updated_at: datetime
 

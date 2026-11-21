@@ -20,6 +20,7 @@ import { LuInfo } from "react-icons/lu";
 import { createInstance } from "i18next";
 import translations from "@/i18n/locales/en/concept-notes.json";
 import {
+  GAP_ANSWER_HISTORY_KEYS,
   GAP_ANSWER_REQUEST_KEYS,
   GAP_ANSWER_SLOTS,
   legacyGapAnswerTemplate,
@@ -33,7 +34,10 @@ import type {
   GapAnswerForm as GapAnswerFormType,
   GapAnswerRequest,
 } from "@/components/ConceptNoteWorkspace/gap-answer-form";
-import type { EditScope } from "@/util/concept-note-edit-types";
+import {
+  EDIT_INSTRUCTION_MAX_CHARS,
+  type EditScope,
+} from "@/util/concept-note-edit-types";
 
 // Real English strings, so the bubble is checked as users read it.
 const i18n = createInstance();
@@ -338,20 +342,100 @@ function visibleBubble(bubble: HTMLElement) {
   };
 }
 
+/** The end of the neutral request every open gap sends, complete or not. */
+const NEUTRAL_REQUEST_TAIL =
+  "Add the supported facts and keep a marker for any part still missing. Wait for my acceptance before applying.";
+
 describe("a sent gap answer in the chat", () => {
+  it("uses a neutral bound request for both partial and complete answers", async () => {
+    const partial = await sendGapAnswer(false);
+    expect(partial).toContain(NEUTRAL_REQUEST_TAIL);
+    expect(partial).not.toContain("replaces its complete");
+    expect(partial).not.toContain("[Information needed:");
+    sent.length = 0;
+    const complete = await sendGapAnswer(true);
+    expect(complete).toContain(NEUTRAL_REQUEST_TAIL);
+    expect(complete).not.toContain("replaces its complete");
+    expect(complete).not.toContain("[Information needed:");
+  });
+
+  it("renders older complete requests as answer cards", async () => {
+    const values = {
+      chapter: "Financing plan",
+      question: "What is the requested instrument?",
+      marker: "[Information needed: What is the requested instrument?]",
+      answer: "1. Which financing instrument?\nLoan",
+      interpolation: { escapeValue: false },
+    };
+    history = [
+      {
+        id: "old-complete",
+        role: "user",
+        text: t("gap-answer-complete-request", values),
+      },
+      {
+        id: "old-neutral",
+        role: "user",
+        text: t("gap-answer-request-history", values),
+      },
+    ];
+    await render(null);
+    const cards = container.querySelectorAll(
+      '[data-testid="concept-note-gap-answer-message"]',
+    );
+    expect(cards).toHaveLength(2);
+    expect(cards[0].textContent).toContain("1. Which financing instrument?");
+    expect(cards[1].textContent).toContain("1. Which financing instrument?");
+  });
+
+  it("keeps the request within the limit when the displayed question is over 2,000 characters", async () => {
+    const longQuestion = "Describe the financing source and amount. ".repeat(
+      60,
+    );
+    const longGap: GapAnswerRequest = {
+      ...gapAnswer,
+      row: {
+        ...gapAnswer.row,
+        question: longQuestion,
+        gap: { ...gapAnswer.row.gap!, question: longQuestion },
+      },
+    };
+    await render(longGap);
+    await act(async () =>
+      subQuestion(0)
+        .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
+        .click(),
+    );
+    const details = byTestId<HTMLTextAreaElement>("concept-note-gap-details")!;
+    // The remaining room is computed from the same shortened question the request sends.
+    expect(details.maxLength).toBeGreaterThan(0);
+    await act(async () => {
+      const setValue = Object.getOwnPropertyDescriptor(
+        HTMLTextAreaElement.prototype,
+        "value",
+      )!.set!;
+      setValue.call(details, "x".repeat(details.maxLength));
+      details.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await act(async () => byTestId("concept-note-gap-preview")!.click());
+    expect(sent).toHaveLength(1);
+    expect(sent[0][0].length).toBeLessThanOrEqual(EDIT_INSTRUCTION_MAX_CHARS);
+    expect(sent[0][0]).toContain(`${longQuestion.slice(0, 2000)}…`);
+    expect(sent[0][0]).not.toContain(longQuestion.slice(0, 2001));
+  });
+
   it.each([
     {
       complete: false,
       answers:
-        "1. Which financing instrument?\nLoan\n\n2. What amount?\nNot answered yet",
-      instruction: "Keep any information I have not supplied marked as missing",
+        "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\nNot answered yet",
+      instruction: NEUTRAL_REQUEST_TAIL,
     },
     {
       complete: true,
       answers:
-        "1. Which financing instrument?\nLoan\n\n2. What amount?\nEUR 2 million\nfrom the city budget",
-      instruction:
-        "replaces its complete [Information needed: What is the requested instrument?] marker",
+        "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\nEUR 2 million\nfrom the city budget",
+      instruction: NEUTRAL_REQUEST_TAIL,
     },
   ])(
     "shows the answers, not the instruction (complete: $complete), live and after a reload",
@@ -362,7 +446,7 @@ describe("a sent gap answer in the chat", () => {
       );
       // Clima still receives the whole instruction.
       expect(content).toContain(instruction);
-      expect(content).toContain("Do not apply changes without my acceptance.");
+      expect(content).toContain("Wait for my acceptance before applying.");
       // Only a recorded gap binds its answer; a legacy marker has no gap to bind.
       expect(sent[0][1]?.answer_complete).toBe(complete ? true : undefined);
 
@@ -419,9 +503,12 @@ describe("a sent gap answer in the chat", () => {
 });
 
 describe("readGapAnswerMessage", () => {
-  // Same templates as the chat panel: the current ones, then the complete request as it was sent before it quoted the marker.
+  // Same templates as the chat panel: the current ones, then the older ones, then the complete request as it was sent before it quoted the marker.
   const templates = () => {
-    const rendered = GAP_ANSWER_REQUEST_KEYS.map((key) =>
+    const rendered = [
+      ...GAP_ANSWER_REQUEST_KEYS,
+      ...GAP_ANSWER_HISTORY_KEYS,
+    ].map((key) =>
       t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
     );
     return [

@@ -428,7 +428,9 @@ export function ConceptNoteWorkspace({
   // A form answer fails when its gap was answered or changed elsewhere; reload the
   // gaps once so reopening the form shows the current version, not the same error.
   const gapChangedId = edits.proposals.find(
-    (proposal) => proposal.error_code === "gap_changed",
+    (proposal) =>
+      proposal.error_code === "gap_changed" ||
+      proposal.error_code === "stale_gap",
   )?.proposal_id;
   const gapSyncedFor = useRef<string | null>(null);
   useEffect(() => {

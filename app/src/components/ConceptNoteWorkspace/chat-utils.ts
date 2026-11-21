@@ -113,12 +113,28 @@ export function readConceptNoteToolVisual(
   });
 }
 
-/** The i18n templates that wrap gap-form answers in the request sent to Clima. */
+/** The i18n templates that wrap gap-form answers in the requests sent to Clima now. */
 export const GAP_ANSWER_REQUEST_KEYS = [
   "gap-answer-request",
-  "gap-answer-complete-request",
   "gap-answer-estimate-confirm-request",
 ] as const;
+
+/** Older request templates, kept only so earlier messages still read as answers. */
+export const GAP_ANSWER_HISTORY_KEYS = [
+  "gap-answer-request-history",
+  "gap-answer-complete-request",
+] as const;
+
+/** The longest gap question a request shows; the server still uses the whole one. */
+const REQUEST_QUESTION_MAX_CHARS = 2000;
+
+/** The question as a request shows it: the first 2,000 characters, then an ellipsis. */
+export function requestQuestion(question: string): string {
+  const characters = Array.from(question);
+  return characters.length > REQUEST_QUESTION_MAX_CHARS
+    ? `${characters.slice(0, REQUEST_QUESTION_MAX_CHARS).join("")}…`
+    : question;
+}
 
 // Stand-ins for the template slots; control characters never occur in a translation.
 export const GAP_ANSWER_SLOTS = {

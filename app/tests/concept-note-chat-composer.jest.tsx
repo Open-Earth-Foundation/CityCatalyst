@@ -28,12 +28,17 @@ const gapSaved = jest.fn();
 const refreshDraft = jest.fn();
 let isGenerating = false;
 const promptI18n = createInstance();
-const t = (key: string, values?: Record<string, unknown>) =>
-  key === "gap-answer-request" ||
-  key === "gap-answer-complete-request" ||
-  key === "gap-answer-estimate-confirm-request"
-    ? promptI18n.t(key, values)
-    : key;
+const t = (key: string, values?: Record<string, unknown>) => {
+  if (
+    key === "gap-answer-request" ||
+    key === "gap-answer-complete-request" ||
+    key === "gap-answer-estimate-confirm-request"
+  )
+    return promptI18n.t(key, values);
+  if (key === "gap-selected-category")
+    return `Selected category: ${values?.value}`;
+  return key;
+};
 
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
@@ -411,11 +416,11 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
       .click(),
   );
   expect(preview.disabled).toBe(false);
-  // A partial answer is saved on the gap instead of starting a chat turn.
-  expect(preview.textContent).toBe("gap-save-answers");
-  expect(container.textContent).toContain("gap-saved-hint");
+  // A partial answer is saved on the gap, then previewed in the chat.
+  expect(preview.textContent).toBe("gap-preview-change");
+  expect(container.textContent).toContain("gap-acceptance-hint");
   await act(async () => preview.click());
-  expect(sendMessage).not.toHaveBeenCalled();
+  expect(sendMessage).toHaveBeenCalledTimes(1);
   expect(saveAnswers.mock.calls[0][0]).toBe(
     "/api/v1/concept-notes/run/gaps/financing-gap/answers/",
   );
@@ -423,9 +428,27 @@ it("shows generated multiple-choice answers without claiming they are sourced fa
   expect(savedBody()).toEqual({
     gap_version: 1,
     answers:
-      "1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-answered",
+      "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\ngap-not-answered",
     expected_previous: null,
   });
+  expect(gapSaved).not.toHaveBeenCalled();
+  expect(closeGap).toHaveBeenCalledTimes(1);
+});
+
+it("saves on the secondary action without starting a chat turn", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await act(async () =>
+    subQuestion(0)
+      .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
+      .click(),
+  );
+  await act(async () =>
+    [...container.querySelectorAll("button")]
+      .find((button) => button.textContent === "gap-save-answers")!
+      .click(),
+  );
+  expect(saveAnswers).toHaveBeenCalledTimes(1);
+  expect(sendMessage).not.toHaveBeenCalled();
   expect(gapSaved).toHaveBeenCalledTimes(1);
   expect(closeGap).toHaveBeenCalledTimes(1);
   // Back in the conversation, a note says the chapter changes later.
@@ -507,7 +530,7 @@ it("shows source-grounded suggestions with their source and adds one to the answ
   expect(use[1].disabled).toBe(true);
   expect(previewButton().disabled).toBe(false);
   await act(async () => previewButton().click());
-  expect(sendMessage).not.toHaveBeenCalled();
+  expect(sendMessage).toHaveBeenCalledTimes(1);
   expect(savedBody().answers).toContain(
     "2. What amount?\ngap-not-answered\n\nGrant",
   );
@@ -569,7 +592,7 @@ it("needs the current value before a changed source value counts as answered", a
   // "Changed" without the new value is not an answer.
   expect(previewButton().disabled).toBe(true);
   await writeAnswer(0, "A EUR 3 million grant");
-  expect(container.textContent).toContain("gap-complete-hint");
+  expect(container.textContent).toContain("gap-acceptance-hint");
 });
 
 it("lets the user pick every option that applies when several can", async () => {
@@ -619,11 +642,11 @@ it("lets the user pick every option that applies when several can", async () => 
   await act(async () => previewButton().click());
   const [content] = sendMessage.mock.calls[0];
   expect(content).toContain(
-    "1. Which co-financing sources apply?\nEU cohesion funds; City budget; EIB loan",
+    "1. Which co-financing sources apply?\nSelected category: EU cohesion funds; Selected category: City budget; EIB loan",
   );
 });
 
-it("asks Clima to replace the gap marker once every question is answered", async () => {
+it("sends the complete answers in one neutral request for the bound gap", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
   await act(async () =>
     subQuestion(0)
@@ -632,7 +655,7 @@ it("asks Clima to replace the gap marker once every question is answered", async
   );
   await writeAnswer(0, "Blended loan and grant");
   await writeAnswer(1, "EUR 2 million");
-  expect(container.textContent).toContain("gap-complete-hint");
+  expect(container.textContent).toContain("gap-acceptance-hint");
   saveAnswers.mockResolvedValueOnce({ ok: true, status: 204 } as Response);
   await act(async () => previewButton().click());
   // The answers are saved (204) before the one chat request that replaces the marker.
@@ -647,12 +670,11 @@ it("asks Clima to replace the gap marker once every question is answered", async
     answer_complete: true,
   });
   expect(content).toContain(
-    "My answers:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
+    "My answer:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
   );
-  expect(content).toContain(
-    "[Information needed: What is the requested instrument?]",
-  );
-  expect(content).not.toContain("marked as missing");
+  // The request quotes no marker: Clima's coverage review decides what closes it.
+  expect(content).not.toContain("[Information needed:");
+  expect(content).not.toContain("replaces");
 });
 
 it("previews an estimate confirmation without asking to replace a marker", async () => {
@@ -715,7 +737,7 @@ it("previews an estimate confirmation without asking to replace a marker", async
   expect(content).not.toContain("marked as missing");
 });
 
-it("quotes the marker as the chapter writes it, so a reformatted one is found", async () => {
+it("does not quote a reformatted marker, since the request names only the question", async () => {
   const marker = "[Information needed: **What is the\nrequested instrument**]";
   await renderPanel(contextStatus, "thread", {
     ...gapAnswer,
@@ -730,7 +752,8 @@ it("quotes the marker as the chapter writes it, so a reformatted one is found", 
   await writeAnswer(1, "EUR 2 million");
   await act(async () => previewButton().click());
   const [content] = sendMessage.mock.calls[0];
-  expect(content).toContain(`replaces its complete ${marker} marker`);
+  expect(content).not.toContain(marker);
+  expect(content).not.toContain("replaces its complete");
 });
 
 it("leaves the gap untouched when answered later and restores the answers on return", async () => {
@@ -791,9 +814,15 @@ it("leaves the gap untouched when answered later and restores the answers on ret
   await writeAnswer(1, "EUR 3 million from the city budget");
   await act(async () => previewButton().click());
   // Still partial, so the combined answers are saved again, replacing the old.
-  expect(savedBody().answers).toContain(earlier);
-  expect(savedBody().answers).toContain("EUR 3 million from the city budget");
-  expect(sendMessage).toHaveBeenCalledTimes(1);
+  // The new figure replaces the saved one for the same question.
+  expect(savedBody().answers).toContain(
+    "1. Which financing instrument?\nSelected category: Grant",
+  );
+  expect(savedBody().answers).toContain(
+    "2. What amount?\nEUR 3 million from the city budget",
+  );
+  expect(savedBody().answers).not.toContain("EUR 2 million");
+  expect(sendMessage).toHaveBeenCalledTimes(2);
 
   // Starting over clears the saved answers for everyone and asks afresh.
   await renderPanel(contextStatus, "thread", null);
@@ -838,7 +867,7 @@ it("lets earlier answers alone complete the gap when nothing is missing", async 
   await renderPanel(contextStatus, "thread", saved);
   expect(subQuestion(0)).toBeUndefined();
   expect(container.textContent).toContain("gap-earlier-answers-cover");
-  expect(container.textContent).toContain("gap-complete-hint");
+  expect(container.textContent).toContain("gap-acceptance-hint");
   await act(async () => previewButton().click());
   const [content, scope] = sendMessage.mock.calls[0];
   expect(content).toContain("1. Which financing instrument?\nLoan");
@@ -880,7 +909,7 @@ it("falls back to free text on failure and keeps it in the details when a retry 
   );
   await writeAnswer(0, "Loan");
   // The fallback asks the recorded gap itself, so its answer can close it.
-  expect(container.textContent).toContain("gap-complete-hint");
+  expect(container.textContent).toContain("gap-acceptance-hint");
   fetchQuestion.mockResolvedValueOnce({
     ok: true,
     json: async () => ({
@@ -958,13 +987,13 @@ it("keeps an undecided answer explicit instead of selecting an invented fact", a
   expect(previewButton().disabled).toBe(true);
   await writeAnswer(1, "EUR 2 million");
   await act(async () => previewButton().click());
-  expect(sendMessage).not.toHaveBeenCalled();
+  expect(sendMessage).toHaveBeenCalledTimes(1);
   expect(savedBody().answers).toBe(
     "1. Which financing instrument?\ngap-not-decided\n\n2. What amount?\nEUR 2 million",
   );
 });
 
-it("saves c14 facts without sending an edit request and distinguishes skipped from undecided", async () => {
+it("saves partial answers before previewing them and distinguishes skipped from undecided", async () => {
   fetchQuestion.mockResolvedValue({
     ok: true,
     json: async () => ({
@@ -999,8 +1028,8 @@ it("saves c14 facts without sending an edit request and distinguishes skipped fr
       .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
       .click(),
   );
-  // The fourth question stays untouched, so the form saves rather than sends.
-  expect(previewButton().textContent).toBe("gap-save-answers");
+  // The fourth question stays untouched; the answers are saved, then previewed.
+  expect(previewButton().textContent).toBe("gap-preview-change");
   await act(async () => previewButton().click());
 
   expect(saveAnswers).toHaveBeenCalledTimes(1);
@@ -1011,28 +1040,22 @@ it("saves c14 facts without sending an edit request and distinguishes skipped fr
     gap_version: 1,
     answers: [
       "1. Which concept is proposed?",
-      "Wilson Pond Concept A",
+      "Selected category: Wilson Pond Concept A",
       "",
       "2. What is the project phase?",
       "gap-not-decided",
       "",
       "3. What is the budget?",
-      "$2,000,000",
+      "Selected category: $2,000,000",
       "",
       "4. Who leads delivery?",
       "gap-not-answered",
     ].join("\n"),
     expected_previous: null,
   });
-  // Saving never starts a chat turn, so no chapter preview is dispatched.
-  expect(sendMessage).not.toHaveBeenCalled();
-  expect(gapSaved).toHaveBeenCalledTimes(1);
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(gapSaved).not.toHaveBeenCalled();
   expect(closeGap).toHaveBeenCalledTimes(1);
-  await renderPanel(contextStatus, "thread", null);
-  expect(
-    container.querySelector('[data-testid="concept-note-gap-saved-note"]')
-      ?.textContent,
-  ).toContain("gap-answers-saved-note");
 });
 
 it("cancels stale generation when another gap is opened", async () => {

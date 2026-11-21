@@ -49,10 +49,12 @@ import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
 import {
+  GAP_ANSWER_HISTORY_KEYS,
   GAP_ANSWER_REQUEST_KEYS,
   GAP_ANSWER_SLOTS,
   legacyGapAnswerTemplate,
   readGapAnswerMessage,
+  requestQuestion,
 } from "./chat-utils";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
@@ -73,11 +75,6 @@ const COMPOSER_MAX_HEIGHT_PX = 190;
 // or a textarea's caret line, so keep two more lines clear above the gap
 // form's footer for the rest of the option or field.
 const GAP_FOOTER_FOCUS_SLACK_PX = 40;
-
-/** The marker a complete answer replaces, quoted exactly as the chapter has it. */
-function quotedMarker(row: GapAnswerRequest["row"]): string {
-  return row.marker ?? `[Information needed: ${row.question}]`;
-}
 
 const CONNECTION_BADGE: Record<
   ChatConnectionState,
@@ -565,19 +562,17 @@ export function ConceptNoteChatPanel({
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
   function answerGap(answer: string, complete: boolean): boolean {
     if (!gapAnswer || chatDisabled) return false;
-    // Only a complete answer may replace the marker; that is what closes the gap.
     // An estimate has no marker left: a complete answer confirms its value.
     const confirmsEstimate = complete && gapAnswer.row.gap?.state === "caveat";
+    // One neutral request for an open gap: Clima's coverage review decides what
+    // the answer closes, so the request states no completeness.
     const content = t(
       confirmsEstimate
         ? "gap-answer-estimate-confirm-request"
-        : complete
-          ? "gap-answer-complete-request"
-          : "gap-answer-request",
+        : "gap-answer-request",
       {
         chapter: gapAnswer.chapterTitle,
-        question: gapAnswer.row.question,
-        marker: quotedMarker(gapAnswer.row),
+        question: requestQuestion(gapAnswer.row.question),
         answer,
         interpolation: { escapeValue: false },
       },
@@ -608,8 +603,7 @@ export function ConceptNoteChatPanel({
           (key) =>
             t(key, {
               chapter: gapAnswer.chapterTitle,
-              question: gapAnswer.row.question,
-              marker: quotedMarker(gapAnswer.row),
+              question: requestQuestion(gapAnswer.row.question),
               answer: "",
               interpolation: { escapeValue: false },
             }).length,
@@ -618,7 +612,10 @@ export function ConceptNoteChatPanel({
     : 0;
   // Sent gap requests are shown as the user's answers (UserMessageText).
   const gapTemplates = useMemo(() => {
-    const rendered = GAP_ANSWER_REQUEST_KEYS.map((key) =>
+    const rendered = [
+      ...GAP_ANSWER_REQUEST_KEYS,
+      ...GAP_ANSWER_HISTORY_KEYS,
+    ].map((key) =>
       t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
     );
     // Requests sent before the marker was quoted wrote it from the question.

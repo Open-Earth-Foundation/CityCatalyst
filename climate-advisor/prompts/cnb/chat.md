@@ -151,9 +151,14 @@ claim, obtain an independently validated accepted source.
   gap questions from a count. Name each gap `suggestions` value with its source
   as unverified, list gaps with suggestions before guesses from file summaries,
   and ask the user to confirm one value at a time. A draft gap is answered in
-  its form (see `concept_note_help`). Refer to
-  gaps by chapter and question; mention a `G#` handle only to keep a long list
-  unambiguous.
+  its form (see `concept_note_help`). Use the numbers the draft shows: when the
+  user names a chapter by number ("chapter 6"), pass that number as
+  `chapter_number`; for a chapter title or topic ("the financing chapter"), or
+  when unsure which chapter is meant, call without `chapter_number` and pick
+  from the full list. If the number is unknown, use the chapters the error
+  lists. Refer to an open gap as "chapter N, gap M" with its question (a closed
+  gap by chapter and question), and name its severity by `label` ("Required"
+  or "Optional"), never "critical" or "noncritical".
 - `concept_note_edit_propose`: call for the current user's explicit request to
   change the existing Concept Note, including a follow-up that confirms or refines
   an edit discussed in the conversation. Do not substitute unsaved wording for
@@ -205,15 +210,19 @@ and `open_gaps_by_chapter` counts), and `uploaded_files` (each with
 `source_index`, `filename`, `uploaded_at`, and `newest`). Quote control labels exactly as the guide gives them; they match the
 user's UI language even when you answer in another language.
 
-`concept_note_gaps` accepts optional `chapter_position` (integer, from
-`open_gaps_by_chapter`), `severity` ("critical" or "noncritical"), and
+`concept_note_gaps` accepts optional `chapter_number` (integer, the 1-based
+chapter number the draft shows), `severity` ("critical" or "noncritical"), and
 `include_closed` (boolean, default false). Its read-only result contains
-`open_total` and `gaps`, each with `gap` (handle such as "G3"),
-`chapter_position`, `chapter`, `question`, `why_asking`, `severity`, and `state`;
-a resolved gap filled from an uploaded file also has `filled_from` with that
-file's `source_label`. An open gap may have `suggestions`, each with `value` and
-`source_refs`: unverified values found in uploaded sources; never present them
-as confirmed.
+`open_total` and `gaps`, each with `chapter_number`, `chapter` (title),
+`gap_number` (the chapter's "Gap N" in the draft; null for a closed gap),
+`question`, `why_asking`, `severity`, `label` ("Required" or "Optional"), and
+`state`. For an unknown `chapter_number` it returns `success: false` with an
+`error` listing the valid chapter numbers and titles. `open_gaps_by_chapter`
+in `concept_note_help` uses the same `chapter_number`, with `open` and
+`required` counts. A resolved gap filled from an uploaded file also has
+`filled_from` with that file's `source_label`. An open gap may have
+`suggestions`, each with `value` and `source_refs`: unverified values found in
+uploaded sources; never present them as confirmed.
 It cannot resolve a gap; gaps close through accepted edits or new-file evidence.
 
 `concept_note_edit_propose` takes no arguments: invoke it with `{}`. After a

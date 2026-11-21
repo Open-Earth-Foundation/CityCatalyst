@@ -1,6 +1,15 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ClipboardEvent,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import {
   Box,
   Checkbox,
@@ -31,6 +40,8 @@ interface GapAnswerFormProps {
   request: GapAnswerRequest;
   lng: string;
   disabled: boolean;
+  /** Shown next to Preview while `disabled` is true, e.g. "Clima is replying". */
+  disabledReason?: string;
   /** Characters the combined answer may use within the edit request limit. */
   answerLimit: number;
   /**
@@ -86,6 +97,30 @@ function saveDraft(key: string, draft: GapDraft | null): void {
 }
 
 /**
+ * Answers typed under "custom" that the user chose to send, as paragraphs for
+ * "Additional details". Keys are `index:question`; a generated question is
+ * kept as the paragraph's first line so the moved answer still says what it
+ * answers. The fallback question is the gap itself, so it is left out there.
+ */
+function typedAnswers(
+  choices: Record<number, string>,
+  customAnswers: Record<string, string>,
+  labelled: boolean,
+): string[] {
+  return Object.entries(customAnswers).flatMap(([key, text]) => {
+    const chosen = (choices[parseInt(key, 10)] ?? "").split(",");
+    if (!chosen.includes("custom") || !text.trim()) return [];
+    const question = key.slice(key.indexOf(":") + 1);
+    return [labelled ? `${question}\n${text.trim()}` : text.trim()];
+  });
+}
+
+/** Adds moved answers to the details the user already wrote. */
+function joinDetails(details: string, moved: string[]): string {
+  return [details.trim(), ...moved].filter(Boolean).join("\n\n");
+}
+
+/**
  * A readable name for a source ref, with the file type of the run upload it
  * names. Without a matching upload the ref itself is shown, minus underscores.
  */
@@ -110,6 +145,7 @@ export function GapAnswerForm({
   request,
   lng,
   disabled,
+  disabledReason,
   answerLimit,
   onAnswer,
   onClose,
@@ -117,9 +153,16 @@ export function GapAnswerForm({
   uploads = [],
 }: GapAnswerFormProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const id = useId();
   // A new gap version starts fresh, since earlier answers may no longer fit it.
   const draftKey = `cnb-gap-draft:${runId}:${request.chapterId}:${request.row.gap?.gap_id ?? request.row.question}:${request.row.gap?.version}`;
   const [draft] = useState(() => readDraft(draftKey));
+  // A draft saved during the unavailable fallback has no generated questions,
+  // so reopening asks new ones; its typed answer moves to the details.
+  const fallbackAnswers =
+    draft && !draft.question
+      ? typedAnswers(draft.choices, draft.customAnswers, false)
+      : [];
   // Answers already sent are included again; new questions cover what they miss.
   const [sent, setSent] = useState(draft?.sent ?? "");
   const [earlier, setEarlier] = useState(sent);
@@ -127,6 +170,8 @@ export function GapAnswerForm({
     draft?.question ?? null,
   );
   const [loading, setLoading] = useState(!draft?.question);
+  // 409: the gap was answered or closed; 404: its chapter or marker is gone.
+  const [closed, setClosed] = useState<"closed" | "missing" | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [choices, setChoices] = useState<Record<number, string>>(
     draft?.choices ?? {},
@@ -134,9 +179,19 @@ export function GapAnswerForm({
   // Keyed by question text so a retry that changes the questions cannot
   // attach earlier text to a different question.
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
-    draft?.customAnswers ?? {},
+    fallbackAnswers.length ? {} : (draft?.customAnswers ?? {}),
   );
-  const [details, setDetails] = useState(draft?.details ?? "");
+  const [details, setDetails] = useState(
+    fallbackAnswers.length
+      ? joinDetails(draft?.details ?? "", fallbackAnswers)
+      : (draft?.details ?? ""),
+  );
+  // Tells the user why their answer now sits in the details field. It stays
+  // until the form closes: autoresize re-fires input events on programmatic
+  // changes, so "the user edited it" cannot be told apart reliably.
+  const [moved, setMoved] = useState(fallbackAnswers.length > 0);
+  // The field whose last paste or keystroke went past its length limit.
+  const [cutField, setCutField] = useState<string | null>(null);
   const [showRequest, setShowRequest] = useState(false);
   const [tooLong, setTooLong] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
@@ -205,9 +260,78 @@ export function GapAnswerForm({
     .filter(Boolean)
     .join("\n\n");
   const charsLeft = answerLimit - answerText.length;
-  // Fields stop accepting text once the shared limit is used up.
-  const fieldMax = (value: string) =>
-    Math.min(2000, value.length + Math.max(0, charsLeft));
+  // The longest value a field may hold within the shared limit. Filling an
+  // empty field also costs (a "\n\n" or "; " separator) or frees (the
+  // "Not decided yet" sent in its place) a few characters.
+  const fieldMax = (value: string, emptyCost: number) =>
+    Math.min(
+      2000,
+      value.length + Math.max(0, charsLeft - (value.trim() ? 0 : emptyCost)),
+    );
+  const detailsMax = fieldMax(details, 2);
+  const customMax = (index: number) =>
+    fieldMax(
+      customAnswers[answerKey(index)] ?? "",
+      answers[index] ? 2 : -t("gap-not-decided").length,
+    );
+  // A textarea's maxLength drops extra text silently, so remember a paste or
+  // keystroke that did not fit and say so under that field.
+  const limitProps = (field: string, max: number) => ({
+    maxLength: max,
+    onPaste: (event: ClipboardEvent<HTMLTextAreaElement>) => {
+      const { value, selectionStart, selectionEnd } = event.currentTarget;
+      const pasted = event.clipboardData
+        .getData("text")
+        .replace(/\r\n?/g, "\n");
+      if (value.length - (selectionEnd - selectionStart) + pasted.length > max)
+        setCutField(field);
+    },
+    onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => {
+      const { value, selectionStart, selectionEnd } = event.currentTarget;
+      const typesText =
+        (event.key.length === 1 || event.key === "Enter") &&
+        !event.ctrlKey &&
+        !event.metaKey;
+      if (typesText && selectionStart === selectionEnd && value.length >= max)
+        setCutField(field);
+    },
+    // Making room ends the notice; text that fits exactly is not a cut.
+    onInput: (event: FormEvent<HTMLTextAreaElement>) => {
+      if (event.currentTarget.value.length < max)
+        setCutField((current) => (current === field ? null : current));
+    },
+  });
+  // Shown while the field stays full.
+  const cutNotice = (field: string, value: string, max: number) =>
+    cutField === field &&
+    value.length >= max && (
+      <Text
+        role="alert"
+        fontSize="label.sm"
+        color="content.secondary"
+        data-testid="concept-note-gap-text-cut"
+      >
+        {t("gap-text-cut")}
+      </Text>
+    );
+  // New questions replace the current ones: typed answers move to the details
+  // first, so nothing the user wrote disappears.
+  const keepTypedAnswers = () => {
+    const typed = typedAnswers(choices, customAnswers, Boolean(question));
+    setCustomAnswers({});
+    if (!typed.length) return;
+    setDetails((current) => joinDetails(current, typed));
+    setMoved(true);
+  };
+  // "Not decided yet" everywhere sends nothing new, so Preview says why it waits.
+  const undecided =
+    questions.length > 0 &&
+    questions.every((_, index) => choices[index] === "unknown");
+  const previewReason = disabled
+    ? disabledReason
+    : !loading && !answered && undecided
+      ? t("gap-preview-needs-answer")
+      : undefined;
 
   useEffect(() => {
     // Reopening an unsent draft keeps its questions, so its answers still match.
@@ -230,6 +354,11 @@ export function GapAnswerForm({
             signal: controller.signal,
           },
         );
+        // The gap cannot be answered any more; free text would only fail later.
+        if (response.status === 409 || response.status === 404) {
+          setClosed(response.status === 409 ? "closed" : "missing");
+          return;
+        }
         if (!response.ok) throw new Error("Question unavailable");
         const result: GapQuestion = await response.json();
         if (controller.signal.aborted) return;
@@ -266,24 +395,16 @@ export function GapAnswerForm({
     earlier,
   ]);
 
+  // Saved while loading too: text typed before the questions arrive must
+  // survive "Save for later".
   useEffect(() => {
-    if (loading) return;
     saveDraft(
       draftKey,
       answered || details.trim() || sent
         ? { question, choices, customAnswers, details, sent }
         : null,
     );
-  }, [
-    draftKey,
-    loading,
-    answered,
-    question,
-    choices,
-    customAnswers,
-    details,
-    sent,
-  ]);
+  }, [draftKey, answered, question, choices, customAnswers, details, sent]);
 
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
@@ -293,9 +414,22 @@ export function GapAnswerForm({
   return (
     <chakra.form
       data-testid="concept-note-gap-answer-form"
+      onKeyDown={(event) => {
+        // Enter on an option only selects it; the browser's implicit submit
+        // would send half-finished answers. Preview is the only way to send.
+        if (event.key === "Enter" && event.target instanceof HTMLInputElement)
+          event.preventDefault();
+        // Escape leaves like "Back to conversation"; the draft is already saved.
+        if (
+          event.key === "Escape" &&
+          !event.defaultPrevented &&
+          !event.nativeEvent.isComposing
+        )
+          onClose();
+      }}
       onSubmit={(event) => {
         event.preventDefault();
-        if (disabled || loading || !answered) return;
+        if (disabled || loading || closed || !answered) return;
         const accepted = onAnswer(answerText, complete);
         setTooLong(!accepted);
         if (!accepted) return;
@@ -316,16 +450,18 @@ export function GapAnswerForm({
       }}
     >
       <VStack align="stretch" gap={3}>
-        <Button
-          type="button"
-          alignSelf="start"
-          size="xs"
-          variant="ghost"
-          onClick={onClose}
-        >
-          <Icon as={LuArrowLeft} />
-          {t("gap-back-to-chat")}
-        </Button>
+        {!closed && (
+          <Button
+            type="button"
+            alignSelf="start"
+            size="xs"
+            variant="ghost"
+            onClick={onClose}
+          >
+            <Icon as={LuArrowLeft} />
+            {t("gap-back-to-chat")}
+          </Button>
+        )}
         <Box>
           <Text fontSize="label.sm" color="content.tertiary" mb={1}>
             {t("gap-question-context", {
@@ -343,13 +479,19 @@ export function GapAnswerForm({
               fontWeight="semibold"
               color="content.primary"
             >
-              {loading
-                ? t("gap-loading-question")
-                : coveredEarlier
-                  ? t("gap-earlier-answers-cover")
-                  : t("gap-questions-heading", { count: questions.length })}
+              {closed === "closed"
+                ? t("gap-closed-heading")
+                : closed === "missing"
+                  ? t("gap-missing-heading")
+                  : loading
+                    ? t("gap-loading-question")
+                    : coveredEarlier
+                      ? t("gap-earlier-answers-cover")
+                      : t("gap-questions-heading", {
+                          count: questions.length,
+                        })}
             </Text>
-            {!loading && questions.length > 1 && (
+            {!loading && !closed && questions.length > 1 && (
               <Text fontSize="label.sm" color="content.tertiary" flexShrink={0}>
                 {t("gap-questions-progress", {
                   answered: answers.filter(Boolean).length,
@@ -394,7 +536,49 @@ export function GapAnswerForm({
             </chakra.button>
           </Box>
         </Box>
-        {earlier && (
+        {closed && (
+          <VStack align="stretch" gap={3} data-testid="concept-note-gap-closed">
+            <Text role="alert" fontSize="body.sm">
+              {t(
+                closed === "closed"
+                  ? "gap-closed-message"
+                  : "gap-missing-message",
+              )}
+            </Text>
+            {/* Nothing typed is dropped silently, even when it cannot be sent here. */}
+            {details.trim() && (
+              <Box
+                p={3}
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                data-testid="concept-note-gap-unsent-text"
+              >
+                <Text fontSize="body.sm" fontWeight="semibold">
+                  {t("gap-unsent-text")}
+                </Text>
+                <Text
+                  fontSize="body.sm"
+                  color="content.secondary"
+                  whiteSpace="pre-wrap"
+                  overflowWrap="anywhere"
+                >
+                  {details.trim()}
+                </Text>
+              </Box>
+            )}
+            <Button
+              type="button"
+              alignSelf="start"
+              bg="content.link"
+              onClick={onClose}
+            >
+              <Icon as={LuArrowLeft} />
+              {t("gap-back-to-chat")}
+            </Button>
+          </VStack>
+        )}
+        {earlier && !closed && (
           <Box
             p={3}
             border="1px solid"
@@ -419,6 +603,7 @@ export function GapAnswerForm({
               variant="ghost"
               size="xs"
               onClick={() => {
+                keepTypedAnswers();
                 setEarlier("");
                 setSent("");
                 setQuestion(null);
@@ -431,7 +616,7 @@ export function GapAnswerForm({
             </Button>
           </Box>
         )}
-        {sourceSuggestions.length > 0 && (
+        {sourceSuggestions.length > 0 && !closed && (
           <VStack
             align="stretch"
             gap={2}
@@ -495,8 +680,7 @@ export function GapAnswerForm({
                     variant="outline"
                     flexShrink={0}
                     disabled={
-                      added ||
-                      fieldMax(details) - details.length <= value.length
+                      added || detailsMax - details.length <= value.length
                     }
                     onClick={() => {
                       setDetails((current) =>
@@ -518,11 +702,14 @@ export function GapAnswerForm({
           </VStack>
         )}
         {loading && (
-          <Text role="status" fontSize="body.sm">
-            {t("gap-loading-options")}
-          </Text>
+          <Box role="status">
+            <Text fontSize="body.sm">{t("gap-loading-options")}</Text>
+            <Text fontSize="body.sm" color="content.secondary">
+              {t("gap-loading-write-now")}
+            </Text>
+          </Box>
         )}
-        {!loading && !question && (
+        {!loading && !closed && !question && (
           <Box role="alert">
             <Text fontSize="body.sm">{t("gap-question-unavailable")}</Text>
             <Button
@@ -530,6 +717,7 @@ export function GapAnswerForm({
               variant="ghost"
               size="xs"
               onClick={() => {
+                keepTypedAnswers();
                 setLoading(true);
                 setAttempt((value) => value + 1);
               }}
@@ -539,6 +727,7 @@ export function GapAnswerForm({
           </Box>
         )}
         {!loading &&
+          !closed &&
           questions.map(
             (
               { question: text, options, where_to_find, confirms, multiple },
@@ -663,107 +852,163 @@ export function GapAnswerForm({
                   </RadioGroup>
                 )}
                 {picked(index).includes("custom") && (
-                  <Textarea
-                    value={customAnswers[answerKey(index)] ?? ""}
-                    onChange={(event) =>
-                      setCustomAnswers((current) => ({
-                        ...current,
-                        [answerKey(index)]: event.target.value,
-                      }))
-                    }
-                    aria-label={text}
-                    placeholder={t(
-                      confirms
-                        ? "gap-confirm-new-value"
-                        : "gap-answer-placeholder",
+                  <>
+                    <Textarea
+                      value={customAnswers[answerKey(index)] ?? ""}
+                      onChange={(event) =>
+                        setCustomAnswers((current) => ({
+                          ...current,
+                          [answerKey(index)]: event.target.value,
+                        }))
+                      }
+                      aria-label={text}
+                      aria-describedby={
+                        options.length > 0 && !answers[index]
+                          ? `${id}-other-${index}`
+                          : undefined
+                      }
+                      placeholder={t(
+                        confirms
+                          ? "gap-confirm-new-value"
+                          : "gap-answer-placeholder",
+                      )}
+                      data-testid="concept-note-gap-custom-answer"
+                      {...limitProps(answerKey(index), customMax(index))}
+                      rows={2}
+                      fontSize="body.sm"
+                    />
+                    {/* A chosen but empty "Other" is not sent as an answer. */}
+                    {options.length > 0 && !answers[index] && (
+                      <Text
+                        id={`${id}-other-${index}`}
+                        fontSize="label.sm"
+                        color="content.secondary"
+                        data-testid="concept-note-gap-other-empty"
+                      >
+                        {t("gap-other-empty")}
+                      </Text>
                     )}
-                    data-testid="concept-note-gap-custom-answer"
-                    maxLength={fieldMax(customAnswers[answerKey(index)] ?? "")}
-                    rows={2}
-                    fontSize="body.sm"
-                  />
+                    {cutNotice(
+                      answerKey(index),
+                      customAnswers[answerKey(index)] ?? "",
+                      customMax(index),
+                    )}
+                  </>
                 )}
               </VStack>
             ),
           )}
-        {!loading && (
-          <Field label={t("gap-additional-details")}>
+        {/* Shown while questions load too, so the user can start writing at once. */}
+        {!closed && (
+          <Field
+            label={t("gap-additional-details")}
+            helperText={moved ? t("gap-answer-moved") : undefined}
+          >
             <Textarea
               ref={detailsRef}
               value={details}
               onChange={(event) => setDetails(event.target.value)}
               placeholder={t("gap-details-placeholder")}
               data-testid="concept-note-gap-details"
-              maxLength={fieldMax(details)}
+              {...limitProps("details", detailsMax)}
               rows={2}
               autoresize
               fontSize="body.sm"
             />
+            {cutNotice("details", details, detailsMax)}
           </Field>
         )}
-        <HStack justify="space-between" flexWrap="wrap">
-          <Button type="button" size="xs" variant="ghost" onClick={onAddSource}>
-            <Icon as={LuPaperclip} />
-            {t("gap-add-source")}
-          </Button>
-          <Button type="button" size="xs" variant="ghost" onClick={onClose}>
-            {t("gap-answer-later")}
-          </Button>
-        </HStack>
+        {!closed && (
+          <HStack justify="space-between" flexWrap="wrap">
+            <Button
+              type="button"
+              size="xs"
+              variant="ghost"
+              onClick={onAddSource}
+            >
+              <Icon as={LuPaperclip} />
+              {t("gap-add-source")}
+            </Button>
+            <Button type="button" size="xs" variant="ghost" onClick={onClose}>
+              {t("gap-answer-later")}
+            </Button>
+          </HStack>
+        )}
         {/* Stays in view while the questions scroll, as the form's only submit. */}
-        <VStack
-          align="stretch"
-          gap={2}
-          position="sticky"
-          bottom={-4}
-          mx={-4}
-          px={4}
-          pt={3}
-          pb={4}
-          bg="base.light"
-          borderTop="1px solid"
-          borderColor="border.neutral"
-        >
-          {tooLong && (
-            <Text
-              role="alert"
-              fontSize="body.sm"
-              color="sentiment.negativeDefault"
-            >
-              {t("gap-answer-too-long")}
-            </Text>
-          )}
-          {!loading && charsLeft < 2000 && (
-            <Text
-              aria-live="polite"
-              fontSize="label.sm"
-              textAlign="center"
-              color={
-                charsLeft > 0
-                  ? "content.secondary"
-                  : "sentiment.negativeDefault"
-              }
-              data-testid="concept-note-gap-chars-left"
-            >
-              {charsLeft > 0
-                ? t("gap-characters-left", {
-                    left: charsLeft.toLocaleString(lng),
-                  })
-                : t("gap-characters-full")}
-            </Text>
-          )}
-          <Button
-            type="submit"
-            bg="content.link"
-            disabled={disabled || loading || !answered || charsLeft < 0}
-            data-testid="concept-note-gap-preview"
+        {!closed && (
+          <VStack
+            align="stretch"
+            gap={2}
+            position="sticky"
+            bottom={-4}
+            mx={-4}
+            px={4}
+            pt={3}
+            pb={4}
+            bg="base.light"
+            borderTop="1px solid"
+            borderColor="border.neutral"
           >
-            {t("gap-preview-change")}
-          </Button>
-          <Text fontSize="label.sm" color="content.tertiary" textAlign="center">
-            {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
-          </Text>
-        </VStack>
+            {tooLong && (
+              <Text
+                role="alert"
+                fontSize="body.sm"
+                color="sentiment.negativeDefault"
+              >
+                {t("gap-answer-too-long")}
+              </Text>
+            )}
+            {!loading && charsLeft < 2000 && (
+              <Text
+                aria-live="polite"
+                fontSize="label.sm"
+                textAlign="center"
+                color={
+                  charsLeft > 0
+                    ? "content.secondary"
+                    : "sentiment.negativeDefault"
+                }
+                data-testid="concept-note-gap-chars-left"
+              >
+                {/* Full is still sendable; only over the limit blocks Preview. */}
+                {charsLeft > 0
+                  ? t("gap-characters-left", {
+                      left: charsLeft.toLocaleString(lng),
+                    })
+                  : charsLeft === 0
+                    ? t("gap-characters-full")
+                    : t("gap-answer-too-long")}
+              </Text>
+            )}
+            <Button
+              type="submit"
+              bg="content.link"
+              disabled={disabled || loading || !answered || charsLeft < 0}
+              aria-describedby={previewReason ? `${id}-reason` : undefined}
+              data-testid="concept-note-gap-preview"
+            >
+              {t("gap-preview-change")}
+            </Button>
+            {previewReason && (
+              <Text
+                id={`${id}-reason`}
+                fontSize="label.sm"
+                color="content.secondary"
+                textAlign="center"
+                data-testid="concept-note-gap-preview-reason"
+              >
+                {previewReason}
+              </Text>
+            )}
+            <Text
+              fontSize="label.sm"
+              color="content.tertiary"
+              textAlign="center"
+            >
+              {t(complete ? "gap-complete-hint" : "gap-acceptance-hint")}
+            </Text>
+          </VStack>
+        )}
       </VStack>
     </chakra.form>
   );

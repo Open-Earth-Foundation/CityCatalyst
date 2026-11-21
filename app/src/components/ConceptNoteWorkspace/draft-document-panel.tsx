@@ -481,7 +481,10 @@ export function DraftDocumentPanel({
                   type="button"
                   variant="ghost"
                   aria-current={isSelected ? "location" : undefined}
-                  aria-label={t("jump-to-chapter", { chapter: chapter.title })}
+                  aria-label={t("jump-to-chapter", {
+                    chapter: chapter.title,
+                    interpolation: { escapeValue: false },
+                  })}
                   title={`${chapter.position + 1} ${chapter.title}`}
                   display="flex"
                   alignItems="center"
@@ -589,7 +592,11 @@ export function DraftDocumentPanel({
               fontWeight="semibold"
               color="content.primary"
             >
-              {t("draft-preview-document-title", { name: noteName })}
+              {/* React escapes text; i18next escaping would show &#39; for "Lima's plan". */}
+              {t("draft-preview-document-title", {
+                name: noteName,
+                interpolation: { escapeValue: false },
+              })}
             </Text>
           </Box>
 

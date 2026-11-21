@@ -5,7 +5,9 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -46,6 +48,11 @@ import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
+import {
+  GAP_ANSWER_REQUEST_KEYS,
+  GAP_ANSWER_SLOTS,
+  readGapAnswerMessage,
+} from "./chat-utils";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -61,6 +68,10 @@ import type {
 
 // About eight lines of composer text before it scrolls.
 const COMPOSER_MAX_HEIGHT_PX = 190;
+// Focus scrolling exposes a radio's 1 px hidden input (the top of its option)
+// or a textarea's caret line, so keep two more lines clear above the gap
+// form's footer for the rest of the option or field.
+const GAP_FOOTER_FOCUS_SLACK_PX = 40;
 
 const CONNECTION_BADGE: Record<
   ChatConnectionState,
@@ -234,6 +245,86 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
+interface UserMessageTextProps {
+  lng: string;
+  text: string;
+  /** The gap request templates, rendered with GAP_ANSWER_SLOTS. */
+  gapTemplates: readonly string[];
+}
+
+/**
+ * A user message as sent. A gap-form request shows the answers the user gave;
+ * the instruction around them, which Clima still receives, sits behind a toggle.
+ */
+function UserMessageText({ lng, text, gapTemplates }: UserMessageTextProps) {
+  const { t } = useTranslation(lng, "concept-notes");
+  const [showRequest, setShowRequest] = useState(false);
+  const requestId = useId();
+  const gapAnswer = readGapAnswerMessage(text, gapTemplates);
+
+  if (!gapAnswer) {
+    return (
+      <Text
+        fontSize="body.sm"
+        lineHeight="22px"
+        color="content.primary"
+        whiteSpace="pre-wrap"
+      >
+        {text}
+      </Text>
+    );
+  }
+
+  return (
+    <Box data-testid="concept-note-gap-answer-message">
+      <Text fontSize="label.sm" color="content.tertiary" lineClamp={2}>
+        {t("gap-answer-message-heading", {
+          chapter: gapAnswer.chapter,
+          question: gapAnswer.question,
+          interpolation: { escapeValue: false },
+        })}
+      </Text>
+      <Text
+        mt={1}
+        fontSize="body.sm"
+        lineHeight="22px"
+        color="content.primary"
+        whiteSpace="pre-wrap"
+        overflowWrap="anywhere"
+      >
+        {gapAnswer.answer}
+      </Text>
+      <chakra.button
+        type="button"
+        mt={1}
+        fontSize="label.sm"
+        fontWeight="semibold"
+        color="content.link"
+        aria-expanded={showRequest}
+        aria-controls={requestId}
+        onClick={() => setShowRequest((value) => !value)}
+      >
+        {t(
+          showRequest
+            ? "gap-answer-message-hide-request"
+            : "gap-answer-message-show-request",
+        )}
+      </chakra.button>
+      <Text
+        id={requestId}
+        hidden={!showRequest}
+        mt={2}
+        fontSize="label.sm"
+        color="content.secondary"
+        whiteSpace="pre-wrap"
+        overflowWrap="anywhere"
+      >
+        {text}
+      </Text>
+    </Box>
+  );
+}
+
 export function ConceptNoteChatPanel({
   cityId,
   contextStatus,
@@ -298,6 +389,21 @@ export function ConceptNoteChatPanel({
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
     contextBlocked || !threadId || historyLoading || isGenerating;
+  // The gap form replaces the chat notices that explain a held send, so it
+  // gets the reason itself, from the same conditions as chatDisabled.
+  const gapDisabledReason = !threadId
+    ? t("chat-unavailable")
+    : contextBlocked
+      ? t(
+          contextState === "failed"
+            ? "gap-preview-disabled-context-failed"
+            : "gap-preview-disabled-context",
+        )
+      : historyLoading
+        ? t("gap-preview-disabled-loading")
+        : isGenerating
+          ? t("gap-preview-disabled-replying")
+          : undefined;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
@@ -378,6 +484,40 @@ export function ConceptNoteChatPanel({
     // The composer remounts when a gap form closes.
   }, [input, gapAnswer]);
 
+  // Closing the gap form (back, save for later, Escape or a send) remounts the
+  // composer; focus it so keyboard focus does not fall back to the page.
+  const gapOpenRef = useRef(false);
+  useEffect(() => {
+    if (gapOpenRef.current && !gapAnswer) inputRef.current?.focus();
+    gapOpenRef.current = Boolean(gapAnswer);
+  }, [gapAnswer]);
+
+  // The gap form's sticky footer covers the bottom of the scroll area. Scroll
+  // padding of its height (plus GAP_FOOTER_FOCUS_SLACK_PX) makes the browser
+  // scroll keyboard focus above it.
+  const [gapFooterHeight, setGapFooterHeight] = useState(0);
+  useEffect(() => {
+    const chatScroll = chatScrollRef.current;
+    if (!gapAnswer || !chatScroll) return;
+    let element = chatScroll.querySelector<HTMLElement>(
+      '[data-testid="concept-note-gap-preview"]',
+    );
+    while (
+      element &&
+      element !== chatScroll &&
+      getComputedStyle(element).position !== "sticky"
+    ) {
+      element = element.parentElement;
+    }
+    const footer = element !== chatScroll ? element : null;
+    if (!footer) return;
+    const observer = new ResizeObserver(() =>
+      setGapFooterHeight(footer.offsetHeight),
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, [gapAnswer]);
+
   async function submitMessage(
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
@@ -426,7 +566,7 @@ export function ConceptNoteChatPanel({
   const gapAnswerLimit = gapAnswer
     ? EDIT_INSTRUCTION_MAX_CHARS -
       Math.max(
-        ...["gap-answer-request", "gap-answer-complete-request"].map(
+        ...GAP_ANSWER_REQUEST_KEYS.map(
           (key) =>
             t(key, {
               chapter: gapAnswer.chapterTitle,
@@ -437,6 +577,14 @@ export function ConceptNoteChatPanel({
         ),
       )
     : 0;
+  // Sent gap requests are shown as the user's answers (UserMessageText).
+  const gapTemplates = useMemo(
+    () =>
+      GAP_ANSWER_REQUEST_KEYS.map((key) =>
+        t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
+      ),
+    [t],
+  );
 
   return (
     <VStack
@@ -528,6 +676,11 @@ export function ConceptNoteChatPanel({
         flex={1}
         minH={0}
         overflowY="auto"
+        scrollPaddingBottom={
+          gapAnswer
+            ? `${gapFooterHeight + GAP_FOOTER_FOCUS_SLACK_PX}px`
+            : undefined
+        }
         bg="base.light"
         p={4}
       >
@@ -538,6 +691,7 @@ export function ConceptNoteChatPanel({
             request={gapAnswer}
             lng={lng}
             disabled={chatDisabled}
+            disabledReason={gapDisabledReason}
             answerLimit={gapAnswerLimit}
             onAnswer={answerGap}
             onClose={onCloseGap}
@@ -621,14 +775,11 @@ export function ConceptNoteChatPanel({
                         {message.text}
                       </ReactMarkdown>
                     ) : message.role === "user" ? (
-                      <Text
-                        fontSize="body.sm"
-                        lineHeight="22px"
-                        color="content.primary"
-                        whiteSpace="pre-wrap"
-                      >
-                        {message.text}
-                      </Text>
+                      <UserMessageText
+                        lng={lng}
+                        text={message.text}
+                        gapTemplates={gapTemplates}
+                      />
                     ) : null}
                     {message.role === "assistant" && message.choices && (
                       <ChatChoices

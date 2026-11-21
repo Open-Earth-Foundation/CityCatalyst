@@ -717,7 +717,7 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
 });
 
-it("falls back to free text on failure and drops it when a retry changes the question", async () => {
+it("falls back to free text on failure and keeps it in the details when a retry changes the question", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(container.querySelector('[role="alert"]')?.textContent).toContain(
@@ -741,12 +741,19 @@ it("falls back to free text on failure and drops it when a retry changes the que
     await new Promise((resolve) => setTimeout(resolve, 250));
   });
   expect(subQuestion(0).textContent).toContain("What completion year?");
+  // The typed answer is never attached to a different question...
   expect(
     subQuestion(0).querySelector<HTMLTextAreaElement>(
       '[data-testid="concept-note-gap-custom-answer"]',
     )!.value,
   ).toBe("");
-  expect(previewButton().disabled).toBe(true);
+  // ...but stays visible in the details, so it is still sent.
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-gap-details"]',
+    )!.value,
+  ).toBe("Loan");
+  expect(previewButton().disabled).toBe(false);
 });
 
 it("counts down the shared edit limit and stops answers before it is exceeded", async () => {
@@ -777,7 +784,7 @@ it("counts down the shared edit limit and stops answers before it is exceeded", 
   expect(field(3).maxLength).toBeLessThan(2000);
   // Text set past the limit (the browser would refuse to type it) blocks Preview.
   await writeAnswer(3, "x".repeat(2000));
-  expect(charsLeft()?.textContent).toBe("gap-characters-full");
+  expect(charsLeft()?.textContent).toBe("gap-answer-too-long");
   expect(previewButton().disabled).toBe(true);
   await act(async () => previewButton().form!.requestSubmit());
   expect(sendMessage).not.toHaveBeenCalled();

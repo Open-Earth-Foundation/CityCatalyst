@@ -64,13 +64,20 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
      in the existing context bundle. The result also carries
-     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `ui_state.open_gaps_by_chapter` (open and Required counts per chapter, by
+     `chapter_number`) and
      `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
    - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
      reauthorizes the run and lists missing-information gaps with their
-     chapter, question, reason, severity, and state, filtered by
-     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
-     handle numbered in creation order, so handles stay stable across filters.
+     chapter, question, reason, severity with its UI `label` ("Required" or
+     "Optional"), and state, filtered by `chapter_number`, `severity`, or
+     `include_closed`. Gaps use the numbers the Draft preview shows:
+     `chapter_number` is the chapter's 1-based number (`position + 1`) and
+     `gap_number` is the per-chapter "Gap N" of an open gap, reproduced from
+     the chapter's `[Information needed: …]` marker order as in the UI's
+     `chapterGapRows` (markers without a gap record take a number too). An
+     unknown `chapter_number` fails with the valid chapter numbers and titles
+     instead of returning an empty list.
    - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
      chart, diagram, or table (title at most 200 characters, HTML at most
      200,000) and returns `concept_note.visual.render` with the title and size;

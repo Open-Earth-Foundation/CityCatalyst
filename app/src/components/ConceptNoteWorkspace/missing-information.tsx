@@ -36,7 +36,8 @@ function MissingInformationMarker({ message }: { message: string }) {
       closeOnClick={false}
       content={message}
       contentProps={{
-        maxW: "360px",
+        // Stays inside a 360 px phone with zag's 8 px viewport padding.
+        maxW: "min(360px, calc(100vw - 32px))",
         px: 3,
         py: 2,
         fontSize: "label.sm",

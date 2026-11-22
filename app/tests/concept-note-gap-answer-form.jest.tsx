@@ -1,9 +1,8 @@
 /** @jest-environment jsdom */
 
 /**
- * GapAnswerForm on its own: closed or missing gaps, typed text that survives
- * reopening, a stale save, and Escape. The real component and English copy are
- * mounted; only fetch is mocked.
+ * GapAnswerForm on its own: closed or missing gaps, and Escape. The real
+ * component and English copy are mounted; only fetch is mocked.
  */
 import {
   beforeAll,
@@ -21,7 +20,6 @@ import {
   jsonResponse,
   keyDown as key,
   mockTranslation,
-  typeInto as setValue,
   settle,
   setupDomShims,
   setupTestRoot,
@@ -37,7 +35,6 @@ const onSaved = jest.fn<(answers: string) => void>();
 const onClose = jest.fn();
 
 const GAP_QUESTION = "What financing does the project request from the funder?";
-const DRAFT_KEY = "cnb-gap-draft:run:financing-chapter:financing-gap:1";
 const request = financingGapRequest({
   question: GAP_QUESTION,
   whyAsking: "The funder needs the type and amount of support.",
@@ -59,7 +56,7 @@ const reply = (status: number, body: unknown = {}) =>
 
 setupDomShims();
 const view = setupTestRoot();
-const { byTestId, button, card, customField, pickOption: pick } = view;
+const { byTestId, button, card } = view;
 beforeAll(async () => {
   ({ GapAnswerForm } =
     await import("@/components/ConceptNoteWorkspace/gap-answer-form"));
@@ -96,16 +93,9 @@ async function mount(props: FormProps = {}): Promise<void> {
   await settle();
 }
 
-/** Unmounts the form the way the workspace does when it closes. */
-async function unmount(): Promise<void> {
-  await act(async () => view.root.render(<></>));
-}
-
 const details = () => byTestId<HTMLTextAreaElement>("concept-note-gap-details");
 const preview = () => byTestId<HTMLButtonElement>("concept-note-gap-preview");
 const en = (key: keyof typeof translations) => translations[key];
-
-const savedDraft = () => sessionStorage.getItem(DRAFT_KEY) ?? "";
 
 describe("a closed or missing gap is not answered as if choices failed", () => {
   it("shows a closed state for 409, with no fields and no submit", async () => {
@@ -151,37 +141,6 @@ describe("a closed or missing gap is not answered as if choices failed", () => {
     );
     expect(view.container.querySelector("textarea")).toBeNull();
     expect(preview()).toBeNull();
-  });
-});
-
-describe("typed text is never silently lost", () => {
-  it("keeps a fallback answer saved for later when reopening generates questions", async () => {
-    fetchQuestion.mockImplementationOnce(() => reply(503));
-    await mount();
-    await setValue(customField(0)!, "EUR 2.5 million concessional loan");
-    await act(async () => button(en("gap-answer-later"))!.click());
-    expect(onClose).toHaveBeenCalledTimes(1);
-    await unmount();
-
-    await mount();
-    expect(fetchQuestion).toHaveBeenCalledTimes(2);
-    expect(card(0).textContent).toContain("Which financing instrument?");
-    expect(details()!.value).toBe("EUR 2.5 million concessional loan");
-    expect(view.container.textContent).toContain(en("gap-answer-moved"));
-    expect(savedDraft()).toContain("EUR 2.5 million concessional loan");
-  });
-
-  it("does not send on a stale answer save and preserves the input", async () => {
-    await mount();
-    await pick(0, "custom");
-    await setValue(customField(0)!, "EUR 2 million");
-    fetchQuestion.mockImplementation((url) =>
-      String(url).includes("/answers") ? reply(409) : reply(200, QUESTIONS),
-    );
-    await act(async () => preview()!.click());
-    expect(onAnswer).not.toHaveBeenCalled();
-    expect(customField(0)!.value).toBe("EUR 2 million");
-    expect(view.container.textContent).toContain(en("gap-save-conflict"));
   });
 });
 

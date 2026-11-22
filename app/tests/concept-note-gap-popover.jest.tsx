@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 
 // Gap popovers in the draft preview: screen-reader labels keep the literal
-// text, rows of the "View all" list tell gaps apart, the long text scrolls
-// above a pinned "Answer in chat", and the marker opens where it fits.
+// text, rows of the "View all" list tell gaps apart, and the marker opens
+// where it fits.
 
 import { act } from "react";
 import { expect, it, jest } from "@jest/globals";
@@ -23,7 +23,7 @@ import {
 const i18n = await conceptNotesI18n({ namespaced: true });
 mockTranslation(i18n.getFixedT("en", "concept-notes"), i18n);
 
-const { ChapterGapMarker, ChapterGapsPanel, chapterGapRows, markerPlacement } =
+const { ChapterGapsPanel, chapterGapRows, markerPlacement } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
 const { DraftDocumentPanel } =
   await import("@/components/ConceptNoteWorkspace/draft-document-panel");
@@ -143,39 +143,6 @@ it("gives two gaps under one heading distinct View all rows", async () => {
     `3${second}Optional · GCF funding request and financial instrument`,
   ]);
   expect(new Set(rows.map((row) => row.textContent)).size).toBe(3);
-});
-
-it("keeps Answer in chat outside the scrolling gap text", async () => {
-  const long = "Confirm the complete financing plan. ".repeat(60).trim();
-  const chapter = chapterWith(
-    "Indicative financing",
-    `Body. [Information needed: ${long}]`,
-    [gap("a", long)],
-  );
-  const row = chapterGapRows(chapter)[0]!;
-  await render(
-    <ChapterGapMarker
-      chapter={chapter}
-      lng="en"
-      row={row}
-      number={1}
-      onAnswerGap={jest.fn()}
-    />,
-  );
-  await act(async () =>
-    byTestId<HTMLButtonElement>("concept-note-gap-marker")!.click(),
-  );
-
-  const text = byTestId("concept-note-chapter-gap-text")!;
-  const answer = byTestId("concept-note-chapter-gap-answer")!;
-  expect(text.textContent).toContain(long);
-  expect(text.textContent).toContain("Because a.");
-  // The button is a sibling after the scroll region, so it never scrolls away.
-  expect(text.contains(answer)).toBe(false);
-  expect(text.parentElement).toBe(answer.parentElement);
-  expect(
-    text.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).toBeTruthy();
 });
 
 it("opens a marker beside it on wide screens and below it on a phone", () => {

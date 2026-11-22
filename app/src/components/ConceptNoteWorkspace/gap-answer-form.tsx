@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Fragment,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ClipboardEvent,
-  type FormEvent,
-  type KeyboardEvent,
-} from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -228,8 +219,6 @@ export function GapAnswerForm({
   // until the form closes: autoresize re-fires input events on programmatic
   // changes, so "the user edited it" cannot be told apart reliably.
   const [moved, setMoved] = useState(fallbackAnswers.length > 0);
-  // The field whose last paste or keystroke went past its length limit.
-  const [cutField, setCutField] = useState<string | null>(null);
   const [showRequest, setShowRequest] = useState(false);
   const [tooLong, setTooLong] = useState(false);
   const headingRef = useRef<HTMLParagraphElement>(null);
@@ -329,60 +318,12 @@ export function GapAnswerForm({
     0,
   );
   const charsLeft = answerLimit - answerText.length - reserved;
-  // The longest value a field may hold within the shared limit. Filling an
-  // empty field also costs (a "\n\n" or "; " separator) or frees (the
-  // "Not decided yet" line a left-out question reserves) a few characters.
-  const fieldMax = (value: string, emptyCost: number) =>
-    Math.min(
-      2000,
-      value.length + Math.max(0, charsLeft - (value.trim() ? 0 : emptyCost)),
-    );
-  const detailsMax = fieldMax(details, 2);
-  const customMax = (index: number) =>
-    fieldMax(
-      customAnswers[answerKey(index)] ?? "",
-      answers[index] ? 2 : -t("gap-not-decided").length,
-    );
-  // A textarea's maxLength drops extra text silently, so remember a paste or
-  // keystroke that did not fit and say so under that field.
-  const limitProps = (field: string, max: number) => ({
-    maxLength: max,
-    onPaste: (event: ClipboardEvent<HTMLTextAreaElement>) => {
-      const { value, selectionStart, selectionEnd } = event.currentTarget;
-      const pasted = event.clipboardData
-        .getData("text")
-        .replace(/\r\n?/g, "\n");
-      if (value.length - (selectionEnd - selectionStart) + pasted.length > max)
-        setCutField(field);
-    },
-    onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => {
-      const { value, selectionStart, selectionEnd } = event.currentTarget;
-      const typesText =
-        (event.key.length === 1 || event.key === "Enter") &&
-        !event.ctrlKey &&
-        !event.metaKey;
-      if (typesText && selectionStart === selectionEnd && value.length >= max)
-        setCutField(field);
-    },
-    // Making room ends the notice; text that fits exactly is not a cut.
-    onInput: (event: FormEvent<HTMLTextAreaElement>) => {
-      if (event.currentTarget.value.length < max)
-        setCutField((current) => (current === field ? null : current));
-    },
-  });
-  // Shown while the field stays full.
-  const cutNotice = (field: string, value: string, max: number) =>
-    cutField === field &&
-    value.length >= max && (
-      <Text
-        role="alert"
-        fontSize="label.sm"
-        color="content.secondary"
-        data-testid="concept-note-gap-text-cut"
-      >
-        {t("gap-text-cut")}
-      </Text>
-    );
+  // The longest value a field may hold within the shared limit. A separator
+  // added with a field's first characters can still overshoot by a few; the
+  // charsLeft guard then blocks sending.
+  const fieldMax = (value: string) =>
+    Math.min(2000, value.length + Math.max(0, charsLeft));
+  const detailsMax = fieldMax(details);
   // New questions replace the current ones: typed answers move to the details
   // first, so nothing the user wrote disappears.
   const keepTypedAnswers = () => {
@@ -1016,7 +957,9 @@ export function GapAnswerForm({
                           : "gap-answer-placeholder",
                       )}
                       data-testid="concept-note-gap-custom-answer"
-                      {...limitProps(answerKey(index), customMax(index))}
+                      maxLength={fieldMax(
+                        customAnswers[answerKey(index)] ?? "",
+                      )}
                       rows={2}
                       fontSize="body.sm"
                     />
@@ -1030,11 +973,6 @@ export function GapAnswerForm({
                       >
                         {t("gap-other-empty")}
                       </Text>
-                    )}
-                    {cutNotice(
-                      answerKey(index),
-                      customAnswers[answerKey(index)] ?? "",
-                      customMax(index),
                     )}
                   </>
                 )}
@@ -1053,12 +991,11 @@ export function GapAnswerForm({
               onChange={(event) => setDetails(event.target.value)}
               placeholder={t("gap-details-placeholder")}
               data-testid="concept-note-gap-details"
-              {...limitProps("details", detailsMax)}
+              maxLength={detailsMax}
               rows={2}
               autoresize
               fontSize="body.sm"
             />
-            {cutNotice("details", details, detailsMax)}
           </Field>
         )}
         {!closed && (

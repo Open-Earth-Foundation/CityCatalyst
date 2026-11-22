@@ -224,60 +224,50 @@ it("counts only open gaps in the section list, not estimates to confirm", async 
   );
 });
 
-it("hides Review & confirm while a raw multiline marker remains", async () => {
-  const chapterWith = (overrides: Partial<ConceptNoteDraftChapter>) =>
-    draftChapter({
-      chapter_id: "chapter-1",
-      title: "Budget",
-      body_markdown: "Budget is 10.",
-      ...overrides,
-    });
-  // A marker split across lines and bold text, claimed by a closed record.
-  const multiline =
-    "Budget is pending. [Information needed: **Who pays\nfor the pilot**]";
-  const closedRecord = gapRecord("gap-closed", {
-    question: "Who pays for the pilot?",
-    state: "resolved",
-    version: 2,
-    resolution: estimateResolution("The city pays."),
-  });
-  const caveat = gapRecord("gap-estimate", {
-    question: "Confirm the request amount",
-    state: "caveat",
-    version: 2,
-    resolution: estimateResolution("About $2 million."),
-  });
-  async function reviewButtonFor(chapter: ConceptNoteDraftChapter) {
-    await renderChapter(chapter);
-    return [...view.container.querySelectorAll("button")].find((button) =>
-      button.textContent?.includes("Review & confirm"),
-    );
-  }
-  // An unrecorded multiline marker hides the button.
-  expect(
-    await reviewButtonFor(chapterWith({ body_markdown: multiline })),
-  ).toBeUndefined();
-  // So does a marker whose record is already closed.
-  expect(
-    await reviewButtonFor(
-      chapterWith({
-        body_markdown: `${multiline}\n\nCosts pending. [Information needed: Confirm funding]`,
-        gaps: [closedRecord],
-      }),
-    ),
-  ).toBeUndefined();
-  // An estimate alone does not hide it.
-  expect(
-    await reviewButtonFor(
-      chapterWith({
-        body_markdown: "The request is an estimated $2 million.",
-        gaps: [caveat],
-        caveat_count: 1,
-      }),
-    ),
-  ).toBeDefined();
-  // And the same chapter without markers shows it.
-  expect(
-    await reviewButtonFor(chapterWith({ body_markdown: "Budget is 10." })),
-  ).toBeDefined();
+// A marker split across lines and bold text.
+const MULTILINE_MARKER =
+  "Budget is pending. [Information needed: **Who pays\nfor the pilot**]";
+
+it.each<[string, boolean, Partial<ConceptNoteDraftChapter>]>([
+  ["an unrecorded raw marker", false, { body_markdown: MULTILINE_MARKER }],
+  [
+    "a marker whose record is already closed",
+    false,
+    {
+      body_markdown: `${MULTILINE_MARKER}\n\nCosts pending. [Information needed: Confirm funding]`,
+      gaps: [
+        gapRecord("gap-closed", {
+          question: "Who pays for the pilot?",
+          state: "resolved",
+          version: 2,
+          resolution: estimateResolution("The city pays."),
+        }),
+      ],
+    },
+  ],
+  [
+    "an estimate alone",
+    true,
+    {
+      body_markdown: "The request is an estimated $2 million.",
+      gaps: [
+        gapRecord("gap-estimate", {
+          question: "Confirm the request amount",
+          state: "caveat",
+          version: 2,
+          resolution: estimateResolution("About $2 million."),
+        }),
+      ],
+      caveat_count: 1,
+    },
+  ],
+  ["no marker", true, { body_markdown: "Budget is 10." }],
+])("offers Review & confirm with %s: %s", async (_, shown, overrides) => {
+  await renderChapter(
+    draftChapter({ chapter_id: "chapter-1", title: "Budget", ...overrides }),
+  );
+  const confirm = [...view.container.querySelectorAll("button")].find(
+    (button) => button.textContent?.includes("Review & confirm"),
+  );
+  expect(confirm !== undefined).toBe(shown);
 });

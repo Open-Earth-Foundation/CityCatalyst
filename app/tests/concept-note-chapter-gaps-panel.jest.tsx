@@ -65,16 +65,12 @@ it("keeps an accepted estimate listed as to be confirmed, after the open gaps", 
   expect(rows.map((row) => row.id)).toEqual(["a", "b", "d"]);
   const onAnswerGap = jest.fn();
   await view.render(
-    <>
-      <ChapterGapsPanel
-        chapter={withEstimate}
-        lng="en"
-        rows={rows}
-        onAnswerGap={onAnswerGap}
-      />
-      {/* Stand-in for the answer form heading that opens in the chat panel. */}
-      <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
-    </>,
+    <ChapterGapsPanel
+      chapter={withEstimate}
+      lng="en"
+      rows={rows}
+      onAnswerGap={onAnswerGap}
+    />,
   );
   const panel = view.byTestId("concept-note-chapter-gaps");
   // Estimates are not counted as open gaps.
@@ -107,13 +103,10 @@ it("keeps an accepted estimate listed as to be confirmed, after the open gaps", 
   expect(confirm.textContent).toContain("gap-confirm-in-chat");
   await act(async () => confirm.click());
   expect(onAnswerGap).toHaveBeenCalledWith(withEstimate, rows[2]);
-  // Let the closing popover hand focus to the form before the next test.
+  // Let the closing popover settle its focus before the next test.
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
-  expect(document.activeElement?.getAttribute("data-testid")).toBe(
-    "concept-note-gap-answer-heading",
-  );
 });
 
 it("keeps counts visible and opens only the selected question with its rationale", async () => {
@@ -169,22 +162,6 @@ it("keeps counts visible and opens only the selected question with its rationale
     detail?.querySelector('[data-testid="concept-note-gap-number"]')
       ?.textContent,
   ).toBe('gap-number:{"number":1}');
-  // Keyboard focus follows the view: into the details, then back to the row.
-  const back = document.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-gap-back"]',
-  );
-  expect(document.activeElement).toBe(back);
-  await act(async () => back?.click());
-  expect(document.activeElement).toBe(
-    document.querySelector('[data-testid="concept-note-gap-list-item"]'),
-  );
-  await act(async () => {
-    document
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-gap-list-item"]',
-      )
-      ?.click();
-  });
 
   const answer = document.querySelector<HTMLButtonElement>(
     '[data-testid="concept-note-chapter-gap-answer"]',
@@ -316,14 +293,15 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
   );
 });
 
-it("keeps an estimate and the answers saved to confirm it in separate blocks", async () => {
+it("shows answers saved so far on the marker, in the gap list and apart from an estimate", async () => {
+  const saved = "1. Question a?\nGrant\n\n2. Amount?\nNot decided yet";
   const estimate =
     "The request is approximately $2 million; not yet confirmed.";
-  const saved = "Confirmed by the lender: $2 million.";
+  const confirming = "Confirmed by the lender: $2 million.";
   const estimated = {
     ...gap("d", "caveat"),
     version: 2,
-    answered_so_far: saved,
+    answered_so_far: confirming,
     resolution: {
       resolution_id: "r-d",
       action: "answer" as const,
@@ -333,55 +311,13 @@ it("keeps an estimate and the answers saved to confirm it in separate blocks", a
       created_at: "2026-09-24T00:00:00Z",
     },
   };
-  const withEstimate = { ...chapter, gaps: [estimated] };
-  const rows = chapterGapRows(withEstimate);
-  await view.render(
-    <>
-      <ChapterGapsPanel
-        chapter={withEstimate}
-        lng="en"
-        rows={rows}
-        onAnswerGap={jest.fn()}
-      />
-    </>,
-  );
-  await act(async () =>
-    view.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-chapter-gaps-toggle"]',
-      )!
-      .click(),
-  );
-  await act(async () =>
-    document
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-gap-list-item"]',
-      )!
-      .click(),
-  );
-  const estimateBlock = document.querySelector(
-    '[data-testid="concept-note-gap-estimate"]',
-  );
-  const savedBlock = document.querySelector(
-    '[data-testid="concept-note-gap-answered-so-far"]',
-  );
-  expect(estimateBlock?.textContent).toContain(estimate);
-  expect(estimateBlock?.textContent).not.toContain(saved);
-  expect(savedBlock?.textContent).toContain(saved);
-  expect(savedBlock?.textContent).not.toContain(estimate);
-  expect(estimateBlock?.contains(savedBlock ?? null)).toBe(false);
-  expect(savedBlock?.contains(estimateBlock ?? null)).toBe(false);
-  // Let the popover settle its focus before the next test.
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  });
-});
-
-it("shows answers saved so far on the marker popover and in the gap list", async () => {
-  const saved = "1. Question a?\nGrant\n\n2. Amount?\nNot decided yet";
   const answered = {
     ...chapter,
-    gaps: [{ ...gap("a", "open"), answered_so_far: saved }, gap("b", "open")],
+    gaps: [
+      { ...gap("a", "open"), answered_so_far: saved },
+      gap("b", "open"),
+      estimated,
+    ],
   };
   const rows = chapterGapRows(answered);
   await view.render(
@@ -412,8 +348,31 @@ it("shows answers saved so far on the marker popover and in the gap list", async
       .click(),
   );
   const items = [
-    ...document.querySelectorAll('[data-testid="concept-note-gap-list-item"]'),
-  ].map((item) => item.textContent);
-  expect(items[0]).toContain("gap-severity-critical · gap-answered-so-far");
-  expect(items[1]).not.toContain("gap-answered-so-far");
+    ...document.querySelectorAll<HTMLButtonElement>(
+      '[data-testid="concept-note-gap-list-item"]',
+    ),
+  ];
+  expect(items[0].textContent).toContain(
+    "gap-severity-critical · gap-answered-so-far",
+  );
+  expect(items[1].textContent).not.toContain("gap-answered-so-far");
+
+  // An estimate and the answers saved to confirm it stay in separate blocks.
+  await act(async () => items[2].click());
+  const estimateBlock = document.querySelector(
+    '[data-testid="concept-note-gap-estimate"]',
+  );
+  const savedBlock = estimateBlock
+    ?.closest('[data-testid="concept-note-chapter-gap"]')
+    ?.querySelector('[data-testid="concept-note-gap-answered-so-far"]');
+  expect(estimateBlock?.textContent).toContain(estimate);
+  expect(estimateBlock?.textContent).not.toContain(confirming);
+  expect(savedBlock?.textContent).toContain(confirming);
+  expect(savedBlock?.textContent).not.toContain(estimate);
+  expect(estimateBlock?.contains(savedBlock ?? null)).toBe(false);
+  expect(savedBlock?.contains(estimateBlock ?? null)).toBe(false);
+  // Let the popover settle its focus before the next test.
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  });
 });

@@ -34,7 +34,7 @@ function setActEnvironment(enabled: boolean): void {
  * returning a function that restores the originals. With `immediate`, the
  * ResizeObserver reports each observed element at once, as a first layout would.
  */
-export function installDomShims({
+function installDomShims({
   resizeObserver = "noop",
 }: { resizeObserver?: "noop" | "immediate" } = {}): () => void {
   const originals = {

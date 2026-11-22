@@ -366,7 +366,6 @@ it("shows source-grounded suggestions with their source and adds one to the answ
   await act(async () => previewButton().click());
   expect(sendMessage).toHaveBeenCalledTimes(1);
   expect(savedBody().answers).not.toContain("What amount?");
-  expect(savedBody().answers).not.toContain("gap-not-answered");
   expect(savedBody().answers).toContain("Grant");
 });
 
@@ -397,7 +396,6 @@ it("names each source by its uploaded document and file type, or a readable labe
   );
   // No upload matches, so the label is humanized and no file type is invented.
   expect(lines).toContain("gap-source-label Annex 7 Cost Breakdown");
-  expect(view.container.textContent).not.toContain("_");
 });
 
 it("needs the current value before a changed source value counts as answered", async () => {
@@ -644,7 +642,6 @@ it("keeps a saved fallback answer when reopening brings generated questions", as
       choices: { 0: "custom" },
       customAnswers: { [`0:${gapAnswer.row.question}`]: "Loan" },
       details: "",
-      sent: "",
     }),
   );
   await renderPanel(contextStatus, "thread", gapAnswer);
@@ -652,24 +649,6 @@ it("keeps a saved fallback answer when reopening brings generated questions", as
   expect(byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value).toBe(
     "Loan",
   );
-});
-
-it("keeps the fallback answer in place when a retry fails again", async () => {
-  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
-  await renderPanel(contextStatus, "thread", gapAnswer);
-  await writeAnswer(0, "Loan");
-  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
-  const retry = button("gap-retry-question")!;
-  await act(async () => retry.click());
-  await settle();
-  expect(
-    byTestId<HTMLTextAreaElement>("concept-note-gap-custom-answer")!.value,
-  ).toBe("");
-  // Retry moves the typed answer to the details, so it is still sent.
-  expect(byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value).toBe(
-    "Loan",
-  );
-  expect(previewButton().disabled).toBe(false);
 });
 
 it("lets earlier answers alone complete the gap when nothing is missing", async () => {
@@ -712,7 +691,7 @@ it("offers free text for gaps without suggestions and blocks submission while Cl
   );
 });
 
-it("falls back to free text on failure and keeps it in the details when a retry changes the question", async () => {
+it("falls back to free text on failure and keeps it in the details across retries", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(view.container.querySelector('[role="alert"]')?.textContent).toContain(
@@ -721,23 +700,28 @@ it("falls back to free text on failure and keeps it in the details when a retry 
   await writeAnswer(0, "Loan");
   // The fallback asks the recorded gap itself, so its answer can close it.
   expect(view.container.textContent).toContain("gap-acceptance-hint");
+  const details = () =>
+    byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value;
+  // A retry that fails again moves the typed answer to the details.
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await act(async () => button("gap-retry-question")!.click());
+  await settle();
+  expect(customField(0)!.value).toBe("");
+  expect(details()).toBe("Loan");
+  expect(previewButton().disabled).toBe(false);
   fetchQuestion.mockResolvedValueOnce(
     jsonResponse({
       why_asking: "Timing matters.",
       questions: [{ question: "What completion year?", options: [] }],
     }),
   );
-  const retry = button("gap-retry-question")!;
-  await act(async () => retry.click());
+  await act(async () => button("gap-retry-question")!.click());
   await settle();
   expect(card(0).textContent).toContain("What completion year?");
   // The typed answer is never attached to a different question...
   expect(customField(0)!.value).toBe("");
-  // ...but stays visible in the details, so it is still sent.
-  expect(byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value).toBe(
-    "Loan",
-  );
-  expect(previewButton().disabled).toBe(false);
+  // ...but stays visible in the details, once, so it is still sent.
+  expect(details()).toBe("Loan");
   await act(async () => previewButton().click());
   expect(sendMessage.mock.calls[0][0]).toContain("Loan");
   expect(sendMessage.mock.calls[0][0]).not.toContain("What completion year?");

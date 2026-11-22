@@ -175,37 +175,22 @@ const NEUTRAL_REQUEST_TAIL =
   "Add the supported facts and keep a marker for any part still missing. Wait for my acceptance before applying.";
 
 describe("a sent gap answer in the chat", () => {
-  it("uses a neutral bound request for both partial and complete answers", async () => {
-    const partial = await sendGapAnswer(false);
-    expect(partial).toContain(NEUTRAL_REQUEST_TAIL);
-    expect(partial).not.toContain("replaces its complete");
-    expect(partial).not.toContain("[Information needed:");
-    sent.length = 0;
-    const complete = await sendGapAnswer(true);
-    expect(complete).toContain(NEUTRAL_REQUEST_TAIL);
-    expect(complete).not.toContain("replaces its complete");
-    expect(complete).not.toContain("[Information needed:");
-  });
-
   it.each([
     {
       complete: false,
       answers: "1. Which financing instrument?\nSelected category: Loan",
-      instruction: NEUTRAL_REQUEST_TAIL,
     },
     {
       complete: true,
       answers:
         "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\nEUR 2 million\nfrom the city budget",
-      instruction: NEUTRAL_REQUEST_TAIL,
     },
   ])(
-    "shows the answers, not the instruction (complete: $complete), live and after a reload",
-    async ({ complete, answers, instruction }) => {
+    "shows the answers, not the instruction (complete: $complete)",
+    async ({ complete, answers }) => {
       const content = await sendGapAnswer(complete);
       // Clima still receives the whole instruction.
-      expect(content).toContain(instruction);
-      expect(content).toContain("Wait for my acceptance before applying.");
+      expect(content).toContain(NEUTRAL_REQUEST_TAIL);
       expect(sent[0][1]?.answer_complete).toBe(complete);
 
       const live = byTestId("concept-note-gap-answer-message")!;
@@ -226,7 +211,9 @@ describe("a sent gap answer in the chat", () => {
         requestHidden: false,
       });
 
-      // History returns the same plain text; the bubble reads the same.
+      // History returns the same plain text; the bubble reads the same. One
+      // reload is enough: the complete answer has the multiline text.
+      if (!complete) return;
       await act(async () => view.root.unmount());
       view.root = createRoot(view.container);
       history = readConceptNoteThreadMessages({

@@ -45,7 +45,6 @@ import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
-import { ChatVisualPanels } from "./chat-visual-panels";
 import { ChatChoices } from "./chat-choices";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
@@ -682,21 +681,12 @@ export function ConceptNoteChatPanel({
                     data-chat-message={message.id}
                     flexShrink={0}
                   >
-                    {visual.panels ? (
-                      <ChatVisualPanels
-                        lng={lng}
-                        onHeightChange={keepLatestInView}
-                        panels={visual.panels}
-                        title={visual.title}
-                      />
-                    ) : (
-                      <ChatVisualFrame
-                        html={visual.html}
-                        lng={lng}
-                        onHeightChange={keepLatestInView}
-                        title={visual.title}
-                      />
-                    )}
+                    <ChatVisualFrame
+                      html={visual.html}
+                      lng={lng}
+                      onHeightChange={keepLatestInView}
+                      title={visual.title}
+                    />
                   </Box>
                 ))}
               </Fragment>

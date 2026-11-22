@@ -7,7 +7,6 @@ from agents.tool import ToolContext
 from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.utils.visual_html import (
     needs_svg,
-    smallest_svg_text_px,
     unsupported_html_features,
 )
 
@@ -76,72 +75,7 @@ async def test_tool_reports_blank_html_with_one_retry_hint() -> None:
     assert "answer in text" in result["data"]["next_step"]
 
 
-SMALL_TEXT_SVG = '<svg viewBox="0 0 440 300"><text font-size="11">a</text></svg>'
-
-
-@pytest.mark.parametrize(
-    ("html", "expected"),
-    [
-        # 11 px text in a 440-wide viewBox shrinks to 8 px in the 320 px column.
-        (SMALL_TEXT_SVG, 8.0),
-        # Mini charts (viewBox up to 200 wide) are drawn 140 px wide.
-        ('<svg viewBox="0 0 160 100"><text font-size="11">a</text></svg>', 11 * 140 / 160),
-        # A 320-wide viewBox is not enlarged; size inherits from a group.
-        ('<svg viewBox="0 0 320 200"><g font-size="12"><text>a</text></g></svg>', 12.0),
-        # Nested svgs use the top-level scale.
-        (
-            '<svg viewBox="0 0 440 300"><svg viewBox="0 0 100 100">'
-            '<text font-size="6">n</text></svg></svg>',
-            6 * 320 / 440,
-        ),
-        # Text with no size takes the stylesheet default for svg text.
-        ('<style>svg text{font-size:9px}</style><svg><text>a</text></svg>', 9.0),
-        # Unknown units, empty text and text outside svg are skipped.
-        ('<svg viewBox="0 0 320 100"><text style="font-size:.6em">a</text></svg>', None),
-        ('<svg><text font-size="12"> </text></svg>', None),
-        ('<text font-size="5">html</text>', None),
-    ],
-)
-def test_smallest_svg_text_px(html: str, expected: float | None) -> None:
-    assert smallest_svg_text_px(html) == expected
-
-
-def test_hidden_svg_text_is_not_judged_by_size() -> None:
-    # A tooltip hidden by a class rule (even one after the svg), <defs> text
-    # and inline-hidden text are not drawn where they stand.
-    html = (
-        '<svg viewBox="0 0 320 120"><defs><text font-size="6">x</text></defs>'
-        '<g class="tip"><text font-size="9">Buildings 455</text></g>'
-        '<text font-size="7" style="display:none">tiny</text>'
-        '<text font-size="13">Buildings</text></svg>'
-        "<style>.pt .tip{display:none}.pt:focus .tip{display:block}</style>"
-    )
-    assert smallest_svg_text_px(html) == 13
-
-
-async def test_tool_rejects_svg_text_below_minimum_with_one_retry_hint() -> None:
-    result = await invoke("Emissions", SMALL_TEXT_SVG)
-
-    assert result["error_code"] == "visual_text_too_small"
-    assert result["data"]["smallest_text_px"] == 8.0
-    assert "retry once" in result["data"]["next_step"]
-
-
-@pytest.mark.parametrize(
-    ("svg", "ok"),
-    [
-        ('<svg viewBox="0 0 320 200"><text font-size="12">a</text></svg>', True),
-        ('<svg viewBox="0 0 150 100"><text font-size="13">a</text></svg>', True),
-        # 11.3 px in the column, and 11.2 px in a mini chart, which needs 13.
-        ('<svg viewBox="0 0 340 200"><text font-size="12">a</text></svg>', False),
-        ('<svg viewBox="0 0 150 100"><text font-size="12">a</text></svg>', False),
-    ],
-)
-async def test_svg_text_threshold(svg: str, ok: bool) -> None:
-    assert (await invoke("Emissions", svg))["success"] is ok
-
-
-MERMAID = "<pre class=\"mermaid\">flowchart TD\n  A[Baseline] --> B[Target]</pre>"
+MERMAID = '<pre class="mermaid">flowchart TD\n  A[Baseline] --> B[Target]</pre>'
 
 
 @pytest.mark.parametrize(
@@ -198,13 +132,22 @@ async def test_tool_accepts_css_keyframe_animation() -> None:
         ("<button>Show 2024</button><p>2023: 455</p>", ["button"]),
         ('<input type="range"><output>0</output>', ["input type=range"]),
         ('<style>.t:target{display:block}</style><p class="t">455</p>', [":target"]),
-        ('<svg viewBox="0 0 9 9"><foreignObject><p>4</p></foreignObject></svg>', ["foreignObject"]),
-        ('<iframe src="https://e.org/map"></iframe><object></object>', ["embedded frame"]),
+        (
+            '<svg viewBox="0 0 9 9"><foreignObject><p>4</p></foreignObject></svg>',
+            ["foreignObject"],
+        ),
+        (
+            '<iframe src="https://e.org/map"></iframe><object></object>',
+            ["embedded frame"],
+        ),
         ('<img src="https://e.org/a.jpg" alt="site">', ["external resource"]),
         ('<style>@import "x.css";</style><p>455</p>', ["external resource"]),
         ('<p style="background:url(//cdn.e.org/x.png)">455</p>', ["external resource"]),
         # Native controls, popovers, local references and data: URLs work.
-        ('<input type="radio" id="a" checked><input type="checkbox"><select></select>', []),
+        (
+            '<input type="radio" id="a" checked><input type="checkbox"><select></select>',
+            [],
+        ),
         ('<button popovertarget="p">Details</button><div popover id="p">455</div>', []),
         (
             '<img src="data:image/png;base64,AA" alt="ok"><svg viewBox="0 0 9 9">'

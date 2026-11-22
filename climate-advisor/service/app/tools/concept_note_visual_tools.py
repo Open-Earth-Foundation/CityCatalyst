@@ -6,12 +6,10 @@ from collections.abc import Callable
 from typing import Any
 
 from agents import function_tool
-from app.services.cnb.visual_data import VisualData, check_visual_data
 from app.utils.concept_note_context import VISUAL_RENDER_ACTION
 from app.utils.visual_html import (
     has_visible_content,
     needs_svg,
-    smallest_svg_text_px,
     svg_animation_elements,
     unsupported_html_features,
 )
@@ -20,10 +18,8 @@ logger = logging.getLogger(__name__)
 
 MAX_VISUAL_TITLE_CHARS = 200
 MAX_VISUAL_HTML_CHARS = 200_000
-# Smaller SVG text is unreadable on a phone, where the chat shows a 320 px column.
-MIN_SVG_TEXT_PX = 12
 # Each hint below is the model's only guidance for its error code, so it
-# carries the one-retry limit itself. The visual and panel tools share them.
+# carries the one-retry limit itself.
 _ANSWER_IN_TEXT = (
     "If that also fails, do not call the tool again; answer in text with the "
     "same values."
@@ -56,12 +52,6 @@ SVG_ANIMATION_HINT = {
     "next_step": "Remove them, write the final state in the attributes and "
     f"animate only with CSS @keyframes, then retry once. {_ANSWER_IN_TEXT}",
 }
-TEXT_TOO_SMALL_HINT = {
-    "reason": "Some SVG text would be smaller than 12 px once drawn in the chat.",
-    "next_step": "Use viewBox width 320 (150 for mini charts in a 2-column grid) "
-    "and font-size of at least 12 (13 in mini charts), then retry once. "
-    f"{_ANSWER_IN_TEXT}",
-}
 
 
 def _blank(html: str) -> dict[str, Any] | None:
@@ -82,13 +72,6 @@ def _svg_animation(html: str) -> dict[str, Any] | None:
     return {"elements": elements} if elements else None
 
 
-def _small_text(html: str) -> dict[str, Any] | None:
-    px = smallest_svg_text_px(html)
-    if px is None or px >= MIN_SVG_TEXT_PX:
-        return None
-    return {"smallest_text_px": round(px, 1)}
-
-
 # Static HTML checks in the order they run: (error code, check, hint). A check
 # returns None when the HTML passes, else the details to report.
 VISUAL_HTML_CHECKS: tuple[
@@ -100,23 +83,19 @@ VISUAL_HTML_CHECKS: tuple[
     # Scripts, dead controls and network resources show but never work.
     ("visual_unsupported_html", _unsupported, UNSUPPORTED_HTML_HINT),
     ("visual_uses_svg_animation", _svg_animation, SVG_ANIMATION_HINT),
-    # SVG text drawn below the readable minimum in a phone-width column.
-    ("visual_text_too_small", _small_text, TEXT_TOO_SMALL_HINT),
 )
 
 
 @function_tool
-async def concept_note_render_visual(
-    title: str, html: str, data: VisualData | None = None
-) -> str:
+async def concept_note_render_visual(title: str, html: str) -> str:
     """Show one static HTML visual (chart, diagram, table or expandable sections).
 
     Call when the user asks for a chart, diagram, table or expandable sections,
     or when a pattern across series, a flow, or many values is hard to read in
     text. Not for single facts, short lists, capability questions or edits.
-    For switchable cards or tabs use `concept_note_render_panels` instead.
-    For KPI cards, metric tiles or a dashboard of numbers, use one visual with
-    a grid of cards, not panels.
+    For switchable cards or tabs use radio inputs and labels styled with
+    `:checked`. For KPI cards, metric tiles or a dashboard of numbers, use a
+    grid of cards.
     `html` must be ONE complete, static HTML document with inline CSS and
     inline SVG. Scripts, links, forms, SVG animation and external resources
     are removed before display, so draw charts as inline SVG and never rely on
@@ -142,27 +121,11 @@ async def concept_note_render_visual(
     is shown in chat only; it never changes the Concept Note.
     HTML that would show nothing once scripts and external resources are
     removed returns visual_no_visible_content: retry once, then answer in text.
-    SVG text under 12 px returns visual_text_too_small with `smallest_text_px`:
-    retry once with viewBox width 320 (150 for mini charts in a 2-column grid)
-    and font-size of at least 12 (13 in mini charts), then answer in text.
     Mermaid source without SVG returns visual_needs_svg; scripts, buttons,
     sliders, text inputs, :target tabs, foreignObject and external files
     visual_unsupported_html with the `features` to replace; and SVG animation
     elements visual_uses_svg_animation: follow `next_step`, retry once, then
     answer in text.
-    When the visual shows numbers, pass `data` with every plotted value: its
-    unit, its source (document values cite source_index and the page or anchor
-    of the concept_note_sources_query excerpt) and its status. Use status
-    missing with value null for gaps (never 0), conflicting with every
-    disagreeing sourced value in alternatives, and derived for values you
-    computed (totals, differences, counts, products), with derived_from naming
-    the input point labels or describing each input briefly. Use method sum
-    only for a plain total of listed points, which is recomputed exactly;
-    otherwise use other. In the HTML print each value, the unit, the
-    source label, "not reported" for gaps and every conflicting value. Pass
-    data null for visuals without numbers. Invalid data returns
-    visual_data_invalid with `issues` to fix; `data_check.warnings` lists
-    declared values or gaps the HTML does not show, so fix or mention them.
     """
     # Validate the model-supplied payload before the chat renders it.
     title = title.strip()
@@ -180,27 +143,12 @@ async def concept_note_render_visual(
         if details is not None:
             return _visual_result(False, data={**details, **hint}, code=code)
 
-    # Optional data metadata: invalid provenance blocks, visibility gaps warn.
-    data_check = check_visual_data(data, html) if data is not None else None
-    if data_check is not None and data_check["issues"]:
-        return _visual_result(
-            False,
-            data={"issues": data_check["issues"]},
-            code="visual_data_invalid",
-        )
-
     logger.info(
         "Rendered CNB visual title_chars=%s html_chars=%s", len(title), len(html)
     )
     # The chat reads the HTML from the call arguments; repeating it here would
     # store and stream every visual twice more.
-    result = {"title": title, "html_chars": len(html)}
-    if data_check is not None:
-        result["data_check"] = {
-            "summary": data_check["summary"],
-            "warnings": data_check["warnings"],
-        }
-    return _visual_result(True, data=result)
+    return _visual_result(True, data={"title": title, "html_chars": len(html)})
 
 
 def _visual_result(

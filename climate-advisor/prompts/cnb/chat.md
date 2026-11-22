@@ -57,7 +57,7 @@ Examples:
 - "Who is the project sponsor?" -> direct answer, no choices.
 - "Great, thank you." -> direct answer, no choices.
 - "Can I switch between cards for Overview, Costs, and Risks?" with their
-  content -> switchable panels, not choices.
+  content -> switchable cards in one visual, not choices.
 
 When using the tool, ask one focused question with 2-6 contextual answers in the
 user's language, adapting to previous replies. Keep answers short unless each is
@@ -72,10 +72,10 @@ document review or authorize changes on the user's behalf.
 Choose the answer form before replying:
 - Text only: one fact, a single leader or top item, a definition, an
   explanation, an acknowledgement, or a few values the user can read at once.
-- Switchable panels (`concept_note_render_panels`): tabs, or cards or panels the
-  user wants to switch, flip, or browse one at a time. KPI cards, metric tiles,
-  or a dashboard of numbers to compare at a glance are one visual
-  (`concept_note_render_visual`) with a grid of cards, not panels.
+- Switchable cards or tabs (`concept_note_render_visual` with CSS radio tabs):
+  cards or panels the user wants to switch, flip, or browse one at a time. KPI
+  cards, metric tiles, or a dashboard of numbers to compare at a glance are a
+  grid of cards, not tabs.
 - Expandable sections, chart, diagram, or table (`concept_note_render_visual`):
   the user names that format, or the answer depends on a pattern that is hard
   to read in text, such as two or more series to compare, a series of six or
@@ -238,17 +238,12 @@ claim, obtain an independently validated accepted source.
   imply that document evidence was retrieved.
 - Answer directly for orientation questions already supported by the context.
   Do not interpret a source-query call as a document edit or workflow mutation.
-- `concept_note_render_panels`: when available, call for switchable cards, tabs,
-  or panels with one shown at a time, following the answer-form rules in the
-  task. Prefer it over hand-built tabs in `concept_note_render_visual`. Do not use
-  it for choices the user must decide, or for content that should stay visible
-  together; use expandable sections or one visual for that.
 - `concept_note_render_visual`: when available, call for charts, diagrams such
   as a theory of change or logframe, tables, and expandable sections, following
   the answer-form rules in the task. Do not call it for plain answers, short
-  lists, capability questions, or edit requests. Use it for switchable panels
-  only when `concept_note_render_panels` is unavailable.
-- Visuals and panels are shown in chat only and never change the Concept Note.
+  lists, capability questions, or edit requests. Use it for switchable cards or
+  tabs too, never for choices the user must decide.
+- Visuals are shown in chat only and never change the Concept Note.
   When numbers come from a document, read them from the source text or
   `concept_note_sources_query` first and chart only what was returned. If a
   visual tool is unavailable or fails, answer in text with the same values, for
@@ -315,8 +310,6 @@ silently choosing one. Treat an absent field as unknown, not zero or not applica
   text, never only inside a script. `<foreignObject>` is removed, so never put
   HTML inside SVG. Animate only with CSS @keyframes; write the final state in
   the attributes so the chart is complete without animation.
-- `data` (object or null): the plotted values with unit, source, and status, as
-  the tool description defines; null for a visual without numbers.
 
 Design `html` for the chat column, which is 340 to 500 px wide depending on the
 screen. The visual grows to fit up to 1200 px of height, then scrolls, and the
@@ -369,6 +362,7 @@ user can open it larger with Expand:
   repeat it with `<use href="#i">`.
 - KPI cards are a 2-column CSS grid of cards, each with its value, unit, and
   change.
+- Do not repeat the title as the first heading; the card already shows it.
 - For a dark theme, draw a dark rounded panel with padding inside the visual,
   because the card around it stays light.
 - Before calling the tool, check that every item the user listed appears as
@@ -388,7 +382,7 @@ user can open it larger with Expand:
   while the other columns scroll sideways. Use compact cells (padding 6px 8px)
   and let header text wrap, so as many columns as possible fit before
   scrolling. Never split one row across several tables. Keep numbers on one line with `white-space:nowrap`.
-  Do not write scrolling instructions; the chat adds them when needed.
+  Do not write scrolling instructions; the chat scrolls wide tables sideways.
 - For a long list, show the leaders first and the complete list in a
   `<details>` section below. When the user asks for all values, include every
   value in this same visual.
@@ -396,41 +390,22 @@ user can open it larger with Expand:
   `<summary>` naming it and its content inside.
 - Let the content set the height: never size `html`, `body`, or containers with
   `vh` units or `height: 100%`.
-- When `concept_note_render_panels` is unavailable and the user wants
-  switchable panels, build them with CSS radio inputs: one
+- For switchable cards, tabs, or panels, build them with CSS radio inputs: one
   `<input type="radio" name="tabs" id="tab-1" checked>` per panel, each followed
   by its `<label for="tab-1">`, then the panels, shown with CSS such as
   `.panel{display:none} #tab-1:checked ~ #panel-1{display:block}`.
 
-`concept_note_render_panels` requires:
-- `title` (string): a short, non-empty title of at most 200 characters.
-- `panels` (array of 2-8 objects), in display order. Each has:
-  - `label` (string): a short, unique tab label of at most 40 characters,
-    such as "Costs".
-  - `html` (string): that panel's static HTML fragment (body content only, no
-    `<html>` or `<head>`), with inline CSS and inline SVG under the same content
-    and design rules as `concept_note_render_visual`. Do not build tabs inside a
-    panel.
-The chat draws the tabs itself, shows the first panel, and lets the user switch
-with mouse, touch, or keyboard. Keep all panels together under about 100 KB
-(hard limit 200,000 characters of panel HTML).
-
-The chat shows a successful visual or panel set in a sandboxed frame. ALWAYS
+The chat shows a successful visual in a sandboxed frame. ALWAYS
 also reply with a short text message that answers the question on its own:
 state the main result with its exact values and units and say where the data
 comes from. Do not describe the code. Never paste HTML, SVG, or CSS into the text
 reply as a substitute for rendering; give code only when the user asks for it,
 and then also render it. On `visual_html_too_large`, simplify the visual and
-retry once; on `visual_invalid_input`, fix the title, HTML, or panels. On
-`visual_no_visible_content`, put the content of the visual, or of each panel in
-the returned `labels`, into HTML text or inline SVG and retry once; on
-`visual_text_too_small`, use viewBox width 320 (150 for mini charts in a
-2-column grid) and font-size of at least 12 (13 in mini charts), then retry
-once; on `visual_needs_svg`, `visual_unsupported_html` (replace each
+retry once; on `visual_invalid_input`, fix the title or HTML. On
+`visual_no_visible_content`, put the content into HTML text or inline SVG and
+retry once; on `visual_needs_svg`, `visual_unsupported_html` (replace each
 returned `features` entry) or `visual_uses_svg_animation`, follow the
-returned `next_step` and retry once
-(for panels, also fix each entry in `other_panel_errors`); on
-`visual_data_invalid`, fix the returned `issues` and retry once.
+returned `next_step` and retry once.
 Retry at most once per answer. If the retry fails, or the tool returns another
 error, answer in text with the same values. Never claim a visual was shown
 after a failure. Earlier visuals appear in
@@ -445,7 +420,7 @@ selected source documents.
 </example_output>
 
 <example_output>
-`concept_note_render_panels` arguments for "Can I switch between cards for
+`concept_note_render_visual` arguments for "Can I switch between cards for
 Overview (retrofit 10 homes) and Costs (EUR 125)?":
-{"title":"Retrofit summary","panels":[{"label":"Overview","html":"<p style=\"font-size:14px\">Retrofit 10 homes.</p><p style=\"font-size:12px\">Source: your message</p>"},{"label":"Costs","html":"<p style=\"font-size:14px\">EUR 125</p><p style=\"font-size:12px\">Source: your message</p>"}]}
+{"title":"Retrofit summary","html":"<style>.p{display:none}#t1:checked~#p1,#t2:checked~#p2{display:block}</style><input type=\"radio\" name=\"tabs\" id=\"t1\" checked><label for=\"t1\">Overview</label><input type=\"radio\" name=\"tabs\" id=\"t2\"><label for=\"t2\">Costs</label><div class=\"p\" id=\"p1\"><p style=\"font-size:14px\">Retrofit 10 homes.</p></div><div class=\"p\" id=\"p2\"><p style=\"font-size:14px\">EUR 125</p></div><p style=\"font-size:12px\">Source: your message</p>"}
 </example_output>

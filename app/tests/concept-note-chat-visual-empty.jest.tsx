@@ -17,10 +17,10 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-const { buildSandboxedVisualDocument, ChatVisualFrame } =
+const { prepareVisualDocument, ChatVisualFrame } =
   await import("@/components/ConceptNoteWorkspace/chat-visual-frame");
-const { hasVisualContent, hasRenderedVisualContent } =
-  await import("@/components/ConceptNoteWorkspace/chat-visual-content");
+const hasVisualContent = (html: string) =>
+  prepareVisualDocument(html).hasContent;
 
 // Same cases as climate-advisor/service/tests/cnb/test_concept_note_visual_empty.py
 // where the sanitizer, not only the backend, makes them blank.
@@ -52,9 +52,9 @@ const VISIBLE = [
   '<svg viewBox="0 0 30 10"><defs><symbol id="h"><path d="M0 0H5"></path></symbol></defs><use href="#h"></use></svg>',
 ];
 
-describe("hasVisualContent", () => {
+describe("sanitized visual content", () => {
   it.each(BLANK)("is blank after sanitizing: %s", (html) => {
-    expect(hasVisualContent(buildSandboxedVisualDocument(html))).toBe(false);
+    expect(hasVisualContent(html)).toBe(false);
   });
 
   it.each([
@@ -64,19 +64,11 @@ describe("hasVisualContent", () => {
     // One painted container a script was meant to fill draws no chart.
     '<style>#chart{background:#fff;height:200px}</style><div id="chart"></div><script>draw()</script>',
   ])("draws nothing with CSS or a removed reference alone: %s", (html) => {
-    expect(hasVisualContent(buildSandboxedVisualDocument(html))).toBe(false);
+    expect(hasVisualContent(html)).toBe(false);
   });
 
   it.each(VISIBLE)("keeps legitimate content: %s", (html) => {
-    expect(hasVisualContent(buildSandboxedVisualDocument(html))).toBe(true);
-  });
-});
-
-describe("hasRenderedVisualContent", () => {
-  it("is unknown without layout", () => {
-    const doc = document.implementation.createHTMLDocument("");
-    doc.body.innerHTML = "<p>42</p>";
-    expect(hasRenderedVisualContent(doc)).toBeNull();
+    expect(hasVisualContent(html)).toBe(true);
   });
 });
 

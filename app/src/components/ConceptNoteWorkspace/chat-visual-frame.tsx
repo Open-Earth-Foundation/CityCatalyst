@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, chakra, HStack, Icon, Text } from "@chakra-ui/react";
-import { type ReactNode, type Ref, useMemo, useRef, useState } from "react";
+import { type ReactNode, type Ref, useMemo, useRef } from "react";
 import DOMPurify from "dompurify";
 import { LuImageOff, LuMaximize2 } from "react-icons/lu";
 
@@ -17,22 +17,13 @@ import {
 import { useTranslation } from "@/i18n/client";
 
 import { ReviewButton as Button } from "./review-button";
-import { useVisualViewState } from "./use-visual-view-state";
 import {
-  adaptVisualLayout,
   addHostStyles,
   applyExpandedLayout,
-  ensureContentInset,
-  restoreLoneDuplicateTitle,
   syncHostTheme,
-  type VisualLayoutLabels,
-  watchTableScroll,
 } from "./chat-visual-layout";
 import { useVisualFrameHeight } from "./use-visual-frame-height";
-import {
-  hasBodyContent,
-  hasRenderedVisualContent,
-} from "./chat-visual-content";
+import { hasBodyContent } from "./chat-visual-content";
 
 // Static HTML/SVG only. Without scripts the frame cannot navigate itself, and with
 // links stripped a click cannot either, so note context cannot leave in a URL.
@@ -101,13 +92,6 @@ function purifier() {
   return visualPurifier;
 }
 
-// Used where no locale is at hand, e.g. tests; the chat passes its own labels.
-const ENGLISH_LAYOUT_LABELS: VisualLayoutLabels = {
-  showAll: (count) => `Show all ${count} entries`,
-  showFirst: (count) => `Show first ${count} entries`,
-  scrollHint: "Scroll sideways to see all columns →",
-};
-
 export interface SandboxedVisual {
   /** The iframe `srcDoc`, or "" where it cannot be built safely. */
   srcDoc: string;
@@ -116,14 +100,10 @@ export interface SandboxedVisual {
 }
 
 /**
- * Sanitizes model HTML once into a DOM, adapts its layout there, checks it for
- * visible content and serializes it with our CSP before any of it.
+ * Sanitizes model HTML once into a DOM, adds the host styles there, checks it
+ * for visible content and serializes it with our CSP before any of it.
  */
-export function prepareVisualDocument(
-  html: string,
-  labels: VisualLayoutLabels = ENGLISH_LAYOUT_LABELS,
-  titles: string | string[] = [],
-): SandboxedVisual {
+export function prepareVisualDocument(html: string): SandboxedVisual {
   const failed = { srcDoc: "", hasContent: false };
   // Fail closed where DOMPurify has no DOM (server rendering).
   if (!DOMPurify.isSupported) return failed;
@@ -135,8 +115,7 @@ export function prepareVisualDocument(
   if (root?.tagName !== "HTML") return failed;
   const doc = root.ownerDocument;
   // Host markup added after sanitizing is ours: plain text and fixed CSS only.
-  adaptVisualLayout(doc, labels);
-  addHostStyles(doc, titles);
+  addHostStyles(doc);
   const clean = root.outerHTML;
   const head = /^<html[^>]*><head>/.exec(clean)?.[0];
   if (!head) return failed;
@@ -146,72 +125,12 @@ export function prepareVisualDocument(
   };
 }
 
-/**
- * Whether sanitized `html` keeps any text or drawing, without the layout work
- * of `prepareVisualDocument`. Where DOMPurify has no DOM (server rendering)
- * nothing is judged blank, as in `ChatVisualFrame`.
- */
-export function hasSanitizedVisualContent(html: string): boolean {
-  if (!DOMPurify.isSupported) return true;
-  const root = purifier().sanitize(html, {
-    ...SANITIZE_OPTIONS,
-    RETURN_DOM: true,
-  }) as Element | null;
-  return root?.tagName === "HTML" && hasBodyContent(root.ownerDocument.body);
-}
-
 /** The sandboxed document only, see `prepareVisualDocument`. */
-export function buildSandboxedVisualDocument(
-  html: string,
-  labels?: VisualLayoutLabels,
-  titles?: string | string[],
-): string {
-  return prepareVisualDocument(html, labels, titles).srcDoc;
+export function buildSandboxedVisualDocument(html: string): string {
+  return prepareVisualDocument(html).srcDoc;
 }
 
-/**
- * `prepareVisualDocument` with toggle labels in the app's locale, memoized.
- * `titles` are the headings the card already shows (see `addHostStyles`).
- * Pass the same ones wherever one visual is shown (card and Expand), so both
- * get the same srcdoc.
- */
-export function useSandboxedVisual(
-  html: string,
-  lng: string,
-  titles: string | string[] = [],
-): SandboxedVisual {
-  const { t } = useTranslation(lng, "concept-notes");
-  // A stable key, so a new array with the same titles does not rebuild.
-  const titleKey = (typeof titles === "string" ? [titles] : titles).join(
-    "\u0000",
-  );
-  return useMemo(
-    () =>
-      prepareVisualDocument(
-        html,
-        {
-          // Set as textContent, so i18next escaping would only show &amp; etc.
-          showAll: (count) =>
-            t("chat-visual-show-all", {
-              count,
-              interpolation: { escapeValue: false },
-            }),
-          showFirst: (count) =>
-            t("chat-visual-show-first", {
-              count,
-              interpolation: { escapeValue: false },
-            }),
-          scrollHint: t("chat-visual-scroll-hint", {
-            interpolation: { escapeValue: false },
-          }),
-        },
-        titleKey ? titleKey.split("\u0000") : [],
-      ),
-    [html, t, titleKey],
-  );
-}
-
-export function VisualIframe({
+function VisualIframe({
   srcDoc,
   title,
   height,
@@ -219,12 +138,12 @@ export function VisualIframe({
   onFrameLoad,
   ref,
 }: {
-  /** From `prepareVisualDocument` / `useSandboxedVisual`. */
+  /** From `prepareVisualDocument`. */
   srcDoc: string;
   title: string;
   height: string;
   onLoad?: () => void;
-  /** Gets the loaded frame, e.g. to sync its native view state. */
+  /** Gets the loaded frame, e.g. to apply the Expand layout. */
   onFrameLoad?: (frame: HTMLIFrameElement) => void;
   ref?: Ref<HTMLIFrameElement>;
 }) {
@@ -236,10 +155,8 @@ export function VisualIframe({
       sandbox="allow-same-origin"
       srcDoc={srcDoc}
       onLoad={(event) => {
-        // First, so measurements below see the organization theme's colours
-        // and the title the page may need back.
+        // First, so measurements below see the organization theme's colours.
         syncHostTheme(event.currentTarget);
-        restoreLoneDuplicateTitle(event.currentTarget.contentDocument);
         onLoad?.();
         onFrameLoad?.(event.currentTarget);
       }}
@@ -256,7 +173,7 @@ export function VisualIframe({
 }
 
 /** Shown instead of a frame whose visual would be blank (e.g. script-only). */
-export function VisualEmptyNote({ lng }: { lng: string }) {
+function VisualEmptyNote({ lng }: { lng: string }) {
   const { t } = useTranslation(lng, "concept-notes");
   return (
     <HStack gap={2} px={3} py={4} data-testid="concept-note-chat-visual-empty">
@@ -276,11 +193,10 @@ interface VisualExpandDialogProps {
 }
 
 /**
- * The Expand button and its large dialog. `children` fill the dialog body,
- * e.g. one frame or the tabs of a panel card. The dialog returns focus to
- * the button on close; the body unmounts, so callers keep state outside it.
+ * The Expand button and its large dialog. `children` fill the dialog body.
+ * The dialog returns focus to the button on close.
  */
-export function VisualExpandDialog({
+function VisualExpandDialog({
   children,
   hidden,
   lng,
@@ -338,62 +254,32 @@ export function VisualExpandDialog({
   );
 }
 
-export type VisualViewStateHandle = ReturnType<typeof useVisualViewState>;
-
 interface ChatVisualFrameProps {
-  /** Only the bordered frame, no header; a parent card draws its own header and Expand. */
-  bare?: boolean;
-  /** Headings the card shows, hidden when the page repeats them; defaults to `title`. */
-  headingTitles?: string[];
   html: string;
   lng: string;
   onHeightChange?: () => void;
   title: string;
-  /** A parent's view state to share, e.g. with its own Expand dialog. */
-  viewState?: VisualViewStateHandle;
 }
 
 /** An AI-generated static HTML visual, sanitized into a script-free sandboxed iframe. */
 export function ChatVisualFrame({
-  bare = false,
-  headingTitles,
   html,
   lng,
   onHeightChange,
   title,
-  viewState: sharedViewState,
 }: ChatVisualFrameProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const frameRef = useRef<HTMLIFrameElement>(null);
-  // Selected tab and open sections, shared by the card and its Expand dialog.
-  const ownViewState = useVisualViewState();
-  const viewState = sharedViewState ?? ownViewState;
   // Follows the content, e.g. a <details> opening, up to the card's max height.
   const { height, onLoad: measureOnLoad } = useVisualFrameHeight(
     frameRef,
     onHeightChange,
   );
   // A visual left with nothing to show after sanitizing (e.g. script-only)
-  // gets a note instead of a blank card. The static check runs on the
-  // sanitized document; the load check catches content hidden by CSS. On the
-  // server DOMPurify is unavailable, so nothing is judged blank there.
-  const visual = useSandboxedVisual(html, lng, headingTitles ?? title);
-  const staticBlank = DOMPurify.isSupported && !visual.hasContent;
-  const [renderedBlankHtml, setRenderedBlankHtml] = useState<string | null>(
-    null,
-  );
-  const blank = staticBlank || renderedBlankHtml === html;
-  const onInlineFrameLoad = (frame: HTMLIFrameElement) => {
-    viewState.connect(frame);
-    if (frame.contentDocument) {
-      ensureContentInset(frame.contentDocument);
-      watchTableScroll(frame.contentDocument);
-    }
-    // null means not laid out yet (offscreen); only a definite false hides it.
-    if (hasRenderedVisualContent(frame.contentDocument) === false) {
-      setRenderedBlankHtml(html);
-    }
-  };
+  // gets a note instead of a blank card. On the server DOMPurify is
+  // unavailable, so nothing is judged blank there.
+  const visual = useMemo(() => prepareVisualDocument(html), [html]);
+  const blank = DOMPurify.isSupported && !visual.hasContent;
 
   return (
     <Box
@@ -405,52 +291,45 @@ export function ChatVisualFrame({
       // The chat column is a flex container; without this the card shrinks to its border.
       flexShrink={0}
       data-testid="concept-note-chat-visual"
-      data-active-panel={viewState.activePanel ?? undefined}
     >
-      {!bare && (
-        <HStack
-          gap={3}
-          borderBottom="1px solid"
-          borderColor="border.neutral"
-          px={3}
-          py={2}
-        >
-          <Box flex={1} minW={0}>
-            <Text
-              fontSize="body.sm"
-              fontWeight="semibold"
-              color="content.primary"
-              truncate
-            >
-              {title}
-            </Text>
-            <Text fontSize="label.sm" color="content.tertiary">
-              {t("chat-visual-label")}
-            </Text>
-          </Box>
-          <VisualExpandDialog
-            lng={lng}
-            title={title}
-            // Nothing to enlarge when the visual is blank.
-            hidden={blank}
+      <HStack
+        gap={3}
+        borderBottom="1px solid"
+        borderColor="border.neutral"
+        px={3}
+        py={2}
+      >
+        <Box flex={1} minW={0}>
+          <Text
+            fontSize="body.sm"
+            fontWeight="semibold"
+            color="content.primary"
+            truncate
           >
-            <VisualIframe
-              srcDoc={visual.srcDoc}
-              title={title}
-              height="100%"
-              onFrameLoad={(frame) => {
-                viewState.connect(frame);
-                if (frame.contentDocument) {
-                  // Inset is measured before the Expand zoom, so zoom does not skew it.
-                  ensureContentInset(frame.contentDocument);
-                  applyExpandedLayout(frame.contentDocument);
-                  watchTableScroll(frame.contentDocument);
-                }
-              }}
-            />
-          </VisualExpandDialog>
-        </HStack>
-      )}
+            {title}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("chat-visual-label")}
+          </Text>
+        </Box>
+        <VisualExpandDialog
+          lng={lng}
+          title={title}
+          // Nothing to enlarge when the visual is blank.
+          hidden={blank}
+        >
+          <VisualIframe
+            srcDoc={visual.srcDoc}
+            title={title}
+            height="100%"
+            onFrameLoad={(frame) => {
+              if (frame.contentDocument) {
+                applyExpandedLayout(frame.contentDocument);
+              }
+            }}
+          />
+        </VisualExpandDialog>
+      </HStack>
       {blank ? (
         <VisualEmptyNote lng={lng} />
       ) : (
@@ -460,7 +339,6 @@ export function ChatVisualFrame({
           title={title}
           height={`${height}px`}
           onLoad={measureOnLoad}
-          onFrameLoad={onInlineFrameLoad}
         />
       )}
     </Box>

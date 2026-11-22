@@ -17,7 +17,6 @@ import {
   type ConceptNoteChatMessage,
   readConceptNoteThreadMessages,
   readConceptNoteToolVisual,
-  isSameConceptNoteVisual,
   readConceptNoteChoices,
 } from "./chat-utils";
 
@@ -160,14 +159,12 @@ export function useConceptNoteChat({
       const visualMessageId = assistantMessageIdRef.current;
       if (visual && visualMessageId) {
         // Identity check keeps a re-reported tool call from rendering twice.
-        // Known limit (CC-1241 #13): two separate calls with the same title and
-        // content also merge into one card here, while history reload
-        // (`rendered_visuals`) keeps one card per call.
         setMessages((current) =>
           current.map((message) =>
             message.id === visualMessageId &&
-            !message.visuals?.some((item) =>
-              isSameConceptNoteVisual(item, visual),
+            !message.visuals?.some(
+              (item) =>
+                item.html === visual.html && item.title === visual.title,
             )
               ? { ...message, visuals: [...(message.visuals ?? []), visual] }
               : message,

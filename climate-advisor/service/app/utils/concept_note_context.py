@@ -156,67 +156,39 @@ def clean_cnb_history(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 RENDER_VISUAL_TOOL_NAME = "concept_note_render_visual"
-RENDER_PANELS_TOOL_NAME = "concept_note_render_panels"
 VISUAL_RENDER_ACTION = "concept_note.visual.render"
-# `data.kind` of a successful concept_note_render_panels result.
-VISUAL_PANELS_KIND = "panels"
 
 
-def rendered_visuals(tools_used: Any) -> list[dict[str, Any]]:
-    """Return each successful visual in stored tool calls.
+def rendered_visuals(tools_used: Any) -> list[dict[str, str]]:
+    """Return the title and HTML of each successful visual in stored tool calls.
 
-    A single visual is `{title, html}`; switchable panels are
-    `{title, panels: [{label, html}]}`. The HTML is read from the call
-    arguments, its only stored copy; earlier results also carried it in
-    `data.html`.
+    The HTML is read from the call arguments, its only stored copy; earlier
+    results also carried it in `data.html`.
     """
-    visuals: list[dict[str, Any]] = []
+    visuals = []
     for invocation in tools_used if isinstance(tools_used, list) else []:
-        if not isinstance(invocation, dict) or invocation.get("name") not in (
-            RENDER_VISUAL_TOOL_NAME,
-            RENDER_PANELS_TOOL_NAME,
+        if (
+            not isinstance(invocation, dict)
+            or invocation.get("name") != RENDER_VISUAL_TOOL_NAME
         ):
             continue
         result = invocation.get("result_json")
         if not isinstance(result, dict) or result.get("action") != VISUAL_RENDER_ACTION:
             continue
         data = result.get("data")
-        if (
-            result.get("success") is not True
-            or not isinstance(data, dict)
-            or not isinstance(data.get("title"), str)
-        ):
-            continue
         arguments = invocation.get("arguments")
-        if invocation["name"] == RENDER_PANELS_TOOL_NAME:
-            panels = _rendered_panels(arguments, data.get("labels"))
-            if panels:
-                visuals.append({"title": data["title"], "panels": panels})
-            continue
         html = arguments.get("html") if isinstance(arguments, dict) else None
-        if not isinstance(html, str):
+        if not isinstance(html, str) and isinstance(data, dict):
             html = data.get("html")
-        if isinstance(html, str) and html:
+        if (
+            result.get("success") is True
+            and isinstance(data, dict)
+            and isinstance(data.get("title"), str)
+            and isinstance(html, str)
+            and html
+        ):
             visuals.append({"title": data["title"], "html": html})
     return visuals
-
-
-def _rendered_panels(arguments: Any, labels: Any) -> list[dict[str, str]]:
-    """Pair the validated labels from the result with the HTML in the arguments."""
-    panels = arguments.get("panels") if isinstance(arguments, dict) else None
-    if (
-        not isinstance(panels, list)
-        or not isinstance(labels, list)
-        or len(panels) != len(labels)
-    ):
-        return []
-    rendered = []
-    for label, panel in zip(labels, panels):
-        html = panel.get("html") if isinstance(panel, dict) else None
-        if not isinstance(label, str) or not isinstance(html, str) or not html:
-            return []
-        rendered.append({"label": label, "html": html})
-    return rendered
 
 
 def omit_visual_html(invocation: dict[str, Any]) -> dict[str, Any]:
@@ -226,8 +198,6 @@ def omit_visual_html(invocation: dict[str, Any]) -> dict[str, Any]:
     message row and the SSE done event keep the HTML in the arguments for the
     chat to render. The result branch covers rows saved before results dropped it.
     """
-    if invocation.get("name") == RENDER_PANELS_TOOL_NAME:
-        return _omit_panels_html(invocation)
     if invocation.get("name") != RENDER_VISUAL_TOOL_NAME:
         return invocation
     compact = dict(invocation)
@@ -250,26 +220,6 @@ def omit_visual_html(invocation: dict[str, Any]) -> dict[str, Any]:
             f"{len(data['html'])} chars omitted]"
         )
         compact["result"] = {**result, "data": {**data, "html": placeholder}}
-    return compact
-
-
-def _omit_panels_html(invocation: dict[str, Any]) -> dict[str, Any]:
-    """Keep panel labels for the model but replace each panel body."""
-    compact = dict(invocation)
-    arguments = invocation.get("arguments")
-    panels = arguments.get("panels") if isinstance(arguments, dict) else None
-    if isinstance(panels, list):
-        compact["arguments"] = {
-            **arguments,
-            "panels": [
-                {**panel, "html": f"[{len(panel['html'])} chars omitted]"}
-                if isinstance(panel, dict) and isinstance(panel.get("html"), str)
-                else panel
-                for panel in panels
-            ],
-        }
-    elif isinstance(arguments, str):
-        compact["arguments"] = f"[{len(arguments)} chars omitted]"
     return compact
 
 

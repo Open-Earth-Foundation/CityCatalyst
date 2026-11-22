@@ -2,8 +2,8 @@
  * Detects AI visuals that would show an empty card after sanitizing.
  *
  * The backend (climate-advisor/service/app/utils/visual_html.py) rejects the
- * obvious cases before the tool reports success; these checks cover what
- * reaches the chat anyway, e.g. older history or content hidden by CSS.
+ * obvious cases before the tool reports success; this check covers what
+ * reaches the chat anyway, e.g. older history.
  */
 
 // Text inside these is never drawn.
@@ -49,16 +49,6 @@ function visibleTextNodes(body: HTMLElement): Text[] {
   return nodes;
 }
 
-/**
- * Whether a sanitized visual document has any text or drawing. Parses only;
- * DOMParser never runs scripts, and the document is already sanitized.
- */
-export function hasVisualContent(sandboxedDocument: string): boolean {
-  if (!sandboxedDocument) return false;
-  const doc = new DOMParser().parseFromString(sandboxedDocument, "text/html");
-  return hasBodyContent(doc.body);
-}
-
 // A CSS `content:` value that draws text, e.g. `::after{content:"62 mm"}`.
 const CSS_CONTENT_TEXT =
   /content\s*:\s*(?!none\b|normal\b|""|'')("|'|attr\(|counter)/i;
@@ -67,18 +57,12 @@ const INLINE_BACKGROUND =
   /(^|;)\s*background(-color|-image)?\s*:\s*(?!transparent|none|rgba\([^)]*,\s*0\s*\))/i;
 const INLINE_SIZE = /(^|;)\s*(width|height)\s*:/i;
 
-// Painted boxes that make a drawing (bars, cells). One painted box is more
-// often an empty container a script was meant to fill.
-const MIN_PAINTED_MARKS = 3;
-
 /** Whether CSS alone draws something: pseudo-element text or inline-painted boxes. */
 function hasCssDrawing(body: HTMLElement): boolean {
   const doc = body.ownerDocument;
-  // The host's own styles (theme, layout) draw nothing by themselves.
+  // The host's own styles (theme, table scroll) draw nothing by themselves.
   const css = Array.from(
-    doc.querySelectorAll(
-      "style:not([data-cc-theme],[data-cc-host],[data-cc-layout])",
-    ),
+    doc.querySelectorAll("style:not([data-cc-theme],[data-cc-host])"),
     (style) => (style.textContent ?? "").replace(/\/\*[\s\S]*?\*\//g, ""),
   ).join("\n");
   if (CSS_CONTENT_TEXT.test(css)) return true;
@@ -88,7 +72,7 @@ function hasCssDrawing(body: HTMLElement): boolean {
   });
 }
 
-/** Same check on an already parsed, sanitized body, without parsing again. */
+/** Whether a sanitized document body has any text or drawing. */
 export function hasBodyContent(body: HTMLElement | null): boolean {
   if (!body) return false;
   return (
@@ -96,81 +80,4 @@ export function hasBodyContent(body: HTMLElement | null): boolean {
     body.querySelector(DRAWN_ELEMENTS) !== null ||
     hasCssDrawing(body)
   );
-}
-
-// A background that paints nothing: the keyword or alpha 0.
-const TRANSPARENT_BACKGROUND =
-  /^(transparent|rgba?\([^)]*[,/]\s*0(\.0*)?\s*\))$/;
-// Caps the scan for painted boxes, so a huge document stays cheap.
-const MAX_PAINT_SCAN = 400;
-
-/** Whether a laid-out element paints a background (colour or gradient). */
-function paintsBackground(element: Element, win: Window): boolean {
-  const style = win.getComputedStyle(element);
-  return (
-    !TRANSPARENT_BACKGROUND.test(style.backgroundColor) ||
-    (!!style.backgroundImage && style.backgroundImage !== "none")
-  );
-}
-
-/** Whether a laid-out element draws text with ::before or ::after. */
-function hasPseudoText(element: Element, win: Window): boolean {
-  return ["::before", "::after"].some((pseudo) => {
-    const content = win.getComputedStyle(element, pseudo).content;
-    return !!content && !/^(none|normal|""|'')$/.test(content);
-  });
-}
-
-function isDrawn(element: Element, rect: DOMRect): boolean {
-  if (rect.width <= 0 && rect.height <= 0) return false;
-  const style = element.ownerDocument.defaultView?.getComputedStyle(element);
-  return style?.visibility !== "hidden" && style?.opacity !== "0";
-}
-
-/**
- * Whether a loaded visual frame shows anything, or null when the browser has
- * not laid it out (offscreen, no layout engine) and the answer is unknown.
- * Catches content the static check cannot, e.g. everything set to display:none.
- */
-export function hasRenderedVisualContent(doc: Document | null): boolean | null {
-  if (!doc?.body) return null;
-  if (!(doc.documentElement.getBoundingClientRect().width > 0)) return null;
-
-  const range = doc.createRange();
-  for (const node of visibleTextNodes(doc.body)) {
-    range.selectNodeContents(node);
-    if (
-      node.parentElement &&
-      isDrawn(node.parentElement, range.getBoundingClientRect())
-    ) {
-      return true;
-    }
-  }
-  // Lines are zero-width or zero-height boxes, so either side counts.
-  if (
-    Array.from(doc.body.querySelectorAll(DRAWN_ELEMENTS)).some((element) =>
-      isDrawn(element, element.getBoundingClientRect()),
-    )
-  ) {
-    return true;
-  }
-  // CSS-only marks: values in ::before/::after, or several painted boxes
-  // (bars, cells). One painted box alone is usually an empty container.
-  const win = doc.defaultView;
-  if (!win) return false;
-  let painted = 0;
-  for (const element of Array.from(doc.body.getElementsByTagName("*")).slice(
-    0,
-    MAX_PAINT_SCAN,
-  )) {
-    const rect = element.getBoundingClientRect();
-    if (!(rect.width > 0 && rect.height > 0) || !isDrawn(element, rect)) {
-      continue;
-    }
-    if (hasPseudoText(element, win)) return true;
-    if (paintsBackground(element, win) && ++painted >= MIN_PAINTED_MARKS) {
-      return true;
-    }
-  }
-  return false;
 }

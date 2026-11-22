@@ -46,7 +46,6 @@ from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 from app.tools.concept_note_question import concept_note_ask_question
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
-from app.tools.concept_note_panel_tools import concept_note_render_panels
 from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -482,7 +481,6 @@ class AgentService:
                     )
                 )
                 tools.append(concept_note_render_visual)
-                tools.append(concept_note_render_panels)
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")
@@ -554,7 +552,12 @@ class AgentService:
                 openai_client=self.client,
             ),
             model_settings=(
-                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                cnb_model_settings(
+                    reasoning_effort,
+                    temperature=agent_temperature,
+                    # Every CNB chat call starts with the same long system prompt.
+                    prompt_cache_key="cnb_chat",
+                )
                 if self._has_concept_note_context
                 else ModelSettings(
                     temperature=agent_temperature,

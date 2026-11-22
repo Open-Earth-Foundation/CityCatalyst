@@ -102,6 +102,17 @@ async def stream_agent_events(
         async for event_bytes in process_chunk(handler, chunk):
             yield event_bytes
 
+    # Cached input shows whether the long system prompt hits the provider cache.
+    usage = getattr(getattr(result, "context_wrapper", None), "usage", None)
+    if usage is not None:
+        logger.info(
+            "Agent run usage requests=%s input_tokens=%s cached_tokens=%s output_tokens=%s",
+            usage.requests,
+            usage.input_tokens,
+            usage.input_tokens_details.cached_tokens,
+            usage.output_tokens,
+        )
+
 
 def build_stream_run_config(
     handler: StreamingHandler, payload: MessageCreateRequest

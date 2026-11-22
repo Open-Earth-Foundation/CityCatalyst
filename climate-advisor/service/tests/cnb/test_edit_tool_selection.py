@@ -215,26 +215,75 @@ def test_financing_prompts_keep_unanswered_concept_and_phase_in_each_gap():
     reviewer = _rendered("cnb_chat_edit_review")
 
     assert (
-        "For each gap, check every requirement of its original question, including the "
-        "selected concept and current phase" in planner
+        "For each requirement of the original question, identify the evidence and verify "
+        "that the resulting chapter states the answer." in planner
     )
     assert (
-        "Keep in the remaining marker each requirement that no evidence answers."
-        in planner
+        "Ask directly for every uncovered requirement of that gap. A separate marker does "
+        "not carry an uncovered requirement for this gap." in planner
     )
-    assert "do not supply either value." in planner
+    assert (
+        "A known concept or phase may identify a contribution in a remaining authorization "
+        "question." in planner
+    )
     assert "a site name does not select the design alternative or phase" in planner
     assert "<financing_two_round_example>" in planner
     assert "Round 2 states the alternative" in planner
     assert "Which phase is current" in planner
 
     assert (
-        'mark it unsupported with the objection "retain the selected concept in the '
-        'remaining marker"' in reviewer
+        "When an original selection requirement remains unanswered and is omitted from the "
+        'new marker, mark it unsupported with the objection "retain the selected concept in '
+        'the remaining marker"' in reviewer
     )
     assert "do the same for the phase" in reviewer
-    assert "and an open marker elsewhere do not request either value." in reviewer
+    assert (
+        '"For the selected project and current phase" provides context and leaves the values '
+        "unanswered." in reviewer
+    )
+    assert (
+        '"Confirm the selected concept and current project phase" requests both values.'
+        in reviewer
+    )
+    assert (
+        "Reject partial coverage if the new marker drops an uncovered requirement or asks "
+        "for a requirement already answered in the resulting chapter." in reviewer
+    )
     assert "In each explanation, name any missing original requirement" in reviewer
+
+
+def test_financing_example_uses_fresh_fixture_facts_and_distinguishes_scope_from_demand():
+    planner = _rendered("cnb_chat_edit_planner")
+    reviewer = _rendered("cnb_chat_edit_review")
+
+    # The Round 2 example uses the fresh fixture facts, not the older pond-retrofit wording.
+    assert (
+        "states the alternative (Wilson Pond Concept A), the phase (final design, permitting "
+        "and construction), the amount (USD 2,500,000), and the timing (January 2027)"
+        in planner
+    )
+    assert (
+        "The user states that the stormwater utility will fund the contribution and that no "
+        "borrowing, levy, reserve draw, assessment, or additional utility financing "
+        "arrangement will be used." in planner
+    )
+    assert (
+        "keep the contribution's proposed 2027 budget status and lack of adoption or "
+        "authorization, and remove this marker." in planner
+    )
+    assert "the pond retrofit" not in planner
+    assert "all five mechanisms" not in planner
+
+    # A known concept and phase identify a referent, not a request.
+    assert "For the selected project and current phase" in reviewer
+    assert (
+        "Confirm authorization of the contribution for Wilson Pond Concept A's final design phase"
+        in reviewer
+    )
+    assert "uses the supported concept and phase as context" in reviewer
+    assert (
+        "asks for a requirement already answered in the resulting chapter" in reviewer
+    )
 
 
 def test_financing_prompts_distinguish_funding_source_and_mechanism_exclusions():

@@ -49,10 +49,9 @@ Mark a partial transition unsupported and explain the missing requirement when i
 marker omits a requirement the original question still asks, when the change only repeats the
 question with the selected project or phase name, or when it removes a required scope qualifier,
 source, match or authorization. Compare the selected concept and current phase of the original
-question with the remaining marker. When the concept was available only as an alternative or as a
-question header, mark it unsupported with the objection "retain the selected concept in the remaining
-marker"; do the same for the phase. The phrase "for the selected project and current phase" and an
-open marker elsewhere do not request either value. Reject a fill that treats a funding source, a
+question with the remaining marker. When an original selection requirement remains unanswered and is
+omitted from the new marker, mark it unsupported with the objection "retain the selected concept in the remaining
+marker"; do the same for the phase. "For the selected project and current phase" provides context and leaves the values unanswered. "Confirm the selected concept and current project phase" requests both values. "Confirm authorization of the contribution for Wilson Pond Concept A's final design phase" requests authorization and uses the supported concept and phase as context. Reject partial coverage if the new marker drops an uncovered requirement or asks for a requirement already answered in the resulting chapter. Reject a fill that treats a funding source, a
 proposed budget or a mechanism answer as formal adoption, a documented match or financial capability.
 In each explanation, name any missing original requirement and any newly introduced request. Mark a count requirement unsupported when the change gives only a
 generic deliverable, a percentage target, a date or a milestone without the requested quantity.

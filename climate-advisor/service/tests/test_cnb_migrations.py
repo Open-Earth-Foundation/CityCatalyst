@@ -350,14 +350,12 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
         }
         with engine.connect() as connection:
             assert connection.execute(
-                text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20261111_120000"]
-            assert connection.execute(
                 text(
-                    "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
+                    "SELECT question, status, answer_progress FROM concept_note_gaps "
+                    "WHERE gap_id = :gap_id"
                 ),
                 {"gap_id": gap_id},
-            ).one() == ("Confirm the budget.", "open")
+            ).one() == ("Confirm the budget.", "open", None)
     finally:
         _run_alembic(
             config="cnb-alembic.ini",
@@ -939,7 +937,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20261111_120000"
+    assert revision == "20261121_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

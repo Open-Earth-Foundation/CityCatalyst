@@ -95,53 +95,49 @@ class _StubInventoryContextClient:
 class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
     """Tests for read-only whole-inventory tool wrappers."""
 
-    async def test_status_overview_tool_serializes_cc_payload(self) -> None:
-        stub_client = _StubInventoryContextClient()
-        tools = build_inventory_context_tools(
-            resolve_scope=_resolve_scope,
-            user_id="user-1",
-            token_ref={"value": "jwt-token"},
-            client_factory=lambda: stub_client,
-        )
-        status_tool = _find_tool(tools, "inventory_status_overview")
+    async def test_scoped_tools_serialize_cc_payload_for_the_resolved_scope(
+        self,
+    ) -> None:
+        cases = [
+            ("inventory_status_overview", "ghgi.inventory.status_overview", "status"),
+            (
+                "inventory_emissions_context",
+                "ghgi.inventory.emissions_context",
+                "emissions",
+            ),
+        ]
+        for tool_name, action, client_action in cases:
+            with self.subTest(tool_name):
+                stub_client = _StubInventoryContextClient()
+                tools = build_inventory_context_tools(
+                    resolve_scope=_resolve_scope,
+                    user_id="user-1",
+                    token_ref={"value": "jwt-token"},
+                    client_factory=lambda: stub_client,
+                )
 
-        output = await status_tool.on_invoke_tool(  # type: ignore[attr-defined]
-            _tool_context("inventory_status_overview"),
-            "{}",
-        )
-        data = json.loads(output)
+                output = await _find_tool(tools, tool_name).on_invoke_tool(  # type: ignore[attr-defined]
+                    _tool_context(tool_name),
+                    "{}",
+                )
+                data = json.loads(output)
 
-        self.assertEqual(data["action"], "ghgi.inventory.status_overview")
-        self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["completion"]["filled"], 31)
-        self.assertEqual(stub_client.requests[0]["request_payload"]["city_id"], "city-1")
-        self.assertEqual(
-            stub_client.requests[0]["request_payload"]["inventory_id"],
-            "inventory-1",
-        )
-        self.assertEqual(stub_client.requests[0]["token"], "jwt-token")
-        self.assertTrue(stub_client.closed)
-
-    async def test_emissions_context_tool_serializes_cc_payload(self) -> None:
-        stub_client = _StubInventoryContextClient()
-        tools = build_inventory_context_tools(
-            resolve_scope=_resolve_scope,
-            user_id="user-1",
-            token_ref={"value": "jwt-token"},
-            client_factory=lambda: stub_client,
-        )
-        emissions_tool = _find_tool(tools, "inventory_emissions_context")
-
-        output = await emissions_tool.on_invoke_tool(  # type: ignore[attr-defined]
-            _tool_context("inventory_emissions_context"),
-            "{}",
-        )
-        data = json.loads(output)
-
-        self.assertEqual(data["action"], "ghgi.inventory.emissions_context")
-        self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["total_emissions_kgco2e"], "12500000")
-        self.assertEqual(stub_client.requests[0]["action"], "emissions")
+                expected = (
+                    stub_client.status_response
+                    if client_action == "status"
+                    else stub_client.emissions_response
+                )
+                self.assertEqual(data["action"], action)
+                self.assertTrue(data["success"])
+                self.assertEqual(data["data"], expected["data"])
+                request = stub_client.requests[0]
+                self.assertEqual(request["action"], client_action)
+                self.assertEqual(request["request_payload"]["city_id"], "city-1")
+                self.assertEqual(
+                    request["request_payload"]["inventory_id"], "inventory-1"
+                )
+                self.assertEqual(request["token"], "jwt-token")
+                self.assertTrue(stub_client.closed)
 
     async def test_tool_reports_missing_token_without_cc_call(self) -> None:
         stub_client = _StubInventoryContextClient()

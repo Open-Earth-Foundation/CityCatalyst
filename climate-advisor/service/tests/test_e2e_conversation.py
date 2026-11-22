@@ -1,34 +1,45 @@
 """
-End-to-End Conversation Flow Tests
+End-to-end message route tests against the real app and an in-memory database.
 
-Tests cover:
-- Complete conversation workflow (thread creation -> message -> response)
-- Multi-turn conversations with context preservation
-- Streaming response validation
-- Tool invocation during conversations
-- Error recovery and resilience
-- Token refresh during conversation
+Tests cover thread validation errors, automatic thread creation, and follow-up
+messages reusing the created thread.
 """
 
 from __future__ import annotations
 
 import json
 import unittest
+from unittest.mock import AsyncMock, patch
+from uuid import UUID, uuid4
 
+from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.main import get_app
 from app.db import Base
-from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, patch
-from uuid import uuid4
+from app.db.session import get_session, get_session_factory, get_session_optional
+from app.main import get_app
 
-class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
-    """Tests for error handling in conversation workflows."""
+
+def _thread_id_from_stream(response_text: str) -> str | None:
+    """Return the first thread_id announced in an SSE response body."""
+    for line in response_text.split("\n"):
+        if not line.startswith("data:"):
+            continue
+        try:
+            data = json.loads(line[5:].strip())
+        except json.JSONDecodeError:
+            continue
+        if data.get("thread_id"):
+            return data["thread_id"]
+    return None
+
+
+class ConversationRouteTests(unittest.IsolatedAsyncioTestCase):
+    """Message route behaviour across thread creation and reuse."""
 
     async def asyncSetUp(self) -> None:
-        """Set up test database and FastAPI app."""
+        """Set up an in-memory database and the FastAPI app."""
         self.engine = create_async_engine(
             "sqlite+aiosqlite:///:memory:",
             echo=False,
@@ -38,35 +49,20 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
             self.engine, expire_on_commit=False
         )
-
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-        self.app = get_app()
-        
-        async def get_session():
+        async def override_session():
             async with self.session_factory() as session:
                 yield session
 
-        async def get_session_factory():
+        async def override_session_factory():
             return self.session_factory
-        
-        async def get_session_optional():
-            async with self.session_factory() as session:
-                yield session
 
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session"]).get_session
-        ] = get_session
-        
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session_factory"]).get_session_factory
-        ] = get_session_factory
-        
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session_optional"]).get_session_optional
-        ] = get_session_optional
-
+        self.app = get_app()
+        self.app.dependency_overrides[get_session] = override_session
+        self.app.dependency_overrides[get_session_factory] = override_session_factory
+        self.app.dependency_overrides[get_session_optional] = override_session
         self.client = TestClient(self.app)
         self.identity_patcher = patch(
             "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
@@ -75,144 +71,51 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         self.identity_patcher.start()
 
     async def asyncTearDown(self) -> None:
-        """Clean up test database and close connections."""
+        """Close the client and database and clear dependency overrides."""
         self.identity_patcher.stop()
-        # Close test client first
-        if hasattr(self, 'client'):
-            self.client.close()
-        
-        # Dispose of the engine to close all connections
-        if hasattr(self, 'engine'):
-            await self.engine.dispose()
-        
-        # Clear dependency overrides
-        if hasattr(self, 'app'):
-            self.app.dependency_overrides.clear()
+        self.client.close()
+        await self.engine.dispose()
+        self.app.dependency_overrides.clear()
+
+    def _post_message(self, **body: str):
+        return self.client.post(
+            "/v1/messages",
+            json={"user_id": "user-1", **body},
+            headers={"Authorization": "Bearer user-1"},
+        )
 
     def test_conversation_with_invalid_thread_id(self) -> None:
-        """Test message creation with invalid thread_id fails gracefully."""
-        response = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "thread_id": "not-a-valid-uuid",
-                "content": "Test"
-            },
-            headers={"Authorization": "Bearer user-1"},
-        )
-        
-        # Should fail with appropriate error (400 or 404)
-        self.assertIn(response.status_code, [400, 404, 422])
+        response = self._post_message(thread_id="not-a-valid-uuid", content="Test")
+
+        self.assertEqual(response.status_code, 400)
 
     def test_conversation_with_missing_thread_id(self) -> None:
-        """Test message creation rejects a non-existent thread_id."""
+        """Message creation rejects a non-existent thread_id."""
         thread_id = str(uuid4())
-        response = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "thread_id": thread_id,
-                "content": "Test"
-            },
-            headers={"Authorization": "Bearer user-1"},
-        )
+
+        response = self._post_message(thread_id=thread_id, content="Test")
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["detail"], f"Thread {thread_id} not found")
 
-    def test_message_without_thread_id_creates_thread_auto(self) -> None:
-        """Test message creation without thread_id automatically creates a thread."""
-        response = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "content": "Test message without thread"
-            },
-            headers={"Authorization": "Bearer user-1"},
-        )
-        
-        # Should succeed with streaming response
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("text/event-stream", response.headers.get("content-type", ""))
-        
-        # Parse SSE stream to find thread_id in done event
-        thread_id = None
-        for line in response.text.split('\n'):
-            if line.startswith('data:'):
-                try:
-                    data = json.loads(line[5:].strip())
-                    if data.get("thread_id"):
-                        thread_id = data["thread_id"]
-                        break
-                except json.JSONDecodeError:
-                    continue
-        
-        # Verify thread_id was found
-        self.assertIsNotNone(thread_id, "thread_id not found in SSE stream")
-        
-        # Verify thread_id is a valid UUID string
-        try:
-            from uuid import UUID
-            UUID(thread_id)
-        except (ValueError, TypeError):
-            self.fail(f"thread_id '{thread_id}' is not a valid UUID")
+    def test_message_without_thread_creates_one_that_later_messages_reuse(
+        self,
+    ) -> None:
+        first = self._post_message(content="First message")
 
-    def test_subsequent_messages_use_created_thread(self) -> None:
-        """Test that subsequent messages can use the auto-created thread."""
-        # First message without thread_id
-        response1 = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "content": "First message"
-            },
-            headers={"Authorization": "Bearer user-1"},
+        self.assertEqual(first.status_code, 200)
+        self.assertIn("text/event-stream", first.headers.get("content-type", ""))
+        thread_id = _thread_id_from_stream(first.text)
+        self.assertIsNotNone(thread_id, "thread_id not found in first message stream")
+        UUID(thread_id)
+
+        second = self._post_message(
+            thread_id=thread_id, content="Second message in same thread"
         )
-        
-        self.assertEqual(response1.status_code, 200)
-        
-        # Parse SSE stream to find thread_id in done event
-        thread_id = None
-        for line in response1.text.split('\n'):
-            if line.startswith('data:'):
-                try:
-                    data = json.loads(line[5:].strip())
-                    if data.get("thread_id"):
-                        thread_id = data["thread_id"]
-                        break
-                except json.JSONDecodeError:
-                    continue
-        
-        self.assertIsNotNone(thread_id, "thread_id not found in first message SSE stream")
-        
-        # Second message with the same thread_id
-        response2 = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "thread_id": thread_id,
-                "content": "Second message in same thread"
-            },
-            headers={"Authorization": "Bearer user-1"},
-        )
-        
-        # Should succeed with streaming response
-        self.assertEqual(response2.status_code, 200)
-        self.assertIn("text/event-stream", response2.headers.get("content-type", ""))
-        
-        # Verify thread_id in second response matches
-        thread_id_2 = None
-        for line in response2.text.split('\n'):
-            if line.startswith('data:'):
-                try:
-                    data = json.loads(line[5:].strip())
-                    if data.get("thread_id"):
-                        thread_id_2 = data["thread_id"]
-                        break
-                except json.JSONDecodeError:
-                    continue
-        
-        self.assertEqual(thread_id_2, thread_id, "thread_id mismatch in second message")
+
+        self.assertEqual(second.status_code, 200)
+        self.assertIn("text/event-stream", second.headers.get("content-type", ""))
+        self.assertEqual(_thread_id_from_stream(second.text), thread_id)
 
 
 if __name__ == "__main__":

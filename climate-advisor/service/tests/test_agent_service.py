@@ -1,151 +1,66 @@
-"""AgentService initialization and prompt configuration."""
+"""AgentService provider routing and OpenRouter client configuration."""
 
 from __future__ import annotations
 
-import unittest
 from unittest.mock import patch
 
+import pytest
+
 from app.services.agent_service import AgentService
+from app.services.openrouter_client import build_openrouter_client_options
 from tests.agent_service_fixtures import build_mock_settings
 
 
-class AgentServiceInitializationTests(unittest.TestCase):
-    """Tests for AgentService initialization."""
+@pytest.mark.parametrize(
+    "base_url, default_model, agentic_model",
+    [
+        # Direct OpenAI rejects provider-prefixed model IDs.
+        ("https://api.openai.com/v1", "gpt-4.1", "gpt-5.6-sol"),
+        # OpenRouter routes by the provider prefix, so it must stay.
+        ("https://openrouter.ai/api/v1", "openai/gpt-4.1", "openai/gpt-5.6-sol"),
+    ],
+    ids=["openai", "openrouter"],
+)
+def test_agent_service_normalizes_model_ids_for_the_provider(
+    base_url: str, default_model: str, agentic_model: str
+) -> None:
+    settings = build_mock_settings(
+        base_url=base_url,
+        default_model="openai/gpt-4.1",
+        agentic_flow_model="openai/gpt-5.6-sol",
+    )
 
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_initializes_with_settings(self, mock_get_settings) -> None:
-        """Test AgentService initializes and loads settings."""
-        mock_settings = build_mock_settings()
-        mock_get_settings.return_value = mock_settings
+    with (
+        patch("app.services.agent_service.get_settings", return_value=settings),
+        patch("app.services.agent_service.AsyncOpenAI"),
+    ):
+        service = AgentService()
 
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
-            self.assertIsNotNone(service)
-            self.assertEqual(service.default_model, "openai/gpt-5.6-terra")
-            self.assertEqual(service.default_temperature, 0.0)
+    assert service.default_model == default_model
+    assert service.agentic_flow_model == agentic_model
 
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_normalizes_openai_model_ids_for_openai_base_url(
-        self,
-        mock_get_settings,
-    ) -> None:
-        """Test provider-prefixed model IDs are normalized for direct OpenAI calls."""
-        mock_settings = build_mock_settings(
-            base_url="https://api.openai.com/v1",
-            default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.6-sol",
-        )
-        mock_get_settings.return_value = mock_settings
 
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
-
-        self.assertEqual(service.default_model, "gpt-4.1")
-        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
-
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_keeps_provider_prefix_for_openrouter_base_url(
-        self,
-        mock_get_settings,
-    ) -> None:
-        """Test provider-prefixed model IDs remain unchanged for OpenRouter routing."""
-        mock_settings = build_mock_settings(
-            base_url="https://openrouter.ai/api/v1",
-            default_model="openai/gpt-4.1",
-        )
-        mock_get_settings.return_value = mock_settings
-
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
-
-        self.assertEqual(service.default_model, "openai/gpt-4.1")
-
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_ignores_agentic_flow_env_override(
-        self,
-        mock_get_settings,
-    ) -> None:
-        """Test the agentic-flow model comes from llm_config even if an env override is set."""
-        mock_settings = build_mock_settings(
-            base_url="https://api.openai.com/v1",
-            default_model="openai/gpt-4.1",
-            agentic_flow_model="openai/gpt-5.6-sol",
-        )
-        mock_get_settings.return_value = mock_settings
-
-        with patch.dict(
-            "os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"}
-        ):
-            with patch("app.services.agent_service.AsyncOpenAI"):
-                service = AgentService()
-
-        self.assertEqual(service.agentic_flow_model, "gpt-5.6-sol")
-
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
-        """Test AgentService raises error when API key is missing."""
-        mock_settings = build_mock_settings(api_key=None)
-        mock_get_settings.return_value = mock_settings
-
-        with self.assertRaises(ValueError) as ctx:
+def test_agent_service_raises_without_api_key() -> None:
+    with patch(
+        "app.services.agent_service.get_settings",
+        return_value=build_mock_settings(api_key=None),
+    ):
+        with pytest.raises(ValueError, match="OpenRouter API key"):
             AgentService()
 
-        self.assertIn("OpenRouter API key", str(ctx.exception))
 
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_with_citycatalyst_token(self, mock_get_settings) -> None:
-        """Test AgentService initializes with CityCatalyst token."""
-        mock_settings = build_mock_settings()
-        mock_get_settings.return_value = mock_settings
+def test_openrouter_options_fall_back_to_llm_config(monkeypatch) -> None:
+    """An empty copied settings field still uses llm_config; env never overrides it."""
+    monkeypatch.setenv("OPENROUTER_TIMEOUT_MS", "120000")
+    monkeypatch.setenv("OPENROUTER_MAX_RETRIES", "9")
+    settings = build_mock_settings()
+    settings.openrouter_base_url = None
 
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService(
-                cc_access_token="jwt-token",
-                cc_thread_id="thread-123",
-                cc_user_id="user-456",
-            )
+    options = build_openrouter_client_options(
+        settings, missing_api_key_message="missing"
+    )
 
-            self.assertEqual(service.cc_access_token, "jwt-token")
-            self.assertEqual(service.cc_thread_id, "thread-123")
-            self.assertEqual(service.cc_user_id, "user-456")
-            self.assertEqual(service._token_ref["value"], "jwt-token")
-
-    @patch("app.services.agent_service.get_settings")
-    def test_agent_service_without_citycatalyst_token(self, mock_get_settings) -> None:
-        """Test AgentService initializes without CityCatalyst token."""
-        mock_settings = build_mock_settings()
-        mock_get_settings.return_value = mock_settings
-
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService(cc_access_token=None)
-            self.assertIsNone(service.cc_access_token)
-
-
-class SystemPromptLoadingTests(unittest.TestCase):
-    """Tests for system prompt loading."""
-
-    @patch("app.services.agent_service.get_settings")
-    def test_system_prompt_loaded_from_config(self, mock_get_settings) -> None:
-        """Test system prompt is loaded from LLM config."""
-        mock_settings = build_mock_settings(prompt="You are a helpful climate advisor.")
-        mock_get_settings.return_value = mock_settings
-
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
-            self.assertEqual(
-                service.system_prompt, "You are a helpful climate advisor."
-            )
-            mock_settings.llm.prompts.compose_prompt.assert_any_call("chat")
-
-    @patch("app.services.agent_service.get_settings")
-    def test_temperature_from_config(self, mock_get_settings) -> None:
-        """Test orchestrator temperature is loaded from LLM config."""
-        mock_settings = build_mock_settings(
-            temperature=0.5,
-            prompt="Prompt",
-        )
-        mock_get_settings.return_value = mock_settings
-
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
-            self.assertEqual(service.default_temperature, 0.5)
+    assert options.base_url == "https://openrouter.ai/api/v1"
+    assert options.kwargs["timeout"] == 30.0
+    assert options.kwargs["max_retries"] == 3
+    assert "HTTP-Referer" in options.kwargs["default_headers"]

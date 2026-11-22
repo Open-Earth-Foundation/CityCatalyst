@@ -3,9 +3,6 @@ from __future__ import annotations
 import json
 import unittest
 
-from app.services.citycatalyst_client import (
-    CityCatalystClientError,
-)
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from agents.tool import ToolContext
@@ -13,23 +10,12 @@ from agents.tool import ToolContext
 
 class _StubClient:
     def __init__(self) -> None:
-        self.inventory_response: dict | None = None
         self.datasources_response: dict | None = None
-        self.inventory_error: Exception | None = None
         self.tokens_used: list[str | None] = []
-
-    async def get_inventory(self, *args, **kwargs) -> dict:  # type: ignore[override]
-        if self.inventory_error:
-            raise self.inventory_error
-        self.tokens_used.append(kwargs.get("token"))
-        assert self.inventory_response is not None
-        return self.inventory_response
 
     async def get_inventory_datasources(
         self, *args, **kwargs
     ) -> dict:  # type: ignore[override]
-        if self.inventory_error:
-            raise self.inventory_error
         self.tokens_used.append(kwargs.get("token"))
         assert self.datasources_response is not None
         return self.datasources_response
@@ -40,52 +26,6 @@ class _StubClient:
 
 class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
     """Behavioural tests for the CCInventoryTool."""
-
-    async def test_fetch_inventory_success(self) -> None:
-        stub_client = _StubClient()
-        stub_client.inventory_response = {
-            "data": {"inventoryId": "inv-1", "name": "Inventory One"}
-        }
-        tool = CCInventoryTool(client=stub_client)
-
-        result = await tool.fetch_inventory(
-            "inv-1",
-            token="jwt-token",
-            user_id="user-1",
-            thread_id="thread-1",
-        )
-
-        self.assertTrue(result.success)
-        self.assertEqual(result.data["data"]["inventoryId"], "inv-1")
-        self.assertIsNone(result.error)
-
-    async def test_fetch_inventory_requires_token(self) -> None:
-        tool = CCInventoryTool(client=_StubClient())
-
-        result = await tool.fetch_inventory(
-            "inv-1",
-            token=None,
-            user_id="user-1",
-            thread_id="thread-1",
-        )
-
-        self.assertFalse(result.success)
-        self.assertEqual(result.error_code, "missing_token")
-
-    async def test_fetch_inventory_error(self) -> None:
-        stub_client = _StubClient()
-        stub_client.inventory_error = CityCatalystClientError("API error")
-        tool = CCInventoryTool(client=stub_client)
-
-        result = await tool.fetch_inventory(
-            "missing",
-            token="jwt-token",
-            user_id="user-1",
-            thread_id="thread-1",
-        )
-
-        self.assertFalse(result.success)
-        self.assertEqual(result.error_code, "cc_error")
 
     async def test_datasource_wrapper_returns_serialized_success(self) -> None:
         stub_client = _StubClient()

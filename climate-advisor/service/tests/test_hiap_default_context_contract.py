@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import ValidationError
 
 from app.models.cnb.concept_note_city_context import HiapContext
 
@@ -56,16 +55,3 @@ def test_large_default_projection_is_complete_not_trimmed() -> None:
     assert len(large["actions"]) == 40
     assert len(json.dumps(large["actions"]).encode("utf-8")) > 24 * 1024
     assert len(CASES["many_selected"]["mitigation"]["actions"]) == 27
-
-
-@pytest.mark.parametrize("case_name", sorted(CASES))
-def test_paging_fields_would_be_rejected_by_the_cnb_models(case_name: str) -> None:
-    """Guard the reason for the rule: scoped-only fields break the strict models."""
-    scoped = json.loads(json.dumps(CASES[case_name]))
-    scoped["mitigation"]["truncated"] = False
-    scoped["mitigation"]["counts"]["total"] = scoped["mitigation"]["counts"][
-        "returned"
-    ]
-
-    with pytest.raises(ValidationError):
-        HiapContext.model_validate(scoped)

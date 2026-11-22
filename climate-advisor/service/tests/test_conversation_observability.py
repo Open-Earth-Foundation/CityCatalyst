@@ -296,7 +296,7 @@ def test_workflow_compacts_responses_prompts_and_records_handled_failure(trackin
     }
     with workflow_trace(
         name="cnb_funding_opportunity_research",
-        inputs={"program": "Example"},
+        inputs={"program": "Example", "api_key": "secret-value"},
         session_id="research-1",
         user_id="user-1",
         attributes={"workflow": "CNB"},
@@ -328,6 +328,7 @@ def test_workflow_compacts_responses_prompts_and_records_handled_failure(trackin
     root = next(span for span in trace.data.spans if span.parent_id is None)
     assert len(root.inputs["system_prompts"]) == 1
     assert root.inputs["program"] == "Example"
+    assert root.inputs["api_key"] == "[REDACTED]"
     assert root.status.status_code.value == "ERROR"
     assert root.outputs["reason"] == "source_unavailable"
     for model in [span for span in trace.data.spans if span.span_type == "CHAT_MODEL"]:

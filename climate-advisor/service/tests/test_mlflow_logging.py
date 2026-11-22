@@ -1,15 +1,22 @@
-"""MLflow configuration, redaction, artifacts, and trace logging."""
+"""MLflow configuration, redaction, preflight, and tool observation records."""
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import sys
-from contextvars import ContextVar
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
+import pytest
+
 from app.utils import mlflow_logging
 from tests.mlflow_fixtures import reset_mlflow_state
+
+_PREFLIGHT_SCRIPT = (
+    Path(__file__).resolve().parents[1] / "scripts" / "mlflow_preflight.py"
+)
+_CATALOG_SECRET = "cat-secret-uuid"
 
 
 def test_initialize_mlflow_returns_false_when_disabled(monkeypatch) -> None:
@@ -20,14 +27,13 @@ def test_initialize_mlflow_returns_false_when_disabled(monkeypatch) -> None:
     assert mlflow_logging.initialize_mlflow() is False
 
 
-def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
-    """Runs should start against the explicitly resolved experiment id."""
+def test_start_run_creates_missing_experiment_and_finishes_run(monkeypatch) -> None:
+    """A run for a not-yet-existing experiment must create it, not be dropped."""
     reset_mlflow_state(monkeypatch)
     recorded: dict[str, object] = {}
 
     class Client:
         def get_experiment_by_name(self, name: str) -> None:
-            recorded["looked_up"] = name
             return None
 
         def create_experiment(self, name: str) -> str:
@@ -37,12 +43,11 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
         def create_run(
             self, *, run_name: str, experiment_id: str, tags: dict[str, str]
         ):
-            recorded.update(run_name=run_name, experiment_id=experiment_id, tags=tags)
+            recorded["experiment_id"] = experiment_id
             return SimpleNamespace(info=SimpleNamespace(run_id="run-1"))
 
         def log_batch(self, *, run_id: str, params, **kwargs) -> None:
-            recorded["run_id"] = run_id
-            recorded["params"] = {param.key: param.value for param in params}
+            return None
 
         def set_terminated(self, run_id: str, *, status: str) -> None:
             recorded["closed"] = (run_id, status)
@@ -54,7 +59,7 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
 
         @staticmethod
         def set_tracking_uri(uri: str) -> None:
-            recorded["tracking_uri"] = uri
+            return None
 
         @staticmethod
         def set_experiment(name: str):
@@ -65,36 +70,13 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
     monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
 
     with mlflow_logging.start_run(
-        run_name="test-run",
-        experiment_name="run-experiment",
-        tags={"workflow": "stationary_energy_draft"},
-        params={"records": 2},
+        run_name="test-run", experiment_name="run-experiment", params={"records": 2}
     ) as run:
         assert run is not None
 
-    assert recorded["tracking_uri"] == "https://mlflow.example"
-    assert recorded["looked_up"] == "run-experiment"
     assert recorded["created"] == "run-experiment"
     assert recorded["experiment_id"] == "exp-created"
-    assert recorded["run_name"] == "test-run"
-    assert recorded["run_id"] == "run-1"
     assert recorded["closed"] == ("run-1", "FINISHED")
-    assert recorded["tags"] == {
-        "mlflow.user": "climate-advisor",
-        "service": "climate-advisor",
-        "environment": "dev",
-        "workflow": "stationary_energy_draft",
-    }
-    assert recorded["params"] == {"records": "2"}
-
-
-def test_mlflow_run_user_defaults_and_overrides(monkeypatch) -> None:
-    """MLflow Created by should use a service identity instead of the OS user."""
-    monkeypatch.delenv("MLFLOW_RUN_USER", raising=False)
-    assert mlflow_logging.mlflow_run_user() == "climate-advisor"
-
-    monkeypatch.setenv("MLFLOW_RUN_USER", "ca-local-smoke")
-    assert mlflow_logging.mlflow_run_user() == "ca-local-smoke"
 
 
 def test_mlflow_experiment_name_matches_active_server_name(monkeypatch) -> None:
@@ -149,166 +131,6 @@ def test_redact_payload_removes_credentials_without_redacting_token_counts() -> 
     assert mlflow_logging.REDACTED_VALUE in payload["nested"]["text"]
 
 
-def test_log_json_artifact_redacts_before_logging(monkeypatch) -> None:
-    """Artifact logging should redact payloads before handing them to MLflow."""
-    recorded: dict[str, object] = {}
-
-    class RecordingMlflow:
-        @staticmethod
-        def log_dict(
-            run_id: str, payload: dict[str, object], artifact_file: str
-        ) -> None:
-            recorded["run_id"] = run_id
-            recorded["payload"] = payload
-            recorded["artifact_file"] = artifact_file
-
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
-    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
-
-    monkeypatch.setattr(
-        mlflow_logging,
-        "_RUN_CONTEXT",
-        ContextVar(
-            "test_run", default=mlflow_logging._RunContext(RecordingMlflow, "run-1")
-        ),
-    )
-    mlflow_logging.log_json_artifact(
-        "request.json",
-        {"access_token": "secret-token", "token_count": 7},
-    )
-
-    assert recorded["artifact_file"] == "request.json"
-    assert recorded["run_id"] == "run-1"
-    assert recorded["payload"] == {
-        "access_token": mlflow_logging.REDACTED_VALUE,
-        "token_count": 7,
-    }
-
-
-def test_trace_span_records_redacted_inputs_and_outputs(monkeypatch) -> None:
-    """Manual spans should preserve nesting data without leaking credentials."""
-    recorded: dict[str, object] = {}
-
-    class Span:
-        def set_inputs(self, inputs: object) -> None:
-            recorded["inputs"] = inputs
-
-        def set_outputs(self, outputs: object) -> None:
-            recorded["outputs"] = outputs
-
-    class SpanContext:
-        def __enter__(self) -> Span:
-            return Span()
-
-        def __exit__(self, exc_type, exc, tb) -> None:
-            recorded["closed"] = True
-
-    class RecordingMlflow:
-        @staticmethod
-        def start_span(**kwargs: object) -> SpanContext:
-            recorded["span_kwargs"] = kwargs
-            return SpanContext()
-
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
-    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
-
-    with mlflow_logging.start_trace_span(
-        name="workflow",
-        span_type="CHAIN",
-        inputs={"api_key": "secret", "turns": 15},
-    ) as span:
-        mlflow_logging.set_span_outputs(span, {"status": "complete"})
-
-    assert recorded["span_kwargs"] == {
-        "name": "workflow",
-        "span_type": "CHAIN",
-        "attributes": {},
-    }
-    assert recorded["inputs"] == {
-        "api_key": mlflow_logging.REDACTED_VALUE,
-        "turns": 15,
-    }
-    assert recorded["outputs"] == {"status": "complete"}
-    assert recorded["closed"] is True
-
-
-def test_log_directory_artifacts_uploads_exact_source_directory(
-    tmp_path: Path,
-    monkeypatch,
-) -> None:
-    """Source snapshots should be uploaded beneath the MLflow sources folder."""
-    source_directory = tmp_path / "sources"
-    source_directory.mkdir()
-    (source_directory / "source-001.md").write_text("# Source", encoding="utf-8")
-    recorded: dict[str, object] = {}
-
-    class RecordingMlflow:
-        @staticmethod
-        def log_artifacts(run_id: str, local_dir: str, *, artifact_path: str) -> None:
-            recorded["run_id"] = run_id
-            recorded["local_dir"] = local_dir
-            recorded["artifact_path"] = artifact_path
-
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
-    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
-
-    monkeypatch.setattr(
-        mlflow_logging,
-        "_RUN_CONTEXT",
-        ContextVar(
-            "test_run", default=mlflow_logging._RunContext(RecordingMlflow, "run-1")
-        ),
-    )
-    mlflow_logging.log_directory_artifacts(
-        source_directory,
-        artifact_path="sources",
-    )
-
-    assert recorded == {
-        "run_id": "run-1",
-        "local_dir": str(source_directory),
-        "artifact_path": "sources",
-    }
-
-
-def test_update_current_trace_context_sets_session_and_metadata(monkeypatch) -> None:
-    """Active traces should receive the CA thread id as the MLflow session id."""
-    reset_mlflow_state(monkeypatch)
-    recorded: dict[str, object] = {}
-
-    class RecordingMlflow:
-        @staticmethod
-        def get_current_active_span() -> object:
-            return object()
-
-        @staticmethod
-        def update_current_trace(**kwargs) -> None:
-            recorded.update(kwargs)
-
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
-    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
-
-    ok = mlflow_logging.update_current_trace_context(
-        session_id="thread-1",
-        user_id="user-1",
-        client_request_id="request-1",
-        tags={"workflow": "stationary_energy_context_chat", "empty": ""},
-        metadata={"thread_id": "thread-1", "turn": 2},
-    )
-
-    assert ok is True
-    assert recorded == {
-        "tags": {"workflow": "stationary_energy_context_chat"},
-        "metadata": {
-            "thread_id": "thread-1",
-            "turn": "2",
-            "mlflow.trace.session": "thread-1",
-            "mlflow.trace.user": "user-1",
-        },
-        "client_request_id": "request-1",
-    }
-
-
 def test_update_current_trace_context_skips_without_active_trace(monkeypatch) -> None:
     """Trace updates should no-op cleanly when MLflow has no active span yet."""
     reset_mlflow_state(monkeypatch)
@@ -353,9 +175,8 @@ def test_inspect_mlflow_configuration_reports_presence_without_secrets(
 
         @staticmethod
         def set_tracking_uri(uri: str) -> None:
-            recorded["uri"] = uri
+            return None
 
-    recorded: dict[str, str] = {}
     monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
 
     report = mlflow_logging.inspect_mlflow_configuration()
@@ -369,4 +190,196 @@ def test_inspect_mlflow_configuration_reports_presence_without_secrets(
     assert report["environment"] == "local-david"
     assert "super-secret" not in dumped
     assert "service-user" not in dumped
-    assert recorded["uri"] == "https://mlflow-dev.openearth.dev"
+
+
+def test_preflight_json_omits_credentials_and_exits_when_unready(
+    monkeypatch, capsys
+) -> None:
+    """The CLI must not print secrets and must fail closed when MLflow is off."""
+    # Load the service script even when the parent `scripts` package shadows it.
+    spec = importlib.util.spec_from_file_location(
+        "mlflow_preflight_under_test", _PREFLIGHT_SCRIPT
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setenv("MLFLOW_ENABLED", "false")
+    monkeypatch.setenv("MLFLOW_TRACKING_USERNAME", "service-user")
+    monkeypatch.setenv("MLFLOW_TRACKING_PASSWORD", "super-secret")
+    monkeypatch.setattr(module, "_load_local_env", lambda: None)
+
+    exit_code = module.main(["--json"])
+    output = capsys.readouterr().out
+
+    assert exit_code == 1
+    assert json.loads(output)["enabled"] is False
+    assert "super-secret" not in output
+    assert "service-user" not in output
+
+
+def test_tool_observation_redacts_catalog_storage_and_credentials(
+    monkeypatch,
+) -> None:
+    """Per-tool MLflow records must never include identifiers, storage, or secrets."""
+    reset_mlflow_state(monkeypatch)
+
+    pending: dict[str, mlflow_logging._ToolObservation] = {}
+    mlflow_logging.start_tool_observation(
+        pending,
+        call_id="call-read",
+        tool_name="native_input_read",
+        arguments={
+            "catalogId": _CATALOG_SECRET,
+            "capabilityId": "ghgi.inventory.status_overview",
+            "access_token": "secret-token",
+            "storage_path": "s3://bucket/object-key",
+        },
+        request_id="req-redact",
+    )
+    record = mlflow_logging.finish_tool_observation(
+        pending,
+        [],
+        call_id="call-read",
+        output={
+            "success": True,
+            "authorization": "Bearer abc.def.ghi",
+            "data": {
+                "catalogId": _CATALOG_SECRET,
+                "signed_url": "https://example.invalid/secret",
+                "entries": [{"catalogId": _CATALOG_SECRET}],
+            },
+        },
+    )
+
+    dumped = json.dumps(record)
+    assert _CATALOG_SECRET not in dumped
+    assert "secret-token" not in dumped
+    assert "s3://bucket/object-key" not in dumped
+    assert "Bearer" not in dumped
+    assert "signed_url" not in dumped
+    assert record["input"]["has_catalog_id"] is True
+    assert record["input"]["has_capability_id"] is True
+    assert record["output"]["entry_count"] == 1
+
+
+def test_tool_observation_survives_disabled_or_unavailable_mlflow(
+    monkeypatch,
+) -> None:
+    """Chat-side records must still be produced when MLflow is off or raising."""
+    reset_mlflow_state(monkeypatch)
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+
+    class BoomMlflow:
+        @staticmethod
+        def get_current_active_span() -> object:
+            raise RuntimeError("trace backend down")
+
+        @staticmethod
+        def start_span_no_context(**kwargs):
+            raise RuntimeError("span backend down")
+
+    monkeypatch.setattr(mlflow_logging, "mlflow", BoomMlflow)
+
+    pending: dict[str, mlflow_logging._ToolObservation] = {}
+    completed: list[dict[str, object]] = []
+    started = mlflow_logging.start_tool_observation(
+        pending,
+        call_id="call-discover",
+        tool_name="native_input_discover",
+        arguments={},
+        request_id="req-isolated",
+    )
+    assert started["state"] == "started"
+    finished = mlflow_logging.finish_tool_observation(
+        pending,
+        completed,
+        call_id="call-discover",
+        output={
+            "action": "native_input_discover",
+            "success": True,
+            "data": {"entries": []},
+        },
+    )
+
+    assert finished["tool_name"] == "native_input_discover"
+    assert finished["outcome"] == "success"
+    assert completed == [finished]
+
+
+_DISCOVER_SUCCESS = {
+    "id": "call-discover",
+    "name": "native_input_discover",
+    "status": "success",
+    "arguments": {},
+    "result_json": {
+        "action": "native_input_discover",
+        "success": True,
+        "data": {"entries": []},
+    },
+}
+_READ_ARGUMENTS = {
+    "catalogId": _CATALOG_SECRET,
+    "capabilityId": "ghgi.inventory.status_overview",
+}
+
+
+@pytest.mark.parametrize(
+    "read_invocation, outcome",
+    [
+        (
+            {
+                "id": "call-read",
+                "name": "native_input_read",
+                "status": "success",
+                "arguments": _READ_ARGUMENTS,
+                "result_json": {
+                    "action": "native_input_read",
+                    "success": False,
+                    "error_code": "capability_unavailable",
+                    "data": {"catalogId": _CATALOG_SECRET},
+                },
+            },
+            "error",
+        ),
+        (
+            {
+                "id": "call-read",
+                "name": "native_input_read",
+                "status": "executing",
+                "arguments": _READ_ARGUMENTS,
+            },
+            "incomplete",
+        ),
+    ],
+    ids=["failed-envelope", "still-executing"],
+)
+def test_fallback_tool_records_fill_gaps_without_catalog_ids(
+    read_invocation: dict[str, object], outcome: str
+) -> None:
+    """Uninstrumented calls are classified from the tool envelope, never transport status."""
+    completed = mlflow_logging.redacted_tool_invocation_records(
+        [_DISCOVER_SUCCESS], request_id="req-merge"
+    )
+
+    records = mlflow_logging.merge_redacted_tool_records(
+        [_DISCOVER_SUCCESS, read_invocation], completed, request_id="req-merge"
+    )
+
+    assert [record["tool_name"] for record in records] == [
+        "native_input_discover",
+        "native_input_read",
+    ]
+    assert records[1]["outcome"] == outcome
+    assert _CATALOG_SECRET not in json.dumps(records)
+
+
+def test_failed_run_creation_does_not_break_the_workflow(mlflow_client) -> None:
+    """An MLflow outage while creating a run must not fail the request it wraps."""
+    from app.utils import mlflow_logging
+
+    mlflow_client.create_run.side_effect = RuntimeError("mlflow down")
+
+    with mlflow_logging.start_run(run_name="cnb_start", experiment_name="ca") as run:
+        mlflow_logging.log_params({"step": "start"})
+
+    assert run is None

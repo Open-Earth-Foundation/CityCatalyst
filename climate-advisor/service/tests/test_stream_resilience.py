@@ -1,196 +1,23 @@
-"""Exercise real Agents/OpenAI streaming and retries with a controlled HTTP provider."""
+"""Exercise real Agents/OpenAI streaming and retries with a controlled HTTP provider.
+
+The `chat` fixture (conftest.py) runs the real app and SDK against ProviderStream.
+"""
 
 import asyncio
-import json
-from collections.abc import AsyncIterator
-from types import SimpleNamespace
-from unittest.mock import AsyncMock
-from uuid import uuid4
 
 import httpx
 import pytest
-from agents import Agent, FunctionTool, OpenAIResponsesModel
+from agents import FunctionTool
 from app.config import get_settings
-from app.models.requests import MessageCreateRequest
-from app.utils.streaming_handler import StreamingHandler
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from openai import AsyncOpenAI
 
-
-def _event(kind: str, **fields: object) -> dict:
-    return {"type": kind, "sequence_number": 1, **fields}
-
-
-def _delta(text: str) -> dict:
-    return _event(
-        "response.output_text.delta",
-        item_id="msg-test",
-        content_index=0,
-        output_index=0,
-        delta=text,
-        logprobs=[],
-    )
-
-
-def _completed(output: list[dict]) -> dict:
-    return _event(
-        "response.completed",
-        response={
-            "id": "resp-test",
-            "object": "response",
-            "created_at": 1,
-            "status": "completed",
-            "model": "test-model",
-            "output": output,
-            "parallel_tool_calls": False,
-            "tool_choice": "auto",
-            "tools": [],
-        },
-    )
-
-
-def _answer() -> list[dict]:
-    return [
-        _delta("Recovered answer"),
-        _completed(
-            [
-                {
-                    "type": "message",
-                    "id": "msg-test",
-                    "role": "assistant",
-                    "status": "completed",
-                    "content": [
-                        {
-                            "type": "output_text",
-                            "text": "Recovered answer",
-                            "annotations": [],
-                        }
-                    ],
-                }
-            ]
-        ),
-    ]
-
-
-def _tool_call(*, status: str = "completed", arguments: str = "{}") -> dict:
-    return {
-        "type": "function_call",
-        "id": "fc-test",
-        "call_id": "call-test",
-        "name": "update_note",
-        "arguments": arguments,
-        "status": status,
-    }
-
-
-class ProviderStream(httpx.AsyncByteStream):
-    def __init__(self, events: list[dict], error: Exception | None = None) -> None:
-        self.events = events
-        self.error = error
-        self.closed = False
-
-    async def __aiter__(self) -> AsyncIterator[bytes]:
-        for event in self.events:
-            yield ("data: " + json.dumps(event) + "\n\n").encode()
-            await asyncio.sleep(0)
-        if self.error is not None:
-            raise self.error
-
-    async def aclose(self) -> None:
-        self.closed = True
-
-
-@pytest.fixture
-def chat(monkeypatch, chat_service):
-    """Keep the application and SDK real; isolate HTTP, history, and persistence."""
-
-    # Retain retry counts while removing backoff from deterministic local tests.
-    monkeypatch.setattr(get_settings().llm.streaming, "retry_delay_ms", 0)
-
-    async def run(*responses: ProviderStream | httpx.Response | Exception, tools=None):
-        requests = []
-        streams = []
-
-        async def transport(request: httpx.Request) -> httpx.Response:
-            requests.append(json.loads(request.content))
-            # Repeat the final response when testing retry exhaustion.
-            result = responses[min(len(requests), len(responses)) - 1]
-            if isinstance(result, Exception):
-                raise result
-            if isinstance(result, httpx.Response):
-                return result
-            result = type(result)(result.events, result.error)
-            streams.append(result)
-            return httpx.Response(
-                200,
-                headers={"content-type": "text/event-stream"},
-                stream=result,
-            )
-
-        client = AsyncOpenAI(
-            api_key="test-key",
-            base_url="https://provider.invalid/v1",
-            max_retries=3,
-            http_client=httpx.AsyncClient(transport=httpx.MockTransport(transport)),
-        )
-        # Preserve the configured retry count while avoiding real backoff in tests.
-        monkeypatch.setattr(client, "_calculate_retry_timeout", lambda *args: 0)
-        agent = Agent(
-            name="Stream regression",
-            instructions="Reply briefly",
-            model=OpenAIResponsesModel(model="test-model", openai_client=client),
-            tools=tools or [],
-        )
-        chat_service.create_agent.return_value = agent
-        persist = AsyncMock(return_value=True)
-        monkeypatch.setattr(
-            "app.utils.streaming_handler.persist_assistant_message", persist
-        )
-
-        handler = StreamingHandler(
-            thread_id=uuid4(), user_id="test-user", session_factory=None
-        )
-        payload = MessageCreateRequest(
-            user_id="test-user",
-            content="How do I get started?",
-            context={"concept_note_run_id": str(uuid4())},
-        )
-        app = FastAPI()
-
-        @app.post("/chat")
-        async def stream():
-            return StreamingResponse(
-                handler.stream_response(payload), media_type="text/event-stream"
-            )
-
-        try:
-            async with httpx.AsyncClient(
-                transport=httpx.ASGITransport(app), base_url="http://test"
-            ) as browser:
-                response = await browser.post("/chat")
-        finally:
-            await client.close()
-        events = []
-        for frame in response.text.split("\n\n"):
-            fields = dict(
-                line.split(":", 1) for line in frame.splitlines() if ":" in line
-            )
-            if "event" in fields and "data" in fields:
-                events.append((fields["event"].strip(), json.loads(fields["data"])))
-        assert response.status_code == 200
-        assert [name for name, _ in events].count("done") == 1
-        assert all(stream.closed for stream in streams)
-        chat_service.close.assert_awaited_once()
-        return SimpleNamespace(
-            requests=requests,
-            events=events,
-            done=events[-1][1],
-            persist=persist,
-            text="".join(data["content"] for name, data in events if name == "message"),
-        )
-
-    return run
+from tests.streaming_fixtures import (
+    ProviderStream,
+    _answer,
+    _completed,
+    _delta,
+    _event,
+    _tool_call,
+)
 
 
 @pytest.mark.parametrize(
@@ -325,7 +152,9 @@ async def test_disabled_stream_recovery_preserves_provider_retries(
     assert result.done["ok"] is False
 
 
-async def test_cancelled_stream_closes_provider_without_retry(chat):
+async def test_cancelled_stream_closes_provider_and_agent_without_retry(
+    chat, chat_service
+):
     reading = asyncio.Event()
     closed = asyncio.Event()
     attempts = []
@@ -348,3 +177,4 @@ async def test_cancelled_stream_closes_provider_without_retry(chat):
         await task
     await asyncio.wait_for(closed.wait(), timeout=1)
     assert attempts == [1]
+    chat_service.close.assert_awaited_once()

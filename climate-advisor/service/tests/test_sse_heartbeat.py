@@ -1,15 +1,16 @@
-"""Transport regression coverage without model calls or a database."""
+"""SSE stream wrappers: heartbeats, ordering, failure and disconnect handling."""
 
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, AsyncIterator, Callable
 from contextvars import ContextVar
 from unittest.mock import AsyncMock
 
 import pytest
 from anyio import CancelScope
 
+from app.utils.cnb_progress import stream_cnb_events
 from app.utils.sse_heartbeat import SSE_HEARTBEAT, with_sse_heartbeats
 
 
@@ -41,8 +42,23 @@ async def test_silent_work_keeps_running_across_multiple_heartbeats() -> None:
         await stream.aclose()
 
 
+# Both stream wrappers sit between the chat producer and the client.
+_WRAPPERS = pytest.mark.parametrize(
+    "wrap, prefix",
+    [
+        (lambda source: with_sse_heartbeats(source, interval_seconds=60), [SSE_HEARTBEAT]),
+        (stream_cnb_events, []),
+    ],
+    ids=["heartbeat", "cnb_progress"],
+)
+
+
 @pytest.mark.asyncio
-async def test_event_order_and_tracing_context_survive_backpressure() -> None:
+@_WRAPPERS
+async def test_event_order_and_tracing_context_survive_backpressure(
+    wrap: Callable[[AsyncIterator[bytes]], AsyncIterator[bytes]],
+    prefix: list[bytes],
+) -> None:
     context: ContextVar[str] = ContextVar("trace", default="outside")
     expected = [f"data: {index}\n\n".encode() for index in range(10)]
     closed = False
@@ -59,17 +75,20 @@ async def test_event_order_and_tracing_context_survive_backpressure() -> None:
             closed = True
 
     actual = []
-    async for chunk in with_sse_heartbeats(source()):
+    async for chunk in wrap(source()):
         actual.append(chunk)
         await asyncio.sleep(0)
-    assert actual == [SSE_HEARTBEAT, *expected]
+    assert actual == [*prefix, *expected]
     assert context.get() == "outside"
     assert closed
 
 
 @pytest.mark.asyncio
+@_WRAPPERS
 @pytest.mark.parametrize("cancel_source", [False, True])
-async def test_producer_failure_is_propagated_without_waiting_for_heartbeat(
+async def test_producer_failure_is_propagated_without_waiting_for_more_events(
+    wrap: Callable[[AsyncIterator[bytes]], AsyncIterator[bytes]],
+    prefix: list[bytes],
     cancel_source: bool,
 ) -> None:
     async def source() -> AsyncGenerator[bytes, None]:
@@ -78,8 +97,8 @@ async def test_producer_failure_is_propagated_without_waiting_for_heartbeat(
             raise asyncio.CancelledError()
         raise RuntimeError("model failed")
 
-    stream = with_sse_heartbeats(source(), interval_seconds=60)
-    assert await anext(stream) == SSE_HEARTBEAT
+    stream = wrap(source())
+    assert [await anext(stream) for _ in prefix] == prefix
     assert await anext(stream) == b"data: started\n\n"
     expected_error = asyncio.CancelledError if cancel_source else RuntimeError
     with pytest.raises(expected_error):

@@ -41,18 +41,7 @@ def test_readiness_returns_ready_when_database_query_succeeds() -> None:
     session.execute.assert_awaited_once()
 
 
-def test_readiness_returns_503_when_database_is_not_configured() -> None:
-    with patch(
-        "app.routes.health.get_session_factory",
-        side_effect=RuntimeError("CA_DATABASE_URL is not configured"),
-    ):
-        response = _client().get("/ready")
-
-    assert response.status_code == 503
-    assert response.json()["detail"] == "Workflow database is unavailable"
-
-
-def test_readiness_returns_503_when_database_query_fails() -> None:
+def _failing_session_factory():
     session = AsyncMock()
     session.execute.side_effect = OSError("database is unreachable")
 
@@ -60,10 +49,19 @@ def test_readiness_returns_503_when_database_query_fails() -> None:
     async def open_session():
         yield session
 
-    with patch(
-        "app.routes.health.get_session_factory",
-        return_value=open_session,
-    ):
+    return open_session
+
+
+@pytest.mark.parametrize(
+    "factory_patch",
+    [
+        {"side_effect": RuntimeError("CA_DATABASE_URL is not configured")},
+        {"return_value": _failing_session_factory()},
+    ],
+    ids=["not-configured", "query-fails"],
+)
+def test_readiness_returns_503_when_database_is_unavailable(factory_patch) -> None:
+    with patch("app.routes.health.get_session_factory", **factory_patch):
         response = _client().get("/ready")
 
     assert response.status_code == 503

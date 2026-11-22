@@ -13,34 +13,25 @@ from app.utils.chat_workflow_context import (
 )
 
 
-def test_binding_stationary_energy_clears_concept_note_context() -> None:
-    draft_run_id = uuid4()
+@pytest.mark.parametrize(
+    "bound_key, cleared_key",
+    [
+        (STATIONARY_ENERGY_DRAFT_RUN_ID_KEY, CONCEPT_NOTE_RUN_ID_KEY),
+        (CONCEPT_NOTE_RUN_ID_KEY, STATIONARY_ENERGY_DRAFT_RUN_ID_KEY),
+    ],
+)
+def test_binding_one_workflow_clears_the_other_and_keeps_credentials(
+    bound_key: str, cleared_key: str
+) -> None:
+    run_id = uuid4()
 
     context = bind_workflow_context(
-        {
-            "access_token": "preserved-token",
-            CONCEPT_NOTE_RUN_ID_KEY: str(uuid4()),
-        },
-        workflow_key=STATIONARY_ENERGY_DRAFT_RUN_ID_KEY,
-        run_id=draft_run_id,
+        {"access_token": "preserved-token", cleared_key: str(uuid4())},
+        workflow_key=bound_key,
+        run_id=run_id,
     )
 
-    assert context == {
-        "access_token": "preserved-token",
-        STATIONARY_ENERGY_DRAFT_RUN_ID_KEY: str(draft_run_id),
-    }
-
-
-def test_binding_concept_note_clears_stationary_energy_context() -> None:
-    concept_note_run_id = uuid4()
-
-    context = bind_workflow_context(
-        {STATIONARY_ENERGY_DRAFT_RUN_ID_KEY: str(uuid4())},
-        workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
-        run_id=concept_note_run_id,
-    )
-
-    assert context == {CONCEPT_NOTE_RUN_ID_KEY: str(concept_note_run_id)}
+    assert context == {"access_token": "preserved-token", bound_key: str(run_id)}
 
 
 def test_binding_rejects_unknown_workflow_context_key() -> None:

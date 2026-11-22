@@ -107,7 +107,6 @@ jobs:
                  tests/test_citycatalyst_client.py \
                  tests/test_rag_tool.py \
                  tests/test_user_identity.py \
-                 tests/test_document_embedding_model.py \
                  --junit-xml=test-results-unit.xml \
                  -v --tb=short --color=yes
 

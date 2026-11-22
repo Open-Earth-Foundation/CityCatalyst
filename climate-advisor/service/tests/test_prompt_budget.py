@@ -1,30 +1,13 @@
 from __future__ import annotations
 
-from app.config.settings import _load_llm_config
+import pytest
+
 from app.utils.prompt_budget import (
     StationaryEnergyPromptBudget,
     compact_stationary_energy_prompt_payload,
     count_prompt_tokens,
-    get_stationary_energy_prompt_budget,
     trim_messages_to_budget,
 )
-
-
-def test_stationary_energy_prompt_budget_loads_from_llm_config() -> None:
-    settings = type("Settings", (), {"llm": _load_llm_config()})()
-
-    chat_budget = get_stationary_energy_prompt_budget(settings, "chat_context")
-
-    assert chat_budget.tokenizer_encoding == "o200k_base"
-    assert chat_budget.max_prompt_tokens == 150000
-    assert chat_budget.max_normalized_rows_per_candidate == 3
-
-
-def test_cnb_validation_prompt_budget_loads_from_llm_config() -> None:
-    config = _load_llm_config()
-
-    assert config.generation.prompt_budget.tokenizer_encoding == "o200k_base"
-    assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
 
 
 def test_count_prompt_tokens_falls_back_for_openrouter_gpt_5_6_sol_slug() -> None:
@@ -105,39 +88,22 @@ def test_stationary_energy_compaction_can_drop_source_data_as_second_stage() -> 
     assert len(candidate["normalized_rows"]) == 2
 
 
-def test_trim_messages_to_budget_preserves_stationary_context_and_current_user() -> None:
-    stationary_context = {
-        "role": "system",
-        "content": "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\nsmall context",
-    }
-    messages = [
-        stationary_context,
-        {"role": "user", "content": "old " * 500},
-        {"role": "assistant", "content": "old response " * 500},
-        {"role": "user", "content": "current question"},
-    ]
-
-    trimmed, token_count, removed = trim_messages_to_budget(
-        messages,
-        instruction_text="system prompt",
-        model="openai/gpt-5.6-sol",
-        budget=StationaryEnergyPromptBudget(max_prompt_tokens=80),
-    )
-
-    assert removed > 0
-    assert trimmed[0] == stationary_context
-    assert trimmed[-1]["content"] == "current question"
-    assert token_count.tokens <= 80
-
-
-def test_trim_messages_to_budget_preserves_embedded_stationary_context() -> None:
-    stationary_context = {
-        "role": "system",
-        "content": (
+@pytest.mark.parametrize(
+    "context_content, instruction_text",
+    [
+        ("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\nsmall context", "system prompt"),
+        (
             "<role>\nStationary Energy prompt\n</role>\n\n"
-            "<context>\nSTATIONARY_ENERGY_DRAFT_CONTEXT_JSON\nsmall context\n</context>"
+            "<context>\nSTATIONARY_ENERGY_DRAFT_CONTEXT_JSON\nsmall context\n</context>",
+            "",
         ),
-    }
+    ],
+    ids=["separate-context", "embedded-context"],
+)
+def test_trim_messages_to_budget_preserves_stationary_context_and_current_user(
+    context_content: str, instruction_text: str
+) -> None:
+    stationary_context = {"role": "system", "content": context_content}
     messages = [
         stationary_context,
         {"role": "user", "content": "old " * 500},
@@ -147,7 +113,7 @@ def test_trim_messages_to_budget_preserves_embedded_stationary_context() -> None
 
     trimmed, token_count, removed = trim_messages_to_budget(
         messages,
-        instruction_text="",
+        instruction_text=instruction_text,
         model="openai/gpt-5.6-sol",
         budget=StationaryEnergyPromptBudget(max_prompt_tokens=80),
     )

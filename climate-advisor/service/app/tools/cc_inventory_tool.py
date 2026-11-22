@@ -52,40 +52,6 @@ class CCInventoryTool:
     def __init__(self, client: Optional[CityCatalystClient] = None) -> None:
         self.cc_client = client or CityCatalystClient()
 
-    async def fetch_inventory(
-        self,
-        inventory_id: str,
-        *,
-        token: Optional[str],
-        user_id: str,
-        thread_id: Union[str, UUID],
-    ) -> CCInventoryToolResult:
-        """Fetch a single inventory record by ID."""
-        if not token:
-            return CCInventoryToolResult(
-                success=False,
-                error="CityCatalyst access token is required.",
-                error_code="missing_token",
-            )
-
-        try:
-            data = await self.cc_client.get_inventory(
-                inventory_id,
-                token=token,
-                user_id=user_id,
-            )
-            return CCInventoryToolResult(
-                success=True,
-                data=data,
-            )
-        except CityCatalystClientError as exc:
-            logger.error("Inventory fetch error: %s", exc)
-            return CCInventoryToolResult(
-                success=False,
-                error=str(exc),
-                error_code="cc_error",
-            )
-
     async def fetch_user_inventories(
         self,
         *,

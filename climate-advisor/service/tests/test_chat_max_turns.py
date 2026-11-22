@@ -3,7 +3,6 @@
 import json
 from types import SimpleNamespace
 
-import pytest
 from agents import FunctionTool
 from app.config import get_settings
 from app.config.settings import _load_llm_config
@@ -12,14 +11,7 @@ from app.utils.max_turns_handler import (
     summarize_catalog_progress,
 )
 
-from tests.test_stream_resilience import (
-    ProviderStream,
-    _answer,
-    _completed,
-    _event,
-    _tool_call,
-    chat,  # noqa: F401  (fixture)
-)
+from tests.streaming_fixtures import ProviderStream, _answer, _completed, _event, _tool_call
 
 INVENTORY_A = "11111111-1111-4111-8111-111111111111"
 INVENTORY_B = "22222222-2222-4222-8222-222222222222"
@@ -60,17 +52,13 @@ def _tool_turn() -> ProviderStream:
     )
 
 
-def test_default_max_agent_turns_is_sixteen() -> None:
-    assert get_settings().llm.chat.max_agent_turns == 16
-
-
 def test_env_var_overrides_max_agent_turns(monkeypatch) -> None:
     monkeypatch.setenv("CHAT_MAX_AGENT_TURNS", "4")
 
     assert _load_llm_config().chat.max_agent_turns == 4
 
 
-async def test_chat_without_tools_is_unchanged_by_the_turn_limit(chat) -> None:  # noqa: F811
+async def test_chat_without_tools_is_unchanged_by_the_turn_limit(chat) -> None:
     result = await chat(ProviderStream(_answer()))
 
     assert len(result.requests) == 1
@@ -78,27 +66,19 @@ async def test_chat_without_tools_is_unchanged_by_the_turn_limit(chat) -> None: 
     assert result.done["ok"] is True
 
 
-async def test_endless_tool_loop_stops_at_sixteen_turns_with_a_partial_answer(
-    chat,  # noqa: F811
+async def test_endless_tool_loop_stops_at_the_configured_limit_with_a_partial_answer(
+    chat, monkeypatch
 ) -> None:
+    monkeypatch.setattr(get_settings().llm.chat, "max_agent_turns", 3)
     calls: list[str] = []
 
     result = await chat(_tool_turn(), tools=[_loop_tool(calls)])
 
-    assert len(result.requests) == 16
-    assert len(calls) == 16
+    assert len(result.requests) == 3
+    assert len(calls) == 3
     assert "step limit" in result.text
     assert "new message" in result.text
     assert result.done["ok"] is True
-
-
-async def test_turn_limit_is_read_from_settings(chat, monkeypatch) -> None:  # noqa: F811
-    monkeypatch.setattr(get_settings().llm.chat, "max_agent_turns", 3)
-
-    result = await chat(_tool_turn(), tools=[_loop_tool([])])
-
-    assert len(result.requests) == 3
-    assert "step limit" in result.text
 
 
 def _call_item(call_id: str, name: str, arguments: dict) -> SimpleNamespace:

@@ -1,11 +1,13 @@
-"""Worker event delivery, isolation, ordering, and cancellation without heartbeats."""
+"""Worker progress delivery, request isolation, and cancellation.
+
+Ordering and failure propagation shared with the heartbeat wrapper are in
+test_sse_heartbeat.py.
+"""
 
 from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncGenerator
-from contextvars import ContextVar
 
 import pytest
 from anyio import CancelScope
@@ -49,50 +51,6 @@ async def test_child_task_progress_arrives_before_tool_finishes_and_is_request_l
             ]
     finally:
         await asyncio.gather(*(s.aclose() for s in streams))
-
-
-@pytest.mark.asyncio
-async def test_event_order_and_tracing_context_survive_backpressure() -> None:
-    context: ContextVar[str] = ContextVar("trace", default="outside")
-    expected = [f"data: {index}\n\n".encode() for index in range(10)]
-    closed = False
-
-    async def source() -> AsyncGenerator[bytes, None]:
-        nonlocal closed
-        token = context.set("inside")
-        try:
-            for chunk in expected:
-                assert context.get() == "inside"
-                yield chunk
-        finally:
-            context.reset(token)
-            closed = True
-
-    actual = []
-    async for chunk in stream_cnb_events(source()):
-        actual.append(chunk)
-        await asyncio.sleep(0)
-    assert actual == expected
-    assert context.get() == "outside"
-    assert closed
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("cancel_source", [False, True])
-async def test_producer_failure_is_propagated_without_waiting_for_more_events(
-    cancel_source: bool,
-) -> None:
-    async def source() -> AsyncGenerator[bytes, None]:
-        yield b"data: started\n\n"
-        if cancel_source:
-            raise asyncio.CancelledError()
-        raise RuntimeError("model failed")
-
-    stream = stream_cnb_events(source())
-    assert await anext(stream) == b"data: started\n\n"
-    expected_error = asyncio.CancelledError if cancel_source else RuntimeError
-    with pytest.raises(expected_error):
-        await asyncio.wait_for(anext(stream), timeout=1)
 
 
 @pytest.mark.asyncio

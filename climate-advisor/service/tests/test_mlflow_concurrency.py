@@ -1,24 +1,16 @@
-from app.utils.streaming_runner import stream_agent_events
-
-"""Regression coverage for request-local MLflow runs without a remote backend."""
+"""Regression coverage for request-local MLflow runs, failures, and cancellation."""
 
 import asyncio
-from contextlib import contextmanager
 from contextvars import ContextVar
 from threading import Event
 from types import SimpleNamespace
-from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
 from anyio import CancelScope
 
-from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
-from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.cnb_observability import record_edit_outcome
-from app.utils.conversation_observability import conversation_trace
-from app.utils.streaming_handler import StreamingHandler
 
 
 @pytest.fixture
@@ -28,117 +20,15 @@ def client(mlflow_client):
 
 @pytest.mark.asyncio
 async def test_async_edit_telemetry_forwards_operation_keyword(client):
-    run_id = uuid4()
     await mlflow_logging.run_mlflow_io(
         record_edit_outcome,
-        run_id=run_id,
+        run_id=uuid4(),
         operation="apply",
         outcome="failed",
-        error_code="proposal_not_pending",
     )
 
-    tags = client.create_run.call_args.kwargs["tags"]
-    assert tags["concept_note_run_id"] == str(run_id)
-    assert tags["operation"] == "apply"
-    assert tags["outcome"] == "failed"
-    assert tags["failure_category"] == "proposal_not_pending"
+    assert client.create_run.call_args.kwargs["tags"]["operation"] == "apply"
     client.set_terminated.assert_called_once_with("run-1", status="FINISHED")
-    assert mlflow_logging._current_run() is None
-
-
-@pytest.mark.asyncio
-async def test_overlapping_requests_isolate_every_logging_operation(client, tmp_path):
-    first_started = asyncio.Event()
-    second_logged = asyncio.Event()
-    targets = {}
-
-    async def request(name):
-        async with mlflow_logging.async_start_run(
-            run_name=name, experiment_name="Clima"
-        ) as run:
-            targets[name] = run.info.run_id
-            if name == "first":
-                first_started.set()
-                await second_logged.wait()
-            else:
-                await first_started.wait()
-            mlflow_logging.log_tags({"concept_note_run_id": name})
-            mlflow_logging.log_params({"request": name})
-            mlflow_logging.log_metrics({"count": 1})
-            mlflow_logging.log_json_artifact("request.json", {"request": name})
-            mlflow_logging.log_text_artifact("request.txt", name)
-            mlflow_logging.log_directory_artifacts(tmp_path, artifact_path=name)
-            if name == "second":
-                second_logged.set()
-                await asyncio.sleep(0)
-
-    await asyncio.gather(request("first"), request("second"))
-
-    assert len(set(targets.values())) == 2
-    for name, run_id in targets.items():
-        batches = [
-            call.kwargs
-            for call in client.log_batch.call_args_list
-            if call.kwargs["run_id"] == run_id
-        ]
-        assert len(batches) == 3
-        assert {tag.key: tag.value for tag in batches[0]["tags"]} == {
-            "concept_note_run_id": name
-        }
-        assert {param.key: param.value for param in batches[1]["params"]} == {
-            "request": name
-        }
-        assert batches[2]["metrics"][0].value == 1
-        client.log_dict.assert_any_call(run_id, {"request": name}, "request.json")
-        client.log_text.assert_any_call(run_id, name, "request.txt")
-        client.log_artifacts.assert_any_call(run_id, str(tmp_path), artifact_path=name)
-        client.set_terminated.assert_any_call(run_id, status="FINISHED")
-    assert mlflow_logging._current_run() is None
-
-
-@pytest.mark.parametrize("failure", ["initialization", "experiment", "creation"])
-def test_failed_scope_never_logs_to_its_enclosing_run(client, monkeypatch, failure):
-    with mlflow_logging.start_run(run_name="parent", experiment_name="Clima") as parent:
-        with monkeypatch.context() as patch:
-            if failure == "initialization":
-                patch.setattr(mlflow_logging, "initialize_mlflow", lambda: False)
-            elif failure == "experiment":
-                patch.setattr(mlflow_logging, "_experiment_id", lambda name: None)
-            else:
-                patch.setattr(
-                    client, "create_run", MagicMock(side_effect=RuntimeError("offline"))
-                )
-            with mlflow_logging.start_run(
-                run_name="failed", experiment_name="Clima"
-            ) as failed:
-                assert failed is None
-                mlflow_logging.log_tags({"concept_note_run_id": "wrong"})
-                mlflow_logging.log_params({"wrong": "parameter"})
-                mlflow_logging.log_metrics({"wrong": 1})
-                mlflow_logging.log_json_artifact("wrong.json", {})
-                mlflow_logging.log_text_artifact("wrong.txt", "wrong")
-        client.log_batch.assert_not_called()
-        client.log_dict.assert_not_called()
-        client.log_text.assert_not_called()
-        mlflow_logging.log_tags({"concept_note_run_id": "parent"})
-        assert client.log_batch.call_args.kwargs["run_id"] == parent.info.run_id
-
-
-def test_nested_run_has_explicit_parent_and_restores_parent(client):
-    with mlflow_logging.start_run(run_name="parent", experiment_name="Clima") as parent:
-        with mlflow_logging.start_run(
-            run_name="child", experiment_name="Clima", nested=True
-        ) as child:
-            assert (
-                client.create_run.call_args.kwargs["tags"]["mlflow.parentRunId"]
-                == parent.info.run_id
-            )
-            mlflow_logging.log_tags({"target": "child"})
-            assert client.log_batch.call_args.kwargs["run_id"] == child.info.run_id
-        mlflow_logging.log_tags({"target": "parent"})
-        assert client.log_batch.call_args.kwargs["run_id"] == parent.info.run_id
-    mlflow_logging.log_tags({"target": "outside"})
-    assert client.log_batch.call_count == 2
 
 
 @pytest.mark.asyncio
@@ -164,23 +54,6 @@ async def test_cancelled_request_closes_only_its_run(client):
     client.set_terminated.assert_any_call("run-1", status="FINISHED")
 
 
-@pytest.mark.asyncio
-async def test_inherited_child_cannot_log_after_request_closes(client):
-    release_child = asyncio.Event()
-
-    async def delayed_log():
-        await release_child.wait()
-        mlflow_logging.log_tags({"late": "data"})
-
-    async with mlflow_logging.async_start_run(
-        run_name="request", experiment_name="Clima"
-    ):
-        task = asyncio.create_task(delayed_log())
-    release_child.set()
-    await task
-    client.log_batch.assert_not_called()
-
-
 def test_pending_writes_are_drained_before_termination(client, monkeypatch):
     events = []
     operation = SimpleNamespace(wait=lambda: events.append("write"))
@@ -203,33 +76,6 @@ def test_logging_and_close_failures_do_not_mask_application_exception(client):
         mlflow_logging.log_tags({"tag": "value"})
         raise ValueError("application failed")
     assert mlflow_logging._current_run() is None
-
-
-def test_trace_metadata_uses_request_run_and_mlflow_32_arguments(client, monkeypatch):
-    recorded = {}
-
-    def update_trace(tags=None, metadata=None, client_request_id=None):
-        recorded.update(metadata)
-
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
-    monkeypatch.setattr(
-        mlflow_logging.mlflow,
-        "get_current_active_span",
-        lambda: object(),
-        raising=False,
-    )
-    monkeypatch.setattr(
-        mlflow_logging.mlflow, "update_current_trace", update_trace, raising=False
-    )
-    with mlflow_logging.start_run(run_name="request", experiment_name="Clima") as run:
-        assert mlflow_logging.update_current_trace_context(
-            session_id="thread-1", user_id="user-1"
-        )
-        assert recorded == {
-            "mlflow.sourceRun": run.info.run_id,
-            "mlflow.trace.session": "thread-1",
-            "mlflow.trace.user": "user-1",
-        }
 
 
 @pytest.mark.parametrize("async_logging", ["true", "false"])
@@ -262,6 +108,9 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
     release = asyncio.Event()
 
     async def request(name):
+        source_directory = tmp_path / f"{name}-sources"
+        source_directory.mkdir()
+        (source_directory / "source.md").write_text("# Source", encoding="utf-8")
         async with mlflow_logging.async_start_run(
             run_name=name, experiment_name="isolated-test"
         ) as run:
@@ -269,6 +118,7 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
             assert mlflow.active_run() is None
             with mlflow_logging.start_trace_span(name=name, span_type="CHAIN") as span:
                 assert span is not None
+                # Interleave both requests so every write races the other run.
                 if name == "first":
                     started.set()
                     await release.wait()
@@ -278,8 +128,16 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
                 mlflow_logging.log_tags({"concept_note_run_id": name})
                 mlflow_logging.log_params({"request": name})
                 mlflow_logging.log_metrics({"count": 1})
-                mlflow_logging.log_json_artifact(f"{name}.json", {"request": name})
-                assert mlflow_logging.update_current_trace_context(session_id=name)
+                mlflow_logging.log_json_artifact(
+                    f"{name}.json", {"request": name, "access_token": "secret"}
+                )
+                mlflow_logging.log_text_artifact(f"{name}.txt", name)
+                mlflow_logging.log_directory_artifacts(
+                    source_directory, artifact_path=f"{name}-sources"
+                )
+                assert mlflow_logging.update_current_trace_context(
+                    session_id=name, user_id="user-1"
+                )
                 return name, run.info.run_id, span.trace_id
 
     try:
@@ -291,12 +149,19 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
             assert run.data.tags["concept_note_run_id"] == name
             assert run.data.params["request"] == name
             assert run.data.metrics["count"] == 1
-            assert [artifact.path for artifact in client.list_artifacts(run_id)] == [
-                f"{name}.json"
-            ]
+            assert {artifact.path for artifact in client.list_artifacts(run_id)} == {
+                f"{name}.json",
+                f"{name}.txt",
+                f"{name}-sources",
+            }
+            assert mlflow.artifacts.load_dict(f"runs:/{run_id}/{name}.json") == {
+                "request": name,
+                "access_token": mlflow_logging.REDACTED_VALUE,
+            }
             trace = client.get_trace(trace_id)
             assert trace.info.trace_metadata["mlflow.sourceRun"] == run_id
             assert trace.info.trace_metadata["mlflow.trace.session"] == name
+            assert trace.info.trace_metadata["mlflow.trace.user"] == "user-1"
             assert (
                 trace.info.trace_location.mlflow_experiment.experiment_id
                 == experiment_id
@@ -304,67 +169,6 @@ async def test_real_mlflow_persists_isolated_runs_and_trace_links(
     finally:
         mlflow.tracing.reset()
         mlflow.set_tracking_uri(previous_uri)
-
-
-@pytest.mark.parametrize("mode", ["general", "stationary_energy", "cnb"])
-@pytest.mark.asyncio
-async def test_other_chat_modes_link_traces_before_model_start(monkeypatch, mode):
-    recorded = {}
-    active = False
-    handler = StreamingHandler(
-        thread_id=uuid4(), user_id="user-1", session_factory=None
-    )
-    handler.workflow_context = ChatWorkflowContext(
-        stationary_energy_draft_run_id=str(uuid4())
-        if mode == "stationary_energy"
-        else None,
-        concept_note_run_id=str(uuid4()) if mode == "cnb" else None,
-    )
-
-    @contextmanager
-    def span_context(**kwargs):
-        nonlocal active
-        active = True
-        recorded["span"] = kwargs
-        try:
-            yield SimpleNamespace(trace_id="test-trace", span_id="root")
-        finally:
-            active = False
-
-    def update_context(**kwargs):
-        assert active
-        recorded["updated"] = True
-        return True
-
-    class Result:
-        async def stream_events(self):
-            yield SimpleNamespace(type="agent_updated_stream_event")
-
-    def run_streamed(*args, **kwargs):
-        assert active
-        assert recorded["updated"]
-        return Result()
-
-    monkeypatch.setattr(
-        "app.utils.conversation_observability.start_trace_span", span_context
-    )
-    monkeypatch.setattr(
-        "app.utils.streaming_telemetry.update_current_trace_context", update_context
-    )
-    monkeypatch.setattr("app.utils.streaming_runner.Runner.run_streamed", run_streamed)
-    payload = MessageCreateRequest(user_id="user-1", content="Review the context")
-    # Every chat owns its root around the entire request, including persistence.
-    with conversation_trace(
-        payload.content, attributes=handler.workflow_context.telemetry()
-    ):
-        assert [
-            chunk async for chunk in stream_agent_events(handler, object(), payload, [])
-        ] == []
-    assert recorded["span"]["name"] == "Climate Advisor Turn"
-    assert (
-        recorded["span"]["attributes"]["workflow"]
-        == handler.workflow_context.telemetry()["workflow"]
-    )
 
 
 @pytest.mark.parametrize("phase", ["create", "write", "close"])

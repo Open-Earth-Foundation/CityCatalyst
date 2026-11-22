@@ -70,7 +70,9 @@ def planner_returning(plan=None, error=None):
     return SimpleNamespace(plan=AsyncMock(return_value=plan, side_effect=error))
 
 
-def user_edit(snapshot, before: str, after: str, instruction: str) -> EditPlanOutput:
+def user_edit(
+    snapshot, before: str, after: str, instruction: str, *, gap_coverage: str = "none"
+) -> EditPlanOutput:
     change = PlannedTextChange(
         chapter_id=snapshot.chapter_id,
         start=snapshot.body_markdown.index(before),
@@ -81,7 +83,14 @@ def user_edit(snapshot, before: str, after: str, instruction: str) -> EditPlanOu
         user_input_quote=instruction,
     )
     review = ChapterEditReview(
-        decisions=[{"change_index": 0, "support": "user", "explanation": "User supplied it."}]
+        decisions=[
+            {
+                "change_index": 0,
+                "support": "user",
+                "gap_coverage": gap_coverage,
+                "explanation": "User supplied it.",
+            }
+        ]
     )
     return EditPlanOutput(intent="edit", changes=bind_semantic_review([change], review))
 
@@ -120,19 +129,23 @@ async def test_validated_changes_are_applied_like_an_accepted_proposal(workspace
 @pytest.mark.asyncio
 async def test_collateral_chapters_and_removed_markers_are_detected(workspace_case):
     loaded, snapshots, run_context = workspace_case
-    with_marker = next(s for s in snapshots if "[Information needed:" in s.body_markdown)
-    marker = with_marker.body_markdown[with_marker.body_markdown.index("[Information needed:"):]
-    marker = marker[: marker.index("]") + 1]
-    instruction = "The accredited entity is Coastal Futures Fund."
-    plan = user_edit(with_marker, marker, "Coastal Futures Fund", instruction)
-    other = next(s.chapter_ref for s in snapshots if s.chapter_ref != with_marker.chapter_ref)
-    edit = case(instruction=instruction, allowed_chapters=[other])
+    summary = next(s for s in snapshots if s.chapter_ref == "project_summary")
+    marker = (
+        "[Information needed: Confirm the country in which Harbor Point is located "
+        "for the GCF SAP proposal.]"
+    )
+    instruction = "In the climate context chapter, state that Harbor Point is in Belize."
+    plan = user_edit(
+        summary, marker, "Harbor Point is in Belize.", instruction, gap_coverage="complete"
+    )
+    edit = case(instruction=instruction, allowed_chapters=["climate_context"])
     record = await run_edit_case(
         edit, loaded, get_settings(), snapshots, run_context, planner=planner_returning(plan)
     )
+    assert record["outcome"] == "edit", record
     checks = case_checks(edit, record, snapshots)
-    assert checks["collateral_chapters"] == [with_marker.chapter_ref]
-    assert checks["removed_markers"] == {with_marker.chapter_ref: [marker]}
+    assert checks["collateral_chapters"] == ["project_summary"]
+    assert checks["removed_markers"] == {"project_summary": [marker]}
 
 
 @pytest.mark.asyncio

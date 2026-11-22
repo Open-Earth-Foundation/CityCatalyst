@@ -107,11 +107,12 @@ async def test_pre_run_page_chat_loads_run_not_started_context():
     ):
         history = await handler._load_conversation_history(get_settings(), payload)
 
-    system_content = history[0]["content"]
     assert history[0]["role"] == "system"
-    assert STATIONARY_ENERGY_RUN_NOT_STARTED_MARKER in system_content
-    assert "CALL TOOL stationary_energy_start_draft TO START IT" in system_content
-    context_json = system_content.split("\n")[2]
+    context_json = (
+        history[0]["content"]
+        .split(f"{STATIONARY_ENERGY_RUN_NOT_STARTED_MARKER}\n", 1)[1]
+        .split("\n", 1)[0]
+    )
     assert json.loads(context_json) == {
         "run_status": "RUN_NOT_STARTED",
         "city_id": "city-1",

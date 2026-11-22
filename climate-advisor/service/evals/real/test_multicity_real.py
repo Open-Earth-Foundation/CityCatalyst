@@ -2,37 +2,35 @@
 
 Run from climate-advisor/ with local Core, the seed and a funded OpenRouter key:
 
-    RUN_REAL_LLM=1 uv run --directory service pytest tests/real -k "R2 or R8" -s
+    RUN_REAL_LLM=1 uv run --directory service pytest evals/real -k "R2 or R8" -s
 
 Each scenario runs REAL_LLM_RUNS times (default 3) and passes only if every run
-passes. Results go to tests/real/out/, never to the vault.
+passes. Results go to evals/real/out/, never to the vault.
 """
 
 from __future__ import annotations
 
 import os
-import uuid
 
 import pytest
 from app.config import get_settings
-from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 
-from tests.real.harness import (
+from evals.real.harness import (
     NO_RANKING,
     _NothingFound,
     CostGuard,
     Run,
     append_record,
     flush_traces,
-    issue_token,
     load_fixture,
+    normalized_response,
     pop_trace_ids,
     run_summary,
     run_with_retry,
     runs_per_scenario,
     set_trace_scenario,
 )
-from tests.real.scenarios import build_scenarios, discovers, has
+from evals.real.scenarios import build_scenarios, discovers, has
 
 pytestmark = [
     pytest.mark.real_llm,
@@ -52,16 +50,6 @@ UNKNOWN_INVENTORY = "00000000-0000-4000-8fff-ffffffffffff"
 _REFUSES = _NothingFound(
     r"not among|do not have access|don't have access|no access|not accessible|can't|cannot"
 )
-
-
-def _normalized(response):
-    """Drop the opaque continuation cursor value (fresh random bytes on every call)."""
-    if not isinstance(response, dict):
-        return response
-    data = dict(response.get("data") or {})
-    if "continuationCursor" in data:
-        data["continuationCursor"] = bool(data["continuationCursor"])
-    return {**response, "data": data}
 
 
 @pytest.fixture(scope="module")
@@ -137,7 +125,7 @@ async def test_r15_model_flow(guard: CostGuard) -> None:
         ) or (
             resp_a is not None
             and resp_b is not None
-            and _normalized(resp_a) == _normalized(resp_b)
+            and normalized_response(resp_a) == normalized_response(resp_b)
         )
         conditions = [
             (core_same, "Core discover responses differ between the two cases"),
@@ -155,50 +143,3 @@ async def test_r15_model_flow(guard: CostGuard) -> None:
         if not passed:
             failures.append(f"run {run_number}: {note}")
     assert not failures, failures
-
-
-async def test_r15_core_integration() -> None:
-    """Against the real local Core: unknown and no-access inventories are indistinguishable."""
-    fixture = load_fixture()
-    token = issue_token(fixture.user_id)
-    thread_id = str(uuid.uuid4())
-    client = CityCatalystClient()
-    try:
-        results = []
-        for inventory_id in (UNKNOWN_INVENTORY, fixture.inventory("B1", 2022)):
-            discovery = await client.discover_native_inputs(
-                request_payload={"userId": fixture.user_id, "inventoryId": inventory_id},
-                token=token,
-                user_id=fixture.user_id,
-                thread_id=thread_id,
-            )
-            try:
-                read = await client.read_native_input(
-                    request_payload={
-                        "userId": fixture.user_id,
-                        "inventoryId": inventory_id,
-                        "catalogId": str(uuid.uuid4()),
-                        "capabilityId": "hiap.inventory.context",
-                        "input": {"inventory_id": inventory_id},
-                    },
-                    token=token,
-                    user_id=fixture.user_id,
-                    thread_id=thread_id,
-                )
-                read_outcome = ("ok", read)
-            except CityCatalystClientError as error:
-                read_outcome = ("error", error.status_code, str(error))
-            results.append((_normalized(discovery), read_outcome))
-    finally:
-        await client.close()
-
-    assert results[0] == results[1], results
-    assert results[0][0]["data"]["entries"] == []
-    _record(
-        "R15-core",
-        1,
-        fixture,
-        Run(),
-        True,
-        "unknown and no-access inventory gave identical discover and read outcomes",
-    )

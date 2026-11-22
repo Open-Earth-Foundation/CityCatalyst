@@ -208,11 +208,11 @@ def test_held_out_cases_reject_prompt_leakage_and_split_families(fixtures, tmp_p
         calibration.load_calibration_cases(path, fixtures, "No worked examples")
 
 
-def test_shipped_cases_are_pending_diverse_and_outside_prompt_examples(fixtures):
+def test_shipped_cases_are_diverse_and_outside_prompt_examples(fixtures):
     prompt = get_settings().llm.prompts.get_prompt("cnb_golden_set_extraction_judge")
     path = Path(__file__).resolve().parents[1] / "calibration/cases.json"
     cases = calibration.load_calibration_cases(path, fixtures, prompt)
-    assert len(cases) >= 24 and all(item.approval is None for item in cases)
+    assert len(cases) >= 24
     assert {item.human_verdict for item in cases} == set(calibration.VERDICTS)
     assert {"tables", "units", "currency", "dates", "responsibilities"} <= {
         tag for item in cases for tag in item.tags

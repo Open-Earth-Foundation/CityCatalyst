@@ -4,6 +4,7 @@ import pytest
 
 pytest.importorskip("pgvector.sqlalchemy")
 import asyncio
+import json
 import os
 import tempfile
 import time
@@ -16,6 +17,7 @@ from typing import Any, AsyncIterator
 from unittest.mock import AsyncMock, patch
 from uuid import UUID
 
+from agents.tool import ToolContext
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -29,6 +31,9 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftSourceCandidate,
 )
 from app.models.db.thread import Thread as ChatThread
+from app.services.stationary_energy.stationary_energy_agent_review import (
+    StationaryEnergyAgentReviewService,
+)
 from app.utils.token_manager import parse_jwt_claims
 from tests.stationary_energy.fixtures import _active_jwt, _auth_headers, _mock_cc_client
 
@@ -54,6 +59,10 @@ class StationaryEnergyDraftCase(unittest.IsolatedAsyncioTestCase):
             await conn.run_sync(Base.metadata.create_all)
 
         self.app = get_app()
+        self.feature_flag_patcher = patch.dict(
+            os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
+        )
+        self.feature_flag_patcher.start()
 
         async def get_test_session() -> AsyncIterator[AsyncSession]:
             async with self.session_factory() as session:
@@ -97,6 +106,7 @@ class StationaryEnergyDraftCase(unittest.IsolatedAsyncioTestCase):
         self.background_session_factory_patcher.stop()
         self.identity_patcher.stop()
         self.cc_client_patcher.stop()
+        self.feature_flag_patcher.stop()
         self.app.dependency_overrides.clear()
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
@@ -128,13 +138,7 @@ class StationaryEnergyDraftCase(unittest.IsolatedAsyncioTestCase):
     def _start_draft(self) -> tuple[str, str, str]:
         """Create a ready draft and return one proposal/candidate pair."""
         mock_client = _mock_cc_client()
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -182,15 +186,61 @@ class StationaryEnergyDraftCase(unittest.IsolatedAsyncioTestCase):
             matching_candidate["candidate_id"],
         )
 
+    @staticmethod
+    def _patch_cc(client: Any) -> Any:
+        """Serve CityCatalyst calls from the given mock client."""
+        return patch(
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
+            return_value=client,
+        )
+
     def _get_status(self, draft_run_id: str, user_id: str = "user-1") -> dict[str, Any]:
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            response = self.client.get(
-                f"/v1/stationary-energy-drafts/{draft_run_id}",
-                params={"user_id": user_id},
-                headers=_auth_headers(user_id),
-            )
+        response = self.client.get(
+            f"/v1/stationary-energy-drafts/{draft_run_id}",
+            params={"user_id": user_id},
+            headers=_auth_headers(user_id),
+        )
         self.assertEqual(response.status_code, 200, response.text)
         return response.json()
+
+    def _review(
+        self,
+        method: str,
+        draft_run_id: str | UUID,
+        *,
+        cc_client: Any = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Run one agent review service call for user-1, commit, and return its JSON."""
+
+        async def exercise() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                service = StationaryEnergyAgentReviewService(session, cc_client=cc_client)
+                result = await getattr(service, method)(
+                    draft_run_id=UUID(str(draft_run_id)), user_id="user-1", **kwargs
+                )
+                await session.commit()
+                return result.model_dump(mode="json")
+
+        result = asyncio.run(exercise())
+        # Tool results carry a translatable message_key, never English text.
+        self.assertNotIn("message", result)
+        return result
+
+    @staticmethod
+    def _invoke_tool(
+        tools: list[Any], name: str, arguments: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """Invoke one agent tool by name, as the agent runner does, and parse its JSON."""
+        tool = next(tool for tool in tools if getattr(tool, "name", None) == name)
+        context = ToolContext(
+            context=None,
+            tool_call_id="test-call",
+            tool_name=name,
+            tool_arguments=json.dumps(arguments or {}),
+        )
+        output = asyncio.run(tool.on_invoke_tool(context, json.dumps(arguments or {})))
+        return json.loads(output)
 
     def _wait_for_draft_status(
         self,

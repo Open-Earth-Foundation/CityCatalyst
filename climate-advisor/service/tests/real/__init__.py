@@ -1,1 +1,1 @@
-"""Opt-in real-LLM tests for CC-1021 Phase F (local services and seed required)."""
+"""Opt-in tests against a real local CityCatalyst Core (RUN_REAL_LLM=1 and the CC-1021 seed)."""

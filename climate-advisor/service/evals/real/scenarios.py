@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
-from tests.real.harness import (
+from evals.real.harness import (
     NO_RANKING,
     UUID_PATTERN,
     CoreCall,

@@ -4,12 +4,7 @@ import pytest
 
 pytest.importorskip("pgvector.sqlalchemy")
 import asyncio
-import json
-import os
-from typing import Any
-from unittest.mock import AsyncMock, patch
-
-from agents.tool import ToolContext
+from unittest.mock import AsyncMock
 
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.tools.stationary_energy_start_draft_tools import (
@@ -32,13 +27,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
         )
         mock_client = _mock_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -69,35 +58,19 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
         token_ref = {"value": _expired_jwt()}
         mock_client = _mock_cc_client()
 
-        async def exercise() -> dict[str, Any]:
-            tools = build_stationary_energy_start_draft_tools(
-                session_factory=self.session_factory,
-                city_id="city-1",
-                inventory_id="inventory-1",
-                user_id="user-1",
-                thread_id=thread_id,
-                token_ref=token_ref,
-                client_factory=lambda: mock_client,
-            )
-            start_tool = next(
-                tool
-                for tool in tools
-                if getattr(tool, "name", None) == "stationary_energy_start_draft"
-            )
-            ctx = ToolContext(
-                context=None,
-                tool_call_id="test-call",
-                tool_name="stationary_energy_start_draft",
-                tool_arguments={},
-            )
+        tools = build_stationary_energy_start_draft_tools(
+            session_factory=self.session_factory,
+            city_id="city-1",
+            inventory_id="inventory-1",
+            user_id="user-1",
+            thread_id=thread_id,
+            token_ref=token_ref,
+            client_factory=lambda: mock_client,
+        )
 
-            output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
-                ctx,
-                json.dumps({"continue_request": True}),
-            )
-            return json.loads(output)
-
-        data = asyncio.run(exercise())
+        data = self._invoke_tool(
+            tools, "stationary_energy_start_draft", {"continue_request": True}
+        )
 
         self.assertTrue(data["success"], data)
         # The page re-sends the request once the run is ready.
@@ -117,36 +90,16 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
         )
 
     def test_agent_start_draft_tool_maps_http_errors(self) -> None:
-        token_ref = {"value": None}
+        tools = build_stationary_energy_start_draft_tools(
+            session_factory=self.session_factory,
+            city_id="city-1",
+            inventory_id="inventory-1",
+            user_id="user-1",
+            thread_id=None,
+            token_ref={"value": None},
+        )
 
-        async def exercise() -> dict[str, Any]:
-            tools = build_stationary_energy_start_draft_tools(
-                session_factory=self.session_factory,
-                city_id="city-1",
-                inventory_id="inventory-1",
-                user_id="user-1",
-                thread_id=None,
-                token_ref=token_ref,
-            )
-            start_tool = next(
-                tool
-                for tool in tools
-                if getattr(tool, "name", None) == "stationary_energy_start_draft"
-            )
-            ctx = ToolContext(
-                context=None,
-                tool_call_id="test-call",
-                tool_name="stationary_energy_start_draft",
-                tool_arguments={},
-            )
-
-            output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
-                ctx,
-                json.dumps({}),
-            )
-            return json.loads(output)
-
-        data = asyncio.run(exercise())
+        data = self._invoke_tool(tools, "stationary_energy_start_draft")
 
         self.assertFalse(data["success"], data)
         self.assertEqual(data["action"], "stationary_energy_start_draft")
@@ -158,13 +111,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
         thread_id = self._create_thread("thread-owner")
         mock_client = _mock_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -181,13 +128,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
     def test_start_requires_access_token_before_calling_cc(self) -> None:
         mock_client = _mock_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -207,13 +148,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
             side_effect=CityCatalystClientError("token rejected", status_code=401)
         )
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -230,13 +165,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
     def test_start_list_and_resume_reject_token_subject_mismatch_from_cc(self) -> None:
         mock_client = _mock_subject_mismatch_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -291,13 +220,7 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
         review_decisions = self._complete_review_decisions(draft_run_id)
         mock_client = _mock_subject_mismatch_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             status_response = self.client.get(
                 f"/v1/stationary-energy-drafts/{draft_run_id}",
                 params={"user_id": "other-user"},
@@ -402,30 +325,29 @@ class StationaryEnergyAuthorizationTests(StationaryEnergyDraftCase):
             ),
         ]
 
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            for method, endpoint, payload in endpoints:
-                if method == "GET":
-                    missing_response = self.client.get(endpoint, params=payload)
-                    malformed_response = self.client.get(
-                        endpoint,
-                        params=payload,
-                        headers={"Authorization": "Basic token"},
-                    )
-                else:
-                    missing_response = self.client.post(endpoint, json=payload)
-                    malformed_response = self.client.post(
-                        endpoint,
-                        json=payload,
-                        headers={"Authorization": "Basic token"},
-                    )
+        for method, endpoint, payload in endpoints:
+            if method == "GET":
+                missing_response = self.client.get(endpoint, params=payload)
+                malformed_response = self.client.get(
+                    endpoint,
+                    params=payload,
+                    headers={"Authorization": "Basic token"},
+                )
+            else:
+                missing_response = self.client.post(endpoint, json=payload)
+                malformed_response = self.client.post(
+                    endpoint,
+                    json=payload,
+                    headers={"Authorization": "Basic token"},
+                )
 
-                self.assertEqual(
-                    missing_response.status_code,
-                    401,
-                    f"{method} {endpoint}: {missing_response.text}",
-                )
-                self.assertEqual(
-                    malformed_response.status_code,
-                    401,
-                    f"{method} {endpoint}: {malformed_response.text}",
-                )
+            self.assertEqual(
+                missing_response.status_code,
+                401,
+                f"{method} {endpoint}: {missing_response.text}",
+            )
+            self.assertEqual(
+                malformed_response.status_code,
+                401,
+                f"{method} {endpoint}: {malformed_response.text}",
+            )

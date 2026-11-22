@@ -13,7 +13,7 @@
  * Inputs (env): CC1021_ACCESS=org|project|collaborator (default org; CC-1060 PR 2 reads
  * all three: organization admin, project admin, city collaborator), CC1021_DATASET=small|realistic (default small; realistic uses
  * 40 actions per ranking with long en/pt explanations), CC1021_FIXTURE_PATH
- * (default climate-advisor/service/tests/real/out/seed-fixture.json), plus the
+ * (default climate-advisor/service/evals/real/out/seed-fixture.json), plus the
  * normal app database variables. DATABASE_HOST must be local.
  *
  * Outputs: rows in the local database (reset limited to the ZZ-CC1021 prefix)
@@ -703,7 +703,7 @@ async function seed(): Promise<void> {
   const fixturePath = path.resolve(
     process.cwd(),
     process.env.CC1021_FIXTURE_PATH ??
-      "../climate-advisor/service/tests/real/out/seed-fixture.json",
+      "../climate-advisor/service/evals/real/out/seed-fixture.json",
   );
   mkdirSync(path.dirname(fixturePath), { recursive: true });
   writeFileSync(fixturePath, JSON.stringify(fixture, null, 2), "utf8");

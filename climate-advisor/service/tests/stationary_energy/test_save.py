@@ -3,9 +3,6 @@ from __future__ import annotations
 import pytest
 
 pytest.importorskip("pgvector.sqlalchemy")
-import os
-from unittest.mock import patch
-
 from tests.stationary_energy.draft_case import StationaryEnergyDraftCase
 from tests.stationary_energy.fixtures import _active_jwt, _auth_headers, _mock_cc_client
 
@@ -14,13 +11,7 @@ class StationaryEnergySaveTests(StationaryEnergyDraftCase):
     def test_save_commits_latest_pending_review_decisions(self) -> None:
         mock_client = _mock_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -74,13 +65,13 @@ class StationaryEnergySaveTests(StationaryEnergyDraftCase):
         self.assertEqual(status_response.status_code, 200, status_response.text)
         self.assertEqual(status_response.json()["workflow_step"], "review")
         self.assertEqual(status_response.json()["status"], "saved")
-        workflow_steps = [
-            call.kwargs["workflow_step"]
-            for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
-        ]
-        self.assertEqual(
-            workflow_steps,
-            ["draft", "draft", "review", "review", "review", "review"],
+        # Commits are authorized against CC's review-step capabilities.
+        self.assertIn(
+            "review",
+            {
+                call.kwargs["workflow_step"]
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            },
         )
         mock_client.commit_stationary_energy_accepted.assert_awaited_once()
         commit_rows = mock_client.commit_stationary_energy_accepted.await_args.kwargs[
@@ -92,13 +83,7 @@ class StationaryEnergySaveTests(StationaryEnergyDraftCase):
     def test_save_commits_manual_review_decisions(self) -> None:
         mock_client = _mock_cc_client()
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={

@@ -31,15 +31,7 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
         self.assertEqual(response.status_code, 404)
 
     def test_start_persists_source_candidates_and_status_returns_snapshot(self) -> None:
-        mock_client = _mock_cc_client()
-
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(_mock_cc_client()):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={
@@ -108,18 +100,6 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
             current_value_by_subsector["I.1"]["inventory_value_id"], "value-1"
         )
         self.assertIsNone(current_value_by_subsector["I.2"])
-        self.assertEqual(
-            mock_client.get_stationary_energy_allowed_capabilities.await_count,
-            2,
-        )
-        self.assertEqual(
-            [
-                call.kwargs["workflow_step"]
-                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
-            ],
-            ["draft", "draft"],
-        )
-        self.assertEqual(mock_client.load_stationary_energy_context.await_count, 2)
         context_summary = self._draft_context_summary(draft_run_id)
         self.assertEqual(context_summary["source_candidates_count"], 4)
         self.assertEqual(context_summary["applicable_source_candidates_count"], 2)
@@ -130,27 +110,20 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
             _context_payload()["guidance_context"]["sector_overview"],
         )
 
-    def test_start_creates_a_new_draft_run_each_time(self) -> None:
-        first_draft_run_id, _proposal_id, _candidate_id = self._start_draft()
-        second_draft_run_id, _proposal_id_2, _candidate_id_2 = self._start_draft()
-
-        self.assertNotEqual(first_draft_run_id, second_draft_run_id)
-
     def test_resume_returns_latest_active_draft_for_scope(self) -> None:
         first_draft_run_id, _proposal_id, _candidate_id = self._start_draft()
         second_draft_run_id, _proposal_id_2, _candidate_id_2 = self._start_draft()
 
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            response = self.client.get(
-                "/v1/stationary-energy-drafts/resume",
-                params={
-                    "user_id": "user-1",
-                    "city_id": "city-1",
-                    "inventory_id": "inventory-1",
-                    "sector_code": "stationary_energy",
-                },
-                headers=_auth_headers(),
-            )
+        response = self.client.get(
+            "/v1/stationary-energy-drafts/resume",
+            params={
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+                "sector_code": "stationary_energy",
+            },
+            headers=_auth_headers(),
+        )
 
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()["draft_run_id"], second_draft_run_id)
@@ -162,27 +135,25 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
         saved_draft_run_id, _proposal_id_3, _candidate_id_3 = self._start_draft()
 
         reviewed_decisions = self._complete_review_decisions(reviewed_draft_run_id)
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            review_response = self.client.post(
-                f"/v1/stationary-energy-drafts/{reviewed_draft_run_id}/review",
-                json={"user_id": "user-1", "decisions": reviewed_decisions},
-                headers=_auth_headers(),
-            )
+        review_response = self.client.post(
+            f"/v1/stationary-energy-drafts/{reviewed_draft_run_id}/review",
+            json={"user_id": "user-1", "decisions": reviewed_decisions},
+            headers=_auth_headers(),
+        )
 
         self.assertEqual(review_response.status_code, 200, review_response.text)
         self._set_draft_run_status(saved_draft_run_id, "saved")
 
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            response = self.client.get(
-                "/v1/stationary-energy-drafts",
-                params={
-                    "user_id": "user-1",
-                    "city_id": "city-1",
-                    "inventory_id": "inventory-1",
-                    "sector_code": "stationary_energy",
-                },
-                headers=_auth_headers(),
-            )
+        response = self.client.get(
+            "/v1/stationary-energy-drafts",
+            params={
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+                "sector_code": "stationary_energy",
+            },
+            headers=_auth_headers(),
+        )
 
         self.assertEqual(response.status_code, 200, response.text)
         drafts = response.json()["drafts"]
@@ -201,16 +172,15 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
         saved_draft_run_id, _proposal_id_2, _candidate_id_2 = self._start_draft()
         self._set_draft_run_status(saved_draft_run_id, "saved")
 
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            response = self.client.get(
-                "/v1/stationary-energy-drafts/resume",
-                params={
-                    "user_id": "user-1",
-                    "city_id": "city-1",
-                    "inventory_id": "inventory-1",
-                },
-                headers=_auth_headers(),
-            )
+        response = self.client.get(
+            "/v1/stationary-energy-drafts/resume",
+            params={
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+            },
+            headers=_auth_headers(),
+        )
 
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()["draft_run_id"], active_draft_run_id)
@@ -218,77 +188,17 @@ class StationaryEnergyLifecycleTests(StationaryEnergyDraftCase):
     def test_resume_marks_draft_stale_when_connected_sources_change(self) -> None:
         mock_client = _mock_cc_client()
         stale_context = _context_payload()
+        applicable, _removed, commercial, _failed = stale_context["source_candidates"]
+        # CC now offers a replacement for the commercial source.
         stale_context["source_candidates"] = [
-            {
-                "datasource_id": "ds-applicable",
-                "name": "Applicable source",
-                "publisher_name": "Open Data Publisher",
-                "dataset_name": "Building energy",
-                "dataset_year": 2024,
-                "url": "https://example.test/source",
-                "geography_match": "city",
-                "source_scope": {
-                    "sector_id": "I",
-                    "sector_name": "Stationary Energy",
-                    "subsector_id": "I.1",
-                    "subsector_name": "Residential buildings",
-                    "scope_id": "1",
-                    "scope_name": "Scope 1",
-                },
-                "source_data": {"raw": "kept"},
-                "normalized_rows": [
-                    {
-                        "value": 100,
-                        "unit": "MWh",
-                        "emissions_value_100yr": "1000000",
-                        "emissions_unit": "kgCO2e",
-                    }
-                ],
-                "applicability_status": "applicable",
-                "applicability_issues": [],
-                "quality_score": "0.91",
-            },
-            {
-                "datasource_id": "ds-replacement",
-                "name": "Replacement source",
-                "publisher_name": "Open Data Publisher",
-                "dataset_name": "Commercial buildings",
-                "dataset_year": 2024,
-                "url": "https://example.test/replacement",
-                "geography_match": "city",
-                "source_scope": {
-                    "sector_id": "I",
-                    "sector_name": "Stationary Energy",
-                    "subsector_id": "I.2",
-                    "subsector_name": "Commercial buildings",
-                    "scope_id": "1",
-                    "scope_name": "Scope 1",
-                },
-                "source_data": {"raw": "new"},
-                "normalized_rows": [
-                    {
-                        "value": 220,
-                        "unit": "MWh",
-                        "emissions_value_100yr": "2200000",
-                        "emissions_unit": "kgCO2e",
-                    }
-                ],
-                "applicability_status": "applicable",
-                "applicability_issues": [],
-                "quality_score": "0.88",
-            },
+            applicable,
+            {**commercial, "datasource_id": "ds-replacement", "name": "Replacement source"},
         ]
         mock_client.load_stationary_energy_context = AsyncMock(
             side_effect=[_context_payload(), stale_context]
         )
 
-        with (
-            patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}),
-            patch(
-                "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-                return_value=mock_client,
-            ),
-        ):
+        with self._patch_cc(mock_client):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
                 json={

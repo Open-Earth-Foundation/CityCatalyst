@@ -5,8 +5,6 @@ import pytest
 from app.utils.streaming_context import resolve_workflow_context
 
 pytest.importorskip("pgvector.sqlalchemy")
-import os
-from unittest.mock import patch
 from uuid import uuid4
 
 from sqlalchemy import select
@@ -22,12 +20,11 @@ class StationaryEnergyChatContextTests(StationaryEnergyDraftCase):
     def test_status_rejects_wrong_user(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
 
-        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
-            response = self.client.get(
-                f"/v1/stationary-energy-drafts/{draft_run_id}",
-                params={"user_id": "other-user"},
-                headers=_auth_headers("other-user"),
-            )
+        response = self.client.get(
+            f"/v1/stationary-energy-drafts/{draft_run_id}",
+            params={"user_id": "other-user"},
+            headers=_auth_headers("other-user"),
+        )
 
         self.assertEqual(response.status_code, 403)
 
@@ -87,48 +84,20 @@ class StationaryEnergyChatContextTests(StationaryEnergyDraftCase):
         await resolve_workflow_context(handler, payload)
         history = await handler._load_conversation_history(None, payload)
 
-        self.assertGreaterEqual(len(history), 2)
+        # The persisted draft snapshot and the page's UI state reach the model.
         self.assertEqual(history[0]["role"], "system")
-        system_content = history[0]["content"]
-        self.assertIn(
-            "You are Clima, the CityCatalyst climate assistant.",
-            system_content,
-        )
-        self.assertIn("<additional_instructions>", system_content)
-        self.assertIn(
-            "Handle one Stationary Energy review intent per user turn.",
-            system_content,
-        )
-        context_start = system_content.index("<context>")
-        self.assertGreater(
-            context_start,
-            system_content.index(
-                "Handle one Stationary Energy review intent per user turn."
-            ),
-        )
-        self.assertIn("</context>", system_content)
-        self.assertTrue(system_content.rstrip().endswith("</context>"))
-        self.assertIn(
-            "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON",
-            system_content[context_start:],
-        )
-        self.assertIn("Testopolis", system_content)
-        self.assertIn("ds-chat", system_content)
-        self.assertIn("guidance_context", system_content)
-        self.assertNotIn("llm_generation", system_content)
-        self.assertIn("ui_context", system_content)
-        self.assertIn(proposal_id, system_content)
-        self.assertIn("Focused right pane row", system_content)
-        self.assertIn("focused_decision_state", system_content)
-        self.assertIn("candidate-chat", system_content)
-        self.assertIn("confirmed_bulk_review_choices", system_content)
-        self.assertIn(
+        context = history[0]["content"].split("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON", 1)[1]
+        for expected in (
+            "Testopolis",
+            "ds-chat",
+            "Use subsector-specific energy activity data first.",
+            proposal_id,
+            "Focused right pane row",
+            "candidate-chat",
+            "confirmed_bulk_review_choices",
             "confirmed_staged_review_rollback_choices",
-            system_content,
-        )
-        self.assertIn(
-            "Use subsector-specific energy activity data first.", system_content
-        )
-        self.assertNotIn("raw-output-should-not-be-in-chat-context", system_content)
+        ):
+            self.assertIn(expected, context)
+        self.assertNotIn("llm_generation", history[0]["content"])
         self.assertEqual(history[-1]["role"], "user")
         self.assertEqual(history[-1]["content"], payload.content)

@@ -1,3 +1,5 @@
+"""Live-LLM eval: Stationary Energy review chat picks the right tool (needs OPENROUTER_API_KEY)."""
+
 from __future__ import annotations
 
 import copy
@@ -44,13 +46,13 @@ from app.utils.streaming_handler import StreamingHandler
 from app.utils.streaming_runner import build_stream_run_config
 
 FIXTURE_PATH = (
-    Path(__file__).parent
+    Path(__file__).parents[1]
+    / "tests"
     / "fixtures"
     / "stationary_energy_review_empty_draft_context.json"
 )
-OUTPUT_DIR = (
-    Path(__file__).parent / "output" / "stationary_energy_review_live_llm"
-)
+# "out" directories are git-ignored repository-wide.
+OUTPUT_DIR = Path(__file__).parent / "out" / "stationary_energy_review_live_llm"
 TEST_USER_ID = "manual-llm-user"
 
 

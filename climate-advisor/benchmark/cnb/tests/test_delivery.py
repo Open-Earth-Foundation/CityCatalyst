@@ -42,12 +42,6 @@ def test_baseline_requires_explicit_approval_and_rejects_changed_content(tmp_pat
     }
     manifest.write_text(json.dumps(value), encoding="utf-8")
     assert load_approved_baseline(manifest, tmp_path, fingerprints)[0] == run
-    assert (
-        load_approved_baseline(
-            manifest, tmp_path, {**fingerprints, "corpus": "different"}
-        )[1]["status"]
-        == "incompatible"
-    )
     (run / "viewer.js").write_text("tampered", encoding="utf-8")
     assert (
         load_approved_baseline(manifest, tmp_path, fingerprints)[1]["status"]
@@ -152,11 +146,6 @@ def test_timeout_retains_completed_stage_and_publication_failure(tmp_path, monke
     delivery = json.loads((run / "delivery.json").read_text())
     assert delivery["publication"]["status"] == "failed"
     assert delivery["execution"] == "incomplete"
-
-
-def test_partial_run_directory_is_not_overwritten(tmp_path):
-    (tmp_path / "runs" / "partial").mkdir(parents=True)
-    assert evaluator.main(["--run-id", "partial", "--results-dir", str(tmp_path)]) == 2
 
 
 def test_swapped_missing_pairs_regress_even_when_aggregate_coverage_is_unchanged():

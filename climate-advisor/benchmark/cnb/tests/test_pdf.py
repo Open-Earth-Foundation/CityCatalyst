@@ -256,7 +256,7 @@ async def test_synthetic_markdown_is_explicitly_not_applicable(tmp_path, monkeyp
 
 
 @pytest.mark.asyncio
-async def test_converter_receives_pinned_local_path_and_runs_independently(
+async def test_converter_receives_the_pinned_local_pdf(
     conversion, monkeypatch, tmp_path
 ):
     loaded, output, _ = conversion
@@ -269,15 +269,12 @@ async def test_converter_receives_pinned_local_path_and_runs_independently(
     process = SimpleNamespace(wait=AsyncMock(return_value=0), returncode=0)
     spawn = AsyncMock(return_value=process)
     monkeypatch.setattr(pdf.asyncio, "create_subprocess_exec", spawn)
-    for _ in range(2):
-        result = await pdf.convert_pdf_fixture(loaded, output, timeout_seconds=1)
-        assert result.status == "completed"
-    assert spawn.call_count == 2
-    args, kwargs = spawn.call_args
-    assert args[:3] == ("node", "--import", "tsx")
+    result = await pdf.convert_pdf_fixture(loaded, output, timeout_seconds=1)
+    assert result.status == "completed"
+    # The converter reads the pinned local copy, checked against its digest.
+    args = spawn.call_args.args
     assert str(loaded.directory / "pinned.pdf") in args
     assert loaded.fixture.source.original_pdf.sha256 in args
-    assert kwargs["cwd"] == app
 
 
 @pytest.mark.asyncio

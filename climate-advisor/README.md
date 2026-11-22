@@ -1581,7 +1581,7 @@ Clima never exports or offers it for download. See `docs/NativeInputCatalog.md`.
 
 #### Real-LLM multi-city tests (local, opt-in)
 
-`service/tests/real/` drives the real Climate Advisor app in-process against a
+`service/evals/real/` drives the real Climate Advisor app in-process against a
 real local Core as a seeded user. It spends OpenRouter credit, so it is skipped
 unless `RUN_REAL_LLM=1`. From the repository root:
 
@@ -1596,11 +1596,11 @@ cover them for HIAP and HIAP-MEED.
    `uv run --directory service alembic upgrade head` here.
 2. `npm run seed-cc1021-multicity` in `app/` (refuses non-local databases;
    `CC1021_DATASET=realistic` for the large-ranking set). It writes
-   `service/tests/real/out/seed-fixture.json` (git-ignored; override with
+   `service/evals/real/out/seed-fixture.json` (git-ignored; override with
    `CC1021_FIXTURE_PATH`).
 3. `npm run dev` in `app/` with the `CA_SERVICE_INTEGRATION` feature flag on
    (see `app/env.example`). Core must be reachable at `CC_BASE_URL`.
-4. `RUN_REAL_LLM=1 uv run --directory service pytest tests/real -k "R2 or R8" -s`
+4. `RUN_REAL_LLM=1 uv run --directory service pytest evals/real -k "R2 or R8" -s`
    with `OPENROUTER_API_KEY` and `CC_SERVICE_API_KEY` (or `CC_API_KEY`) set in
    the environment. `REAL_LLM_RUNS` (default 3) repeats each scenario and a
    scenario passes only if every run passes; `REAL_LLM_COST_CAP_USD` aborts the
@@ -1608,7 +1608,7 @@ cover them for HIAP and HIAP-MEED.
 
 The runner authenticates through Core's `user-token` endpoint with the service
 key (no browser, no test shortcut in production code), records the payloads that
-actually reach Core, and writes JSON/Markdown to `service/tests/real/out/`.
+actually reach Core, and writes JSON/Markdown to `service/evals/real/out/`.
 Hosted tracing (MLflow, LangSmith) is disabled for these runs. The runner never
 writes to the vault.
 

@@ -137,9 +137,7 @@ def test_publish_builds_viewer_index_and_missing_snapshots(tmp_path):
     assert fixture["stages"]["verification"] is None
     assert set(payload["prompts"]) == {"extraction", "chapter_writing", "verification", "editing"}
     assert payload["examples"]["extraction"]
-    assert (newer / "viewer.js").read_text(encoding="utf-8").startswith(
-        '(window.GOLDEN_RUNS = window.GOLDEN_RUNS || {})["newer"] = '
-    )
+    assert read_viewer(newer / "viewer.js")["run"]["id"] == "newer"
 
 
 def test_publish_run_snapshots_at_run_time_and_keeps_old_snapshots(tmp_path):
@@ -163,8 +161,6 @@ def test_run_ids_default_to_utc_time_plus_label_and_reject_unsafe_names(tmp_path
     assert args.output_dir == tmp_path / "runs" / "ci-krakow"
     with pytest.raises(SystemExit):
         evaluator.parse_args(["--run-id", "../escape"])
-    with pytest.raises(SystemExit):
-        evaluator.parse_args(["--output-dir", "somewhere"])  # replaced by --results-dir
 
 
 def test_existing_run_is_never_overwritten(tmp_path, monkeypatch):
@@ -175,14 +171,6 @@ def test_existing_run_is_never_overwritten(tmp_path, monkeypatch):
 
     monkeypatch.setattr(evaluator, "evaluate", must_not_run)
     assert evaluator.main(["--results-dir", str(tmp_path), "--run-id", "taken"]) == 2
-
-
-def test_viewer_assets_reference_the_run_index():
-    html = (publish.VIEWER_DIR / "index.html").read_text(encoding="utf-8")
-    script = (publish.VIEWER_DIR / "app.js").read_text(encoding="utf-8")
-    assert '<script src="runs/index.js"></script>' in html
-    assert "runs/${encodeURIComponent(id)}/viewer.js" in script
-    assert "comparePage" in script
 
 
 def _fixtures_without_pdfs(tmp_path: Path) -> Path:

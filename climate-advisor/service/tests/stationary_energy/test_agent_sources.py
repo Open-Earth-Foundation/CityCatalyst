@@ -4,15 +4,11 @@ import pytest
 
 pytest.importorskip("pgvector.sqlalchemy")
 import asyncio
-from typing import Any
 from uuid import UUID
 
 from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftSourceCandidate,
-)
-from app.services.stationary_energy.stationary_energy_agent_review import (
-    StationaryEnergyAgentReviewService,
 )
 from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyAgentReviewChoiceInput,
@@ -21,37 +17,35 @@ from tests.stationary_energy.draft_case import StationaryEnergyDraftCase
 
 
 class StationaryEnergyAgentSourcesTests(StationaryEnergyDraftCase):
+    def _stage_and_preview_change(
+        self, draft_run_id: str, proposal_id: str, candidate_id: str
+    ) -> dict:
+        self._review(
+            "accept_one",
+            draft_run_id,
+            choice=StationaryEnergyAgentReviewChoiceInput(
+                proposal_id=UUID(proposal_id),
+                candidate_id=UUID(candidate_id),
+            ),
+        )
+        return self._review(
+            "preview_staged_source_changes",
+            draft_run_id,
+            proposal_ids=[UUID(proposal_id)],
+        )
+
     def test_agent_review_preview_staged_source_change_uses_empty_without_alternative(
         self,
     ) -> None:
         draft_run_id, proposal_id, candidate_id = self._start_draft()
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                await service.accept_one(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    choice=StationaryEnergyAgentReviewChoiceInput(
-                        proposal_id=UUID(proposal_id),
-                        candidate_id=UUID(candidate_id),
-                    ),
-                )
-                result = await service.preview_staged_source_changes(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    proposal_ids=[UUID(proposal_id)],
-                )
-                await session.commit()
-                return result.model_dump(mode="json")
+        result = self._stage_and_preview_change(draft_run_id, proposal_id, candidate_id)
 
-        result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(
             result["ui_event"],
             "stationary_energy_review_change_confirmation_requested",
         )
-        self.assertNotIn("message", result)
         self.assertEqual(
             result["message_key"],
             "tool-message-staged-change-confirm-success",
@@ -100,52 +94,21 @@ class StationaryEnergyAgentSourcesTests(StationaryEnergyDraftCase):
 
         alternative_candidate_id = asyncio.run(add_alternative())
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                await service.accept_one(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    choice=StationaryEnergyAgentReviewChoiceInput(
-                        proposal_id=UUID(proposal_id),
-                        candidate_id=UUID(candidate_id),
-                    ),
-                )
-                result = await service.preview_staged_source_changes(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    proposal_ids=[UUID(proposal_id)],
-                )
-                await session.commit()
-                return result.model_dump(mode="json")
+        result = self._stage_and_preview_change(draft_run_id, proposal_id, candidate_id)
 
-        result = asyncio.run(exercise())
         self.assertTrue(result["success"])
-        self.assertEqual(result["pending_choices"][0]["action"], "override_source")
-        self.assertEqual(
-            result["pending_choices"][0]["selected_candidate_id"],
-            alternative_candidate_id,
-        )
-        self.assertEqual(
-            result["pending_choices"][0]["selected_source_id"],
-            "ds-preview-alt-details",
-        )
+        choice = result["pending_choices"][0]
+        self.assertEqual(choice["action"], "override_source")
+        self.assertEqual(choice["selected_candidate_id"], alternative_candidate_id)
+        self.assertEqual(choice["selected_source_id"], "ds-preview-alt-details")
 
     def test_agent_review_options_include_source_evidence_for_chat_checks(
         self,
     ) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                result = await service.list_review_options(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                )
-                return result.model_dump(mode="json")
+        result = self._review("list_review_options", draft_run_id)
 
-        result = asyncio.run(exercise())
         option = next(
             option
             for blocker in result["blocked_choices"]
@@ -166,40 +129,27 @@ class StationaryEnergyAgentSourcesTests(StationaryEnergyDraftCase):
 
     def test_agent_review_preview_staged_sources_rollback_does_not_mutate(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+        self._review(
+            "accept_all_recommended",
+            draft_run_id,
+            rationale="User accepted all recommended sources.",
+        )
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                await service.accept_all_recommended(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    rationale="User accepted all recommended sources.",
-                )
-                result = await service.preview_staged_sources_rollback(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                )
-                await session.commit()
-                return result.model_dump(mode="json")
+        result = self._review("preview_staged_sources_rollback", draft_run_id)
 
-        result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(
             result["ui_event"],
             "stationary_energy_review_rollback_confirmation_requested",
         )
-        self.assertNotIn("message", result)
         self.assertEqual(
             result["message_key"],
             "tool-message-staged-rollback-confirm-success",
         )
         self.assertEqual(result["message_params"], {"selected": 2, "pending": 2})
-        self.assertEqual(len(result["pending_choices"]), 2)
-        self.assertTrue(
-            all(
-                choice["action"] == "rollback_staged"
-                for choice in result["pending_choices"]
-            )
+        self.assertEqual(
+            [choice["action"] for choice in result["pending_choices"]],
+            ["rollback_staged", "rollback_staged"],
         )
         self.assertEqual(
             len(self._get_status(draft_run_id)["staged_review_selections"]), 2
@@ -209,30 +159,23 @@ class StationaryEnergyAgentSourcesTests(StationaryEnergyDraftCase):
         self,
     ) -> None:
         draft_run_id, proposal_id, candidate_id = self._start_draft()
+        self._review(
+            "accept_one",
+            draft_run_id,
+            choice=StationaryEnergyAgentReviewChoiceInput(
+                proposal_id=UUID(proposal_id),
+                candidate_id=UUID(candidate_id),
+            ),
+        )
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                await service.accept_one(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    choice=StationaryEnergyAgentReviewChoiceInput(
-                        proposal_id=UUID(proposal_id),
-                        candidate_id=UUID(candidate_id),
-                    ),
-                )
-                result = await service.rollback_staged_sources(
-                    draft_run_id=UUID(draft_run_id),
-                    user_id="user-1",
-                    proposal_ids=[UUID(proposal_id)],
-                )
-                await session.commit()
-                return result.model_dump(mode="json")
+        result = self._review(
+            "rollback_staged_sources",
+            draft_run_id,
+            proposal_ids=[UUID(proposal_id)],
+        )
 
-        result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(result["selected_choices"][0]["action"], "rollback_staged")
-        self.assertNotIn("message", result)
         self.assertEqual(result["message_key"], "tool-message-staged-rollback-success")
         self.assertEqual(result["message_params"], {"selected": 1, "pending": 2})
         self.assertEqual(self._get_status(draft_run_id)["staged_review_selections"], [])
@@ -242,28 +185,17 @@ class StationaryEnergyAgentSourcesTests(StationaryEnergyDraftCase):
     ) -> None:
         draft_run_id = asyncio.run(self._create_notation_review_draft_snapshot())
 
-        async def exercise() -> dict[str, Any]:
-            async with self.session_factory() as session:
-                service = StationaryEnergyAgentReviewService(session)
-                result = await service.accept_all_recommended(
-                    draft_run_id=draft_run_id,
-                    user_id="user-1",
-                    rationale="User asked the agent to pick best.",
-                )
-                await session.commit()
-                return result.model_dump(mode="json")
+        result = self._review(
+            "accept_all_recommended",
+            draft_run_id,
+            rationale="User asked the agent to pick best.",
+        )
 
-        result = asyncio.run(exercise())
         self.assertTrue(result["success"])
-        self.assertEqual(len(result["selected_choices"]), 1)
-        self.assertNotIn("message", result)
+        self.assertEqual(
+            [choice["action"] for choice in result["selected_choices"]], ["accept"]
+        )
         self.assertEqual(result["message_key"], "tool-message-stage-success")
         self.assertEqual(result["message_params"], {"selected": 1, "pending": 0})
-        self.assertEqual(result["selected_choices"][0]["action"], "accept")
-
-        status = self._get_status(str(draft_run_id))
-        self.assertEqual(len(status["staged_review_selections"]), 1)
-        self.assertEqual(
-            status["staged_review_selections"][0]["action"],
-            "accept",
-        )
+        staged = self._get_status(str(draft_run_id))["staged_review_selections"]
+        self.assertEqual([s["action"] for s in staged], ["accept"])

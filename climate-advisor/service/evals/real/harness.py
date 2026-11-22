@@ -6,14 +6,14 @@ actually reach Core, the tool calls, the final answer, time and OpenRouter cost.
 
 Inputs (env): RUN_REAL_LLM=1, CC_BASE_URL (default http://localhost:3000),
 CC_SERVICE_API_KEY or CC_API_KEY, OPENROUTER_API_KEY, CC1021_FIXTURE_PATH
-(default tests/real/out/seed-fixture.json), REAL_LLM_RUNS (default 3),
+(default service/evals/real/out/seed-fixture.json), REAL_LLM_RUNS (default 3),
 REAL_LLM_COST_CAP_USD (default 2). MLflow tracing is off unless
 REAL_LLM_MLFLOW=1 (then REAL_LLM_MLFLOW_EXPERIMENT, default cc1060-local-review,
 and REAL_LLM_MLFLOW_ENVIRONMENT, default local-david; credentials come from the
 environment or climate-advisor/.env and are never printed). Each trace is tagged
 with scenario_id and scenario_run, and the trace IDs go to records.jsonl.
 
-Outputs: tests/real/out/records.jsonl and tests/real/out/report.md. The runner
+Outputs: evals/real/out/records.jsonl and evals/real/out/report.md. The runner
 never writes to the vault; a separate review step copies sanitized results.
 """
 
@@ -309,6 +309,16 @@ def issue_token(user_id: str) -> str:
     )
     response.raise_for_status()
     return response.json()["access_token"]
+
+
+def normalized_response(response: Any) -> Any:
+    """Drop the opaque continuation cursor value (fresh random bytes on every call)."""
+    if not isinstance(response, dict):
+        return response
+    data = dict(response.get("data") or {})
+    if "continuationCursor" in data:
+        data["continuationCursor"] = bool(data["continuationCursor"])
+    return {**response, "data": data}
 
 
 def openrouter_usage() -> Optional[float]:

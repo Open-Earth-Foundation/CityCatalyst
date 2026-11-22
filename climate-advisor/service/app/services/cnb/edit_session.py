@@ -21,6 +21,7 @@ from app.services.cnb.edit_validation import (
     validate_document_integrity,
     validate_provenance,
 )
+from app.utils.cnb_gap_edit import marker_question_too_long
 from app.utils.cnb_information_markers import (
     INFORMATION_NEEDED_PATTERN,
     removed_information_markers,
@@ -147,6 +148,15 @@ class DraftEditSession:
                         reason = None
                     if reason:
                         if not replacement.replace_all:
+                            # An over-cap remainder is refused with its own repair, not as a protected match.
+                            if (
+                                reason == "protected_markers"
+                                and marker_question_too_long(change.after)
+                            ):
+                                raise EditOperationError(
+                                    "marker_changed",
+                                    "A missing-information question may be at most 2,000 characters. Shorten the remaining question and resubmit.",
+                                )
                             raise EditOperationError(
                                 reason,
                                 "Use propose_structure to rename a chapter title. Internal template subheadings cannot be changed through text replacements."

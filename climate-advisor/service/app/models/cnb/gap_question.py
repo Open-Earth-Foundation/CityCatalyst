@@ -14,6 +14,8 @@ from pydantic import (
     model_validator,
 )
 
+from app.utils.cnb_gap_edit import MAX_GAP_QUESTION_CHARS
+
 logger = logging.getLogger(__name__)
 
 MAX_QUESTIONS = 4
@@ -59,7 +61,7 @@ class GapSubQuestion(BaseModel):
 
     # The prompt asks for 160; a narrowed gap returns its exact remaining question,
     # which may be as long as the persisted marker question.
-    question: str = Field(min_length=1, max_length=2000)
+    question: str = Field(min_length=1, max_length=MAX_GAP_QUESTION_CHARS)
     # The prompt asks for five (eight for a checklist); the margin keeps one
     # longer list from failing the set.
     options: list[
@@ -73,6 +75,27 @@ class GapSubQuestion(BaseModel):
     confirms: bool = False
     # Several options can apply together, so the UI lets the user select each one.
     multiple: bool = False
+
+    @classmethod
+    def stored_remainder(cls, question: str) -> "GapSubQuestion":
+        """Return a persisted narrowed question exactly, even above the generation cap.
+
+        Only a remainder that was already stored may exceed the cap, because
+        marker edits reject longer new questions before they are saved. Adopted
+        originals can be longer, so reopening them must still show the exact text.
+        """
+        if len(question) <= MAX_GAP_QUESTION_CHARS:
+            return cls(question=question, options=[])
+        if not question.strip():
+            raise ValueError("A stored remainder must be nonempty.")
+        # Free-text fields are fixed, so no validator can reject the stored text.
+        return cls.model_construct(
+            question=question,
+            options=[],
+            where_to_find="",
+            confirms=False,
+            multiple=False,
+        )
 
     @field_validator("options")
     @classmethod

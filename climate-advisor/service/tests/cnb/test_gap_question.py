@@ -16,9 +16,14 @@ from app.models.cnb.gap_question import (
 )
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.persistence.concept_notes.edits import applied_gap_answers
-from app.routes.concept_note_runs import propose_gap_question, save_gap_answers
+from app.routes.concept_note_runs import (
+    propose_gap_question,
+    router,
+    save_gap_answers,
+)
 from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
+from fastapi.routing import serialize_response
 from pydantic import ValidationError
 from tests.test_concept_note_lifecycle import _workspace_repository
 
@@ -273,6 +278,40 @@ def test_unbound_question_still_requires_a_capped_question():
         ).question
         == "q" * 2000
     )
+
+
+async def test_persisted_long_narrowed_question_reopens_exactly(gap_route):
+    """An over-cap remainder saved before the cap still reopens verbatim through the API."""
+    long_question = "Describe the funding source and its amount. " * 60
+    gap = gap_route.chapter.gaps[0]
+    gap.has_accepted_narrowing = True
+    gap.question = long_question.strip()
+    gap.why_asking = ""
+    gap_route.args["payload"].question = None
+    result = await propose_gap_question(**gap_route.args)
+    gap_route.generate.assert_not_called()
+    route = next(
+        item
+        for item in router.routes
+        if getattr(item, "path", "").endswith("gap-question")
+    )
+    # FastAPI serializes the response through the route's own response field.
+    body = await serialize_response(
+        field=route.response_field, response_content=result, is_coroutine=True
+    )
+    assert body == {
+        "why_asking": "This information is required to complete the chapter.",
+        "questions": [
+            {
+                "question": gap.question,
+                "options": [],
+                "where_to_find": "",
+                "confirms": False,
+                "multiple": False,
+            }
+        ],
+    }
+    assert len(body["questions"][0]["question"]) > 2000
 
 
 async def test_centers_the_excerpt_on_a_marker_formatted_unlike_its_question(

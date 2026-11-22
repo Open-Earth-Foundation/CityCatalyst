@@ -165,7 +165,7 @@ async def propose_gap_question(
     ):
         return GapQuestionOutput(
             why_asking=(gap.why_asking or LEGACY_GENERIC_GAP_RATIONALE)[:240],
-            questions=[GapSubQuestion(question=gap.question, options=[])],
+            questions=[GapSubQuestion.stored_remainder(gap.question)],
         )
     body = chapter.body_markdown or ""
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.

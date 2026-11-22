@@ -437,6 +437,34 @@ def test_saved_gap_quote_rejects_cross_gap_then_accepts_valid_same_gap_retry() -
     assert result.startswith(f"Location: {location} Phase: {saved}")
 
 
+@pytest.mark.parametrize(("length", "accepted"), [(2000, True), (2001, False)])
+def test_overlong_new_remainder_is_rejected_before_review(length, accepted) -> None:
+    """A narrowed question is capped at 2,000 characters before any model review."""
+    marker = "[Information needed: Confirm the instrument and amount.]"
+    current = chapter(f"Finance: {marker}")
+    current.gaps.append(gap("Confirm the instrument and amount."))
+    edits = session([current], "The city will use stormwater utility funds.")
+    found = edits.search_draft(marker)
+    remainder = "x" * length
+    result = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                f"The city will use stormwater utility funds. [Information needed: {remainder}]",
+                user_input_quote="The city will use stormwater utility funds",
+            )
+        ]
+    )
+    if accepted:
+        assert result["ok"], result
+        assert edits.plan is not None
+    else:
+        assert not result["ok"]
+        assert result["code"] == "marker_changed"
+        assert "at most 2,000 characters" in result["message"]
+        assert edits.plan is None
+
+
 def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
     """A factual replacement for one gap-marker search, with exact provenance."""
     values = {"kind": "factual", "group_id": "gap", **kwargs}

@@ -105,6 +105,14 @@ def estimate_anchor_problem(
     return False
 
 
+def marker_question_too_long(text: str) -> bool:
+    """Tell whether replacement text leaves a marker asking more than the cap."""
+    return any(
+        len(marker_question(marker)) > MAX_GAP_QUESTION_CHARS
+        for marker in information_needed_markers(text)
+    )
+
+
 def marker_edit_shape(before: str, after: str) -> MarkerTransition | None:
     """Classify one replacement as a marker fill, a marker narrowing, or neither.
 

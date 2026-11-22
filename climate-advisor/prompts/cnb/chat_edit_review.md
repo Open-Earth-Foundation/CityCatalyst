@@ -68,6 +68,8 @@ unsupported. Text that says a part is undecided, unknown or pending when the
 user's answer for it was only "Not decided yet" or stated no fact is
 unsupported.
 
+For an estimate confirmation, read the resulting text around the replacement. When a same-subject confirmed amount replaces an adjacent estimate and a visible marker still explicitly asks to confirm that amount, mark the incomplete candidate unsupported, name the question to narrow in the explanation, and keep any independently uncovered field (such as the source or authorization). Judge a separate funding authorization or availability question on its own evidence.
+
 Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and
 assertion must match. Preserve independent facts sharing a number. Prior assistant

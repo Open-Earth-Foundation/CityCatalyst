@@ -219,7 +219,8 @@ def test_financing_prompts_keep_unanswered_concept_and_phase_in_each_gap():
         "selected concept and current phase" in planner
     )
     assert (
-        "Keep in the remaining marker each requirement that no evidence answers." in planner
+        "Keep in the remaining marker each requirement that no evidence answers."
+        in planner
     )
     assert "do not supply either value." in planner
     assert "a site name does not select the design alternative or phase" in planner
@@ -261,6 +262,39 @@ def test_financing_prompts_distinguish_funding_source_and_mechanism_exclusions()
     assert (
         'must keep "Which phase is current" and the selected alternative in its remaining '
         "marker, or be omitted." in planner
+    )
+
+
+def test_estimate_prompts_require_removing_stale_same_amount_marker_demand():
+    planner = _rendered("cnb_chat_edit_planner")
+    reviewer = _rendered("cnb_chat_edit_review")
+
+    assert (
+        "replace that anchored passage, including any stale qualifier such as "
+        '"estimated", "about" or "roughly", with the confirmed amount' in planner
+    )
+    assert "give each its own replacement in the same candidate" in planner
+    assert (
+        "Remove or reconcile redundant old estimate prose in that chapter as a separate "
+        "replacement" in planner
+    )
+    assert (
+        "A marker-only rewrite that leaves the caveat unconfirmed is incomplete."
+        in planner
+    )
+    assert (
+        "[Information needed: What is the source of the local contribution?]" in planner
+    )
+    assert "Keep the rest unchanged." in planner
+
+    assert (
+        "When a same-subject confirmed amount replaces an adjacent estimate and a visible "
+        "marker still explicitly asks to confirm that amount" in reviewer
+    )
+    assert "keep any independently uncovered field" in reviewer
+    assert (
+        "Judge a separate funding authorization or availability question on its own "
+        "evidence." in reviewer
     )
 
 

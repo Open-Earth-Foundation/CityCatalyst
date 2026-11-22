@@ -63,11 +63,20 @@ clarification naming the value that is needed.
 A chapter gap with state "caveat" has its `estimate` already in the text. Give each
 caveat one exact passage that the search can identify uniquely; add surrounding
 context when the passage repeats. When the instruction confirms or corrects that value,
-search the complete recorded estimate answer, replace that anchored passage including any
-stale qualifier such as "estimated", "about" or "roughly", and set estimate to false for the
-confirmed amount. Keep the rest unchanged. Also update any other open marker that still
-explicitly asks to confirm that same amount, only to the extent the new evidence answers it;
-keep its scope, source, match and authorization questions while they remain unanswered.
+search the complete recorded estimate answer and replace that anchored passage, including any
+stale qualifier such as "estimated", "about" or "roughly", with the confirmed amount; set
+estimate to false for it. Keep the rest unchanged. Then search for open markers that explicitly
+ask to confirm that same amount, and give each its own replacement in the same candidate: the
+confirmed factual clause, then one remaining marker for only the parts the evidence does not
+answer (source, authorization, timing, match, other funding or mechanism). Remove or reconcile
+redundant old estimate prose in that chapter as a separate replacement, so no hedged text sits
+beside the confirmed amount. A marker-only rewrite that leaves the caveat unconfirmed is incomplete.
+Example: with the caveat "an estimated USD 2,050,000, the City's unconfirmed figure" and the marker
+"[Information needed: Confirm the estimated local contribution and its source.]", the instruction
+"The City confirms USD 2,050,000." gives one replacement of the caveat with "USD 2,050,000"
+(estimate false) and one of the marker with "The City's local contribution is USD 2,050,000.
+[Information needed: What is the source of the local contribution?]" (partial). Keep the
+scope, source, match and authorization questions of any other marker while they remain unanswered.
 Preserve unrelated source-backed estimates and earlier contributions. Where a partial
 record's facts make substantive progress, write them as distinct prose; skip an edit that
 adds nothing. Ordinary chat yields one proposal per message, even across chapters.

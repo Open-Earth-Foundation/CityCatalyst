@@ -1458,6 +1458,104 @@ async def test_saving_answers_for_an_estimate_preserves_its_accepted_resolution(
     assert after.answered_so_far is None
 
 
+async def test_confirming_estimate_and_narrowing_related_marker_commits_both(
+    workspace,
+) -> None:
+    """CC-1239: one acceptance confirms a caveat and narrows a related marker.
+
+    The confirmed amount replaces the hedged estimate, and the open marker that
+    asks to confirm the same amount keeps only its unanswered source question.
+    An unrelated open marker is left as it was.
+    """
+    await _caveat_with_estimate(workspace, copies=1)
+    related_marker = "[Information needed: Confirm the volunteer count and its source.]"
+    source_question = "Confirm the source of the volunteer count."
+    unrelated_marker = f"[Information needed: {BUDGET_QUESTION}]"
+    related_gap, unrelated_gap = uuid4(), uuid4()
+    async with workspace._session_factory() as session, session.begin():
+        revision = await session.scalar(
+            select(ConceptNoteChapterRevision).where(
+                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
+                ConceptNoteChapterRevision.revision_number == 1,
+            )
+        )
+        revision.body_markdown += f"\n\n{related_marker}\n\n{unrelated_marker}"
+        for gap_id, field_key, question in (
+            (
+                related_gap,
+                "volunteer_source",
+                "Confirm the volunteer count and its source.",
+            ),
+            (unrelated_gap, "budget", BUDGET_QUESTION),
+        ):
+            session.add(
+                ConceptNoteGap(
+                    gap_id=gap_id,
+                    run_id=RUN_ID,
+                    chapter_id=CHAPTER_ID,
+                    field_key=field_key,
+                    severity="critical",
+                    question=question,
+                    why_asking="The volunteer count must be sourced.",
+                    status="open",
+                )
+            )
+    [before] = await workspace.list_chapters(run_id=RUN_ID)
+    body = before.body_markdown
+    confirmed = "150 volunteers"
+    narrowed = (
+        f"The City confirmed {confirmed}. [Information needed: {source_question}]"
+    )
+    caveat = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=body.index(ESTIMATE),
+        before=ESTIMATE,
+        after=confirmed,
+        kind="factual",
+        group_id="volunteer_count",
+        user_input_quote=confirmed,
+        estimate=False,
+        gap_bindings=[gap_binding(version=2, mode="confirm_estimate")],
+    )
+    related = EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=1,
+        start=body.index(related_marker),
+        before=related_marker,
+        after=narrowed,
+        kind="factual",
+        group_id="volunteer_source",
+        user_input_quote=confirmed,
+        estimate=False,
+        gap_bindings=[gap_binding(version=1, mode="narrow", gap_id=related_gap)],
+    )
+    after_body = body.replace(ESTIMATE, confirmed).replace(related_marker, narrowed)
+    await _accept(workspace, before=body, after=after_body, changes=[caveat, related])
+    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    gaps = {gap.gap_id: gap for gap in after.gaps}
+    assert (gaps[GAP_ID].state, gaps[GAP_ID].version) == ("resolved", 3)
+    async with workspace._session_factory() as session:
+        answers = (
+            await session.scalars(
+                select(ConceptNoteGapResolution.answer).where(
+                    ConceptNoteGapResolution.gap_id == GAP_ID
+                )
+            )
+        ).all()
+    assert confirmed in answers and ESTIMATE in answers
+    assert (gaps[related_gap].state, gaps[related_gap].version) == ("open", 2)
+    assert gaps[related_gap].question == source_question
+    assert (gaps[unrelated_gap].state, gaps[unrelated_gap].version) == ("open", 1)
+    assert unrelated_marker in after.body_markdown
+    assert ESTIMATE not in after.body_markdown
+    assert confirmed in after.body_markdown
+
+
 def test_an_estimate_is_always_a_factual_change() -> None:
     with pytest.raises(ValueError, match="an estimate is a factual change"):
         EditChange(

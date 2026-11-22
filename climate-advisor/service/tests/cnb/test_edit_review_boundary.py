@@ -891,7 +891,7 @@ async def test_operation_deadline_cancels_pending_work_and_returns_retryable_err
     cancelled = asyncio.Event()
 
     class SlowPlanner(ConceptNoteEditPlanner):
-        async def _plan(self, *args):
+        async def _plan(self, *args, **kwargs):
             try:
                 await asyncio.Event().wait()
             finally:
@@ -957,6 +957,170 @@ async def test_repair_remains_inside_the_original_operation_deadline():
         )
     assert error.value.code == "planning_timeout"
     assert repairing.is_set() and cancelled.is_set()
+
+
+BOUND_AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
+
+
+def planner_settings(timeout_seconds: float):
+    """Settings whose only change is a short operation deadline for the test."""
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.llm.generation.prompt_budget.cnb_edits = (
+        settings.llm.generation.prompt_budget.cnb_edits.model_copy(
+            update={"timeout_seconds": timeout_seconds}
+        )
+    )
+    return settings
+
+
+def bound_reopen(
+    state: str = "open",
+) -> tuple[WorkspaceChapterSnapshot, EditProposalRequest]:
+    """A chapter whose one gap has an accepted narrowing and a bound answer."""
+    current = chapter(f"Finance: {BOUND_AMOUNT_MARKER}")
+    gap = gap_snapshot(
+        "What amount will the city contribute?",
+        state=state,
+        original="Confirm the instrument and amount.",
+        passages=("The city will use stormwater utility funds.",),
+    )
+    current.gaps.append(gap)
+    request = EditProposalRequest(
+        instruction="The city contribution is USD 2,500,000.",
+        scope=EditScope(
+            focused_chapter_id=current.chapter_id,
+            gap_id=gap.gap_id,
+            gap_version=gap.version,
+        ),
+        idempotency_key=uuid4(),
+    )
+    return current, request
+
+
+@pytest.mark.asyncio
+async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_changes():
+    current, request = bound_reopen()
+    planner_calls = 0
+    reviewed_after: list[str] = []
+
+    class StalledThenFreshRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal planner_calls
+            if agent.output_type is EditAgentOutput:
+                planner_calls += 1
+                if planner_calls == 1:
+                    # Stage a stale candidate, then stall past the first planner slice.
+                    await propose_with_tools(
+                        agent,
+                        BOUND_AMOUNT_MARKER,
+                        "USD 2,000,000.",
+                        kind="factual",
+                        user_input_quote="USD 2,500,000",
+                    )
+                    await asyncio.Event().wait()
+                await propose_with_tools(
+                    agent,
+                    BOUND_AMOUNT_MARKER,
+                    "USD 2,500,000.",
+                    kind="factual",
+                    user_input_quote="USD 2,500,000",
+                )
+                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+            # Only the fresh candidate reaches the independent reviewer.
+            reviewed_after.append(json.loads(payload)["changes"][0]["after"])
+            review = ChapterEditReview(
+                decisions=[
+                    {
+                        "change_index": 0,
+                        "support": "user",
+                        "gap_coverage": "complete",
+                        "explanation": "The user states the amount.",
+                    }
+                ]
+            )
+            return SimpleNamespace(final_output=review)
+
+    plan = await ConceptNoteEditPlanner(
+        planner_settings(1.0), runner=StalledThenFreshRunner
+    ).plan(request, [current], {})
+    assert planner_calls == 2
+    assert reviewed_after == ["USD 2,500,000."]
+    assert [change.after for change in plan.changes] == ["USD 2,500,000."]
+
+
+@pytest.mark.asyncio
+async def test_bound_reopen_timeout_exhausts_one_operation_budget():
+    current, request = bound_reopen()
+    planner_calls = 0
+
+    class AlwaysStalledRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal planner_calls
+            planner_calls += 1
+            await asyncio.Event().wait()
+
+    with pytest.raises(EditOperationError) as error:
+        await ConceptNoteEditPlanner(
+            planner_settings(0.5), runner=AlwaysStalledRunner
+        ).plan(request, [current], {})
+    assert error.value.code == "planning_timeout"
+    # One early slice and one retry, never a second retry.
+    assert planner_calls == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("case", ["unbound", "caveat"])
+async def test_unbound_or_caveat_planning_uses_existing_deadline(case):
+    if case == "unbound":
+        current, request = chapter("Finance: nothing to answer."), EditProposalRequest(
+            instruction="Use digits.", idempotency_key=uuid4()
+        )
+    else:
+        current, request = bound_reopen(state="caveat")
+    planner_calls = 0
+
+    class AlwaysStalledRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal planner_calls
+            planner_calls += 1
+            await asyncio.Event().wait()
+
+    with pytest.raises(EditOperationError) as error:
+        await ConceptNoteEditPlanner(
+            planner_settings(0.5), runner=AlwaysStalledRunner
+        ).plan(request, [current], {})
+    assert error.value.code == "planning_timeout"
+    assert planner_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_external_cancellation_never_retries_planner():
+    current, request = bound_reopen()
+    started = asyncio.Event()
+    planner_calls = 0
+
+    class CancelledRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal planner_calls
+            planner_calls += 1
+            started.set()
+            await asyncio.Event().wait()
+
+    task = asyncio.create_task(
+        ConceptNoteEditPlanner(planner_settings(5), runner=CancelledRunner).plan(
+            request, [current], {}
+        )
+    )
+    await started.wait()
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert planner_calls == 1
 
 
 def chapter(body: str) -> WorkspaceChapterSnapshot:

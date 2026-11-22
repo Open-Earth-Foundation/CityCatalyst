@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 from uuid import UUID
 from collections.abc import Callable
 from typing import Any
@@ -48,6 +49,35 @@ from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
+# A bound reopen gets this much of the operation budget for its first planner call.
+FIRST_PLANNER_SLICE_SECONDS = 120.0
+
+
+class _FirstPlannerStalled(Exception):
+    """Private signal: the first planner call hit its early slice, not the deadline."""
+
+
+def is_bound_accepted_narrowing(
+    request: EditProposalRequest, chapters: list[WorkspaceChapterSnapshot]
+) -> bool:
+    """Return True when a bound answer targets an open gap with accepted passages.
+
+    The check uses only the request binding and the stored snapshot; it never reads
+    the simulator's answer completeness.
+    """
+    scope = request.scope
+    if scope.gap_id is None:
+        return False
+    return any(
+        gap.gap_id == scope.gap_id
+        and gap.version == scope.gap_version
+        and gap.state == "open"
+        and bool(gap.accepted_passages)
+        for chapter in chapters
+        if chapter.chapter_id == scope.focused_chapter_id
+        for gap in chapter.gaps
+    )
+
 
 async def unavailable_source_lookup(source_index: int, question: str) -> str:
     """Fail closed when no authorized source access is bound to the operation."""
@@ -77,20 +107,46 @@ class ConceptNoteEditPlanner:
         """Bound the complete tool loop and semantic review by one operation deadline.
 
         ``source_lookup`` gives the planner and every reviewer the same verified,
-        snapshot-pinned access to the selected sources.
+        snapshot-pinned access to the selected sources. A bound reopen whose first
+        planner call stalls gets one fresh attempt within the same deadline.
         """
+        cnb_edits = self._settings.llm.generation.prompt_budget.cnb_edits
+        started = time.monotonic()
+        first_slice = (
+            min(FIRST_PLANNER_SLICE_SECONDS, cnb_edits.timeout_seconds * 0.4)
+            if is_bound_accepted_narrowing(request, chapters)
+            else None
+        )
         try:
-            async with asyncio.timeout(
-                self._settings.llm.generation.prompt_budget.cnb_edits.timeout_seconds
-            ):
-                return await self._plan(
-                    request,
-                    chapters,
-                    run_context,
-                    prior_proposal,
-                    recent_messages,
-                    source_lookup,
-                )
+            async with asyncio.timeout(cnb_edits.timeout_seconds):
+                try:
+                    return await self._plan(
+                        request,
+                        chapters,
+                        run_context,
+                        prior_proposal,
+                        recent_messages,
+                        source_lookup,
+                        first_planner_timeout=first_slice,
+                    )
+                except _FirstPlannerStalled:
+                    # Log counts and timing only; the retry rebuilds all draft state.
+                    logger.info(
+                        "Retrying a stalled initial edit planner",
+                        extra={
+                            "stage": "planning",
+                            "retry_count": 1,
+                            "elapsed_seconds": round(time.monotonic() - started, 1),
+                        },
+                    )
+                    return await self._plan(
+                        request,
+                        chapters,
+                        run_context,
+                        prior_proposal,
+                        recent_messages,
+                        source_lookup,
+                    )
         except TimeoutError:
             raise EditOperationError(
                 "planning_timeout",
@@ -112,8 +168,14 @@ class ConceptNoteEditPlanner:
         prior_proposal: EditProposalResponse | None,
         recent_messages: list[dict[str, str]] | None,
         source_lookup: SourceLookup,
+        *,
+        first_planner_timeout: float | None = None,
     ) -> EditPlanOutput:
-        """Repair rejected candidates within one deadline, reviewing each independently."""
+        """Repair rejected candidates within one deadline, reviewing each independently.
+
+        ``first_planner_timeout`` bounds only the operation's first planner call and
+        raises ``_FirstPlannerStalled`` when that bound expires.
+        """
         prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_planner")
         review_prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_review")
         model = (
@@ -261,14 +323,24 @@ class ConceptNoteEditPlanner:
                     tracing_disabled=True, trace_include_sensitive_data=False
                 )
                 await emit_cnb_progress("planning")
-                result = await run_with_cnb_reasoning(
-                    self._runner,
-                    agent,
-                    json.dumps(payload, ensure_ascii=False),
-                    run_config=run_config,
-                    stage="planning",
-                    max_turns=budget.cnb_edits.max_agent_turns,
+                # Only the first planner call of this operation has an early slice.
+                planner_deadline = asyncio.timeout(
+                    first_planner_timeout if attempt == 0 else None
                 )
+                try:
+                    async with planner_deadline:
+                        result = await run_with_cnb_reasoning(
+                            self._runner,
+                            agent,
+                            json.dumps(payload, ensure_ascii=False),
+                            run_config=run_config,
+                            stage="planning",
+                            max_turns=budget.cnb_edits.max_agent_turns,
+                        )
+                except TimeoutError:
+                    if not planner_deadline.expired():
+                        raise
+                    raise _FirstPlannerStalled from None
                 raw = result.final_output
                 outcome = (
                     EditAgentOutput.model_validate_json(raw)

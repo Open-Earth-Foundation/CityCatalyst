@@ -1920,6 +1920,266 @@ async def test_partial_review_objection_repairs_dropped_financing_scope():
     assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
 
 
+OPTIONAL_FUNDING_CASES = {
+    # Financing names the City's contribution; capability keeps its conditional debt ask.
+    "contribution_only_debt": {
+        "target_marker": (
+            "[Information needed: What is the City's contribution source, amount "
+            "and proposed budget status?]"
+        ),
+        "target_question": (
+            "What is the City's contribution source, amount and proposed budget status?"
+        ),
+        "target_instruction": (
+            "The city will use stormwater utility funds for its contribution of "
+            "USD 2,500,000 in its proposed 2027 budget."
+        ),
+        "target_after": (
+            "The city will use stormwater utility funds for its contribution of "
+            "USD 2,500,000 in its proposed 2027 budget."
+        ),
+        "sibling_marker": (
+            "[Information needed: Confirm the project and phase capability evidence, "
+            "available local match, applicable project-phase debt or bonding "
+            "authority, and authorized official.]"
+        ),
+        "sibling_question": (
+            "Confirm the project and phase capability evidence, available local match, "
+            "applicable project-phase debt or bonding authority, and authorized official."
+        ),
+        "sibling_quote": "No borrowing is proposed for the City's contribution.",
+        "sibling_dropped": (
+            "No borrowing is proposed for the City's contribution. [Information needed: "
+            "Confirm the project and phase capability evidence, available local match, "
+            "and authorized official.]"
+        ),
+        "sibling_repaired": (
+            "No borrowing is proposed for the City's contribution. [Information needed: "
+            "Confirm the project and phase capability evidence, available local match, "
+            "whether applicable project-phase debt or bonding authority applies, and "
+            "authorized official.]"
+        ),
+        "objection": (
+            "Retain applicable project-phase debt or bonding authority in the remaining "
+            "marker."
+        ),
+    },
+    # Financing names the City's contribution; the inventory keeps every match ask.
+    "inventory_match_loss": {
+        "target_marker": (
+            "[Information needed: What is the City's contribution source, amount "
+            "and proposed budget status?]"
+        ),
+        "target_question": (
+            "What is the City's contribution source, amount and proposed budget status?"
+        ),
+        "target_instruction": (
+            "The city will use stormwater utility funds for its contribution of "
+            "USD 2,500,000 in its proposed 2027 budget."
+        ),
+        "target_after": (
+            "The city will use stormwater utility funds for its contribution of "
+            "USD 2,500,000 in its proposed 2027 budget."
+        ),
+        "sibling_marker": (
+            "[Information needed: What other committed, pending and anticipated "
+            "funding is available across state, federal, local and non-governmental "
+            "sources, including each source's amount, status and local match, and what "
+            "local match remains for the City or application?]"
+        ),
+        "sibling_question": (
+            "What other committed, pending and anticipated funding is available across "
+            "state, federal, local and non-governmental sources, including each source's "
+            "amount, status and local match, and what local match remains for the City "
+            "or application?"
+        ),
+        "sibling_quote": "The state grant of USD 1,000,000 is committed.",
+        "sibling_dropped": (
+            "The state grant of USD 1,000,000 is committed. [Information needed: What "
+            "other committed, pending and anticipated funding is available across state, "
+            "federal, local and non-governmental sources, including each source's amount "
+            "and status?]"
+        ),
+        "sibling_repaired": (
+            "The state grant of USD 1,000,000 is committed. [Information needed: What "
+            "other committed, pending and anticipated funding is available across state, "
+            "federal, local and non-governmental sources, including each source's amount, "
+            "status and local match, and the local match still available to the City or "
+            "application?]"
+        ),
+        "objection": (
+            "Retain the City's or application's remaining match in the remaining marker."
+        ),
+    },
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "case,repair",
+    [
+        ("contribution_only_debt", "corrected"),
+        ("contribution_only_debt", "removed"),
+        ("inventory_match_loss", "corrected"),
+        ("inventory_match_loss", "removed"),
+    ],
+)
+async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap_change(
+    case, repair
+):
+    spec = OPTIONAL_FUNDING_CASES[case]
+    target_chapter = chapter(f"Financing: {spec['target_marker']}")
+    target_gap = gap_snapshot(spec["target_question"])
+    target_chapter.gaps.append(target_gap)
+    sibling_chapter = replace(
+        chapter(f"Capability: {spec['sibling_marker']}"), position=1
+    )
+    sibling_chapter.gaps.append(gap_snapshot(spec["sibling_question"]))
+    instruction = f"{spec['target_instruction']} {spec['sibling_quote']}"
+    request = EditProposalRequest(
+        instruction=instruction,
+        scope=EditScope(
+            focused_chapter_id=target_chapter.chapter_id,
+            gap_id=target_gap.gap_id,
+            gap_version=target_gap.version,
+        ),
+        idempotency_key=uuid4(),
+    )
+    editor_inputs = []
+    reviewer_inputs = []
+
+    async def propose_pair(agent, replacements):
+        tools = {tool.name: tool for tool in agent.tools}
+        found = []
+        for before, _after, _quote in replacements:
+            context = ToolContext(
+                context=None,
+                tool_name="search_draft",
+                tool_call_id="search",
+                tool_arguments="{}",
+            )
+            found.append(
+                await tools["search_draft"].on_invoke_tool(
+                    context, json.dumps({"text": before, "chapter_positions": None})
+                )
+            )
+        context = ToolContext(
+            context=None,
+            tool_name="propose_edits",
+            tool_call_id="propose",
+            tool_arguments="{}",
+        )
+        proposed = await tools["propose_edits"].on_invoke_tool(
+            context,
+            json.dumps(
+                {
+                    "replacements": [
+                        {
+                            "search_id": result["search_id"],
+                            "replacement": after,
+                            "replace_all": False,
+                            "match_ids": [],
+                            "kind": "factual",
+                            "group_id": group,
+                            "source_refs": [],
+                            "user_input_quote": quote,
+                        }
+                        for result, (_before, after, quote), group in zip(
+                            found, replacements, ("target", "sibling")
+                        )
+                    ]
+                }
+            ),
+        )
+        assert proposed["ok"], proposed
+
+    class OptionalRepairRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            data = json.loads(payload)
+            if agent.output_type is EditAgentOutput:
+                editor_inputs.append(data)
+                target = (
+                    spec["target_marker"],
+                    spec["target_after"],
+                    spec["target_instruction"],
+                )
+                if len(editor_inputs) == 1:
+                    sibling = (
+                        spec["sibling_marker"],
+                        spec["sibling_dropped"],
+                        spec["sibling_quote"],
+                    )
+                    await propose_pair(agent, [target, sibling])
+                else:
+                    [feedback] = [
+                        item
+                        for item in data["review_feedback"]
+                        if item["chapter_position"] == 1
+                    ]
+                    assert feedback["decisions"][0]["support"] == "unsupported"
+                    assert feedback["decisions"][0]["explanation"] == spec["objection"]
+                    if repair == "corrected":
+                        sibling = (
+                            spec["sibling_marker"],
+                            spec["sibling_repaired"],
+                            spec["sibling_quote"],
+                        )
+                        await propose_pair(agent, [target, sibling])
+                    else:
+                        await propose_pair(agent, [target])
+                output = EditAgentOutput(intent="edit")
+            else:
+                assert [tool.name for tool in agent.tools] == ["query_source"]
+                reviewer_inputs.append(data)
+                after = data["changes"][0]["after"]
+                if data["chapter"]["position"] == 1:
+                    [sibling_target] = data["changes"][0]["gap_targets"]
+                    assert sibling_target["question"] == spec["sibling_question"]
+                if after == spec["sibling_dropped"]:
+                    decision = {
+                        "change_index": 0,
+                        "support": "unsupported",
+                        "gap_coverage": "partial",
+                        "explanation": spec["objection"],
+                    }
+                else:
+                    decision = {
+                        "change_index": 0,
+                        "support": "user",
+                        "gap_coverage": "partial"
+                        if "[Information needed" in after
+                        else "complete",
+                        "explanation": "The user's facts cover the grounded part.",
+                    }
+                output = ChapterEditReview(decisions=[decision])
+            return SimpleNamespace(final_output=output)
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    plan = await ConceptNoteEditPlanner(settings, runner=OptionalRepairRunner).plan(
+        request, [target_chapter, sibling_chapter], {}
+    )
+    # The rejected optional sibling costs one bounded repair; the target is unchanged.
+    assert len(editor_inputs) == 2
+    changes = validate_edit_plan(
+        request, [target_chapter, sibling_chapter], plan
+    )
+    [bound] = [c for c in changes if c.chapter_id == target_chapter.chapter_id]
+    assert bound.after == spec["target_after"]
+    assert [
+        (b.gap_id, b.gap_version, b.mode) for b in bound.gap_bindings
+    ] == [(target_gap.gap_id, target_gap.version, "fill")]
+    sibling_changes = [c for c in changes if c.chapter_id == sibling_chapter.chapter_id]
+    if repair == "removed":
+        assert sibling_changes == []
+    else:
+        [sibling] = sibling_changes
+        assert sibling.after == spec["sibling_repaired"]
+        assert [b.mode for b in sibling.gap_bindings] == ["narrow"]
+    assert target_chapter.body_markdown == f"Financing: {spec['target_marker']}"
+
+
 def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():
     current = chapter(
         "Lead: [Information needed: Confirm the lead partner.] "

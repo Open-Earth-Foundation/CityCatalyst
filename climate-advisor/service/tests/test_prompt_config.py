@@ -345,3 +345,32 @@ def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
     assert "supported by at least one excerpt retained" in synthesis_prompt
     assert "Do not combine values or qualifications" in synthesis_prompt
     assert "Do not silently choose one version" in synthesis_prompt
+
+
+def test_cnb_gap_edit_prompts_preserve_alternatives_and_funding_scope() -> None:
+    """Pin the planner and reviewer coverage distinctions for optional gap edits."""
+    prompts = _load_llm_config().prompts
+    planner = prompts.get_prompt("cnb_chat_edit_planner")
+    reviewer = prompts.get_prompt("cnb_chat_edit_review")
+
+    # Selection alternatives stay disjunctive and never gain a separate scope.
+    assert "another defined project scope" in planner
+    assert "which design alternative at A" in planner
+    assert "never added to the selection" in planner
+    assert "selection copy" in reviewer
+    assert "name the added requirement, not a lost concept" in reviewer
+
+    # Conditional project-phase authority survives a contribution-only fact.
+    assert "applicable project-phase debt or bonding authority" in planner
+    assert "one-contribution no-borrowing fact" in planner
+    assert "retain applicable project-phase debt or bonding authority" in reviewer
+
+    # Both the City's and the application's match asks survive inventory edits.
+    assert "City's or application's remaining match" in planner
+    assert "generic proposed budget or availability date supplies no match evidence" in (
+        planner
+    )
+    assert "City's or application's remaining match" in reviewer
+    assert "earns zero new coverage keeps its literal question" in planner
+    assert "direct chat and bound form" in planner
+    assert "bound form answers as to direct chat" in reviewer

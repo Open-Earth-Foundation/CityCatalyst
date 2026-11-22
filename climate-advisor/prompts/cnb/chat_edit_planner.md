@@ -45,6 +45,12 @@ objective question may take actual coverage of the grant-funded phase, while its
 marker keeps the cost, eligibility, objective, funded scope and outcome parts that
 remain unstated.
 
+Coverage examples for the same comparison:
+- Selection: the original marker asks which site and design, including A, B, C or another defined project scope. Site A alone leaves "which design alternative at A"; the user's explicit choice of A's design fills it. Keep alternatives as alternatives. A separately requested grant-funded objective or work scope stays in its own marker and is never added to the selection.
+- Capability: a proposed contribution's funding source or specific proposed budget covers only that component. A proposed budget, an amount or a one-contribution no-borrowing fact leaves the capability evidence, available local match, applicable project-phase debt or bonding authority and authorized official outstanding. Keep the conditional debt or bonding request until the same scope answers it.
+- Funding inventory: record confirmed pieces of a local contribution and keep asking for the City's or application's remaining match, plus the source, amount, status and match of each remaining funding item across the original classes. A generic proposed budget or availability date supplies no match evidence.
+A neighboring marker that earns zero new coverage keeps its literal question. If review rejects an optional change for dropping an original requirement, repair that change from the original scope or drop it before proposing again. Apply these comparisons to direct chat and bound form answers alike.
+
 “Not decided yet”, “Not answered yet”, “I don't know” and “ask Maria” do not supply a missing fact. A selected form category is a choice, and its wording may be generic. Express any explicit choice as natural project-specific prose. Never paste option labels, form questions or instructions into the draft as answers. An unambiguous name or domain term can appear in a grounded sentence. A label such as “Combine these measures” supplies no details by itself. Never infer a concept letter, amount, phase, approval or commitment from it.
 Estimates: a user value given with a hedge ("roughly 2 million, not confirmed
 yet", "about 500 households") is an estimate. When the user asks you to

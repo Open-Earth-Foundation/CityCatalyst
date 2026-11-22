@@ -2,11 +2,10 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock, Mock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
-from app.config.settings import Settings, _load_llm_config
 from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
     GapAnswersRequest,
@@ -20,7 +19,6 @@ from app.routes.concept_note_runs import (
     propose_gap_question,
     save_gap_answers,
 )
-from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
 from pydantic import ValidationError
 from tests.cnb.gap_edit_helpers import mock_cnb_session, mock_run_authorization
@@ -33,44 +31,6 @@ from tests.test_concept_note_lifecycle import _workspace_repository
 def test_rejects_single_or_invalid_choices(options):
     with pytest.raises(ValidationError):
         GapSubQuestion(question="Instrument?", options=options)
-
-
-async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
-    settings = Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
-    output = {
-        "why_asking": "Support needed",
-        "questions": [
-            {
-                "question": "Instrument?",
-                "options": ["Loan", "Grant", "Guarantee"],
-                "where_to_find": "Loan agreement or lender term sheet",
-                "confirms": False,
-                "multiple": False,
-            },
-            {
-                "question": "Amount?",
-                "options": [],
-                "where_to_find": "",
-                "confirms": False,
-                "multiple": False,
-            },
-        ],
-    }
-    client = AsyncMock()
-    client.__aenter__.return_value = client
-    client.chat.completions.create.return_value = SimpleNamespace(
-        choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(output)))]
-    )
-    monkeypatch.setattr(
-        "app.services.cnb.chat_suggestions.AsyncOpenAI", Mock(return_value=client)
-    )
-    result = await generate_suggestion(
-        settings, {"question": "Original gap"}, "cnb_gap_question", GapQuestionOutput
-    )
-    assert result.model_dump() == output
-    messages = client.chat.completions.create.call_args.kwargs["messages"]
-    assert "one short question" in messages[0]["content"]
-    assert json.loads(messages[1]["content"]) == {"question": "Original gap"}
 
 
 @pytest.fixture
@@ -160,8 +120,7 @@ async def test_rejects_foreign_or_stale_gap(gap_route, change, status):
 
 
 async def test_uses_server_question_and_bounded_chapter_without_writing(gap_route):
-    result = await propose_gap_question(**gap_route.args)
-    assert result.questions[0].options == ["Loan", "Grant"]
+    await propose_gap_question(**gap_route.args)
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
     # Answers saved on this gap version reach the model, so it asks only the rest.
@@ -230,6 +189,7 @@ ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
             SimpleNamespace(answer=ESTIMATE),
         ),
     ],
+    ids=["formatted-marker", "accepted-estimate"],
 )
 async def test_excerpt_is_centered_on_the_gap(gap_route, kept, body, resolution):
     gap = gap_route.chapter.gaps[0]

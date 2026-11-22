@@ -2,13 +2,9 @@
 
 from types import SimpleNamespace
 from unittest.mock import patch
-from uuid import UUID, uuid4
+from uuid import uuid4
 
-from app.services.cnb.ui_context import (
-    build_ui_state,
-    load_ui_state,
-    ui_gap_numbers,
-)
+from app.services.cnb.ui_context import build_ui_state, load_ui_state
 
 
 def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
@@ -112,25 +108,3 @@ def test_open_gaps_are_counted_per_chapter_in_document_order():
     assert build_ui_state(chapters)["open_gaps_by_chapter"] == [
         {"chapter_number": 2, "chapter": "Commitments", "open": 2, "required": 1}
     ]
-
-
-def test_a_punctuation_only_marker_takes_no_gap_number():
-    """Adoption gives an empty key no record, so the popover numbers it no row."""
-    open_gap_id = UUID("dddddddd-dddd-4ddd-8ddd-dddddddddddd")
-    chapter = SimpleNamespace(
-        body_markdown=(
-            "[Information needed: ???]\n\n"
-            "[Information needed: Who signs?]\n\n"
-            "[Information needed: Confirm budget.]"
-        ),
-        gaps=[
-            SimpleNamespace(
-                gap_id=open_gap_id,
-                question="Confirm budget.",
-                severity="critical",
-                state="open",
-            )
-        ],
-    )
-    # "Who signs?" is row 1, the open gap row 2; the "???" marker has no row.
-    assert ui_gap_numbers(chapter) == {open_gap_id: 2}

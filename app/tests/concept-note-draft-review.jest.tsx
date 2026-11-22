@@ -28,41 +28,6 @@ beforeAll(async () => {
     await import("@/components/ConceptNoteWorkspace/draft-document-panel"));
 });
 
-/** The panel's focus state with no finding selected. */
-const panelFocus = (selectedChapterId: string) => ({
-  chapterElements: { current: {} },
-  previewElement: { current: null },
-  focusedFindingElement: { current: null },
-  isChapterPanelOpen: true,
-  selectedChapterId,
-  selectChapter: jest.fn(),
-  toggleChapterPanel: jest.fn(),
-  focusedFinding: null,
-});
-
-/** Renders one chapter with no finding in focus. */
-const renderChapter = (chapter: ConceptNoteDraftChapter) =>
-  view.render(
-    <DraftDocumentPanel
-      chapters={[chapter]}
-      lng="en"
-      noteName="Tram project"
-      focusFindingKey={null}
-      isConfirmingChapter={false}
-      onConfirmChapter={jest.fn()}
-      focus={panelFocus(chapter.chapter_id)}
-    />,
-  );
-
-const estimateResolution = (answer: string) => ({
-  resolution_id: "resolution-1",
-  action: "answer" as const,
-  answer,
-  actor_user_id: "owner",
-  source_refs: [],
-  created_at: "2026-11-20T10:00:00Z",
-});
-
 it("keeps validation findings, inline decisions, markers and chapter confirmation together", async () => {
   const chapter: ConceptNoteDraftChapter = {
     chapter_id: "chapter-1",
@@ -197,77 +162,63 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   expect(onFocusedChapterChange).toHaveBeenCalledWith(chapter.chapter_id);
 });
 
-it("counts only open gaps in the section list, not estimates to confirm", async () => {
-  await renderChapter(
-    draftChapter({
-      chapter_id: "chapter-1",
-      title: "Budget",
-      body_markdown:
-        "The request is an estimated $2 million. [Information needed: Confirm funding]",
-      revision_number: 2,
-      gaps: [
-        gapRecord("gap-open", { question: "Confirm funding" }),
-        gapRecord("gap-estimate", {
-          question: "Confirm the request amount",
-          state: "caveat",
-          version: 2,
-          resolution: estimateResolution(
-            "The request is an estimated $2 million.",
-          ),
-        }),
-      ],
-      caveat_count: 1,
-    }),
-  );
+it("counts open gaps and allows chapter confirmation once the last marker is removed", async () => {
+  const estimate = gapRecord("gap-estimate", {
+    question: "Confirm the request amount",
+    state: "caveat",
+    version: 2,
+    resolution: {
+      resolution_id: "estimate",
+      action: "answer",
+      answer: "About $2 million.",
+      actor_user_id: "owner",
+      source_refs: [],
+      created_at: "2026-11-20T10:00:00Z",
+    },
+  });
+  const complete = draftChapter({
+    chapter_id: "chapter-1",
+    title: "Budget",
+    body_markdown: "The request is an estimated $2 million.",
+    gaps: [estimate],
+    caveat_count: 1,
+  });
+  const pending = {
+    ...complete,
+    // A legacy marker can lack a gap record and still block confirmation.
+    body_markdown:
+      complete.body_markdown +
+      " [Information needed: **Who pays\nfor the pilot?**]",
+  };
+  const onConfirmChapter = jest.fn();
+  const render = (chapter: ConceptNoteDraftChapter) =>
+    view.render(
+      <DraftDocumentPanel
+        chapters={[chapter]}
+        lng="en"
+        noteName="Tram project"
+        focusFindingKey={null}
+        isConfirmingChapter={false}
+        onConfirmChapter={onConfirmChapter}
+        focus={{
+          chapterElements: { current: {} },
+          previewElement: { current: null },
+          focusedFindingElement: { current: null },
+          isChapterPanelOpen: true,
+          selectedChapterId: chapter.chapter_id,
+          selectChapter: jest.fn(),
+          toggleChapterPanel: jest.fn(),
+          focusedFinding: null,
+        }}
+      />,
+    );
+  await render(pending);
   expect(view.byTestId("concept-note-section-gap-count")?.textContent).toBe(
     "1",
   );
-});
+  expect(view.button("Review & confirm")).toBeUndefined();
 
-// A marker split across lines and bold text.
-const MULTILINE_MARKER =
-  "Budget is pending. [Information needed: **Who pays\nfor the pilot**]";
-
-it.each<[string, boolean, Partial<ConceptNoteDraftChapter>]>([
-  ["an unrecorded raw marker", false, { body_markdown: MULTILINE_MARKER }],
-  [
-    "a marker whose record is already closed",
-    false,
-    {
-      body_markdown: `${MULTILINE_MARKER}\n\nCosts pending. [Information needed: Confirm funding]`,
-      gaps: [
-        gapRecord("gap-closed", {
-          question: "Who pays for the pilot?",
-          state: "resolved",
-          version: 2,
-          resolution: estimateResolution("The city pays."),
-        }),
-      ],
-    },
-  ],
-  [
-    "an estimate alone",
-    true,
-    {
-      body_markdown: "The request is an estimated $2 million.",
-      gaps: [
-        gapRecord("gap-estimate", {
-          question: "Confirm the request amount",
-          state: "caveat",
-          version: 2,
-          resolution: estimateResolution("About $2 million."),
-        }),
-      ],
-      caveat_count: 1,
-    },
-  ],
-  ["no marker", true, { body_markdown: "Budget is 10." }],
-])("offers Review & confirm with %s: %s", async (_, shown, overrides) => {
-  await renderChapter(
-    draftChapter({ chapter_id: "chapter-1", title: "Budget", ...overrides }),
-  );
-  const confirm = [...view.container.querySelectorAll("button")].find(
-    (button) => button.textContent?.includes("Review & confirm"),
-  );
-  expect(confirm !== undefined).toBe(shown);
+  await render(complete);
+  await act(async () => view.button("Review & confirm")!.click());
+  expect(onConfirmChapter).toHaveBeenCalledWith(complete);
 });

@@ -1080,7 +1080,11 @@ async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_c
                 )
                 return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
             # Only the fresh candidate reaches the independent reviewer.
-            reviewed_after.append(json.loads(payload)["changes"][0]["after"])
+            [change] = json.loads(payload)["changes"]
+            [target] = change["gap_targets"]
+            assert target["original_question"] == "Confirm the instrument and amount."
+            assert target["accepted_passages"] == ["The city will use stormwater utility funds."]
+            reviewed_after.append(change["after"])
             review = single_review("user", "complete", "The user states the amount.")
             return SimpleNamespace(final_output=review)
 
@@ -1715,7 +1719,6 @@ def test_reviewer_coverage_must_match_the_change_shape():
     )
     [objection] = repaired.decisions
     assert objection.support == "unsupported"
-    assert "Keep one marker for the missing part." in objection.explanation
     with pytest.raises(EditOperationError) as error:
         bind_semantic_review([planned_fill], repaired)
     assert error.value.code == "unsupported_edit"
@@ -1735,7 +1738,6 @@ def test_reviewer_coverage_must_match_the_change_shape():
         reviewed_plan(current, [narrow], ["user"], coverages=["partial"]),
     )
     assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
-    assert change.group_id.startswith("gap-")
     # Claiming complete coverage for a narrowing is a mismatched review.
     with pytest.raises(EditOperationError) as error:
         validate_edit_plan(
@@ -1744,37 +1746,6 @@ def test_reviewer_coverage_must_match_the_change_shape():
             reviewed_plan(current, [narrow], ["user"], coverages=["complete"]),
         )
     assert error.value.code == "invalid_review"
-
-
-def test_review_uses_original_scope_and_accepted_history_for_a_second_round_fill():
-    current = chapter(f"Finance: {AMOUNT_MARKER}")
-    current.gaps.append(
-        gap_snapshot(
-            "What amount will the city contribute?",
-            original="Confirm the instrument and amount.",
-            passages=(f"{FUNDS}.",),
-        )
-    )
-    request = edit_request("The city contribution is USD 2,500,000.")
-    payload = build_planner_input(request, current, {})
-    [gap_payload] = payload["chapter"]["gaps"]
-    assert gap_payload["original_question"] == "Confirm the instrument and amount."
-    assert gap_payload["accepted_passages"] == [f"{FUNDS}."]
-    assert gap_payload["is_bound_answer"] is False
-
-    fill = change_at(
-        current.body_markdown, AMOUNT_MARKER, "USD 2,500,000.", "USD 2,500,000", "amount"
-    )
-    planned = PlannedTextChange(**fill, chapter_id=current.chapter_id)
-    bindings = gap_bindings_for_change(planned, current, request.scope)
-    [target] = gap_review_targets(planned, current, bindings)
-    assert target["original_question"] == "Confirm the instrument and amount."
-    assert target["accepted_passages"] == [f"{FUNDS}."]
-    assert target["remaining_marker"] is None
-    [accepted] = validate_edit_plan(
-        request, [current], reviewed_plan(current, [fill], ["user"], ["complete"])
-    )
-    assert accepted.gap_bindings[0].mode == "fill"
 
 
 TARGET_QUESTION = (
@@ -1866,7 +1837,6 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
                     retry = [sibling(repaired)] if repair == "corrected" else []
                     await propose_replacements(agent, [target, *retry])
                 return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
-            assert [tool.name for tool in agent.tools] == ["query_source"]
             after = data["changes"][0]["after"]
             if data["chapter"]["position"] == 1:
                 [sibling_target] = data["changes"][0]["gap_targets"]

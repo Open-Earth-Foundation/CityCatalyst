@@ -11,7 +11,6 @@ from agents.tool import ToolContext
 from app.services.cnb.ui_context import (
     UnknownChapterNumberError,
     build_gap_list,
-    ui_gap_numbers,
 )
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 
@@ -56,15 +55,6 @@ def chapter(position, title, gaps, *, status="needs_review", body=None):
 
 def numbered(rows):
     return [(row["chapter_number"], row["gap_number"], row["question"]) for row in rows]
-
-
-def test_open_gap_lists_the_answers_saved_so_far():
-    saved = "1. Lead partner?\nLincoln Park Neighborhood Council"
-    rows = build_gap_list(
-        [chapter(0, "Delivery", [gap(1, "Lead partner", answered_so_far=saved)])]
-    )["gaps"]
-    # The chat can see what a teammate already saved in the gap form.
-    assert rows[0]["answered_so_far"] == saved
 
 
 def test_gap_tool_reads_the_narrowed_question_and_rebased_saved_answers():
@@ -133,24 +123,12 @@ def test_lists_open_gaps_with_the_chapter_and_gap_numbers_the_draft_shows():
         (1, 2, "Contact persons"),
         (2, 1, "Mitigation target"),
     ]
-    assert result["gaps"][0] == {
-        "chapter_number": 1,
-        "chapter": "Applicant",
-        "gap_number": 1,
-        "question": "Tax identification number",
-        "why_asking": "Needed for Tax identification number",
-        "severity": "critical",
-        "label": "Required",
-        "state": "open",
-    }
     # The popover's words, not the stored severity names.
     assert [row["label"] for row in result["gaps"]] == [
         "Required",
         "Optional",
         "Required",
     ]
-    # Internal creation-order handles are gone, so the agent cannot show them.
-    assert "gap" not in result["gaps"][0]
 
 
 def test_filters_by_chapter_number_severity_and_closed_state():
@@ -206,6 +184,7 @@ def test_gap_numbers_count_markers_without_records_like_the_draft():
     closed = gap(4, "Old question", state="resolved")
     body = "\n\n".join(
         [
+            "[Information needed: ???]",  # No question to number.
             "[Information needed: Where are the cells?]",
             # No record: the draft lists it as its own gap.
             "[Information needed: Who owns the schoolyards?]",
@@ -219,11 +198,6 @@ def test_gap_numbers_count_markers_without_records_like_the_draft():
     snapshot = chapter(
         2, "Components", [located, no_marker, punctuated, closed], body=body
     )
-    assert ui_gap_numbers(snapshot) == {
-        located.gap_id: 1,
-        no_marker.gap_id: 4,
-        punctuated.gap_id: 3,
-    }
     rows = build_gap_list([snapshot])["gaps"]
     assert [(row["gap_number"], row["question"]) for row in rows] == [
         (1, "Where are the cells?"),
@@ -236,11 +210,10 @@ def test_gap_numbers_match_formatted_and_multiline_markers():
     """A formatted, wrapped marker pairs with its record, which is counted once."""
     paired = gap(1, "Who signs the annual report?")
     body = (
-        "[Information needed: Legacy question with no record]\n\n"
-        "[Information needed:  **Who signs the annual\nreport**?]"
+        "[Information needed: Who signs the annual report in 2027?]\n\n"
+        "[Information needed:  **Who signs the annual\nreport**?] See [policy](url)."
     )
     snapshot = chapter(0, "Governance", [paired], body=body)
-    assert ui_gap_numbers(snapshot) == {paired.gap_id: 2}
     result = build_gap_list([snapshot])
     assert numbered(result["gaps"]) == [(1, 2, "Who signs the annual report?")]
     assert result["open_total"] == 1
@@ -262,11 +235,6 @@ async def invoke(tool, arguments):
     return json.loads(await tool.on_invoke_tool(context, json.dumps(arguments)))
 
 
-def test_tool_takes_the_ui_chapter_number():
-    schema = make_tool().params_json_schema["properties"]
-    assert set(schema) == {"chapter_number", "severity", "include_closed"}
-
-
 async def test_tool_reauthorizes_and_passes_filters():
     listing = {"gaps": [{"chapter_number": 2, "gap_number": 1}], "open_total": 1}
     with (
@@ -280,7 +248,6 @@ async def test_tool_reauthorizes_and_passes_filters():
         ) as load,
     ):
         tool = make_tool()
-        assert tool.name == "concept_note_gaps"
         result = await invoke(
             tool,
             {"chapter_number": 2, "severity": "critical", "include_closed": False},

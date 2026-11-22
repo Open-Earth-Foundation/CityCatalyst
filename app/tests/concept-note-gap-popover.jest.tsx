@@ -1,13 +1,8 @@
 /** @jest-environment jsdom */
 
-// Gap popovers in the draft preview: screen-reader labels keep the literal
-// text, rows of the "View all" list tell gaps apart, and the marker opens
-// where it fits.
-
 import { act } from "react";
 import { expect, it, jest } from "@jest/globals";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
-import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
 import {
   conceptNotesI18n,
   draftChapter,
@@ -23,54 +18,40 @@ import {
 const i18n = await conceptNotesI18n({ namespaced: true });
 mockTranslation(i18n.getFixedT("en", "concept-notes"), i18n);
 
-const { ChapterGapsPanel, chapterGapRows, markerPlacement } =
-  await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
 const { DraftDocumentPanel } =
   await import("@/components/ConceptNoteWorkspace/draft-document-panel");
 
 const TRICKY_QUESTION =
   "Confirm the contractor's \"operation & maintenance\" (O&M) obligations and/or the city's fallback.";
 const TRICKY_TITLE = "Risks & mitigation / O&M";
-const ENTITY = /&(#39|amp|quot|#x2F|lt|gt);/;
 
 setupDomShims();
 const view = setupTestRoot(appTheme);
-const render = view.render;
 
-const gap = (
-  id: string,
-  question: string,
-  severity: ConceptNoteGap["severity"] = "critical",
-) => gapRecord(id, { question, severity });
-
-const chapterWith = (
-  title: string,
-  body: string,
-  gaps: ConceptNoteGap[],
-): ConceptNoteDraftChapter =>
-  draftChapter({
-    title,
-    body_markdown: body,
-    gaps,
-    open_gap_count: gaps.length,
-  });
-
-const byTestId = <T extends HTMLElement = HTMLElement>(id: string) =>
-  document.querySelector<T>(`[data-testid="${id}"]`);
-
-it("labels markers, View all and section links with the literal text, not HTML entities", async () => {
-  const chapter = chapterWith(
-    TRICKY_TITLE,
-    `Body text. [Information needed: ${TRICKY_QUESTION}]`,
-    [gap("a", TRICKY_QUESTION)],
+it("opens the selected question when two gaps share a heading", async () => {
+  const formatted = TRICKY_QUESTION.replace(
+    "city's fallback.",
+    "city’s  fallback",
   );
-  await render(
+  const otherQuestion = "Who approves the contract?";
+  const chapter = draftChapter({
+    title: TRICKY_TITLE,
+    body_markdown: `### Procurement\n\n[Information needed: ${otherQuestion}] [Information needed: **${formatted}**]`,
+    gaps: [
+      gapRecord("approval", { question: otherQuestion }),
+      gapRecord("obligations", { question: TRICKY_QUESTION }),
+    ],
+    open_gap_count: 2,
+  });
+  const answer = jest.fn();
+  await view.render(
     <DraftDocumentPanel
       chapters={[chapter]}
       lng="en"
       noteName={`Lima's "Phase 2" & co`}
       focusFindingKey={null}
       isConfirmingChapter={false}
+      onAnswerGap={answer}
       onConfirmChapter={jest.fn()}
       focus={{
         chapterElements: { current: {} },
@@ -85,85 +66,41 @@ it("labels markers, View all and section links with the literal text, not HTML e
     />,
   );
 
-  expect(byTestId("concept-note-gap-marker")?.getAttribute("aria-label")).toBe(
-    `Gap 1 · Required: ${TRICKY_QUESTION}`,
+  const marker = [
+    ...view.container.querySelectorAll(
+      '[data-testid="concept-note-gap-marker"]',
+    ),
+  ].find((element) =>
+    element.getAttribute("aria-label")?.includes(TRICKY_QUESTION),
   );
-  expect(
-    byTestId("concept-note-chapter-gaps-toggle")?.getAttribute("aria-label"),
-  ).toBe(`View all gaps in ${TRICKY_TITLE}`);
-  expect(
-    document
-      .querySelector(`[aria-label="Jump to ${TRICKY_TITLE}"]`)
-      ?.getAttribute("aria-label"),
-  ).toBe(`Jump to ${TRICKY_TITLE}`);
-  // The document title is visible text built by t(), so it must stay literal too.
-  expect(byTestId("concept-note-draft-preview")?.textContent).toContain(
-    `Lima's "Phase 2" & co — Concept note`,
-  );
-  const labels = [...document.querySelectorAll("[aria-label]")].map((element) =>
-    element.getAttribute("aria-label")!,
-  );
-  expect(labels.filter((label) => ENTITY.test(label))).toEqual([]);
-  expect(byTestId("concept-note-draft-preview")?.textContent).not.toMatch(
-    ENTITY,
-  );
-});
-
-it("gives two gaps under one heading distinct View all rows", async () => {
-  const first = "Confirm the amount of GCF funding requested.";
-  const second = "Confirm the proposed GCF financial instrument.";
-  const chapter = chapterWith(
-    "Indicative financing",
-    "### Co-financing\n\nThe city co-finances. [Information needed: Confirm the city share.]\n\n" +
-      "### GCF funding request and financial instrument\n\nThe plan seeks grants. " +
-      `[Information needed: ${first}] [Information needed: ${second}]`,
-    [
-      gap("a", "Confirm the city share."),
-      gap("b", first),
-      gap("c", second, "noncritical"),
-    ],
-  );
-  await render(
-    <ChapterGapsPanel
-      chapter={chapter}
-      lng="en"
-      rows={chapterGapRows(chapter)}
-    />,
-  );
+  expect(marker?.textContent).toBe("2");
   await act(async () =>
-    byTestId<HTMLButtonElement>("concept-note-chapter-gaps-toggle")!.click(),
+    view
+      .byTestId<HTMLButtonElement>("concept-note-chapter-gaps-toggle")!
+      .click(),
   );
-
   const rows = [
-    ...document.querySelectorAll('[data-testid="concept-note-gap-list-item"]'),
+    ...document.querySelectorAll<HTMLButtonElement>(
+      '[data-testid="concept-note-gap-list-item"]',
+    ),
   ];
-  expect(rows.map((row) => row.textContent)).toEqual([
-    "1Confirm the city share.Required · Co-financing",
-    `2${first}Required · GCF funding request and financial instrument`,
-    `3${second}Optional · GCF funding request and financial instrument`,
-  ]);
-  expect(new Set(rows.map((row) => row.textContent)).size).toBe(3);
-});
-
-it("opens a marker beside it on wide screens and below it on a phone", () => {
-  const marker = (left: number) => {
-    const element = document.createElement("button");
-    element.getBoundingClientRect = () => ({ left }) as DOMRect;
-    return element;
-  };
-  const at = (width: number, left: number) => {
-    window.innerWidth = width;
-    return markerPlacement(marker(left));
-  };
-  const originalWidth = window.innerWidth;
-  try {
-    // Desktop and the 768 px breakpoint: room for 360 px + 20 px on the left.
-    expect(at(1440, 1340)).toBe("left-start");
-    expect(at(768, 700)).toBe("left-start");
-    // 360 px phone: the 328 px popover needs 348 px, the marker sits at 300.
-    expect(at(360, 300)).toBe("bottom-end");
-    expect(at(360, 348)).toBe("left-start");
-  } finally {
-    window.innerWidth = originalWidth;
-  }
+  const selected = rows.find((row) =>
+    row.textContent?.includes(TRICKY_QUESTION),
+  )!;
+  await act(async () => selected.click());
+  expect(
+    document.querySelector('[data-testid="concept-note-chapter-gap"]')
+      ?.textContent,
+  ).toContain("Because obligations.");
+  await act(async () =>
+    document
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-chapter-gap-answer"]',
+      )!
+      .click(),
+  );
+  expect(answer).toHaveBeenCalledWith(
+    chapter,
+    expect.objectContaining({ id: "obligations", question: TRICKY_QUESTION }),
+  );
 });

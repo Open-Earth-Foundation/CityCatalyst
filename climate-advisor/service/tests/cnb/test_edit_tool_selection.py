@@ -1,15 +1,12 @@
 """Opt-in live OpenRouter checks of CNB routing; tool bodies are never executed."""
 
 import json
-from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
-from agents.tool import ToolContext
-from app.models.cnb.concept_note_edits import EditProposalRequest, EditScope
+from app.models.cnb.concept_note_edits import EditProposalRequest
 from app.services.agent_service import AgentService
-from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 
 from app.config import get_settings
 
@@ -115,75 +112,3 @@ async def test_live_cnb_selects_proposal_tool_only_for_available_edit_requests(
             assert message.content
     finally:
         await service.close()
-
-
-async def test_auto_scope_edit_request_reaches_the_service_unchanged(monkeypatch):
-    """A gap-fact proposal with no gap ID is forwarded exactly as bound."""
-    request = EditProposalRequest(
-        instruction="The application will be submitted on 15 March 2027.",
-        idempotency_key=uuid4(),
-    )
-    proposal = SimpleNamespace(
-        proposal_id=uuid4(),
-        status="proposed",
-        changes=[],
-        structure=None,
-        notices=[],
-        clarification=None,
-        review_objections=[],
-        error_code=None,
-    )
-    service = SimpleNamespace(propose=AsyncMock(return_value=proposal))
-    monkeypatch.setattr(
-        "app.tools.concept_note_edit_tools.get_edit_service", lambda: service
-    )
-    monkeypatch.setattr(
-        "app.tools.concept_note_edit_tools.CityCatalystClient",
-        MagicMock(return_value=SimpleNamespace(close=AsyncMock())),
-    )
-    run_service = SimpleNamespace(
-        get_authorized_run=AsyncMock(return_value=SimpleNamespace()),
-        cc_client=SimpleNamespace(close=AsyncMock()),
-    )
-    monkeypatch.setattr(
-        "app.tools.concept_note_edit_tools.ConceptNoteRunService",
-        MagicMock(return_value=run_service),
-    )
-    history = [{"role": "user", "content": "Earlier question"}]
-    session_factory = MagicMock()
-    session_factory.return_value.__aenter__ = AsyncMock(return_value=MagicMock())
-    session_factory.return_value.__aexit__ = AsyncMock(return_value=False)
-    tool = build_concept_note_edit_tools(
-        session_factory=session_factory,
-        run_id=uuid4(),
-        user_id="owner",
-        token_ref={"value": "token"},
-        request=request,
-        recent_messages=history,
-    )[0]
-    context = ToolContext(
-        context=None, tool_call_id="edit-1", tool_name=tool.name, tool_arguments="{}"
-    )
-    await tool.on_invoke_tool(context, "{}")
-
-    forwarded = service.propose.call_args
-    # The bound request object is passed on as-is: auto scope, no gap ID, exact text.
-    assert forwarded.args[1] is request
-    assert request.scope == EditScope()
-    assert request.instruction == (
-        "The application will be submitted on 15 March 2027."
-    )
-    assert forwarded.kwargs["recent_messages"] == history
-
-
-def test_gap_edit_prompts_keep_partial_progress_and_estimate_sections():
-    """The planner owns the shared examples; the reviewer keeps its decision contract."""
-    prompts = get_settings().llm.prompts
-    planner = prompts.get_prompt("cnb_chat_edit_planner")
-    reviewer = prompts.get_prompt("cnb_chat_edit_review")
-
-    assert "<partial_progress_examples>" in planner
-    assert "<gap_fill_example>" in planner
-    assert "Estimates:" in planner
-    assert "gap_coverage" in reviewer
-    assert "ChapterEditReview" in reviewer

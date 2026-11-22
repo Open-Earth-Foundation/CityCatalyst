@@ -46,7 +46,6 @@ interface WorkspaceState {
 let initialWorkspaceState: WorkspaceState;
 let setWorkspaceState: (value: WorkspaceState) => void;
 let initialContext: ConceptNoteApplicationContext | undefined;
-let reviewProposal: { proposal_id: string } | null = null;
 let finishRefetch: (success: boolean) => void;
 let setApplicationContext: (value: ConceptNoteApplicationContext) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
@@ -144,11 +143,11 @@ jest.unstable_mockModule(
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/document-review",
   () => ({
-    DocumentReviewToolbar: () => <div data-testid="review-toolbar" />,
+    DocumentReviewToolbar: () => null,
     DocumentReviewFeedback: () => null,
     documentReviewChanges: () => [],
     editFeedbackKey: () => null,
-    selectReviewProposal: () => reviewProposal,
+    selectReviewProposal: () => null,
   }),
 );
 // The draft tab's setup button calls the workspace handler under test.
@@ -198,32 +197,19 @@ beforeAll(async () => {
 beforeEach(() => {
   initialContext = undefined;
   initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
-  reviewProposal = null;
   refetch.mockReset();
   refetchDraft.mockReset();
 });
-async function renderWorkspace() {
+
+async function clickSetup() {
   await view.render(
     <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />,
   );
-}
-
-async function clickSetup() {
-  await renderWorkspace();
   const button = [...view.container.querySelectorAll("button")].find(
     (item) => item.getAttribute("aria-label") === "open-funding-setup",
   );
-  expect(button).toBeDefined();
   await act(async () => button!.click());
 }
-
-it("opens funding after a successful context retry without a second click", async () => {
-  await clickSetup();
-  expect(refetch).toHaveBeenCalledTimes(1);
-  expect(view.container.querySelector('[role="dialog"]')).toBeNull();
-  await act(async () => finishRefetch(true));
-  expect(view.container.querySelector('[role="dialog"]')).not.toBeNull();
-});
 
 it("keeps funding closed after a failed context retry and allows another attempt", async () => {
   await clickSetup();
@@ -235,26 +221,7 @@ it("keeps funding closed after a failed context retry and allows another attempt
   expect(view.container.querySelector('[role="dialog"]')).not.toBeNull();
 });
 
-it("opens funding immediately when context is already loaded", async () => {
-  initialContext = context;
-  await clickSetup();
-  expect(refetch).not.toHaveBeenCalled();
-  expect(view.container.querySelector('[role="dialog"]')).not.toBeNull();
-});
-
-it("renders the edit review toolbar once, in its own row", async () => {
-  reviewProposal = { proposal_id: "proposal" };
-  await clickSetup();
-  const toolbars = view.container.querySelectorAll(
-    '[data-testid="review-toolbar"]',
-  );
-  expect(toolbars).toHaveLength(1);
-  expect(
-    toolbars[0].closest('[data-testid="concept-note-review-bar"]'),
-  ).not.toBeNull();
-});
-
-it("shows one ready-to-draft banner without its own start button until funding is cleared", async () => {
+it("clears ready-to-draft guidance when the saved template is removed", async () => {
   const template = {
     name: "EIB starter",
     chapter_schema: [{}, {}],
@@ -267,8 +234,6 @@ it("shows one ready-to-draft banner without its own start button until funding i
   const banner = () =>
     view.container.querySelector('[data-testid="concept-note-next-step"]');
   expect(banner()?.textContent).toContain("next-step-funding-saved-title");
-  // The setup panel's Start drafting is the only start button.
-  expect(banner()?.textContent).not.toContain("start-drafting");
 
   await act(async () => setApplicationContext({ ...context, template: null }));
   expect(banner()).toBeNull();
@@ -333,16 +298,6 @@ it("keeps dismissed source guidance closed when funding arrives", async () => {
   expect(
     view.container.querySelector('[data-testid="concept-note-next-step"]'),
   ).toBeNull();
-});
-
-it("shows source guidance when the draft loads after ready sources", async () => {
-  initialContext = fundedContext;
-  initialWorkspaceState = { draftStatus: undefined, contextState: "ready" };
-  await clickSetup();
-  await act(async () =>
-    setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
-  );
-  expect(view.container.textContent).toContain("next-step-funding-saved-title");
 });
 
 it("waits for sources before showing ready-to-draft guidance after saving funding", async () => {

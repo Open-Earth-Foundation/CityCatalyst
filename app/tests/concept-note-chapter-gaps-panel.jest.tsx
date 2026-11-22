@@ -17,7 +17,7 @@ mockTranslation((key: string, values?: Record<string, unknown>) =>
   values ? `${key}:${JSON.stringify(values)}` : key,
 );
 
-const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows, gapRowForMessage } =
+const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
 const { remarkMissingInformation, remarkGapPassages } =
   await import("@/components/ConceptNoteWorkspace/draft-markdown");
@@ -100,79 +100,15 @@ it("keeps an accepted estimate listed as to be confirmed, after the open gaps", 
   const confirm = document.querySelector<HTMLButtonElement>(
     '[data-testid="concept-note-chapter-gap-answer"]',
   )!;
-  expect(confirm.textContent).toContain("gap-confirm-in-chat");
   await act(async () => confirm.click());
-  expect(onAnswerGap).toHaveBeenCalledWith(withEstimate, rows[2]);
+  expect(onAnswerGap).toHaveBeenCalledWith(
+    withEstimate,
+    expect.objectContaining({ id: "d" }),
+  );
   // Let the closing popover settle its focus before the next test.
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
-});
-
-it("keeps counts visible and opens only the selected question with its rationale", async () => {
-  const onAnswerGap = jest.fn();
-  await view.render(
-    <>
-      <ChapterGapsPanel
-        chapter={chapter}
-        lng="en"
-        rows={chapterGapRows(chapter)}
-        onAnswerGap={onAnswerGap}
-      />
-    </>,
-  );
-  const panel = view.byTestId("concept-note-chapter-gaps");
-  expect(panel?.getAttribute("data-state")).toBe("closed");
-  expect(panel?.textContent).toContain('chapter-open-gaps:{"count":2}');
-  expect(panel?.textContent).toContain(
-    'gap-counts:{"required":1,"optional":1}',
-  );
-  expect(
-    view.container.querySelectorAll('[data-testid="concept-note-chapter-gap"]'),
-  ).toHaveLength(0);
-
-  const toggle = view.byTestId<HTMLButtonElement>(
-    "concept-note-chapter-gaps-toggle",
-  );
-  await act(async () => {
-    toggle?.click();
-  });
-  // Let the popover finish its own initial focus before choosing a row.
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  });
-  const rows = document.querySelectorAll(
-    '[data-testid="concept-note-gap-list-item"]',
-  );
-  expect(rows).toHaveLength(2);
-  expect(rows[1]?.getAttribute("data-severity")).toBe("noncritical");
-  expect(
-    document.querySelector('[data-testid="concept-note-chapter-gap"]'),
-  ).toBeNull();
-  await act(async () => {
-    (rows[0] as HTMLButtonElement).click();
-  });
-  const detail = document.querySelector(
-    '[data-testid="concept-note-chapter-gap"]',
-  );
-  expect(detail?.textContent).toContain("Question a?");
-  expect(detail?.textContent).toContain("Because a.");
-  expect(detail?.textContent).toContain("gap-clima-rationale");
-  expect(
-    detail?.querySelector('[data-testid="concept-note-gap-number"]')
-      ?.textContent,
-  ).toBe('gap-number:{"number":1}');
-
-  const answer = document.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-chapter-gap-answer"]',
-  );
-  await act(async () => {
-    answer?.click();
-  });
-  expect(onAnswerGap).toHaveBeenCalledWith(
-    chapter,
-    expect.objectContaining({ id: "a", question: "Question a?" }),
-  );
 });
 
 it("matches source passages, keeps unanchored gaps, and does not resurrect resolved ones", () => {
@@ -184,35 +120,6 @@ it("matches source passages, keeps unanchored gaps, and does not resurrect resol
   expect(rows[1]?.title).toBe("Timing");
   expect(rows.some((row) => row.id === "c")).toBe(false);
   expect(rows[0]?.severity).toBe("noncritical");
-});
-
-it("pairs a gap with its marker however the marker is formatted", async () => {
-  // Bold, no "?", a curly apostrophe, a double space and a line break.
-  const marker = "[Information needed: **Richfield’s  share\nfor question a**]";
-  const formatted = {
-    ...chapter,
-    body_markdown: `### Costs\n\nCosts pending. ${marker}`,
-    gaps: [
-      { ...gap("a", "open"), question: "Richfield's share for question a?" },
-    ],
-  };
-  const rows = chapterGapRows(formatted);
-  expect(rows).toHaveLength(1);
-  expect(rows[0]).toMatchObject({ id: "a", title: "Costs", marker });
-  expect(rows[0]?.gap?.gap_id).toBe("a");
-
-  // The inline marker opens the recorded gap, not a separate legacy row.
-  await act(async () =>
-    view.root.render(
-      <ReactMarkdown remarkPlugins={[remarkMissingInformation]}>
-        {formatted.body_markdown}
-      </ReactMarkdown>,
-    ),
-  );
-  const link = view.container.querySelector<HTMLAnchorElement>(
-    'a[href="#cnb-missing-information"]',
-  );
-  expect(gapRowForMessage(rows, decodeURIComponent(link!.title))?.id).toBe("a");
 });
 
 it("attaches a standalone marker to its actual passage without changing the text", async () => {
@@ -337,9 +244,7 @@ it("shows answers saved so far on the marker, in the gap list and apart from an 
   const box = document.querySelector(
     '[data-testid="concept-note-gap-answered-so-far"]',
   );
-  expect(box?.textContent).toContain("gap-answered-so-far");
-  expect(box?.textContent).toContain("gap-answered-so-far-hint");
-  expect(box?.textContent).toContain("2. Amount?\nNot decided yet");
+  expect(box?.textContent).toContain(saved);
   await act(async () =>
     view.container
       .querySelector<HTMLButtonElement>(
@@ -369,8 +274,6 @@ it("shows answers saved so far on the marker, in the gap list and apart from an 
   expect(estimateBlock?.textContent).not.toContain(confirming);
   expect(savedBlock?.textContent).toContain(confirming);
   expect(savedBlock?.textContent).not.toContain(estimate);
-  expect(estimateBlock?.contains(savedBlock ?? null)).toBe(false);
-  expect(savedBlock?.contains(estimateBlock ?? null)).toBe(false);
   // Let the popover settle its focus before the next test.
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 50));

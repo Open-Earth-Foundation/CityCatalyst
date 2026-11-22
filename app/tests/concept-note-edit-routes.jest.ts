@@ -125,7 +125,16 @@ const routes = [
     handler: collection.POST,
     method: "POST",
     suffix: "/edit-proposals",
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: targetId,
+        gap_id: key,
+        gap_version: 2,
+        answer_complete: true,
+      },
+    },
   },
   {
     name: "read",
@@ -153,7 +162,16 @@ const routes = [
     handler: refine.POST,
     method: "POST",
     suffix: `/edit-proposals/${targetId}/refine`,
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: null,
+        gap_id: null,
+        gap_version: null,
+        answer_complete: false,
+      },
+    },
   },
   {
     name: "confirm",

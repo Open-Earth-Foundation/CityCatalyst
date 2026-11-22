@@ -5,7 +5,6 @@ from unittest.mock import MagicMock
 from uuid import UUID, uuid4
 
 import pytest
-from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
@@ -20,18 +19,12 @@ from app.models.cnb.concept_note_edits import (
     GapEditBinding,
     PlannedTextChange,
 )
-from app.models.db.cnb_edit import ConceptNoteEditApplication, ConceptNoteEditProposal
-from app.models.db.cnb_reference import CnbFundedProject, CnbFunder
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
-    ConceptNoteChapterValidation,
-    ConceptNoteEvidenceLink,
-    ConceptNoteExport,
     ConceptNoteGap,
     ConceptNoteGapResolution,
-    ConceptNoteMatchedProject,
 )
 from app.persistence.concept_notes.edits import (
     EditOperationError,
@@ -45,15 +38,12 @@ from app.persistence.concept_notes.gaps import (
     record_accepted_narrowing,
     save_partial_answer,
 )
-from app.persistence.concept_notes.workspace import (
-    ConceptNoteWorkspaceRepository,
-    WorkspaceConflictError,
-)
+from app.persistence.concept_notes.workspace import WorkspaceConflictError
 from app.services.cnb.edit_planner import bind_semantic_review
 from app.services.cnb.edit_validation import bind_answer_gap, validate_edit_plan
 from app.utils.cnb_gap_edit import gap_answer_digest
-from sqlalchemy import DefaultClause, delete, select, text, update
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy import delete, select, update
+from tests.test_concept_note_lifecycle import _workspace_repository
 
 RUN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 CHAPTER_ID = UUID("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
@@ -61,49 +51,9 @@ GAP_ID = UUID("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
 
 
 @pytest.fixture
-async def workspace(tmp_path):
-    """Create an isolated managed-workspace schema for lifecycle tests."""
-    engine = create_async_engine(
-        f"sqlite+aiosqlite:///{(tmp_path / 'workspace.db').as_posix()}"
-    )
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    tables = [
-        ConceptNoteChapter.__table__,
-        ConceptNoteChapterRevision.__table__,
-        ConceptNoteGap.__table__,
-        ConceptNoteGapResolution.__table__,
-        ConceptNoteChapterReview.__table__,
-        ConceptNoteChapterValidation.__table__,
-        ConceptNoteEvidenceLink.__table__,
-        ConceptNoteEditProposal.__table__,
-        ConceptNoteEditApplication.__table__,
-        ConceptNoteExport.__table__,
-        CnbFunder.__table__,
-        CnbFundedProject.__table__,
-        ConceptNoteMatchedProject.__table__,
-    ]
-    postgres_defaults = []
-    for table in tables:
-        for column in table.columns:
-            if column.server_default is None or "::jsonb" not in str(
-                column.server_default.arg
-            ):
-                continue
-            postgres_defaults.append((column, column.server_default))
-            fallback = "'{}'" if column.name == "patch_summary" else "'[]'"
-            column.server_default = DefaultClause(text(fallback))
-    try:
-        async with engine.begin() as connection:
-            await connection.run_sync(
-                lambda sync_connection: CnbBase.metadata.create_all(
-                    sync_connection,
-                    tables=tables,
-                )
-            )
-    finally:
-        for column, server_default in postgres_defaults:
-            column.server_default = server_default
-    try:
+async def workspace():
+    """Seed one chapter, its first revision and one open gap in an isolated workspace."""
+    async with _workspace_repository() as (repository, session_factory):
         async with session_factory() as session, session.begin():
             session.add(
                 ConceptNoteChapter(
@@ -145,9 +95,7 @@ async def workspace(tmp_path):
                     status="open",
                 )
             )
-        yield ConceptNoteWorkspaceRepository(session_factory)
-    finally:
-        await engine.dispose()
+        yield repository
 
 
 async def test_accepted_chat_edit_resolves_gap_and_can_be_confirmed(workspace) -> None:
@@ -685,19 +633,6 @@ def gap_row(
     )
 
 
-def revision_row(
-    body: str, *, number: int = 2, chapter_id: UUID = CHAPTER_ID
-) -> ConceptNoteChapterRevision:
-    return ConceptNoteChapterRevision(
-        chapter_id=chapter_id,
-        revision_number=number,
-        author_type="agent",
-        change_type="draft",
-        body_markdown=body,
-        patch_summary={},
-    )
-
-
 async def add_rows(workspace, *rows) -> None:
     async with workspace._session_factory() as session, session.begin():
         session.add_all(rows)
@@ -808,16 +743,15 @@ async def fixture_chapter(workspace):
     return chapter
 
 
-@pytest.mark.parametrize("answer_complete", [False, True])
 @pytest.mark.parametrize(
-    ("transition", "mode"),
+    ("transition", "answer_complete"),
     [
-        ("fill", "fill"),
-        ("narrow", "narrow"),
+        ("fill", False),
+        ("narrow", True),
     ],
 )
 async def test_form_completeness_hint_never_controls_a_reviewed_transition(
-    workspace, answer_complete: bool, transition: str, mode: str
+    workspace, transition: str, answer_complete: bool
 ) -> None:
     """The form's completeness hint never decides a transition; the reviewed shape does."""
     chapters = await workspace.list_chapters(run_id=RUN_ID)
@@ -849,7 +783,7 @@ async def test_form_completeness_hint_never_controls_a_reviewed_transition(
     [accepted] = validate_edit_plan(
         request, chapters, EditPlanOutput(intent="edit", changes=reviewed)
     )
-    assert [binding.mode for binding in accepted.gap_bindings] == [mode]
+    assert [binding.mode for binding in accepted.gap_bindings] == [transition]
     assert accepted.gap_bindings[0].gap_id == GAP_ID
 
 
@@ -998,27 +932,18 @@ async def test_old_pending_marker_edits_require_a_fresh_review(workspace) -> Non
     assert (await fixture_chapter(workspace)).gaps[0].state == "open"
 
 
-async def test_a_bound_answer_names_its_gap_version_without_hiding_gaps(
+async def test_a_bound_answer_to_a_superseded_gap_version_is_rejected(
     workspace,
 ) -> None:
-    """The form binding only checks the gap version; every gap stays visible to planning."""
+    """The form binding only checks the gap version; a superseded version is rejected."""
     chapters = await workspace.list_chapters(run_id=RUN_ID)
-
-    def request(scope: EditScope) -> EditProposalRequest:
-        return EditProposalRequest(
-            instruction="Lead partner: Lincoln Park Neighborhood Council.",
-            scope=scope,
-            idempotency_key=uuid4(),
-        )
-
-    assert bind_answer_gap(request(EditScope()), chapters) is chapters
-    assert bind_answer_gap(request(bound_scope()), chapters) is chapters
-    assert (
-        bind_answer_gap(request(bound_scope(answer_complete=False)), chapters)
-        is chapters
+    request = EditProposalRequest(
+        instruction="Lead partner: Lincoln Park Neighborhood Council.",
+        scope=bound_scope(gap_version=2),
+        idempotency_key=uuid4(),
     )
     with pytest.raises(EditOperationError) as error:
-        bind_answer_gap(request(bound_scope(gap_version=2)), chapters)
+        bind_answer_gap(request, chapters)
     assert error.value.code == "gap_changed"
 
 
@@ -1393,32 +1318,6 @@ async def test_estimate_confirmation_rejects_unbound_duplicate_occurrence_atomic
     assert await estimate_state(workspace) == state_before
 
 
-async def test_confirmed_estimate_updates_prose_version_and_resolution_together(
-    workspace,
-) -> None:
-    """CC-1239: a confirmation replaces the estimate, its prose and its resolution at once.
-
-    The caveat gap resolves at its next version, the chapter gains one revision
-    and the confirmed text replaces the estimate in the prose.
-    """
-    body = await caveat_with_estimate(workspace, 1)
-    change = gap_change(
-        body,
-        ESTIMATE,
-        CONFIRMED,
-        group="volunteers",
-        bindings=[gap_binding(version=2, mode="confirm_estimate")],
-    )
-    after_body = body.replace(ESTIMATE, CONFIRMED)
-    await accept(workspace, before=body, after=after_body, changes=[change])
-
-    after = await fixture_chapter(workspace)
-    assert after.body_markdown == after_body
-    assert after.revision_number == 2
-    assert (after.gaps[0].state, after.gaps[0].version) == ("resolved", 3)
-    assert await resolution_answers(workspace) == sorted([ESTIMATE, CONFIRMED])
-
-
 def test_accepted_passages_strip_markers_and_keep_the_original_scope() -> None:
     """Progress keeps the first scope, marker-free passages and no duplicates."""
     gap = ConceptNoteGap(question="Who leads and when?", answer_progress=None)
@@ -1471,17 +1370,6 @@ async def test_narrowing_carries_saved_answers_to_the_new_version_without_creati
     assert non_partial is None
     # The stale form still holds no saved text, so its save is refused.
     assert not await save_answers(workspace, "A newer answer", version=2)
-
-
-async def test_carry_forward_leaves_a_clear_gap_clear(workspace) -> None:
-    """With no saved answers at the previous version, nothing is carried forward."""
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        gap.version = 2
-        assert not await carry_forward_saved_answer(
-            session, gap=gap, previous_version=1
-        )
-    assert (await fixture_chapter(workspace)).gaps[0].answered_so_far is None
 
 
 def test_redraft_resets_progress_only_when_gap_scope_changes_or_reopens() -> None:

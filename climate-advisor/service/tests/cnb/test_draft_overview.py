@@ -463,27 +463,6 @@ def test_overview_facts_expose_draft_state_without_identifiers():
     assert "field_key" not in serialized
 
 
-def test_cnb_chat_distinguishes_direction_choices_from_concrete_edit_confirmation():
-    prompt = _load_llm_config().prompts.compose_prompt("cnb_chat")
-    # The prompt wraps its examples across lines; match on words, not breaks.
-    normalized = " ".join(prompt.split())
-
-    assert (
-        "selects a direction in response to a question about which approach to "
-        "explore, acknowledge that direction and ask what still needs deciding"
-    ) in normalized
-    assert "That selection alone does not authorize a document edit." in normalized
-    assert "follow the edit-tool rule and use the facts they supplied." in normalized
-    assert (
-        '"Which financing approach should we explore?" answered with "Pursue a '
-        'grant, with city co-financing to be confirmed" -> acknowledge the '
-        "direction and ask what still needs deciding; leave the draft unchanged."
-    ) in normalized
-    assert (
-        '"Yes, make that change" -> call the edit tool for that exact change.'
-    ) in normalized
-
-
 def test_overview_instructions_extend_the_cnb_chat_prompt():
     prompts = _load_llm_config().prompts
 

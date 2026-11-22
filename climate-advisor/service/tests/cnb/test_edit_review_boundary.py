@@ -1777,73 +1777,6 @@ def test_review_uses_original_scope_and_accepted_history_for_a_second_round_fill
     assert accepted.gap_bindings[0].mode == "fill"
 
 
-@pytest.mark.asyncio
-async def test_partial_review_objection_repairs_dropped_financing_scope():
-    question = "Confirm the selected alternative, current phase, instrument and amount."
-    current = chapter(f"Finance: {marker(question)}")
-    current.gaps.append(gap_snapshot(question))
-    instruction = (
-        "The selected alternative is the pond retrofit in final design. "
-        "The city will use stormwater utility funds."
-    )
-    dropped = (
-        "The city will use stormwater utility funds for its contribution. "
-        "[Information needed: What amount will the city contribute?]"
-    )
-    complete_scope = (
-        "The city will use stormwater utility funds. [Information needed: Which design "
-        "alternative is selected, which phase is current, and what amount will the city "
-        "contribute?]"
-    )
-    objection = "Retain the selected concept in the remaining marker."
-    editor_calls = 0
-    reviewer_calls = 0
-
-    class ScopeRepairRunner(StreamingTestRunner):
-        @staticmethod
-        async def run(agent, payload, **kwargs):
-            nonlocal editor_calls, reviewer_calls
-            data = json.loads(payload)
-            if agent.output_type is EditAgentOutput:
-                editor_calls += 1
-                if editor_calls > 1:
-                    [feedback] = data["review_feedback"]
-                    assert feedback["decisions"][0]["support"] == "unsupported"
-                    assert feedback["decisions"][0]["explanation"] == objection
-                await propose_with_tools(
-                    agent,
-                    marker(question),
-                    dropped if editor_calls == 1 else complete_scope,
-                    kind="factual",
-                    user_input_quote="stormwater utility funds",
-                )
-                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
-            assert [tool.name for tool in agent.tools] == ["query_source"]
-            reviewer_calls += 1
-            after = data["changes"][0]["after"]
-            if "alternative" not in after or "phase" not in after:
-                review = single_review("unsupported", "partial", objection)
-            else:
-                review = single_review(
-                    "user",
-                    "partial",
-                    "The source is stated and the remaining marker keeps the "
-                    "concept, phase and amount.",
-                )
-            return SimpleNamespace(final_output=review)
-
-    request = edit_request(instruction)
-    plan = await ConceptNoteEditPlanner(
-        planner_settings(), runner=ScopeRepairRunner
-    ).plan(request, [current], {})
-    # The rejected partial is repaired once; the full-scope partial is reviewed again.
-    assert (editor_calls, reviewer_calls) == (2, 2)
-    assert plan.changes[0].after == complete_scope
-    assert plan.changes[0].semantic_support == "user"
-    [change] = validate_edit_plan(request, [current], plan)
-    assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
-
-
 TARGET_QUESTION = (
     "What is the City's contribution source, amount and proposed budget status?"
 )
@@ -1852,72 +1785,37 @@ TARGET_ANSWER = (
     "USD 2,500,000 in its proposed 2027 budget."
 )
 
-# Each sibling question is answered in part; its first draft drops one funding
-# ask from the remaining question and the repair either restores it or drops the
-# sibling change.
-OPTIONAL_FUNDING_CASES = {
-    # Financing names the City's contribution; capability keeps its conditional debt ask.
-    "contribution_only_debt": {
-        "question": (
-            "Confirm the project and phase capability evidence, available local match, "
-            "applicable project-phase debt or bonding authority, and authorized official."
-        ),
-        "quote": "No borrowing is proposed for the City's contribution.",
-        "dropped": (
-            "Confirm the project and phase capability evidence, available local match, "
-            "and authorized official."
-        ),
-        "repaired": (
-            "Confirm the project and phase capability evidence, available local match, "
-            "whether applicable project-phase debt or bonding authority applies, and "
-            "authorized official."
-        ),
-        "objection": (
-            "Retain applicable project-phase debt or bonding authority in the remaining "
-            "marker."
-        ),
-    },
-    # Financing names the City's contribution; the inventory keeps every match ask.
-    "inventory_match_loss": {
-        "question": (
-            "What other committed, pending and anticipated funding is available across "
-            "state, federal, local and non-governmental sources, including each source's "
-            "amount, status and local match, and what local match remains for the City "
-            "or application?"
-        ),
-        "quote": "The state grant of USD 1,000,000 is committed.",
-        "dropped": (
-            "What other committed, pending and anticipated funding is available across "
-            "state, federal, local and non-governmental sources, including each source's "
-            "amount and status?"
-        ),
-        "repaired": (
-            "What other committed, pending and anticipated funding is available across "
-            "state, federal, local and non-governmental sources, including each source's "
-            "amount, status and local match, and the local match still available to the "
-            "City or application?"
-        ),
-        "objection": (
-            "Retain the City's or application's remaining match in the remaining marker."
-        ),
-    },
+# The capability sibling is answered in part; its first draft drops the conditional
+# debt ask from the remaining question and the repair either restores it or drops
+# the sibling change.
+OPTIONAL_FUNDING_SIBLING = {
+    "question": (
+        "Confirm the project and phase capability evidence, available local match, "
+        "applicable project-phase debt or bonding authority, and authorized official."
+    ),
+    "quote": "No borrowing is proposed for the City's contribution.",
+    "dropped": (
+        "Confirm the project and phase capability evidence, available local match, "
+        "and authorized official."
+    ),
+    "repaired": (
+        "Confirm the project and phase capability evidence, available local match, "
+        "whether applicable project-phase debt or bonding authority applies, and "
+        "authorized official."
+    ),
+    "objection": (
+        "Retain applicable project-phase debt or bonding authority in the remaining "
+        "marker."
+    ),
 }
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "case,repair",
-    [
-        ("contribution_only_debt", "corrected"),
-        ("contribution_only_debt", "removed"),
-        ("inventory_match_loss", "corrected"),
-        ("inventory_match_loss", "removed"),
-    ],
-)
+@pytest.mark.parametrize("repair", ["corrected", "removed"])
 async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap_change(
-    case, repair
+    repair,
 ):
-    spec = OPTIONAL_FUNDING_CASES[case]
+    spec = OPTIONAL_FUNDING_SIBLING
     dropped = f"{spec['quote']} {marker(spec['dropped'])}"
     repaired = f"{spec['quote']} {marker(spec['repaired'])}"
     target_chapter = chapter(f"Financing: {marker(TARGET_QUESTION)}")

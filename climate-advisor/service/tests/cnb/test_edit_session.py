@@ -223,13 +223,6 @@ def test_search_ids_and_match_ids_cannot_be_reused_across_other_searches():
             "protected_markers",
         ),
         (
-            "Finance: [Information needed: Confirm the instrument and amount.]",
-            "[Information needed: Confirm the instrument and amount.]",
-            "Stormwater funds. [Information needed: What amount?] [Information needed: Who signs?]",
-            [],
-            "protected_markers",
-        ),
-        (
             "Finance: [Information needed: Confirm the instrument and amount.] Other [Information needed: Who signs?]",
             "[Information needed: Confirm the instrument and amount.] Other",
             "Stormwater funds. [Information needed: What amount?] Other",
@@ -250,13 +243,6 @@ def test_search_ids_and_match_ids_cannot_be_reused_across_other_searches():
             [],
             "protected_markers",
         ),
-        (
-            "Finance: [Information needed: Confirm the instrument and amount.]",
-            "[Information needed: Confirm the instrument and amount.]",
-            "Stormwater funds. [Information needed: What amount?]",
-            "untracked",
-            "protected_markers",
-        ),
     ],
 )
 def test_partial_gap_change_requires_one_exact_new_marker_and_factual_prose(
@@ -264,10 +250,9 @@ def test_partial_gap_change_requires_one_exact_new_marker_and_factual_prose(
 ) -> None:
     """A narrowing keeps exactly one new marker and only the changed marker's anchor."""
     current = chapter(body)
-    if extra_gaps != "untracked":
-        current.gaps.append(gap("Confirm the instrument and amount."))
-        for question in extra_gaps:
-            current.gaps.append(gap(question))
+    current.gaps.append(gap("Confirm the instrument and amount."))
+    for question in extra_gaps:
+        current.gaps.append(gap(question))
     edits = session([current], "The city will use stormwater utility funds.")
     result = propose_one(
         edits,

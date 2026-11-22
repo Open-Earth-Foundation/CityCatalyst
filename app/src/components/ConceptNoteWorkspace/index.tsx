@@ -30,10 +30,7 @@ import { api } from "@/services/api";
 import { hasIncompleteInitialUploads } from "@/util/concept-note-initial-uploads";
 import { NewConceptNoteDialog } from "../ConceptNoteDashboard/new-concept-note-dialog";
 import type { EditScope } from "@/util/concept-note-edit-types";
-import type {
-  ConceptNoteDraftChapter,
-  ConceptNoteDraftState,
-} from "@/util/types";
+import type { ConceptNoteDraftChapter } from "@/util/types";
 
 import {
   getConceptNoteStatusPresentation,
@@ -42,11 +39,7 @@ import {
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
-import {
-  chapterGapRows,
-  type ChapterGapRow,
-} from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
-import { informationMarkerKey } from "@/components/ConceptNoteWorkspace/draft-markdown";
+import type { ChapterGapRow } from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
 import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
@@ -92,29 +85,6 @@ const workspaceTabs: Array<{
   { key: "context", translationKey: "context-tab", icon: LuRefreshCw },
 ];
 
-/**
- * A signature of the draft's unrecorded markers: null when every marker already
- * has a gap record. It covers the run, each chapter's revision and its
- * normalized marker keys, so a changed draft yields a new signature.
- */
-function unrecordedLegacyGapKey(
-  runId: string,
-  draft: ConceptNoteDraftState | null | undefined,
-): string | null {
-  const parts: string[] = [];
-  for (const chapter of draft?.chapters ?? []) {
-    const keys = chapterGapRows(chapter)
-      .filter((row) => row.gap === null)
-      .map((row) => informationMarkerKey(row.question));
-    if (keys.length > 0) {
-      parts.push(
-        `${chapter.chapter_id}@${chapter.revision_number ?? 0}:${keys.join("|")}`,
-      );
-    }
-  }
-  return parts.length > 0 ? `${runId}#${parts.join(";")}` : null;
-}
-
 export function ConceptNoteWorkspace({
   cityId,
   initialReviewChapterId,
@@ -142,16 +112,6 @@ export function ConceptNoteWorkspace({
   >(null);
   const [confirmChapterMutation, confirmChapterState] =
     api.useConfirmConceptNoteChapterMutation();
-  const [adoptLegacyMarkerGaps] =
-    api.useAdoptConceptNoteLegacyMarkerGapsMutation();
-  // Legacy markers get gap records once per unrecorded signature, so renders
-  // and Strict Mode effects do not send twice. A failed or stalled attempt
-  // stays failed until Retry clears it.
-  const legacyGapAttempt = useRef<string | null>(null);
-  const [legacyGapFailedKey, setLegacyGapFailedKey] = useState<string | null>(
-    null,
-  );
-  const [legacyGapRetry, setLegacyGapRetry] = useState(0);
   const [reviewOpen, setReviewOpen] = useState(false);
   // "What next?" guidance: set on funder save, sources ready, drafting complete.
   const [nextStep, setNextStep] = useState<
@@ -243,42 +203,6 @@ export function ConceptNoteWorkspace({
   const draftHasContent = Boolean(
     draft?.chapters.some((chapter) => Boolean(chapter.body_markdown)),
   );
-  const legacyGapKey = unrecordedLegacyGapKey(runId, draft);
-  const legacyGapError =
-    legacyGapKey !== null && legacyGapFailedKey === legacyGapKey;
-
-  useEffect(() => {
-    if (!legacyGapKey || legacyGapAttempt.current === legacyGapKey) return;
-    legacyGapAttempt.current = legacyGapKey;
-    void (async () => {
-      try {
-        await adoptLegacyMarkerGaps({ runId }).unwrap();
-        const fresh = await refetchDraft().unwrap();
-        // A newer attempt, run or retry owns the state now.
-        if (legacyGapAttempt.current !== legacyGapKey) return;
-        // The same markers still lack records after a success: stop here.
-        if (unrecordedLegacyGapKey(runId, fresh) === legacyGapKey) {
-          setLegacyGapFailedKey(legacyGapKey);
-        }
-      } catch {
-        if (legacyGapAttempt.current === legacyGapKey) {
-          setLegacyGapFailedKey(legacyGapKey);
-        }
-      }
-    })();
-  }, [
-    adoptLegacyMarkerGaps,
-    legacyGapKey,
-    legacyGapRetry,
-    refetchDraft,
-    runId,
-  ]);
-
-  function retryLegacyGapSync(): void {
-    legacyGapAttempt.current = null;
-    setLegacyGapFailedKey(null);
-    setLegacyGapRetry((value) => value + 1);
-  }
   // Transition detection during render (React's "derived from previous
   // props" pattern) keeps guidance changes out of effect bodies.
   const sourcesReadyForDrafting =
@@ -495,7 +419,7 @@ export function ConceptNoteWorkspace({
     }
   }
 
-  /** Open the gap form for a record-backed row. A legacy marker waits for the sync. */
+  /** Open the gap form for a record-backed row; an unrecorded marker has no form. */
   function answerGap(
     chapter: ConceptNoteDraftChapter,
     row: ChapterGapRow,
@@ -632,7 +556,6 @@ export function ConceptNoteWorkspace({
                 setUploadPickerRequest((value) => value + 1);
               }}
               draftOverviewPending={Boolean(draft?.overview_pending)}
-              legacyGapSyncPending={legacyGapKey !== null}
               onDraftOverviewComplete={() => void refetchDraft()}
               onGapAnswersSaved={() => void refetchDraft()}
               onRefreshDraft={() => void refetchDraft()}
@@ -865,9 +788,6 @@ export function ConceptNoteWorkspace({
                   onAnswerGap={(chapter, row) => answerGap(chapter, row)}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
-                  legacyGapSyncPending={legacyGapKey !== null}
-                  legacyGapSyncError={legacyGapError}
-                  onRetryLegacyGapSync={retryLegacyGapSync}
                   isDraftRunning={isDraftRunning}
                   isConfirmingChapter={confirmChapterState.isLoading}
                   isRetrying={retryBundleState.isLoading}

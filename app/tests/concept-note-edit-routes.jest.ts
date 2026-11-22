@@ -78,10 +78,6 @@ const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
 const startChat =
   await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
-const adoptGap =
-  await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/gaps/route");
-const adoptLegacyGaps =
-  await import("@/app/api/v1/concept-notes/[runId]/gaps/adopt-markers/route");
 const gapAnswers =
   await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
 const gapAnswersBody = {
@@ -102,7 +98,6 @@ const applyBody = {
   idempotency_key: key,
 };
 const confirmBody = { expected_revision: 2, idempotency_key: key };
-const adoptBody = { marker: "[Information needed: Who signs the agreement?]" };
 const routes = [
   {
     name: "structure-read",
@@ -166,20 +161,6 @@ const routes = [
     method: "POST",
     suffix: `/chapters/${targetId}/confirm`,
     body: confirmBody,
-  },
-  {
-    name: "adopt-gap",
-    handler: adoptGap.POST,
-    method: "POST",
-    suffix: `/chapters/${targetId}/gaps`,
-    body: adoptBody,
-  },
-  {
-    name: "adopt-legacy-gaps",
-    handler: adoptLegacyGaps.POST,
-    method: "POST",
-    suffix: "/gaps/adopt-markers",
-    body: undefined,
   },
   {
     name: "gap-answers",
@@ -303,15 +284,9 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    [
-      "read",
-      "apply",
-      "reject",
-      "refine",
-      "confirm",
-      "adopt-gap",
-      "gap-answers",
-    ].includes(route.name),
+    ["read", "apply", "reject", "refine", "confirm", "gap-answers"].includes(
+      route.name,
+    ),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(
@@ -341,9 +316,6 @@ test.each([
   ["confirm", { ...confirmBody, expected_revision: 0 }],
   ["confirm", { ...confirmBody, expected_revision: 1.5 }],
   ["confirm", { ...confirmBody, idempotency_key: "bad" }],
-  ["adopt-gap", { marker: "" }],
-  ["adopt-gap", { marker: "x".repeat(2101) }],
-  ["adopt-gap", { ...adoptBody, user_id: "attacker" }],
   ["gap-answers", { answers: "x" }],
   ["gap-answers", { ...gapAnswersBody, gap_version: 0 }],
   ["gap-answers", { ...gapAnswersBody, user_id: "attacker" }],
@@ -367,7 +339,7 @@ test.each(routes.filter((route) => route.body))(
   },
 );
 
-test.each(["apply", "refine", "confirm", "adopt-gap"])(
+test.each(["apply", "refine", "confirm"])(
   "%s authorizes the run's actual city despite a forged city query",
   async (name) => {
     canAccessCity.mockRejectedValueOnce(
@@ -387,7 +359,7 @@ test.each(["apply", "refine", "confirm", "adopt-gap"])(
   },
 );
 
-test.each(["apply", "refine", "confirm", "adopt-gap"])(
+test.each(["apply", "refine", "confirm"])(
   "%s stops if the authenticated run lookup returns 404",
   async (name) => {
     upstream.mockResolvedValueOnce(
@@ -401,43 +373,7 @@ test.each(["apply", "refine", "confirm", "adopt-gap"])(
   },
 );
 
-test("adopt-legacy-gaps keeps the proxy's public error contract", async () => {
-  // The run proxy returns only the public code/message shape, never raw detail.
-  upstream.mockImplementation(async ({ path }) =>
-    path === `/v1/concept-notes/${runId}`
-      ? Response.json({ city_id: cityId })
-      : Response.json({ detail: "Internal drafting error" }, { status: 409 }),
-  );
-  const response = await request(
-    routes.find((route) => route.name === "adopt-legacy-gaps")!,
-  );
-  expect(response.status).toBe(409);
-  expect(await response.json()).toEqual({ detail: "" });
-});
-
-test("adopt-legacy-gaps forwards no body and ignores client-supplied markers or users", async () => {
-  const response = await request(
-    routes.find((route) => route.name === "adopt-legacy-gaps")!,
-    {
-      body: { marker: "[Information needed: Who signs?]", user_id: "attacker" },
-      query: `city_id=${otherCity}&user_id=attacker`,
-    },
-  );
-  expect(response.status).toBe(200);
-  expect(upstream).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      path: `/v1/concept-notes/${runId}/gaps/adopt-markers`,
-      method: "POST",
-      searchParams: { user_id: session.user.id },
-    }),
-  );
-  expect(upstream.mock.lastCall?.[0].body).toBeUndefined();
-  expect(canAccessCity).toHaveBeenCalledWith(session, cityId, {
-    includeResource: false,
-  });
-});
-
-test.each(["apply", "refine", "confirm", "start-chat", "adopt-gap"])(
+test.each(["apply", "refine", "confirm", "start-chat"])(
   "%s preserves upstream error status, code and detail for the client",
   async (name) => {
     const payload = { code: "stale_base", detail: "The draft has changed" };

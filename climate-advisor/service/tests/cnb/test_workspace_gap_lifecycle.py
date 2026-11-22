@@ -621,13 +621,120 @@ def bound_scope(**overrides) -> EditScope:
     return EditScope(**{**values, **overrides})
 
 
-LEAD_MARKER = "[Information needed: Confirm the lead partner.]"
+LEAD_QUESTION = "Confirm the lead partner."
+LEAD_MARKER = f"[Information needed: {LEAD_QUESTION}]"
 LEAD_ANSWER = "Lincoln Park Neighborhood Council will lead delivery."
 BUDGET_QUESTION = "Confirm the delivery budget."
 BUDGET_MARKER = f"[Information needed: {BUDGET_QUESTION}]"
+SIGNATORY_QUESTION = "Who signs the grant agreement?"
+UNRECORDED = f"[Information needed: {SIGNATORY_QUESTION}]"
+VOLUNTEER_MARKER = "[Information needed: Confirm the volunteer count.]"
+ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
+CONFIRMED = "The City confirmed 150 volunteers."
 
 
-async def _accept(workspace, *, before: str, after: str, changes: list[EditChange]):
+def gap_change(
+    body: str,
+    before: str,
+    after: str,
+    *,
+    bindings: list[GapEditBinding] = (),
+    quote: str | None = None,
+    group: str = "lead_partner",
+    base_revision: int = 1,
+    kind: str = "factual",
+    **fields,
+) -> EditChange:
+    """A reviewed change of the first ``before`` in ``body``; the quote defaults to ``after``."""
+    return EditChange(
+        chapter_id=CHAPTER_ID,
+        chapter_title="Implementation",
+        change_id=uuid4(),
+        base_revision=base_revision,
+        start=body.index(before),
+        before=before,
+        after=after,
+        kind=kind,
+        group_id=group,
+        user_input_quote=after if quote is None else quote,
+        gap_bindings=list(bindings),
+        **fields,
+    )
+
+
+def gap_row(
+    question: str,
+    *,
+    field_key: str,
+    gap_id: UUID | None = None,
+    chapter_id: UUID = CHAPTER_ID,
+    severity: str = "critical",
+    status: str = "open",
+) -> ConceptNoteGap:
+    return ConceptNoteGap(
+        gap_id=gap_id or uuid4(),
+        run_id=RUN_ID,
+        chapter_id=chapter_id,
+        field_key=field_key,
+        severity=severity,
+        question=question,
+        why_asking="Needed for the chapter.",
+        suggestions=[],
+        source_refs=[],
+        status=status,
+    )
+
+
+def revision_row(
+    body: str, *, number: int = 2, chapter_id: UUID = CHAPTER_ID
+) -> ConceptNoteChapterRevision:
+    return ConceptNoteChapterRevision(
+        chapter_id=chapter_id,
+        revision_number=number,
+        author_type="agent",
+        change_type="draft",
+        body_markdown=body,
+        patch_summary={},
+    )
+
+
+async def add_rows(workspace, *rows) -> None:
+    async with workspace._session_factory() as session, session.begin():
+        session.add_all(rows)
+
+
+async def update_fixture_gap(workspace, *, body: str | None = None, **values) -> None:
+    """Change the seeded gap's columns and, optionally, its first revision's body."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        for name, value in values.items():
+            setattr(gap, name, value)
+        if body is not None:
+            revision = await session.scalar(
+                select(ConceptNoteChapterRevision).where(
+                    ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
+                    ConceptNoteChapterRevision.revision_number == 1,
+                )
+            )
+            revision.body_markdown = body
+
+
+async def resolve(workspace, *, before: str, after: str, changes: list[EditChange]):
+    """Run only the gap transitions of an acceptance, without a new revision."""
+    async with workspace._session_factory() as session, session.begin():
+        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
+        await resolve_filled_information_gaps(
+            session,
+            chapter=chapter,
+            before=before,
+            after=after,
+            changes=changes,
+            user_id="owner",
+            idempotency_key=uuid4(),
+        )
+
+
+async def accept(workspace, *, before: str, after: str, changes: list[EditChange]):
     """Accept reviewed changes as the apply path does: gap transitions, then one revision."""
     async with workspace._session_factory() as session, session.begin():
         chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
@@ -658,23 +765,47 @@ async def _accept(workspace, *, before: str, after: str, changes: list[EditChang
         )
 
 
-def _lead_change(
-    body: str, *, before: str, after: str, bindings: list[GapEditBinding], **fields
-) -> EditChange:
-    return EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=body.index(before),
-        before=before,
-        after=after,
-        kind="factual",
-        group_id="lead_partner",
-        user_input_quote=after,
-        gap_bindings=bindings,
-        **fields,
-    )
+async def stale_gap_error(workspace, **acceptance) -> str:
+    """Run a gap transition that must fail and return its error code."""
+    with pytest.raises(EditOperationError) as error:
+        await resolve(workspace, **acceptance)
+    return error.value.code
+
+
+async def save_answers(
+    workspace,
+    answer: str,
+    expected_previous: str | None = None,
+    *,
+    version: int = 1,
+    run_id: UUID = RUN_ID,
+    user_id: str = "owner",
+) -> bool:
+    async with workspace._session_factory() as session, session.begin():
+        return await save_partial_answer(
+            session,
+            run_id=run_id,
+            gap_id=GAP_ID,
+            gap_version=version,
+            answer=answer,
+            expected_previous=expected_previous,
+            user_id=user_id,
+        )
+
+
+async def resolution_answers(workspace, gap_id: UUID = GAP_ID) -> list[str]:
+    async with workspace._session_factory() as session:
+        answers = await session.scalars(
+            select(ConceptNoteGapResolution.answer).where(
+                ConceptNoteGapResolution.gap_id == gap_id
+            )
+        )
+        return sorted(answers)
+
+
+async def fixture_chapter(workspace):
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    return chapter
 
 
 @pytest.mark.parametrize("answer_complete", [False, True])
@@ -691,11 +822,9 @@ async def test_form_completeness_hint_never_controls_a_reviewed_transition(
     """The form's completeness hint never decides a transition; the reviewed shape does."""
     chapters = await workspace.list_chapters(run_id=RUN_ID)
     if transition == "fill":
-        after = LEAD_ANSWER
-        coverage = "complete"
+        after, coverage = LEAD_ANSWER, "complete"
     else:
-        after = f"{LEAD_ANSWER} {BUDGET_MARKER}"
-        coverage = "partial"
+        after, coverage = f"{LEAD_ANSWER} {BUDGET_MARKER}", "partial"
     change = PlannedTextChange(
         chapter_id=CHAPTER_ID,
         start=chapters[0].body_markdown.index(LEAD_MARKER),
@@ -705,19 +834,13 @@ async def test_form_completeness_hint_never_controls_a_reviewed_transition(
         group_id="lead_partner",
         user_input_quote=LEAD_ANSWER,
     )
-    reviewed = bind_semantic_review(
-        [change],
-        ChapterEditReview(
-            decisions=[
-                EditSemanticDecision(
-                    change_index=0,
-                    support="user",
-                    gap_coverage=coverage,
-                    explanation="The user supplied the lead partner.",
-                )
-            ]
-        ),
+    decision = EditSemanticDecision(
+        change_index=0,
+        support="user",
+        gap_coverage=coverage,
+        explanation="The user supplied the lead partner.",
     )
+    reviewed = bind_semantic_review([change], ChapterEditReview(decisions=[decision]))
     request = EditProposalRequest(
         instruction=LEAD_ANSWER,
         scope=bound_scope(answer_complete=answer_complete),
@@ -735,64 +858,48 @@ async def test_accepting_partial_then_full_uses_same_gap_and_exact_remaining_mar
 ) -> None:
     """One gap moves v1 -> v2 (narrowed) -> v3 (filled) with no orphan marker."""
     saved = "Lincoln Park Neighborhood Council"
-    async with workspace._session_factory() as session, session.begin():
-        assert await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=1,
-            answer=saved,
-            expected_previous=None,
-            user_id="owner",
-        )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    narrowed_body = chapter.body_markdown.replace(
-        LEAD_MARKER, f"{LEAD_ANSWER} {BUDGET_MARKER}"
-    )
-    await _accept(
+    assert await save_answers(workspace, saved)
+    body = (await fixture_chapter(workspace)).body_markdown
+    narrowing = f"{LEAD_ANSWER} {BUDGET_MARKER}"
+    await accept(
         workspace,
-        before=chapter.body_markdown,
-        after=narrowed_body,
+        before=body,
+        after=body.replace(LEAD_MARKER, narrowing),
         changes=[
-            _lead_change(
-                chapter.body_markdown,
-                before=LEAD_MARKER,
-                after=f"{LEAD_ANSWER} {BUDGET_MARKER}",
+            gap_change(
+                body,
+                LEAD_MARKER,
+                narrowing,
                 bindings=[gap_binding(version=1, mode="narrow", saved=saved)],
             )
         ],
     )
-    [narrowed] = await workspace.list_chapters(run_id=RUN_ID)
+    narrowed = await fixture_chapter(workspace)
     [gap] = narrowed.gaps
     assert (gap.state, gap.version, gap.question) == ("open", 2, BUDGET_QUESTION)
-    assert gap.original_question == "Confirm the lead partner."
+    assert gap.original_question == LEAD_QUESTION
     assert gap.accepted_passages == (LEAD_ANSWER,)
     assert gap.answered_so_far == saved
     assert gap.resolution is None
     assert narrowed.body_markdown.count("[Information needed:") == 1
 
-    filled_body = narrowed.body_markdown.replace(BUDGET_MARKER, "EUR 10 million")
-    await _accept(
+    body = narrowed.body_markdown
+    await accept(
         workspace,
-        before=narrowed.body_markdown,
-        after=filled_body,
+        before=body,
+        after=body.replace(BUDGET_MARKER, "EUR 10 million"),
         changes=[
-            EditChange(
-                chapter_id=CHAPTER_ID,
-                chapter_title="Implementation",
-                change_id=uuid4(),
+            gap_change(
+                body,
+                BUDGET_MARKER,
+                "EUR 10 million",
+                group="budget",
                 base_revision=2,
-                start=narrowed.body_markdown.index(BUDGET_MARKER),
-                before=BUDGET_MARKER,
-                after="EUR 10 million",
-                kind="factual",
-                group_id="budget",
-                user_input_quote="EUR 10 million",
-                gap_bindings=[gap_binding(version=2, mode="fill", saved=saved)],
+                bindings=[gap_binding(version=2, saved=saved)],
             )
         ],
     )
-    [final] = await workspace.list_chapters(run_id=RUN_ID)
+    final = await fixture_chapter(workspace)
     [gap] = final.gaps
     assert (gap.state, gap.version) == ("resolved", 3)
     assert gap.resolution.answer == "EUR 10 million"
@@ -802,171 +909,93 @@ async def test_accepting_partial_then_full_uses_same_gap_and_exact_remaining_mar
 
 async def test_apply_rejects_a_stale_gap_or_saved_answer_atomically(workspace) -> None:
     """A stale binding or saved answer raises stale_gap and writes neither prose nor progress."""
-    async with workspace._session_factory() as session, session.begin():
-        assert await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=1,
-            answer="Lincoln Park Neighborhood Council",
-            expected_previous=None,
-            user_id="owner",
-        )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    narrowed_body = chapter.body_markdown.replace(
-        LEAD_MARKER, f"{LEAD_ANSWER} {BUDGET_MARKER}"
-    )
+    saved = "Lincoln Park Neighborhood Council"
+    assert await save_answers(workspace, saved)
+    before = await fixture_chapter(workspace)
+    body = before.body_markdown
+    narrowing = f"{LEAD_ANSWER} {BUDGET_MARKER}"
     stale_bindings = {
-        "saved answer changed": [gap_binding(version=1, mode="narrow", saved="Other")],
-        "gap version superseded": [
-            gap_binding(
-                version=2, mode="narrow", saved="Lincoln Park Neighborhood Council"
-            )
-        ],
+        "saved answer changed": gap_binding(version=1, mode="narrow", saved="Other"),
+        "gap version superseded": gap_binding(version=2, mode="narrow", saved=saved),
     }
-    for label, bindings in stale_bindings.items():
-        async with workspace._session_factory() as session:
-            with pytest.raises(EditOperationError) as error:
-                async with session.begin():
-                    chapter_row = await session.get(ConceptNoteChapter, CHAPTER_ID)
-                    await resolve_filled_information_gaps(
-                        session,
-                        chapter=chapter_row,
-                        before=chapter.body_markdown,
-                        after=narrowed_body,
-                        changes=[
-                            _lead_change(
-                                chapter.body_markdown,
-                                before=LEAD_MARKER,
-                                after=f"{LEAD_ANSWER} {BUDGET_MARKER}",
-                                bindings=bindings,
-                            )
-                        ],
-                        user_id="owner",
-                        idempotency_key=uuid4(),
-                    )
-            assert error.value.code == "stale_gap", label
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    for label, binding in stale_bindings.items():
+        code = await stale_gap_error(
+            workspace,
+            before=body,
+            after=body.replace(LEAD_MARKER, narrowing),
+            changes=[gap_change(body, LEAD_MARKER, narrowing, bindings=[binding])],
+        )
+        assert code == "stale_gap", label
+    after = await fixture_chapter(workspace)
     [gap] = after.gaps
-    assert (gap.state, gap.version, gap.question) == (
-        "open",
-        1,
-        "Confirm the lead partner.",
-    )
+    assert (gap.state, gap.version, gap.question) == ("open", 1, LEAD_QUESTION)
     assert gap.accepted_passages == ()
     assert after.revision_number == 1
-    assert after.body_markdown == chapter.body_markdown
+    assert after.body_markdown == body
 
 
 async def test_accepting_one_change_in_multigap_review_leaves_the_other_gap_unchanged(
     workspace,
 ) -> None:
     """Accepting the lead-partner change never touches the other open signatory gap."""
-    async with workspace._session_factory() as session, session.begin():
-        session.add(
-            ConceptNoteGap(
-                gap_id=uuid4(),
-                run_id=RUN_ID,
-                chapter_id=CHAPTER_ID,
-                field_key="signatory",
-                severity="critical",
-                question="Who signs the grant agreement?",
-                why_asking="The grant needs a signatory.",
-                suggestions=[],
-                source_refs=[],
-                status="open",
-                version=1,
-            )
-        )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    other_marker = "[Information needed: Who signs the grant agreement?]"
-    body = f"{chapter.body_markdown}\n\n{other_marker}"
-    await _accept(
+    await add_rows(workspace, gap_row(SIGNATORY_QUESTION, field_key="signatory"))
+    body = f"{(await fixture_chapter(workspace)).body_markdown}\n\n{UNRECORDED}"
+    await accept(
         workspace,
         before=body,
         after=body.replace(LEAD_MARKER, LEAD_ANSWER),
         changes=[
-            _lead_change(
-                body,
-                before=LEAD_MARKER,
-                after=LEAD_ANSWER,
-                bindings=[gap_binding(version=1)],
+            gap_change(
+                body, LEAD_MARKER, LEAD_ANSWER, bindings=[gap_binding(version=1)]
             )
         ],
     )
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    after = await fixture_chapter(workspace)
     states = {gap.question: (gap.state, gap.version) for gap in after.gaps}
     assert states == {
-        "Confirm the lead partner.": ("resolved", 2),
-        "Who signs the grant agreement?": ("open", 1),
+        LEAD_QUESTION: ("resolved", 2),
+        SIGNATORY_QUESTION: ("open", 1),
     }
-    assert after.body_markdown.count(other_marker) == 1
+    assert after.body_markdown.count(UNRECORDED) == 1
 
 
 async def test_repeated_marker_occurrences_apply_as_one_gap_transition(
     workspace,
 ) -> None:
     """Every occurrence of a repeated question fills together and the gap moves once."""
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    body = f"{chapter.body_markdown}\n\nRepeated: {LEAD_MARKER}"
-    occurrences = [
-        _lead_change(
-            body,
-            before=LEAD_MARKER,
-            after=LEAD_ANSWER,
-            bindings=[gap_binding(version=1)],
-        ),
-    ]
-    second = occurrences[0].model_copy(
+    body = (
+        f"{(await fixture_chapter(workspace)).body_markdown}\n\nRepeated: {LEAD_MARKER}"
+    )
+    first = gap_change(
+        body, LEAD_MARKER, LEAD_ANSWER, bindings=[gap_binding(version=1)]
+    )
+    second = first.model_copy(
         update={"change_id": uuid4(), "start": body.rindex(LEAD_MARKER)}
     )
-    await _accept(
+    await accept(
         workspace,
         before=body,
         after=body.replace(LEAD_MARKER, LEAD_ANSWER),
-        changes=[*occurrences, second],
+        changes=[first, second],
     )
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    after = await fixture_chapter(workspace)
     [gap] = after.gaps
     assert (gap.state, gap.version) == ("resolved", 2)
     assert "[Information needed:" not in after.body_markdown
-    async with workspace._session_factory() as session:
-        answers = (
-            await session.scalars(
-                select(ConceptNoteGapResolution.answer).where(
-                    ConceptNoteGapResolution.gap_id == GAP_ID
-                )
-            )
-        ).all()
-    assert list(answers) == [LEAD_ANSWER]
+    assert await resolution_answers(workspace) == [LEAD_ANSWER]
 
 
 async def test_old_pending_marker_edits_require_a_fresh_review(workspace) -> None:
     """A proposal from before gap bindings cannot move a marker; it must be regenerated."""
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    async with workspace._session_factory() as session:
-        with pytest.raises(EditOperationError) as error:
-            async with session.begin():
-                chapter_row = await session.get(ConceptNoteChapter, CHAPTER_ID)
-                await resolve_filled_information_gaps(
-                    session,
-                    chapter=chapter_row,
-                    before=chapter.body_markdown,
-                    after=chapter.body_markdown.replace(LEAD_MARKER, LEAD_ANSWER),
-                    changes=[
-                        _lead_change(
-                            chapter.body_markdown,
-                            before=LEAD_MARKER,
-                            after=LEAD_ANSWER,
-                            bindings=[],
-                        )
-                    ],
-                    user_id="owner",
-                    idempotency_key=uuid4(),
-                )
-        assert error.value.code == "stale_gap"
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
-    assert after.gaps[0].state == "open"
+    body = (await fixture_chapter(workspace)).body_markdown
+    code = await stale_gap_error(
+        workspace,
+        before=body,
+        after=body.replace(LEAD_MARKER, LEAD_ANSWER),
+        changes=[gap_change(body, LEAD_MARKER, LEAD_ANSWER, bindings=[])],
+    )
+    assert code == "stale_gap"
+    assert (await fixture_chapter(workspace)).gaps[0].state == "open"
 
 
 async def test_a_bound_answer_names_its_gap_version_without_hiding_gaps(
@@ -998,204 +1027,48 @@ def test_a_bound_answer_names_its_chapter_and_version() -> None:
         EditScope(gap_id=GAP_ID, gap_version=1)
 
 
-UNRECORDED = "[Information needed: Who signs the grant agreement?]"
-
-
-async def add_unrecorded_marker(workspace) -> None:
-    """Revision 2 adds a marker that no gap record tracks (a legacy marker)."""
-    async with workspace._session_factory() as session, session.begin():
-        session.add(
-            ConceptNoteChapterRevision(
-                chapter_id=CHAPTER_ID,
-                revision_number=2,
-                author_type="agent",
-                change_type="draft",
-                body_markdown="## Implementation\n\n[Information needed: Confirm the lead partner.]\n\n"
-                f"Signatory: {UNRECORDED}",
-                patch_summary={},
-            )
-        )
-
-
-async def test_adopting_an_unrecorded_marker_creates_one_open_gap(workspace) -> None:
-    """The record pairs with the marker, so the normal form can close it."""
-    await add_unrecorded_marker(workspace)
-    gap_id = await workspace.adopt_marker_gap(
-        run_id=RUN_ID, chapter_id=CHAPTER_ID, marker=UNRECORDED
-    )
-    # A retry, even with other formatting, returns the same record.
-    assert (
-        await workspace.adopt_marker_gap(
-            run_id=RUN_ID,
-            chapter_id=CHAPTER_ID,
-            marker="[Information needed: **who signs the grant agreement**]",
-        )
-        == gap_id
-    )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    adopted = next(gap for gap in chapter.gaps if gap.gap_id == gap_id)
-    assert len(chapter.gaps) == 2
-    assert adopted.question == "Who signs the grant agreement?"
-    assert adopted.state == "open" and adopted.severity == "critical"
-    assert adopted.field_key.startswith("adopted_")
-    # The stored sentinel is shown as a rationale specific to this marker.
-    assert "Who signs the grant agreement?" in adopted.why_asking
-    assert "Implementation" in adopted.why_asking
-    assert chapter.status == "needs_review"
-    assert chapter.body_markdown.endswith(UNRECORDED)
-
-    # Answering it now closes the adopted gap like any other.
-    answer = "Jordan Ellis, City Manager, signs the grant agreement."
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=2,
-        start=chapter.body_markdown.index(UNRECORDED),
-        before=UNRECORDED,
-        after=answer,
-        kind="factual",
-        group_id="signatory",
-        user_input_quote="Jordan Ellis, City Manager",
-        gap_bindings=[gap_binding(version=1, gap_id=gap_id)],
-    )
-    async with workspace._session_factory() as session, session.begin():
-        row = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=row,
-            before=chapter.body_markdown,
-            after=chapter.body_markdown.replace(UNRECORDED, answer),
-            changes=[change],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
-    assert next(gap for gap in after.gaps if gap.gap_id == gap_id).state == "resolved"
-
-
-async def test_adoption_keeps_existing_records_and_rejects_missing_markers(
-    workspace,
-) -> None:
-    # A marker that already has an open record keeps it.
-    assert (
-        await workspace.adopt_marker_gap(
-            run_id=RUN_ID,
-            chapter_id=CHAPTER_ID,
-            marker="[Information needed: Confirm the lead partner.]",
-        )
-        == GAP_ID
-    )
-    with pytest.raises(WorkspaceConflictError, match="no longer in the chapter"):
-        await workspace.adopt_marker_gap(
-            run_id=RUN_ID, chapter_id=CHAPTER_ID, marker=UNRECORDED
-        )
-    with pytest.raises(WorkspaceConflictError, match="unavailable"):
-        await workspace.adopt_marker_gap(
-            run_id=uuid4(),
-            chapter_id=CHAPTER_ID,
-            marker="[Information needed: Confirm the lead partner.]",
-        )
-    async with workspace._session_factory() as session, session.begin():
-        (await session.get(ConceptNoteGap, GAP_ID)).status = "resolved"
-    with pytest.raises(WorkspaceConflictError, match="already closed"):
-        await workspace.adopt_marker_gap(
-            run_id=RUN_ID,
-            chapter_id=CHAPTER_ID,
-            marker="[Information needed: Confirm the lead partner.]",
-        )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert len(chapter.gaps) == 1
-
-
 async def test_saved_answers_show_only_for_their_open_gap_version(workspace) -> None:
     """Answers saved from the form stay on the gap until it changes or closes."""
     saved = "1. Lead partner?\nLincoln Park Neighborhood Council\n\n2. Funding?\nNot decided yet"
-    async with workspace._session_factory() as session, session.begin():
-        # A stale form or another run's gap cannot attach answers.
-        for run_id, version in ((RUN_ID, 2), (uuid4(), 1)):
-            assert not await save_partial_answer(
-                session,
-                run_id=run_id,
-                gap_id=GAP_ID,
-                gap_version=version,
-                answer=saved,
-                expected_previous=None,
-                user_id="owner",
-            )
-        assert await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=1,
-            answer=f" {saved} ",
-            expected_previous=None,
-            user_id="teammate",
-        )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    # A stale form or another run's gap cannot attach answers.
+    assert not await save_answers(workspace, saved, version=2)
+    assert not await save_answers(workspace, saved, run_id=uuid4())
+    assert await save_answers(workspace, f" {saved} ", user_id="teammate")
+    chapter = await fixture_chapter(workspace)
     [gap] = chapter.gaps
     # Saving changes neither the draft nor the gap version a form is bound to.
     assert (gap.state, gap.version, gap.answered_so_far) == ("open", 1, saved)
     assert chapter.revision_number == 1
 
     # Once the gap is answered and resolved, the saved answers no longer show.
-    marker = "[Information needed: Confirm the lead partner.]"
-    answer = "Lincoln Park Neighborhood Council will lead delivery."
-    async with workspace._session_factory() as session, session.begin():
-        row = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=row,
-            before=chapter.body_markdown,
-            after=chapter.body_markdown.replace(marker, answer),
-            changes=[
-                EditChange(
-                    chapter_id=CHAPTER_ID,
-                    chapter_title="Implementation",
-                    change_id=uuid4(),
-                    base_revision=1,
-                    start=chapter.body_markdown.index(marker),
-                    before=marker,
-                    after=answer,
-                    kind="factual",
-                    group_id="lead_partner",
-                    user_input_quote=answer,
-                    gap_bindings=[gap_binding(version=1, saved=saved)],
-                )
-            ],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
-    [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    body = chapter.body_markdown
+    await resolve(
+        workspace,
+        before=body,
+        after=body.replace(LEAD_MARKER, LEAD_ANSWER),
+        changes=[
+            gap_change(
+                body,
+                LEAD_MARKER,
+                LEAD_ANSWER,
+                bindings=[gap_binding(version=1, saved=saved)],
+            )
+        ],
+    )
+    [after] = (await fixture_chapter(workspace)).gaps
     assert (after.state, after.answered_so_far) == ("resolved", None)
-
-
-async def _save_answers(workspace, answer: str, expected_previous: str | None) -> bool:
-    async with workspace._session_factory() as session, session.begin():
-        return await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=1,
-            answer=answer,
-            expected_previous=expected_previous,
-            user_id="owner",
-        )
 
 
 async def test_two_open_forms_cannot_overwrite_or_clear_newer_saved_answers(
     workspace,
 ) -> None:
     """Two forms opened on the same empty gap cannot overwrite each other."""
-    [first_view] = await workspace.list_chapters(run_id=RUN_ID)
-    [second_view] = await workspace.list_chapters(run_id=RUN_ID)
-    assert first_view.gaps[0].answered_so_far is None
-    assert second_view.gaps[0].answered_so_far is None
+    assert (await fixture_chapter(workspace)).gaps[0].answered_so_far is None
 
-    assert await _save_answers(workspace, "First form's answer", None)
+    assert await save_answers(workspace, "First form's answer")
     # The second form still expects nothing saved, so both its save and clear fail.
-    assert not await _save_answers(workspace, "Second form's answer", None)
-    assert not await _save_answers(workspace, "", None)
+    assert not await save_answers(workspace, "Second form's answer")
+    assert not await save_answers(workspace, "")
 
     async with workspace._session_factory() as session:
         events = await session.scalars(
@@ -1205,40 +1078,62 @@ async def test_two_open_forms_cannot_overwrite_or_clear_newer_saved_answers(
             )
         )
         assert [event.answer for event in events] == ["First form's answer"]
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    chapter = await fixture_chapter(workspace)
     assert (chapter.revision_number, chapter.gaps[0].version) == (1, 1)
     assert chapter.gaps[0].answered_so_far == "First form's answer"
 
     # A form that reloaded the newer text can save and then clear it.
-    assert await _save_answers(workspace, "Second form's answer", "First form's answer")
-    assert await _save_answers(workspace, "", "Second form's answer")
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert await save_answers(workspace, "Second form's answer", "First form's answer")
+    assert await save_answers(workspace, "", "Second form's answer")
+    chapter = await fixture_chapter(workspace)
     assert (chapter.revision_number, chapter.gaps[0].version) == (1, 1)
     assert chapter.gaps[0].answered_so_far is None
 
 
-VOLUNTEER_MARKER = "[Information needed: Confirm the volunteer count.]"
+async def seed_volunteer_gap(workspace) -> str:
+    """Make the seeded gap a numeric volunteer-count gap; return the new body."""
+    body = f"## Implementation\n\n{VOLUNTEER_MARKER}"
+    await update_fixture_gap(
+        workspace,
+        body=body,
+        field_key="volunteer_count",
+        question="Confirm the volunteer count.",
+    )
+    return body
 
 
-async def _seed_volunteer_gap(workspace) -> None:
-    """Make the seeded gap a numeric volunteer-count gap for estimate tests.
+async def accept_estimate(workspace, estimate: str, *, after: str | None = None):
+    """Fill the volunteer marker with a labelled estimate; return the body and change."""
+    body = await seed_volunteer_gap(workspace)
+    change = gap_change(
+        body,
+        VOLUNTEER_MARKER,
+        after or estimate,
+        quote="roughly 120 volunteers, not confirmed",
+        group="volunteer_count",
+        estimate=True,
+        bindings=[gap_binding(version=1)],
+    )
+    estimated = body.replace(VOLUNTEER_MARKER, change.after)
+    await resolve(workspace, before=body, after=estimated, changes=[change])
+    return estimated, change
 
-    Only the estimate tests call this, so the shared fixture stays unchanged
-    for the other tests.
-    """
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        gap.field_key = "volunteer_count"
-        gap.question = "Confirm the volunteer count."
-        revision = await session.scalar(
-            select(ConceptNoteChapterRevision).where(
-                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
-                ConceptNoteChapterRevision.revision_number == 1,
-            )
-        )
-        revision.body_markdown = revision.body_markdown.replace(
-            "[Information needed: Confirm the lead partner.]", VOLUNTEER_MARKER
-        )
+
+def confirmation(
+    change: EditChange, body: str, before: str, after: str, bindings
+) -> EditChange:
+    """A non-estimate follow-up to ``change`` that replaces ``before`` in ``body``."""
+    return change.model_copy(
+        update={
+            "change_id": uuid4(),
+            "start": body.index(before),
+            "before": before,
+            "after": after,
+            "user_input_quote": after,
+            "estimate": False,
+            "gap_bindings": bindings,
+        }
+    )
 
 
 async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
@@ -1249,101 +1144,28 @@ async def test_an_accepted_estimate_keeps_its_gap_visible_until_confirmed(
     A later complete answer bound to that caveat gap replaces the estimate
     text (no marker is left) and resolves it.
     """
-    await _seed_volunteer_gap(workspace)
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    marker = VOLUNTEER_MARKER
-    estimate = "The City estimates 120 volunteers, pending confirmation."
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=before.body_markdown.index(marker),
-        before=marker,
-        after=estimate,
-        kind="factual",
-        group_id="volunteer_count",
-        user_input_quote="roughly 120 volunteers, not confirmed",
-        estimate=True,
-        gap_bindings=[gap_binding(version=1)],
-    )
-    estimated_body = before.body_markdown.replace(marker, estimate)
-    async with workspace._session_factory() as session, session.begin():
-        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=chapter,
-            before=before.body_markdown,
-            after=estimated_body,
-            changes=[change],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
-    assert after.gaps[0].state == "caveat"
-    assert after.gaps[0].version == 2
-    assert after.gaps[0].resolution.answer == estimate
+    estimated, change = await accept_estimate(workspace, ESTIMATE)
+    [gap] = (await fixture_chapter(workspace)).gaps
+    assert (gap.state, gap.version, gap.resolution.answer) == ("caveat", 2, ESTIMATE)
+
+    def confirm(version: int) -> dict:
+        binding = gap_binding(version=version, mode="confirm_estimate")
+        return {
+            "before": estimated,
+            "after": estimated.replace(ESTIMATE, CONFIRMED),
+            "changes": [
+                confirmation(change, estimated, ESTIMATE, CONFIRMED, [binding])
+            ],
+        }
 
     # A confirmation bound to the superseded version is stale and changes nothing.
-    confirmed = "The City confirmed 150 volunteers."
-    confirm = change.model_copy(
-        update={
-            "change_id": uuid4(),
-            "before": estimate,
-            "after": confirmed,
-            "user_input_quote": confirmed,
-            "estimate": False,
-            "gap_bindings": [gap_binding(version=1, mode="confirm_estimate")],
-        }
-    )
-    async with workspace._session_factory() as session:
-        with pytest.raises(EditOperationError) as error:
-            async with session.begin():
-                chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-                await resolve_filled_information_gaps(
-                    session,
-                    chapter=chapter,
-                    before=estimated_body,
-                    after=estimated_body.replace(estimate, confirmed),
-                    changes=[confirm],
-                    user_id="owner",
-                    idempotency_key=uuid4(),
-                )
-        assert error.value.code == "stale_gap"
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
-    assert after.gaps[0].state == "caveat"
+    assert await stale_gap_error(workspace, **confirm(1)) == "stale_gap"
+    assert (await fixture_chapter(workspace)).gaps[0].state == "caveat"
 
-    async with workspace._session_factory() as session, session.begin():
-        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=chapter,
-            before=estimated_body,
-            after=estimated_body.replace(estimate, confirmed),
-            changes=[
-                confirm.model_copy(
-                    update={
-                        "gap_bindings": [
-                            gap_binding(version=2, mode="confirm_estimate")
-                        ]
-                    }
-                )
-            ],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
-    assert after.gaps[0].state == "resolved"
-    assert after.gaps[0].version == 3
-    async with workspace._session_factory() as session:
-        answers = (
-            await session.scalars(
-                select(ConceptNoteGapResolution.answer).where(
-                    ConceptNoteGapResolution.gap_id == GAP_ID
-                )
-            )
-        ).all()
-    assert sorted(answers) == sorted([estimate, confirmed])
+    await resolve(workspace, **confirm(2))
+    [gap] = (await fixture_chapter(workspace)).gaps
+    assert (gap.state, gap.version) == ("resolved", 3)
+    assert await resolution_answers(workspace) == sorted([ESTIMATE, CONFIRMED])
 
 
 async def test_saving_answers_for_an_estimate_preserves_its_accepted_resolution(
@@ -1355,37 +1177,8 @@ async def test_saving_answers_for_an_estimate_preserves_its_accepted_resolution(
     and cleared at the caveat version; a complete confirmation then resolves it
     and clears the saved text.
     """
-    await _seed_volunteer_gap(workspace)
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    marker = VOLUNTEER_MARKER
-    estimate = "The City estimates 120 volunteers, pending confirmation."
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=before.body_markdown.index(marker),
-        before=marker,
-        after=estimate,
-        kind="factual",
-        group_id="volunteer_count",
-        user_input_quote="roughly 120 volunteers, not confirmed",
-        estimate=True,
-        gap_bindings=[gap_binding(version=1)],
-    )
-    estimated_body = before.body_markdown.replace(marker, estimate)
-    async with workspace._session_factory() as session, session.begin():
-        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=chapter,
-            before=before.body_markdown,
-            after=estimated_body,
-            changes=[change],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
-
+    estimated, change = await accept_estimate(workspace, ESTIMATE)
+    draft = (await fixture_chapter(workspace)).body_markdown
     # SQLite's second-resolution now() would tie the estimate with the later
     # confirmation, so date the estimate event clearly earlier.
     async with workspace._session_factory() as session, session.begin():
@@ -1400,62 +1193,55 @@ async def test_saving_answers_for_an_estimate_preserves_its_accepted_resolution(
 
     saved = "The confirmed figure is 150 volunteers."
     for answer, expected_previous in ((saved, None), ("", saved)):
-        async with workspace._session_factory() as session, session.begin():
-            assert await save_partial_answer(
-                session,
-                run_id=RUN_ID,
-                gap_id=GAP_ID,
-                gap_version=2,
-                answer=answer,
-                expected_previous=expected_previous,
-                user_id="owner",
-            )
-        [chapter_view] = await workspace.list_chapters(run_id=RUN_ID)
-        [gap] = chapter_view.gaps
+        assert await save_answers(workspace, answer, expected_previous, version=2)
+        chapter = await fixture_chapter(workspace)
+        [gap] = chapter.gaps
         assert (gap.state, gap.version) == ("caveat", 2)
-        assert gap.resolution.answer == estimate
+        assert gap.resolution.answer == ESTIMATE
         assert gap.answered_so_far == (answer or None)
-        assert chapter_view.body_markdown == before.body_markdown
+        assert chapter.body_markdown == draft
 
     # Save the answers again so the complete confirmation starts with them saved.
-    async with workspace._session_factory() as session, session.begin():
-        assert await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=2,
-            answer=saved,
-            expected_previous=None,
-            user_id="owner",
-        )
-    confirmed = "The City confirmed 150 volunteers."
-    confirm = change.model_copy(
-        update={
-            "change_id": uuid4(),
-            "before": estimate,
-            "after": confirmed,
-            "user_input_quote": confirmed,
-            "estimate": False,
-            "gap_bindings": [
-                gap_binding(version=2, mode="confirm_estimate", saved=saved)
-            ],
-        }
+    assert await save_answers(workspace, saved, version=2)
+    binding = gap_binding(version=2, mode="confirm_estimate", saved=saved)
+    await resolve(
+        workspace,
+        before=estimated,
+        after=estimated.replace(ESTIMATE, CONFIRMED),
+        changes=[confirmation(change, estimated, ESTIMATE, CONFIRMED, [binding])],
     )
-    async with workspace._session_factory() as session, session.begin():
-        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=chapter,
-            before=estimated_body,
-            after=estimated_body.replace(estimate, confirmed),
-            changes=[confirm],
-            user_id="owner",
+    [gap] = (await fixture_chapter(workspace)).gaps
+    assert (gap.state, gap.version) == ("resolved", 3)
+    assert gap.resolution.answer == CONFIRMED
+    assert gap.answered_so_far is None
+
+
+async def caveat_with_estimate(workspace, copies: int) -> str:
+    """Make the seeded gap a caveat whose estimate appears ``copies`` times; return the body."""
+    body = "## Implementation\n\n" + "\n\n".join(
+        f"Delivery relies on {ESTIMATE}" for _ in range(copies)
+    )
+    await update_fixture_gap(
+        workspace,
+        body=body,
+        field_key="volunteer_count",
+        question="Confirm the volunteer count.",
+        status="caveat",
+        version=2,
+    )
+    await add_rows(
+        workspace,
+        ConceptNoteGapResolution(
+            gap_id=GAP_ID,
+            action="answer",
+            answer=ESTIMATE,
+            gap_version=2,
+            actor_user_id="owner",
+            source_refs=[],
             idempotency_key=uuid4(),
-        )
-    [after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
-    assert (after.state, after.version) == ("resolved", 3)
-    assert after.resolution.answer == confirmed
-    assert after.answered_so_far is None
+        ),
+    )
+    return body
 
 
 async def test_confirming_estimate_and_narrowing_related_marker_commits_both(
@@ -1467,108 +1253,62 @@ async def test_confirming_estimate_and_narrowing_related_marker_commits_both(
     asks to confirm the same amount keeps only its unanswered source question.
     An unrelated open marker is left as it was.
     """
-    await _caveat_with_estimate(workspace, copies=1)
-    related_marker = "[Information needed: Confirm the volunteer count and its source.]"
+    related_question = "Confirm the volunteer count and its source."
+    related_marker = f"[Information needed: {related_question}]"
     source_question = "Confirm the source of the volunteer count."
-    unrelated_marker = f"[Information needed: {BUDGET_QUESTION}]"
+    body = await caveat_with_estimate(workspace, copies=1)
+    body += f"\n\n{related_marker}\n\n{BUDGET_MARKER}"
+    await update_fixture_gap(workspace, body=body)
     related_gap, unrelated_gap = uuid4(), uuid4()
-    async with workspace._session_factory() as session, session.begin():
-        revision = await session.scalar(
-            select(ConceptNoteChapterRevision).where(
-                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
-                ConceptNoteChapterRevision.revision_number == 1,
-            )
-        )
-        revision.body_markdown += f"\n\n{related_marker}\n\n{unrelated_marker}"
-        for gap_id, field_key, question in (
-            (
-                related_gap,
-                "volunteer_source",
-                "Confirm the volunteer count and its source.",
-            ),
-            (unrelated_gap, "budget", BUDGET_QUESTION),
-        ):
-            session.add(
-                ConceptNoteGap(
-                    gap_id=gap_id,
-                    run_id=RUN_ID,
-                    chapter_id=CHAPTER_ID,
-                    field_key=field_key,
-                    severity="critical",
-                    question=question,
-                    why_asking="The volunteer count must be sourced.",
-                    status="open",
-                )
-            )
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    body = before.body_markdown
+    await add_rows(
+        workspace,
+        gap_row(related_question, gap_id=related_gap, field_key="volunteer_source"),
+        gap_row(BUDGET_QUESTION, gap_id=unrelated_gap, field_key="budget"),
+    )
     confirmed = "150 volunteers"
     narrowed = (
         f"The City confirmed {confirmed}. [Information needed: {source_question}]"
     )
-    caveat = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=body.index(ESTIMATE),
-        before=ESTIMATE,
-        after=confirmed,
-        kind="factual",
-        group_id="volunteer_count",
-        user_input_quote=confirmed,
-        estimate=False,
-        gap_bindings=[gap_binding(version=2, mode="confirm_estimate")],
-    )
-    related = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=body.index(related_marker),
-        before=related_marker,
-        after=narrowed,
-        kind="factual",
-        group_id="volunteer_source",
-        user_input_quote=confirmed,
-        estimate=False,
-        gap_bindings=[gap_binding(version=1, mode="narrow", gap_id=related_gap)],
-    )
+    changes = [
+        gap_change(
+            body,
+            ESTIMATE,
+            confirmed,
+            group="volunteer_count",
+            bindings=[gap_binding(version=2, mode="confirm_estimate")],
+        ),
+        gap_change(
+            body,
+            related_marker,
+            narrowed,
+            quote=confirmed,
+            group="volunteer_source",
+            bindings=[gap_binding(version=1, mode="narrow", gap_id=related_gap)],
+        ),
+    ]
     after_body = body.replace(ESTIMATE, confirmed).replace(related_marker, narrowed)
-    await _accept(workspace, before=body, after=after_body, changes=[caveat, related])
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    await accept(workspace, before=body, after=after_body, changes=changes)
+
+    after = await fixture_chapter(workspace)
     gaps = {gap.gap_id: gap for gap in after.gaps}
     assert (gaps[GAP_ID].state, gaps[GAP_ID].version) == ("resolved", 3)
-    async with workspace._session_factory() as session:
-        answers = (
-            await session.scalars(
-                select(ConceptNoteGapResolution.answer).where(
-                    ConceptNoteGapResolution.gap_id == GAP_ID
-                )
-            )
-        ).all()
-    assert confirmed in answers and ESTIMATE in answers
+    assert await resolution_answers(workspace) == sorted([confirmed, ESTIMATE])
     assert (gaps[related_gap].state, gaps[related_gap].version) == ("open", 2)
     assert gaps[related_gap].question == source_question
     assert (gaps[unrelated_gap].state, gaps[unrelated_gap].version) == ("open", 1)
-    assert unrelated_marker in after.body_markdown
+    assert BUDGET_MARKER in after.body_markdown
     assert ESTIMATE not in after.body_markdown
     assert confirmed in after.body_markdown
 
 
 def test_an_estimate_is_always_a_factual_change() -> None:
     with pytest.raises(ValueError, match="an estimate is a factual change"):
-        EditChange(
-            chapter_id=CHAPTER_ID,
-            chapter_title="Implementation",
-            change_id=uuid4(),
-            base_revision=1,
-            start=0,
-            before="old",
-            after="about 2 million",
+        gap_change(
+            "old",
+            "old",
+            "about 2 million",
             kind="wording",
-            group_id="amount",
-            user_input_quote="about 2 million",
+            group="amount",
             estimate=True,
         )
 
@@ -1582,134 +1322,47 @@ async def test_confirming_an_estimate_also_closes_its_duplicate_caveat(
     complete answer to that other gap that replaces the estimate text here
     resolves it; a change outside the estimate text leaves it a caveat.
     """
-    await _seed_volunteer_gap(workspace)
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    marker = VOLUNTEER_MARKER
     estimate = "an estimated 120 volunteers, the City's unconfirmed figure"
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=before.body_markdown.index(marker),
-        before=marker,
-        after=f"Delivery relies on {estimate}.",
-        kind="factual",
-        group_id="volunteers",
-        user_input_quote="roughly 120 volunteers, not confirmed",
-        estimate=True,
-        gap_bindings=[gap_binding(version=1)],
+    estimated, change = await accept_estimate(
+        workspace, estimate, after=f"Delivery relies on {estimate}."
     )
-    estimated_body = before.body_markdown.replace(marker, change.after)
-    async with workspace._session_factory() as session, session.begin():
-        chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-        await resolve_filled_information_gaps(
-            session,
-            chapter=chapter,
-            before=before.body_markdown,
-            after=estimated_body,
-            changes=[change],
-            user_id="owner",
-            idempotency_key=uuid4(),
-        )
     # Saved answers on the duplicate never stand in for its accepted estimate.
     reply = "Only a partial reply, not the estimate."
-    async with workspace._session_factory() as session, session.begin():
-        assert await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=2,
-            answer=reply,
-            expected_previous=None,
-            user_id="owner",
-        )
+    assert await save_answers(workspace, reply, version=2)
+    confirmed = "150 volunteers, confirmed by the City"
     for old, new, state, bindings in (
         ("## Implementation", "## Delivery", "caveat", []),
         (
             estimate,
-            "150 volunteers, confirmed by the City",
+            confirmed,
             "resolved",
             [gap_binding(version=2, mode="confirm_estimate", saved=reply)],
         ),
     ):
-        confirm = change.model_copy(
-            update={
-                "change_id": uuid4(),
-                "start": estimated_body.index(old),
-                "before": old,
-                "after": new,
-                "user_input_quote": new,
-                "estimate": False,
-                "gap_bindings": bindings,
-            }
+        await resolve(
+            workspace,
+            before=estimated,
+            after=estimated.replace(old, new),
+            changes=[confirmation(change, estimated, old, new, bindings)],
         )
-        async with workspace._session_factory() as session, session.begin():
-            chapter = await session.get(ConceptNoteChapter, CHAPTER_ID)
-            await resolve_filled_information_gaps(
-                session,
-                chapter=chapter,
-                before=estimated_body,
-                after=estimated_body.replace(old, new),
-                changes=[confirm],
-                user_id="owner",
-                idempotency_key=uuid4(),
-            )
-        [after] = await workspace.list_chapters(run_id=RUN_ID)
-        assert after.gaps[0].state == state
+        assert (await fixture_chapter(workspace)).gaps[0].state == state
 
 
-ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
-
-
-async def _caveat_with_estimate(workspace, copies: int) -> None:
-    """Make the seeded gap a caveat whose estimate appears ``copies`` times in the chapter."""
-    await _seed_volunteer_gap(workspace)
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        gap.status = "caveat"
-        gap.version = 2
-        session.add(
-            ConceptNoteGapResolution(
-                gap_id=GAP_ID,
-                action="answer",
-                answer=ESTIMATE,
-                gap_version=2,
-                actor_user_id="owner",
-                source_refs=[],
-                idempotency_key=uuid4(),
-            )
-        )
-        revision = await session.scalar(
-            select(ConceptNoteChapterRevision).where(
-                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID,
-                ConceptNoteChapterRevision.revision_number == 1,
-            )
-        )
-        revision.body_markdown = "## Implementation\n\n" + "\n\n".join(
-            f"Delivery relies on {ESTIMATE}" for _ in range(copies)
-        )
-
-
-async def _estimate_state(workspace) -> tuple:
+async def estimate_state(workspace) -> tuple:
     """Snapshot the revisions, gap version and status, and resolution events for the gap."""
     async with workspace._session_factory() as session:
-        revisions = (
-            await session.scalars(
-                select(ConceptNoteChapterRevision.revision_number).where(
-                    ConceptNoteChapterRevision.chapter_id == CHAPTER_ID
-                )
+        revisions = await session.scalars(
+            select(ConceptNoteChapterRevision.revision_number).where(
+                ConceptNoteChapterRevision.chapter_id == CHAPTER_ID
             )
-        ).all()
-        resolutions = (
-            await session.scalars(
-                select(ConceptNoteGapResolution.resolution_id).where(
-                    ConceptNoteGapResolution.gap_id == GAP_ID
-                )
+        )
+        resolutions = await session.scalars(
+            select(ConceptNoteGapResolution.resolution_id).where(
+                ConceptNoteGapResolution.gap_id == GAP_ID
             )
-        ).all()
+        )
         gap = await session.get(ConceptNoteGap, GAP_ID)
-        return sorted(revisions), len(resolutions), gap.version, gap.status
+        return sorted(revisions), len(resolutions.all()), gap.version, gap.status
 
 
 @pytest.mark.parametrize("copies", [3, 2])
@@ -1722,33 +1375,22 @@ async def test_estimate_confirmation_rejects_unbound_duplicate_occurrence_atomic
     copy is ambiguous, so the apply must fail with no revision, gap or
     resolution written.
     """
-    await _caveat_with_estimate(workspace, copies)
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    state_before = await _estimate_state(workspace)
-    start = before.body_markdown.index(ESTIMATE)
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=start,
-        before=ESTIMATE,
-        after="The City now estimates 130 volunteers, pending confirmation.",
-        kind="factual",
-        group_id="volunteers",
-        user_input_quote="130 volunteers",
+    body = await caveat_with_estimate(workspace, copies)
+    state_before = await estimate_state(workspace)
+    change = gap_change(
+        body,
+        ESTIMATE,
+        "The City now estimates 130 volunteers, pending confirmation.",
+        quote="130 volunteers",
+        group="volunteers",
     )
     after_body = (
-        before.body_markdown[:start]
-        + change.after
-        + before.body_markdown[start + len(ESTIMATE) :]
+        body[: change.start] + change.after + body[change.start + len(ESTIMATE) :]
     )
     with pytest.raises(EditOperationError) as error:
-        await _accept(
-            workspace, before=before.body_markdown, after=after_body, changes=[change]
-        )
+        await accept(workspace, before=body, after=after_body, changes=[change])
     assert error.value.code == "stale_gap"
-    assert await _estimate_state(workspace) == state_before
+    assert await estimate_state(workspace) == state_before
 
 
 async def test_confirmed_estimate_updates_prose_version_and_resolution_together(
@@ -1759,224 +1401,38 @@ async def test_confirmed_estimate_updates_prose_version_and_resolution_together(
     The caveat gap resolves at its next version, the chapter gains one revision
     and the confirmed text replaces the estimate in the prose.
     """
-    await _caveat_with_estimate(workspace, 1)
-    [before] = await workspace.list_chapters(run_id=RUN_ID)
-    confirmed = "The City confirmed 150 volunteers."
-    start = before.body_markdown.index(ESTIMATE)
-    change = EditChange(
-        chapter_id=CHAPTER_ID,
-        chapter_title="Implementation",
-        change_id=uuid4(),
-        base_revision=1,
-        start=start,
-        before=ESTIMATE,
-        after=confirmed,
-        kind="factual",
-        group_id="volunteers",
-        user_input_quote=confirmed,
-        gap_bindings=[gap_binding(version=2, mode="confirm_estimate")],
+    body = await caveat_with_estimate(workspace, 1)
+    change = gap_change(
+        body,
+        ESTIMATE,
+        CONFIRMED,
+        group="volunteers",
+        bindings=[gap_binding(version=2, mode="confirm_estimate")],
     )
-    after_body = before.body_markdown.replace(ESTIMATE, confirmed)
-    await _accept(
-        workspace, before=before.body_markdown, after=after_body, changes=[change]
-    )
+    after_body = body.replace(ESTIMATE, CONFIRMED)
+    await accept(workspace, before=body, after=after_body, changes=[change])
 
-    [after] = await workspace.list_chapters(run_id=RUN_ID)
+    after = await fixture_chapter(workspace)
     assert after.body_markdown == after_body
-    assert after.revision_number == before.revision_number + 1
+    assert after.revision_number == 2
     assert (after.gaps[0].state, after.gaps[0].version) == ("resolved", 3)
-    async with workspace._session_factory() as session:
-        answers = (
-            await session.scalars(
-                select(ConceptNoteGapResolution.answer).where(
-                    ConceptNoteGapResolution.gap_id == GAP_ID
-                )
-            )
-        ).all()
-    assert sorted(answers) == sorted([ESTIMATE, confirmed])
-
-
-SECOND_CHAPTER_ID = UUID("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
-DELETED_CHAPTER_ID = UUID("ffffffff-ffff-4fff-8fff-ffffffffffff")
-
-
-async def _gap_and_chapter_rows(workspace) -> tuple[dict, dict]:
-    """Snapshot every gap record and chapter row, including timestamps."""
-    async with workspace._session_factory() as session:
-        gaps = (await session.scalars(select(ConceptNoteGap))).all()
-        chapters = (await session.scalars(select(ConceptNoteChapter))).all()
-        return (
-            {
-                gap.gap_id: (
-                    gap.chapter_id,
-                    gap.field_key,
-                    gap.severity,
-                    gap.question,
-                    gap.why_asking,
-                    gap.status,
-                    gap.created_at,
-                    gap.updated_at,
-                )
-                for gap in gaps
-            },
-            {
-                chapter.chapter_id: (chapter.status, chapter.updated_at)
-                for chapter in chapters
-            },
-        )
-
-
-async def test_batch_adopts_every_unrecorded_marker_once(workspace) -> None:
-    """One run-level call gives each unrecorded marker one record per chapter.
-
-    The concurrent-session part of this scenario belongs to the live harness.
-    """
-    long_question = "x" * 2_050
-    body = (
-        "## Implementation\n\n"
-        "[Information needed: Confirm the lead partner.]\n\n"
-        f"Signatory: {UNRECORDED}\n\n"
-        "Again: [Information needed: **who signs the grant agreement**]\n\n"
-        "Budget: [Information needed: Confirm the budget.]\n\n"
-        f"Long: [Information needed: {long_question}]"
-    )
-    second_body = (
-        "## Scope\n\nFunding: " f"{UNRECORDED}\n\nNote: [Information needed: ***]"
-    )
-    async with workspace._session_factory() as session, session.begin():
-        session.add(
-            ConceptNoteChapterRevision(
-                chapter_id=CHAPTER_ID,
-                revision_number=2,
-                author_type="agent",
-                change_type="draft",
-                body_markdown=body,
-                patch_summary={},
-            )
-        )
-        # A closed record keeps its marker closed, so no new record appears.
-        session.add(
-            ConceptNoteGap(
-                gap_id=uuid4(),
-                run_id=RUN_ID,
-                chapter_id=CHAPTER_ID,
-                field_key="budget",
-                severity="noncritical",
-                question="Confirm the budget.",
-                why_asking="The budget must be stated.",
-                status="resolved",
-            )
-        )
-        session.add(
-            ConceptNoteChapter(
-                chapter_id=SECOND_CHAPTER_ID,
-                run_id=RUN_ID,
-                template_section_id="scope",
-                title="Scope",
-                position=1,
-                status="draft",
-                required=True,
-            )
-        )
-        session.add(
-            ConceptNoteChapterRevision(
-                chapter_id=SECOND_CHAPTER_ID,
-                revision_number=1,
-                author_type="agent",
-                change_type="draft",
-                body_markdown=second_body,
-                patch_summary={},
-            )
-        )
-        session.add(
-            ConceptNoteChapter(
-                chapter_id=DELETED_CHAPTER_ID,
-                run_id=RUN_ID,
-                template_section_id="old",
-                title="Old",
-                position=2,
-                status="deleted",
-                required=False,
-            )
-        )
-        session.add(
-            ConceptNoteChapterRevision(
-                chapter_id=DELETED_CHAPTER_ID,
-                revision_number=1,
-                author_type="agent",
-                change_type="draft",
-                body_markdown=f"Old {UNRECORDED}",
-                patch_summary={},
-            )
-        )
-
-    assert await workspace.adopt_legacy_marker_gaps(run_id=RUN_ID) == 3
-    first_gaps, first_chapters = await _gap_and_chapter_rows(workspace)
-
-    chapters = {
-        chapter.chapter_id: chapter
-        for chapter in await workspace.list_chapters(run_id=RUN_ID)
-    }
-    assert set(chapters) == {CHAPTER_ID, SECOND_CHAPTER_ID}
-    first = chapters[CHAPTER_ID]
-    adopted = [gap for gap in first.gaps if gap.field_key.startswith("adopted_")]
-    assert sorted(gap.question for gap in adopted) == sorted(
-        ["Who signs the grant agreement?", long_question]
-    )
-    assert all(gap.severity == "critical" and gap.state == "open" for gap in adopted)
-    assert [gap.question for gap in first.gaps].count("Confirm the budget.") == 1
-    assert "Confirm the lead partner." in [gap.question for gap in first.gaps]
-    assert first.status == "needs_review"
-    assert first.body_markdown == body
-
-    second = chapters[SECOND_CHAPTER_ID]
-    assert [gap.question for gap in second.gaps] == ["Who signs the grant agreement?"]
-    assert second.gaps[0].severity == "critical" and second.gaps[0].state == "open"
-    assert second.status == "needs_review"
-    assert second.body_markdown == second_body
-
-    # Open counts: the existing lead-partner gap plus the two adopted ones here.
-    assert sum(gap.state == "open" for gap in first.gaps) == 3
-    assert sum(gap.state == "open" for gap in second.gaps) == 1
-    assert all(row[0] != DELETED_CHAPTER_ID for row in first_gaps.values())
-
-    # Revisions are untouched, so the second chapter keeps its single revision.
-    async with workspace._session_factory() as session:
-        revisions = (await session.scalars(select(ConceptNoteChapterRevision))).all()
-    assert sorted(
-        (revision.chapter_id, revision.revision_number) for revision in revisions
-    ) == sorted(
-        [
-            (CHAPTER_ID, 1),
-            (CHAPTER_ID, 2),
-            (SECOND_CHAPTER_ID, 1),
-            (DELETED_CHAPTER_ID, 1),
-        ]
-    )
-
-    # A repeat call adds nothing and rewrites no timestamp or identifier.
-    assert await workspace.adopt_legacy_marker_gaps(run_id=RUN_ID) == 0
-    assert await _gap_and_chapter_rows(workspace) == (first_gaps, first_chapters)
+    assert await resolution_answers(workspace) == sorted([ESTIMATE, CONFIRMED])
 
 
 def test_accepted_passages_strip_markers_and_keep_the_original_scope() -> None:
     """Progress keeps the first scope, marker-free passages and no duplicates."""
     gap = ConceptNoteGap(question="Who leads and when?", answer_progress=None)
-    record_accepted_narrowing(
-        gap,
-        previous_question="Who leads and when?",
-        passage="Lincoln Park leads. [Information needed: When does it start?]",
-    )
-    record_accepted_narrowing(
-        gap,
-        previous_question="When does it start?",
-        passage="Lincoln Park leads.",
-    )
-    record_accepted_narrowing(
-        gap,
-        previous_question="When does it start?",
-        passage="The budget is set.",
-    )
+    for previous_question, passage in (
+        (
+            "Who leads and when?",
+            "Lincoln Park leads. [Information needed: When does it start?]",
+        ),
+        ("When does it start?", "Lincoln Park leads."),
+        ("When does it start?", "The budget is set."),
+    ):
+        record_accepted_narrowing(
+            gap, previous_question=previous_question, passage=passage
+        )
     assert gap.answer_progress == {
         "original_question": "Who leads and when?",
         "accepted_passages": ["Lincoln Park leads.", "The budget is set."],
@@ -1987,46 +1443,34 @@ async def test_narrowing_carries_saved_answers_to_the_new_version_without_creati
     workspace,
 ) -> None:
     """An accepted narrowing moves saved answers to the new version, not a resolution."""
-    saved = "Lincoln Park Neighborhood Council will lead delivery."
-    assert await _save_answers(workspace, saved, None)
-    passage = "Lincoln Park Neighborhood Council will lead delivery."
+    assert await save_answers(workspace, LEAD_ANSWER)
     async with workspace._session_factory() as session, session.begin():
         gap = await session.get(ConceptNoteGap, GAP_ID, with_for_update=True)
         previous_question = gap.question
         gap.version = 2
-        gap.question = "Confirm the delivery budget."
+        gap.question = BUDGET_QUESTION
         record_accepted_narrowing(
-            gap, previous_question=previous_question, passage=passage
+            gap, previous_question=previous_question, passage=LEAD_ANSWER
         )
         assert await carry_forward_saved_answer(session, gap=gap, previous_version=1)
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    [narrowed] = chapter.gaps
+    [narrowed] = (await fixture_chapter(workspace)).gaps
     assert (narrowed.gap_id, narrowed.state, narrowed.version) == (GAP_ID, "open", 2)
-    assert narrowed.question == "Confirm the delivery budget."
-    assert narrowed.answered_so_far == saved
+    assert narrowed.question == BUDGET_QUESTION
+    assert narrowed.answered_so_far == LEAD_ANSWER
     assert narrowed.resolution is None
-    assert narrowed.original_question == "Confirm the lead partner."
-    assert narrowed.accepted_passages == (passage,)
+    assert narrowed.original_question == LEAD_QUESTION
+    assert narrowed.accepted_passages == (LEAD_ANSWER,)
 
-    async with workspace._session_factory() as session, session.begin():
+    async with workspace._session_factory() as session:
         non_partial = await session.scalar(
             select(ConceptNoteGapResolution.resolution_id).where(
                 ConceptNoteGapResolution.gap_id == GAP_ID,
                 ConceptNoteGapResolution.action != "partial_answer",
             )
         )
-        # The stale form still holds no saved text, so its save is refused.
-        stale = await save_partial_answer(
-            session,
-            run_id=RUN_ID,
-            gap_id=GAP_ID,
-            gap_version=2,
-            answer="A newer answer",
-            expected_previous=None,
-            user_id="owner",
-        )
     assert non_partial is None
-    assert stale is False
+    # The stale form still holds no saved text, so its save is refused.
+    assert not await save_answers(workspace, "A newer answer", version=2)
 
 
 async def test_carry_forward_leaves_a_clear_gap_clear(workspace) -> None:
@@ -2037,41 +1481,29 @@ async def test_carry_forward_leaves_a_clear_gap_clear(workspace) -> None:
         assert not await carry_forward_saved_answer(
             session, gap=gap, previous_version=1
         )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.gaps[0].answered_so_far is None
+    assert (await fixture_chapter(workspace)).gaps[0].answered_so_far is None
 
 
 def test_redraft_resets_progress_only_when_gap_scope_changes_or_reopens() -> None:
     """A changed normalized question or a reopen starts a new specification."""
     progress = {
-        "original_question": "Confirm the lead partner.",
+        "original_question": LEAD_QUESTION,
         "accepted_passages": ["Lincoln Park leads."],
     }
 
     def gap_with_progress(status: str = "open") -> ConceptNoteGap:
-        return ConceptNoteGap(
-            gap_id=GAP_ID,
-            run_id=RUN_ID,
-            chapter_id=CHAPTER_ID,
-            field_key="lead_partner",
-            severity="critical",
-            question="Confirm the lead partner.",
-            why_asking="The delivery model must name an accountable partner.",
-            suggestions=[],
-            source_refs=[],
-            status=status,
-            version=2,
-            answer_progress=dict(progress),
+        gap = gap_row(
+            LEAD_QUESTION, field_key="lead_partner", gap_id=GAP_ID, status=status
         )
+        gap.version = 2
+        gap.answer_progress = dict(progress)
+        return gap
 
-    def output(
-        question: str, why_asking: str | None = None
-    ) -> ConceptNoteDraftGapOutput:
+    def output(question: str, why_asking: str = "Needed for the chapter."):
         return ConceptNoteDraftGapOutput(
             field_key="lead_partner",
             question=question,
-            why_asking=why_asking
-            or "The delivery model must name an accountable partner.",
+            why_asking=why_asking,
             severity="critical",
             suggestions=[],
         )
@@ -2085,19 +1517,19 @@ def test_redraft_resets_progress_only_when_gap_scope_changes_or_reopens() -> Non
 
     # A different normalized question is a new original for that scope.
     new_scope = gap_with_progress()
-    _update_gap_from_output(new_scope, output("Confirm the delivery budget."))
+    _update_gap_from_output(new_scope, output(BUDGET_QUESTION))
     assert new_scope.answer_progress is None
 
     # Reopening a resolved row resets it; an open row keeps its lineage.
     session = MagicMock()
     reopened = gap_with_progress(status="resolved")
     _reconcile_evidence_gaps(
-        session, None, [reopened], [output("Confirm the lead partner.")], [], set()
+        session, None, [reopened], [output(LEAD_QUESTION)], [], set()
     )
     assert (reopened.status, reopened.answer_progress) == ("open", None)
     still_open = gap_with_progress()
     _reconcile_evidence_gaps(
-        session, None, [still_open], [output("Confirm the lead partner.")], [], set()
+        session, None, [still_open], [output(LEAD_QUESTION)], [], set()
     )
     assert still_open.answer_progress == progress
 
@@ -2106,26 +1538,21 @@ async def test_working_copy_keeps_gap_answer_progress_with_independent_identity(
     workspace,
 ) -> None:
     """A working copy carries gap progress as an independent copy, not a link."""
-    progress = {
-        "original_question": "Confirm the lead partner.",
-        "accepted_passages": ["Lincoln Park Neighborhood Council will lead delivery."],
-    }
-    [source_before] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    progress = {"original_question": LEAD_QUESTION, "accepted_passages": [LEAD_ANSWER]}
+    [source_before] = (await fixture_chapter(workspace)).gaps
     assert (source_before.original_question, source_before.accepted_passages) == (
         None,
         (),
     )
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        gap.answer_progress = progress
+    await update_fixture_gap(workspace, answer_progress=progress)
 
     destination_id = uuid4()
     await workspace.copy_working_copy(
         source_run_id=RUN_ID, destination_run_id=destination_id
     )
-    [source] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    [source] = (await fixture_chapter(workspace)).gaps
     [copied] = (await workspace.list_chapters(run_id=destination_id))[0].gaps
-    expected = (progress["original_question"], tuple(progress["accepted_passages"]))
+    expected = (LEAD_QUESTION, (LEAD_ANSWER,))
     assert copied.gap_id != source.gap_id
     assert (copied.original_question, copied.accepted_passages) == expected
     assert (source.original_question, source.accepted_passages) == expected
@@ -2134,5 +1561,5 @@ async def test_working_copy_keeps_gap_answer_progress_with_independent_identity(
     async with workspace._session_factory() as session, session.begin():
         copied_row = await session.get(ConceptNoteGap, copied.gap_id)
         copied_row.answer_progress = None
-    [source_after] = (await workspace.list_chapters(run_id=RUN_ID))[0].gaps
+    [source_after] = (await fixture_chapter(workspace)).gaps
     assert source_after.accepted_passages == expected[1]

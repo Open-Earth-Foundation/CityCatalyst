@@ -138,15 +138,6 @@ class ConceptNoteChapterConfirmRequest(BaseModel):
     idempotency_key: UUID
 
 
-class ConceptNoteMarkerGapRequest(BaseModel):
-    """Track one missing-information marker that has no gap record yet."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    # The marker exactly as the chapter shows it, "[Information needed: ...]".
-    marker: str = Field(min_length=1, max_length=2_100)
-
-
 class ConceptNoteValidationCheckResponse(BaseModel):
     """One derived readiness area in the public validation response."""
 

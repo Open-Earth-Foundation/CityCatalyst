@@ -55,7 +55,7 @@ export function chapterGapRows(
       severity: gap.severity,
       gap,
     }));
-  // Resolved gaps keep their markers out; legacy markers get their own row.
+  // Resolved gaps keep their markers out; unrecorded markers get their own row.
   for (const { message } of markers) {
     const key = informationMarkerKey(message);
     // An empty key (punctuation only) gets no record, so it gets no row.
@@ -249,7 +249,8 @@ function GapDetails({
           </Box>
         )}
       </Box>
-      {onAnswer && (
+      {/* An unrecorded marker has no gap record to answer against. */}
+      {onAnswer && row.gap && (
         <Button
           mt={4}
           w="full"

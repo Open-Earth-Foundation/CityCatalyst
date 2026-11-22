@@ -49,10 +49,8 @@ import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
 import {
-  GAP_ANSWER_HISTORY_KEYS,
   GAP_ANSWER_REQUEST_KEYS,
   GAP_ANSWER_SLOTS,
-  legacyGapAnswerTemplate,
   readGapAnswerMessage,
   requestQuestion,
 } from "./chat-utils";
@@ -98,8 +96,6 @@ interface ConceptNoteChatPanelProps {
   /** The run's uploads, so gap source refs show as document names. */
   uploads?: ConceptNoteUploadResponse[];
   draftOverviewPending: boolean;
-  /** Unrecorded markers are being given gap records; sends wait for them. */
-  legacyGapSyncPending?: boolean;
   lng: string;
   onOpenContext: () => void;
   runId: string;
@@ -345,7 +341,6 @@ export function ConceptNoteChatPanel({
   onAddGapSource,
   uploads,
   draftOverviewPending,
-  legacyGapSyncPending = false,
   lng,
   onOpenContext,
   runId,
@@ -402,11 +397,7 @@ export function ConceptNoteChatPanel({
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
   const chatDisabled =
-    contextBlocked ||
-    !threadId ||
-    historyLoading ||
-    isGenerating ||
-    legacyGapSyncPending;
+    contextBlocked || !threadId || historyLoading || isGenerating;
   // The gap form replaces the chat notices that explain a held send, so it
   // gets the reason itself, from the same conditions as chatDisabled.
   const gapDisabledReason = !threadId
@@ -421,9 +412,7 @@ export function ConceptNoteChatPanel({
         ? t("gap-preview-disabled-loading")
         : isGenerating
           ? t("gap-preview-disabled-replying")
-          : legacyGapSyncPending
-            ? t("gap-adopting")
-            : undefined;
+          : undefined;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
@@ -611,19 +600,13 @@ export function ConceptNoteChatPanel({
       )
     : 0;
   // Sent gap requests are shown as the user's answers (UserMessageText).
-  const gapTemplates = useMemo(() => {
-    const rendered = [
-      ...GAP_ANSWER_REQUEST_KEYS,
-      ...GAP_ANSWER_HISTORY_KEYS,
-    ].map((key) =>
-      t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
-    );
-    // Requests sent before the marker was quoted wrote it from the question.
-    const legacy = rendered
-      .filter((template) => template.includes(GAP_ANSWER_SLOTS.marker))
-      .map(legacyGapAnswerTemplate);
-    return [...rendered, ...legacy];
-  }, [t]);
+  const gapTemplates = useMemo(
+    () =>
+      GAP_ANSWER_REQUEST_KEYS.map((key) =>
+        t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
+      ),
+    [t],
+  );
 
   return (
     <VStack

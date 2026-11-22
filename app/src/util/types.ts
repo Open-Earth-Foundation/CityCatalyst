@@ -1594,14 +1594,6 @@ export interface ConfirmConceptNoteChapterRequest {
   idempotencyKey: string;
 }
 
-/** Track one unrecorded "[Information needed: …]" marker as an open gap. */
-export interface AdoptConceptNoteMarkerGapRequest {
-  runId: string;
-  chapterId: string;
-  /** The marker exactly as the chapter shows it. */
-  marker: string;
-}
-
 export interface InitialConceptNoteUpload {
   upload_id: string;
   filename: string;

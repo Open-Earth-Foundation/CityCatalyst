@@ -81,8 +81,8 @@ class GapSubQuestion(BaseModel):
         """Return a persisted narrowed question exactly, even above the generation cap.
 
         Only a remainder that was already stored may exceed the cap, because
-        marker edits reject longer new questions before they are saved. Adopted
-        originals can be longer, so reopening them must still show the exact text.
+        marker edits reject longer new questions before they are saved, so
+        reopening it must still show the exact text.
         """
         if len(question) <= MAX_GAP_QUESTION_CHARS:
             return cls(question=question, options=[])

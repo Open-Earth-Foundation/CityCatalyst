@@ -85,8 +85,6 @@ interface GapDraft {
   choices: Record<number, string>;
   customAnswers: Record<string, string>;
   details: string;
-  /** Sent answers an older form kept here; read once, then dropped on the next write. */
-  sent?: string;
 }
 
 function readDraft(key: string): GapDraft | null {
@@ -199,17 +197,10 @@ export function GapAnswerForm({
   // Answers saved on this gap version, by anyone, are sent again with new ones;
   // the server asks only for what they miss.
   const savedAnswers = request.row.gap?.answered_so_far ?? "";
-  // A draft from before saves moved sent answers into the browser; they stay
-  // here for review when the server has none, and are never sent to the model.
-  const legacySent = typeof draft?.sent === "string" ? draft.sent.trim() : "";
   const fallbackAnswers =
     draft && !draft.question
       ? typedAnswers(draft.choices, draft.customAnswers, false)
       : [];
-  const movedAnswers = [
-    ...fallbackAnswers,
-    ...(legacySent && !savedAnswers ? [legacySent] : []),
-  ];
   const [earlier, setEarlier] = useState(savedAnswers);
   const [saving, setSaving] = useState(false);
   const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
@@ -229,14 +220,14 @@ export function GapAnswerForm({
     fallbackAnswers.length ? {} : (draft?.customAnswers ?? {}),
   );
   const [details, setDetails] = useState(
-    movedAnswers.length
-      ? joinDetails(draft?.details ?? "", movedAnswers)
+    fallbackAnswers.length
+      ? joinDetails(draft?.details ?? "", fallbackAnswers)
       : (draft?.details ?? ""),
   );
   // Tells the user why their answer now sits in the details field. It stays
   // until the form closes: autoresize re-fires input events on programmatic
   // changes, so "the user edited it" cannot be told apart reliably.
-  const [moved, setMoved] = useState(movedAnswers.length > 0);
+  const [moved, setMoved] = useState(fallbackAnswers.length > 0);
   // The field whose last paste or keystroke went past its length limit.
   const [cutField, setCutField] = useState<string | null>(null);
   const [showRequest, setShowRequest] = useState(false);

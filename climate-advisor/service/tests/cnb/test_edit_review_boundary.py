@@ -40,10 +40,6 @@ from app.models.cnb.concept_note_edits import (
     EditScope,
     PlannedTextChange,
 )
-from app.persistence.concept_notes.gaps import (
-    WorkspaceGapResolutionSnapshot,
-    WorkspaceGapSnapshot,
-)
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_planner import (
@@ -61,6 +57,13 @@ from app.services.cnb.edit_validation import (
     validate_edit_plan,
 )
 from app.utils.cnb_progress import bind_cnb_progress
+from tests.cnb.gap_edit_helpers import (
+    caveat_gap,
+    chapter_snapshot as chapter,
+    edit_request,
+    gap_snapshot,
+    marker,
+)
 
 
 class StreamingTestRunner:
@@ -82,6 +85,40 @@ class StreamingTestRunner:
         return Result()
 
 
+def tool_context(tool_name: str, call_id: str) -> ToolContext:
+    return ToolContext(
+        context=None, tool_name=tool_name, tool_call_id=call_id, tool_arguments="{}"
+    )
+
+
+async def propose_replacements(agent, replacements: list[dict]) -> None:
+    """Search each ``before`` text, then propose every replacement in one tool call."""
+    tools = {tool.name: tool for tool in agent.tools}
+    operations = []
+    for item in replacements:
+        found = await tools["search_draft"].on_invoke_tool(
+            tool_context("search_draft", "search"),
+            json.dumps({"text": item["before"], "chapter_positions": None}),
+        )
+        operations.append(
+            {
+                "search_id": found["search_id"],
+                "replacement": item["after"],
+                "replace_all": item.get("replace_all", False),
+                "match_ids": [],
+                "kind": item.get("kind", "wording"),
+                "group_id": item.get("group_id", "edit"),
+                "source_refs": item.get("source_refs") or [],
+                "user_input_quote": item.get("user_input_quote"),
+            }
+        )
+    proposed = await tools["propose_edits"].on_invoke_tool(
+        tool_context("propose_edits", "propose"),
+        json.dumps({"replacements": operations}),
+    )
+    assert proposed["ok"], proposed
+
+
 async def propose_with_tools(
     agent,
     before,
@@ -92,42 +129,46 @@ async def propose_with_tools(
     replace_all=False,
     user_input_quote=None,
 ):
-    tools = {tool.name: tool for tool in agent.tools}
-    context = ToolContext(
-        context=None,
-        tool_name="search_draft",
-        tool_call_id="search",
-        tool_arguments="{}",
-    )
-    found = await tools["search_draft"].on_invoke_tool(
-        context, json.dumps({"text": before, "chapter_positions": None})
-    )
-    context = ToolContext(
-        context=None,
-        tool_name="propose_edits",
-        tool_call_id="propose",
-        tool_arguments="{}",
-    )
-    proposed = await tools["propose_edits"].on_invoke_tool(
-        context,
-        json.dumps(
+    await propose_replacements(
+        agent,
+        [
             {
-                "replacements": [
-                    {
-                        "search_id": found["search_id"],
-                        "replacement": after,
-                        "replace_all": replace_all,
-                        "match_ids": [],
-                        "kind": kind,
-                        "group_id": "edit",
-                        "source_refs": source_refs or [],
-                        "user_input_quote": user_input_quote,
-                    }
-                ]
+                "before": before,
+                "after": after,
+                "kind": kind,
+                "replace_all": replace_all,
+                "source_refs": source_refs,
+                "user_input_quote": user_input_quote,
             }
-        ),
+        ],
     )
-    assert proposed["ok"], proposed
+
+
+def single_review(support: str, coverage: str, explanation: str) -> ChapterEditReview:
+    """The reviewer's decision on the only change in a chapter."""
+    return ChapterEditReview(
+        decisions=[
+            {
+                "change_index": 0,
+                "support": support,
+                "gap_coverage": coverage,
+                "explanation": explanation,
+            }
+        ]
+    )
+
+
+def change_at(body: str, before: str, after: str, quote: str, group: str, **fields):
+    """A factual planned change anchored at the first ``before`` in ``body``."""
+    return {
+        "start": body.index(before),
+        "before": before,
+        "after": after,
+        "kind": "factual",
+        "group_id": group,
+        "user_input_quote": quote,
+        **fields,
+    }
 
 
 @pytest.mark.asyncio
@@ -962,16 +1003,32 @@ async def test_repair_remains_inside_the_original_operation_deadline():
 BOUND_AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
 
 
-def planner_settings(timeout_seconds: float):
-    """Settings whose only change is a short operation deadline for the test."""
+def planner_settings(timeout_seconds: float | None = None):
+    """Test settings, optionally with a short operation deadline."""
     settings = get_settings().model_copy(deep=True)
     settings.openrouter_api_key = "test-key"
-    settings.llm.generation.prompt_budget.cnb_edits = (
-        settings.llm.generation.prompt_budget.cnb_edits.model_copy(
-            update={"timeout_seconds": timeout_seconds}
+    if timeout_seconds is not None:
+        settings.llm.generation.prompt_budget.cnb_edits = (
+            settings.llm.generation.prompt_budget.cnb_edits.model_copy(
+                update={"timeout_seconds": timeout_seconds}
+            )
         )
-    )
     return settings
+
+
+def stalled_runner(started: asyncio.Event | None = None):
+    """A runner whose every model call hangs; the returned list counts the calls."""
+    calls: list[object] = []
+
+    class StalledRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            calls.append(agent)
+            if started is not None:
+                started.set()
+            await asyncio.Event().wait()
+
+    return StalledRunner, calls
 
 
 def bound_reopen(
@@ -986,14 +1043,8 @@ def bound_reopen(
         passages=("The city will use stormwater utility funds.",),
     )
     current.gaps.append(gap)
-    request = EditProposalRequest(
-        instruction="The city contribution is USD 2,500,000.",
-        scope=EditScope(
-            focused_chapter_id=current.chapter_id,
-            gap_id=gap.gap_id,
-            gap_version=gap.version,
-        ),
-        idempotency_key=uuid4(),
+    request = edit_request(
+        "The city contribution is USD 2,500,000.", chapter=current, gap=gap
     )
     return current, request
 
@@ -1030,16 +1081,7 @@ async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_c
                 return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
             # Only the fresh candidate reaches the independent reviewer.
             reviewed_after.append(json.loads(payload)["changes"][0]["after"])
-            review = ChapterEditReview(
-                decisions=[
-                    {
-                        "change_index": 0,
-                        "support": "user",
-                        "gap_coverage": "complete",
-                        "explanation": "The user states the amount.",
-                    }
-                ]
-            )
+            review = single_review("user", "complete", "The user states the amount.")
             return SimpleNamespace(final_output=review)
 
     plan = await ConceptNoteEditPlanner(
@@ -1053,66 +1095,41 @@ async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_c
 @pytest.mark.asyncio
 async def test_bound_reopen_timeout_exhausts_one_operation_budget():
     current, request = bound_reopen()
-    planner_calls = 0
-
-    class AlwaysStalledRunner(StreamingTestRunner):
-        @staticmethod
-        async def run(agent, payload, **kwargs):
-            nonlocal planner_calls
-            planner_calls += 1
-            await asyncio.Event().wait()
-
+    runner, calls = stalled_runner()
     with pytest.raises(EditOperationError) as error:
-        await ConceptNoteEditPlanner(
-            planner_settings(0.5), runner=AlwaysStalledRunner
-        ).plan(request, [current], {})
+        await ConceptNoteEditPlanner(planner_settings(0.5), runner=runner).plan(
+            request, [current], {}
+        )
     assert error.value.code == "planning_timeout"
     # One early slice and one retry, never a second retry.
-    assert planner_calls == 2
+    assert len(calls) == 2
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("case", ["unbound", "caveat"])
 async def test_unbound_or_caveat_planning_uses_existing_deadline(case):
     if case == "unbound":
-        current, request = chapter("Finance: nothing to answer."), EditProposalRequest(
-            instruction="Use digits.", idempotency_key=uuid4()
+        current, request = chapter("Finance: nothing to answer."), edit_request(
+            "Use digits."
         )
     else:
         current, request = bound_reopen(state="caveat")
-    planner_calls = 0
-
-    class AlwaysStalledRunner(StreamingTestRunner):
-        @staticmethod
-        async def run(agent, payload, **kwargs):
-            nonlocal planner_calls
-            planner_calls += 1
-            await asyncio.Event().wait()
-
+    runner, calls = stalled_runner()
     with pytest.raises(EditOperationError) as error:
-        await ConceptNoteEditPlanner(
-            planner_settings(0.5), runner=AlwaysStalledRunner
-        ).plan(request, [current], {})
+        await ConceptNoteEditPlanner(planner_settings(0.5), runner=runner).plan(
+            request, [current], {}
+        )
     assert error.value.code == "planning_timeout"
-    assert planner_calls == 1
+    assert len(calls) == 1
 
 
 @pytest.mark.asyncio
 async def test_external_cancellation_never_retries_planner():
     current, request = bound_reopen()
     started = asyncio.Event()
-    planner_calls = 0
-
-    class CancelledRunner(StreamingTestRunner):
-        @staticmethod
-        async def run(agent, payload, **kwargs):
-            nonlocal planner_calls
-            planner_calls += 1
-            started.set()
-            await asyncio.Event().wait()
-
+    runner, calls = stalled_runner(started)
     task = asyncio.create_task(
-        ConceptNoteEditPlanner(planner_settings(5), runner=CancelledRunner).plan(
+        ConceptNoteEditPlanner(planner_settings(5), runner=runner).plan(
             request, [current], {}
         )
     )
@@ -1120,21 +1137,7 @@ async def test_external_cancellation_never_retries_planner():
     task.cancel()
     with pytest.raises(asyncio.CancelledError):
         await task
-    assert planner_calls == 1
-
-
-def chapter(body: str) -> WorkspaceChapterSnapshot:
-    return WorkspaceChapterSnapshot(
-        chapter_id=uuid4(),
-        chapter_ref=None,
-        title="Implementation",
-        position=0,
-        status="needs_review",
-        required=True,
-        user_locked=False,
-        body_markdown=body,
-        revision_number=1,
-    )
+    assert len(calls) == 1
 
 
 def reviewed_plan(current, changes, supports, coverages=None):
@@ -1686,36 +1689,6 @@ def test_context_snapshot_changes_when_citycatalyst_data_changes():
     assert context_snapshot(CITY_CONTEXT, "manual_population") is None
 
 
-def gap_snapshot(
-    question: str,
-    *,
-    state: str = "open",
-    answered: str | None = None,
-    original: str | None = None,
-    passages: tuple[str, ...] = (),
-    resolution: WorkspaceGapResolutionSnapshot | None = None,
-) -> WorkspaceGapSnapshot:
-    """A structured gap projection with its saved answers and accepted lineage."""
-    now = datetime.now(UTC)
-    return WorkspaceGapSnapshot(
-        gap_id=uuid4(),
-        field_key="field",
-        question=question,
-        why_asking="Needed for the chapter.",
-        severity="critical",
-        state=state,
-        suggestions=[],
-        source_refs=[],
-        version=1,
-        resolution=resolution,
-        created_at=now,
-        updated_at=now,
-        answered_so_far=answered,
-        original_question=original,
-        accepted_passages=passages,
-    )
-
-
 FINANCE_MARKER = "[Information needed: Confirm the instrument and amount.]"
 AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
 FUNDS = "The city will use stormwater utility funds"
@@ -1729,39 +1702,22 @@ def finance_chapter() -> WorkspaceChapterSnapshot:
 
 def test_reviewer_coverage_must_match_the_change_shape():
     current = finance_chapter()
-    instruction = f"{FUNDS} and contribute USD 2,500,000."
-    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
-    start = current.body_markdown.index(FINANCE_MARKER)
-    full_fill = {
-        "start": start,
-        "before": FINANCE_MARKER,
-        "after": f"{FUNDS} and USD 2,500,000.",
-        "kind": "factual",
-        "group_id": "finance",
-        "user_input_quote": "USD 2,500,000",
-    }
-    partial_fill = PlannedTextChange(**full_fill, chapter_id=current.chapter_id)
-    bindings = [gap_bindings_for_change(partial_fill, current, request.scope)]
+    body = current.body_markdown
+    request = edit_request(f"{FUNDS} and contribute USD 2,500,000.")
+    full_fill = change_at(
+        body, FINANCE_MARKER, f"{FUNDS} and USD 2,500,000.", "USD 2,500,000", "finance"
+    )
+    planned_fill = PlannedTextChange(**full_fill, chapter_id=current.chapter_id)
+    bindings = [gap_bindings_for_change(planned_fill, current, request.scope)]
     # A full fill the reviewer calls partial is a concrete objection, never accepted.
     repaired = gap_coverage_review(
-        [partial_fill],
-        bindings,
-        ChapterEditReview(
-            decisions=[
-                {
-                    "change_index": 0,
-                    "support": "user",
-                    "gap_coverage": "partial",
-                    "explanation": "Reviewed",
-                }
-            ]
-        ),
+        [planned_fill], bindings, single_review("user", "partial", "Reviewed")
     )
     [objection] = repaired.decisions
     assert objection.support == "unsupported"
     assert "Keep one marker for the missing part." in objection.explanation
     with pytest.raises(EditOperationError) as error:
-        bind_semantic_review([partial_fill], repaired)
+        bind_semantic_review([planned_fill], repaired)
     assert error.value.code == "unsupported_edit"
 
     [fill] = validate_edit_plan(
@@ -1772,14 +1728,7 @@ def test_reviewer_coverage_must_match_the_change_shape():
     assert [binding.mode for binding in fill.gap_bindings] == ["fill"]
 
     # A narrowing is the bounded repair: partial coverage passes with its own group.
-    narrow = {
-        "start": start,
-        "before": FINANCE_MARKER,
-        "after": f"{FUNDS}. {AMOUNT_MARKER}",
-        "kind": "factual",
-        "group_id": "finance",
-        "user_input_quote": FUNDS,
-    }
+    narrow = change_at(body, FINANCE_MARKER, f"{FUNDS}. {AMOUNT_MARKER}", FUNDS, "finance")
     [change] = validate_edit_plan(
         request,
         [current],
@@ -1806,46 +1755,32 @@ def test_review_uses_original_scope_and_accepted_history_for_a_second_round_fill
             passages=(f"{FUNDS}.",),
         )
     )
-    instruction = "The city contribution is USD 2,500,000."
-    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
+    request = edit_request("The city contribution is USD 2,500,000.")
     payload = build_planner_input(request, current, {})
     [gap_payload] = payload["chapter"]["gaps"]
     assert gap_payload["original_question"] == "Confirm the instrument and amount."
     assert gap_payload["accepted_passages"] == [f"{FUNDS}."]
     assert gap_payload["is_bound_answer"] is False
 
-    fill = PlannedTextChange(
-        chapter_id=current.chapter_id,
-        start=current.body_markdown.index(AMOUNT_MARKER),
-        before=AMOUNT_MARKER,
-        after="USD 2,500,000.",
-        kind="factual",
-        group_id="amount",
-        user_input_quote="USD 2,500,000",
+    fill = change_at(
+        current.body_markdown, AMOUNT_MARKER, "USD 2,500,000.", "USD 2,500,000", "amount"
     )
-    bindings = gap_bindings_for_change(fill, current, request.scope)
-    [target] = gap_review_targets(fill, current, bindings)
+    planned = PlannedTextChange(**fill, chapter_id=current.chapter_id)
+    bindings = gap_bindings_for_change(planned, current, request.scope)
+    [target] = gap_review_targets(planned, current, bindings)
     assert target["original_question"] == "Confirm the instrument and amount."
     assert target["accepted_passages"] == [f"{FUNDS}."]
     assert target["remaining_marker"] is None
     [accepted] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(
-            current, [fill.model_dump(exclude={"chapter_id"})], ["user"], ["complete"]
-        ),
+        request, [current], reviewed_plan(current, [fill], ["user"], ["complete"])
     )
     assert accepted.gap_bindings[0].mode == "fill"
 
 
 @pytest.mark.asyncio
 async def test_partial_review_objection_repairs_dropped_financing_scope():
-    marker = (
-        "[Information needed: Confirm the selected alternative, current phase, "
-        "instrument and amount.]"
-    )
     question = "Confirm the selected alternative, current phase, instrument and amount."
-    current = chapter(f"Finance: {marker}")
+    current = chapter(f"Finance: {marker(question)}")
     current.gaps.append(gap_snapshot(question))
     instruction = (
         "The selected alternative is the pond retrofit in final design. "
@@ -1861,103 +1796,81 @@ async def test_partial_review_objection_repairs_dropped_financing_scope():
         "contribute?]"
     )
     objection = "Retain the selected concept in the remaining marker."
-    editor_inputs = []
-    reviewer_inputs = []
+    editor_calls = 0
+    reviewer_calls = 0
 
     class ScopeRepairRunner(StreamingTestRunner):
         @staticmethod
         async def run(agent, payload, **kwargs):
+            nonlocal editor_calls, reviewer_calls
             data = json.loads(payload)
             if agent.output_type is EditAgentOutput:
-                editor_inputs.append(data)
-                after = dropped if len(editor_inputs) == 1 else complete_scope
-                if len(editor_inputs) > 1:
+                editor_calls += 1
+                if editor_calls > 1:
                     [feedback] = data["review_feedback"]
                     assert feedback["decisions"][0]["support"] == "unsupported"
                     assert feedback["decisions"][0]["explanation"] == objection
                 await propose_with_tools(
                     agent,
-                    marker,
-                    after,
+                    marker(question),
+                    dropped if editor_calls == 1 else complete_scope,
                     kind="factual",
                     user_input_quote="stormwater utility funds",
                 )
-                output = EditAgentOutput(intent="edit")
+                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+            assert [tool.name for tool in agent.tools] == ["query_source"]
+            reviewer_calls += 1
+            after = data["changes"][0]["after"]
+            if "alternative" not in after or "phase" not in after:
+                review = single_review("unsupported", "partial", objection)
             else:
-                assert [tool.name for tool in agent.tools] == ["query_source"]
-                reviewer_inputs.append(data)
-                after = data["changes"][0]["after"]
-                lost = "alternative" not in after or "phase" not in after
-                output = ChapterEditReview(
-                    decisions=[
-                        {
-                            "change_index": 0,
-                            "support": "unsupported" if lost else "user",
-                            "gap_coverage": "partial",
-                            "explanation": (
-                                objection
-                                if lost
-                                else "The source is stated and the remaining marker keeps "
-                                "the concept, phase and amount."
-                            ),
-                        }
-                    ]
+                review = single_review(
+                    "user",
+                    "partial",
+                    "The source is stated and the remaining marker keeps the "
+                    "concept, phase and amount.",
                 )
-            return SimpleNamespace(final_output=output)
+            return SimpleNamespace(final_output=review)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
-    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
-    plan = await ConceptNoteEditPlanner(settings, runner=ScopeRepairRunner).plan(
-        request, [current], {}
-    )
+    request = edit_request(instruction)
+    plan = await ConceptNoteEditPlanner(
+        planner_settings(), runner=ScopeRepairRunner
+    ).plan(request, [current], {})
     # The rejected partial is repaired once; the full-scope partial is reviewed again.
-    assert len(editor_inputs) == 2
-    assert len(reviewer_inputs) == 2
+    assert (editor_calls, reviewer_calls) == (2, 2)
     assert plan.changes[0].after == complete_scope
     assert plan.changes[0].semantic_support == "user"
     [change] = validate_edit_plan(request, [current], plan)
     assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
 
 
+TARGET_QUESTION = (
+    "What is the City's contribution source, amount and proposed budget status?"
+)
+TARGET_ANSWER = (
+    "The city will use stormwater utility funds for its contribution of "
+    "USD 2,500,000 in its proposed 2027 budget."
+)
+
+# Each sibling question is answered in part; its first draft drops one funding
+# ask from the remaining question and the repair either restores it or drops the
+# sibling change.
 OPTIONAL_FUNDING_CASES = {
     # Financing names the City's contribution; capability keeps its conditional debt ask.
     "contribution_only_debt": {
-        "target_marker": (
-            "[Information needed: What is the City's contribution source, amount "
-            "and proposed budget status?]"
-        ),
-        "target_question": (
-            "What is the City's contribution source, amount and proposed budget status?"
-        ),
-        "target_instruction": (
-            "The city will use stormwater utility funds for its contribution of "
-            "USD 2,500,000 in its proposed 2027 budget."
-        ),
-        "target_after": (
-            "The city will use stormwater utility funds for its contribution of "
-            "USD 2,500,000 in its proposed 2027 budget."
-        ),
-        "sibling_marker": (
-            "[Information needed: Confirm the project and phase capability evidence, "
-            "available local match, applicable project-phase debt or bonding "
-            "authority, and authorized official.]"
-        ),
-        "sibling_question": (
+        "question": (
             "Confirm the project and phase capability evidence, available local match, "
             "applicable project-phase debt or bonding authority, and authorized official."
         ),
-        "sibling_quote": "No borrowing is proposed for the City's contribution.",
-        "sibling_dropped": (
-            "No borrowing is proposed for the City's contribution. [Information needed: "
+        "quote": "No borrowing is proposed for the City's contribution.",
+        "dropped": (
             "Confirm the project and phase capability evidence, available local match, "
-            "and authorized official.]"
+            "and authorized official."
         ),
-        "sibling_repaired": (
-            "No borrowing is proposed for the City's contribution. [Information needed: "
+        "repaired": (
             "Confirm the project and phase capability evidence, available local match, "
             "whether applicable project-phase debt or bonding authority applies, and "
-            "authorized official.]"
+            "authorized official."
         ),
         "objection": (
             "Retain applicable project-phase debt or bonding authority in the remaining "
@@ -1966,46 +1879,23 @@ OPTIONAL_FUNDING_CASES = {
     },
     # Financing names the City's contribution; the inventory keeps every match ask.
     "inventory_match_loss": {
-        "target_marker": (
-            "[Information needed: What is the City's contribution source, amount "
-            "and proposed budget status?]"
-        ),
-        "target_question": (
-            "What is the City's contribution source, amount and proposed budget status?"
-        ),
-        "target_instruction": (
-            "The city will use stormwater utility funds for its contribution of "
-            "USD 2,500,000 in its proposed 2027 budget."
-        ),
-        "target_after": (
-            "The city will use stormwater utility funds for its contribution of "
-            "USD 2,500,000 in its proposed 2027 budget."
-        ),
-        "sibling_marker": (
-            "[Information needed: What other committed, pending and anticipated "
-            "funding is available across state, federal, local and non-governmental "
-            "sources, including each source's amount, status and local match, and what "
-            "local match remains for the City or application?]"
-        ),
-        "sibling_question": (
+        "question": (
             "What other committed, pending and anticipated funding is available across "
             "state, federal, local and non-governmental sources, including each source's "
             "amount, status and local match, and what local match remains for the City "
             "or application?"
         ),
-        "sibling_quote": "The state grant of USD 1,000,000 is committed.",
-        "sibling_dropped": (
-            "The state grant of USD 1,000,000 is committed. [Information needed: What "
-            "other committed, pending and anticipated funding is available across state, "
-            "federal, local and non-governmental sources, including each source's amount "
-            "and status?]"
+        "quote": "The state grant of USD 1,000,000 is committed.",
+        "dropped": (
+            "What other committed, pending and anticipated funding is available across "
+            "state, federal, local and non-governmental sources, including each source's "
+            "amount and status?"
         ),
-        "sibling_repaired": (
-            "The state grant of USD 1,000,000 is committed. [Information needed: What "
-            "other committed, pending and anticipated funding is available across state, "
-            "federal, local and non-governmental sources, including each source's amount, "
-            "status and local match, and the local match still available to the City or "
-            "application?]"
+        "repaired": (
+            "What other committed, pending and anticipated funding is available across "
+            "state, federal, local and non-governmental sources, including each source's "
+            "amount, status and local match, and the local match still available to the "
+            "City or application?"
         ),
         "objection": (
             "Retain the City's or application's remaining match in the remaining marker."
@@ -2028,89 +1918,45 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
     case, repair
 ):
     spec = OPTIONAL_FUNDING_CASES[case]
-    target_chapter = chapter(f"Financing: {spec['target_marker']}")
-    target_gap = gap_snapshot(spec["target_question"])
+    dropped = f"{spec['quote']} {marker(spec['dropped'])}"
+    repaired = f"{spec['quote']} {marker(spec['repaired'])}"
+    target_chapter = chapter(f"Financing: {marker(TARGET_QUESTION)}")
+    target_gap = gap_snapshot(TARGET_QUESTION)
     target_chapter.gaps.append(target_gap)
-    sibling_chapter = replace(
-        chapter(f"Capability: {spec['sibling_marker']}"), position=1
+    sibling_chapter = chapter(f"Capability: {marker(spec['question'])}", position=1)
+    sibling_chapter.gaps.append(gap_snapshot(spec["question"]))
+    chapters = [target_chapter, sibling_chapter]
+    request = edit_request(
+        f"{TARGET_ANSWER} {spec['quote']}", chapter=target_chapter, gap=target_gap
     )
-    sibling_chapter.gaps.append(gap_snapshot(spec["sibling_question"]))
-    instruction = f"{spec['target_instruction']} {spec['sibling_quote']}"
-    request = EditProposalRequest(
-        instruction=instruction,
-        scope=EditScope(
-            focused_chapter_id=target_chapter.chapter_id,
-            gap_id=target_gap.gap_id,
-            gap_version=target_gap.version,
-        ),
-        idempotency_key=uuid4(),
-    )
-    editor_inputs = []
-    reviewer_inputs = []
+    target = {
+        "before": marker(TARGET_QUESTION),
+        "after": TARGET_ANSWER,
+        "kind": "factual",
+        "group_id": "target",
+        "user_input_quote": TARGET_ANSWER,
+    }
 
-    async def propose_pair(agent, replacements):
-        tools = {tool.name: tool for tool in agent.tools}
-        found = []
-        for before, _after, _quote in replacements:
-            context = ToolContext(
-                context=None,
-                tool_name="search_draft",
-                tool_call_id="search",
-                tool_arguments="{}",
-            )
-            found.append(
-                await tools["search_draft"].on_invoke_tool(
-                    context, json.dumps({"text": before, "chapter_positions": None})
-                )
-            )
-        context = ToolContext(
-            context=None,
-            tool_name="propose_edits",
-            tool_call_id="propose",
-            tool_arguments="{}",
-        )
-        proposed = await tools["propose_edits"].on_invoke_tool(
-            context,
-            json.dumps(
-                {
-                    "replacements": [
-                        {
-                            "search_id": result["search_id"],
-                            "replacement": after,
-                            "replace_all": False,
-                            "match_ids": [],
-                            "kind": "factual",
-                            "group_id": group,
-                            "source_refs": [],
-                            "user_input_quote": quote,
-                        }
-                        for result, (_before, after, quote), group in zip(
-                            found, replacements, ("target", "sibling")
-                        )
-                    ]
-                }
-            ),
-        )
-        assert proposed["ok"], proposed
+    def sibling(after: str) -> dict:
+        return {
+            "before": marker(spec["question"]),
+            "after": after,
+            "kind": "factual",
+            "group_id": "sibling",
+            "user_input_quote": spec["quote"],
+        }
+
+    editor_calls = 0
 
     class OptionalRepairRunner(StreamingTestRunner):
         @staticmethod
         async def run(agent, payload, **kwargs):
+            nonlocal editor_calls
             data = json.loads(payload)
             if agent.output_type is EditAgentOutput:
-                editor_inputs.append(data)
-                target = (
-                    spec["target_marker"],
-                    spec["target_after"],
-                    spec["target_instruction"],
-                )
-                if len(editor_inputs) == 1:
-                    sibling = (
-                        spec["sibling_marker"],
-                        spec["sibling_dropped"],
-                        spec["sibling_quote"],
-                    )
-                    await propose_pair(agent, [target, sibling])
+                editor_calls += 1
+                if editor_calls == 1:
+                    await propose_replacements(agent, [target, sibling(dropped)])
                 else:
                     [feedback] = [
                         item
@@ -2119,284 +1965,129 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
                     ]
                     assert feedback["decisions"][0]["support"] == "unsupported"
                     assert feedback["decisions"][0]["explanation"] == spec["objection"]
-                    if repair == "corrected":
-                        sibling = (
-                            spec["sibling_marker"],
-                            spec["sibling_repaired"],
-                            spec["sibling_quote"],
-                        )
-                        await propose_pair(agent, [target, sibling])
-                    else:
-                        await propose_pair(agent, [target])
-                output = EditAgentOutput(intent="edit")
+                    retry = [sibling(repaired)] if repair == "corrected" else []
+                    await propose_replacements(agent, [target, *retry])
+                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+            assert [tool.name for tool in agent.tools] == ["query_source"]
+            after = data["changes"][0]["after"]
+            if data["chapter"]["position"] == 1:
+                [sibling_target] = data["changes"][0]["gap_targets"]
+                assert sibling_target["question"] == spec["question"]
+            if after == dropped:
+                review = single_review("unsupported", "partial", spec["objection"])
             else:
-                assert [tool.name for tool in agent.tools] == ["query_source"]
-                reviewer_inputs.append(data)
-                after = data["changes"][0]["after"]
-                if data["chapter"]["position"] == 1:
-                    [sibling_target] = data["changes"][0]["gap_targets"]
-                    assert sibling_target["question"] == spec["sibling_question"]
-                if after == spec["sibling_dropped"]:
-                    decision = {
-                        "change_index": 0,
-                        "support": "unsupported",
-                        "gap_coverage": "partial",
-                        "explanation": spec["objection"],
-                    }
-                else:
-                    decision = {
-                        "change_index": 0,
-                        "support": "user",
-                        "gap_coverage": "partial"
-                        if "[Information needed" in after
-                        else "complete",
-                        "explanation": "The user's facts cover the grounded part.",
-                    }
-                output = ChapterEditReview(decisions=[decision])
-            return SimpleNamespace(final_output=output)
+                coverage = "partial" if "[Information needed" in after else "complete"
+                review = single_review(
+                    "user", coverage, "The user's facts cover the grounded part."
+                )
+            return SimpleNamespace(final_output=review)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
-    plan = await ConceptNoteEditPlanner(settings, runner=OptionalRepairRunner).plan(
-        request, [target_chapter, sibling_chapter], {}
-    )
+    plan = await ConceptNoteEditPlanner(
+        planner_settings(), runner=OptionalRepairRunner
+    ).plan(request, chapters, {})
     # The rejected optional sibling costs one bounded repair; the target is unchanged.
-    assert len(editor_inputs) == 2
-    changes = validate_edit_plan(
-        request, [target_chapter, sibling_chapter], plan
-    )
+    assert editor_calls == 2
+    changes = validate_edit_plan(request, chapters, plan)
     [bound] = [c for c in changes if c.chapter_id == target_chapter.chapter_id]
-    assert bound.after == spec["target_after"]
-    assert [
-        (b.gap_id, b.gap_version, b.mode) for b in bound.gap_bindings
-    ] == [(target_gap.gap_id, target_gap.version, "fill")]
+    assert bound.after == TARGET_ANSWER
+    assert [(b.gap_id, b.gap_version, b.mode) for b in bound.gap_bindings] == [
+        (target_gap.gap_id, target_gap.version, "fill")
+    ]
     sibling_changes = [c for c in changes if c.chapter_id == sibling_chapter.chapter_id]
     if repair == "removed":
         assert sibling_changes == []
     else:
-        [sibling] = sibling_changes
-        assert sibling.after == spec["sibling_repaired"]
-        assert [b.mode for b in sibling.gap_bindings] == ["narrow"]
-    assert target_chapter.body_markdown == f"Financing: {spec['target_marker']}"
+        [sibling_change] = sibling_changes
+        assert sibling_change.after == repaired
+        assert [b.mode for b in sibling_change.gap_bindings] == ["narrow"]
+    assert target_chapter.body_markdown == f"Financing: {marker(TARGET_QUESTION)}"
 
 
 def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():
-    current = chapter(
-        "Lead: [Information needed: Confirm the lead partner.] "
-        "Budget: [Information needed: Confirm the budget.]"
-    )
+    lead_marker = marker("Confirm the lead partner.")
+    budget_marker = marker("Confirm the budget.")
+    current = chapter(f"Lead: {lead_marker} Budget: {budget_marker}")
     current.gaps.extend(
         [
             gap_snapshot("Confirm the lead partner.", answered="Lincoln Park Council"),
             gap_snapshot("Confirm the budget.", answered="EUR 4 million"),
         ]
     )
-    request = EditProposalRequest(instruction="Other text.", idempotency_key=uuid4())
-    lead = PlannedTextChange(
-        chapter_id=current.chapter_id,
-        start=current.body_markdown.index(
-            "[Information needed: Confirm the lead partner.]"
-        ),
-        before="[Information needed: Confirm the lead partner.]",
-        after="Lincoln Park Council will lead.",
-        kind="factual",
-        group_id="lead",
-        user_input_quote="EUR 4 million",
+    body = current.body_markdown
+    request = edit_request("Other text.")
+    lead = change_at(
+        body, lead_marker, "Lincoln Park Council will lead.", "EUR 4 million", "lead"
     )
-    bindings = gap_bindings_for_change(lead, current, request.scope)
-    [target] = gap_review_targets(lead, current, bindings)
+    planned_lead = PlannedTextChange(**lead, chapter_id=current.chapter_id)
+    bindings = gap_bindings_for_change(planned_lead, current, request.scope)
+    [target] = gap_review_targets(planned_lead, current, bindings)
     assert target["saved_answers"] == "Lincoln Park Council"
     # The budget's saved answer is evidence for the budget gap only.
     with pytest.raises(EditOperationError) as error:
         validate_edit_plan(
-            request,
-            [current],
-            reviewed_plan(
-                current,
-                [lead.model_dump(exclude={"chapter_id"})],
-                ["user"],
-                ["complete"],
-            ),
+            request, [current], reviewed_plan(current, [lead], ["user"], ["complete"])
         )
     assert error.value.code == "invalid_user_input"
 
-    budget = PlannedTextChange(
-        chapter_id=current.chapter_id,
-        start=current.body_markdown.index("[Information needed: Confirm the budget.]"),
-        before="[Information needed: Confirm the budget.]",
-        after="The budget is EUR 4 million.",
-        kind="factual",
-        group_id="budget",
-        user_input_quote="EUR 4 million",
+    budget = change_at(
+        body, budget_marker, "The budget is EUR 4 million.", "EUR 4 million", "budget"
     )
     [accepted] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(
-            current, [budget.model_dump(exclude={"chapter_id"})], ["user"], ["complete"]
-        ),
+        request, [current], reviewed_plan(current, [budget], ["user"], ["complete"])
     )
     assert accepted.gap_bindings[0].mode == "fill"
 
 
 def test_estimate_confirmation_requires_review_of_the_actual_estimate():
     estimate = "an estimated EUR 2 million, the City's unconfirmed figure"
-    current = chapter(f"Budget: {estimate}. Schedule: 12 months.")
-    current.gaps.append(
-        gap_snapshot(
-            "Confirm the budget.",
-            state="caveat",
-            resolution=WorkspaceGapResolutionSnapshot(
-                resolution_id=uuid4(),
-                action="answer",
-                answer=estimate,
-                actor_user_id="owner",
-                source_refs=[],
-                created_at=datetime.now(UTC),
-                gap_version=1,
-            ),
-        )
-    )
+    body = f"Budget: {estimate}. Schedule: 12 months."
+    confirmed = "EUR 2.1 million, confirmed by the city council"
+    current = chapter(body)
+    current.gaps.append(caveat_gap("Confirm the budget.", estimate))
     instruction = "The city confirms EUR 2.1 million and 14 months."
-    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
-    confirm = {
-        "start": current.body_markdown.index(estimate),
-        "before": estimate,
-        "after": "EUR 2.1 million, confirmed by the city council",
-        "kind": "factual",
-        "group_id": "budget",
-        "user_input_quote": "EUR 2.1 million",
-    }
+    request = edit_request(instruction)
+    confirm = change_at(body, estimate, confirmed, "EUR 2.1 million", "budget")
+
+    def modes(chapter_snapshot, change, *, scoped=request, coverage="complete"):
+        [accepted] = validate_edit_plan(
+            scoped,
+            [chapter_snapshot],
+            reviewed_plan(chapter_snapshot, [change], ["user"], [coverage]),
+        )
+        return [binding.mode for binding in accepted.gap_bindings]
+
     # Without a reviewed confirmation the caveat keeps its estimate.
     with pytest.raises(EditOperationError) as error:
-        validate_edit_plan(
-            request, [current], reviewed_plan(current, [confirm], ["user"])
-        )
+        modes(current, confirm, coverage="none")
     assert error.value.code == "invalid_review"
-
-    [accepted] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(current, [confirm], ["user"], ["complete"]),
-    )
-    assert [binding.mode for binding in accepted.gap_bindings] == ["confirm_estimate"]
+    assert modes(current, confirm) == ["confirm_estimate"]
 
     # An unrelated factual edit, even inside a request bound to the caveat, never resolves it.
-    unrelated = {
-        "start": current.body_markdown.index("12 months"),
-        "before": "12 months",
-        "after": "14 months",
-        "kind": "factual",
-        "group_id": "schedule",
-        "user_input_quote": "14 months",
-    }
-    bound = EditProposalRequest(
-        instruction=instruction,
-        scope=EditScope(
-            focused_chapter_id=current.chapter_id,
-            gap_id=current.gaps[0].gap_id,
-            gap_version=1,
-        ),
-        idempotency_key=uuid4(),
-    )
+    unrelated = change_at(body, "12 months", "14 months", "14 months", "schedule")
+    bound = edit_request(instruction, chapter=current, gap=current.gaps[0])
     with pytest.raises(EditOperationError) as error:
-        validate_edit_plan(
-            bound,
-            [current],
-            reviewed_plan(current, [unrelated], ["user"], ["complete"]),
-        )
+        modes(current, unrelated, scoped=bound)
     assert error.value.code == "invalid_review"
 
     # A partial-span confirmation of the unique estimate binds the same gap.
-    partial = {
-        **confirm,
-        "start": current.body_markdown.index("EUR 2 million"),
-        "before": "EUR 2 million",
-        "after": "EUR 2.1 million",
-    }
-    [partial_accepted] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(current, [partial], ["user"], ["complete"]),
-    )
-    assert [binding.mode for binding in partial_accepted.gap_bindings] == [
-        "confirm_estimate"
-    ]
-
-    def answer_resolution(answer: str) -> WorkspaceGapResolutionSnapshot:
-        return WorkspaceGapResolutionSnapshot(
-            resolution_id=uuid4(),
-            action="answer",
-            answer=answer,
-            actor_user_id="owner",
-            source_refs=[],
-            created_at=datetime.now(UTC),
-            gap_version=1,
-        )
+    partial = change_at(body, "EUR 2 million", "EUR 2.1 million", "EUR 2.1 million", "budget")
+    assert modes(current, partial) == ["confirm_estimate"]
 
     # Two gaps for the same question and estimate bind together.
-    twins = chapter(f"Budget: {estimate}. Schedule: 12 months.")
-    twins.gaps.extend(
-        gap_snapshot(
-            "Confirm the budget.",
-            state="caveat",
-            resolution=answer_resolution(estimate),
-        )
-        for _ in range(2)
-    )
-    [twinned] = validate_edit_plan(
-        request,
-        [twins],
-        reviewed_plan(
-            twins,
-            [{**confirm, "start": twins.body_markdown.index(estimate)}],
-            ["user"],
-            ["complete"],
-        ),
-    )
-    assert [binding.mode for binding in twinned.gap_bindings] == [
-        "confirm_estimate",
-        "confirm_estimate",
-    ]
+    twins = chapter(body)
+    twins.gaps.extend(caveat_gap("Confirm the budget.", estimate) for _ in range(2))
+    assert modes(twins, confirm) == ["confirm_estimate", "confirm_estimate"]
 
     # Different questions sharing one estimate: only the form's gap may bind.
-    shared = chapter(f"Budget: {estimate}. Schedule: 12 months.")
-    budget_gap = gap_snapshot(
-        "Confirm the budget.",
-        state="caveat",
-        resolution=answer_resolution(estimate),
-    )
-    shared.gaps.extend(
-        [
-            budget_gap,
-            gap_snapshot(
-                "Confirm the schedule.",
-                state="caveat",
-                resolution=answer_resolution(estimate),
-            ),
-        ]
-    )
-    shared_confirm = [{**confirm, "start": shared.body_markdown.index(estimate)}]
+    shared = chapter(body)
+    budget_gap = caveat_gap("Confirm the budget.", estimate)
+    shared.gaps.extend([budget_gap, caveat_gap("Confirm the schedule.", estimate)])
     with pytest.raises(EditOperationError) as error:
-        validate_edit_plan(
-            request,
-            [shared],
-            reviewed_plan(shared, shared_confirm, ["user"], ["complete"]),
-        )
+        modes(shared, confirm)
     assert error.value.code == "ambiguous_gap"
-    scoped = EditProposalRequest(
-        instruction=instruction,
-        scope=EditScope(
-            focused_chapter_id=shared.chapter_id,
-            gap_id=budget_gap.gap_id,
-            gap_version=1,
-        ),
-        idempotency_key=uuid4(),
-    )
+    scoped = edit_request(instruction, chapter=shared, gap=budget_gap)
     [bound_one] = validate_edit_plan(
-        scoped,
-        [shared],
-        reviewed_plan(shared, shared_confirm, ["user"], ["complete"]),
+        scoped, [shared], reviewed_plan(shared, [confirm], ["user"], ["complete"])
     )
     assert [binding.gap_id for binding in bound_one.gap_bindings] == [budget_gap.gap_id]
 
@@ -2408,65 +2099,45 @@ def test_edit_plan_rejects_duplicate_candidate_estimate_anchor():
     is refused before it can reach the reviewer's gap transition.
     """
     estimate = "an estimated EUR 2 million"
-    current = chapter(
-        f"Budget: [Information needed: Confirm the budget.]. Summary: {estimate}."
-    )
+    budget_marker = marker("Confirm the budget.")
+    current = chapter(f"Budget: {budget_marker}. Summary: {estimate}.")
     current.gaps.append(gap_snapshot("Confirm the budget."))
-    request = EditProposalRequest(
-        instruction="The budget is about EUR 2 million.", idempotency_key=uuid4()
+    fill = change_at(
+        current.body_markdown,
+        budget_marker,
+        estimate,
+        "EUR 2 million",
+        "budget",
+        estimate=True,
     )
-    fill = {
-        "start": current.body_markdown.index("[Information"),
-        "before": "[Information needed: Confirm the budget.]",
-        "after": estimate,
-        "kind": "factual",
-        "group_id": "budget",
-        "user_input_quote": "EUR 2 million",
-        "estimate": True,
-    }
     with pytest.raises(EditOperationError) as error:
         validate_edit_plan(
-            request, [current], reviewed_plan(current, [fill], ["user"], ["complete"])
+            edit_request("The budget is about EUR 2 million."),
+            [current],
+            reviewed_plan(current, [fill], ["user"], ["complete"]),
         )
     assert error.value.code == "ambiguous_gap"
 
     # A narrowing whose prose copies an existing caveat anchor is refused too.
     caveat_text = "a provisional schedule of 12 months"
-    narrowing = chapter(
-        f"Plan: {caveat_text}. Gap: [Information needed: Confirm the schedule.]"
-    )
+    schedule_marker = marker("Confirm the schedule.")
+    narrowing = chapter(f"Plan: {caveat_text}. Gap: {schedule_marker}")
     narrowing.gaps.extend(
         [
-            gap_snapshot(
-                "Confirm the budget.",
-                state="caveat",
-                resolution=WorkspaceGapResolutionSnapshot(
-                    resolution_id=uuid4(),
-                    action="answer",
-                    answer=caveat_text,
-                    actor_user_id="owner",
-                    source_refs=[],
-                    created_at=datetime.now(UTC),
-                    gap_version=1,
-                ),
-            ),
+            caveat_gap("Confirm the budget.", caveat_text),
             gap_snapshot("Confirm the schedule."),
         ]
     )
-    narrow = {
-        "start": narrowing.body_markdown.index("[Information"),
-        "before": "[Information needed: Confirm the schedule.]",
-        "after": f"[Information needed: Confirm the completion date.] Note: {caveat_text}.",
-        "kind": "factual",
-        "group_id": "schedule",
-        "user_input_quote": caveat_text,
-    }
-    narrowing_request = EditProposalRequest(
-        instruction=f"The schedule is {caveat_text}.", idempotency_key=uuid4()
+    narrow = change_at(
+        narrowing.body_markdown,
+        schedule_marker,
+        f"{marker('Confirm the completion date.')} Note: {caveat_text}.",
+        caveat_text,
+        "schedule",
     )
     with pytest.raises(EditOperationError) as error:
         validate_edit_plan(
-            narrowing_request,
+            edit_request(f"The schedule is {caveat_text}."),
             [narrowing],
             reviewed_plan(narrowing, [narrow], ["user"], ["partial"]),
         )
@@ -2481,35 +2152,17 @@ def test_ambiguous_existing_estimate_cannot_be_edited_unbound():
     """
     estimate = "an estimated EUR 2 million"
     current = chapter(f"Budget: {estimate}. Finance: {estimate}.")
-    current.gaps.append(
-        gap_snapshot(
-            "Confirm the budget.",
-            state="caveat",
-            resolution=WorkspaceGapResolutionSnapshot(
-                resolution_id=uuid4(),
-                action="answer",
-                answer=estimate,
-                actor_user_id="owner",
-                source_refs=[],
-                created_at=datetime.now(UTC),
-                gap_version=1,
-            ),
-        )
+    current.gaps.append(caveat_gap("Confirm the budget.", estimate))
+    request = edit_request("The city confirms EUR 2.1 million.")
+    factual_change = change_at(
+        current.body_markdown,
+        estimate,
+        "EUR 2.1 million, confirmed by the city council",
+        "EUR 2.1 million",
+        "budget",
     )
-    request = EditProposalRequest(
-        instruction="The city confirms EUR 2.1 million.", idempotency_key=uuid4()
-    )
-    start = current.body_markdown.index(estimate)
-    factual = {
-        "start": start,
-        "before": estimate,
-        "after": "EUR 2.1 million, confirmed by the city council",
-        "kind": "factual",
-        "group_id": "budget",
-        "user_input_quote": "EUR 2.1 million",
-    }
-    wording = {**factual, "kind": "wording", "user_input_quote": None}
-    for change in (factual, wording):
+    wording = {**factual_change, "kind": "wording", "user_input_quote": None}
+    for change in (factual_change, wording):
         with pytest.raises(EditOperationError) as error:
             validate_edit_plan(
                 request,

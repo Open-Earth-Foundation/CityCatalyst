@@ -4,30 +4,24 @@
 // text, rows of the "View all" list tell gaps apart, the long text scrolls
 // above a pinned "Answer in chat", and the marker opens where it fits.
 
-import { act, type ReactNode } from "react";
-import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, expect, it, jest } from "@jest/globals";
-import { ChakraProvider } from "@chakra-ui/react";
-import i18next from "i18next";
-
-import translations from "@/i18n/locales/en/concept-notes.json";
+import { act } from "react";
+import { expect, it, jest } from "@jest/globals";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
+import {
+  conceptNotesI18n,
+  draftChapter,
+  gapRecord,
+  mockTranslation,
+  setupDomShims,
+  setupTestRoot,
+} from "./helpers/concept-note-ui";
 
 // A real i18next instance with the app's defaults (app/src/i18n/settings.ts
 // sets no interpolation options), so interpolated values are HTML-escaped
 // unless a call opts out, exactly as in production.
-const i18n = i18next.createInstance();
-await i18n.init({
-  lng: "en",
-  ns: ["concept-notes"],
-  defaultNS: "concept-notes",
-  resources: { en: { "concept-notes": translations } },
-});
-const t = i18n.getFixedT("en", "concept-notes");
-jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t, i18n }),
-}));
+const i18n = await conceptNotesI18n({ namespaced: true });
+mockTranslation(i18n.getFixedT("en", "concept-notes"), i18n);
 
 const { ChapterGapMarker, ChapterGapsPanel, chapterGapRows, markerPlacement } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
@@ -39,83 +33,30 @@ const TRICKY_QUESTION =
 const TRICKY_TITLE = "Risks & mitigation / O&M";
 const ENTITY = /&(#39|amp|quot|#x2F|lt|gt);/;
 
-let root: Root;
-let container: HTMLDivElement;
-const originalResizeObserver = globalThis.ResizeObserver;
+setupDomShims();
+const view = setupTestRoot(appTheme);
+const render = view.render;
 
-function gap(
+const gap = (
   id: string,
   question: string,
   severity: ConceptNoteGap["severity"] = "critical",
-): ConceptNoteGap {
-  return {
-    gap_id: id,
-    field_key: id,
-    question,
-    why_asking: `Because ${id}.`,
-    severity,
-    state: "open",
-    suggestions: [],
-    source_refs: [],
-    version: 1,
-    resolution: null,
-    created_at: "2026-11-20T00:00:00Z",
-    updated_at: "2026-11-20T00:00:00Z",
-  };
-}
+) => gapRecord(id, { question, severity });
 
-function chapterWith(
+const chapterWith = (
   title: string,
   body: string,
   gaps: ConceptNoteGap[],
-): ConceptNoteDraftChapter {
-  return {
-    chapter_id: "ch-1",
-    template_section_id: null,
+): ConceptNoteDraftChapter =>
+  draftChapter({
     title,
-    position: 0,
-    status: "draft",
-    required: true,
-    user_locked: false,
     body_markdown: body,
     gaps,
     open_gap_count: gaps.length,
-    caveat_count: 0,
-    revision_number: 1,
-    confirmed_body_markdown: null,
-    confirmed_revision_number: null,
-  };
-}
-
-async function render(node: ReactNode) {
-  await act(async () =>
-    root.render(<ChakraProvider value={appTheme}>{node}</ChakraProvider>),
-  );
-}
+  });
 
 const byTestId = <T extends HTMLElement = HTMLElement>(id: string) =>
   document.querySelector<T>(`[data-testid="${id}"]`);
-
-beforeEach(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-  // Chakra clones JSON-compatible recipes; jsdom lacks structuredClone.
-  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
-});
-
-afterEach(async () => {
-  await act(async () => root.unmount());
-  container.remove();
-  globalThis.ResizeObserver = originalResizeObserver;
-  globalThis.IS_REACT_ACT_ENVIRONMENT = false;
-});
 
 it("labels markers, View all and section links with the literal text, not HTML entities", async () => {
   const chapter = chapterWith(

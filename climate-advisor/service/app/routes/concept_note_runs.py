@@ -22,7 +22,6 @@ from app.models.cnb.concept_note_application_context import (
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterConfirmRequest,
     ConceptNoteDraftResponse,
-    ConceptNoteMarkerGapRequest,
 )
 from app.models.cnb.concept_note_runs import (
     ConceptNoteChatThreadListResponse,
@@ -749,72 +748,6 @@ async def confirm_concept_note_chapter(
             run=run,
             chapter_id=chapter_id,
             payload=payload,
-        )
-    except ChapterDraftingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-
-
-@router.post(
-    "/concept-notes/{run_id}/gaps/adopt-markers",
-    response_model=ConceptNoteDraftResponse,
-)
-async def adopt_concept_note_legacy_marker_gaps(
-    run_id: UUID,
-    draft_service: Annotated[
-        ConceptNoteChapterDraftService | None,
-        Depends(get_chapter_draft_service),
-    ],
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteDraftResponse:
-    """Track every unrecorded marker in the run's active chapters as an open gap."""
-    run = await ConceptNoteRunService(session).get_authorized_run(
-        run_id=run_id,
-        requested_user_id=user_id,
-        authorization=authorization,
-    )
-    if draft_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Concept Note chapter drafting is unavailable",
-        )
-    try:
-        return await draft_service.adopt_legacy_marker_gaps(run=run)
-    except ChapterDraftingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-
-
-@router.post(
-    "/concept-notes/{run_id}/chapters/{chapter_id}/gaps",
-    response_model=ConceptNoteDraftResponse,
-)
-async def adopt_concept_note_marker_gap(
-    run_id: UUID,
-    chapter_id: UUID,
-    payload: ConceptNoteMarkerGapRequest,
-    draft_service: Annotated[
-        ConceptNoteChapterDraftService | None,
-        Depends(get_chapter_draft_service),
-    ],
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteDraftResponse:
-    """Track one unrecorded marker as an open gap so the gap form can close it."""
-    run = await ConceptNoteRunService(session).get_authorized_run(
-        run_id=run_id,
-        requested_user_id=user_id,
-        authorization=authorization,
-    )
-    if draft_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Concept Note chapter drafting is unavailable",
-        )
-    try:
-        return await draft_service.adopt_marker_gap(
-            run=run, chapter_id=chapter_id, payload=payload
         )
     except ChapterDraftingError as exc:
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc

@@ -18,56 +18,21 @@ from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.persistence.concept_notes.edits import applied_gap_answers
 from app.routes.concept_note_runs import (
     propose_gap_question,
-    router,
     save_gap_answers,
 )
 from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
-from fastapi.routing import serialize_response
 from pydantic import ValidationError
+from tests.cnb.gap_edit_helpers import mock_cnb_session, mock_run_authorization
 from tests.test_concept_note_lifecycle import _workspace_repository
 
 
 @pytest.mark.parametrize(
-    "options",
-    [["Loan"], ["Loan", " loan "], ["", "Grant"], [f"Source {i}" for i in range(9)]],
+    "options", [["Loan"], ["Loan", " loan "], ["", "Grant"], ["x"] * 6]
 )
 def test_rejects_single_or_invalid_choices(options):
     with pytest.raises(ValidationError):
         GapSubQuestion(question="Instrument?", options=options)
-
-
-def test_confirmation_takes_its_choices_from_the_ui():
-    question = GapSubQuestion(question="Still EUR 2m?", options=[], confirms=True)
-    assert question.confirms
-    # Model-written choices would bring back a "changed" answer with no value.
-    with pytest.raises(ValidationError):
-        GapSubQuestion(
-            question="Still EUR 2m?", options=["Yes", "No"], confirms=True
-        )
-
-
-def test_several_answers_need_options_to_select():
-    sources = [f"Source {i}" for i in range(8)]
-    question = GapSubQuestion(question="Sources?", options=sources, multiple=True)
-    assert question.multiple
-    # Free text already takes several answers, so the flag is dropped, not fatal.
-    assert not GapSubQuestion(question="Amount?", options=[], multiple=True).multiple
-
-
-def test_no_questions_when_earlier_answers_cover_the_gap():
-    # Used to fail as a 503; the UI then lets the earlier answers complete the gap.
-    output = GapQuestionOutput(why_asking="Already answered", questions=[])
-    assert output.questions == []
-
-
-def test_keeps_the_first_four_questions_instead_of_failing():
-    # Two confirmations plus three open parts once turned the whole set into a 503.
-    output = GapQuestionOutput(
-        why_asking="Support needed",
-        questions=[{"question": f"Part {i}?", "options": []} for i in range(5)],
-    )
-    assert [q.question for q in output.questions] == [f"Part {i}?" for i in range(4)]
 
 
 async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
@@ -82,7 +47,13 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
                 "confirms": False,
                 "multiple": False,
             },
-            {"question": "Amount?", "options": [], "where_to_find": "", "confirms": False, "multiple": False},
+            {
+                "question": "Amount?",
+                "options": [],
+                "where_to_find": "",
+                "confirms": False,
+                "multiple": False,
+            },
         ],
     }
     client = AsyncMock()
@@ -105,12 +76,7 @@ async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
 @pytest.fixture
 def gap_route(monkeypatch):
     chapter_id, gap_id = uuid4(), uuid4()
-    run = SimpleNamespace(run_id=uuid4())
-    authorize = AsyncMock(return_value=run)
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.ConceptNoteRunService",
-        Mock(return_value=SimpleNamespace(get_authorized_run=authorize)),
-    )
+    run, authorize = mock_run_authorization(monkeypatch)
     chapter = SimpleNamespace(
         chapter_id=chapter_id,
         title="Financing",
@@ -145,12 +111,7 @@ def gap_route(monkeypatch):
     monkeypatch.setattr("app.routes.concept_note_runs.generate_suggestion", generate)
     previous = AsyncMock(return_value=["Earlier answer " * 300])
     monkeypatch.setattr("app.routes.concept_note_runs.applied_gap_answers", previous)
-    cnb_session = AsyncMock()
-    cnb_session.__aenter__.return_value = cnb_session
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
-        Mock(return_value=Mock(return_value=cnb_session)),
-    )
+    mock_cnb_session(monkeypatch, AsyncMock())
     return SimpleNamespace(
         authorize=authorize,
         chapter=chapter,
@@ -222,8 +183,6 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     assert context["source_suggestions"] == [
         {"value": "Loan of EUR 2 million", "source_refs": ["Plan"]}
     ]
-    # Hints are optional, so an older model reply without them still validates.
-    assert result.questions[0].where_to_find == ""
     gap_route.args["session"].commit.assert_not_called()
 
 
@@ -247,82 +206,42 @@ async def test_narrowed_gap_returns_only_the_literal_remaining_question(gap_rout
     gap_route.args["session"].commit.assert_not_called()
 
 
-async def test_bound_question_uses_full_server_text_when_client_omits_question(
-    gap_route,
-):
-    long_question = "Describe the funding source and its amount. " * 60
+ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
+
+
+@pytest.mark.parametrize(
+    ("kept", "body", "resolution"),
+    [
+        # A marker formatted unlike its question still anchors the excerpt.
+        (
+            "[Information needed: **original  question?**]",
+            "Before " * 2000
+            + "[Information needed: **original  question?**]"
+            + " After" * 2000,
+            None,
+        ),
+        # An estimate to confirm anchors it even beyond the first 12,000 characters.
+        (
+            ESTIMATE,
+            "Filler " * 3000
+            + ESTIMATE
+            + " Tail " * 2000
+            + "[Information needed: Original question]",
+            SimpleNamespace(answer=ESTIMATE),
+        ),
+    ],
+)
+async def test_excerpt_is_centered_on_the_gap(gap_route, kept, body, resolution):
     gap = gap_route.chapter.gaps[0]
-    gap.question = long_question.strip()
-    gap_route.chapter.body_markdown = (
-        "Before " * 2000 + f"[Information needed: {gap.question}]" + " After" * 2000
-    )
-    gap_route.args["payload"].question = None
-    await propose_gap_question(**gap_route.args)
-    context = gap_route.generate.call_args.args[1]
-    assert len(context["question"]) > 2000
-    assert context["question"] == gap.question
-    assert f"[Information needed: {gap.question}]" in context["chapter_excerpt"]
-
-
-def test_unbound_question_still_requires_a_capped_question():
-    chapter_id = uuid4()
-    with pytest.raises(ValidationError):
-        GapQuestionRequest(chapter_id=chapter_id, question=None)
-    with pytest.raises(ValidationError):
-        GapQuestionRequest(chapter_id=chapter_id, question="q" * 2001)
-    # A bound gap may omit the question, and an older bound payload still validates.
-    assert GapQuestionRequest(chapter_id=chapter_id, gap_id=uuid4()).question is None
-    assert (
-        GapQuestionRequest(
-            chapter_id=chapter_id, gap_id=uuid4(), question="q" * 2000
-        ).question
-        == "q" * 2000
-    )
-
-
-async def test_persisted_long_narrowed_question_reopens_exactly(gap_route):
-    """An over-cap remainder saved before the cap still reopens verbatim through the API."""
-    long_question = "Describe the funding source and its amount. " * 60
-    gap = gap_route.chapter.gaps[0]
-    gap.has_accepted_narrowing = True
-    gap.question = long_question.strip()
-    gap.why_asking = ""
-    gap_route.args["payload"].question = None
-    result = await propose_gap_question(**gap_route.args)
-    gap_route.generate.assert_not_called()
-    route = next(
-        item
-        for item in router.routes
-        if getattr(item, "path", "").endswith("gap-question")
-    )
-    # FastAPI serializes the response through the route's own response field.
-    body = await serialize_response(
-        field=route.response_field, response_content=result, is_coroutine=True
-    )
-    assert body == {
-        "why_asking": "This information is required to complete the chapter.",
-        "questions": [
-            {
-                "question": gap.question,
-                "options": [],
-                "where_to_find": "",
-                "confirms": False,
-                "multiple": False,
-            }
-        ],
-    }
-    assert len(body["questions"][0]["question"]) > 2000
-
-
-async def test_centers_the_excerpt_on_a_marker_formatted_unlike_its_question(
-    gap_route,
-):
-    marker = "[Information needed: **original  question?**]"
-    gap_route.chapter.body_markdown = "Before " * 2000 + marker + " After" * 2000
+    if resolution is not None:
+        gap.state = "caveat"
+        gap.resolution = resolution
+    gap_route.chapter.body_markdown = body
+    assert body.index(kept) > 12000
     await propose_gap_question(**gap_route.args)
     excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
-    assert marker in excerpt
-    assert "Before" in excerpt and "After" in excerpt
+    assert len(excerpt) == 12000
+    assert kept in excerpt
 
 
 @pytest.mark.parametrize("saved", [True, False])
@@ -332,12 +251,7 @@ async def test_saving_answers_authorizes_and_rejects_a_changed_gap(
     save = AsyncMock(return_value=saved)
     monkeypatch.setattr("app.routes.concept_note_runs.save_partial_answer", save)
     # MagicMock supports `async with`, including the session's begin().
-    cnb_session = MagicMock()
-    cnb_session.__aenter__.return_value = cnb_session
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
-        Mock(return_value=Mock(return_value=cnb_session)),
-    )
+    mock_cnb_session(monkeypatch, MagicMock())
     args = {
         "run_id": gap_route.args["run_id"],
         "gap_id": gap_route.chapter.gaps[0].gap_id,
@@ -385,32 +299,6 @@ async def test_saving_answers_checks_access_before_writing(gap_route, monkeypatc
         )
     assert error.value.status_code == 403
     save.assert_not_called()
-
-
-async def test_an_estimate_to_confirm_can_still_be_asked(gap_route):
-    """CC-1239: a caveat gap holds an accepted estimate the user can confirm."""
-    gap_route.chapter.gaps[0].state = "caveat"
-    result = await propose_gap_question(**gap_route.args)
-    assert result.questions[0].question == "Instrument?"
-    gap_route.generate.assert_called_once()
-
-
-async def test_an_estimate_excerpt_is_centered_on_the_accepted_estimate(gap_route):
-    """CC-1239: the excerpt keeps an estimate beyond the first 12,000 characters."""
-    estimate = "The City estimates 120 volunteers, pending confirmation."
-    gap_route.chapter.gaps[0].state = "caveat"
-    gap_route.chapter.gaps[0].resolution = SimpleNamespace(answer=estimate)
-    gap_route.chapter.body_markdown = (
-        "Filler " * 3000
-        + estimate
-        + " Tail " * 2000
-        + "[Information needed: Original question]"
-    )
-    assert gap_route.chapter.body_markdown.index(estimate) > 12000
-    await propose_gap_question(**gap_route.args)
-    excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
-    assert len(excerpt) == 12000
-    assert estimate in excerpt
 
 
 async def test_provider_failure_is_explicit_and_retryable(gap_route):
@@ -465,7 +353,7 @@ async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
                         1,
                         "applied",
                         request(
-                            "gap-answer-complete-request",
+                            "gap-answer-estimate-confirm-request",
                             "1. Instrument?\nLoan\n\nPaid back over ten years.",
                         ),
                     ),

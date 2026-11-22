@@ -1,52 +1,19 @@
 """Exercise agent selections against exact snapshots and protected draft content."""
 
 from dataclasses import replace
-from datetime import UTC, datetime
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 
 from app.config.settings import CnbEditPromptBudgetConfig
 from app.models.cnb.concept_note_edits import DraftReplacement, EditProposalRequest
 from app.persistence.concept_notes.edits import replace_anchors
-from app.persistence.concept_notes.gaps import WorkspaceGapSnapshot
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
-
-
-def gap(
-    question: str, state: str = "open", gap_id: UUID | None = None
-) -> WorkspaceGapSnapshot:
-    """A structured gap as the workspace projects it, for marker pairing tests."""
-    now = datetime.now(UTC)
-    return WorkspaceGapSnapshot(
-        gap_id=gap_id or uuid4(),
-        field_key="field",
-        question=question,
-        why_asking="Needed for the chapter.",
-        severity="critical",
-        state=state,
-        suggestions=[],
-        source_refs=[],
-        version=1,
-        resolution=None,
-        created_at=now,
-        updated_at=now,
-    )
-
-
-def chapter(body: str, position: int = 0) -> WorkspaceChapterSnapshot:
-    return WorkspaceChapterSnapshot(
-        chapter_id=uuid4(),
-        chapter_ref=None,
-        title="Summary",
-        position=position,
-        status="needs_review",
-        required=True,
-        user_locked=False,
-        body_markdown=body,
-        revision_number=1,
-    )
+from tests.cnb.gap_edit_helpers import (
+    chapter_snapshot as chapter,
+    gap_snapshot as gap,
+)
 
 
 def session(
@@ -71,6 +38,18 @@ def replacement(search_id: str, text: str = "Cracow", **kwargs) -> DraftReplacem
         group_id="rename",
         **kwargs,
     )
+
+
+def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
+    """A factual replacement for one gap-marker search, with exact provenance."""
+    values = {"kind": "factual", "group_id": "gap", **kwargs}
+    return DraftReplacement(search_id=search_id, replacement=text, **values)
+
+
+def propose_one(edits: DraftEditSession, search: str, text: str, **kwargs) -> dict:
+    """Search the draft for ``search`` and propose one factual replacement for it."""
+    found = edits.search_draft(search)
+    return edits.propose_edits([replacement_for(found["search_id"], text, **kwargs)])
 
 
 def test_ambiguous_replacement_can_be_repaired_using_an_exact_match_id():
@@ -290,15 +269,11 @@ def test_partial_gap_change_requires_one_exact_new_marker_and_factual_prose(
         for question in extra_gaps:
             current.gaps.append(gap(question))
     edits = session([current], "The city will use stormwater utility funds.")
-    found = edits.search_draft(search)
-    result = edits.propose_edits(
-        [
-            replacement_for(
-                found["search_id"],
-                replacement,
-                user_input_quote="The city will use stormwater utility funds",
-            )
-        ]
+    result = propose_one(
+        edits,
+        search,
+        replacement,
+        user_input_quote="The city will use stormwater utility funds",
     )
     if code is None:
         assert result["ok"], result
@@ -317,15 +292,8 @@ def test_a_plain_edit_may_not_introduce_a_broken_or_new_marker() -> None:
     """Outside a gap transition, no replacement may add a marker or a broken prefix."""
     current = chapter("Finance: the budget is open.")
     edits = session([current], "The budget is open.")
-    found = edits.search_draft("Finance:")
-    broken = edits.propose_edits(
-        [
-            replacement_for(
-                found["search_id"],
-                "Finance: [Information needed: budget",
-                kind="wording",
-            )
-        ]
+    broken = propose_one(
+        edits, "Finance:", "Finance: [Information needed: budget", kind="wording"
     )
     assert not broken["ok"] and broken["code"] == "marker_changed"
     assert edits.plan is None
@@ -338,13 +306,11 @@ def test_locked_target_marker_is_never_a_gap_transition() -> None:
     )
     current.gaps.append(gap("Confirm the amount."))
     edits = session([current], "The amount is EUR 2 million.")
-    found = edits.search_draft("[Information needed: Confirm the amount.]")
-    result = edits.propose_edits(
-        [
-            replacement_for(
-                found["search_id"], "EUR 2 million", user_input_quote="EUR 2 million"
-            )
-        ]
+    result = propose_one(
+        edits,
+        "[Information needed: Confirm the amount.]",
+        "EUR 2 million",
+        user_input_quote="EUR 2 million",
     )
     assert result["code"] == "locked_chapters"
 
@@ -390,9 +356,7 @@ def test_saved_gap_quote_rejects_cross_gap_then_accepts_valid_same_gap_retry() -
     body = f"Location: {location} Phase: {phase}"
     current = chapter(body)
     current.gaps.append(gap("Confirm the project location."))
-    current.gaps.append(
-        replace(gap("Confirm the current phase and outcomes."), answered_so_far=saved)
-    )
+    current.gaps.append(gap("Confirm the current phase and outcomes.", answered=saved))
     edits = session([current], "Update the chapter.")
     location_search = edits.search_draft(location)["search_id"]
     phase_search = edits.search_draft(phase)["search_id"]
@@ -444,16 +408,11 @@ def test_overlong_new_remainder_is_rejected_before_review(length, accepted) -> N
     current = chapter(f"Finance: {marker}")
     current.gaps.append(gap("Confirm the instrument and amount."))
     edits = session([current], "The city will use stormwater utility funds.")
-    found = edits.search_draft(marker)
-    remainder = "x" * length
-    result = edits.propose_edits(
-        [
-            replacement_for(
-                found["search_id"],
-                f"The city will use stormwater utility funds. [Information needed: {remainder}]",
-                user_input_quote="The city will use stormwater utility funds",
-            )
-        ]
+    result = propose_one(
+        edits,
+        marker,
+        f"The city will use stormwater utility funds. [Information needed: {'x' * length}]",
+        user_input_quote="The city will use stormwater utility funds",
     )
     if accepted:
         assert result["ok"], result
@@ -465,7 +424,3 @@ def test_overlong_new_remainder_is_rejected_before_review(length, accepted) -> N
         assert edits.plan is None
 
 
-def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
-    """A factual replacement for one gap-marker search, with exact provenance."""
-    values = {"kind": "factual", "group_id": "gap", **kwargs}
-    return DraftReplacement(search_id=search_id, replacement=text, **values)

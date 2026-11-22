@@ -72,7 +72,6 @@ import {
   ConceptNoteFunderImportResponse,
   ConceptNoteFundingSelection,
   ConfirmConceptNoteChapterRequest,
-  AdoptConceptNoteMarkerGapRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteChatThreadListResponse,
@@ -2983,29 +2982,6 @@ export const api = createApi({
           { type: "ConceptNoteEdits", id: runId },
         ],
       }),
-      adoptConceptNoteMarkerGap: builder.mutation<
-        ConceptNoteDraftState,
-        AdoptConceptNoteMarkerGapRequest
-      >({
-        query: ({ runId, chapterId, marker }) => ({
-          url: `concept-notes/${runId}/chapters/${chapterId}/gaps`,
-          method: "POST",
-          body: { marker },
-        }),
-        invalidatesTags: (_result, _error, { runId }) => [
-          { type: "ConceptNoteDraft", id: runId },
-        ],
-      }),
-      /** Refetch the draft after this; it carries no tag, so the reload is explicit. */
-      adoptConceptNoteLegacyMarkerGaps: builder.mutation<
-        ConceptNoteDraftState,
-        { runId: string }
-      >({
-        query: ({ runId }) => ({
-          url: `concept-notes/${runId}/gaps/adopt-markers`,
-          method: "POST",
-        }),
-      }),
       validateConceptNoteChapter: builder.mutation<
         ConceptNoteChapterValidationResponse,
         ValidateConceptNoteChapterRequest
@@ -3198,8 +3174,6 @@ export const {
   useActivateConceptNoteChatThreadMutation,
   useStartConceptNoteDraftMutation,
   useConfirmConceptNoteChapterMutation,
-  useAdoptConceptNoteMarkerGapMutation,
-  useAdoptConceptNoteLegacyMarkerGapsMutation,
   useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

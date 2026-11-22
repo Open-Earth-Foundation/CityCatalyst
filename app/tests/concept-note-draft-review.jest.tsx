@@ -1,42 +1,66 @@
 /** @jest-environment jsdom */
 
-import { afterEach, beforeAll, expect, it, jest } from "@jest/globals";
-import { ChakraProvider } from "@chakra-ui/react";
+import { beforeAll, expect, it, jest } from "@jest/globals";
 import { act, type ComponentProps } from "react";
-import { createRoot, type Root } from "react-dom/client";
 
 import translations from "@/i18n/locales/en/concept-notes.json";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type { EditChange } from "@/util/concept-note-edit-types";
 import type { ConceptNoteDraftChapter } from "@/util/types";
+import {
+  draftChapter,
+  gapRecord,
+  mockTranslation,
+  setupDomShims,
+  setupTestRoot,
+} from "./helpers/concept-note-ui";
 
-jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({
-    t: (key: string) => translations[key as keyof typeof translations] ?? key,
-  }),
-}));
+mockTranslation(
+  (key: string) => translations[key as keyof typeof translations] ?? key,
+);
 
 let DraftDocumentPanel: typeof import("@/components/ConceptNoteWorkspace/draft-document-panel").DraftDocumentPanel;
-let root: Root;
-let container: HTMLDivElement;
 
+setupDomShims();
+const view = setupTestRoot(appTheme);
 beforeAll(async () => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-  // Chakra clones JSON-compatible recipes; jsdom in CI lacks structuredClone.
-  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
-  globalThis.ResizeObserver = class {
-    disconnect() {}
-    observe() {}
-    unobserve() {}
-  };
-  HTMLElement.prototype.scrollTo = jest.fn();
   ({ DraftDocumentPanel } =
     await import("@/components/ConceptNoteWorkspace/draft-document-panel"));
 });
 
-afterEach(async () => {
-  await act(async () => root.unmount());
-  container.remove();
+/** The panel's focus state with no finding selected. */
+const panelFocus = (selectedChapterId: string) => ({
+  chapterElements: { current: {} },
+  previewElement: { current: null },
+  focusedFindingElement: { current: null },
+  isChapterPanelOpen: true,
+  selectedChapterId,
+  selectChapter: jest.fn(),
+  toggleChapterPanel: jest.fn(),
+  focusedFinding: null,
+});
+
+/** Renders one chapter with no finding in focus. */
+const renderChapter = (chapter: ConceptNoteDraftChapter) =>
+  view.render(
+    <DraftDocumentPanel
+      chapters={[chapter]}
+      lng="en"
+      noteName="Tram project"
+      focusFindingKey={null}
+      isConfirmingChapter={false}
+      onConfirmChapter={jest.fn()}
+      focus={panelFocus(chapter.chapter_id)}
+    />,
+  );
+
+const estimateResolution = (answer: string) => ({
+  resolution_id: "resolution-1",
+  action: "answer" as const,
+  answer,
+  actor_user_id: "owner",
+  source_refs: [],
+  created_at: "2026-11-20T10:00:00Z",
 });
 
 it("keeps validation findings, inline decisions, markers and chapter confirmation together", async () => {
@@ -104,25 +128,15 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
       },
     },
   };
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
-  async function render(overrides: Partial<typeof props> = {}) {
-    await act(async () =>
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <DraftDocumentPanel {...props} {...overrides} />
-        </ChakraProvider>,
-      ),
-    );
-  }
+  const render = (overrides: Partial<typeof props> = {}) =>
+    view.render(<DraftDocumentPanel {...props} {...overrides} />);
   await render();
   expect(
-    container.querySelector('[data-testid="focused-review-finding"]')
+    view.container.querySelector('[data-testid="focused-review-finding"]')
       ?.textContent,
   ).toContain("Check the total budget");
   const marker = () =>
-    container.querySelector<HTMLButtonElement>(
+    view.container.querySelector<HTMLButtonElement>(
       '[data-testid="concept-note-gap-marker"]',
     )!;
   // A parent re-render must not remount the marker and close its popover.
@@ -144,10 +158,10 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     await new Promise(requestAnimationFrame);
   });
   expect(
-    container.querySelector('[data-testid="focused-review-finding"]'),
+    view.container.querySelector('[data-testid="focused-review-finding"]'),
   ).not.toBeNull();
   expect(
-    container.querySelector('[data-testid="concept-note-inline-document"]')
+    view.container.querySelector('[data-testid="concept-note-inline-document"]')
       ?.textContent,
   ).toContain("20");
   expect(document.activeElement?.getAttribute("data-change-ids")).toContain(
@@ -155,7 +169,7 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
   );
   await act(async () => {
     (
-      container.querySelector(
+      view.container.querySelector(
         '[data-testid="concept-note-inline-accept"]',
       ) as HTMLButtonElement
     ).click();
@@ -166,12 +180,14 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
     chapters: [{ ...chapter, body_markdown: "Budget is 10." }],
   });
   await act(async () => {
-    const confirm = [...container.querySelectorAll("button")].find((button) =>
-      button.textContent?.includes("Review & confirm"),
+    const confirm = [...view.container.querySelectorAll("button")].find(
+      (button) => button.textContent?.includes("Review & confirm"),
     );
     confirm?.click();
     (
-      container.querySelector('[aria-current="location"]') as HTMLButtonElement
+      view.container.querySelector(
+        '[aria-current="location"]',
+      ) as HTMLButtonElement
     ).click();
   });
   expect(onConfirmChapter).toHaveBeenCalledWith({
@@ -182,174 +198,58 @@ it("keeps validation findings, inline decisions, markers and chapter confirmatio
 });
 
 it("counts only open gaps in the section list, not estimates to confirm", async () => {
-  const gap = {
-    why_asking: "",
-    severity: "critical",
-    suggestions: [],
-    source_refs: [],
-    created_at: "2026-11-20T10:00:00Z",
-    updated_at: "2026-11-20T10:00:00Z",
-  } as const;
-  const chapter: ConceptNoteDraftChapter = {
-    chapter_id: "chapter-1",
-    title: "Budget",
-    template_section_id: "budget",
-    position: 0,
-    required: true,
-    user_locked: false,
-    status: "draft",
-    body_markdown:
-      "The request is an estimated $2 million. [Information needed: Confirm funding]",
-    revision_number: 2,
-    confirmed_body_markdown: null,
-    confirmed_revision_number: null,
-    gaps: [
-      {
-        ...gap,
-        gap_id: "gap-open",
-        field_key: "funding",
-        question: "Confirm funding",
-        state: "open",
-        version: 1,
-        resolution: null,
-      },
-      {
-        ...gap,
-        gap_id: "gap-estimate",
-        field_key: "request",
-        question: "Confirm the request amount",
-        state: "caveat",
-        version: 2,
-        resolution: {
-          resolution_id: "resolution-1",
-          action: "answer",
-          answer: "The request is an estimated $2 million.",
-          actor_user_id: "owner",
-          source_refs: [],
-          created_at: "2026-11-20T10:00:00Z",
-        },
-      },
-    ],
-    open_gap_count: 1,
-    caveat_count: 1,
-  };
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <DraftDocumentPanel
-          chapters={[chapter]}
-          lng="en"
-          noteName="Tram project"
-          focusFindingKey={null}
-          isConfirmingChapter={false}
-          onConfirmChapter={jest.fn()}
-          focus={{
-            chapterElements: { current: {} },
-            previewElement: { current: null },
-            focusedFindingElement: { current: null },
-            isChapterPanelOpen: true,
-            selectedChapterId: chapter.chapter_id,
-            selectChapter: jest.fn(),
-            toggleChapterPanel: jest.fn(),
-            focusedFinding: null,
-          }}
-        />
-      </ChakraProvider>,
-    ),
+  await renderChapter(
+    draftChapter({
+      chapter_id: "chapter-1",
+      title: "Budget",
+      body_markdown:
+        "The request is an estimated $2 million. [Information needed: Confirm funding]",
+      revision_number: 2,
+      gaps: [
+        gapRecord("gap-open", { question: "Confirm funding" }),
+        gapRecord("gap-estimate", {
+          question: "Confirm the request amount",
+          state: "caveat",
+          version: 2,
+          resolution: estimateResolution(
+            "The request is an estimated $2 million.",
+          ),
+        }),
+      ],
+      caveat_count: 1,
+    }),
   );
-  expect(
-    container.querySelector('[data-testid="concept-note-section-gap-count"]')
-      ?.textContent,
-  ).toBe("1");
+  expect(view.byTestId("concept-note-section-gap-count")?.textContent).toBe(
+    "1",
+  );
 });
 
 it("hides Review & confirm while a raw multiline marker remains", async () => {
-  const gap = {
-    why_asking: "",
-    severity: "critical",
-    suggestions: [],
-    source_refs: [],
-    created_at: "2026-11-20T10:00:00Z",
-    updated_at: "2026-11-20T10:00:00Z",
-  } as const;
-  const chapterWith = (
-    overrides: Partial<ConceptNoteDraftChapter>,
-  ): ConceptNoteDraftChapter => ({
-    chapter_id: "chapter-1",
-    title: "Budget",
-    template_section_id: "budget",
-    position: 0,
-    required: true,
-    user_locked: false,
-    status: "draft",
-    body_markdown: "Budget is 10.",
-    revision_number: 1,
-    confirmed_body_markdown: null,
-    confirmed_revision_number: null,
-    gaps: [],
-    open_gap_count: 0,
-    caveat_count: 0,
-    ...overrides,
-  });
+  const chapterWith = (overrides: Partial<ConceptNoteDraftChapter>) =>
+    draftChapter({
+      chapter_id: "chapter-1",
+      title: "Budget",
+      body_markdown: "Budget is 10.",
+      ...overrides,
+    });
   // A marker split across lines and bold text, claimed by a closed record.
   const multiline =
     "Budget is pending. [Information needed: **Who pays\nfor the pilot**]";
-  const closedRecord = {
-    ...gap,
-    gap_id: "gap-closed",
-    field_key: "funding",
+  const closedRecord = gapRecord("gap-closed", {
     question: "Who pays for the pilot?",
     state: "resolved",
     version: 2,
-    resolution: {
-      resolution_id: "resolution-1",
-      action: "answer",
-      answer: "The city pays.",
-      actor_user_id: "owner",
-      source_refs: [],
-      created_at: "2026-11-20T10:00:00Z",
-    },
-  } as const;
-  const caveat = {
-    ...closedRecord,
-    gap_id: "gap-estimate",
-    state: "caveat",
+    resolution: estimateResolution("The city pays."),
+  });
+  const caveat = gapRecord("gap-estimate", {
     question: "Confirm the request amount",
-    resolution: { ...closedRecord.resolution, answer: "About $2 million." },
-  } as const;
-  const focus = {
-    chapterElements: { current: {} },
-    previewElement: { current: null },
-    focusedFindingElement: { current: null },
-    isChapterPanelOpen: true,
-    selectedChapterId: "chapter-1",
-    selectChapter: jest.fn(),
-    toggleChapterPanel: jest.fn(),
-    focusedFinding: null,
-  };
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
+    state: "caveat",
+    version: 2,
+    resolution: estimateResolution("About $2 million."),
+  });
   async function reviewButtonFor(chapter: ConceptNoteDraftChapter) {
-    await act(async () =>
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <DraftDocumentPanel
-            chapters={[chapter]}
-            lng="en"
-            noteName="Tram project"
-            focusFindingKey={null}
-            isConfirmingChapter={false}
-            onConfirmChapter={jest.fn()}
-            focus={focus}
-          />
-        </ChakraProvider>,
-      ),
-    );
-    return [...container.querySelectorAll("button")].find((button) =>
+    await renderChapter(chapter);
+    return [...view.container.querySelectorAll("button")].find((button) =>
       button.textContent?.includes("Review & confirm"),
     );
   }

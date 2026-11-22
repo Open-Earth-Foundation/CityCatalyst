@@ -522,8 +522,6 @@
   "chapter-gaps-title_other": "Clima needs {{count}} things for this chapter",
   "chapter-gaps-hint": "Answer a guided question and Clima proposes the edit for you to review.",
   "gap-answer-in-chat": "Answer in chat",
-  "gap-adopting": "Preparing missing information in this draft…",
-  "gap-adopt-error": "Could not prepare the draft's missing information.",
   "gap-missing-information": "Missing information",
   "gap-why-needed": "Why this is needed",
   "gap-answered-so-far": "Answers saved",
@@ -595,7 +593,6 @@
   "gap-text-cut": "Some text was not added because it is over the length limit.",
   "gap-preview-needs-answer": "Answer at least one question to preview a change.",
   "gap-answer-request": "For the missing information in \"{{chapter}}\":\n{{question}}\n\nMy answer:\n{{answer}}\n\nPropose a chapter update for me to review. Add the supported facts and keep a marker for any part still missing. Wait for my acceptance before applying.",
-  "gap-answer-complete-request": "For the missing information in \"{{chapter}}\":\n{{question}}\n\nMy answers:\n{{answer}}\n\nThese answers cover this missing information. Propose a chapter update that replaces its complete {{marker}} marker with text based on my answers, and any other marker that asks for the same information when my answers state everything it asks for. Keep all other missing-information markers. Do not apply changes without my acceptance.",
   "gap-answer-estimate-confirm-request": "For the missing information in \"{{chapter}}\":\n{{question}}\n\nMy answers:\n{{answer}}\n\nPropose an update for me to review that replaces the current estimate using my answers. Keep all missing-information markers. Do not apply changes without my acceptance.",
   "gap-answer-message-heading": "Answers for {{chapter}} · {{question}}",
   "gap-answer-message-show-request": "Show request sent to Clima",
@@ -996,6 +993,5 @@
   "plan-upload-partial-help": "The ready plan documents are included in this run. Some other plan files failed; review them below and retry if available, or upload corrected documents.",
   "plan-upload-processing-help": "The plan is included once document processing and run context preparation finish.",
   "plan-upload-in-progress": "Wait for the current upload to finish.",
-  "gap-answer-request-history": "For the missing information in \"{{chapter}}\":\n{{question}}\n\nMy answer:\n{{answer}}\n\nPropose a chapter update for me to review. Keep any information I have not supplied marked as missing. Do not apply changes without my acceptance.",
   "gap-selected-category": "Selected category: {{value}}"
 }

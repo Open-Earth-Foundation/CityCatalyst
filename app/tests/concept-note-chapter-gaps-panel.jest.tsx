@@ -1,80 +1,37 @@
 /** @jest-environment jsdom */
 
 import { act } from "react";
-import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, expect, it, jest } from "@jest/globals";
-import { ChakraProvider } from "@chakra-ui/react";
+import { expect, it, jest } from "@jest/globals";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
-import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
+import type { ConceptNoteGap } from "@/util/types";
 import ReactMarkdown from "react-markdown";
+import {
+  draftChapter,
+  gapRecord,
+  mockTranslation,
+  setupDomShims,
+  setupTestRoot,
+} from "./helpers/concept-note-ui";
 
-const t = (key: string, values?: Record<string, unknown>) =>
-  values ? `${key}:${JSON.stringify(values)}` : key;
-jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t }),
-}));
+mockTranslation((key: string, values?: Record<string, unknown>) =>
+  values ? `${key}:${JSON.stringify(values)}` : key,
+);
 
 const { ChapterGapsPanel, ChapterGapMarker, chapterGapRows, gapRowForMessage } =
   await import("@/components/ConceptNoteWorkspace/chapter-gaps-panel");
 const { remarkMissingInformation, remarkGapPassages } =
   await import("@/components/ConceptNoteWorkspace/draft-markdown");
 
-let root: Root;
-let container: HTMLDivElement;
-const originalResizeObserver = globalThis.ResizeObserver;
+setupDomShims();
+const view = setupTestRoot(appTheme);
 
-function gap(id: string, state: ConceptNoteGap["state"]): ConceptNoteGap {
-  return {
-    gap_id: id,
-    field_key: id,
-    question: `Question ${id}?`,
-    why_asking: `Because ${id}.`,
-    severity: id === "b" ? "noncritical" : "critical",
-    state,
-    suggestions: [],
-    source_refs: [],
-    version: 1,
-    resolution: null,
-    created_at: "2026-09-24T00:00:00Z",
-    updated_at: "2026-09-24T00:00:00Z",
-  };
-}
+const gap = (id: string, state: ConceptNoteGap["state"]) =>
+  gapRecord(id, { state, severity: id === "b" ? "noncritical" : "critical" });
 
-const chapter: ConceptNoteDraftChapter = {
-  chapter_id: "ch-1",
-  template_section_id: null,
+const chapter = draftChapter({
   title: "Funding breakdown",
   position: 1,
-  status: "draft",
-  required: true,
-  user_locked: false,
-  body_markdown: "Body",
   gaps: [gap("a", "open"), gap("b", "open"), gap("c", "resolved")],
-  open_gap_count: 2,
-  caveat_count: 0,
-  revision_number: 1,
-  confirmed_body_markdown: null,
-  confirmed_revision_number: null,
-};
-
-beforeEach(() => {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-  globalThis.structuredClone = (value) => JSON.parse(JSON.stringify(value));
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
-});
-
-afterEach(async () => {
-  await act(async () => root.unmount());
-  container.remove();
-  globalThis.ResizeObserver = originalResizeObserver;
-  globalThis.IS_REACT_ACT_ENVIRONMENT = false;
 });
 
 it("lists only open gaps and falls back to marker messages", () => {
@@ -107,27 +64,23 @@ it("keeps an accepted estimate listed as to be confirmed, after the open gaps", 
   // No marker is left for an estimate, so it follows the open gaps.
   expect(rows.map((row) => row.id)).toEqual(["a", "b", "d"]);
   const onAnswerGap = jest.fn();
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <ChapterGapsPanel
-          chapter={withEstimate}
-          lng="en"
-          rows={rows}
-          onAnswerGap={onAnswerGap}
-        />
-        {/* Stand-in for the answer form heading that opens in the chat panel. */}
-        <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
-      </ChakraProvider>,
-    ),
+  await view.render(
+    <>
+      <ChapterGapsPanel
+        chapter={withEstimate}
+        lng="en"
+        rows={rows}
+        onAnswerGap={onAnswerGap}
+      />
+      {/* Stand-in for the answer form heading that opens in the chat panel. */}
+      <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
+    </>,
   );
-  const panel = container.querySelector(
-    '[data-testid="concept-note-chapter-gaps"]',
-  );
+  const panel = view.byTestId("concept-note-chapter-gaps");
   // Estimates are not counted as open gaps.
   expect(panel?.textContent).toContain('chapter-open-gaps:{"count":2}');
   await act(async () =>
-    container
+    view.container
       .querySelector<HTMLButtonElement>(
         '[data-testid="concept-note-chapter-gaps-toggle"]',
       )!
@@ -165,32 +118,28 @@ it("keeps an accepted estimate listed as to be confirmed, after the open gaps", 
 
 it("keeps counts visible and opens only the selected question with its rationale", async () => {
   const onAnswerGap = jest.fn();
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <ChapterGapsPanel
-          chapter={chapter}
-          lng="en"
-          rows={chapterGapRows(chapter)}
-          onAnswerGap={onAnswerGap}
-        />
-      </ChakraProvider>,
-    ),
+  await view.render(
+    <>
+      <ChapterGapsPanel
+        chapter={chapter}
+        lng="en"
+        rows={chapterGapRows(chapter)}
+        onAnswerGap={onAnswerGap}
+      />
+    </>,
   );
-  const panel = container.querySelector(
-    '[data-testid="concept-note-chapter-gaps"]',
-  );
+  const panel = view.byTestId("concept-note-chapter-gaps");
   expect(panel?.getAttribute("data-state")).toBe("closed");
   expect(panel?.textContent).toContain('chapter-open-gaps:{"count":2}');
   expect(panel?.textContent).toContain(
     'gap-counts:{"required":1,"optional":1}',
   );
   expect(
-    container.querySelectorAll('[data-testid="concept-note-chapter-gap"]'),
+    view.container.querySelectorAll('[data-testid="concept-note-chapter-gap"]'),
   ).toHaveLength(0);
 
-  const toggle = container.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-chapter-gaps-toggle"]',
+  const toggle = view.byTestId<HTMLButtonElement>(
+    "concept-note-chapter-gaps-toggle",
   );
   await act(async () => {
     toggle?.click();
@@ -277,13 +226,13 @@ it("pairs a gap with its marker however the marker is formatted", async () => {
 
   // The inline marker opens the recorded gap, not a separate legacy row.
   await act(async () =>
-    root.render(
+    view.root.render(
       <ReactMarkdown remarkPlugins={[remarkMissingInformation]}>
         {formatted.body_markdown}
       </ReactMarkdown>,
     ),
   );
-  const link = container.querySelector<HTMLAnchorElement>(
+  const link = view.container.querySelector<HTMLAnchorElement>(
     'a[href="#cnb-missing-information"]',
   );
   expect(gapRowForMessage(rows, decodeURIComponent(link!.title))?.id).toBe("a");
@@ -291,7 +240,7 @@ it("pairs a gap with its marker however the marker is formatted", async () => {
 
 it("attaches a standalone marker to its actual passage without changing the text", async () => {
   await act(async () =>
-    root.render(
+    view.root.render(
       <ReactMarkdown
         remarkPlugins={[remarkMissingInformation, remarkGapPassages]}
       >
@@ -301,7 +250,7 @@ it("attaches a standalone marker to its actual passage without changing the text
       </ReactMarkdown>,
     ),
   );
-  const paragraphs = container.querySelectorAll("p");
+  const paragraphs = view.container.querySelectorAll("p");
   expect(paragraphs).toHaveLength(2);
   expect(paragraphs[0]?.querySelector("a")?.getAttribute("href")).toBe(
     "#cnb-missing-information",
@@ -321,24 +270,20 @@ it("attaches a standalone marker to its actual passage without changing the text
 it("opens a numbered optional marker and routes the exact gap into chat", async () => {
   const onAnswerGap = jest.fn();
   const row = chapterGapRows(chapter)[1]!;
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <ChapterGapMarker
-          chapter={chapter}
-          lng="en"
-          row={row}
-          number={4}
-          onAnswerGap={onAnswerGap}
-        />
-        {/* Stand-in for the answer form heading that opens in the chat panel. */}
-        <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
-      </ChakraProvider>,
-    ),
+  await view.render(
+    <>
+      <ChapterGapMarker
+        chapter={chapter}
+        lng="en"
+        row={row}
+        number={4}
+        onAnswerGap={onAnswerGap}
+      />
+      {/* Stand-in for the answer form heading that opens in the chat panel. */}
+      <p tabIndex={-1} data-testid="concept-note-gap-answer-heading" />
+    </>,
   );
-  const marker = container.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-gap-marker"]',
-  )!;
+  const marker = view.byTestId<HTMLButtonElement>("concept-note-gap-marker")!;
   expect(marker.textContent).toBe("4");
   expect(marker.getAttribute("data-severity")).toBe("noncritical");
   await act(async () => marker.click());
@@ -390,20 +335,18 @@ it("keeps an estimate and the answers saved to confirm it in separate blocks", a
   };
   const withEstimate = { ...chapter, gaps: [estimated] };
   const rows = chapterGapRows(withEstimate);
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <ChapterGapsPanel
-          chapter={withEstimate}
-          lng="en"
-          rows={rows}
-          onAnswerGap={jest.fn()}
-        />
-      </ChakraProvider>,
-    ),
+  await view.render(
+    <>
+      <ChapterGapsPanel
+        chapter={withEstimate}
+        lng="en"
+        rows={rows}
+        onAnswerGap={jest.fn()}
+      />
+    </>,
   );
   await act(async () =>
-    container
+    view.container
       .querySelector<HTMLButtonElement>(
         '[data-testid="concept-note-chapter-gaps-toggle"]',
       )!
@@ -441,21 +384,14 @@ it("shows answers saved so far on the marker popover and in the gap list", async
     gaps: [{ ...gap("a", "open"), answered_so_far: saved }, gap("b", "open")],
   };
   const rows = chapterGapRows(answered);
-  await act(async () =>
-    root.render(
-      <ChakraProvider value={appTheme}>
-        <ChapterGapMarker
-          chapter={answered}
-          lng="en"
-          row={rows[0]!}
-          number={1}
-        />
-        <ChapterGapsPanel chapter={answered} lng="en" rows={rows} />
-      </ChakraProvider>,
-    ),
+  await view.render(
+    <>
+      <ChapterGapMarker chapter={answered} lng="en" row={rows[0]!} number={1} />
+      <ChapterGapsPanel chapter={answered} lng="en" rows={rows} />
+    </>,
   );
   await act(async () =>
-    container
+    view.container
       .querySelector<HTMLButtonElement>(
         '[data-testid="concept-note-gap-marker"]',
       )!
@@ -469,7 +405,7 @@ it("shows answers saved so far on the marker popover and in the gap list", async
   expect(box?.textContent).toContain("gap-answered-so-far-hint");
   expect(box?.textContent).toContain("2. Amount?\nNot decided yet");
   await act(async () =>
-    container
+    view.container
       .querySelector<HTMLButtonElement>(
         '[data-testid="concept-note-chapter-gaps-toggle"]',
       )!

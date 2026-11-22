@@ -6,7 +6,6 @@ import logging
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from hashlib import sha256
 from typing import Any
 from uuid import UUID
 
@@ -19,10 +18,8 @@ from app.models.db.cnb_workspace import (
     ConceptNoteChapterReview,
     ConceptNoteChapterRevision,
     ConceptNoteChapterValidation,
-    ConceptNoteGap,
 )
 from app.persistence.concept_notes.gaps import (
-    LEGACY_GENERIC_GAP_RATIONALE,
     _chapter_gaps,
     _dropped_unanswered_gaps,
     _gap_from_output,
@@ -33,7 +30,6 @@ from app.persistence.concept_notes.gaps import (
 from app.persistence.concept_notes.workspace_queries import (
     _active_chapters,
     _evidence_by_chapter,
-    _gaps_by_chapter,
     _latest_revision,
     _latest_revisions,
 )
@@ -56,7 +52,6 @@ from app.persistence.concept_notes.workspace_validation import (
     _load_validation_context,
 )
 from app.utils.cnb_information_markers import (
-    INFORMATION_NEEDED_PATTERN,
     information_marker_key,
     information_needed_markers,
 )
@@ -384,129 +379,6 @@ class ConceptNoteWorkspaceRepository:
             chapter.status = "ready"
             chapter.updated_at = datetime.now(UTC)
 
-    async def adopt_marker_gap(
-        self,
-        *,
-        run_id: UUID,
-        chapter_id: UUID,
-        marker: str,
-    ) -> UUID:
-        """Create the open gap record a marker lacks, or return the one it has.
-
-        Runs drafted before structured gaps can hold markers without a record.
-        The new gap uses the normal drafting path (``_gap_from_output``):
-        ``critical`` severity, as the web app already labelled the marker, the
-        migration rationale sentinel (rendered as a gap-specific rationale on
-        read), and a ``field_key`` derived from the marker so a retry finds the
-        same record. Nothing in the chapter text changes.
-
-        Raises:
-            WorkspaceConflictError: If the chapter is unavailable, the latest
-                revision has no such marker, or the marker's gap is closed.
-        """
-        async with self._session_factory() as session, session.begin():
-            # Step 1: lock the chapter and find the marker in its current text.
-            chapter = await _require_chapter(session, chapter_id, lock=True)
-            latest = await _latest_revision(session, chapter_id)
-            if chapter.run_id != run_id or latest is None:
-                raise WorkspaceConflictError("Concept Note chapter is unavailable")
-            key = information_marker_key(marker)
-            current = next(
-                (
-                    item
-                    for item in information_needed_markers(latest.body_markdown)
-                    if information_marker_key(item) == key
-                ),
-                None,
-            )
-            if not key or current is None:
-                raise WorkspaceConflictError("This marker is no longer in the chapter")
-
-            # Step 2: a marker that already has a record keeps it.
-            for gap in await _chapter_gaps(session, chapter_id):
-                if information_marker_key(gap.question) != key:
-                    continue
-                if gap.status not in {"open", "processing"}:
-                    raise WorkspaceConflictError("This marker's gap is already closed")
-                return gap.gap_id
-
-            # Step 3: record exactly this marker as an open gap.
-            question = INFORMATION_NEEDED_PATTERN.fullmatch(current).group(1)
-            gap = _legacy_marker_gap(
-                chapter, key=key, question=_marker_question(question)
-            )
-            session.add(gap)
-            chapter.status = "needs_review"
-            chapter.updated_at = datetime.now(UTC)
-            await session.flush()
-            logger.info(
-                "Adopted marker as gap run_id=%s chapter_id=%s gap_id=%s",
-                run_id,
-                chapter_id,
-                gap.gap_id,
-            )
-            return gap.gap_id
-
-    async def adopt_legacy_marker_gaps(self, *, run_id: UUID) -> int:
-        """Give every unrecorded marker in the run's active chapters a gap record.
-
-        One transaction locks the chapters in UUID order, then reads their latest
-        revisions and every gap record in batches. A normalized marker key claimed
-        by any record (in any state) or by an earlier marker in the same chapter
-        gets no new record, so formatted duplicates share one gap and a closed
-        marker stays closed. Markdown, revisions and existing records are kept.
-        Returns the number of gap records created.
-        """
-        async with self._session_factory() as session, session.begin():
-            chapters = list(
-                (
-                    await session.scalars(
-                        select(ConceptNoteChapter)
-                        .where(
-                            ConceptNoteChapter.run_id == run_id,
-                            ConceptNoteChapter.status != "deleted",
-                        )
-                        .order_by(ConceptNoteChapter.chapter_id.asc())
-                        .with_for_update()
-                    )
-                ).all()
-            )
-            chapter_ids = [chapter.chapter_id for chapter in chapters]
-            latest = await _latest_revisions(session, chapter_ids)
-            records = await _gaps_by_chapter(session, chapter_ids, only_open=False)
-            created = 0
-            now = datetime.now(UTC)
-            for chapter in chapters:
-                revision = latest.get(chapter.chapter_id)
-                if revision is None:
-                    continue
-                claimed = {
-                    information_marker_key(gap.question)
-                    for gap in records[chapter.chapter_id]
-                }
-                inserted = 0
-                for marker in information_needed_markers(revision.body_markdown):
-                    key = information_marker_key(marker)
-                    if not key or key in claimed:
-                        continue
-                    claimed.add(key)
-                    question = INFORMATION_NEEDED_PATTERN.fullmatch(marker).group(1)
-                    session.add(
-                        _legacy_marker_gap(
-                            chapter, key=key, question=_marker_question(question)
-                        )
-                    )
-                    inserted += 1
-                if inserted:
-                    chapter.status = "needs_review"
-                    chapter.updated_at = now
-                    created += inserted
-            await session.flush()
-            logger.info(
-                "Adopted legacy marker gaps run_id=%s created=%s", run_id, created
-            )
-            return created
-
     async def save_revalidated_chapter(
         self,
         *,
@@ -606,39 +478,6 @@ async def _require_chapter(
     if chapter is None or chapter.status == "deleted":
         raise WorkspaceConflictError(f"Concept Note chapter {chapter_id} was not found")
     return chapter
-
-
-def _marker_question(inner_text: str) -> str:
-    """Trim the Markdown wrapper a marker's text may carry, keeping every word."""
-    return inner_text.strip(" \t\r\n*_~`")
-
-
-def _legacy_marker_gap(
-    chapter: ConceptNoteChapter,
-    *,
-    key: str,
-    question: str,
-) -> ConceptNoteGap:
-    """Build the open record for a marker drafted before gap records existed.
-
-    Shared by the single and batch adoption routes. The row is built directly,
-    not through ``ConceptNoteDraftGapOutput``, which caps the generated question
-    at 2,000 characters; a legacy marker keeps its full text.
-    ``critical`` severity matches the web app's marker label, and the
-    ``adopted_<sha12>`` field key comes from the full normalized key, so a retry
-    finds the same record.
-    """
-    return ConceptNoteGap(
-        run_id=chapter.run_id,
-        chapter_id=chapter.chapter_id,
-        field_key=f"adopted_{sha256(key.encode()).hexdigest()[:12]}",
-        severity="critical",
-        question=question,
-        why_asking=LEGACY_GENERIC_GAP_RATIONALE,
-        suggestions=[],
-        source_refs=[],
-        status="open",
-    )
 
 
 def _require_marker_parity(

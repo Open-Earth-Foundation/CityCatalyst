@@ -1,5 +1,3 @@
-import { informationMarkerKey } from "./draft-markdown";
-
 export interface ConceptNoteChatVisual {
   title: string;
   html: string;
@@ -119,12 +117,6 @@ export const GAP_ANSWER_REQUEST_KEYS = [
   "gap-answer-estimate-confirm-request",
 ] as const;
 
-/** Older request templates, kept only so earlier messages still read as answers. */
-export const GAP_ANSWER_HISTORY_KEYS = [
-  "gap-answer-request-history",
-  "gap-answer-complete-request",
-] as const;
-
 /** The longest gap question a request shows; the server still uses the whole one. */
 const REQUEST_QUESTION_MAX_CHARS = 2000;
 
@@ -141,16 +133,7 @@ export const GAP_ANSWER_SLOTS = {
   chapter: "\u0001",
   question: "\u0002",
   answer: "\u0003",
-  marker: "\u0004",
 } as const;
-
-/** A complete-request template as sent before it quoted the marker: the marker was written from the question. */
-export function legacyGapAnswerTemplate(template: string): string {
-  return template.replace(
-    GAP_ANSWER_SLOTS.marker,
-    `[Information needed: ${GAP_ANSWER_SLOTS.question}]`,
-  );
-}
 
 export interface GapAnswerMessage {
   chapter: string;
@@ -165,15 +148,11 @@ function gapAnswerPattern(template: string): RegExp {
   const names = Object.fromEntries(
     Object.entries(GAP_ANSWER_SLOTS).map(([name, slot]) => [slot, name]),
   );
-  const seen = new Set<string>();
   const source = template
-    .split(/([\u0001-\u0004])/)
+    .split(/([\u0001-\u0003])/)
     .map((part) => {
       const name = names[part];
       if (!name) return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      // The complete request repeats the question inside its marker.
-      if (seen.has(name)) return `\\k<${name}>`;
-      seen.add(name);
       return `(?<${name}>[\\s\\S]+?)`;
     })
     .join("");
@@ -192,12 +171,7 @@ export function readGapAnswerMessage(
 ): GapAnswerMessage | null {
   for (const template of templates) {
     const groups = gapAnswerPattern(template).exec(text)?.groups;
-    // A quoted marker must pair with the question it was sent for.
-    const pairs =
-      groups?.marker === undefined ||
-      informationMarkerKey(groups.marker) ===
-        informationMarkerKey(groups.question ?? "");
-    if (groups?.chapter && groups.question && groups.answer && pairs) {
+    if (groups?.chapter && groups.question && groups.answer) {
       return {
         chapter: groups.chapter,
         question: groups.question,

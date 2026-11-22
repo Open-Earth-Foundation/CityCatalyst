@@ -1,11 +1,10 @@
 "use client";
 
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, VStack } from "@chakra-ui/react";
 
 import { useMemo } from "react";
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
@@ -45,14 +44,6 @@ interface DraftTabProps extends DraftInlineReviewProps {
   onStartDrafting: () => void;
   highlightStartDrafting?: boolean;
   nextStep?: ReactNode;
-  /**
-   * Unrecorded legacy markers are being given gap records. The draft waits for
-   * the refreshed gaps, so no stale gap count or action shows meanwhile.
-   */
-  legacyGapSyncPending?: boolean;
-  /** The sync failed or stalled; Retry runs it again. */
-  legacyGapSyncError?: boolean;
-  onRetryLegacyGapSync?: () => void;
 }
 
 export function DraftTab(props: DraftTabProps) {
@@ -97,23 +88,6 @@ export function DraftTab(props: DraftTabProps) {
         </Box>
       )}
 
-      {props.legacyGapSyncPending && !props.legacyGapSyncError && (
-        <Text role="status" fontSize="body.sm" color="content.secondary">
-          {t("gap-adopting")}
-        </Text>
-      )}
-      {props.legacyGapSyncError && (
-        <Flex role="alert" align="center" gap={3} wrap="wrap">
-          <Text color="sentiment.negativeDefault">{t("gap-adopt-error")}</Text>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={props.onRetryLegacyGapSync}
-          >
-            {t("retry")}
-          </Button>
-        </Flex>
-      )}
       {props.mutationError && (
         <Text role="alert" color="sentiment.negativeDefault">
           {props.mutationError}
@@ -122,7 +96,7 @@ export function DraftTab(props: DraftTabProps) {
       {props.nextStep}
       <DraftSetupPanel {...props} />
 
-      {draftStarted && chapters.length > 0 && !props.legacyGapSyncPending && (
+      {draftStarted && chapters.length > 0 && (
         <DraftDocumentPanel
           {...props}
           chapters={chapters}

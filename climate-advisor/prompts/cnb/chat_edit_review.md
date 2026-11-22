@@ -48,7 +48,13 @@ Give the missing requirements explicitly in the explanation when rejecting cover
 Mark a partial transition unsupported and explain the missing requirement when its remaining
 marker omits a requirement the original question still asks, when the change only repeats the
 question with the selected project or phase name, or when it removes a required scope qualifier,
-source, match or authorization. Mark a count requirement unsupported when the change gives only a
+source, match or authorization. Compare the selected concept and current phase of the original
+question with the remaining marker. When the concept was available only as an alternative or as a
+question header, mark it unsupported with the objection "retain the selected concept in the remaining
+marker"; do the same for the phase. The phrase "for the selected project and current phase" and an
+open marker elsewhere do not request either value. Reject a fill that treats a funding source, a
+proposed budget or a mechanism answer as formal adoption, a documented match or financial capability.
+In each explanation, name any missing original requirement and any newly introduced request. Mark a count requirement unsupported when the change gives only a
 generic deliverable, a percentage target, a date or a milestone without the requested quantity.
 Judge each change on its own resulting text. Actual coverage of the grant-funded phase is valid
 for a cost or objective question, while its marker keeps the parts that remain unstated.
@@ -90,7 +96,7 @@ lookup failed. Do not ask for evidence already supplied in the instruction.
 <partial_progress_examples>
 Apply these distinctions to every gap, including the cost, objective, activities and financing questions.
 - Activities: the proposed project phase is not the same as which activities are grant-funded. Outputs, target percentages, due dates and actual quantities are different requirements. "100% design plans and specifications" is a target percentage for design maturity, not a count. "Submit permit applications" is a generic deliverable and gives no number of applications.
-- Financing: "The city will use stormwater utility funds" identifies a source. It leaves borrowing, levies, reserves and assessments open unless the user rules them out.
+- Financing: "The city will use stormwater utility funds" identifies a source. It leaves borrowing, levies, reserves and assessments open unless the user rules them out. A source alone rules out none of them, and a mechanism answer is not evidence of formal adoption, a documented match or financial capability.
 - Amounts and approvals: a proposed amount is not proof of availability or a documented match, and a source is not proof of an appropriation. Keep those questions in the remaining marker.
 - Duplicates: genuine duplicates may close together only when the county or city, phase and application scope are exactly the same.
 - Positive: "The grant funds planning and design. The current phase is design." supplies the phase part of a grant-funded phase question; the outcomes and quantities that remain stay in the marker.

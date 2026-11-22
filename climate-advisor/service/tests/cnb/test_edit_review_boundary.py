@@ -83,7 +83,14 @@ class StreamingTestRunner:
 
 
 async def propose_with_tools(
-    agent, before, after, *, source_refs=None, kind="wording", replace_all=False
+    agent,
+    before,
+    after,
+    *,
+    source_refs=None,
+    kind="wording",
+    replace_all=False,
+    user_input_quote=None,
 ):
     tools = {tool.name: tool for tool in agent.tools}
     context = ToolContext(
@@ -114,7 +121,7 @@ async def propose_with_tools(
                         "kind": kind,
                         "group_id": "edit",
                         "source_refs": source_refs or [],
-                        "user_input_quote": None,
+                        "user_input_quote": user_input_quote,
                     }
                 ]
             }
@@ -1665,6 +1672,88 @@ def test_review_uses_original_scope_and_accepted_history_for_a_second_round_fill
         ),
     )
     assert accepted.gap_bindings[0].mode == "fill"
+
+
+@pytest.mark.asyncio
+async def test_partial_review_objection_repairs_dropped_financing_scope():
+    marker = (
+        "[Information needed: Confirm the selected alternative, current phase, "
+        "instrument and amount.]"
+    )
+    question = "Confirm the selected alternative, current phase, instrument and amount."
+    current = chapter(f"Finance: {marker}")
+    current.gaps.append(gap_snapshot(question))
+    instruction = (
+        "The selected alternative is the pond retrofit in final design. "
+        "The city will use stormwater utility funds."
+    )
+    dropped = (
+        "The city will use stormwater utility funds for its contribution. "
+        "[Information needed: What amount will the city contribute?]"
+    )
+    complete_scope = (
+        "The city will use stormwater utility funds. [Information needed: Which design "
+        "alternative is selected, which phase is current, and what amount will the city "
+        "contribute?]"
+    )
+    objection = "Retain the selected concept in the remaining marker."
+    editor_inputs = []
+    reviewer_inputs = []
+
+    class ScopeRepairRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            data = json.loads(payload)
+            if agent.output_type is EditAgentOutput:
+                editor_inputs.append(data)
+                after = dropped if len(editor_inputs) == 1 else complete_scope
+                if len(editor_inputs) > 1:
+                    [feedback] = data["review_feedback"]
+                    assert feedback["decisions"][0]["support"] == "unsupported"
+                    assert feedback["decisions"][0]["explanation"] == objection
+                await propose_with_tools(
+                    agent,
+                    marker,
+                    after,
+                    kind="factual",
+                    user_input_quote="stormwater utility funds",
+                )
+                output = EditAgentOutput(intent="edit")
+            else:
+                assert [tool.name for tool in agent.tools] == ["query_source"]
+                reviewer_inputs.append(data)
+                after = data["changes"][0]["after"]
+                lost = "alternative" not in after or "phase" not in after
+                output = ChapterEditReview(
+                    decisions=[
+                        {
+                            "change_index": 0,
+                            "support": "unsupported" if lost else "user",
+                            "gap_coverage": "partial",
+                            "explanation": (
+                                objection
+                                if lost
+                                else "The source is stated and the remaining marker keeps "
+                                "the concept, phase and amount."
+                            ),
+                        }
+                    ]
+                )
+            return SimpleNamespace(final_output=output)
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
+    plan = await ConceptNoteEditPlanner(settings, runner=ScopeRepairRunner).plan(
+        request, [current], {}
+    )
+    # The rejected partial is repaired once; the full-scope partial is reviewed again.
+    assert len(editor_inputs) == 2
+    assert len(reviewer_inputs) == 2
+    assert plan.changes[0].after == complete_scope
+    assert plan.changes[0].semantic_support == "user"
+    [change] = validate_edit_plan(request, [current], plan)
+    assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
 
 
 def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():

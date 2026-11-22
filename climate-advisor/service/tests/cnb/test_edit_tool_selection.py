@@ -210,6 +210,60 @@ def test_gap_edit_prompts_distinguish_related_partial_progress_and_full_coverage
     assert "Judge each change on its own resulting text." in reviewer
 
 
+def test_financing_prompts_keep_unanswered_concept_and_phase_in_each_gap():
+    planner = _rendered("cnb_chat_edit_planner")
+    reviewer = _rendered("cnb_chat_edit_review")
+
+    assert (
+        "For each gap, check every requirement of its original question, including the "
+        "selected concept and current phase" in planner
+    )
+    assert (
+        "Keep in the remaining marker each requirement that no evidence answers." in planner
+    )
+    assert "do not supply either value." in planner
+    assert "a site name does not select the design alternative or phase" in planner
+    assert "<financing_two_round_example>" in planner
+    assert "Round 2 states the alternative" in planner
+    assert "Which phase is current" in planner
+
+    assert (
+        'mark it unsupported with the objection "retain the selected concept in the '
+        'remaining marker"' in reviewer
+    )
+    assert "do the same for the phase" in reviewer
+    assert "and an open marker elsewhere do not request either value." in reviewer
+    assert "In each explanation, name any missing original requirement" in reviewer
+
+
+def test_financing_prompts_distinguish_funding_source_and_mechanism_exclusions():
+    planner = _rendered("cnb_chat_edit_planner")
+    reviewer = _rendered("cnb_chat_edit_review")
+
+    for prompt in (planner, reviewer):
+        assert "A source alone rules out none of them" in prompt
+        assert (
+            "a mechanism answer is not evidence of formal adoption, a documented match or "
+            "financial capability" in prompt
+        )
+
+    assert (
+        "Reject a fill that treats a funding source, a proposed budget or a mechanism "
+        "answer as formal adoption" in reviewer
+    )
+    assert (
+        "Keep an unknown additional arrangement in the remaining marker only when the "
+        "original question demands it." in planner
+    )
+    assert (
+        'Do not write "adopted", "matched" or "committed" from these answers.' in planner
+    )
+    assert (
+        'must keep "Which phase is current" and the selected alternative in its remaining '
+        "marker, or be omitted." in planner
+    )
+
+
 def test_saved_answer_edit_prompts_repair_with_same_gap_quote():
     planner = _rendered("cnb_chat_edit_planner")
     chat = _rendered("cnb_chat")

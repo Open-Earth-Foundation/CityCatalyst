@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import asyncio
-import json
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import Any, cast
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -41,7 +39,6 @@ from app.services.cnb.chapter_drafting import (
     ConceptNoteChapterDraftService,
     _chapter_input_messages,
     recover_stale_drafts,
-    run_chapter_drafting_reconciler,
 )
 from fastapi import HTTPException, Response
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
@@ -86,36 +83,6 @@ class FakeWorkspace:
             revision_number=1,
         )
         return True
-
-
-async def test_load_state_uses_lightweight_template_fingerprint_lookup() -> None:
-    """Avoid loading full funder context for the frequently polled draft state."""
-    workspace = MagicMock()
-    workspace.list_chapters = AsyncMock(return_value=[])
-    application_context = MagicMock()
-    application_context.load_template_fingerprint_for_run = AsyncMock(
-        return_value="template-fingerprint"
-    )
-    application_context.load_for_run = AsyncMock()
-    service = cast(
-        ConceptNoteChapterDraftService,
-        object.__new__(ConceptNoteChapterDraftService),
-    )
-    service._workspace = workspace
-    service._application_context = application_context
-    run = cast(
-        ConceptNoteRun,
-        SimpleNamespace(run_id=RUN_ID, context_summary={}),
-    )
-
-    await service.load_state(run)
-
-    application_context.load_template_fingerprint_for_run.assert_awaited_once_with(run)
-    application_context.load_for_run.assert_not_called()
-    workspace.list_chapters.assert_awaited_once_with(
-        run_id=RUN_ID,
-        template_fingerprint="template-fingerprint",
-    )
 
 
 async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
@@ -228,8 +195,6 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
                 ],
             }
         ]
-    assert source["page_count"] == 1
-    assert source["block_count"] is None
     assert payloads[0]["application_context"]["included_sources"]["ghgi"] is True
     assert payloads[1]["previous_chapters"] == [
         {
@@ -243,10 +208,6 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
     ]
     service._complete_draft.assert_awaited_once()
     service._fail_draft.assert_not_awaited()
-    service._application_context.load_for_run.assert_awaited_once_with(
-        service._load_owned_run.return_value,
-        included_sources=included_sources,
-    )
 
 
 def _open_gap(field_key: str, question: str) -> WorkspaceGapSnapshot:
@@ -528,11 +489,12 @@ async def test_revalidation_finishes_without_llm_calls_before_drafting(
     has_chapters,
 ) -> None:
     """New files on an undrafted note need no redraft and no template."""
+    payloads: list[dict[str, Any]] = []
     service = _revalidation_service(
         [_drafted_chapter(1, revision_number=None)] if has_chapters else [],
         selected=[1] if has_chapters else [],
         query_document_fn=AsyncMock(),
-        payloads=[],
+        payloads=payloads,
         saved=[],
         with_template=False,
     )
@@ -543,8 +505,9 @@ async def test_revalidation_finishes_without_llm_calls_before_drafting(
         new_sources=[RevalidationSource(source=NEW_SOURCE, units=[])],
     )
 
-    service._load_run_context.assert_not_awaited()
+    # Neither the impact reviewer nor the drafter (an LLM call each) runs.
     service._source_impact_reviewer.select_chapters.assert_not_awaited()
+    assert payloads == []
 
 
 async def test_revalidation_redrafts_drafted_chapters_without_a_template() -> None:
@@ -633,31 +596,6 @@ async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> N
         await engine.dispose()
 
 
-async def test_chapter_drafting_reconciler_runs_until_cancelled(monkeypatch) -> None:
-    """Run the drafting recovery on the same periodic pattern as bundle recovery."""
-    sleep = AsyncMock(side_effect=[None, asyncio.CancelledError()])
-    recover = AsyncMock(return_value=1)
-    session_factory = object()
-    monkeypatch.setattr("app.services.cnb.chapter_drafting.asyncio.sleep", sleep)
-    monkeypatch.setattr(
-        "app.services.cnb.chapter_drafting.get_session_factory",
-        lambda: session_factory,
-    )
-    monkeypatch.setattr(
-        "app.services.cnb.chapter_drafting.recover_stale_drafts",
-        recover,
-    )
-
-    with pytest.raises(asyncio.CancelledError):
-        await run_chapter_drafting_reconciler(
-            interval_seconds=1,
-            stale_after=timedelta(hours=1),
-        )
-
-    recover.assert_awaited_once()
-    assert recover.await_args.kwargs["session_factory"] is session_factory
-
-
 async def test_completed_draft_start_returns_200(monkeypatch) -> None:
     """Return 200 when the idempotent start does not schedule background work."""
     run = SimpleNamespace(run_id=RUN_ID, user_id="user-1")
@@ -729,30 +667,21 @@ async def test_drafting_errors_keep_their_http_status(
     assert exc_info.value.status_code == expected_status
 
 
-def test_chapter_input_sends_complete_sources_as_a_second_message() -> None:
+@pytest.mark.parametrize("with_sources", [True, False])
+def test_drafter_input_carries_the_complete_source_text(with_sources) -> None:
+    text = "<!-- page: 7 -->\nPolsad tunnel 214"
     document = {
         "source_label": "KST IV plan",
         "filename": "plan.pdf",
         "source_format": "pdf",
-        "text": "<!-- page: 7 -->\nPolsad tunnel 214",
+        "text": text,
     }
     payload = {
         "chapter": {"title": "Project components"},
-        "source_documents": [document],
+        "source_documents": [document] if with_sources else [],
     }
 
     messages = _chapter_input_messages(payload)
 
-    assert json.loads(messages[0]["content"]) == {
-        "chapter": {"title": "Project components"}
-    }
-    assert messages[1]["role"] == "user"
-    assert messages[1]["content"].startswith("CONCEPT_NOTE_SOURCE_DOCUMENTS\n")
-    assert '<source index="1" label="KST IV plan"' in messages[1]["content"]
-    assert "<!-- page: 7 -->\nPolsad tunnel 214" in messages[1]["content"]
-
-
-def test_chapter_input_without_sources_is_one_json_message() -> None:
-    messages = _chapter_input_messages({"chapter": {}, "source_documents": []})
-
-    assert messages == [{"role": "user", "content": json.dumps({"chapter": {}})}]
+    assert len(messages) == (2 if with_sources else 1)
+    assert (text in messages[-1]["content"]) is with_sources

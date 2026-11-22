@@ -1,5 +1,3 @@
-from app.utils.streaming_runner import stream_agent_events
-
 """Keep CNB runtime evidence below system instructions without changing history."""
 
 import json
@@ -12,9 +10,19 @@ import pytest
 
 from app.config import get_settings
 from app.models.requests import MessageCreateRequest
+from app.services.cnb.draft_overview import DRAFT_OVERVIEW_JSON_MARKER
+from app.services.cnb.edit_validation import recent_user_inputs
 from app.utils.chat_workflow_context import ChatWorkflowContext
-from app.utils.concept_note_context import clean_cnb_history
+from app.utils.concept_note_context import (
+    clean_cnb_history,
+    render_source_documents_message,
+)
+from app.utils.streaming_context import (
+    load_concept_note_context_message,
+    recent_concept_note_edit_messages,
+)
 from app.utils.streaming_handler import StreamingHandler
+from app.utils.streaming_runner import stream_agent_events
 
 
 async def test_regular_context_does_not_load_navigation_state() -> None:
@@ -147,44 +155,6 @@ async def test_cnb_unavailable_bundle_is_runtime_data() -> None:
     assert messages[1] == {"role": "user", "content": payload.content}
 
 
-@pytest.mark.parametrize(
-    "content",
-    ["Help me", "What should I do next?", "Work on my concept note"],
-)
-async def test_vague_cnb_request_uses_the_bound_run_context(content: str) -> None:
-    run_id = uuid4()
-    context_loader = AsyncMock(
-        return_value={
-            "workflow_step": "editing_document",
-            "document_context": {"chapters": ["Summary", "Budget"]},
-        }
-    )
-    handler = StreamingHandler(
-        thread_id=str(uuid4()), user_id="owner", session_factory=MagicMock()
-    )
-    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(run_id))
-    payload = MessageCreateRequest(user_id="owner", content=content)
-
-    with (
-        patch(
-            "app.utils.streaming_handler.load_conversation_history",
-            new=AsyncMock(return_value=[]),
-        ),
-        patch("app.utils.streaming_context.load_agent_context", new=context_loader),
-    ):
-        messages = await handler._load_conversation_history(get_settings(), payload)
-
-    context = json.loads(messages[0]["content"].split("\n", 1)[1])
-    assert context["workflow_step"] == "editing_document"
-    assert context["document_context"]["chapters"] == ["Summary", "Budget"]
-    assert messages[-1] == {"role": "user", "content": content}
-    context_loader.assert_awaited_once_with(
-        session_factory=handler.session_factory,
-        user_id="owner",
-        run_id=run_id,
-    )
-
-
 async def test_general_chat_history_roles_are_unchanged() -> None:
     handler = StreamingHandler(
         thread_id=str(uuid4()), user_id="owner", session_factory=None
@@ -286,12 +256,3 @@ def test_edit_window_excludes_uploaded_source_text_and_draft_facts() -> None:
     )
     assert window == [draft_ready]
     assert recent_user_inputs(window) == []
-
-
-from app.services.cnb.draft_overview import DRAFT_OVERVIEW_JSON_MARKER
-from app.services.cnb.edit_validation import recent_user_inputs
-from app.utils.concept_note_context import render_source_documents_message
-from app.utils.streaming_context import (
-    load_concept_note_context_message,
-    recent_concept_note_edit_messages,
-)

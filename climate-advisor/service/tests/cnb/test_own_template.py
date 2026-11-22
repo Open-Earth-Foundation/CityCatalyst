@@ -1,7 +1,6 @@
 """A note's own application template, typed by hand or read from a document."""
 
 from functools import partial
-from uuid import uuid4
 
 import pytest
 from app.models.cnb.funder_creation import (

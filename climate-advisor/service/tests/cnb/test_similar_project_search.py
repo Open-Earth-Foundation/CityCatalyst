@@ -1,12 +1,14 @@
-"""Tests for internal Concept Note Builder similar-project matching."""
+"""Similar-project data contract, reviewed candidates and matching."""
 
 import json
+import logging
 from types import SimpleNamespace
 from uuid import UUID, uuid4
 
 import pytest
 from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
+    CnbSimilarProjectSearchRunResult,
     CnbSimilarProjectEvidence,
     CnbSimilarProjectLlmDecision,
     CnbSimilarProjectLlmDecisionSet,
@@ -20,6 +22,8 @@ from app.services.cnb.similar_project_search import (
     ProjectMatchingService,
     rebuild_similar_projects_section,
 )
+from app.services.cnb.similar_project_review import _merge_candidate_entries
+from pydantic import ValidationError
 
 
 class FakeStore:
@@ -141,51 +145,10 @@ def _service(
     )
 
 
-def test_service_does_not_store_provider_responses_by_default(
+def test_configured_service_reads_postgres_and_does_not_store_responses(
     monkeypatch,
 ) -> None:
-    direct_service, _ = _service(
-        store=FakeStore(),
-        reference_data=FakeReferenceData([]),
-        decisions=None,
-    )
-    fake_settings = SimpleNamespace(
-        cnb_database_url=None,
-        llm=SimpleNamespace(
-            models=SimpleNamespace(
-                funding_research=SimpleNamespace(
-                    name="test-model",
-                    reasoning_effort="low",
-                )
-            ),
-            prompts=SimpleNamespace(
-                get_prompt=lambda prompt_name: f"Prompt: {prompt_name}"
-            ),
-        )
-    )
-    monkeypatch.setattr(
-        similar_project_search,
-        "get_settings",
-        lambda: fake_settings,
-    )
-
-    configured_service = ProjectMatchingService.from_settings(
-        openai_client=SimpleNamespace(responses=FakeResponses(None)),
-        workflow_store=FakeStore(),
-    )
-    opted_in_service = ProjectMatchingService.from_settings(
-        openai_client=SimpleNamespace(responses=FakeResponses(None)),
-        workflow_store=FakeStore(),
-        store_responses=True,
-    )
-
-    assert direct_service.store_responses is False
-    assert configured_service.store_responses is False
-    assert opted_in_service.store_responses is True
-
-
-def test_service_uses_postgres_reference_data_when_configured(monkeypatch) -> None:
-    """Select the managed CNB reader when the URL is present in settings."""
+    """Production wiring uses the managed CNB reader and keeps provider storage off."""
     fake_settings = SimpleNamespace(
         cnb_database_url="postgresql://configured",
         llm=SimpleNamespace(
@@ -207,6 +170,7 @@ def test_service_uses_postgres_reference_data_when_configured(monkeypatch) -> No
         workflow_store=FakeStore(),
     )
 
+    assert service.store_responses is False
     assert isinstance(
         service.reference_data_client,
         similar_project_search.PostgresCnbReferenceDataClient,
@@ -474,3 +438,94 @@ def test_context_rebuild_changes_only_similar_projects() -> None:
     )
     assert rebuilt["cc_context"] == original["cc_context"]
     assert rebuilt["document_context"] == original["document_context"]
+
+
+# --- Data contract --------------------------------------------------------------
+
+
+def test_search_request_requires_project_context_and_scoped_funder() -> None:
+    cross_funder = CnbSimilarProjectSearchRequest(
+        run_id=uuid4(),
+        funder_scope="cross_funder",
+        interventions=["Municipal solar"],
+        limit=50,
+    )
+    assert cross_funder.funder_id is None
+
+    with pytest.raises(ValidationError, match="funder_id is required"):
+        CnbSimilarProjectSearchRequest(run_id=uuid4(), project_name="Project")
+    with pytest.raises(ValidationError, match="material semantic project field"):
+        CnbSimilarProjectSearchRequest(
+            run_id=uuid4(),
+            funder_scope="cross_funder",
+            known_gaps=["Details pending"],
+        )
+    with pytest.raises(ValidationError):
+        CnbSimilarProjectSearchRequest.model_validate(
+            {**cross_funder.model_dump(), "limit": 51}
+        )
+
+
+@pytest.mark.parametrize(
+    ("status", "completion_signal", "is_valid"),
+    [
+        ("completed", "concept_note_context_bundle_ready", True),
+        ("completed", None, False),
+        ("skipped_upload_not_ingested", None, True),
+        (
+            "skipped_upload_not_ingested",
+            "concept_note_context_bundle_ready",
+            False,
+        ),
+    ],
+)
+def test_completion_signal_matches_run_status(
+    status: str,
+    completion_signal: str | None,
+    is_valid: bool,
+) -> None:
+    payload = {
+        "completion_signal": completion_signal,
+        "result": {"status": status, "matches": [], "caveats": []},
+    }
+    if is_valid:
+        CnbSimilarProjectSearchRunResult.model_validate(payload)
+    else:
+        with pytest.raises(ValidationError):
+            CnbSimilarProjectSearchRunResult.model_validate(payload)
+
+
+# --- Reviewed candidates --------------------------------------------------------
+
+
+def test_duplicate_reviewed_candidates_merge_with_a_review_caveat(caplog) -> None:
+    """A semantic merge keeps every reviewed value and says which records merged."""
+    project_id, funder_id = uuid4(), uuid4()
+
+    def reviewed(hazards: list[str], tags: list[str], gaps: list[str]):
+        return CnbSimilarProjectCandidate(
+            funded_project_id=project_id,
+            funder_id=funder_id,
+            is_funded_award=True,
+            name="Municipal Solar Project",
+            hazards=hazards,
+            project_tags=tags,
+            known_gaps=gaps,
+        )
+
+    with caplog.at_level(logging.WARNING):
+        merged = _merge_candidate_entries(
+            [
+                (reviewed(["heat"], ["solar"], ["Award amount is unknown."]), "run-b", "project-2"),
+                (reviewed(["drought"], ["municipal"], []), "run-a", "project-1"),
+            ]
+        )
+
+    origin_list = "run-a:project-1, run-b:project-2"
+    assert origin_list in caplog.text
+    assert merged.hazards == ["heat", "drought"]
+    assert merged.project_tags == ["solar", "municipal"]
+    assert merged.known_gaps == [
+        "Award amount is unknown.",
+        f"Merged 2 reviewed records with the same semantic identity: {origin_list}.",
+    ]

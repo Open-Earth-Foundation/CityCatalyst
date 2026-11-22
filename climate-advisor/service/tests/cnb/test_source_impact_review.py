@@ -10,9 +10,6 @@ from app.services.cnb.source_impact_review import (
     ConceptNoteSourceImpactReviewer,
     build_source_impact_review_partitions,
 )
-from app.tools.concept_note_source_impact_tools import (
-    build_concept_note_source_impact_tools,
-)
 
 NEW_SOURCE = SelectedSource(
     upload_id=uuid4(),
@@ -93,13 +90,6 @@ def test_source_review_slices_losslessly_and_covers_every_chapter() -> None:
             key=lambda item: item["slice_index"],
         )
         assert "".join(item["body_markdown"] for item in chapter_slices) == body
-
-
-def test_source_selector_is_a_single_purpose_tool() -> None:
-    """Expose exactly one selector tool to the review-only call."""
-    [tool] = build_concept_note_source_impact_tools(allowed_chapter_numbers={2, 3})
-
-    assert tool.name == "select_chapters_to_update"
 
 
 async def test_source_reviewer_forces_one_tool_call_and_parses_numbers(

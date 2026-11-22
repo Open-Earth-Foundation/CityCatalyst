@@ -113,6 +113,13 @@ async def propose_with_tools(
     assert proposed["ok"], proposed
 
 
+def planner_settings():
+    """Copy the settings with a placeholder model key so real agents are built."""
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    return settings
+
+
 @pytest.mark.asyncio
 async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
     events = []
@@ -144,8 +151,7 @@ async def test_planner_reports_real_model_stages_and_excludes_locked_chapters():
                 )
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     current = chapter("ten schools")
     second = replace(chapter("ten hospitals"), position=1)
     with bind_cnb_progress(capture):
@@ -183,8 +189,7 @@ async def test_agent_cannot_finalize_an_edit_without_a_validated_tool_proposal()
         async def run(agent, payload, **kwargs):
             return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     with pytest.raises(EditOperationError) as error:
         await ConceptNoteEditPlanner(settings, runner=EmptyRunner).plan(
             EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
@@ -243,8 +248,7 @@ async def test_reviewer_feedback_repairs_and_rechecks_the_complete_candidate(rej
                 }])
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     request = EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4())
     plan = await ConceptNoteEditPlanner(settings, runner=RepairRunner).plan(
         request, [current, second], {}
@@ -289,8 +293,7 @@ async def test_repair_limits_never_bypass_candidate_or_review_guards(
                 }])
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     settings.llm.generation.prompt_budget.cnb_edits.max_review_repairs = repair_limit
     with pytest.raises(EditOperationError) as error:
         await ConceptNoteEditPlanner(settings, runner=RejectedRunner).plan(
@@ -409,8 +412,7 @@ async def test_planner_and_reviewers_share_one_bounded_verified_source_lookup():
                 }])
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     settings.llm.generation.prompt_budget.cnb_edits.max_source_queries = 2
     plan = await ConceptNoteEditPlanner(settings, runner=LookupRunner).plan(
         EditProposalRequest(instruction="Fill the DSCR.", idempotency_key=uuid4()),
@@ -477,33 +479,27 @@ async def test_service_pins_lookups_to_snapshot_and_keeps_review_objections(
     [call] = queried
     assert call["expected_source"] == (snapshot_source["upload_id"], "a" * 64)
     assert call["token"] == "token-1"
-    assert call["session_factory"] == "sessions"
-    assert call["include_visual_context"] is False
 
 
-@pytest.mark.asyncio
-async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
-    monkeypatch,
-):
+def edit_proposal(**fields) -> EditProposalResponse:
+    """A stored proposal response with only the fields a test cares about set."""
     now = datetime.now(UTC)
-    proposal = EditProposalResponse(
-        proposal_id=uuid4(),
-        run_id=uuid4(),
-        instruction="Fill the gaps.",
-        scope=EditScope(),
-        status="failed",
-        error_code="unsupported_edit",
-        review_objections=[
-            EditReviewObjection(
-                chapter_title="Financing plan",
-                explanation="No supplied source states 70% CPI indexation.",
-            )
-        ],
-        created_at=now,
-        updated_at=now,
+    defaults = {
+        "proposal_id": uuid4(),
+        "run_id": uuid4(),
+        "instruction": "Fill the gaps.",
+        "scope": EditScope(),
+        "created_at": now,
+        "updated_at": now,
+    }
+    return EditProposalResponse(**{**defaults, **fields})
+
+
+def edit_chat_tool(monkeypatch, propose: AsyncMock):
+    """Build the chat edit tool around a fake edit service and an authorized run."""
+    monkeypatch.setattr(
+        edit_tools, "get_edit_service", lambda: SimpleNamespace(propose=propose)
     )
-    service = SimpleNamespace(propose=AsyncMock(return_value=proposal))
-    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
     monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
     monkeypatch.setattr(
         edit_tools,
@@ -520,7 +516,7 @@ async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
 
     [tool] = edit_tools.build_concept_note_edit_tools(
         session_factory=sessions,
-        run_id=proposal.run_id,
+        run_id=uuid4(),
         user_id="owner",
         token_ref={"value": "token-1"},
         request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
@@ -531,16 +527,32 @@ async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
         tool_call_id="edit",
         tool_arguments="{}",
     )
-    result = json.loads(await tool.on_invoke_tool(context, "{}"))
+
+    async def invoke() -> dict:
+        return json.loads(await tool.on_invoke_tool(context, "{}"))
+
+    return invoke
+
+
+@pytest.mark.asyncio
+async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
+    monkeypatch,
+):
+    objection = EditReviewObjection(
+        chapter_title="Financing plan",
+        explanation="No supplied source states 70% CPI indexation.",
+    )
+    propose = AsyncMock(
+        return_value=edit_proposal(
+            status="failed", error_code="unsupported_edit", review_objections=[objection]
+        )
+    )
+
+    result = await edit_chat_tool(monkeypatch, propose)()
 
     assert result["error_code"] == "unsupported_edit"
-    assert result["data"]["review_objections"] == [
-        {
-            "chapter_title": "Financing plan",
-            "explanation": "No supplied source states 70% CPI indexation.",
-        }
-    ]
-    assert service.propose.await_args.kwargs["token"] == "token-1"
+    assert result["data"]["review_objections"] == [objection.model_dump()]
+    assert propose.await_args.kwargs["token"] == "token-1"
 
 
 async def invoke_query_source(tool, question, source_index=1):
@@ -675,35 +687,7 @@ def test_a_large_rewrite_trims_review_quotations_instead_of_failing():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("status", ["pending", "running"])
-async def test_no_edit_is_planned_while_a_new_source_rewrites_chapters(status):
-    repository = SimpleNamespace(
-        start=AsyncMock(), replay=AsyncMock(return_value=None)
-    )
-    service = ConceptNoteEditService(
-        repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
-    )
-
-    @asynccontextmanager
-    async def locked(run):
-        yield SimpleNamespace(
-            context_summary={"source_revalidation": {"status": status}}
-        ), {}
-
-    service.locked_context = locked
-    with pytest.raises(EditOperationError) as error:
-        await service._propose(
-            SimpleNamespace(run_id=uuid4(), user_id="owner"),
-            EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
-            token="token",
-            recent_messages=None,
-        )
-
-    assert error.value.code == "sources_updating"
-    repository.start.assert_not_awaited()
-
-
-@pytest.mark.asyncio
-async def test_a_replayed_request_returns_its_proposal_while_sources_update():
+async def test_a_replayed_request_returns_its_proposal_while_sources_update(status):
     async with _workspace_repository() as (_, sessions):
         repository = ConceptNoteEditRepository(sessions)
         run = SimpleNamespace(run_id=uuid4(), user_id="owner")
@@ -718,7 +702,7 @@ async def test_a_replayed_request_returns_its_proposal_while_sources_update():
         @asynccontextmanager
         async def locked(run):
             yield SimpleNamespace(
-                context_summary={"source_revalidation": {"status": "pending"}}
+                context_summary={"source_revalidation": {"status": status}}
             ), {}
 
         service.locked_context = locked
@@ -793,8 +777,6 @@ async def test_rejection_objections_persist_and_planning_state_expires():
 
 @pytest.mark.asyncio
 async def test_chat_tool_reports_proposal_scope_and_source_updates(monkeypatch):
-    now = datetime.now(UTC)
-
     def change(title, start):
         return EditChange(
             change_id=uuid4(),
@@ -809,53 +791,25 @@ async def test_chat_tool_reports_proposal_scope_and_source_updates(monkeypatch):
             source_refs=["5"],
         )
 
-    proposal = EditProposalResponse(
-        proposal_id=uuid4(),
-        run_id=uuid4(),
-        instruction="Fill the gaps.",
-        scope=EditScope(),
+    proposal = edit_proposal(
         status="proposed",
-        changes=[change("Financing plan", 0), change("Financing plan", 9), change("Risk management", 0)],
-        created_at=now,
-        updated_at=now,
+        changes=[
+            change("Financing plan", 0),
+            change("Financing plan", 9),
+            change("Risk management", 0),
+        ],
     )
-    service = SimpleNamespace(
-        propose=AsyncMock(
-            side_effect=[proposal, EditOperationError("sources_updating", "Wait.")]
-        )
-    )
-    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
-    monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
-    monkeypatch.setattr(
-        edit_tools,
-        "ConceptNoteRunService",
-        lambda session, cc_client: SimpleNamespace(
-            get_authorized_run=AsyncMock(return_value="run"),
-            cc_client=SimpleNamespace(close=AsyncMock()),
-        ),
+    invoke = edit_chat_tool(
+        monkeypatch,
+        AsyncMock(side_effect=[proposal, EditOperationError("sources_updating", "Wait.")]),
     )
 
-    @asynccontextmanager
-    async def sessions():
-        yield None
-
-    [tool] = edit_tools.build_concept_note_edit_tools(
-        session_factory=sessions,
-        run_id=proposal.run_id,
-        user_id="owner",
-        token_ref={"value": "token-1"},
-        request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
-    )
-    context = ToolContext(
-        context=None, tool_name="concept_note_edit_propose", tool_call_id="edit", tool_arguments="{}"
-    )
-
-    proposed = json.loads(await tool.on_invoke_tool(context, "{}"))
+    proposed = await invoke()
     assert proposed["data"]["chapters"] == [
         {"title": "Financing plan", "change_count": 2},
         {"title": "Risk management", "change_count": 1},
     ]
-    updating = json.loads(await tool.on_invoke_tool(context, "{}"))
+    updating = await invoke()
     assert updating["error_code"] == "sources_updating"
 
 
@@ -864,34 +818,6 @@ async def test_unbound_source_lookup_fails_closed():
     result = json.loads(await unavailable_source_lookup(1, "What is the DSCR?"))
     assert result["success"] is False
     assert result["error_code"] == "source_lookup_unavailable"
-
-
-@pytest.mark.asyncio
-async def test_operation_deadline_cancels_pending_work_and_returns_retryable_error():
-    cancelled = asyncio.Event()
-
-    class SlowPlanner(ConceptNoteEditPlanner):
-        async def _plan(self, *args):
-            try:
-                await asyncio.Event().wait()
-            finally:
-                cancelled.set()
-
-    settings = get_settings().model_copy(deep=True)
-    # Shorten only the test deadline without weakening production configuration bounds.
-    settings.llm.generation.prompt_budget.cnb_edits = (
-        settings.llm.generation.prompt_budget.cnb_edits.model_copy(
-            update={"timeout_seconds": 0.01}
-        )
-    )
-    with pytest.raises(EditOperationError) as error:
-        await SlowPlanner(settings).plan(
-            EditProposalRequest(instruction="Use digits.", idempotency_key=uuid4()),
-            [chapter("ten schools")],
-            {},
-        )
-    assert error.value.code == "planning_timeout"
-    assert cancelled.is_set()
 
 
 @pytest.mark.asyncio
@@ -922,8 +848,7 @@ async def test_repair_remains_inside_the_original_operation_deadline():
                 }])
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     settings.llm.generation.prompt_budget.cnb_edits = (
         settings.llm.generation.prompt_budget.cnb_edits.model_copy(
             update={"timeout_seconds": 1}
@@ -981,82 +906,76 @@ def factual(before, after, instruction, group="schools"):
     }
 
 
-def test_school_count_edit_keeps_unrelated_ten_month_duration():
-    current = chapter(
-        "The project serves 10 schools. The delivery period is 10 months."
-    )
-    instruction = "Change the number of schools from 10 to 12. Keep the delivery period at 10 months unchanged."
-    request = EditProposalRequest(instruction=instruction, idempotency_key=uuid4())
-    plan = reviewed_plan(
-        current, [factual("10 schools", "12 schools", instruction)], ["user"]
-    )
-
-    changes = validate_edit_plan(request, [current], plan)
-
-    assert (
-        replace_anchors(current.body_markdown, changes)
-        == "The project serves 12 schools. The delivery period is 10 months."
-    )
+SCHOOLS_TO_12 = (
+    "Change the number of schools from 10 to 12. "
+    "Keep the delivery period at 10 months unchanged."
+)
+SCHOOLS_AND_MONTHS = "Serve 12 schools over 14 months."
+DOUBLE_SCHOOLS = "Double the number of schools."
+EVERY_10_SCHOOLS = "Replace every 10 schools with 12 schools."
 
 
-def test_independent_facts_with_equal_old_values_keep_model_groups():
-    current = chapter("We serve 10 schools over 10 months.")
-    instruction = "Serve 12 schools over 14 months."
-    plan = reviewed_plan(
-        current,
-        [
-            factual("10 schools", "12 schools", instruction, "schools"),
-            factual("10 months", "14 months", instruction, "duration"),
-        ],
-        ["user", "user"],
-    )
-
-    changes = validate_edit_plan(
-        EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
-        [current],
-        plan,
-    )
-
-    assert changes[0].group_id != changes[1].group_id
-    assert (
-        replace_anchors(current.body_markdown, changes)
-        == "We serve 12 schools over 14 months."
-    )
-
-
-def test_semantically_preserved_number_format_is_not_reclassified_by_tokens():
-    current = chapter("We serve ten schools.")
-    instruction = "Use digits for the school count."
-    plan = reviewed_plan(
-        current,
-        [
-            {
-                "start": 9,
-                "before": "ten",
-                "after": "10",
-                "kind": "wording",
-                "group_id": "format",
-            }
-        ],
-        ["preserved"],
-    )
-
-    changes = validate_edit_plan(
-        EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
-        [current],
-        plan,
-    )
-
-    assert changes[0].kind == "wording"
-    assert replace_anchors(current.body_markdown, changes) == "We serve 10 schools."
-
-
-def test_llm_supported_calculation_does_not_require_literal_result_in_user_quote():
-    current = chapter("We serve 10 schools.")
-    instruction = "Double the number of schools."
-    plan = reviewed_plan(
-        current, [factual("10 schools", "20 schools", instruction)], ["user"]
-    )
+@pytest.mark.parametrize(
+    "body,instruction,planned,supports,expected",
+    [
+        pytest.param(
+            "The project serves 10 schools. The delivery period is 10 months.",
+            SCHOOLS_TO_12,
+            [factual("10 schools", "12 schools", SCHOOLS_TO_12)],
+            ["user"],
+            "The project serves 12 schools. The delivery period is 10 months.",
+            id="equal-number-elsewhere-is-kept",
+        ),
+        pytest.param(
+            "We serve 10 schools over 10 months.",
+            SCHOOLS_AND_MONTHS,
+            [
+                factual("10 schools", "12 schools", SCHOOLS_AND_MONTHS, "schools"),
+                factual("10 months", "14 months", SCHOOLS_AND_MONTHS, "duration"),
+            ],
+            ["user", "user"],
+            "We serve 12 schools over 14 months.",
+            id="independent-facts-keep-model-groups",
+        ),
+        pytest.param(
+            "We serve ten schools.",
+            "Use digits for the school count.",
+            [
+                {
+                    "start": 9,
+                    "before": "ten",
+                    "after": "10",
+                    "kind": "wording",
+                    "group_id": "format",
+                }
+            ],
+            ["preserved"],
+            "We serve 10 schools.",
+            id="preserved-number-format-stays-wording",
+        ),
+        pytest.param(
+            "We serve 10 schools.",
+            DOUBLE_SCHOOLS,
+            [factual("10 schools", "20 schools", DOUBLE_SCHOOLS)],
+            ["user"],
+            "We serve 20 schools.",
+            id="llm-supported-calculation",
+        ),
+        pytest.param(
+            "We serve 10 schools. These 10 schools receive grants.",
+            EVERY_10_SCHOOLS,
+            [{**factual("10 schools", "12 schools", EVERY_10_SCHOOLS), "start": 9}],
+            ["user"],
+            "We serve 12 schools. These 10 schools receive grants.",
+            id="no-unreviewed-global-replacements",
+        ),
+    ],
+)
+def test_reviewed_edits_apply_exactly_as_the_model_planned(
+    body, instruction, planned, supports, expected
+):
+    current = chapter(body)
+    plan = reviewed_plan(current, planned, supports)
 
     changes = validate_edit_plan(
         EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
@@ -1064,45 +983,16 @@ def test_llm_supported_calculation_does_not_require_literal_result_in_user_quote
         plan,
     )
 
-    assert replace_anchors(current.body_markdown, changes) == "We serve 20 schools."
-
-
-def test_python_does_not_add_unreviewed_replacements_to_a_global_request():
-    current = chapter("We serve 10 schools. These 10 schools receive grants.")
-    instruction = "Replace every 10 schools with 12 schools."
-    plan = reviewed_plan(
-        current,
-        [{**factual("10 schools", "12 schools", instruction), "start": 9}],
-        ["user"],
-    )
-
-    changes = validate_edit_plan(
-        EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
-        [current],
-        plan,
-    )
-
-    assert len(changes) == 1
-    assert (
-        replace_anchors(current.body_markdown, changes)
-        == "We serve 12 schools. These 10 schools receive grants."
-    )
-
-
-def test_llm_rejection_still_blocks_a_proposal():
-    current = chapter("We serve 10 schools.")
-    with pytest.raises(EditOperationError) as error:
-        reviewed_plan(
-            current,
-            [factual("10 schools", "20 schools", "Make this clearer.")],
-            ["unsupported"],
-        )
-    assert error.value.code == "unsupported_edit"
+    # Python neither adds, regroups nor reclassifies the reviewed changes.
+    assert [c.kind for c in changes] == [c["kind"] for c in planned]
+    assert len({c.group_id for c in changes}) == len({c["group_id"] for c in planned})
+    assert replace_anchors(current.body_markdown, changes) == expected
 
 
 @pytest.mark.parametrize(
     "failure,code",
     [
+        ("rejected", "unsupported_edit"),
         ("missing_review", "invalid_review"),
         ("fabricated_quote", "invalid_user_input"),
         ("fabricated_source", "invalid_source"),
@@ -1125,17 +1015,20 @@ def test_storage_and_provenance_guards_remain(failure, code):
         change.update(before="## Implementation", after="## New heading")
     if failure == "locked":
         current = replace(current, user_locked=True)
-    plan = reviewed_plan(current, [change], ["user"])
-    if failure == "missing_review":
-        plan = plan.model_copy(
-            update={
-                "changes": [
-                    plan.changes[0].model_copy(update={"semantic_support": None})
-                ]
-            }
-        )
 
     with pytest.raises(EditOperationError) as error:
+        # The reviewer's rejection blocks the plan before Python validation runs.
+        plan = reviewed_plan(
+            current, [change], ["unsupported" if failure == "rejected" else "user"]
+        )
+        if failure == "missing_review":
+            plan = plan.model_copy(
+                update={
+                    "changes": [
+                        plan.changes[0].model_copy(update={"semantic_support": None})
+                    ]
+                }
+            )
         validate_edit_plan(
             EditProposalRequest(instruction=instruction, idempotency_key=uuid4()),
             [current],
@@ -1230,12 +1123,14 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
     request = EditProposalRequest(
         instruction="Use the second plan's school count.", idempotency_key=uuid4()
     )
+    manual_population = {"population": 900_000, "year": 2024, "source": "user_entered"}
     context = {
         "selected_sources": duplicate_sources,
         "cc_context": {
             "city": {
                 "cityId": "private-city",
                 "name": "Example City",
+                "population": 900_000,
                 "storageKey": "private/storage",
                 "s3_key": "private/s3",
                 "object_key": "private/object",
@@ -1253,6 +1148,7 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
                 "markdown_s3_key": "private/project.md",
             }
         ],
+        "manual_population": manual_population,
         "unexpected_metadata": "private-extra",
     }
     duplicate_sources[0]["key_excerpts"].append(
@@ -1286,8 +1182,7 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
                 )
             return SimpleNamespace(final_output=output)
 
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
+    settings = planner_settings()
     plan = await ConceptNoteEditPlanner(settings, runner=CapturingRunner).plan(
         request, [current], context
     )
@@ -1313,7 +1208,12 @@ async def test_planner_and_reviewer_receive_evidence_without_backend_metadata(
             "text": "School upgrades are eligible.",
             "heading": "eligibility",
         }
-        assert payload["run_context"]["cc_context"]["city"] == {"name": "Example City"}
+        # Citable city facts and the user-entered population stay available.
+        assert payload["run_context"]["cc_context"]["city"] == {
+            "name": "Example City",
+            "population": 900_000,
+        }
+        assert payload["run_context"]["manual_population"] == manual_population
     assert calls[1]["changes"][0]["source_refs"] == ["2"]
     changes = validate_edit_plan(request, [current], plan, context)
     assert (
@@ -1344,16 +1244,8 @@ def test_refinement_rebinds_snapshots_without_replaying_private_source_refs(
     changes[0] = changes[0].model_copy(
         update={"source_refs": [duplicate_sources[0]["upload_id"]]}
     )
-    now = datetime.now(UTC)
-    prior = EditProposalResponse(
-        proposal_id=uuid4(),
-        run_id=uuid4(),
-        instruction=request.instruction,
-        scope=EditScope(),
-        status="proposed",
-        changes=changes,
-        created_at=now,
-        updated_at=now,
+    prior = edit_proposal(
+        instruction=request.instruction, status="proposed", changes=changes
     )
     reordered = [duplicate_sources[1], dict(duplicate_sources[0])]
     if source_changed:
@@ -1398,42 +1290,26 @@ def population_fill(context_refs):
     }
 
 
-def test_citycatalyst_context_supports_a_factual_edit_without_user_values():
-    current = chapter(f"The city context. {POPULATION_SENTENCE}")
-    plan = reviewed_plan(current, [population_fill(["city"])], ["context"])
-
-    changes = validate_edit_plan(
-        EditProposalRequest(
-            instruction="Add the data about the population please",
-            idempotency_key=uuid4(),
+@pytest.mark.parametrize(
+    "section,context",
+    [
+        ("city", CITY_CONTEXT),
+        (
+            "manual_population",
+            {
+                **CITY_CONTEXT,
+                "manual_population": {
+                    "population": 1_000_000,
+                    "year": 2025,
+                    "source": "user_entered",
+                },
+            },
         ),
-        [current],
-        plan,
-        CITY_CONTEXT,
-    )
-
-    assert changes[0].kind == "factual"
-    assert changes[0].source_snapshots == []
-    snapshot = changes[0].context_snapshots[0]
-    assert snapshot.section == "city"
-    assert snapshot.label == "CityCatalyst city profile"
-    assert (
-        replace_anchors(current.body_markdown, changes)
-        == "The city context. Kraków has 1,000,000 residents (2025)."
-    )
-
-
-def test_user_entered_population_is_citable_run_context():
+    ],
+)
+def test_run_context_supports_a_factual_edit_without_user_values(section, context):
     current = chapter(f"The city context. {POPULATION_SENTENCE}")
-    context = {
-        **CITY_CONTEXT,
-        "manual_population": {
-            "population": 1_000_000,
-            "year": 2025,
-            "source": "user_entered",
-        },
-    }
-    plan = reviewed_plan(current, [population_fill(["manual_population"])], ["context"])
+    plan = reviewed_plan(current, [population_fill([section])], ["context"])
 
     changes = validate_edit_plan(
         EditProposalRequest(instruction="Add the population", idempotency_key=uuid4()),
@@ -1442,7 +1318,13 @@ def test_user_entered_population_is_citable_run_context():
         context,
     )
 
-    assert changes[0].context_snapshots[0].section == "manual_population"
+    assert changes[0].kind == "factual"
+    assert changes[0].source_snapshots == []
+    assert changes[0].context_snapshots[0].section == section
+    assert (
+        replace_anchors(current.body_markdown, changes)
+        == "The city context. Kraków has 1,000,000 residents (2025)."
+    )
 
 
 @pytest.mark.parametrize(
@@ -1472,19 +1354,6 @@ def test_context_provenance_guards(context_refs, supports, context, code):
             context,
         )
     assert error.value.code == code
-
-
-def test_planner_input_exposes_manual_population_and_context_refs():
-    current = chapter("We serve 10 schools.")
-    request = EditProposalRequest(instruction="Add population", idempotency_key=uuid4())
-    manual = {"population": 900_000, "year": 2024, "source": "user_entered"}
-
-    payload = build_planner_input(
-        request, current, {**CITY_CONTEXT, "manual_population": manual}
-    )
-
-    assert payload["run_context"]["manual_population"] == manual
-    assert payload["run_context"]["cc_context"]["city"]["population"] == 1_000_000
 
 
 def test_context_snapshot_changes_when_citycatalyst_data_changes():

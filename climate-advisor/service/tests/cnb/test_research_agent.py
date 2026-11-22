@@ -3,9 +3,11 @@
 import json
 from types import SimpleNamespace
 
+import pytest
 from app.models.cnb.research import (
     FieldEvidence,
     FundedProjectResearchResult,
+    FundingOpportunityResearchResult,
     ResearchGap,
 )
 from app.services.cnb.research_agent import (
@@ -15,7 +17,7 @@ from app.services.cnb.research_agent import (
     run_agent_loop,
 )
 from app.services.cnb.research_prompt import model_research_state
-from tests.cnb.helpers import build_request, build_result
+from tests.cnb.helpers import RecordingResponses, build_request, build_result
 
 
 def test_missing_data_allows_multinational_funder_country_to_remain_null() -> None:
@@ -31,21 +33,9 @@ def test_missing_data_allows_multinational_funder_country_to_remain_null() -> No
 
 
 def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> None:
-    parsed_result = build_result()
-
-    class FakeResponses:
-        def __init__(self) -> None:
-            self.calls: list[dict[str, object]] = []
-
-        def parse(self, **kwargs: object) -> SimpleNamespace:
-            self.calls.append(kwargs)
-            return SimpleNamespace(
-                id=f"response-{len(self.calls):03d}",
-                output=[],
-                output_parsed=model_research_state(parsed_result, []),
-            )
-
-    client = SimpleNamespace(responses=FakeResponses())
+    client = SimpleNamespace(
+        responses=RecordingResponses(model_research_state(build_result(), []))
+    )
     outcome = run_agent_loop(
         request=build_request(max_turns=2),
         seed_sources=[],
@@ -61,10 +51,8 @@ def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> No
     assert outcome.termination_reason == "turn_limit"
     assert "tools" in client.responses.calls[0]
     assert "tools" not in client.responses.calls[1]
-    progress_message = client.responses.calls[1]["input"][-1]["content"]
-    assert "<current_filled_object>" in progress_message
-    assert "<missing_data>" in progress_message
-    assert "<final_gap_audit>" in progress_message
+    # The next turn resumes from the object filled so far.
+    assert "Example Program" in client.responses.calls[1]["input"][-1]["content"]
 
 
 def test_resumed_prior_evidence_cannot_report_coverage_complete() -> None:
@@ -94,20 +82,7 @@ def test_resumed_prior_evidence_cannot_report_coverage_complete() -> None:
     request = build_request(max_turns=2).model_copy(
         update={"current_filled_object": covered_result}
     )
-
-    class FakeResponses:
-        def __init__(self) -> None:
-            self.calls: list[dict[str, object]] = []
-
-        def parse(self, **kwargs: object) -> SimpleNamespace:
-            self.calls.append(kwargs)
-            return SimpleNamespace(
-                id=f"response-{len(self.calls):03d}",
-                output=[],
-                output_parsed=model_research_state(covered_result, []),
-            )
-
-    responses = FakeResponses()
+    responses = RecordingResponses(model_research_state(covered_result, []))
     outcome = run_agent_loop(
         request=request,
         seed_sources=[],
@@ -139,14 +114,16 @@ def test_recaptured_resume_evidence_can_satisfy_coverage() -> None:
     )
 
 
-def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> None:
+def _result_with_evidenced_project(
+    **project_fields: object,
+) -> FundingOpportunityResearchResult:
+    """Add one funded project whose row evidence came from a captured source."""
     base = build_result()
     project = FundedProjectResearchResult(
         funded_project_ref="project-001",
         funder_ref="funder-001",
         name="Evidence-backed project",
-        award_amount=999,
-        currency="USD",
+        **project_fields,
     )
     row_evidence = FieldEvidence(
         evidence_ref="evidence-project-row",
@@ -155,16 +132,18 @@ def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> N
         source_ref="source-project",
         quote_or_summary="The program supported Evidence-backed project.",
     )
-    previous_result = base.model_copy(
+    return base.model_copy(
         update={
             "funded_projects": [*base.funded_projects, project],
             "evidence": [*base.evidence, row_evidence],
         }
     )
 
+
+def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> None:
     restored = preserve_evidence_qualified_funded_projects(
-        previous_result=previous_result,
-        candidate_result=base,
+        previous_result=_result_with_evidenced_project(award_amount=999, currency="USD"),
+        candidate_result=build_result(),
         captured_source_refs={"source-project"},
         target_funded_projects=1,
     )
@@ -172,9 +151,9 @@ def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> N
     restored_project = next(
         item
         for item in restored.funded_projects
-        if item.funded_project_ref == project.funded_project_ref
+        if item.funded_project_ref == "project-001"
     )
-    assert restored_project.name == project.name
+    assert restored_project.name == "Evidence-backed project"
     assert restored_project.award_amount is None
     assert restored_project.currency is None
     assert [item.evidence_ref for item in restored.evidence] == [
@@ -183,27 +162,11 @@ def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> N
     ]
 
 
-def test_restored_project_only_clears_a_satisfied_target_gap() -> None:
-    base = build_result()
-    project = FundedProjectResearchResult(
-        funded_project_ref="project-001",
-        funder_ref="funder-001",
-        name="Evidence-backed project",
-    )
-    row_evidence = FieldEvidence(
-        evidence_ref="evidence-project-row",
-        funded_project_ref=project.funded_project_ref,
-        target_path="funded_projects[project-001]",
-        source_ref="source-project",
-        quote_or_summary="The program supported Evidence-backed project.",
-    )
-    previous_result = base.model_copy(
-        update={
-            "funded_projects": [*base.funded_projects, project],
-            "evidence": [*base.evidence, row_evidence],
-        }
-    )
-    candidate_result = base.model_copy(
+@pytest.mark.parametrize(("target", "gap_cleared"), [(2, False), (1, True)])
+def test_restored_project_only_clears_a_satisfied_target_gap(
+    target: int, gap_cleared: bool
+) -> None:
+    candidate_result = build_result().model_copy(
         update={
             "gaps": [
                 ResearchGap(
@@ -214,23 +177,12 @@ def test_restored_project_only_clears_a_satisfied_target_gap() -> None:
         }
     )
 
-    still_short = preserve_evidence_qualified_funded_projects(
-        previous_result=previous_result,
+    restored = preserve_evidence_qualified_funded_projects(
+        previous_result=_result_with_evidenced_project(),
         candidate_result=candidate_result,
         captured_source_refs={"source-project"},
-        target_funded_projects=2,
-    )
-    target_met = preserve_evidence_qualified_funded_projects(
-        previous_result=previous_result,
-        candidate_result=candidate_result,
-        captured_source_refs={"source-project"},
-        target_funded_projects=1,
+        target_funded_projects=target,
     )
 
-    assert any(
-        gap.target_path == TARGET_FUNDED_PROJECTS_GAP_PATH
-        for gap in still_short.gaps
-    )
-    assert all(
-        gap.target_path != TARGET_FUNDED_PROJECTS_GAP_PATH for gap in target_met.gaps
-    )
+    has_gap = any(gap.target_path == TARGET_FUNDED_PROJECTS_GAP_PATH for gap in restored.gaps)
+    assert has_gap is not gap_cleared

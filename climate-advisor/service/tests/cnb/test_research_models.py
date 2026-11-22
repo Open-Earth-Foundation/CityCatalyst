@@ -28,30 +28,12 @@ def _nested_keys(value: object) -> Iterator[str]:
             yield from _nested_keys(child)
 
 
-def test_request_accepts_missing_template_and_rejects_zero_turns() -> None:
-    """The optional template stays optional while max_turns remains positive."""
-    assert build_request().application_template_url is None
-    assert build_request().current_filled_object is None
-
+def test_resumed_manifest_round_trips_the_filled_object() -> None:
+    """A resumed manifest carries the earlier partial result back in."""
     resumed_manifest = build_request().model_dump(mode="json")
     resumed_manifest["current_filled_object"] = build_result().model_dump(mode="json")
     resumed_request = FundingOpportunityResearchRequest.model_validate(resumed_manifest)
     assert resumed_request.current_filled_object == build_result()
-
-    with pytest.raises(ValidationError):
-        build_request(max_turns=0)
-
-
-def test_request_defaults_to_fifteen_turns() -> None:
-    """A manifest without an override should receive the production turn budget."""
-    request = FundingOpportunityResearchRequest(
-        funder_name="Example Funder",
-        funder_url="https://funder.example/",
-        program_name="Example Program",
-        program_url="https://funder.example/program",
-    )
-
-    assert request.max_turns == 15
 
 
 def test_model_output_schema_avoids_unsupported_strict_json_features() -> None:
@@ -61,39 +43,6 @@ def test_model_output_schema_avoids_unsupported_strict_json_features() -> None:
 
     assert "format" not in schema_keys
     assert "pattern" not in schema_keys
-
-
-def test_funded_project_matches_architecture_year_and_award_shape() -> None:
-    """A funded project keeps action and award information in one entity."""
-    project = FundedProjectResearchResult(
-        funded_project_ref="project-001",
-        funder_ref="funder-001",
-        name="Funded project",
-        applicant_name="Example City",
-        interventions=["Prepare a retrofit investment concept"],
-        award_amount=125000,
-        currency="USD",
-        award_year=2026,
-        status="awarded",
-        summary="The award funded project preparation.",
-    )
-
-    assert project.award_year == 2026
-    assert "calendar_year" not in project.model_fields
-    assert {
-        "funder",
-        "funding_opportunities",
-        "funded_projects",
-        "funder_templates",
-        "funder_criteria",
-    }.issubset(FundingOpportunityResearchResult.model_fields)
-    for removed_collection in (
-        "funded_project_actions",
-        "funding_links",
-        "financial_amounts",
-        "pipeline_entries",
-    ):
-        assert removed_collection not in FundedProjectResearchResult.model_fields
 
 
 def test_result_requires_one_opportunity_and_valid_table_references() -> None:

@@ -22,8 +22,8 @@ async def invoke(title: str, html: str) -> dict:
     )
 
 
-async def test_render_visual_returns_title_and_size_without_html() -> None:
-    result = await invoke("Emissions by sector", HTML)
+async def test_render_visual_returns_trimmed_title_and_size_without_html() -> None:
+    result = await invoke("  Emissions by sector \n", HTML)
 
     assert result == {
         "action": "concept_note.visual.render",
@@ -31,13 +31,6 @@ async def test_render_visual_returns_title_and_size_without_html() -> None:
         "data": {"title": "Emissions by sector", "html_chars": len(HTML)},
         "error_code": None,
     }
-
-
-async def test_render_visual_trims_title() -> None:
-    result = await invoke("  Theory of change \n", HTML)
-
-    assert result["success"] is True
-    assert result["data"]["title"] == "Theory of change"
 
 
 @pytest.mark.parametrize(

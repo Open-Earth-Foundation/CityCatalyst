@@ -33,7 +33,7 @@ async def invoke(tool):
     return json.loads(await tool.on_invoke_tool(context, "{}"))
 
 
-async def test_help_is_lazy_and_refreshes_state_on_each_call():
+async def test_help_reauthorizes_and_refreshes_state_on_each_call():
     with (
         patch(
             "app.tools.concept_note_help_tools.load_agent_context",
@@ -44,12 +44,9 @@ async def test_help_is_lazy_and_refreshes_state_on_each_call():
             new=AsyncMock(
                 side_effect=[{"draft": {"exists": False}}, {"draft": {"exists": True}}]
             ),
-        ) as state,
+        ),
     ):
         tool = make_tool()
-        authorize.assert_not_awaited()
-        state.assert_not_awaited()
-        assert tool.params_json_schema["properties"] == {}
         before = await invoke(tool)
         after = await invoke(tool)
     assert before["ui_state"]["draft"]["exists"] is False
@@ -106,25 +103,39 @@ async def invoke_ready(ui_locale):
         return await invoke(make_tool(ui_locale))
 
 
-async def test_portuguese_ui_gets_portuguese_navigation_labels():
-    """Answers must name the controls Portuguese users actually see."""
-    result = await invoke_ready("pt")
-    guide = result["guide"]
-    assert result["ui_locale"] == "pt"
-    assert '"Visualização do rascunho"' in guide
-    assert '"Os seus arquivos" → "Carregar arquivo"' in guide
-    assert '"Exportar PDF"' in guide
-    assert '"Draft preview"' not in guide
-    assert '"Upload file"' not in guide
+ENGLISH_LABELS = [
+    '"Draft preview"',
+    '"Your files" → "Upload file"',
+    '"Export PDF" / "Export DOCX"',
+]
 
 
-@pytest.mark.parametrize("ui_locale", ["en", None, "xx", "en-GB"])
-async def test_english_and_unsupported_locales_keep_english_labels(ui_locale):
+@pytest.mark.parametrize(
+    ("ui_locale", "expected_locale", "present", "absent"),
+    [
+        (
+            "pt",
+            "pt",
+            [
+                '"Visualização do rascunho"',
+                '"Os seus arquivos" → "Carregar arquivo"',
+                '"Exportar PDF"',
+            ],
+            ['"Draft preview"', '"Upload file"'],
+        ),
+        *[(locale, "en", ENGLISH_LABELS, []) for locale in ["en", None, "xx", "en-GB"]],
+    ],
+)
+async def test_guide_names_the_controls_in_the_ui_language(
+    ui_locale, expected_locale, present, absent
+):
+    """Answers must name the controls users actually see; unsupported tags fall back to English."""
     result = await invoke_ready(ui_locale)
-    assert result["ui_locale"] == "en"
-    assert '"Draft preview"' in result["guide"]
-    assert '"Your files" → "Upload file"' in result["guide"]
-    assert '"Export PDF" / "Export DOCX"' in result["guide"]
+    assert result["ui_locale"] == expected_locale
+    for label in present:
+        assert label in result["guide"]
+    for label in absent:
+        assert label not in result["guide"]
 
 
 def test_locale_tags_normalize_to_supported_languages():

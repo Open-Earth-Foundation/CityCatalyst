@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from uuid import uuid4
 from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
 from app.db import Base
@@ -16,32 +16,53 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import get_settings
 
+CNB_BASE_TOOLS = [
+    "concept_note_ask_question",
+    "concept_note_help",
+    "concept_note_gaps",
+    "concept_note_render_visual",
+]
 
-@pytest.mark.parametrize("stationary_energy", [False, True])
-async def test_help_is_not_available_outside_cnb(monkeypatch, stationary_energy):
+
+@pytest.fixture(autouse=True)
+def agent_settings(monkeypatch):
+    """Give AgentService a test key and no tracing."""
     settings = get_settings().model_copy(deep=True)
     settings.openrouter_api_key = "test-key"
     settings.langsmith_tracing_enabled = False
     monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
-    service = AgentService(
-        cc_user_id="owner",
-        cc_thread_id=uuid4(),
+    return settings
+
+
+async def _agent_tools(**service_kwargs) -> tuple[list[str], object]:
+    service = AgentService(cc_user_id="owner", cc_thread_id=uuid4(), **service_kwargs)
+    try:
+        agent = await service.create_agent()
+    finally:
+        await service.close()
+    return [tool.name for tool in agent.tools], agent
+
+
+@pytest.mark.parametrize("stationary_energy", [False, True])
+async def test_help_is_not_available_outside_cnb(stationary_energy):
+    tools, _ = await _agent_tools(
         session_factory=MagicMock(),
         stationary_energy_draft_run_id=uuid4() if stationary_energy else None,
     )
-    try:
-        agent = await service.create_agent()
-        assert "concept_note_help" not in [tool.name for tool in agent.tools]
-    finally:
-        await service.close()
+    assert "concept_note_help" not in tools
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("edit_enabled", [False, True])
+@pytest.mark.parametrize(
+    ("workflow_step", "sources_available"),
+    [
+        ("interviewing", True),
+        ("editing_document", True),
+        ("assembling_context", False),
+    ],
+)
 async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
-    tmp_path,
-    monkeypatch,
-    edit_enabled,
+    tmp_path, workflow_step, sources_available, edit_enabled
 ) -> None:
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'agent-scope.db').as_posix()}"
@@ -58,22 +79,6 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     run_id = uuid4()
-    edit_request = (
-        EditProposalRequest(
-            instruction="Make the opening shorter.", idempotency_key=uuid4()
-        )
-        if edit_enabled
-        else None
-    )
-    expected_tools = [
-        "concept_note_ask_question",
-        "concept_note_help",
-        "concept_note_gaps",
-        "concept_note_render_visual",
-        "concept_note_sources_query",
-    ]
-    if edit_enabled:
-        expected_tools.append("concept_note_edit_propose")
     try:
         async with session_factory() as session, session.begin():
             session.add_all(
@@ -85,7 +90,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
                         city_id=str(uuid4()),
                         idempotency_key=uuid4(),
                         request_fingerprint="a" * 64,
-                        workflow_step="interviewing",
+                        workflow_step=workflow_step,
                         context_summary={"context_bundle": {"status": "ready"}},
                         permission_summary={},
                     ),
@@ -97,107 +102,38 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
                     ),
                 ]
             )
-        settings = get_settings().model_copy(deep=True)
-        settings.openrouter_api_key = "test-key"
-        settings.langsmith_tracing_enabled = False
-        monkeypatch.setattr(
-            "app.services.agent_service.get_settings",
-            lambda: settings,
+        edit_request = (
+            EditProposalRequest(
+                instruction="Make the opening shorter.", idempotency_key=uuid4()
+            )
+            if edit_enabled
+            else None
         )
 
-        service = AgentService(
+        tools, agent = await _agent_tools(
             cc_access_token="token",
-            cc_thread_id=uuid4(),
-            cc_user_id="owner",
             session_factory=session_factory,
             concept_note_run_id=run_id,
             concept_note_edit_request=edit_request,
         )
-        agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == expected_tools
+
+        expected = list(CNB_BASE_TOOLS)
+        if sources_available:
+            expected.append("concept_note_sources_query")
+            if edit_enabled:
+                expected.append("concept_note_edit_propose")
+        assert tools == expected
         assert agent.tool_use_behavior == {
             "stop_at_tool_names": ["concept_note_ask_question"]
         }
-        if edit_enabled:
+        if sources_available and edit_enabled:
             assert agent.tools[-1].params_json_schema["properties"] == {}
-        assert service.active_instructions == settings.llm.prompts.compose_prompt(
-            "cnb_chat"
-        )
-        await service.close()
-
-        async with session_factory() as session, session.begin():
-            run = await session.get(ConceptNoteRun, run_id)
-            assert run is not None
-            run.workflow_step = "editing_document"
-        service = AgentService(
-            cc_access_token="token",
-            cc_thread_id=uuid4(),
-            cc_user_id="owner",
-            session_factory=session_factory,
-            concept_note_run_id=run_id,
-            concept_note_edit_request=edit_request,
-        )
-        agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == expected_tools
-        await service.close()
-
-        async with session_factory() as session, session.begin():
-            run = await session.get(ConceptNoteRun, run_id)
-            assert run is not None
-            run.workflow_step = "assembling_context"
-        service = AgentService(
-            cc_access_token="token",
-            cc_thread_id=uuid4(),
-            cc_user_id="owner",
-            session_factory=session_factory,
-            concept_note_run_id=run_id,
-            concept_note_edit_request=edit_request,
-        )
-        agent = await service.create_agent()
-        assert [tool.name for tool in agent.tools] == [
-            "concept_note_ask_question",
-            "concept_note_help",
-            "concept_note_gaps",
-            "concept_note_render_visual",
-        ]
-        await service.close()
     finally:
         await engine.dispose()
 
 
-async def test_render_visual_is_always_registered_for_cnb_chat(monkeypatch):
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
-    settings.langsmith_tracing_enabled = False
-    monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
-    monkeypatch.setattr(
-        "app.services.agent_service.load_agent_context",
-        AsyncMock(return_value={"workflow_step": None}),
-    )
-    service = AgentService(
-        cc_user_id="owner",
-        cc_thread_id=uuid4(),
-        session_factory=MagicMock(),
-        concept_note_run_id=uuid4(),
-    )
-    try:
-        agent = await service.create_agent()
-    finally:
-        await service.close()
-    assert [tool.name for tool in agent.tools] == [
-        "concept_note_ask_question",
-        "concept_note_help",
-        "concept_note_gaps",
-        "concept_note_render_visual",
-    ]
-
-
 async def test_help_receives_active_ui_locale(monkeypatch):
     """The CNB frontend language must reach help so labels match the UI."""
-    settings = get_settings().model_copy(deep=True)
-    settings.openrouter_api_key = "test-key"
-    settings.langsmith_tracing_enabled = False
-    monkeypatch.setattr("app.services.agent_service.get_settings", lambda: settings)
     monkeypatch.setattr(
         "app.services.agent_service.load_agent_context",
         AsyncMock(return_value={"workflow_step": None}),
@@ -206,15 +142,9 @@ async def test_help_receives_active_ui_locale(monkeypatch):
     monkeypatch.setattr(
         "app.services.agent_service.build_concept_note_help_tools", build
     )
-    service = AgentService(
-        cc_user_id="owner",
-        cc_thread_id=uuid4(),
+    await _agent_tools(
         session_factory=MagicMock(),
         concept_note_run_id=uuid4(),
         concept_note_ui_locale="pt",
     )
-    try:
-        await service.create_agent()
-    finally:
-        await service.close()
     assert build.call_args.kwargs["ui_locale"] == "pt"

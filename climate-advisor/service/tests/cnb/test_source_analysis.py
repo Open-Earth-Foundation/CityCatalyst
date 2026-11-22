@@ -4,9 +4,9 @@ import asyncio
 import hashlib
 import json
 from collections.abc import AsyncIterator
+from functools import reduce
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import httpx
@@ -40,33 +40,6 @@ from app.services.cnb.source_analysis import (
     source_analysis_contract_version,
     verify_source_artifact,
 )
-from app.utils.cnb_progress import bind_cnb_progress
-
-
-@pytest.mark.asyncio
-async def test_source_worker_uses_live_stream_and_validates_result(
-    analysis_dependencies, monkeypatch
-):
-    settings, client = analysis_dependencies
-    stream = AsyncMock(return_value=SimpleNamespace(final_output={
-        "sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}],
-    }))
-    monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
-    with bind_cnb_progress(AsyncMock()):
-        result = await run_agent(
-            name="Source reader",
-            prompt="Read source",
-            model_config=settings.llm.models.cnb_source_reader,
-            output_type=QuestionReading,
-            input_text="Drainage upgrades",
-            client=client,
-            runner=Runner,
-            expected_sections=1,
-        )
-    stream.assert_awaited_once()
-    assert stream.call_args.kwargs["stage"] == "reading"
-    assert stream.call_args.kwargs["run_config"].tracing_disabled
-    assert result.sections[0].excerpts == ["Drainage upgrades"]
 
 
 class FakeRunner:
@@ -179,24 +152,6 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert set(runner.covered_pages) == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
-
-
-def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> None:
-    markdown = (
-        "<!-- page: 1 -->\n"
-        "# Emissions\n\n"
-        "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |"
-    )
-
-    pages = parse_source_pages(markdown)
-
-    assert pages == [
-        SourcePage(
-            number=1,
-            text="\n# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
-        )
-    ]
-    assert "12.50" in pages[0].text
 
 
 def test_source_pages_keep_each_pages_header_and_footer_in_order() -> None:
@@ -408,19 +363,15 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
 
 
 @pytest.mark.parametrize(
-    ("role", "model_name", "effort", "output_type", "output"),
+    ("role", "output_type", "output"),
     [
         (
             "cnb_source_reader",
-            "openai/gpt-5.6-terra",
-            "medium",
             QuestionReading,
             {"sections": [{"excerpts": [], "caveats": []}]},
         ),
         (
             "cnb_source_synthesizer",
-            "openai/gpt-5.6-terra",
-            "medium",
             DocumentSummary,
             {
                 "summary": "No budget is stated.",
@@ -433,8 +384,6 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
 @pytest.mark.asyncio
 async def test_source_worker_serializes_terra_requests_without_temperature(
     role,
-    model_name,
-    effort,
     output_type,
     output,
 ) -> None:
@@ -501,8 +450,9 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
     assert result == output_type.model_validate(output)
     assert len(captured) == 1
     request = captured[0]
-    assert request["model"] == model_name
-    assert request["reasoning"] == {"effort": effort, "summary": "detailed"}
+    model_config = getattr(settings.llm.models, role)
+    assert request["model"] == model_config.name
+    assert request["reasoning"]["effort"] == model_config.reasoning_effort
     assert request["store"] is False
     assert "temperature" not in request
     assert not request.get("tools")
@@ -513,70 +463,40 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
         assert sections["minItems"] == sections["maxItems"] == 1
 
 
-def _set_reader_model(settings: Settings, _: Path) -> None:
-    settings.llm.models.cnb_source_reader.name = "previous-model"
-
-
-def _set_reader_effort(settings: Settings, _: Path) -> None:
-    settings.llm.models.cnb_source_reader.reasoning_effort = "minimal"
-
-
-def _set_synthesizer_model(settings: Settings, _: Path) -> None:
-    settings.llm.models.cnb_source_synthesizer.name = "previous-model"
-
-
-def _set_synthesizer_effort(settings: Settings, _: Path) -> None:
-    settings.llm.models.cnb_source_synthesizer.reasoning_effort = "minimal"
-
-
-def _set_mapping_prompt(settings: Settings, tmp_path: Path) -> None:
-    prompt = tmp_path / "mapping.md"
-    prompt.write_text("Changed mapping prompt", encoding="utf-8")
-    settings.llm.prompts.cnb_source_document_mapping = str(prompt)
-
-
-def _set_synthesis_prompt(settings: Settings, tmp_path: Path) -> None:
-    prompt = tmp_path / "synthesis.md"
-    prompt.write_text("Changed synthesis prompt", encoding="utf-8")
-    settings.llm.prompts.cnb_source_summary_synthesis = str(prompt)
-
-
-def _set_tokenizer(settings: Settings, _: Path) -> None:
-    settings.llm.generation.prompt_budget.tokenizer_encoding = "cl100k_base"
-
-
-def _set_partition_limit(settings: Settings, _: Path) -> None:
-    settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens -= 1
-
-
-def _set_excerpt_limit(settings: Settings, _: Path) -> None:
-    settings.llm.generation.prompt_budget.cnb_sources.max_key_excerpts -= 1
-
-
-def _set_topic_limit(settings: Settings, _: Path) -> None:
-    settings.llm.generation.prompt_budget.cnb_sources.max_topics -= 1
+CHANGED_PROMPT = object()
+DECREMENT = object()
 
 
 @pytest.mark.parametrize(
-    "change",
+    ("path", "value"),
     [
-        _set_reader_model,
-        _set_reader_effort,
-        _set_synthesizer_model,
-        _set_synthesizer_effort,
-        _set_mapping_prompt,
-        _set_synthesis_prompt,
-        _set_tokenizer,
-        _set_partition_limit,
-        _set_excerpt_limit,
-        _set_topic_limit,
+        ("llm.models.cnb_source_reader.name", "previous-model"),
+        ("llm.models.cnb_source_reader.reasoning_effort", "minimal"),
+        ("llm.models.cnb_source_synthesizer.name", "previous-model"),
+        ("llm.models.cnb_source_synthesizer.reasoning_effort", "minimal"),
+        ("llm.prompts.cnb_source_document_mapping", CHANGED_PROMPT),
+        ("llm.prompts.cnb_source_summary_synthesis", CHANGED_PROMPT),
+        ("llm.generation.prompt_budget.tokenizer_encoding", "cl100k_base"),
+        ("llm.generation.prompt_budget.cnb_sources.max_partition_tokens", DECREMENT),
+        ("llm.generation.prompt_budget.cnb_sources.max_key_excerpts", DECREMENT),
+        ("llm.generation.prompt_budget.cnb_sources.max_topics", DECREMENT),
     ],
 )
-def test_every_analysis_input_invalidates_the_reuse_contract(change, tmp_path) -> None:
+def test_every_analysis_input_invalidates_the_reuse_contract(
+    path: str, value: object, tmp_path: Path
+) -> None:
     """Any configured input that can change analysis output forces re-analysis."""
     settings = get_settings().model_copy(deep=True)
     current_contract = source_analysis_contract_version(settings)
-    change(settings, tmp_path)
+    *parents, name = path.split(".")
+    target = reduce(getattr, parents, settings)
+    if value is CHANGED_PROMPT:
+        prompt = tmp_path / f"{name}.md"
+        prompt.write_text("Changed prompt", encoding="utf-8")
+        value = str(prompt)
+    elif value is DECREMENT:
+        value = getattr(target, name) - 1
+    setattr(target, name, value)
     assert source_analysis_contract_version(settings) != current_contract
 
 

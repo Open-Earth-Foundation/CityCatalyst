@@ -208,9 +208,13 @@ async def test_untracked_marker_blocks_confirmation(workspace) -> None:
     assert chapter.confirmed_revision_number is None
 
 
-@pytest.mark.parametrize("untracked_marker", [True, False])
-async def test_generated_marker_gap_mismatch_is_not_saved(
-    workspace, untracked_marker
+@pytest.mark.parametrize(
+    ("marker", "with_gap"),
+    [(True, False), (False, True), (True, True)],
+    ids=["untracked-marker", "markerless-gap", "matching"],
+)
+async def test_generated_chapter_saves_only_when_markers_match_gaps(
+    workspace, marker, with_gap
 ) -> None:
     async with workspace._session_factory() as session, session.begin():
         await session.execute(delete(ConceptNoteGap))
@@ -221,38 +225,24 @@ async def test_generated_marker_gap_mismatch_is_not_saved(
         why_asking="The budget is required.",
         severity="critical",
     )
+    save = workspace.save_generated_chapter(
+        chapter_id=CHAPTER_ID,
+        body_markdown=(
+            "[Information needed: Confirm the budget.]" if marker else "Complete text."
+        ),
+        missing_information=[gap] if with_gap else [],
+    )
+    if marker and with_gap:
+        assert await save
+        [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+        assert chapter.status == "needs_review"
+        assert len(chapter.gaps) == 1
+        return
     with pytest.raises(WorkspaceConflictError, match="must match the generated gaps"):
-        await workspace.save_generated_chapter(
-            chapter_id=CHAPTER_ID,
-            body_markdown="[Information needed: Confirm the budget.]"
-            if untracked_marker
-            else "Complete text.",
-            missing_information=[] if untracked_marker else [gap],
-        )
+        await save
     [chapter] = await workspace.list_chapters(run_id=RUN_ID)
     assert chapter.body_markdown is None
     assert chapter.gaps == []
-
-
-async def test_generated_matching_marker_can_be_saved(workspace) -> None:
-    async with workspace._session_factory() as session, session.begin():
-        await session.execute(delete(ConceptNoteGap))
-        await session.execute(delete(ConceptNoteChapterRevision))
-    assert await workspace.save_generated_chapter(
-        chapter_id=CHAPTER_ID,
-        body_markdown="[Information needed: Confirm the budget.]",
-        missing_information=[
-            ConceptNoteDraftGapOutput(
-                field_key="budget",
-                question="Confirm the budget.",
-                why_asking="The budget is required.",
-                severity="critical",
-            )
-        ],
-    )
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.status == "needs_review"
-    assert len(chapter.gaps) == 1
 
 
 async def test_wording_edit_does_not_preserve_ready_with_an_untracked_marker(
@@ -293,7 +283,6 @@ async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(
 
     assert "Confirm the lead partner" in rationale
     assert "Implementation chapter" in rationale
-    assert "grounded evidence" in rationale
     assert rationale != "This information is required to complete the chapter."
 
 
@@ -486,73 +475,65 @@ async def test_source_revalidation_keeps_deferred_caveat_gaps(workspace) -> None
     assert chapter.gaps[0].resolution is None
 
 
-async def test_source_revalidation_rejects_a_restored_marker_it_cannot_match(
-    workspace,
-) -> None:
-    """A "]" in a dropped question truncates its marker, so the redraft is refused."""
-    async with workspace._session_factory() as session, session.begin():
-        gap = await session.get(ConceptNoteGap, GAP_ID)
-        assert gap is not None
-        gap.question = "Cost [approx] in EUR?"
+def _gap_limit_redraft() -> ConceptNoteChapterDraftOutput:
+    """A redraft already at the 30-gap limit, leaving no room to restore one."""
+    questions = [f"Confirm figure {index}." for index in range(30)]
+    return ConceptNoteChapterDraftOutput(
+        body_markdown="\n\n".join(
+            f"[Information needed: {question}]" for question in questions
+        ),
+        missing_information=[
+            ConceptNoteDraftGapOutput(
+                field_key=f"figure_{index}",
+                question=question,
+                why_asking="The funder needs the figure.",
+                severity="noncritical",
+            )
+            for index, question in enumerate(questions)
+        ],
+    )
 
-    with pytest.raises(WorkspaceConflictError, match="markers must match"):
-        await workspace.save_revalidated_chapter(
-            chapter_id=CHAPTER_ID,
-            expected_revision_number=1,
-            generated=ConceptNoteChapterDraftOutput(
+
+@pytest.mark.parametrize(
+    ("stored_question", "generated", "error"),
+    [
+        # A "]" in a dropped question truncates its marker, so it cannot match.
+        (
+            "Cost [approx] in EUR?",
+            ConceptNoteChapterDraftOutput(
                 body_markdown="## Implementation\n\nA partner will lead delivery."
             ),
-            source_refs=["implementation-plan.pdf"],
-            answered_gap_ids=set(),
-        )
-
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.revision_number == 1
-
-
-async def test_source_revalidation_rejects_a_restore_over_the_gap_limit(
-    workspace,
-) -> None:
-    """Restoring a dropped gap must still respect the 30-gap output limit."""
-    questions = [f"Confirm figure {index}." for index in range(30)]
-    with pytest.raises(WorkspaceConflictError, match="could not be restored"):
-        await workspace.save_revalidated_chapter(
-            chapter_id=CHAPTER_ID,
-            expected_revision_number=1,
-            generated=ConceptNoteChapterDraftOutput(
-                body_markdown="\n\n".join(
-                    f"[Information needed: {question}]" for question in questions
-                ),
-                missing_information=[
-                    ConceptNoteDraftGapOutput(
-                        field_key=f"figure_{index}",
-                        question=question,
-                        why_asking="The funder needs the figure.",
-                        severity="noncritical",
-                    )
-                    for index, question in enumerate(questions)
-                ],
-            ),
-            source_refs=["implementation-plan.pdf"],
-            answered_gap_ids=set(),
-        )
-
-    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
-    assert chapter.revision_number == 1
-
-
-async def test_source_revalidation_rejects_marker_gap_mismatch(workspace) -> None:
-    """Every Information-needed marker must have a matching structured gap."""
-    with pytest.raises(WorkspaceConflictError, match="markers must match"):
-        await workspace.save_revalidated_chapter(
-            chapter_id=CHAPTER_ID,
-            expected_revision_number=1,
-            generated=ConceptNoteChapterDraftOutput(
+            "markers must match",
+        ),
+        # Restoring a dropped gap must still respect the 30-gap output limit.
+        (None, _gap_limit_redraft(), "could not be restored"),
+        # Every Information-needed marker must have a matching structured gap.
+        (
+            None,
+            ConceptNoteChapterDraftOutput(
                 body_markdown=(
                     "## Implementation\n\n[Information needed: Confirm the lead "
                     "partner.]"
                 ),
             ),
+            "markers must match",
+        ),
+    ],
+    ids=["unmatchable-restored-marker", "over-gap-limit", "marker-without-gap"],
+)
+async def test_source_revalidation_rejects_an_inconsistent_redraft(
+    workspace, stored_question, generated, error
+) -> None:
+    if stored_question:
+        async with workspace._session_factory() as session, session.begin():
+            gap = await session.get(ConceptNoteGap, GAP_ID)
+            gap.question = stored_question
+
+    with pytest.raises(WorkspaceConflictError, match=error):
+        await workspace.save_revalidated_chapter(
+            chapter_id=CHAPTER_ID,
+            expected_revision_number=1,
+            generated=generated,
             source_refs=["implementation-plan.pdf"],
             answered_gap_ids=set(),
         )

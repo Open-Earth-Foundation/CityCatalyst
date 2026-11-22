@@ -1,70 +1,37 @@
 """Verify funding/edit lock ordering with real PostgreSQL row locks."""
 
 import asyncio
-import os
 from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from app.db.cnb import CnbBase
 from app.models.cnb.concept_note_edits import EditPlanOutput, EditProposalRequest
-from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
-from app.models.db.thread import Thread
+from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.edits import ConceptNoteEditRepository
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edits import ConceptNoteEditService
 from app.services.cnb.funding_selection import save_funding_selection
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.schema import CreateSchema, DropSchema
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from tests.cnb.test_funding_selection import _draft, _run, _seed, _selection
-
-pytestmark = pytest.mark.skipif(
-    not os.getenv("CNB_TEST_DATABASE_URL"),
-    reason="Requires disposable CNB_TEST_DATABASE_URL",
-)
 
 
 @pytest_asyncio.fixture
-async def funding_workspace():
-    """Keep both stores in an isolated schema removed after each test."""
-    url = os.environ["CNB_TEST_DATABASE_URL"].replace(
-        "postgresql://", "postgresql+asyncpg://"
-    )
-    schema = f"cc873_test_{uuid4().hex}"
-    admin = create_async_engine(url)
-    engine = create_async_engine(
-        url, connect_args={"server_settings": {"search_path": schema}}
-    )
-    try:
-        async with admin.begin() as connection:
-            await connection.execute(CreateSchema(schema))
-        async with engine.begin() as connection:
-            for table in (
-                ConceptNoteRun.__table__,
-                Thread.__table__,
-                ConceptNoteContextBundle.__table__,
-            ):
-                await connection.run_sync(table.create)
-            await connection.run_sync(CnbBase.metadata.create_all)
-        sessions = async_sessionmaker(engine, expire_on_commit=False)
-        workspace = ConceptNoteWorkspaceRepository(sessions)
-        first, second, opportunity = await _seed(sessions)
-        async with sessions() as session:
-            run = await _run(session)
-            selected = await save_funding_selection(
-                session, run, _selection(first, opportunity), reference_factory=sessions
-            )
-        await _draft(
-            workspace, run.run_id, selected.template.chapter_schema, "Keep this draft."
+async def funding_workspace(cnb_postgres_schema):
+    """Select the first funder and draft one chapter in an isolated schema."""
+    sessions = async_sessionmaker(cnb_postgres_schema, expire_on_commit=False)
+    workspace = ConceptNoteWorkspaceRepository(sessions)
+    first, second, opportunity = await _seed(sessions)
+    async with sessions() as session:
+        run = await _run(session)
+        selected = await save_funding_selection(
+            session, run, _selection(first, opportunity), reference_factory=sessions
         )
-        yield sessions, workspace, run, first, second, opportunity
-    finally:
-        await engine.dispose()
-        async with admin.begin() as connection:
-            await connection.execute(DropSchema(schema, cascade=True, if_exists=True))
-        await admin.dispose()
+    await _draft(
+        workspace, run.run_id, selected.template.chapter_schema, "Keep this draft."
+    )
+    return sessions, workspace, run, first, second, opportunity
 
 
 async def test_switch_waits_for_edit_registration_then_rejects_active_planning(

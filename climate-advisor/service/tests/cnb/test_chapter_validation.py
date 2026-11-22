@@ -4,7 +4,10 @@ from uuid import UUID
 
 import pytest
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
-from app.models.cnb.concept_note_chapter_validation import ChapterValidationGap
+from app.models.cnb.concept_note_chapter_validation import (
+    ChapterValidationGap,
+    ChapterValidationRequest,
+)
 from app.persistence.concept_notes.workspace_validation import (
     WorkspaceValidationChapter,
     WorkspaceValidationContext,
@@ -84,38 +87,74 @@ def test_builds_request_from_repository_snapshot() -> None:
     assert built.evidence_links[0].source_location == "page 4"
 
 
-async def test_runs_completeness_before_document_consistency() -> None:
-    calls: list[tuple[str, dict[str, Any]]] = []
+async def test_consistency_checks_the_output_against_the_other_chapters() -> None:
+    observed: dict[str, Any] = {}
+    output_body = "The total project cost is EUR 4 million."
 
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        calls.append((phase, payload))
-        return completeness() if phase == "completeness" else consistency()
+        if phase == "completeness":
+            return completeness()
+        observed.update(payload)
+        return consistency(
+            findings=[
+                finding(
+                    "cross_chapter_conflict",
+                    "The output total conflicts with the document budget.",
+                    "Confirm and use one approved total.",
+                    chapter_ids=[TARGET_ID, OTHER_ID],
+                )
+            ]
+        )
 
     decision = await service(run_pass).validate(
         request(
             chapters=[
-                chapter(TARGET_ID, position=0),
+                chapter(TARGET_ID, position=0, body=output_body),
                 chapter(OTHER_ID, position=1),
                 chapter(THIRD_ID, position=2),
             ]
         )
     )
 
-    assert [phase for phase, _ in calls] == ["completeness", "consistency"]
-    assert {item["chapter_id"] for item in calls[1][1]["document"]["chapters"]} == {
+    assert observed["output"]["body_markdown"] == output_body
+    assert {item["chapter_id"] for item in observed["document"]["chapters"]} == {
         str(OTHER_ID),
         str(THIRD_ID),
     }
-    assert calls[0][1]["output"]["chapter_id"] == str(TARGET_ID)
-    assert calls[1][1]["output"]["chapter_id"] == str(TARGET_ID)
-    assert calls[0][1]["document"]["evidence_links"][0]["position"] == 1
-    assert calls[1][1]["document"]["evidence_links"][0]["position"] == 1
+    assert decision.status == "incomplete"
+
+
+async def test_service_does_not_apply_program_specific_scope_rules() -> None:
+    decision = await service(static_passes()).validate(
+        request(
+            chapters=[
+                chapter(
+                    TARGET_ID,
+                    position=0,
+                    body=(
+                        "The proposed measure is delivery of the route. Construction "
+                        "is 97% complete and commissioning is underway."
+                    ),
+                ),
+                chapter(
+                    OTHER_ID,
+                    position=1,
+                    body=(
+                        "The programme document excludes ongoing construction and "
+                        "commissioning."
+                    ),
+                ),
+            ]
+        )
+    )
+
     assert decision.status == "ready"
+    assert decision.findings == []
 
 
 @pytest.mark.parametrize("asks", ["open_gap", "marker"])
 async def test_open_questions_are_checked_against_the_other_chapters(asks: str) -> None:
-    calls: list[tuple[str, dict[str, Any]]] = []
+    calls: dict[str, dict[str, Any]] = {}
     answered = finding(
         "cross_chapter_conflict",
         "The output still asks for the project period, but chapter 2 states it.",
@@ -125,7 +164,7 @@ async def test_open_questions_are_checked_against_the_other_chapters(asks: str) 
     )
 
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        calls.append((phase, payload))
+        calls[phase] = payload
         if phase == "completeness":
             return completeness()
         return consistency(findings=[answered] if phase == "answered_gaps" else [])
@@ -146,14 +185,27 @@ async def test_open_questions_are_checked_against_the_other_chapters(asks: str) 
         )
     )
 
-    assert [phase for phase, _ in calls] == ["completeness", "consistency", "answered_gaps"]
-    payload = calls[2][1]
-    assert set(payload) == {"document", "output", "open_gaps"}
-    assert [c["chapter_id"] for c in payload["document"]["chapters"]] == [str(OTHER_ID)]
-    assert "evidence_links" not in payload["document"]
+    document = calls["answered_gaps"]["document"]
+    assert [c["chapter_id"] for c in document["chapters"]] == [str(OTHER_ID)]
     stale = [f for f in decision.findings if f.category == "cross_chapter_conflict"]
     assert len(stale) == 1 and stale[0].phase == "consistency"
     assert set(stale[0].involved_chapter_ids) == {TARGET_ID, OTHER_ID}
+
+
+async def _completeness_document(
+    validation_request: ChapterValidationRequest,
+) -> dict[str, Any]:
+    """Run validation and return the document the completeness pass received."""
+    seen: list[dict[str, Any]] = []
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        if phase == "completeness":
+            seen.append(payload["document"])
+            return completeness()
+        return consistency()
+
+    await service(run_pass).validate(validation_request)
+    return seen[0]
 
 
 async def test_completeness_receives_only_selected_schema_and_associated_fields() -> (
@@ -180,17 +232,10 @@ async def test_completeness_receives_only_selected_schema_and_associated_fields(
     ]
     template.required_fields = ["Budget", "Implementation timetable", "Project name"]
     before = template.model_dump()
-    calls: list[dict[str, Any]] = []
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            calls.append(payload)
-            return completeness()
-        return consistency()
+    document = await _completeness_document(validation_request)
 
-    await service(run_pass).validate(validation_request)
-
-    assert calls[0]["document"]["validation_profile"] == {
+    assert document["validation_profile"] == {
         "name": "Application template",
         "output_format": None,
         "chapter_schema": {
@@ -201,8 +246,32 @@ async def test_completeness_receives_only_selected_schema_and_associated_fields(
         },
         "required_fields": ["Implementation timetable", "Project name"],
     }
-    assert "template" not in calls[0]["document"]
+    assert "template" not in document
     assert template.model_dump() == before
+
+
+async def test_chapter_without_fields_does_not_inherit_other_chapters_requirements() -> (
+    None
+):
+    validation_request = request()
+    assert validation_request.template is not None
+    validation_request.template.chapter_schema = [
+        {"chapter_ref": "chapter-1", "required_fields": []},
+        {"chapter_ref": "other", "required_fields": ["Implementation timetable"]},
+    ]
+
+    document = await _completeness_document(validation_request)
+
+    assert document["validation_profile"]["required_fields"] == []
+
+
+async def test_no_template_preserves_template_free_validation() -> None:
+    validation_request = request()
+    validation_request.template = None
+
+    document = await _completeness_document(validation_request)
+
+    assert document["validation_profile"] is None
 
 
 @pytest.mark.parametrize(
@@ -259,38 +328,6 @@ async def test_selection_uses_the_same_reference_normalization_as_workspace(
     assert (
         await service(static_passes()).validate(validation_request)
     ).status == "ready"
-
-
-async def test_chapter_without_fields_does_not_inherit_other_chapters_requirements() -> (
-    None
-):
-    validation_request = request()
-    assert validation_request.template is not None
-    validation_request.template.chapter_schema = [
-        {"chapter_ref": "chapter-1", "required_fields": []},
-        {"chapter_ref": "other", "required_fields": ["Implementation timetable"]},
-    ]
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            assert payload["document"]["validation_profile"]["required_fields"] == []
-            return completeness()
-        return consistency()
-
-    await service(run_pass).validate(validation_request)
-
-
-async def test_no_template_preserves_template_free_validation() -> None:
-    validation_request = request()
-    validation_request.template = None
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            assert payload["document"]["validation_profile"] is None
-            return completeness()
-        return consistency()
-
-    await service(run_pass).validate(validation_request)
 
 
 async def test_resolves_model_evidence_positions_to_public_source_metadata() -> None:

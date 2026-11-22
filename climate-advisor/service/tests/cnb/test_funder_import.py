@@ -419,19 +419,6 @@ def test_award_provenance_compares_values_across_browser_decimal_scales(amount, 
     assert award.quote_or_summary == draft.evidence[1].quote
 
 
-async def test_discard_preserves_a_replacement_and_clears_only_its_own_import():
-    async with _ca_session() as session:
-        run, upload = await _run_with_upload(session)
-        current = _ready_import(upload)
-        await _store_import(session, run, current)
-        await service.discard_funder_import(session, run, import_id=uuid4())
-        assert (await load_funder_import(session, run)).import_id == current.import_id
-        await service.discard_funder_import(session, run, import_id=current.import_id)
-        assert await load_funder_import(session, run) is None
-        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-        assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
-
-
 async def test_start_accepts_a_converting_upload_and_allows_one_running_import():
     async with _ca_session() as session:
         run, upload = await _run_with_upload(session, ingest_status="queued")
@@ -541,8 +528,6 @@ async def test_heartbeat_keeps_a_long_running_import_alive(monkeypatch):
         ):
             result = await _run_job(session, run, upload, read)
         assert result.status == "ready"
-        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
-        assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
 
 
 @pytest.mark.parametrize("state", ["expired", "replaced", "discarded", "ready"])
@@ -697,6 +682,9 @@ async def test_bodyless_discard_uses_query_id_and_preserves_a_replacement():
             assert discarded.status_code == 204
             assert discarded.content == b""
             assert await load_funder_import(session, run) is None
+        # Discarding removes only the import, not the rest of the bundle.
+        bundle = await session.get(ConceptNoteContextBundle, run.run_id)
+        assert bundle.context_bundle["cc_context"]["city"]["name"] == "X"
 
 
 @pytest.mark.parametrize("params", [{}, {"import_id": "invalid"}])

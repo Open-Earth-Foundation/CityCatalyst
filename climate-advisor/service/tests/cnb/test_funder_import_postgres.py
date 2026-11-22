@@ -1,62 +1,22 @@
 """Exercise funder import races against real PostgreSQL transaction locks."""
 
 import asyncio
-import os
 from unittest.mock import patch
-from uuid import uuid4
 
-import pytest
 import pytest_asyncio
-from app.db.cnb import CnbBase
-from app.models.db.concept_note import (
-    ConceptNoteContextBundle,
-    ConceptNoteRun,
-    ConceptNoteUpload,
-)
-from app.models.db.thread import Thread
+from app.models.db.concept_note import ConceptNoteRun
 from app.services.cnb import funder_creation as service
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.schema import CreateSchema, DropSchema
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from tests.cnb.test_funder_import import (
     _run_with_upload,
 )
 
-pytestmark = pytest.mark.skipif(
-    not os.getenv("CNB_TEST_DATABASE_URL"),
-    reason="Requires disposable CNB_TEST_DATABASE_URL",
-)
-
 
 @pytest_asyncio.fixture
-async def import_sessions():
+async def import_sessions(cnb_postgres_schema):
     """Keep workflow and catalogue writes in a disposable, isolated schema."""
-    url = os.environ["CNB_TEST_DATABASE_URL"].replace(
-        "postgresql://", "postgresql+asyncpg://"
-    )
-    schema = f"funder_import_test_{uuid4().hex}"
-    admin = create_async_engine(url)
-    engine = create_async_engine(
-        url, connect_args={"server_settings": {"search_path": schema}}
-    )
-    try:
-        async with admin.begin() as connection:
-            await connection.execute(CreateSchema(schema))
-        async with engine.begin() as connection:
-            for table in (
-                ConceptNoteRun.__table__,
-                Thread.__table__,
-                ConceptNoteContextBundle.__table__,
-                ConceptNoteUpload.__table__,
-            ):
-                await connection.run_sync(table.create)
-            await connection.run_sync(CnbBase.metadata.create_all)
-        yield async_sessionmaker(engine, expire_on_commit=False)
-    finally:
-        await engine.dispose()
-        async with admin.begin() as connection:
-            await connection.execute(DropSchema(schema, cascade=True, if_exists=True))
-        await admin.dispose()
+    return async_sessionmaker(cnb_postgres_schema, expire_on_commit=False)
 
 
 async def test_concurrent_starts_accept_and_schedule_only_one_import(import_sessions):

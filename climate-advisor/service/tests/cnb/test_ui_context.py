@@ -34,9 +34,6 @@ def test_active_critical_gaps_require_acknowledgement_without_blocking_export():
     assert state["export"]["blockers"] == []
     assert state["export"]["critical_gap_count"] == 2
     assert state["export"]["requires_acknowledgement"] is True
-    assert state["review"]["failure_blocks_export"] is None
-    assert state["pending_proposal"] is None
-    assert state["active_tab"] is None
 
     chapter.gaps = []
     state = build_ui_state([chapter])

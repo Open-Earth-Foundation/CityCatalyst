@@ -156,47 +156,32 @@ def test_import_accepts_reviewed_data_that_matches_selected_decisions() -> None:
     assert payload.projects[0].record.name == "Evidence-backed name"
 
 
-def test_import_rejects_data_that_disagrees_with_selected_decision() -> None:
-    research, review = _build_pair(reviewed_project_name="Different unreviewed name")
-
-    with pytest.raises(
-        ValueError,
-        match="reviewed_reference_data does not match selected decision",
-    ):
-        prepare_reviewed_reference_import(
-            research=research,
-            review=review,
-            known_funder_ids={FUNDER_ID},
-        )
-
-
-def test_import_rejects_data_for_an_unselected_decision() -> None:
+@pytest.mark.parametrize(
+    ("reviewed", "message"),
+    [
+        (
+            {"reviewed_project_name": "Different unreviewed name"},
+            "reviewed_reference_data does not match selected decision",
+        ),
+        (
+            {"reviewed_summary": "Unselected summary"},
+            "reviewed_reference_data includes an unselected decision",
+        ),
+        (
+            {"reviewed_city": "Unreviewed city"},
+            "reviewed_reference_data field has no selected decision",
+        ),
+    ],
+    ids=["disagrees-with-decision", "unselected-decision", "no-decision"],
+)
+def test_import_rejects_data_the_review_did_not_approve(
+    reviewed: dict[str, str], message: str
+) -> None:
     research, review = _build_pair(
-        reviewed_project_name="Evidence-backed name",
-        reviewed_summary="Unselected summary",
+        **{"reviewed_project_name": "Evidence-backed name", **reviewed}
     )
 
-    with pytest.raises(
-        ValueError,
-        match="reviewed_reference_data includes an unselected decision",
-    ):
-        prepare_reviewed_reference_import(
-            research=research,
-            review=review,
-            known_funder_ids={FUNDER_ID},
-        )
-
-
-def test_import_rejects_populated_data_without_a_decision() -> None:
-    research, review = _build_pair(
-        reviewed_project_name="Evidence-backed name",
-        reviewed_city="Unreviewed city",
-    )
-
-    with pytest.raises(
-        ValueError,
-        match="reviewed_reference_data field has no selected decision",
-    ):
+    with pytest.raises(ValueError, match=message):
         prepare_reviewed_reference_import(
             research=research,
             review=review,

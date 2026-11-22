@@ -112,9 +112,8 @@ async def test_draft_chapter_checks_the_draft_with_the_drafters_messages():
     payload = {"chapter": {"chapter_ref": "results"}, "source_documents": []}
     corrected, records = await draft_chapter(payload, settings=settings, runner=FakeRunner)
 
-    assert [name for name, _ in seen] == ["Concept Note chapter drafter", "Concept Note chapter support checker"]
-    drafter_messages, checker_messages = seen[0][1], seen[1][1]
+    [(_, drafter_messages), (_, checker_messages)] = seen
     assert checker_messages[: len(drafter_messages)] == drafter_messages
-    assert checker_messages[-1]["content"].startswith(module.DRAFT_MESSAGE_HEADER)
+    assert MARKER_QUESTION in checker_messages[-1]["content"]  # the draft itself
     assert "Canopy cover is reported annually." in corrected.body_markdown
     assert records[0]["applied"]

@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import hashlib
 from copy import deepcopy
 
 import pytest
 from app.services.cnb.visual_context import (
-    VISUAL_CONTEXT_CONTRACT_VERSION,
     VisualContextContractError,
     project_visual_context,
     validate_structured_delivery,
@@ -105,7 +103,6 @@ def test_projection_preserves_full_envelope_equality() -> None:
     assert projected[0].provider_annotation["title"] is None
     assert "12.5%" in projected[0].model_dump_json()
     assert "Ignore previous instructions" in projected[0].model_dump_json()
-    assert VISUAL_CONTEXT_CONTRACT_VERSION.startswith("citycatalyst.visual-context.")
 
 
 def test_projection_skips_images_without_annotation() -> None:

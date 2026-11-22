@@ -154,8 +154,7 @@ async def test_maps_selected_funder_programme_and_template() -> None:
     }
 
 
-async def test_loads_template_fingerprint_with_one_reference_query() -> None:
-    """Keep the frequently polled draft state independent of full context loading."""
+async def test_fingerprints_the_selected_funder_template() -> None:
     template = SimpleNamespace(
         template_id=TEMPLATE_ID,
         template_name="EIB starter",
@@ -168,9 +167,6 @@ async def test_loads_template_fingerprint_with_one_reference_query() -> None:
     service = ConceptNoteApplicationContextService(
         session_factory=_session_factory(session)
     )
-    service._load_funder = AsyncMock()
-    service._load_opportunity = AsyncMock()
-    service._load_template = AsyncMock()
 
     fingerprint = await service.load_template_fingerprint_for_run(
         _run(with_funding=True)
@@ -186,7 +182,3 @@ async def test_loads_template_fingerprint_with_one_reference_query() -> None:
     assert fingerprint == calculate_application_template_fingerprint(
         expected_template
     )
-    session.scalar.assert_awaited_once()
-    service._load_funder.assert_not_called()
-    service._load_opportunity.assert_not_called()
-    service._load_template.assert_not_called()

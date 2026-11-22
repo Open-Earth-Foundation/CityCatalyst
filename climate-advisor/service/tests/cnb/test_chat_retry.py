@@ -1,58 +1,25 @@
 """Retry storage skips the newest identical user message."""
 
 from datetime import UTC, datetime, timedelta
-from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
-import httpx
 import pytest
 import pytest_asyncio
-from fastapi import FastAPI
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
-from app.db import Base
-from app.db.session import get_session_factory, get_session_optional
 from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
-from app.routes import messages
 from app.services.cnb.chat_retry import is_retry_turn
+from sqlalchemy import select
 
 AUTH_HEADERS = {"Authorization": "Bearer owner-token"}
 RETRY_OPTIONS = {"concept_note_turn": "retry"}
 
 
 @pytest_asyncio.fixture
-async def chat_api(tmp_path, monkeypatch):
-    engine = create_async_engine(
-        f"sqlite+aiosqlite:///{(tmp_path / 'chat.db').as_posix()}"
-    )
-    factory = async_sessionmaker(engine, expire_on_commit=False)
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
+async def chat_api(chat_client):
     thread_id = uuid4()
-    async with factory() as session, session.begin():
+    async with chat_client.factory() as session, session.begin():
         session.add(Thread(thread_id=thread_id, user_id="owner", context={}))
-    monkeypatch.setattr(
-        "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-        AsyncMock(return_value="owner"),
-    )
-
-    async def empty_stream(*args):
-        yield b'event: done\ndata: {"ok":true}\n\n'
-
-    handler = Mock()
-    handler.return_value.stream_response = empty_stream
-    monkeypatch.setattr(messages, "StreamingHandler", handler)
-    app = FastAPI()
-    app.include_router(messages.router, prefix="/v1")
-    app.dependency_overrides[get_session_factory] = lambda: factory
-    app.dependency_overrides[get_session_optional] = lambda: None
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        yield client, factory, thread_id
-    await engine.dispose()
+    return chat_client.client, chat_client.factory, thread_id
 
 
 async def _post(client, thread_id, content, options=None):
@@ -81,7 +48,6 @@ def test_only_the_retry_turn_option_marks_a_retry():
     assert not is_retry_turn("retry")
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "content",
     [
@@ -104,7 +70,6 @@ async def test_retry_after_a_failed_reply_preserves_and_dedupes_exact_text(
     assert await _stored(factory, thread_id) == [("user", content)]
 
 
-@pytest.mark.asyncio
 async def test_retry_does_not_dedupe_different_whitespace(chat_api):
     client, factory, thread_id = chat_api
 
@@ -117,7 +82,6 @@ async def test_retry_does_not_dedupe_different_whitespace(chat_api):
     ]
 
 
-@pytest.mark.asyncio
 async def test_retry_stores_the_question_when_the_first_attempt_never_arrived(
     chat_api,
 ):
@@ -129,7 +93,6 @@ async def test_retry_stores_the_question_when_the_first_attempt_never_arrived(
     assert await _stored(factory, thread_id) == [("user", "What is the budget?")]
 
 
-@pytest.mark.asyncio
 async def test_retry_stores_a_repeat_question_after_an_answer(chat_api):
     client, factory, thread_id = chat_api
     asked = datetime.now(UTC) - timedelta(minutes=2)
@@ -164,7 +127,6 @@ async def test_retry_stores_a_repeat_question_after_an_answer(chat_api):
     ]
 
 
-@pytest.mark.asyncio
 async def test_plain_repeat_questions_are_still_saved(chat_api):
     client, factory, thread_id = chat_api
 

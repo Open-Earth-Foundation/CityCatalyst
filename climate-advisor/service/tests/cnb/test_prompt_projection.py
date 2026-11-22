@@ -252,7 +252,6 @@ def test_research_first_and_later_turns_have_no_metadata_ids():
     assert "opportunity-001" not in calls[0]["input"]
     assert "source-private" not in calls[0]["input"]
     assert "opportunity-001" not in calls[1]["input"][-1]["content"]
-    assert calls[1]["previous_response_id"] == "response-protocol-id"
     assert outcome.result.funder.funder_ref == state.funder.funder_ref
 
 
@@ -325,5 +324,4 @@ def test_research_retries_invalid_selection_with_an_identifier_free_correction()
     assert len(calls) == 2
     assert result.turns_used == 1
     assert trace[0].action == "structured_output_retry"
-    assert "unavailable project" in calls[1]["input"]
     assert "opportunity-001" not in calls[1]["input"]

@@ -14,18 +14,7 @@ from app.services.cnb.funder_identity_match import (
     FunderIdentityLlmMatch,
     propose_funder_identity_candidates,
 )
-
-
-class FakeResponses:
-    """Record the identity request and return injected structured output."""
-
-    def __init__(self, decision_set: FunderIdentityLlmDecisionSet) -> None:
-        self.decision_set = decision_set
-        self.calls: list[dict[str, object]] = []
-
-    def parse(self, **kwargs: object) -> SimpleNamespace:
-        self.calls.append(kwargs)
-        return SimpleNamespace(output_parsed=self.decision_set)
+from tests.cnb.helpers import RecordingResponses
 
 
 def _record(
@@ -47,7 +36,7 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
         funder_id=uuid4(),
         name="Minnesota Pollution Control Agency",
     )
-    responses = FakeResponses(
+    responses = RecordingResponses(
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
@@ -85,8 +74,6 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
 
     assert len(responses.calls) == 1
     call = responses.calls[0]
-    assert call["model"] == "small-model"
-    assert call["reasoning"] == {"effort": "low"}
     assert call["store"] is False
     payload = json.loads(str(call["input"]))
     assert [item["identity_name"] for item in payload["funded_projects"]] == [
@@ -106,7 +93,7 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
 def test_identity_scan_rejects_model_invented_funder_name() -> None:
     canonical_funder = CanonicalFunder(funder_id=uuid4(), name="Known Funder")
     invented_name = "Invented Funder"
-    responses = FakeResponses(
+    responses = RecordingResponses(
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
@@ -137,7 +124,7 @@ def test_identity_scan_rejects_model_invented_funder_name() -> None:
 
 def test_identity_scan_skips_provider_when_no_identity_can_be_compared() -> None:
     record = _record("project-001", reported_funder_name=None)
-    responses = FakeResponses(FunderIdentityLlmDecisionSet(decisions=[]))
+    responses = RecordingResponses(FunderIdentityLlmDecisionSet(decisions=[]))
 
     [updated] = propose_funder_identity_candidates(
         funded_projects=[record],

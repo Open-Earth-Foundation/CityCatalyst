@@ -1,5 +1,7 @@
 """Shared object builders for Concept Note Builder research tests."""
 
+from types import SimpleNamespace
+
 from app.models.cnb.research import (
     FieldEvidence,
     FunderProfileResearchResult,
@@ -8,6 +10,21 @@ from app.models.cnb.research import (
     FundingOpportunityResearchResult,
     FundingOpportunityResearchResultRow,
 )
+
+
+class RecordingResponses:
+    """Fake OpenAI Responses API that records parse() calls and returns one result."""
+
+    def __init__(self, parsed: object) -> None:
+        self.parsed = parsed
+        self.calls: list[dict[str, object]] = []
+
+    def parse(self, **kwargs: object) -> SimpleNamespace:
+        self.calls.append(kwargs)
+        return SimpleNamespace(
+            id=f"response-{len(self.calls):03d}", output=[], output_parsed=self.parsed
+        )
+
 
 def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
     """Create a valid no-template request for tests."""

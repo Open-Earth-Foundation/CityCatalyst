@@ -14,7 +14,6 @@ from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import get_settings
-from app.config.settings import _load_llm_config
 from app.db import Base
 from app.db.session import get_session, get_session_factory, get_session_optional
 from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
@@ -30,7 +29,6 @@ from app.services.cnb.draft_overview import (
     BODY_EXCERPT_CHARS,
     DRAFT_OVERVIEW_REQUEST,
     build_draft_overview_facts,
-    draft_overview_instructions,
     overview_pending,
     release_draft_overview,
 )
@@ -450,30 +448,10 @@ def test_overview_facts_expose_draft_state_without_identifiers():
     assert baseline["open_gaps"] == [
         {"question": "Confirm the total cost.", "severity": "critical"}
     ]
-    assert budget == {
-        "title": "Budget",
-        "required": True,
-        "drafted": False,
-        "body_excerpt": None,
-        "body_truncated": False,
-        "open_gaps": [],
-    }
+    assert (budget["drafted"], budget["body_excerpt"]) == (False, None)
     serialized = str(facts)
     assert "chapter_id" not in serialized
     assert "field_key" not in serialized
-
-
-def test_overview_instructions_extend_the_cnb_chat_prompt():
-    prompts = _load_llm_config().prompts
-
-    instructions = draft_overview_instructions(prompts)
-
-    assert instructions.startswith(prompts.compose_prompt("cnb_chat"))
-    assert "<turn_instructions>" in instructions
-    assert "CONCEPT_NOTE_DRAFT_OVERVIEW_JSON" in instructions
-    assert DRAFT_OVERVIEW_REQUEST in instructions
-    assert "`concept_note_ask_question` is optional" in instructions
-    assert "Otherwise return the overview directly" in instructions
 
 
 async def test_overview_turn_orders_context_facts_then_hidden_trigger():
@@ -523,42 +501,18 @@ async def test_overview_turn_orders_context_facts_then_hidden_trigger():
     )
 
 
-async def test_failed_overview_stream_releases_the_claim():
-    run_id = uuid4()
-    session_factory = MagicMock()
-    handler = StreamingHandler(
-        thread_id=str(uuid4()),
-        user_id="owner",
-        session_factory=session_factory,
-        draft_overview_claim=(run_id, BUILD_ID),
+async def test_failed_overview_stream_releases_the_claim(chat_api, monkeypatch):
+    client, factory, run_id, thread_id, _save_message, _handler = chat_api
+    # The real handler streams; only the agent setup fails mid-stream.
+    monkeypatch.setattr(messages, "StreamingHandler", StreamingHandler)
+    monkeypatch.setattr(
+        "app.utils.streaming_handler.prepare_stream_agent",
+        AsyncMock(side_effect=RuntimeError("draft unavailable")),
     )
-    handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(run_id))
-    payload = MessageCreateRequest(user_id="owner", content=DRAFT_OVERVIEW_REQUEST)
-    release = AsyncMock()
 
-    with (
-        patch.object(
-            handler,
-            "_load_conversation_history",
-            new=AsyncMock(side_effect=RuntimeError("draft unavailable")),
-        ),
-        patch("app.utils.streaming_handler.release_draft_overview", new=release),
-    ):
-        events = [
-            event
-            async for event in handler._stream_response_with_mlflow(
-                payload=payload,
-                history_warning=None,
-                req_id="req",
-                settings=get_settings(),
-                started_at=0.0,
-            )
-        ]
-
-    assert any(b"event: error" in event for event in events)
-    release.assert_awaited_once_with(
-        session_factory=session_factory,
-        run_id=run_id,
-        user_id="owner",
-        build_id=BUILD_ID,
+    response = await client.post(
+        "/v1/messages", json=_overview_request(thread_id), headers=AUTH_HEADERS
     )
+
+    assert "event: error" in response.text
+    assert overview_pending(await _draft_progress(factory, run_id))

@@ -14,6 +14,8 @@
   "chat-choices-send": "Send answer",
   "chat-choices-proposes-edit": "Choosing an answer prepares a proposed change for you to review. Nothing changes until you accept it.",
   "chat-message-unsent": "Not sent",
+  "chat-reply-in-progress": "Clima is still replying…",
+  "chat-reply-status-unavailable": "Reload the chat to check for a reply.",
   "chat-reply-missing": "Clima did not finish replying to your last message.",
   "chat-suggestion-review": "What should I improve first?",
   "chat-suggestion-gaps": "What details are missing?",

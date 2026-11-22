@@ -8,6 +8,7 @@ import type { SSEStreamOptions } from "@/hooks/useSSEStream";
 let streamOptions: SSEStreamOptions;
 const startStream = jest.fn(async (_url: string, _init?: RequestInit) => {});
 const refreshDraft = jest.fn();
+const observedReplyEnd = jest.fn();
 const threadInactive = jest.fn();
 // Stable like i18next's: history reloads whenever `t` changes.
 const t = (key: string) => key;
@@ -28,6 +29,7 @@ const { useConceptNoteChat } =
 let chat: ReturnType<typeof useConceptNoteChat>;
 let root: Root;
 let historyOk = true;
+let historyReplyInProgress = false;
 let historyMessages: unknown[] = [];
 const originalFetch = globalThis.fetch;
 
@@ -37,6 +39,7 @@ function Harness() {
     runId: "run",
     threadId: "thread",
     onDraftOverviewComplete: refreshDraft,
+    onObservedReplyEnd: observedReplyEnd,
     onThreadInactive: threadInactive,
   });
   useEffect(() => {
@@ -65,6 +68,8 @@ async function showChoiceQuestion() {
 
 beforeEach(async () => {
   historyOk = true;
+  historyReplyInProgress = false;
+  observedReplyEnd.mockClear();
   historyMessages = [];
   startStream.mockClear();
   refreshDraft.mockClear();
@@ -72,7 +77,10 @@ beforeEach(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.fetch = jest.fn(async () => ({
     ok: historyOk,
-    json: async () => ({ messages: historyMessages }),
+    json: async () => ({
+      messages: historyMessages,
+      reply_in_progress: historyReplyInProgress,
+    }),
   })) as unknown as typeof fetch;
   root = createRoot(document.createElement("div"));
   await act(async () => root.render(<Harness />));
@@ -80,6 +88,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await act(async () => root.unmount());
+  jest.useRealTimers();
   globalThis.fetch = originalFetch;
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
 });
@@ -783,4 +792,84 @@ it("does not offer Retry when the last message is Clima's", async () => {
   ]);
   expect(chat.error).toBeNull();
   expect(chat.canRetry).toBe(false);
+});
+
+it("waits for an active saved reply and loads it without starting another stream", async () => {
+  jest.useFakeTimers();
+  historyReplyInProgress = true;
+  await remountWithHistory([{ message_id: "q", role: "user", text: "Budget" }]);
+  expect(chat.replyStatus).toBe("chat-reply-in-progress");
+  expect(chat.error).toBeNull();
+  expect(chat.canRetry).toBe(false);
+
+  await act(async () => {
+    await chat.sendMessage("Duplicate");
+    await chat.requestDraftOverview();
+    await chat.retry();
+  });
+  expect(startStream).not.toHaveBeenCalled();
+
+  historyReplyInProgress = false;
+  historyMessages.push({
+    message_id: "a",
+    role: "assistant",
+    text: "About 2M EUR.",
+  });
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(3_000);
+  });
+  expect(chat.messages.map(({ id }) => id)).toEqual(["q", "a"]);
+  expect(chat.replyStatus).toBeNull();
+  expect(chat.error).toBeNull();
+  expect(observedReplyEnd).toHaveBeenCalledTimes(1);
+  const calls = jest.mocked(fetch).mock.calls.length;
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(9_000);
+  });
+  expect(fetch).toHaveBeenCalledTimes(calls);
+});
+
+it("refreshes after an overlapping send is rejected and offers Retry only when idle", async () => {
+  jest.useFakeTimers();
+  await act(async () => chat.sendMessage("Duplicate"));
+  historyMessages = [
+    { message_id: "q", role: "user", text: "Accepted elsewhere" },
+  ];
+  historyReplyInProgress = true;
+  await act(async () =>
+    streamOptions.onError?.(
+      "Clima is still replying.",
+      "concept_note_reply_in_progress",
+      { status: 409, streamStarted: false },
+    ),
+  );
+  expect(chat.messages.map(({ id }) => id)).toEqual(["q"]);
+  expect(chat.replyStatus).toBe("chat-reply-in-progress");
+  expect(chat.error).toBeNull();
+  expect(chat.canRetry).toBe(false);
+
+  historyReplyInProgress = false;
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(3_000);
+  });
+  expect(chat.replyStatus).toBeNull();
+  expect(chat.error).toBe("chat-reply-missing");
+  expect(chat.canRetry).toBe(true);
+});
+
+it("reconciles a disconnected stream with its completed reply without resending", async () => {
+  await act(async () => chat.sendMessage("Budget"));
+  historyMessages = [
+    { message_id: "q", role: "user", text: "Budget" },
+    { message_id: "a", role: "assistant", text: "About 2M EUR." },
+  ];
+  await act(async () =>
+    streamOptions.onError?.("Disconnected", undefined, {
+      streamStarted: true,
+      interrupted: true,
+    }),
+  );
+  expect(chat.messages.map(({ id }) => id)).toEqual(["q", "a"]);
+  expect(chat.canRetry).toBe(false);
+  expect(startStream).toHaveBeenCalledTimes(1);
 });

@@ -236,3 +236,29 @@ it("keeps a custom answer over the edit limit unsent and says how much to shorte
   expect(send().disabled).toBe(false);
   expect(container.textContent).not.toContain("chat-message-too-long");
 });
+
+it("sends the sole edit action in one click", async () => {
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ChatChoices
+          lng="en"
+          choices={["Update timeline to quarters"]}
+          choiceAction="propose_edit"
+          disabled={false}
+          answered={false}
+          draft=""
+          onDraftChange={() => {}}
+          onReply={reply}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  expect(container.querySelectorAll("button[aria-pressed]")).toHaveLength(1);
+  expect(container.textContent).toContain("chat-choices-proposes-edit");
+  await act(async () => {
+    option().click();
+  });
+  expect(reply).toHaveBeenCalledTimes(1);
+  expect(reply).toHaveBeenCalledWith("Update timeline to quarters");
+});

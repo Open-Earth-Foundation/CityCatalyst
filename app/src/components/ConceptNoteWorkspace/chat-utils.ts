@@ -30,9 +30,12 @@ export function readConceptNoteChoiceAction(
 export function readConceptNoteChoices(value: unknown): string[] | undefined {
   if (!isRecord(value) || value.name !== "concept_note_ask_question") return;
   const options = value.options;
+  // A confirmation for one document change has a single option.
+  const minimum =
+    readConceptNoteChoiceAction(value.on_answer) === "propose_edit" ? 1 : 2;
   if (
     !Array.isArray(options) ||
-    options.length < 2 ||
+    options.length < minimum ||
     options.length > 12 ||
     !options.every(
       (option): option is string =>
@@ -127,6 +130,10 @@ export function readConceptNoteToolVisual(
   });
 }
 
+export function readConceptNoteReplyInProgress(payload: unknown): boolean {
+  return isRecord(payload) && payload.reply_in_progress === true;
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -164,6 +171,7 @@ export function readConceptNoteThreadMessages(
               choices: readConceptNoteChoices({
                 name: "concept_note_ask_question",
                 options: message.choices,
+                on_answer: message.choice_action,
               }),
               choiceAction: readConceptNoteChoiceAction(message.choice_action),
             }

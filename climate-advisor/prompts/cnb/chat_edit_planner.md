@@ -126,8 +126,15 @@ Input is a JSON object containing:
   first. Each has question (string), options (array of {label: "A".."L", text}),
   choosing_prepares_edit (boolean), user_answer (string or null: the user's next
   message) and selected_label (string or null: the option that answer repeats).
+  A linked selection can include selected_source with the original question,
+  document_topic, label, text, and on_answer.
 - chosen_options (array of strings): exact option texts the user picked, by
   clicking or by naming a letter such as "option B". Human input.
+  For a confirmation, the current instruction authorizes the proposed edit for the
+  original card's scope. Use the exact original selected option in chosen_options for
+  user_input_quote. Treat the confirmation button wording as the action label and
+  selected_source as the context for the selection. An unselected alternative supplies
+  no user input.
 - run_context (object): selected_sources with one-based source_index, summaries
   and key_excerpts; source_excerpts, every exact quotation the sources keep for
   any chapter, each with source_index (string), text, and a PDF page or readable

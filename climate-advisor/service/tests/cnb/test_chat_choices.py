@@ -26,6 +26,22 @@ def test_invalid_options_are_rejected(options):
         ConceptNoteQuestion(message="Which next step?", options=options)
 
 
+def test_only_edit_cards_accept_one_option():
+    payload = {"message": "Prepare this?", "options": ["Use quarters"]}
+    edit = {**payload, "on_answer": "propose_edit"}
+    result = ConceptNoteQuestion.model_validate(edit).model_dump_json()
+    accepted = stop_at_valid_question(
+        None, [tool_result("concept_note_ask_question", result)]
+    )
+    assert accepted.is_final_output is True
+    assert saved_question_choices(
+        [{"name": "concept_note_ask_question", "result_json": json.loads(result)}]
+    ) == ["Use quarters"]
+    for reply in ({}, {"on_answer": "reply"}):
+        with pytest.raises(ValidationError):
+            ConceptNoteQuestion.model_validate({**payload, **reply})
+
+
 def test_complete_rewrites_fit_in_options():
     rewrites = ["Rewrite one. " * 40, "Rewrite two. " * 40]
     question = ConceptNoteQuestion(message="Which rewrite?", options=rewrites)

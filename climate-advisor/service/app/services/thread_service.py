@@ -46,7 +46,7 @@ class ThreadService:
         return thread
 
     async def get_thread(
-        self, thread_id: Union[str, UUID], *, for_update: bool = False
+        self, thread_id: Union[str, UUID], *, for_update: bool = False, for_share: bool = False
     ) -> Thread | None:
         """Load a thread, optionally serializing history writes in its transaction."""
         # Validate UUID format before querying
@@ -67,6 +67,8 @@ class ThreadService:
         query = select(Thread).where(Thread.thread_id == thread_id)
         if for_update:
             query = query.with_for_update().execution_options(populate_existing=True)
+        elif for_share:
+            query = query.with_for_update(read=True).execution_options(populate_existing=True)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
@@ -74,7 +76,9 @@ class ThreadService:
         thread.last_updated = datetime.now(timezone.utc)
         await self.session.flush()
 
-    async def get_thread_for_user(self, thread_id: Union[str, UUID], user_id: str) -> Thread:
+    async def get_thread_for_user(
+        self, thread_id: Union[str, UUID], user_id: str, *, for_share: bool = False,
+    ) -> Thread:
         """Return the thread if it is owned by ``user_id``.
 
         Raises:
@@ -88,7 +92,10 @@ class ThreadService:
             user_id
         )
         
-        thread = await self.get_thread(thread_id)
+        thread = (
+            await self.get_thread(thread_id, for_share=True)
+            if for_share else await self.get_thread(thread_id)
+        )
         if thread is None:
             logger.warning(
                 "Thread not found - thread_id=%s, user_id=%s",

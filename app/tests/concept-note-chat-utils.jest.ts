@@ -285,3 +285,53 @@ it("trims option labels so they match the trimmed answer that is sent", () => {
     }),
   ).toEqual(["Use quarters", "Use months"]);
 });
+
+it("accepts a single edit option in live and saved replies only", () => {
+  const options = ["Update timeline to quarters"];
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options,
+      on_answer: "propose_edit",
+    }),
+  ).toEqual(options);
+  // A reply card still needs two answers, with or without the explicit action.
+  expect(
+    readConceptNoteChoices({ name: "concept_note_ask_question", options }),
+  ).toBeUndefined();
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options,
+      on_answer: "reply",
+    }),
+  ).toBeUndefined();
+  const [restored] = readConceptNoteThreadMessages({
+    messages: [
+      {
+        message_id: "confirm",
+        role: "assistant",
+        text: "Prepare this change?",
+        choices: options,
+        choice_action: "propose_edit",
+      },
+    ],
+  });
+  expect(restored.questionMessageId).toBe("confirm");
+  expect(restored.choices).toEqual(options);
+  expect(restored.choiceAction).toBe("propose_edit");
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: [],
+      on_answer: "propose_edit",
+    }),
+  ).toBeUndefined();
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: Array.from({ length: 13 }, (_, index) => `Change ${index + 1}`),
+      on_answer: "propose_edit",
+    }),
+  ).toBeUndefined();
+});

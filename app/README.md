@@ -13,12 +13,14 @@ to the latest chat; the unsent card text stays in place. Picking an option while
 the card's own field holds text moves that text into the main composer, after any
 text already there. While the workspace is open, **Use draft** retrieves other
 unused inline text into the main composer for that chat.
-Most cards only answer a question: picking an option never starts a document
-change. A card that prepares a change says so above its options ("Choosing an
-answer prepares a proposed change for you to review"). If an answer never reached
-Clima, it is marked **Not sent**, Retry stays available and the card can be
-answered again. If the chat reopens with your last message unanswered (for
-example after a reload during a reply), Clima offers **Retry** for it.
+Most cards only answer a question. When a preference is about the document,
+Clima follows the answer with an action that prepares a proposed edit for review.
+A card that prepares a change says so above its options. If an answer never
+reached Clima, it is marked **Not sent**, Retry stays available and the card can
+be answered again. Reopening a chat during a reply shows **Clima is still
+replying…** and loads the saved answer when ready. An overlapping send is
+declined and shows the same status. **Retry** is available when Clima is idle
+and the latest saved message has no reply.
 A tall card opens at its question and first options rather than at its top.
 Chat messages and custom answers are limited to the 8,000-character edit-request
 limit: longer text stays in the field with a hint and cannot be sent.
@@ -36,8 +38,12 @@ HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
 asks them to reload the workspace. Other non-transient 4xx responses ask the
 user to check the request. These errors clear any previous failed turn and do
 not offer Retry. HTTP 408/429, server errors, transport failures, and stream
-failures remain retryable. A context-not-ready response also clears a previous
-failed turn because Clima answered successfully and declined that new request.
+failures remain retryable. If an accepted reply stream disconnects, the workspace
+checks history for the active or completed reply. A context-not-ready response
+also clears a previous failed turn because Clima declined that new request.
+The Next.js proxy retries non-streaming Climate Advisor GET and HEAD requests
+on supported connection errors and timeouts. It allows up to three attempts, with
+five seconds per attempt and a 16-second total deadline.
 
 ## Prerequisites
 

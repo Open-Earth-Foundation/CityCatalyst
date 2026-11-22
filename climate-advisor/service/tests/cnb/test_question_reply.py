@@ -303,7 +303,8 @@ async def postgres_store():
         await connection.execute(
             text(f'''CREATE TABLE "{schema}".threads (
             thread_id UUID PRIMARY KEY, user_id VARCHAR NOT NULL, inventory_id VARCHAR,
-            concept_note_run_id UUID, context JSONB, title VARCHAR,
+            concept_note_run_id UUID, reply_turn_id UUID, reply_turn_expires_at TIMESTAMPTZ,
+            context JSONB, title VARCHAR,
             created_at TIMESTAMPTZ DEFAULT now(), last_updated TIMESTAMPTZ DEFAULT now())''')
         )
         await connection.execute(
@@ -415,3 +416,23 @@ async def test_postgres_expired_writer_racing_retry_saves_one_answer(postgres_st
             )
         )
         assert len(replies) == 1
+
+@pytest.mark.asyncio
+async def test_postgres_simultaneous_turn_claims_accept_one(postgres_store):
+    from app.services.cnb.chat_turn import claim_reply_turn
+
+    thread_id, _ = await seed_card(postgres_store)
+
+    async def claim():
+        async with postgres_store() as session, session.begin():
+            thread = await ThreadService(session).get_thread(thread_id, for_update=True)
+            return await claim_reply_turn(session, thread)
+
+    outcomes = await asyncio.gather(claim(), claim(), return_exceptions=True)
+    accepted = [result for result in outcomes if not isinstance(result, BaseException)]
+    rejections = [result for result in outcomes if isinstance(result, HTTPException)]
+    assert len(accepted) == len(rejections) == 1
+    assert rejections[0].status_code == 409
+    assert rejections[0].detail["code"] == "concept_note_reply_in_progress"
+    async with postgres_store() as session:
+        assert (await session.get(Thread, thread_id)).reply_turn_id == accepted[0]

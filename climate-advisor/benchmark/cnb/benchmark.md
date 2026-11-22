@@ -28,7 +28,8 @@ The code in `golden_set/`:
 | `core.py` | Loads and checks the fixtures; stage 1 (extraction) judge input and scoring; shared scoring helpers. |
 | `chapters.py` | Stage 2: runs the production drafter and support check per chapter, then scores. |
 | `verification.py` | Stage 3: plants defects in the reference draft, runs the production validator, then scores. |
-| `editing.py` | Stage 4: runs the production edit planner on each editing case, then scores. |
+| `editing.py` | Stage 4: runs edit-planner and suggested-answer cases, then scores them together. |
+| `chat_options.py` | Runs the configured CNB chat prompt, question tool, and reply-card handling against frozen evidence. |
 | `workspace.py` | Builds the in-memory workspace the pipeline normally reads from the database. |
 | `judge.py` | Calls the judge model with a stage's judge prompt. |
 | `../utils/usage.py` | Shared OpenRouter usage attribution; unavailable cost is explicit. |
@@ -85,11 +86,21 @@ Pages:
 
 ## Run the benchmark
 
+Harbor Point's Editing stage covers street-tree wording, project summary openings,
+monitoring indicators, and a timeline format choice with a follow-up confirmation.
+The typed Option B case exercises the production edit planner and validation.
+Both paths use the checked-in source and reference draft. Python checks the card
+actions, edit attempts, and exact option replacement and quote. The Editing judge
+checks the grounding of every answer, the timeline follow-up, and edit fidelity.
+
 From `climate-advisor/`:
 
 ```bash
 # Offline tests, no model calls.
 uv run pytest benchmark/cnb/tests -q
+
+# Targeted live run after approval for provider usage.
+PYTHONPATH=service:. uv run python -m benchmark.cnb.scripts.evaluate --fixture harbor-point-heat-resilience --stage editing --label cc1240-suggested-answers
 
 # Full run: calls the configured models; runtime and cost depend on configuration.
 # Needs OPENROUTER_API_KEY in climate-advisor/.env.

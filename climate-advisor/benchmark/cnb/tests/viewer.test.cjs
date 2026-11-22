@@ -1,5 +1,5 @@
 /**
- * Exercise the static viewer's chapter-pair rendering and legacy snapshots.
+ * Exercise the static viewer's report rendering and legacy snapshots.
  * Reads ../viewer/app.js in a browser stub; no network, files written, or providers.
  * From repository root: node --test climate-advisor/benchmark/cnb/tests/viewer.test.cjs
  */
@@ -25,7 +25,7 @@ const context = vm.createContext({
 // Expose existing functions inside the test only, keeping browser assets standalone.
 vm.runInContext(source.replace(/\}\)\(\);\s*$/, `
   globalThis.viewer = { extractionFacts, extractionGate, factStats, stageDocCard,
-    goldenTab, extractionTab, verdictDiff, usageTotals, runTotals, indexTotals, usageDiff, costText,
+    goldenTab, extractionTab, editingTab, verdictDiff, usageTotals, runTotals, indexTotals, usageDiff, costText,
     setRun: (run) => { D = run; } };
 })();`), context);
 const viewer = context.viewer;
@@ -135,6 +135,41 @@ test("changed editing verdicts link to the corresponding saved case", () => {
   const html = viewer.verdictDiff({ run: { id: "baseline" }, fixtures: [before] },
     { run: { id: "candidate" }, fixtures: [after] });
   assert.match(html, /\?run=candidate#\/f\/test-city\/editing\/case-rename/);
+});
+
+test("editing renders escaped suggested answers with verdicts and linked quotes", () => {
+  const f = fixture();
+  const picked = "Use <quarters>.";
+  const unitId = "answer/timeline/1/1";
+  f.golden.editing = { cases: [{
+    id: "timeline", instruction: "Quarters or months?", expected_outcome: "question_card",
+    expected_changes: [{ id: "formats", statement: "Offer both formats." }],
+    must_preserve: [],
+  }] };
+  f.stages.editing = {
+    cases: [{
+      case_id: "timeline", outcome: "question_card", picked_option: picked,
+      chat_turns: [{ text: "Which format?", card: { options: [picked, "Use months."], on_answer: "reply" } }],
+    }],
+    report: {
+      metrics: { unsupported_answers: 1 },
+      details: { cases: [{ case_id: "timeline", outcome_ok: true, contract_failures: ["Missing follow-up"] }] },
+      judgment: { cases: [{
+        case_id: "timeline",
+        expected_changes: [{ id: "formats", verdict: "applied", reason: "Both choices.", output_refs: [{ unit_id: unitId, quote: picked }] }],
+        preserved: [],
+        changes: [{ unit_id: unitId, verdict: "supported", reason: "Matches the pick.", evidence: [{ unit_id: "picked/timeline", quote: picked }] }],
+      }] },
+    },
+  };
+  viewer.setRun({ run: { id: "candidate" }, fixtures: [f] });
+  const html = viewer.editingTab(f);
+  assert.match(html, /Chat turn 1 · reply/);
+  assert.match(html, /Picked option · Use &lt;quarters&gt;\./);
+  assert.match(html, /Unsupported answers/);
+  assert.match(html, /Missing follow-up/);
+  assert.match(html, /href="#\/f\/test-city\/editing\/case-timeline">Use &lt;quarters&gt;\./);
+  assert.doesNotMatch(html, /not found verbatim|<quarters>/);
 });
 
 test("partial and legacy prices are visible and cannot imply cost savings", () => {

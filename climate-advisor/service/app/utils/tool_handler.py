@@ -26,6 +26,7 @@ async def persist_assistant_message(
     tool_invocations: Optional[List[dict]],
     message_id: UUID | None = None,
     question_reply_claim: tuple[UUID, str] | None = None,
+    reply_turn_id: UUID | None = None,
 ) -> bool:
     """Persist the assistant message to the database with full tool metadata.
 
@@ -48,6 +49,7 @@ async def persist_assistant_message(
     try:
         # Import lazily to avoid circular dependencies.
         from app.models.db.message import Message
+        from app.services.cnb.chat_turn import reply_clock, reply_in_progress
         from app.services.cnb.question_reply import REPLY_MARKER, cnb_message_time, thread_run_id
         from app.services.message_service import MessageService
         from app.services.thread_service import ThreadService
@@ -59,8 +61,15 @@ async def persist_assistant_message(
             if thread is None or thread.user_id != user_id:
                 return False
             is_cnb = bool(thread_run_id(thread))
-            if is_cnb:
+            if is_cnb or reply_turn_id is not None:
                 thread = await thread_service.get_thread(thread_id, for_update=True)
+                if thread is None or thread.user_id != user_id:
+                    return False
+            if reply_turn_id is not None and (
+                thread.reply_turn_id != reply_turn_id
+                or not reply_in_progress(thread, await reply_clock(session))
+            ):
+                return False
             if question_reply_claim is not None:
                 reply = await session.get(Message, question_reply_claim[0])
                 marker = (

@@ -7,6 +7,8 @@
   "chat-choices-send": "Antwort senden",
   "chat-choices-proposes-edit": "Wenn Sie eine Antwort wählen, wird eine vorgeschlagene Änderung zur Prüfung vorbereitet. Nichts ändert sich, bevor Sie sie annehmen.",
   "chat-message-unsent": "Nicht gesendet",
+  "chat-reply-in-progress": "Clima antwortet noch…",
+  "chat-reply-status-unavailable": "Laden Sie den Chat neu, um nach einer Antwort zu sehen.",
   "chat-reply-missing": "Clima hat die Antwort auf Ihre letzte Nachricht nicht abgeschlossen.",
   "chat-choices-arrived_one": "Clima hat eine Frage mit {{count}} vorgeschlagenen Antwort gestellt.",
   "chat-choices-arrived_other": "Clima hat eine Frage mit {{count}} vorgeschlagenen Antworten gestellt.",

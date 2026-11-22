@@ -14,6 +14,8 @@ from app.models.responses import (
     ThreadMessageResponse,
     ThreadMessagesResponse,
 )
+from app.services.cnb.chat_turn import reply_clock, reply_in_progress
+from app.services.cnb.question_reply import thread_run_id
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.tools.concept_note_question import saved_question
@@ -121,6 +123,12 @@ async def get_thread_messages(
     thread_service = ThreadService(session)
     message_service = MessageService(session)
     thread = await thread_service.get_thread_for_user(thread_id, user_id)
+    in_progress = False
+    if thread_run_id(thread) or thread.reply_turn_id is not None:
+        # Hold a share lock through the message read so the reply status and
+        # the saved user message come from the same side of a new turn claim.
+        thread = await thread_service.get_thread_for_user(thread_id, user_id, for_share=True)
+        in_progress = reply_in_progress(thread, await reply_clock(session))
     messages = await message_service.get_thread_messages(
         thread_id=thread.thread_id,
         limit=limit,
@@ -128,6 +136,7 @@ async def get_thread_messages(
 
     return ThreadMessagesResponse(
         thread_id=thread.thread_id,
+        reply_in_progress=in_progress,
         messages=[
             ThreadMessageResponse(
                 message_id=message.message_id,

@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+from agents import ToolCallItem, ToolCallOutputItem
 from app.config import get_settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
@@ -15,10 +16,16 @@ from app.models.cnb.concept_note_edits import (
 )
 from app.persistence.concept_notes.edits import EditOperationError
 from app.services.cnb.edit_planner import bind_semantic_review
+from app.services.cnb.question_reply import referenced_options
+from app.tools.concept_note_question import ConceptNoteQuestion
 
+from benchmark.cnb.golden_set import chat_options
+from benchmark.cnb.golden_set.chat_options import saved_card
+from benchmark.cnb.golden_set.core import fixture_problems
 from benchmark.cnb.golden_set.editing import (
     case_checks,
     editing_judge_input,
+    evaluate_editing,
     run_edit_case,
     score_editing,
     validate_editing_judgment,
@@ -291,9 +298,206 @@ def test_fixture_edit_cases_cover_fill_propagate_rewrite_and_clarify(fixtures):
     for loaded in fixtures.values():
         cases = loaded.fixture.editing.cases
         refs = {chapter.chapter_ref for chapter in loaded.reference_draft.chapters}
-        assert {c.expected_outcome for c in cases} == {"edit", "clarification"}
+        assert {"edit", "clarification"} <= {c.expected_outcome for c in cases}
         assert len(cases) >= 4
         assert any(len(c.allowed_chapters) > 1 for c in cases), "a propagation case"
         for edit in cases:
             assert set(edit.allowed_chapters) <= refs
             assert edit.focused_chapter is None or edit.focused_chapter in refs
+
+
+def test_harbor_point_suggested_answer_cases_load(fixtures):
+    loaded = fixtures["harbor-point-heat-resilience"]
+    assert fixture_problems(loaded) == []
+    cases = {case.id: case for case in loaded.fixture.editing.cases}
+    assert {
+        case.id for case in cases.values() if case.expected_outcome == "question_card"
+    } == {
+        "card-street-trees",
+        "card-summary-openings",
+        "card-monitoring-indicator",
+        "card-timeline-reply",
+    }
+    assert [case.id for case in cases.values() if case.pick_first_option] == [
+        "card-timeline-reply"
+    ]
+    switch = cases["edit-switch-to-option-b"]
+    selection = switch.option_selection
+    assert selection is not None
+    a, b, _ = selection.card.options
+    card = saved_card(selection.card, "fixture-card", a)
+    assert card["selected_label"] == "A"
+    assert referenced_options([card], switch.instruction) == [a, b]
+    assert selection.card.options[selection.expected_index] == b
+
+
+def test_card_reply_fails_on_edit_attempt_or_missing_follow_up(workspace_case):
+    loaded, snapshots, _ = workspace_case
+    timeline = next(c for c in loaded.fixture.editing.cases if c.id == "card-timeline-reply")
+    card = {
+        "message": "Which format should the timeline use?",
+        "on_answer": "reply",
+        "options": ["Use quarters.", "Use months."],
+        "document_topic": "implementation timeline",
+    }
+    first = {"card": card, "text": card["message"], "tool_calls": ["concept_note_ask_question"]}
+    action = "Update implementation timeline to reflect “Use quarters.”"
+    reply = {
+        "card": {"on_answer": "propose_edit", "options": [action]},
+        "text": "Quarters. Would you like me to prepare the change for review?",
+        "tool_calls": [],
+    }
+    record = {
+        "case_id": timeline.id,
+        "outcome": "question_card",
+        "clarification": None,
+        "changes": [],
+        "edited_chapters": {},
+        "chat_turns": [first, reply],
+        "picked_option": "Use quarters.",
+        "reply_only": True,
+        "expected_followup": [action],
+    }
+    assert case_checks(timeline, record, snapshots)["contract_failures"] == []
+    payload = editing_judge_input(loaded, snapshots, [record])
+    assert {u.id for u in payload.outputs} == {
+        "answer/card-timeline-reply/1/message",
+        "answer/card-timeline-reply/1/1",
+        "answer/card-timeline-reply/1/2",
+        "answer/card-timeline-reply/2/message",
+        "answer/card-timeline-reply/2/1",
+    }
+    assert validate_editing_judgment(payload, EditingEvaluation(cases=[
+        EditCaseJudgment(
+            case_id=timeline.id,
+            expected_changes=[ExpectationJudgment(
+                id="timeline-formats-and-follow-up",
+                verdict="applied",
+                output_refs=[TextReference(
+                    unit_id="answer/card-timeline-reply/2/message",
+                    quote=reply["text"],
+                )],
+                reason="The reply offers to prepare the change.",
+            )],
+            preserved=[],
+            changes=[],
+            contradictions=[],
+        ),
+    ]))
+    reply["card"]["options"] = ["Keep the existing timeline."]
+    assert "expected the exact single follow-up action" in case_checks(
+        timeline, record, snapshots
+    )["contract_failures"]
+    reply["card"]["options"] = [action]
+    reply["tool_calls"].append("concept_note_edit_propose")
+    assert "chat attempted or produced a document edit" in case_checks(
+        timeline, record, snapshots
+    )["contract_failures"]
+    record["chat_turns"].pop()
+    assert "missing reply-only option selection and response" in case_checks(
+        timeline, record, snapshots
+    )["contract_failures"]
+
+
+@pytest.mark.asyncio
+async def test_timeline_chat_runner_publishes_confirmation_without_edit_tool(
+    workspace_case, monkeypatch, tmp_path
+):
+    loaded, _, _ = workspace_case
+    timeline = next(c for c in loaded.fixture.editing.cases if c.id == "card-timeline-reply")
+    fixture = loaded.fixture.model_copy(deep=True)
+    fixture.editing.cases = [timeline]
+    loaded = replace(loaded, fixture=fixture)
+    question = ConceptNoteQuestion(
+        message="Which format would you like?",
+        options=["Use quarters.", "Use months."],
+        document_topic="implementation timeline",
+    )
+    inputs = []
+
+    async def run(agent, messages, **_kwargs):
+        inputs.append((agent, messages))
+        if len(inputs) == 2:
+            return SimpleNamespace(new_items=[], final_output="Quarters make sense.")
+        output = question.model_dump_json()
+        return SimpleNamespace(
+            final_output=output,
+            new_items=[
+                ToolCallItem(agent, {"call_id": "question", "name": "concept_note_ask_question"}),
+                ToolCallOutputItem(agent, {"call_id": "question"}, output),
+            ],
+        )
+
+    async def judge(payload, _settings):
+        picked = next(unit for unit in payload.evidence if unit.id == f"picked/{timeline.id}")
+        assert picked.text == question.options[0]
+        action = payload.outputs[-1]
+        assert action.id == f"answer/{timeline.id}/2/1"
+        assert action.text == "Update implementation timeline to reflect “Use quarters.”"
+        return EditingEvaluation(cases=[
+            EditCaseJudgment(
+                case_id=timeline.id,
+                expected_changes=[ExpectationJudgment(
+                    id=timeline.expected_changes[0].id,
+                    verdict="partially_applied",
+                    output_refs=[TextReference(unit_id=action.id, quote=picked.text)],
+                    reason="The action names the picked format, but another answer is unsupported.",
+                )],
+                preserved=[],
+                changes=[
+                    ChangeJudgment(
+                        unit_id=unit.id,
+                        verdict="unsupported" if unit.id.endswith("/1/2") else "supported",
+                        evidence=[TextReference(unit_id=picked.id, quote=picked.text)],
+                        reason="Test answer verdict.",
+                    )
+                    for unit in payload.outputs
+                ],
+                contradictions=[],
+            )
+        ])
+
+    monkeypatch.setattr(chat_options.Runner, "run", run)
+    monkeypatch.setattr(
+        chat_options, "build_openrouter_client_options",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            base_url="https://example.invalid", kwargs={"api_key": "offline"}
+        ),
+    )
+    report = await evaluate_editing(loaded, get_settings(), tmp_path, judge=judge)
+    (first_agent, first_messages), (second_agent, second_messages) = inputs
+    assert {tool.name for tool in first_agent.tools} == {
+        "concept_note_ask_question", "concept_note_edit_propose",
+    }
+    assert [tool.name for tool in second_agent.tools] == ["concept_note_ask_question"]
+    assert first_messages[-1]["content"] == timeline.instruction
+    assert second_messages[-2]["content"] == question.options[0]
+    assert "Update implementation timeline to reflect “Use quarters.”" in second_messages[-1]["content"]
+    assert report.integrity_failures == [] and report.evaluation_errors == []
+    assert report.metrics["case_pass_rate"] == 0
+    assert report.metrics["expected_change_rate"] == 1
+    assert report.metrics["unsupported_changes"] == 0
+    assert report.metrics["unsupported_answers"] == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("minimal_diff", [False, True])
+async def test_option_switch_checks_verbatim_text_and_quote(workspace_case, minimal_diff):
+    loaded, snapshots, run_context = workspace_case
+    switch = next(c for c in loaded.fixture.editing.cases if c.id == "edit-switch-to-option-b")
+    selection = switch.option_selection
+    assert selection is not None
+    a, b, _ = selection.card.options
+    snapshot = next(s for s in snapshots if s.chapter_ref == switch.focused_chapter)
+    before = "The project will deliver" if minimal_diff else selection.before
+    after = "Planned measures include" if minimal_diff else b
+    planner = planner_returning(user_edit(snapshot, before, after, b))
+    record = await run_edit_case(
+        switch, loaded, get_settings(), snapshots, run_context, planner=planner
+    )
+    kwargs = planner.plan.await_args.kwargs
+    assert kwargs["chosen_options"] == [a, b]
+    assert kwargs["question_cards"][0]["selected_label"] == "A"
+    assert case_checks(switch, record, snapshots)["contract_failures"] == []
+    record["changes"][0]["user_input_quote"] = switch.instruction
+    assert case_checks(switch, record, snapshots)["contract_failures"]

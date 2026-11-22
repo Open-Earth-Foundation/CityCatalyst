@@ -365,6 +365,7 @@ describe("shared caller integration", () => {
       fetchMock.mockRejectedValueOnce(fetchError);
 
       const result = await callClimateAdvisorChat({
+        method: "POST",
         path: "/v1/concept-notes/run?embedded=private",
         searchParams: { user_id: "private-user" },
         headers: { Authorization: "Bearer private-token" },
@@ -382,7 +383,7 @@ describe("shared caller integration", () => {
       expect(logger.warn).toHaveBeenCalledTimes(1);
       expect(logger.warn).toHaveBeenCalledWith(
         {
-          method: "GET",
+          method: "POST",
           path: "/v1/concept-notes/run",
           error_name: "TypeError",
           cause_code: code,

@@ -16,6 +16,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.persistence.concept_notes.context_bundle import normalize_bundle
+from app.services.cnb.question_reply import thread_run_id
 from app.services.thread_service import ThreadService
 from app.utils.concept_note_context import extract_concept_note_run_id
 from fastapi import HTTPException
@@ -57,13 +58,13 @@ async def require_chat_context_ready(
     user_id: str,
     context: Any,
     options: dict[str, Any] | None,
-) -> None:
+) -> str | None:
     """Validate the same request/thread CNB scope used by the streaming handler.
 
     Raise 409 with ``concept_note_context_not_ready`` for pending, failed, or
     stale context. Explicit run scope must match the supplied thread. Ready
     city-only runs are supported. Ownership and storage errors retain distinct
-    statuses; no user message or agent is created here.
+    statuses. Return the validated run ID when the turn is scoped to CNB.
     """
     requested_run_id = extract_concept_note_run_id(context, options)
     if session_factory is None:
@@ -77,7 +78,7 @@ async def require_chat_context_ready(
             thread = await ThreadService(session).get_thread_for_user(
                 thread_id, user_id
             )
-            run_id = requested_run_id or extract_concept_note_run_id(thread.context)
+            run_id = requested_run_id or thread_run_id(thread)
             if run_id is None:
                 return
             try:
@@ -143,6 +144,7 @@ async def require_chat_context_ready(
                         "message": "Concept Note document context is not ready. Review context and retry when preparation finishes.",
                     },
                 )
+            return run_id
     except (OSError, SQLAlchemyError, ValueError) as exc:
         logger.exception("Failed to validate Concept Note chat readiness")
         raise HTTPException(503, detail={"code": "cnb_storage_unavailable"}) from exc

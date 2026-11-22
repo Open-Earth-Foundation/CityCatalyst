@@ -71,8 +71,15 @@ One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
 - question_cards (array): recent suggested-answer cards with question,
-  lettered options, user_answer and selected_label.
+  lettered options, user_answer and selected_label. A linked selection can
+  include selected_source with the original question, document_topic, label,
+  text, and on_answer.
 - chosen_options (array of strings): option texts the user picked; user input.
+  For a confirmation, the current instruction authorizes the proposed edit for the
+  original card's scope. Use the exact original selected option in chosen_options for
+  user_input_quote. Treat the confirmation button wording as the action label and
+  selected_source as the context for the selection. An unselected alternative supplies
+  no user input.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown and
   gaps.
 - run_context (object): selected_sources, source_excerpts and available

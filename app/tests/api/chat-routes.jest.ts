@@ -574,6 +574,7 @@ describe("Chat routes", () => {
     "concept_note_context_not_ready",
     "concept_note_question_stale",
     "concept_note_thread_mismatch",
+    "concept_note_reply_in_progress",
   ])(
     "preserves the CNB %s rejection as HTTP 409 with its stable code",
     async (code) => {
@@ -782,6 +783,7 @@ describe("Chat routes", () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({
         thread_id: "thread-1",
+        reply_in_progress: true,
         messages: [
           {
             message_id: "message-1",
@@ -804,6 +806,7 @@ describe("Chat routes", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       thread_id: "thread-1",
+      reply_in_progress: true,
       messages: [
         {
           message_id: "message-1",

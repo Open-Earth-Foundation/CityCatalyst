@@ -51,7 +51,7 @@
  *       401:
  *         description: Unauthorized
  *       409:
- *         description: CNB context is not ready (concept_note_context_not_ready), a draft overview is unavailable (concept_note_draft_overview_unavailable), the selected question is stale (concept_note_question_stale), or another chat is now the run's active chat (concept_note_thread_mismatch).
+ *         description: CNB context is not ready (concept_note_context_not_ready), a draft overview is unavailable (concept_note_draft_overview_unavailable), the selected question is stale (concept_note_question_stale),, another chat is now the run's active chat (concept_note_thread_mismatch), or Clima is still replying (concept_note_reply_in_progress).
  *       422:
  *         description: A CNB message cannot form a document edit request, for example because it exceeds 8,000 characters. Nothing is saved.
  *       502:
@@ -76,6 +76,7 @@ import { apiHandler } from "@/util/api";
 // Conflict codes the Concept Note chat handles; other CA errors stay opaque.
 const FORWARDED_CONFLICT_CODES = new Set([
   "concept_note_context_not_ready",
+  "concept_note_reply_in_progress",
   "concept_note_draft_overview_unavailable",
   "concept_note_question_stale",
   "concept_note_thread_mismatch",

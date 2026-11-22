@@ -1,7 +1,7 @@
 """Present a CNB question in the assistant message without changing the document."""
 
 import logging
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal, Self
 
 from agents import function_tool
 from pydantic import (
@@ -10,6 +10,7 @@ from pydantic import (
     StringConstraints,
     ValidationError,
     field_validator,
+    model_validator,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,9 +27,16 @@ class ConceptNoteQuestion(BaseModel):
     message: Annotated[
         str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4000)
     ]
-    options: list[Answer] = Field(min_length=2, max_length=12)
+    options: list[Answer] = Field(min_length=1, max_length=12)
     # Cards saved before on_answer existed only ever answered the question.
     on_answer: OnAnswer = "reply"
+    # Names the draft passage a reply option would change; server-owned cards may omit it.
+    document_topic: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=160)
+        ]
+        | None
+    ) = None
 
     @field_validator("options")
     @classmethod
@@ -38,22 +46,33 @@ class ConceptNoteQuestion(BaseModel):
             raise ValueError("Answers must be distinct")
         return values
 
+    @model_validator(mode="after")
+    def require_reply_choices(self) -> Self:
+        """A reply card asks a question with at least two suggested answers."""
+        if self.on_answer == "reply" and len(self.options) < 2:
+            raise ValueError("Reply cards require at least two answers")
+        return self
 
-def saved_question(tools: object) -> ConceptNoteQuestion | None:
-    """Read the validated card from history, never raw tool results."""
+
+def saved_question_invocation(tools: object) -> dict[str, Any] | None:
+    """Return the newest saved question invocation, even when its card is invalid."""
     if not isinstance(tools, list):
         return None
     for tool in reversed(tools):
-        if (
-            not isinstance(tool, dict)
-            or tool.get("name") != "concept_note_ask_question"
-        ):
-            continue
-        try:
-            return ConceptNoteQuestion.model_validate(tool.get("result_json"))
-        except ValidationError:
-            return None
+        if isinstance(tool, dict) and tool.get("name") == "concept_note_ask_question":
+            return tool
     return None
+
+
+def saved_question(tools: object) -> ConceptNoteQuestion | None:
+    """Read the validated card from history, never raw tool results."""
+    invocation = saved_question_invocation(tools)
+    if invocation is None:
+        return None
+    try:
+        return ConceptNoteQuestion.model_validate(invocation.get("result_json"))
+    except ValidationError:
+        return None
 
 
 def saved_question_choices(tools: object) -> list[str] | None:
@@ -87,17 +106,21 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     """End this turn with an interactive question inside the assistant message.
 
     message contains your concise user-facing explanation and ONE question as
-    Markdown. options contains 2-12 contextual answer texts as plain text, without
-    letter prefixes or Markdown. The UI adds A/B/C labels and a free-text answer automatically.
+    Markdown. options contains 2-12 answers for reply, 1-12 changes for propose_edit,
+    as contextual plain text, without letter prefixes or Markdown. The UI adds A/B/C
+    labels and a free-text answer automatically.
     on_answer says what choosing an option does, and the UI tells the user:
     "reply" (default choice) only answers the question; choosing an option then
-    cannot start a document change in the next turn. Use "propose_edit" only
-    when the user already asked to change the document and the card just
-    settles how; choosing then prepares a proposed change for review, never
-    applies it. Every "propose_edit" option is a change; never add a
-    "keep unchanged" or "not now" option to it. Rewrites the user asked to
-    "choose from" are "reply" unless they asked to put the chosen one into the
-    document.
+    cannot start a document change in the next turn. Use propose_edit after an
+    edit request that needs a choice, or to offer the one change selected on a
+    document-topic reply card. Selecting prepares a proposal for review. Each
+    option must describe a change. Never add a "keep unchanged" or "not now"
+    option to it. Rewrites the user asked to "choose from" are "reply" unless
+    they asked to put the chosen one into the document.
+    For a reply card whose options are concrete directions for changing this draft,
+    set document_topic to the short name of the document passage, section, content,
+    or format at issue. Leave it null for navigation, advice, evidence-gathering steps
+    and other informational choices.
     Use when concrete choices make a clarification or next-step decision
     easier for the user, and always when the user asks for options or
     alternatives to choose from, such as rewrites; then each option holds one
@@ -108,7 +131,7 @@ async def concept_note_ask_question(question: ConceptNoteQuestion) -> str:
     Do not use when alternatives are for discussion only or the user says they
     are not choosing yet, even if they say "options" or "alternatives".
     Do not use for direct answers, acknowledgements, or open-ended questions.
-    It is optional, including after a previous choice.
+    When the runtime supplies a follow-up option, use it exactly as the sole propose_edit option.
     It only presents choices; it never edits the document or submits anything.
     """
     logger.info("Presenting CNB question with %d options", len(question.options))

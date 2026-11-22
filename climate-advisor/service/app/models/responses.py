@@ -30,6 +30,7 @@ class ThreadMessageResponse(BaseModel):
 class ThreadMessagesResponse(BaseModel):
     thread_id: UUID
     messages: list[ThreadMessageResponse]
+    reply_in_progress: bool = False
 
 
 class ProblemDetails(BaseModel):

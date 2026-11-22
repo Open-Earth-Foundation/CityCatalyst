@@ -294,6 +294,7 @@ export function ConceptNoteChatPanel({
   const {
     connection,
     error: chatError,
+    replyStatus,
     canRetry,
     overviewFailed,
     historyLoading,
@@ -311,6 +312,10 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
+    onObservedReplyEnd: () => {
+      void edits.refresh();
+      onDraftOverviewComplete?.();
+    },
     // The chat list then shows the newer chat and offers a way back to it.
     onThreadInactive: chatThreads.refresh,
   });
@@ -327,6 +332,7 @@ export function ConceptNoteChatPanel({
     !threadId ||
     historyLoading ||
     isGenerating ||
+    Boolean(replyStatus) ||
     chatThreads.busy;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
@@ -877,6 +883,11 @@ export function ConceptNoteChatPanel({
               </HStack>
             )}
           </>
+        )}
+        {replyStatus && (
+          <Text role="status" fontSize="label.sm" color="content.secondary">
+            {replyStatus}
+          </Text>
         )}
       </VStack>
 

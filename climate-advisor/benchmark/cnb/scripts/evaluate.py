@@ -8,8 +8,8 @@ Four stages, each run once per fixture:
    requirements, and missing-information gaps. Requires extraction.
 3. verification: the production chapter validator runs on a frozen reference
    draft with seeded defects; the judge maps findings to defects.
-4. editing: the production edit planner applies chat edit requests to the frozen
-   reference draft; Python diffs chapters, the judge checks fidelity.
+4. editing: runs the edit planner and suggested-answer chat using the frozen
+   reference draft; Python checks exact contracts, the judge checks fidelity.
 
 Inputs:
 - --fixtures-dir: versioned fixtures (default benchmark/cnb/fixtures).
@@ -36,7 +36,8 @@ Outputs (in <results-dir>/runs/<run-id>/; no database writes):
   commit, and per-stage usage: wall time, requests, tokens, and the cost
   OpenRouter reports (per agent too). No full source text.
 - outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
-  verification/seeded_draft.json and findings.json, editing/cases.json, and
+  verification/seeded_draft.json and findings.json, editing/cases.json (edits
+  and chat turns), and
   <stage>/judgment.json for review.
 - viewer.js, and the refreshed viewer at <results-dir>/index.html (see
   benchmark/cnb/scripts/publish.py). Open it to browse and compare runs.
@@ -283,6 +284,7 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         "edit_planner": _model_summary(
             models.cnb_chat_edit_planner or models.cnb_source_synthesizer
         ),
+        "cnb_chat": _model_summary(models.cnb_chat or models.agentic_flow or models.orchestrator),
         "judge": _model_summary(models.cnb_golden_set_judge),
     }
     args.delivery["fingerprints"] = evaluation_fingerprints(

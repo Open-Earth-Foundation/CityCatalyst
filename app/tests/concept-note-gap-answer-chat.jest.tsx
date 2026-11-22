@@ -427,8 +427,7 @@ describe("a sent gap answer in the chat", () => {
   it.each([
     {
       complete: false,
-      answers:
-        "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\nNot answered yet",
+      answers: "1. Which financing instrument?\nSelected category: Loan",
       instruction: NEUTRAL_REQUEST_TAIL,
     },
     {

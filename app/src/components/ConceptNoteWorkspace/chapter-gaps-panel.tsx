@@ -367,6 +367,8 @@ export function ChapterGapMarker({
         positioning={{
           placement,
           flip: true,
+          // On a phone neither side fits; let it cover the marker, not the screen edge.
+          overlap: true,
           offset: { mainAxis: 12 },
         }}
       >

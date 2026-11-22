@@ -500,7 +500,7 @@ describe("G-80 and Escape: keyboard", () => {
 });
 
 describe("G-84: the shared limit counts separators and says when text is cut", () => {
-  // "1. What amount?\nNot answered yet" is 32 characters.
+  // An untouched question reserves "\n\n1. What amount?\nNot decided yet" (33 characters).
   const ONE_FREE = {
     why_asking: "Amount.",
     questions: [{ question: "What amount?", options: [] }],
@@ -522,15 +522,17 @@ describe("G-84: the shared limit counts separators and says when text is cut", (
     expect(onAnswer.mock.calls[0][0]).toHaveLength(LIMIT);
   });
 
-  it("frees the 'Not answered yet' filler when an empty answer is filled", async () => {
+  it("frees the reserved 'Not decided yet' line when an empty answer is filled", async () => {
     fetchQuestion.mockImplementation(() => reply(200, ONE_FREE));
     await mount({ answerLimit: LIMIT });
-    // 100 - "1. What amount?\n" (16)
-    expect(customField(0)!.maxLength).toBe(84);
-    await setValue(customField(0)!, "x".repeat(84));
+    // 100 - the reserved line (33) + "Not decided yet" (15), which the answer replaces
+    expect(customField(0)!.maxLength).toBe(82);
+    await setValue(customField(0)!, "x".repeat(82));
     expect(preview()!.disabled).toBe(false);
     await act(async () => preview()!.click());
-    expect(onAnswer.mock.calls[0][0]).toHaveLength(LIMIT);
+    // "1. What amount?\n" (16) + 82; the sent text stays within the limit
+    expect(onAnswer.mock.calls[0][0]).toHaveLength(98);
+    expect(onAnswer.mock.calls[0][0].length).toBeLessThanOrEqual(LIMIT);
   });
 
   it("counts the '; ' before Other in a multiple-answer question", async () => {

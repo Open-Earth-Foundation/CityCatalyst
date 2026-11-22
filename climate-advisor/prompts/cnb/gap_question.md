@@ -27,8 +27,9 @@ previous_answers or in earlier_answers; ask only for what is still unconfirmed.
 When earlier_answers already cover every part of the gap, return an empty
 questions list. Never repeat an
 already answered question in different words. A part answered "Not decided yet"
-or "Not answered yet", or described in the chapter as not yet decided, confirmed
-or estimated, is still unconfirmed: ask for it again, and ask for it before new
+is undecided, and a part the user left untouched is omitted from the answers.
+Either, or a part described in the chapter as not yet decided, confirmed or
+estimated, is still unconfirmed: ask for it again, and ask for it before new
 follow-up details.
 Some parts cannot be answered yet because the work that produces them does not
 exist: the chapter or earlier answers say a study, assessment, survey, permit

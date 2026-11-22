@@ -316,29 +316,31 @@ export function GapAnswerForm({
   const answered =
     answers.some(Boolean) || Boolean(details.trim()) || Boolean(earlier);
   const sourceSuggestions = request.row.gap?.suggestions ?? [];
-  // A skipped question is sent apart from an explicit "Not decided yet", so
-  // neither reads as the other.
-  const missing = (index: number) =>
-    t(
-      picked(index).includes("unknown")
-        ? "gap-not-decided"
-        : "gap-not-answered",
-    );
+  // An untouched question is left out of the sent text; only a chosen
+  // "Not decided yet" says so, and the rest stays missing instead of becoming
+  // an "undecided" fact.
   const answerText = joinAnswerBlocks(
     earlier,
     questions.flatMap(({ question: text }, index) => {
       if (answers[index]) return [`${index + 1}. ${text}\n${answers[index]}`];
-      // A skipped part adds nothing once saved answers exist, so its
-      // placeholder cannot stand in for them; explicit "Not decided yet" stays.
-      if (earlier && !picked(index).includes("unknown")) return [];
-      return [`${index + 1}. ${text}\n${missing(index)}`];
+      if (!picked(index).includes("unknown")) return [];
+      return [`${index + 1}. ${text}\n${t("gap-not-decided")}`];
     }),
     details.trim(),
   );
-  const charsLeft = answerLimit - answerText.length;
+  // A left-out question still reserves its line, so answering it later cannot
+  // push the text past the limit.
+  const reserved = questions.reduce(
+    (sum, { question: text }, index) =>
+      answers[index] || picked(index).includes("unknown")
+        ? sum
+        : sum + `\n\n${index + 1}. ${text}\n${t("gap-not-decided")}`.length,
+    0,
+  );
+  const charsLeft = answerLimit - answerText.length - reserved;
   // The longest value a field may hold within the shared limit. Filling an
   // empty field also costs (a "\n\n" or "; " separator) or frees (the
-  // "Not decided yet" sent in its place) a few characters.
+  // "Not decided yet" line a left-out question reserves) a few characters.
   const fieldMax = (value: string, emptyCost: number) =>
     Math.min(
       2000,
@@ -348,7 +350,7 @@ export function GapAnswerForm({
   const customMax = (index: number) =>
     fieldMax(
       customAnswers[answerKey(index)] ?? "",
-      answers[index] ? 2 : -missing(index).length,
+      answers[index] ? 2 : -t("gap-not-decided").length,
     );
   // A textarea's maxLength drops extra text silently, so remember a paste or
   // keystroke that did not fit and say so under that field.

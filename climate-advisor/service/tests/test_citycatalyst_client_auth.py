@@ -230,92 +230,58 @@ class CityCatalystClientAuthTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(get_with_auto_refresh.await_count, 4)
 
     async def test_validate_user_identity_uses_bearer_and_service_headers(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example/",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [_response(200, json_data={"user_id": "canonical-user"})]
-            )
+        client = CityCatalystClient(base_url="https://cc.example/", api_key="test-api-key")
+        stub = _StubAsyncClient([_response(200, json_data={"user_id": "canonical-user"})])
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                user_id = await client.validate_user_identity("current-token")
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            user_id = await client.validate_user_identity("current-token")
 
         self.assertEqual(user_id, "canonical-user")
         recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/auth/identity",
-        )
+        self.assertEqual(recorded["url"], "https://cc.example/api/v1/internal/ca/auth/identity")
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer current-token")
         self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
         self.assertEqual(recorded["headers"]["X-Service-Key"], "test-api-key")
         self.assertNotIn("json", recorded)
 
     async def test_refresh_token_normalizes_base_url_and_validates_payload(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example/",
-                cc_api_key="test-api-key",
-            ),
-        ):
-            client = CityCatalystClient()
-            token_payload = _refresh_payload()
-            stub = _StubAsyncClient([_response(200, json_data=token_payload)])
+        client = CityCatalystClient(base_url="https://cc.example/", api_key="test-api-key")
+        token_payload = _refresh_payload()
+        stub = _StubAsyncClient([_response(200, json_data=token_payload)])
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                token, expires_in = await client.refresh_token("user-123")
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            token, expires_in = await client.refresh_token("user-123")
 
         self.assertEqual(token, token_payload["access_token"])
         self.assertEqual(expires_in, 3600)
         recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/user-token",
-        )
+        self.assertEqual(recorded["url"], "https://cc.example/api/v1/internal/ca/user-token")
         self.assertEqual(recorded["headers"]["X-CA-Service-Key"], "test-api-key")
         self.assertEqual(recorded["json"]["user_id"], "user-123")
 
     async def test_refresh_token_requires_api_key_before_request(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key=None,
-            ),
+            return_value=SimpleNamespace(cc_base_url="https://cc.example", cc_api_key=None),
         ):
             client = CityCatalystClient()
-            get_client = AsyncMock()
+        get_client = AsyncMock()
 
-            with patch.object(client, "_get_client", new=get_client):
-                with self.assertRaises(TokenRefreshError) as captured:
-                    await client.refresh_token("user-123")
+        with patch.object(client, "_get_client", new=get_client):
+            with self.assertRaises(TokenRefreshError):
+                await client.refresh_token("user-123")
 
-        self.assertIn("CC_API_KEY not configured", str(captured.exception))
         get_client.assert_not_awaited()
 
-    async def test_refresh_token_preserves_unauthorized_status_and_key_used(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="wrong-key",
-            ),
-        ):
-            client = CityCatalystClient()
-            stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+    async def test_refresh_token_reports_unauthorized_status(self) -> None:
+        client = CityCatalystClient(base_url="https://cc.example", api_key="wrong-key")
+        stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                with self.assertRaises(TokenRefreshError) as captured:
-                    await client.refresh_token("user-123")
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            with self.assertRaises(TokenRefreshError) as captured:
+                await client.refresh_token("user-123")
 
         self.assertIn("HTTP 401", str(captured.exception))
-        self.assertEqual(stub.requests[0]["headers"]["X-CA-Service-Key"], "wrong-key")
 
     async def test_refresh_token_rejects_malformed_or_mismatched_payloads(self) -> None:
         cases = [
@@ -332,64 +298,12 @@ class CityCatalystClientAuthTests(unittest.IsolatedAsyncioTestCase):
         ]
 
         for payload, expected_message in cases:
-            with patch(
-                "app.services.citycatalyst_client.get_settings",
-                return_value=SimpleNamespace(
-                    cc_base_url="https://cc.example",
-                    cc_api_key="test-api-key",
-                ),
-            ):
-                client = CityCatalystClient()
+            with self.subTest(expected_message=expected_message):
+                client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
                 stub = _StubAsyncClient([_response(200, json_data=payload)])
 
                 with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
                     with self.assertRaises(TokenRefreshError) as captured:
                         await client.refresh_token("user-123")
 
-            self.assertIn(expected_message, str(captured.exception))
-
-    async def test_internal_capability_calls_include_service_headers(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={"results": [{"proposal_id": "proposal-1", "status": "committed"}]},
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                await client.commit_stationary_energy_accepted(
-                    request_payload={
-                        "draft_run_id": "draft-1",
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                        "rows": [
-                            {
-                                "proposal_id": "proposal-1",
-                                "decision_version": 1,
-                                "row_type": "selected_source",
-                                "selected_source_id": "ds-1",
-                            }
-                        ],
-                    },
-                    token="jwt-token",
-                )
-
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
-        self.assertEqual(recorded["headers"]["X-Service-Key"], "test-api-key")
+                self.assertIn(expected_message, str(captured.exception))

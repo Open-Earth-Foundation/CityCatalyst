@@ -396,18 +396,27 @@ async def test_lifecycle_actions_keep_copies_independent() -> None:
             )
 
 
-async def test_source_cleanup_preserves_shared_copies_and_cleans_the_last_reference() -> (
+async def test_delete_keeps_sources_a_copy_still_uses_and_cleans_the_last_reference() -> (
     None
 ):
     async with _ca_session() as session:
-        source_id, copy_id, original_upload, copy_upload = [uuid4() for _ in range(4)]
-        for run_id in [source_id, copy_id]:
-            session.add(_run(run_id=run_id, thread_id=uuid4(), city_id=uuid4()))
+        source = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
+        copy = _run(run_id=uuid4(), thread_id=uuid4(), city_id=uuid4())
+        original_upload, copy_upload = uuid4(), uuid4()
+        session.add_all([source, copy])
         await session.flush()
-        for run_id, upload_id in [(source_id, original_upload), (copy_id, copy_upload)]:
+        for run, upload_id in [(source, original_upload), (copy, copy_upload)]:
+            session.add(
+                Thread(
+                    thread_id=run.thread_id,
+                    user_id=run.user_id,
+                    concept_note_run_id=run.run_id,
+                )
+            )
+            # A duplicated note keeps pointing at the original upload's artifact.
             session.add(
                 ConceptNoteUpload(
-                    run_id=run_id,
+                    run_id=run.run_id,
                     upload_id=upload_id,
                     uploaded_by_user_id="owner-1",
                     filename="plan.pdf",
@@ -415,12 +424,22 @@ async def test_source_cleanup_preserves_shared_copies_and_cleans_the_last_refere
                 )
             )
         await session.commit()
-        service = ConceptNoteLifecycleService(session)
-        assert await service._unshared_source_upload_ids(source_id) == []
-        original = await session.get(ConceptNoteRun, source_id)
-        await session.delete(original)
-        await session.commit()
-        assert set(await service._unshared_source_upload_ids(copy_id)) == {
+        service = ConceptNoteLifecycleService(session, workspace=AsyncMock())
+        delete_sources = AsyncMock()
+        service.run_service.cc_client.delete_concept_note_sources = delete_sources
+
+        service.run_service.get_authorized_run = AsyncMock(return_value=source)
+        await service.delete_run(
+            run_id=source.run_id, requested_user_id="owner-1", authorization="Bearer token"
+        )
+        delete_sources.assert_not_awaited()
+
+        service.run_service.get_authorized_run = AsyncMock(return_value=copy)
+        await service.delete_run(
+            run_id=copy.run_id, requested_user_id="owner-1", authorization="Bearer token"
+        )
+        delete_sources.assert_awaited_once()
+        assert set(delete_sources.await_args.args[0]) == {
             str(original_upload),
             str(copy_upload),
         }

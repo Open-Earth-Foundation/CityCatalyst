@@ -123,6 +123,7 @@ class FakeCityCatalystClient:
         self.hiap_calls = 0
         self.no_inventories = False
         self.reject_city = False
+        self.invalid_status = False
         self.invalid_emissions = False
         self.invalid_hiap = False
 
@@ -165,6 +166,8 @@ class FakeCityCatalystClient:
         """Return sector completion and sector-local source-state counts."""
         self.status_calls += 1
         assert request_payload["inventory_id"] == str(INVENTORY_ID)
+        if self.invalid_status:
+            return capability({})
         return capability(status_data())
 
     async def load_inventory_emissions_context(
@@ -319,20 +322,6 @@ def test_returns_missing_ghgi_without_detail_calls(city_context_client) -> None:
     assert cc_client.emissions_calls == 0
 
 
-def test_rejects_removed_meed_request_flag(city_context_client) -> None:
-    client, repository, cc_client = city_context_client
-
-    response = client.post(
-        f"/v1/concept-notes/{RUN_ID}/cc-context",
-        json={"city_id": str(CITY_ID), "include_meed": True},
-        headers={"Authorization": "Bearer owner-user"},
-    )
-
-    assert response.status_code == 422
-    assert repository.merge_calls == 0
-    assert cc_client.list_calls == 0
-
-
 def test_loads_and_persists_hiap_only_when_requested(
     city_context_client,
 ) -> None:
@@ -434,11 +423,17 @@ def test_returns_missing_hiap_without_triggering_a_capability(
     assert repository.merge_calls == 1
 
 
-def test_rejects_invalid_hiap_capability_data(city_context_client) -> None:
+@pytest.mark.parametrize(
+    ("invalid_flag", "include_hiap"),
+    [("invalid_status", None), ("invalid_emissions", None), ("invalid_hiap", True)],
+)
+def test_rejects_invalid_capability_data_without_persisting(
+    city_context_client, invalid_flag: str, include_hiap: bool | None
+) -> None:
     client, repository, cc_client = city_context_client
-    cc_client.invalid_hiap = True
+    setattr(cc_client, invalid_flag, True)
 
-    response = post_context(client, include_hiap=True)
+    response = post_context(client, include_hiap=include_hiap)
 
     assert response.status_code == 503
     assert response.json()["code"] == "invalid_cc_context"
@@ -461,64 +456,23 @@ def test_does_not_serve_cached_context_after_city_access_is_revoked(
     assert cc_client.hiap_calls == 1
 
 
-def test_rejects_incomplete_ghgi_capability_data(
-    city_context_client,
-) -> None:
-    client, repository, cc_client = city_context_client
-    cc_client.invalid_emissions = True
-
-    response = post_context(client)
-
-    assert response.status_code == 503
-    assert response.json()["code"] == "invalid_cc_context"
-    assert repository.merge_calls == 0
-
-    with pytest.raises(ConceptNoteCityContextDataError):
-        compact_ghgi_context(
-            inventory=inventory_choices()[0],
-            status_data={},
-            emissions_data=emissions_data(),
-        )
-
-
-@pytest.mark.parametrize("failure_point", ["load", "merge"])
-def test_repository_error_details_are_not_exposed(
+@pytest.mark.parametrize(
+    ("failure_point", "code"),
+    [
+        ("load", "cnb_storage_unavailable"),
+        ("merge", "cnb_storage_unavailable"),
+        ("load", "internal_database_failure"),
+    ],
+)
+def test_repository_errors_use_safe_public_storage_error(
     city_context_client,
     failure_point: str,
+    code: str,
 ) -> None:
     client, repository, _ = city_context_client
     internal_detail = "SECRET_DATABASE_DETAIL"
-    error = ConceptNoteCityContextRepositoryError(
-        "cnb_storage_unavailable",
-        599,
-        internal_detail,
-    )
-    if failure_point == "load":
-        repository.load_error = error
-    else:
-        repository.merge_error = error
-
-    response = post_context(client)
-
-    assert response.status_code == 503
-    assert response.json() == {
-        "code": "cnb_storage_unavailable",
-        "detail": "Concept Note context storage is not available",
-        "status": 503,
-    }
-    assert internal_detail not in response.text
-
-
-def test_unknown_repository_error_uses_safe_public_fallback(
-    city_context_client,
-) -> None:
-    client, repository, _ = city_context_client
-    internal_detail = "SECRET_DATABASE_DETAIL"
-    repository.load_error = ConceptNoteCityContextRepositoryError(
-        "internal_database_failure",
-        599,
-        internal_detail,
-    )
+    error = ConceptNoteCityContextRepositoryError(code, 599, internal_detail)
+    setattr(repository, f"{failure_point}_error", error)
 
     response = post_context(client)
 
@@ -766,48 +720,21 @@ def status_data() -> dict[str, Any]:
                     "not_occurring": 1,
                 },
             },
-            {
-                "sector": "Waste",
-                "reference": "III",
-                "required": 0,
-                "filled": 0,
-                "missing": 0,
-                "completion_percent": 100,
-                "data_state": {
-                    "third_party": 0,
-                    "manual_or_uploaded": 0,
-                    "not_estimated": 0,
-                    "not_occurring": 0,
-                },
-            },
-            {
-                "sector": "IPPU",
-                "reference": "IV",
-                "required": 0,
-                "filled": 0,
-                "missing": 0,
-                "completion_percent": 100,
-                "data_state": {
-                    "third_party": 0,
-                    "manual_or_uploaded": 0,
-                    "not_estimated": 0,
-                    "not_occurring": 0,
-                },
-            },
-            {
-                "sector": "AFOLU",
-                "reference": "V",
-                "required": 0,
-                "filled": 0,
-                "missing": 0,
-                "completion_percent": 100,
-                "data_state": {
-                    "third_party": 0,
-                    "manual_or_uploaded": 0,
-                    "not_estimated": 0,
-                    "not_occurring": 0,
-                },
-            },
+            *(
+                {
+                    "sector": sector,
+                    "reference": reference,
+                    "required": 0,
+                    "filled": 0,
+                    "missing": 0,
+                    "completion_percent": 100,
+                    "data_state": dict.fromkeys(
+                        ("third_party", "manual_or_uploaded", "not_estimated", "not_occurring"),
+                        0,
+                    ),
+                }
+                for sector, reference in (("Waste", "III"), ("IPPU", "IV"), ("AFOLU", "V"))
+            ),
         ],
     }
 

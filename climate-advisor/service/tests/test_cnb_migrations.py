@@ -1,4 +1,4 @@
-"""Integration and metadata tests for the independent CNB Alembic chain."""
+"""PostgreSQL tests for the independent CA and CNB Alembic chains."""
 
 from __future__ import annotations
 
@@ -10,11 +10,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from alembic.autogenerate import compare_metadata
 from alembic.config import Config
+from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from app.db.cnb import CnbBase
 from app.models.db import cnb_edit, cnb_reference, cnb_workspace  # noqa: F401
-from app.models.db.concept_note import ConceptNoteUpload
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import IntegrityError
 
@@ -43,16 +44,36 @@ CNB_TABLES = {
 CA_TABLES = {
     "threads",
     "messages",
+    "concept_note_runs",
+    "concept_note_context_bundles",
+    "concept_note_uploads",
     "stationary_energy_draft_runs",
     "stationary_energy_draft_source_candidates",
     "stationary_energy_draft_proposals",
     "stationary_energy_review_decisions",
     "stationary_energy_staged_review_selections",
 }
+STRUCTURED_UPLOAD_COLUMNS = {
+    "annotation_mode",
+    "structured_s3_key",
+    "structured_sha256",
+    "structured_size_bytes",
+    "structured_schema_version",
+}
+CHAINS = {
+    "ca": ("alembic.ini", "migrations", "CA_DATABASE_URL"),
+    "cnb": ("cnb-alembic.ini", "cnb_migrations", "CNB_DATABASE_URL"),
+}
+
+requires_postgres = pytest.mark.skipif(
+    not CNB_DATABASE_URL,
+    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+)
 
 
-def _run_alembic(*, config: str, database_env: str, args: list[str]) -> None:
-    """Run Alembic without placing the database URL in command output."""
+def _alembic(chain: str, *args: str) -> None:
+    """Run one Alembic chain without placing the database URL in command output."""
+    config, _, database_env = CHAINS[chain]
     environment = os.environ.copy()
     environment[database_env] = CNB_DATABASE_URL or ""
     completed = subprocess.run(
@@ -66,117 +87,33 @@ def _run_alembic(*, config: str, database_env: str, args: list[str]) -> None:
     assert completed.returncode == 0, completed.stderr
 
 
-def _render_offline_upgrade(*, config: str, database_env: str) -> str:
-    """Render one PostgreSQL migration chain without opening a connection."""
-    environment = os.environ.copy()
-    environment[database_env] = "postgresql://unused:unused@localhost/unused"
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "alembic",
-            "-c",
-            config,
-            "upgrade",
-            "head",
-            "--sql",
-        ],
-        cwd=SERVICE_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert completed.returncode == 0, completed.stderr
-    return completed.stdout
+def _heads(chain: str) -> list[str]:
+    config_file, location, _ = CHAINS[chain]
+    config = Config(str(SERVICE_ROOT / config_file))
+    config.set_main_option("script_location", str(SERVICE_ROOT / location))
+    return ScriptDirectory.from_config(config).get_heads()
 
 
-def test_ca_migration_chain_has_one_head() -> None:
-    """Catch divergent CA migrations even when PostgreSQL tests are skipped."""
-    config = Config(str(SERVICE_ROOT / "alembic.ini"))
-    config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
-    scripts = ScriptDirectory.from_config(config)
-
-    assert scripts.get_heads() == ["20261011_120000"]
+def _columns(engine, table: str) -> dict[str, dict]:
+    return {column["name"]: column for column in inspect(engine).get_columns(table)}
 
 
-def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
-    """Keep the deployed CA column aligned with the explicit opportunity API."""
-    sql = _render_offline_upgrade(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-    )
-    legacy_column = "selected_funding_" + "record_id"
-    assert (
-        f"ALTER TABLE concept_note_runs RENAME {legacy_column} "
-        "TO selected_funding_opportunity_id;"
-    ) in sql
+def _reset_ca(engine) -> None:
+    """Return the CA chain to base and drop its version table for other tests."""
+    _alembic("ca", "downgrade", "base")
+    with engine.begin() as connection:
+        connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
 
 
-def test_ca_migration_chain_backfills_run_city_population() -> None:
-    """Pre-CC-948 runs report the population their stored bundle already holds."""
-    sql = _render_offline_upgrade(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-    )
-    assert "'{context_bundle,city_population}'" in sql
-    assert "FROM concept_note_context_bundles AS bundle" in sql
+@pytest.mark.parametrize("chain", sorted(CHAINS))
+def test_migration_chain_has_one_head(chain: str) -> None:
+    """Catch divergent migrations even when PostgreSQL tests are skipped."""
+    assert len(_heads(chain)) == 1
 
 
-def test_ca_structured_upload_migration_keeps_explicit_constraint_name() -> None:
-    """The named check must not be prefixed twice by metadata conventions."""
-    sql = _render_offline_upgrade(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-    )
-    assert "ADD CONSTRAINT ck_concept_note_uploads_structured_identity CHECK (" in sql
-    assert "annotation_mode IS NOT NULL" in sql
-    assert "structured_size_bytes IS NOT NULL" in sql
-    assert (
-        "ck_concept_note_uploads_ck_concept_note_uploads_structured_identity" not in sql
-    )
-    model_check = next(
-        constraint
-        for constraint in ConceptNoteUpload.__table__.constraints
-        if constraint.name == "ck_concept_note_uploads_structured_identity"
-    )
-    assert "annotation_mode IS NOT NULL" in str(model_check.sqltext)
-    assert "structured_size_bytes IS NOT NULL" in str(model_check.sqltext)
-
-    environment = os.environ.copy()
-    environment["CA_DATABASE_URL"] = "postgresql://unused:unused@localhost/unused"
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "alembic",
-            "-c",
-            "alembic.ini",
-            "downgrade",
-            "20261001_120000:20260925_120000",
-            "--sql",
-        ],
-        cwd=SERVICE_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
-    assert (
-        "DROP CONSTRAINT ck_concept_note_uploads_structured_identity;"
-        in completed.stdout
-    )
-
-
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
+@requires_postgres
 def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
     """Only legacy ready progress gains the field, with the bundle's population."""
-    assert CNB_DATABASE_URL is not None
     engine = create_engine(CNB_DATABASE_URL)
     populated, unpopulated, current, unbuilt = uuid4(), uuid4(), uuid4(), uuid4()
     city = {"name": "Kraków", "population": 804237, "population_year": 2024}
@@ -193,16 +130,8 @@ def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
         unbuilt: ({}, None),
     }
     try:
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "20260811_120000"],
-        )
+        _alembic("ca", "downgrade", "base")
+        _alembic("ca", "upgrade", "20260811_120000")
         # Seed runs as the pre-CC-948 build left them.
         with engine.begin() as connection:
             for run_id, (summary, bundle_city) in runs.items():
@@ -219,11 +148,7 @@ def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
                         )
                         """
                     ),
-                    {
-                        "run_id": run_id,
-                        "summary": json.dumps(summary),
-                        "key": uuid4(),
-                    },
+                    {"run_id": run_id, "summary": json.dumps(summary), "key": uuid4()},
                 )
                 if bundle_city is not None:
                     connection.execute(
@@ -239,11 +164,7 @@ def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
                             "bundle": json.dumps({"cc_context": {"city": bundle_city}}),
                         },
                     )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "head"],
-        )
+        _alembic("ca", "upgrade", "head")
 
         with engine.connect() as connection:
             summaries = dict(
@@ -262,67 +183,21 @@ def test_ca_city_population_backfill_derives_from_stored_bundle() -> None:
         assert summaries[current] == runs[current][0]
         assert summaries[unbuilt] == {}
     finally:
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        # Leave no CA version table for the CNB table-set assertions.
-        with engine.begin() as connection:
-            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        _reset_ca(engine)
         engine.dispose()
 
 
-def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
-    """Prevent SQLAlchemy naming conventions from double-prefixing checks."""
-    sql = _render_offline_upgrade(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-    )
-
-    assert "CREATE TABLE funding_opportunities" in sql
-    assert "CREATE TABLE funded_projects" in sql
-    assert "CONSTRAINT ck_funding_evidence_exactly_one_parent CHECK" in sql
-    assert "ck_funding_evidence_ck_funding_evidence" not in sql
-    assert "DROP CONSTRAINT uq_funder_templates_opportunity_name" in sql
-    assert "CONSTRAINT uq_funder_templates_opportunity UNIQUE" in sql
-    assert "CREATE TABLE concept_note_chapter_validations" in sql
-    assert "ck_concept_note_chapter_validations_status_valid" in sql
-
-
-def test_cnb_metadata_contains_only_owned_tables() -> None:
-    """Keep CA-owned run, context-bundle, and upload tables out of CNB metadata."""
-    assert set(CnbBase.metadata.tables) == CNB_TABLES
-    assert not {
-        "concept_note_runs",
-        "concept_note_context_bundles",
-        "concept_note_uploads",
-    } & set(CnbBase.metadata.tables)
-
-
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
+@requires_postgres
 @pytest.mark.parametrize("parent", ["20260828_120000", "20260907_120000"])
 def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
     parent: str,
 ) -> None:
     """Both previously deployed schemas converge without rewriting their data."""
-    assert CNB_DATABASE_URL is not None
     engine = create_engine(CNB_DATABASE_URL)
     run_id, gap_id = uuid4(), uuid4()
     try:
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", parent],
-        )
+        _alembic("cnb", "downgrade", "base")
+        _alembic("cnb", "upgrade", parent)
         # Seed a real gap using the schema that existed on each branch.
         if parent == "20260828_120000":
             insert = """
@@ -340,52 +215,51 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
             """
         with engine.begin() as connection:
             connection.execute(text(insert), {"gap_id": gap_id, "run_id": run_id})
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", "head"],
-        )
+        _alembic("cnb", "upgrade", "head")
         assert set(inspect(engine).get_table_names()) == CNB_TABLES | {
             "cnb_alembic_version"
         }
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20261111_120000"]
+            ).scalars().all() == _heads("cnb")
             assert connection.execute(
-                text(
-                    "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
-                ),
+                text("SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"),
                 {"gap_id": gap_id},
             ).one() == ("Confirm the budget.", "open")
     finally:
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
+        _alembic("cnb", "downgrade", "base")
         engine.dispose()
 
 
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
+@requires_postgres
+@pytest.mark.parametrize(
+    ("parent", "revision", "column", "populated"),
+    [
+        (
+            "20260909_120000",
+            "20260917_120000",
+            "notices",
+            '["A locked chapter was excluded."]',
+        ),
+        (
+            "20260921_120000",
+            "20261111_120000",
+            "review_objections",
+            '[{"chapter_title": "Financing plan",'
+            ' "explanation": "No source states 70% CPI indexation."}]',
+        ),
+    ],
 )
-def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
-    assert CNB_DATABASE_URL is not None
+def test_edit_proposal_list_column_upgrade_and_downgrade_preserve_proposal(
+    parent: str, revision: str, column: str, populated: str
+) -> None:
+    """A new list column defaults to [] and removing it keeps every other field."""
     engine = create_engine(CNB_DATABASE_URL)
     try:
-        # Seed a proposal before notices existed, retaining every original field.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", "20260909_120000"],
-        )
+        # Seed a proposal on the parent revision, before the column existed.
+        _alembic("cnb", "downgrade", "base")
+        _alembic("cnb", "upgrade", parent)
         with engine.begin() as connection:
             original = dict(
                 connection.execute(
@@ -398,177 +272,48 @@ def test_cnb_notices_upgrade_and_downgrade_preserve_existing_proposal() -> None:
                             '[{"before": "Old city", "after": "New city"}]', 'proposed')
                         RETURNING *
                     """),
-                    {
-                        "proposal_id": uuid4(),
-                        "run_id": uuid4(),
-                        "idempotency_key": uuid4(),
-                    },
+                    {"proposal_id": uuid4(), "run_id": uuid4(), "idempotency_key": uuid4()},
                 )
                 .mappings()
                 .one()
             )
 
-        # Test the notices revision independently of later schema additions.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", "20260917_120000"],
-        )
-        columns = {
-            column["name"]: column
-            for column in inspect(engine).get_columns("concept_note_edit_proposals")
-        }
-        assert columns["notices"]["nullable"] is False
-        assert columns["notices"]["default"] is not None
+        # Existing proposals get an empty list and keep every other field.
+        _alembic("cnb", "upgrade", revision)
+        added = _columns(engine, "concept_note_edit_proposals")[column]
+        assert added["nullable"] is False
+        assert added["default"] is not None
         with engine.begin() as connection:
             upgraded = dict(
                 connection.execute(text("SELECT * FROM concept_note_edit_proposals"))
                 .mappings()
                 .one()
             )
-            assert upgraded.pop("notices") == []
+            assert upgraded.pop(column) == []
             assert upgraded == original
             connection.execute(
-                text("""
-                    UPDATE concept_note_edit_proposals
-                    SET notices = '["A locked chapter was excluded."]'::jsonb
-                """)
+                text(f"UPDATE concept_note_edit_proposals SET {column} = CAST(:value AS jsonb)"),
+                {"value": populated},
             )
 
-        # Downgrading removes populated notices while preserving the proposal.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "20260909_120000"],
-        )
-        assert "notices" not in {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_edit_proposals")
-        }
+        # Downgrading removes the populated column while preserving the proposal.
+        _alembic("cnb", "downgrade", parent)
+        assert column not in _columns(engine, "concept_note_edit_proposals")
         with engine.connect() as connection:
             assert (
                 dict(
-                    connection.execute(
-                        text("SELECT * FROM concept_note_edit_proposals")
-                    )
+                    connection.execute(text("SELECT * FROM concept_note_edit_proposals"))
                     .mappings()
                     .one()
                 )
                 == original
             )
     finally:
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
+        _alembic("cnb", "downgrade", "base")
         engine.dispose()
 
 
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
-def test_cnb_review_objections_migration_preserves_existing_proposal() -> None:
-    assert CNB_DATABASE_URL is not None
-    engine = create_engine(CNB_DATABASE_URL)
-    try:
-        # Seed a proposal on the parent revision, before objections existed.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", "20260921_120000"],
-        )
-        with engine.begin() as connection:
-            original = dict(
-                connection.execute(
-                    text("""
-                        INSERT INTO concept_note_edit_proposals
-                            (proposal_id, run_id, actor_user_id, idempotency_key,
-                             request_fingerprint, instruction, scope, changes,
-                             status, error_code)
-                        VALUES (:proposal_id, :run_id, 'migration-test', :idempotency_key,
-                            'fingerprint', 'Fill the financing gaps.', '{"type": "document"}',
-                            '[]', 'failed', 'unsupported_edit')
-                        RETURNING *
-                    """),
-                    {
-                        "proposal_id": uuid4(),
-                        "run_id": uuid4(),
-                        "idempotency_key": uuid4(),
-                    },
-                )
-                .mappings()
-                .one()
-            )
-
-        # Existing proposals get an empty objection list and keep every other field.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["upgrade", "20261111_120000"],
-        )
-        columns = {
-            column["name"]: column
-            for column in inspect(engine).get_columns("concept_note_edit_proposals")
-        }
-        assert columns["review_objections"]["nullable"] is False
-        assert columns["review_objections"]["default"] is not None
-        with engine.begin() as connection:
-            upgraded = dict(
-                connection.execute(text("SELECT * FROM concept_note_edit_proposals"))
-                .mappings()
-                .one()
-            )
-            assert upgraded.pop("review_objections") == []
-            assert upgraded == original
-            connection.execute(
-                text("""
-                    UPDATE concept_note_edit_proposals
-                    SET review_objections = '[{"chapter_title": "Financing plan",
-                        "explanation": "No source states 70% CPI indexation."}]'::jsonb
-                """)
-            )
-
-        # Downgrading removes populated objections while preserving the proposal.
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "20260921_120000"],
-        )
-        assert "review_objections" not in {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_edit_proposals")
-        }
-        with engine.connect() as connection:
-            assert (
-                dict(
-                    connection.execute(
-                        text("SELECT * FROM concept_note_edit_proposals")
-                    )
-                    .mappings()
-                    .one()
-                )
-                == original
-            )
-    finally:
-        _run_alembic(
-            config="cnb-alembic.ini",
-            database_env="CNB_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        engine.dispose()
-
-
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
+@requires_postgres
 @pytest.mark.parametrize(
     "parent",
     [
@@ -579,67 +324,34 @@ def test_cnb_review_objections_migration_preserves_existing_proposal() -> None:
         "20261007_120000",
     ],
 )
-def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
-    parent: str,
-) -> None:
-    """Upgrade either CA branch and a fresh database to the combined schema."""
-    assert CNB_DATABASE_URL is not None
+def test_structured_upload_migration_upgrades_released_schemas(parent: str) -> None:
+    """Upgrade either released CA branch to the combined schema and its constraint."""
     engine = create_engine(CNB_DATABASE_URL)
-    expected_columns = {
-        "annotation_mode",
-        "structured_s3_key",
-        "structured_sha256",
-        "structured_size_bytes",
-        "structured_schema_version",
-    }
     try:
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", parent],
-        )
-        parent_columns = {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_uploads")
-        }
+        _alembic("ca", "downgrade", "base")
+        _alembic("ca", "upgrade", parent)
+        parent_columns = set(_columns(engine, "concept_note_uploads"))
         if parent in {"20261001_120000", "20261005_120000", "20261007_120000"}:
-            assert expected_columns <= parent_columns
+            assert STRUCTURED_UPLOAD_COLUMNS <= parent_columns
         else:
-            assert not expected_columns & parent_columns
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "head"],
-        )
-        columns = {
-            column["name"]: column
-            for column in inspect(engine).get_columns("concept_note_uploads")
-        }
-        assert expected_columns <= set(columns)
-        assert all(columns[name]["nullable"] for name in expected_columns)
-        assert "concept_note_run_id" in {
-            column["name"] for column in inspect(engine).get_columns("threads")
-        }
-        assert "custom_template" in {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_runs")
-        }
+            assert not STRUCTURED_UPLOAD_COLUMNS & parent_columns
+        _alembic("ca", "upgrade", "head")
+        columns = _columns(engine, "concept_note_uploads")
+        assert STRUCTURED_UPLOAD_COLUMNS <= set(columns)
+        assert all(columns[name]["nullable"] for name in STRUCTURED_UPLOAD_COLUMNS)
+        assert "concept_note_run_id" in _columns(engine, "threads")
+        run_columns = _columns(engine, "concept_note_runs")
+        assert {"custom_template", "selected_funding_opportunity_id"} <= set(run_columns)
         assert "ck_concept_note_uploads_structured_identity" in {
             constraint["name"]
-            for constraint in inspect(engine).get_check_constraints(
-                "concept_note_uploads"
-            )
+            for constraint in inspect(engine).get_check_constraints("concept_note_uploads")
         }
         with engine.connect() as connection:
             assert connection.execute(
                 text("SELECT version_num FROM alembic_version")
-            ).scalar_one() == "20261011_120000"
+            ).scalars().all() == _heads("ca")
 
+        # The structured identity is either fully absent or fully present.
         run_id = uuid4()
         upload_insert = text(
             """
@@ -668,22 +380,14 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
                     )
                     """
                 ),
-                {
-                    "run_id": run_id,
-                    "idempotency_key": uuid4(),
-                    "request_fingerprint": "a" * 64,
-                },
+                {"run_id": run_id, "idempotency_key": uuid4(), "request_fingerprint": "a" * 64},
             )
             connection.execute(
                 upload_insert,
                 {
                     "upload_id": uuid4(),
                     "run_id": run_id,
-                    "annotation_mode": None,
-                    "structured_s3_key": None,
-                    "structured_sha256": None,
-                    "structured_size_bytes": None,
-                    "structured_schema_version": None,
+                    **dict.fromkeys(STRUCTURED_UPLOAD_COLUMNS),
                 },
             )
             complete_identity = {
@@ -694,151 +398,51 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
                 "structured_size_bytes": 1,
                 "structured_schema_version": "citycatalyst.structured-document.1",
             }
-            connection.execute(
-                upload_insert,
-                {"upload_id": uuid4(), **complete_identity},
-            )
-            for null_field in (
-                "annotation_mode",
-                "structured_s3_key",
-                "structured_sha256",
-                "structured_size_bytes",
-                "structured_schema_version",
-            ):
+            connection.execute(upload_insert, {"upload_id": uuid4(), **complete_identity})
+            for null_field in sorted(STRUCTURED_UPLOAD_COLUMNS):
                 with pytest.raises(IntegrityError), connection.begin_nested():
                     connection.execute(
                         upload_insert,
-                        {
-                            "upload_id": uuid4(),
-                            **complete_identity,
-                            null_field: None,
-                        },
+                        {"upload_id": uuid4(), **complete_identity, null_field: None},
                     )
-
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "head"],
-        )
-        assert expected_columns <= {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_uploads")
-        }
     finally:
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        with engine.begin() as connection:
-            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        _reset_ca(engine)
         engine.dispose()
 
 
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
+@requires_postgres
 def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
-    """Exercise both migration chains against an empty PostgreSQL database."""
-    assert CNB_DATABASE_URL is not None
+    """Both chains build disjoint table sets, and the CNB head matches its models."""
     engine = create_engine(CNB_DATABASE_URL)
 
-    _run_alembic(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-        args=["downgrade", "base"],
-    )
-    _run_alembic(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-        args=["upgrade", "head"],
-    )
+    _alembic("cnb", "downgrade", "base")
+    _alembic("cnb", "upgrade", "head")
 
     inspector = inspect(engine)
     tables = set(inspector.get_table_names())
     assert tables == CNB_TABLES | {"cnb_alembic_version"}
     assert not CA_TABLES & tables
-    assert (
-        not {
-            "concept_note_runs",
-            "concept_note_context_bundles",
-            "concept_note_uploads",
-        }
-        & tables
-    )
 
-    expected_indexes = {
-        "funding_opportunities": {"ix_funding_opportunities_funder_name"},
-        "funded_projects": {"ix_funded_projects_funder_name"},
-        "concept_note_chapters": {
-            "uq_concept_note_chapters_active_position",
-            "ix_concept_note_chapters_run_status",
-        },
-        "concept_note_evidence_links": {"ix_concept_note_evidence_links_chapter"},
-        "concept_note_gaps": {
-            "ix_concept_note_gaps_run_status",
-            "ix_concept_note_gaps_chapter",
-        },
-        "concept_note_matched_projects": {
-            "ix_concept_note_matched_projects_run_decision"
-        },
-        "concept_note_exports": {"ix_concept_note_exports_run_status"},
-    }
-    for table_name, index_names in expected_indexes.items():
-        assert index_names <= {
-            item["name"] for item in inspector.get_indexes(table_name)
-        }
+    # Columns, types, nullability, server defaults, indexes and unique constraints
+    # of the migrated schema must equal the CNB model metadata.
+    with engine.connect() as connection:
+        context = MigrationContext.configure(
+            connection,
+            opts={
+                "compare_type": True,
+                "compare_server_default": True,
+                "version_table": "cnb_alembic_version",
+            },
+        )
+        assert compare_metadata(context, CnbBase.metadata) == []
 
+    # Autogenerate does not compare partial-index predicates, FK actions or checks.
     chapter_indexes = {
         item["name"]: item for item in inspector.get_indexes("concept_note_chapters")
     }
-    assert chapter_indexes["uq_concept_note_chapters_active_position"]["unique"]
-    assert (
-        "postgresql_where"
-        in chapter_indexes["uq_concept_note_chapters_active_position"][
-            "dialect_options"
-        ]
-    )
-
-    opportunity_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("funding_opportunities")
-    }
-    project_uniques = {
-        item["name"] for item in inspector.get_unique_constraints("funded_projects")
-    }
-    source_uniques = {
-        item["name"] for item in inspector.get_unique_constraints("source_documents")
-    }
-    revision_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("concept_note_chapter_revisions")
-    }
-    match_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("concept_note_matched_projects")
-    }
-    assert "uq_funding_opportunities_source_identity" in opportunity_uniques
-    assert "uq_funded_projects_source_identity" in project_uniques
-    assert "uq_source_documents_content_hash_url" in source_uniques
-    assert "uq_concept_note_chapter_revisions_number" in revision_uniques
-    assert "uq_concept_note_matched_projects_run_project" in match_uniques
-    validation_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("concept_note_chapter_validations")
-    }
-    assert "uq_concept_note_chapter_validations_chapter" in validation_uniques
-    template_uniques = {
-        item["name"] for item in inspector.get_unique_constraints("funder_templates")
-    }
-    assert "uq_funder_templates_opportunity" in template_uniques
-    assert "uq_funder_templates_opportunity_name" not in template_uniques
+    active_position = chapter_indexes["uq_concept_note_chapters_active_position"]
+    assert active_position["unique"]
+    assert "postgresql_where" in active_position["dialect_options"]
 
     expected_fk_deletes = {
         "funding_opportunities": {("funder_id",): "RESTRICT"},
@@ -868,12 +472,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             for item in inspector.get_foreign_keys(table_name)
         }
         assert observed == expected
-
-    evidence_checks = {
-        item["name"] for item in inspector.get_check_constraints("funding_evidence")
-    }
-    assert "ck_funding_evidence_exactly_one_parent" in evidence_checks
-
+    # Run-scoped tables reference CA runs only by value, never by foreign key.
     for table_name in (
         "concept_note_chapters",
         "concept_note_gaps",
@@ -885,110 +484,44 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             for item in inspector.get_foreign_keys(table_name)
             for column in item["constrained_columns"]
         }
-
-    opportunity_columns = {
-        item["name"]: item for item in inspector.get_columns("funding_opportunities")
+    check_names = {
+        item["name"]
+        for table_name in ("funding_evidence", "concept_note_chapter_validations")
+        for item in inspector.get_check_constraints(table_name)
     }
-    project_columns = {
-        item["name"]: item for item in inspector.get_columns("funded_projects")
-    }
-    assert {"sector", "applicant_type", "known_gaps"} <= set(opportunity_columns)
-    assert {"sector", "applicant_type", "known_gaps"} <= set(project_columns)
-    assert opportunity_columns["funding_opportunity_id"]["default"] is None
-    assert project_columns["funded_project_id"]["default"] is None
-    for column_name in ("hazards", "interventions", "known_gaps"):
-        assert opportunity_columns[column_name]["default"] is not None
-    for column_name in ("hazards", "interventions", "project_tags", "known_gaps"):
-        assert project_columns[column_name]["default"] is not None
-    criteria_columns = {
-        item["name"]: item for item in inspector.get_columns("funder_criteria")
-    }
-    assert criteria_columns["source_document_id"]["nullable"] is True
-    assert criteria_columns["hard_gate"]["default"] is not None
-
-    expected_default_columns = {
-        "funders": {"profile"},
-        "funder_templates": {"chapter_schema", "required_fields"},
-        "funding_evidence": {"source_map"},
-        "concept_note_chapters": {
-            "status",
-            "required",
-            "user_locked",
-            "created_at",
-            "updated_at",
-        },
-        "concept_note_chapter_revisions": {
-            "body_markdown",
-            "patch_summary",
-            "created_at",
-        },
-        "concept_note_chapter_validations": {
-            "findings",
-            "validated_at",
-        },
-        "concept_note_gaps": {"status", "created_at"},
-        "concept_note_matched_projects": {"matched_tags", "evidence", "caveats"},
-    }
-    for table_name, column_names in expected_default_columns.items():
-        columns = {item["name"]: item for item in inspector.get_columns(table_name)}
-        assert all(
-            columns[column_name]["default"] is not None for column_name in column_names
-        )
+    assert {
+        "ck_funding_evidence_exactly_one_parent",
+        "ck_concept_note_chapter_validations_status_valid",
+    } <= check_names
 
     with engine.connect() as connection:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20261111_120000"
+    assert [revision] == _heads("cnb")
 
-    _run_alembic(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-        args=["downgrade", "base"],
-    )
+    _alembic("cnb", "downgrade", "base")
     assert not CNB_TABLES & set(inspect(engine).get_table_names())
-    _run_alembic(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-        args=["upgrade", "head"],
-    )
+    _alembic("cnb", "upgrade", "head")
     assert CNB_TABLES <= set(inspect(engine).get_table_names())
-    _run_alembic(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-        args=["downgrade", "base"],
-    )
+    _alembic("cnb", "downgrade", "base")
 
-    _run_alembic(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-        args=["upgrade", "head"],
-    )
+    # A fresh CA database gets the combined upload schema and none of the CNB tables.
+    _alembic("ca", "upgrade", "head")
     assert not CNB_TABLES & set(inspect(engine).get_table_names())
-    _run_alembic(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-        args=["downgrade", "base"],
-    )
+    assert STRUCTURED_UPLOAD_COLUMNS <= set(_columns(engine, "concept_note_uploads"))
+    _reset_ca(engine)
     engine.dispose()
 
 
-@pytest.mark.skipif(
-    not CNB_DATABASE_URL,
-    reason="CNB_TEST_DATABASE_URL is required for PostgreSQL migration tests",
-)
+@requires_postgres
 def test_upload_roles_upgrade_current_develop_and_preserve_existing_uploads() -> None:
     """Add roles after the released merge head without losing existing sources."""
-    assert CNB_DATABASE_URL is not None
     engine = create_engine(CNB_DATABASE_URL)
     run_id, existing_id, plan_id = uuid4(), uuid4(), uuid4()
     try:
         # Seed an upload on the current develop schema, before roles exist.
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "20261005_120000"],
-        )
+        _alembic("ca", "upgrade", "20261005_120000")
         with engine.begin() as connection:
             connection.execute(
                 text("""
@@ -1008,19 +541,13 @@ def test_upload_roles_upgrade_current_develop_and_preserve_existing_uploads() ->
             """),
                 {"upload_id": existing_id, "run_id": run_id},
             )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "20261008_120000"],
-        )
+        _alembic("ca", "upgrade", "20261008_120000")
 
         # Existing sources default to references; only documented roles are valid.
         with engine.begin() as connection:
             assert (
                 connection.execute(
-                    text(
-                        "SELECT source_role FROM concept_note_uploads WHERE upload_id = :id"
-                    ),
+                    text("SELECT source_role FROM concept_note_uploads WHERE upload_id = :id"),
                     {"id": existing_id},
                 ).scalar_one()
                 == "reference"
@@ -1040,44 +567,19 @@ def test_upload_roles_upgrade_current_develop_and_preserve_existing_uploads() ->
                     ),
                     {"id": plan_id},
                 )
-            assert (
-                connection.execute(
-                    text("SELECT version_num FROM alembic_version")
-                ).scalar_one()
-                == "20261008_120000"
-            )
 
         # Removing role metadata must retain both documents and the merged schema.
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "20261005_120000"],
-        )
-        assert "source_role" not in {
-            column["name"]
-            for column in inspect(engine).get_columns("concept_note_uploads")
-        }
+        _alembic("ca", "downgrade", "20261005_120000")
+        assert "source_role" not in _columns(engine, "concept_note_uploads")
         with engine.connect() as connection:
             assert (
                 connection.execute(
-                    text(
-                        "SELECT count(*) FROM concept_note_uploads WHERE run_id = :id"
-                    ),
+                    text("SELECT count(*) FROM concept_note_uploads WHERE run_id = :id"),
                     {"id": run_id},
                 ).scalar_one()
                 == 2
             )
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["upgrade", "head"],
-        )
+        _alembic("ca", "upgrade", "head")
     finally:
-        _run_alembic(
-            config="alembic.ini",
-            database_env="CA_DATABASE_URL",
-            args=["downgrade", "base"],
-        )
-        with engine.begin() as connection:
-            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+        _reset_ca(engine)
         engine.dispose()

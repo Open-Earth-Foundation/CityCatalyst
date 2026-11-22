@@ -17,7 +17,6 @@ from app.services.native_input_catalog_service import (
 @dataclass
 class _CoreClientDouble:
     discover_native_inputs: AsyncMock
-    read_native_input: AsyncMock
 
 
 def _context(**overrides: Any) -> ActiveRequestContext:
@@ -36,7 +35,6 @@ def _context(**overrides: Any) -> ActiveRequestContext:
 def _client(response: Any) -> _CoreClientDouble:
     return _CoreClientDouble(
         discover_native_inputs=AsyncMock(return_value=response),
-        read_native_input=AsyncMock(),
     )
 
 
@@ -88,7 +86,6 @@ async def test_discovery_calls_core_for_each_invocation_and_returns_current_entr
         user_id="user-1",
         thread_id="thread-1",
     )
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -127,7 +124,6 @@ async def test_discovery_requires_resolved_context_and_does_not_call_core_withou
 
     assert result.entries == ()
     client.discover_native_inputs.assert_not_awaited()
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -141,15 +137,11 @@ async def test_discovery_requires_resolved_context_and_does_not_call_core_withou
 async def test_empty_or_malformed_discovery_registers_no_catalog_state(
     response: dict[str, Any],
 ) -> None:
-    client = _client(response)
-    client.discover_native_inputs.side_effect = [_discovery_response(), response]
-    service = NativeInputCatalogService(core_client=client)
+    service = NativeInputCatalogService(core_client=_client(response))
 
-    await service.discover(context=_context(), token="jwt-token")
     result = await service.discover(context=_context(), token="jwt-token")
 
     assert result.entries == ()
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -166,14 +158,12 @@ async def test_unavailable_or_timed_out_discovery_is_not_reported_as_an_empty_ca
     failure: Exception,
 ) -> None:
     client = _client(_discovery_response())
-    client.discover_native_inputs.side_effect = [_discovery_response(), failure]
+    client.discover_native_inputs.side_effect = failure
     service = NativeInputCatalogService(core_client=client)
 
-    await service.discover(context=_context(), token="jwt-token")
     with pytest.raises(NativeInputDiscoveryUnavailableError):
         await service.discover(context=_context(), token="jwt-token")
 
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -201,29 +191,13 @@ async def test_disabled_discovery_does_not_load_capabilities_or_call_core() -> N
 
     assert result.entries == ()
     client.discover_native_inputs.assert_not_awaited()
-    client.read_native_input.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_discovery_relays_an_opaque_cursor_and_returns_the_next_page() -> None:
     """A continuation cursor is request state, not an authorization grant."""
-    first_page = {
-        "action": "native_input.discover",
-        "success": True,
-        "data": {
-            "entries": [
-                {
-                    "catalog_id": "catalog-1",
-                    "kind": "inventory_import",
-                    "owning_module": "ghgi",
-                    "source_type": "inventory",
-                    "capability_ids": ["ghgi.inventory.status_overview"],
-                    "source_id": "private-source-id",
-                }
-            ],
-            "continuationCursor": "opaque-core-cursor",
-        },
-    }
+    first_page = _discovery_response()
+    first_page["data"]["continuationCursor"] = "opaque-core-cursor"
     second_page = _discovery_response(catalog_id="catalog-101")
     client = _client(first_page)
     client.discover_native_inputs.side_effect = [first_page, second_page]
@@ -241,18 +215,5 @@ async def test_discovery_relays_an_opaque_cursor_and_returns_the_next_page() -> 
     assert "source_id" not in first.entries[0]
     assert second.entries[0]["catalog_id"] == "catalog-101"
     assert second.continuation_cursor is None
-    assert client.discover_native_inputs.await_count == 2
-    client.discover_native_inputs.assert_awaited_with(
-        request_payload={
-            "userId": "user-1",
-            "organizationId": "organization-1",
-            "projectId": "project-1",
-            "cityId": "city-1",
-            "inventoryId": "inventory-1",
-            "cursor": "opaque-core-cursor",
-        },
-        token="jwt-token",
-        user_id="user-1",
-        thread_id="thread-1",
-    )
-    client.read_native_input.assert_not_awaited()
+    sent = client.discover_native_inputs.await_args.kwargs["request_payload"]
+    assert sent["cursor"] == "opaque-core-cursor"

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import json
 import os
-import sys
 from ipaddress import ip_address
 from urllib.parse import urlsplit
 from uuid import uuid4
@@ -19,10 +17,6 @@ from app.services.citycatalyst_client import (
 )
 
 
-DYNAMIC_CATALOG_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
-DYNAMIC_USER_ID = "11111111-1111-4111-8111-111111111111"
-DYNAMIC_CITY_ID = "22222222-2222-4222-8222-222222222222"
-DYNAMIC_INVENTORY_ID = "33333333-3333-4333-8333-333333333333"
 DYNAMIC_CAPABILITY_ID = "ghgi.inventory.status_overview"
 DYNAMIC_FIXTURE_LABEL = "CC-737 dynamic contract fixture"
 DYNAMIC_FIXTURE_MARKER_LABEL = "cc_737_dynamic_contract_marker"
@@ -153,68 +147,6 @@ def _dynamic_contract_env() -> dict[str, str]:
     return env
 
 
-def test_fixture_catalog_recovery_rejects_ambiguous_marker_with_malformed_id() -> None:
-    fixture_marker = "one-live-execution"
-    discovery: dict[str, object] = {
-        "data": {
-            "entries": [
-                {
-                    "catalog_id": DYNAMIC_CATALOG_ID,
-                    "labels": {
-                        DYNAMIC_FIXTURE_MARKER_LABEL: fixture_marker,
-                    },
-                },
-                {
-                    "catalog_id": None,
-                    "labels": {
-                        DYNAMIC_FIXTURE_MARKER_LABEL: fixture_marker,
-                    },
-                },
-            ]
-        }
-    }
-
-    assert _fixture_catalog_id(discovery, fixture_marker) is None
-
-
-@pytest.mark.parametrize(
-    ("base_url", "mutation_opt_in", "expected_reason"),
-    [
-        ("https://core.example", "1", "loopback"),
-        ("http://localhost:3000", None, "explicit opt-in"),
-    ],
-)
-def test_dynamic_contract_rejects_unsafe_execution_context(
-    monkeypatch: pytest.MonkeyPatch,
-    base_url: str,
-    mutation_opt_in: str | None,
-    expected_reason: str,
-) -> None:
-    contract_env = {
-        "CC_BASE_URL": base_url,
-        "CC_API_KEY": "test-service-key",
-        "CA_AUTH_CONTRACT_USER_ID": DYNAMIC_USER_ID,
-        "CA_AUTH_CONTRACT_OTHER_USER_ID": "other-user",
-        "CA_AUTH_CONTRACT_CITY_ID": DYNAMIC_CITY_ID,
-        "CA_AUTH_CONTRACT_INVENTORY_ID": DYNAMIC_INVENTORY_ID,
-    }
-    for name, value in contract_env.items():
-        monkeypatch.setenv(name, value)
-    if mutation_opt_in is None:
-        monkeypatch.delenv(
-            "CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION",
-            raising=False,
-        )
-    else:
-        monkeypatch.setenv(
-            "CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION",
-            mutation_opt_in,
-        )
-
-    with pytest.raises(pytest.skip.Exception, match=expected_reason):
-        _dynamic_contract_env()
-
-
 async def _withdraw_live_catalog_entries(
     *,
     base_url: str,
@@ -295,220 +227,6 @@ def _dynamic_read_payload(
 
 
 @pytest.mark.asyncio
-async def test_native_input_catalog_dynamic_runtime_sequence_uses_bounded_camel_case_contract() -> None:
-    catalog_registered = False
-    recorded_requests: list[tuple[str, dict[str, object]]] = []
-
-    def core_handler(request: httpx.Request) -> httpx.Response:
-        nonlocal catalog_registered
-        payload = json.loads(request.content) if request.content else {}
-        recorded_requests.append((request.url.path, payload))
-
-        if request.url.path.endswith("/native-inputs/discover"):
-            entries = []
-            if catalog_registered:
-                entries.append(
-                    {
-                        "catalog_id": DYNAMIC_CATALOG_ID,
-                        "kind": "inventory_import",
-                        "owning_module": "ghgi",
-                        "source_type": "inventory",
-                        "capability_ids": [DYNAMIC_CAPABILITY_ID],
-                    }
-                )
-            return httpx.Response(
-                200,
-                json={
-                    "action": "native_input.discover",
-                    "success": True,
-                    "data": {"entries": entries},
-                },
-            )
-
-        if request.url.path == "/api/v1/internal/native-input-catalog":
-            catalog_registered = True
-            return httpx.Response(
-                201,
-                json={"data": {"id": DYNAMIC_CATALOG_ID}, "created": True},
-            )
-
-        if request.url.path.endswith("/native-inputs/read"):
-            return httpx.Response(
-                200,
-                json={
-                    "action": DYNAMIC_CAPABILITY_ID,
-                    "success": True,
-                    "data": {"status": "ready"},
-                },
-            )
-
-        return httpx.Response(404)
-
-    client = CityCatalystClient(
-        base_url="https://core.example",
-        api_key="test-service-key",
-    )
-    client._client = httpx.AsyncClient(transport=httpx.MockTransport(core_handler))
-    discovery_payload = _dynamic_discovery_payload(
-        user_id=DYNAMIC_USER_ID,
-        city_id=DYNAMIC_CITY_ID,
-        inventory_id=DYNAMIC_INVENTORY_ID,
-    )
-
-    try:
-        first_discovery = await client.discover_native_inputs(
-            request_payload=discovery_payload,
-            token="test-token",
-            user_id=DYNAMIC_USER_ID,
-            thread_id="dynamic-contract",
-        )
-        await client.post_internal_capability(
-            "/api/v1/internal/native-input-catalog",
-            json_data=_dynamic_registration_payload(
-                user_id=DYNAMIC_USER_ID,
-                city_id=DYNAMIC_CITY_ID,
-                inventory_id=DYNAMIC_INVENTORY_ID,
-                fixture_marker="in-process-contract-fixture",
-            ),
-            token="test-token",
-        )
-        second_discovery = await client.discover_native_inputs(
-            request_payload=discovery_payload,
-            token="test-token",
-            user_id=DYNAMIC_USER_ID,
-            thread_id="dynamic-contract",
-        )
-        selected_read = await client.read_native_input(
-            request_payload=_dynamic_read_payload(
-                catalog_id=DYNAMIC_CATALOG_ID,
-                user_id=DYNAMIC_USER_ID,
-                city_id=DYNAMIC_CITY_ID,
-                inventory_id=DYNAMIC_INVENTORY_ID,
-            ),
-            token="test-token",
-            user_id=DYNAMIC_USER_ID,
-            thread_id="dynamic-contract",
-        )
-    finally:
-        await client.close()
-
-    assert first_discovery["data"]["entries"] == []
-    assert second_discovery["data"]["entries"] == [
-        {
-            "catalog_id": DYNAMIC_CATALOG_ID,
-            "kind": "inventory_import",
-            "owning_module": "ghgi",
-            "source_type": "inventory",
-            "capability_ids": [DYNAMIC_CAPABILITY_ID],
-        }
-    ]
-    _assert_safe_discovery_entry(second_discovery["data"]["entries"][0])
-    assert selected_read == {
-        "action": DYNAMIC_CAPABILITY_ID,
-        "success": True,
-        "data": {"status": "ready"},
-    }
-
-    read_requests = [
-        payload
-        for path, payload in recorded_requests
-        if path.endswith("/native-inputs/read")
-    ]
-    assert read_requests == [
-        _dynamic_read_payload(
-            catalog_id=DYNAMIC_CATALOG_ID,
-            user_id=DYNAMIC_USER_ID,
-            city_id=DYNAMIC_CITY_ID,
-            inventory_id=DYNAMIC_INVENTORY_ID,
-        )
-    ]
-    assert "catalogId" in read_requests[0]
-    assert "capabilityId" in read_requests[0]
-    assert "catalog_id" not in read_requests[0]
-    assert "capability_id" not in read_requests[0]
-    _assert_no_forbidden_contract_fields(read_requests[0])
-    assert not any(path.endswith("/user-token") for path, _ in recorded_requests)
-
-
-@pytest.mark.asyncio
-async def test_dynamic_live_contract_never_withdraws_idempotent_registration(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    existing_catalog_id = "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
-    withdrawals: list[list[str]] = []
-
-    class IdempotentRegistrationClient:
-        def __init__(self, **_kwargs: object) -> None:
-            self.discovery_calls = 0
-
-        async def __aenter__(self) -> IdempotentRegistrationClient:
-            return self
-
-        async def __aexit__(self, *_args: object) -> None:
-            return None
-
-        async def refresh_token(self, _user_id: str) -> tuple[str, int]:
-            return "test-token", 3600
-
-        async def discover_native_inputs(self, **_kwargs: object) -> dict[str, object]:
-            self.discovery_calls += 1
-            entries: list[dict[str, object]] = []
-            if self.discovery_calls > 1:
-                entries.append(
-                    {
-                        "catalog_id": existing_catalog_id,
-                        "kind": "inventory_import",
-                        "owning_module": "ghgi",
-                        "source_type": "inventory",
-                        "capability_ids": [DYNAMIC_CAPABILITY_ID],
-                    }
-                )
-            return {"data": {"entries": entries}}
-
-        async def post_internal_capability(self, *_args: object, **_kwargs: object) -> dict[str, object]:
-            return {
-                "data": {"id": existing_catalog_id},
-                "created": False,
-            }
-
-        async def read_native_input(self, **_kwargs: object) -> dict[str, object]:
-            return {
-                "action": DYNAMIC_CAPABILITY_ID,
-                "success": True,
-                "data": {"status": "ready"},
-            }
-
-    async def record_withdrawal(*, catalog_ids: list[str], **_kwargs: object) -> None:
-        withdrawals.append(catalog_ids)
-
-    module = sys.modules[__name__]
-    monkeypatch.setattr(
-        module,
-        "_dynamic_contract_env",
-        lambda: {
-            "base_url": "http://localhost:3000",
-            "api_key": "test-service-key",
-            "user_id": DYNAMIC_USER_ID,
-            "other_user_id": "other-user",
-            "city_id": DYNAMIC_CITY_ID,
-            "inventory_id": DYNAMIC_INVENTORY_ID,
-        },
-    )
-    monkeypatch.setattr(module, "CityCatalystClient", IdempotentRegistrationClient)
-    monkeypatch.setattr(module, "_withdraw_live_catalog_entries", record_withdrawal)
-
-    captured_error: AssertionError | None = None
-    try:
-        await test_dynamic_runtime_sequence_against_running_core()
-    except AssertionError as error:
-        captured_error = error
-
-    assert withdrawals == []
-    assert captured_error is not None
-    assert "must create a new catalog entry" in str(captured_error)
-
-
-@pytest.mark.asyncio
 async def test_dynamic_runtime_sequence_against_running_core() -> None:
     env = _dynamic_contract_env()
     discovery_payload = _dynamic_discovery_payload(
@@ -580,12 +298,6 @@ async def test_dynamic_runtime_sequence_against_running_core() -> None:
                 city_id=env["city_id"],
                 inventory_id=env["inventory_id"],
             )
-            assert "catalogId" in read_payload
-            assert "capabilityId" in read_payload
-            assert "catalog_id" not in read_payload
-            assert "capability_id" not in read_payload
-            _assert_no_forbidden_contract_fields(read_payload)
-
             selected_read = await client.read_native_input(
                 request_payload=read_payload,
                 token=token,

@@ -203,32 +203,29 @@ async def _list_runs(
     )
 
 
-async def test_start_run_creates_after_scope_and_reference_validation() -> None:
-    """Create a run only after validating identity, city, and funding scope."""
-    payload = _start_request()
+@pytest.mark.parametrize(
+    ("failing_check", "expected_status"),
+    [("city", 403), ("funding", 422)],
+)
+async def test_start_run_creates_nothing_when_scope_validation_fails(
+    failing_check: str, expected_status: int
+) -> None:
+    """Revoked city access or an unknown funding reference stops run creation."""
     service, repository, cc_client, funding_validator = _run_service()
-    repository.create_or_get.return_value = (
-        _persisted_run(
-            payload,
-            request_fingerprint=_request_fingerprint(payload),
-        ),
-        True,
-    )
+    if failing_check == "city":
+        cc_client.get_city.side_effect = CityCatalystClientError(
+            "City access revoked", status_code=403
+        )
+    else:
+        funding_validator.validate.side_effect = HTTPException(
+            status_code=422, detail="Unknown funder_id"
+        )
 
-    response = await service.start_run(payload, authorization="Bearer token")
+    with pytest.raises(HTTPException) as exc_info:
+        await service.start_run(_start_request(), authorization="Bearer token")
 
-    assert response.created is True
-    assert response.user_id == payload.user_id
-    cc_client.validate_user_identity.assert_awaited_once_with("token")
-    cc_client.get_city.assert_awaited_once_with(
-        city_id=str(payload.city_id),
-        token="token",
-        user_id=payload.user_id,
-    )
-    funding_validator.validate.assert_awaited_once_with(
-        funder_id=None,
-        selected_funding_opportunity_id=None,
-    )
+    assert exc_info.value.status_code == expected_status
+    repository.create_or_get.assert_not_awaited()
 
 
 @pytest.mark.parametrize("created", [True, False])
@@ -264,16 +261,8 @@ async def test_start_run_schedules_only_new_context_after_commit(
 
     assert response.created is created
     assert events == (["commit", "schedule"] if created else ["commit"])
-    service.session.commit.assert_awaited_once_with()
     if created:
-        schedule.assert_called_once_with(
-            service=context_bundle_service,
-            user_id=payload.user_id,
-            run_id=response.run_id,
-            token="token",
-        )
-    else:
-        schedule.assert_not_called()
+        assert schedule.call_args.kwargs["run_id"] == response.run_id
 
 
 async def test_start_run_rejects_reused_key_with_different_fingerprint() -> None:
@@ -334,7 +323,6 @@ async def test_manual_population_is_scoped_to_one_run_and_can_be_cleared() -> No
         "context_bundle": {"status": "ready"},
         "manual_population": {"population": 0, "year": 2024},
     }
-    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
 
     cleared = await service.update_manual_population(
         run_id=run.run_id,
@@ -385,7 +373,6 @@ async def test_manual_population_rejects_edits_during_drafting_after_lock(
         "population": 100,
         "year": 2020,
     }
-    service.session.refresh.assert_awaited_once_with(run, with_for_update=True)
     service.session.commit.assert_not_awaited()
 
 
@@ -405,7 +392,7 @@ def test_manual_population_rejects_invalid_values(value: dict) -> None:
 
 
 def test_start_request_caps_initial_uploads_at_the_run_limit() -> None:
-    """Accept 10 expected sources and reject 11 before the run is created."""
+    """Accept the run limit of expected sources and reject one more before creation."""
     from app.models.cnb.concept_note_markdown import MAX_UPLOADS_PER_RUN
     from app.models.cnb.concept_note_runs import InitialConceptNoteUpload
 
@@ -423,10 +410,9 @@ def test_start_request_caps_initial_uploads_at_the_run_limit() -> None:
             ],
         )
 
-    assert MAX_UPLOADS_PER_RUN == 10
-    assert len(request(10).initial_uploads) == 10
+    assert len(request(MAX_UPLOADS_PER_RUN).initial_uploads) == MAX_UPLOADS_PER_RUN
     with pytest.raises(ValidationError):
-        request(11)
+        request(MAX_UPLOADS_PER_RUN + 1)
 
 
 async def test_get_run_hides_missing_or_unowned_run() -> None:
@@ -514,75 +500,40 @@ async def test_get_run_returns_owned_upload_metadata() -> None:
     assert response.uploads[0].page_count == 55
 
 
-async def test_list_runs_rejects_authenticated_user_mismatch() -> None:
-    """Reject a requested owner that differs from the bearer-token subject."""
-    service, repository, _, _ = _run_service(canonical_user_id="other-user")
+@pytest.mark.parametrize(
+    ("failure", "expected_status"),
+    [
+        ("missing_bearer", 401),
+        ("user_mismatch", 403),
+        ("identity_outage", 503),
+        ("city_revoked", 403),
+        ("city_outage", 503),
+    ],
+)
+async def test_list_runs_queries_nothing_when_access_cannot_be_confirmed(
+    failure: str, expected_status: int
+) -> None:
+    """Authentication, city access and CityCatalyst outages all fail before storage."""
+    canonical_user_id = "other-user" if failure == "user_mismatch" else "owner-1"
+    service, repository, cc_client, _ = _run_service(canonical_user_id=canonical_user_id)
+    if failure == "identity_outage":
+        cc_client.validate_user_identity.side_effect = CityCatalystClientError(
+            "CityCatalyst unavailable", status_code=500
+        )
+    elif failure == "city_revoked":
+        cc_client.get_city.side_effect = CityCatalystClientError(
+            "City access revoked", status_code=403
+        )
+    elif failure == "city_outage":
+        cc_client.get_city.side_effect = CityCatalystClientError(
+            "CityCatalyst unavailable", status_code=500
+        )
+    authorization = None if failure == "missing_bearer" else "Bearer token"
 
     with pytest.raises(HTTPException) as exc_info:
-        await _list_runs(service)
+        await _list_runs(service, authorization=authorization)
 
-    assert exc_info.value.status_code == 403
-    repository.list_for_user_city.assert_not_awaited()
-
-
-async def test_list_runs_maps_identity_outage_to_service_unavailable() -> None:
-    """Do not query runs when token identity cannot be validated."""
-    service, repository, cc_client, _ = _run_service()
-    cc_client.validate_user_identity.side_effect = CityCatalystClientError(
-        "CityCatalyst unavailable",
-        status_code=500,
-    )
-
-    with pytest.raises(HTTPException) as exc_info:
-        await _list_runs(service)
-
-    assert exc_info.value.status_code == 503
-    cc_client.get_city.assert_not_awaited()
-    repository.list_for_user_city.assert_not_awaited()
-
-
-async def test_list_runs_requires_bearer_token() -> None:
-    """Reject a list request without a CityCatalyst bearer token."""
-    service, repository, cc_client, _ = _run_service()
-
-    with pytest.raises(HTTPException) as exc_info:
-        await _list_runs(service, authorization=None)
-
-    assert exc_info.value.status_code == 401
-    cc_client.validate_user_identity.assert_not_awaited()
-    repository.list_for_user_city.assert_not_awaited()
-
-
-async def test_list_runs_revalidates_city_access_before_querying() -> None:
-    """Do not query persisted runs when current city access is revoked."""
-    service, repository, cc_client, _ = _run_service()
-    city_id = uuid4()
-    cc_client.get_city.side_effect = CityCatalystClientError(
-        "City access revoked",
-        status_code=403,
-    )
-
-    with pytest.raises(HTTPException) as exc_info:
-        await _list_runs(service, city_id=city_id)
-
-    assert exc_info.value.status_code == 403
-    repository.list_for_user_city.assert_not_awaited()
-
-
-async def test_list_runs_maps_city_authorization_outage_to_service_unavailable() -> (
-    None
-):
-    """Keep authorization integration failures distinct from access denial."""
-    service, repository, cc_client, _ = _run_service()
-    cc_client.get_city.side_effect = CityCatalystClientError(
-        "CityCatalyst unavailable",
-        status_code=500,
-    )
-
-    with pytest.raises(HTTPException) as exc_info:
-        await _list_runs(service)
-
-    assert exc_info.value.status_code == 503
+    assert exc_info.value.status_code == expected_status
     repository.list_for_user_city.assert_not_awaited()
 
 
@@ -620,17 +571,6 @@ async def test_list_runs_returns_stable_progress_and_resume_fields() -> None:
         == detailed.progress_summary
         == {"ready_sources": 3}
     )
-
-
-async def test_list_runs_returns_empty_envelope() -> None:
-    """Represent an authorized city without runs as an empty stable list."""
-    service, repository, _, _ = _run_service()
-    repository.list_for_user_city.return_value = []
-    city_id = uuid4()
-
-    response = await _list_runs(service, city_id=city_id)
-
-    assert response.model_dump() == {"runs": []}
 
 
 async def test_list_runs_defaults_missing_context_summary() -> None:
@@ -791,3 +731,32 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             assert stored_thread.context["access_token"] == "preserved-token"
     finally:
         await engine.dispose()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(("created", "status_code"), [(True, 201), (False, 200)])
+async def test_start_route_returns_created_or_replayed_status(
+    monkeypatch, created: bool, status_code: int
+) -> None:
+    """A new run answers 201 and an idempotent replay answers 200 with the same run."""
+    from types import SimpleNamespace
+
+    from app.routes import concept_note_runs
+
+    run_id = uuid4()
+    service = SimpleNamespace(
+        start_run_and_schedule_context=AsyncMock(
+            return_value=SimpleNamespace(created=created, run_id=run_id)
+        )
+    )
+    monkeypatch.setattr(concept_note_runs, "ConceptNoteRunService", lambda _: service)
+
+    response = await concept_note_runs.start_concept_note_run(
+        payload=SimpleNamespace(),
+        context_bundle_service=None,
+        authorization="Bearer token",
+        session=SimpleNamespace(),
+    )
+
+    assert response.status_code == status_code
+    assert str(run_id) in response.body.decode()

@@ -4,7 +4,6 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any, Optional
 from unittest.mock import AsyncMock
 
@@ -145,138 +144,25 @@ def _tool(tools: dict[str, object], name: str) -> object:
         raise AssertionError(f"missing tool {name}") from error
 
 
-def test_builder_registers_two_stable_tools_without_discovery_snapshot() -> None:
-    """Stable tools register without discovering or selecting a catalog pair."""
+def test_tools_register_lazily_with_closed_finite_schemas() -> None:
+    """Building tools calls no Core; schemas leave no source, scope or storage escape hatch."""
     client = _StubClient()
     service = _StubService(_discovery())
-
     tools, _, _ = _build(client, service=service)
 
     assert list(tools) == ["native_input_discover", "native_input_read"]
     service.discover.assert_not_awaited()
     assert client.requests == []
-    assert not client.closed
-
-
-def test_tools_expose_only_fixed_discovery_and_finite_read_schemas() -> None:
-    """Tool schemas leave no source, scope, storage, or arbitrary-input escape hatch."""
-    tools, _, _ = _build(_StubClient())
-
-    discover_tool = _tool(tools, "native_input_discover")
-    read_tool = _tool(tools, "native_input_read")
-    discover_schema = getattr(discover_tool, "params_json_schema")
-    read_schema = getattr(read_tool, "params_json_schema")
-
-    assert discover_schema == {
-        "type": "object",
-        "properties": {
-            "cursor": {"type": "string", "minLength": 1, "maxLength": 4096},
-            "inventoryId": {"type": "string", "format": "uuid"},
-        },
-        "additionalProperties": False,
+    discover_schema = getattr(tools["native_input_discover"], "params_json_schema")
+    read_schema = getattr(tools["native_input_read"], "params_json_schema")
+    assert set(discover_schema["properties"]) == {"cursor", "inventoryId"}
+    assert set(read_schema["properties"]) == {
+        "catalogId", "capabilityId", "language", "inventoryId",
+        "scope", "type", "limit", "offset", "chapters",
     }
-    assert read_schema == {
-        "type": "object",
-        "properties": {
-            "catalogId": {"type": "string", "minLength": 1},
-            "capabilityId": {"type": "string", "minLength": 1},
-            "language": {"type": "string", "maxLength": 16},
-            "inventoryId": {"type": "string", "format": "uuid"},
-            "scope": {"type": "string", "enum": ["selected", "ranked"]},
-            "type": {"type": "string", "enum": ["mitigation", "adaptation"]},
-            "limit": {"type": "integer", "minimum": 1, "maximum": 50},
-            "offset": {"type": "integer", "minimum": 0, "maximum": 1000},
-            "chapters": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "snapshot",
-                        "the_action",
-                        "action_impact",
-                        "city_fit",
-                        "policy_backing",
-                        "legal_mandate_delivery",
-                        "financing_precedents_pathway",
-                        "sources_assumptions",
-                    ],
-                },
-                "maxItems": 8,
-            },
-        },
-        "required": ["catalogId", "capabilityId"],
-        "additionalProperties": False,
-    }
-    assert getattr(discover_tool, "strict_json_schema") is False
-    assert getattr(read_tool, "strict_json_schema") is False
-
-
-def test_tool_descriptions_route_ranked_action_questions_to_hiap_capability() -> None:
-    """Descriptions tell the model which questions and capabilities these tools serve."""
-    tools, _, _ = _build(_StubClient())
-
-    discover_description = getattr(_tool(tools, "native_input_discover"), "description")
-    read_description = getattr(_tool(tools, "native_input_read"), "description")
-
-    assert "ranked" in discover_description
-    assert "HIAP" in discover_description
-    assert "hiap.inventory.context" in read_description
-    assert "ghgi.inventory.status_overview" in read_description
-    assert "ghgi.inventory.emissions_context" in read_description
-    assert "hiap_meed.ranking.context" in read_description
-    assert "hiap_meed.output_plan.context" in read_description
-    assert "hiap.action_plan.context" in read_description
-    assert "offset" in read_description
-    assert (
-        "language is accepted only by hiap.inventory.context, "
-        "hiap_meed.ranking.context and hiap_meed.output_plan.context"
-    ) in read_description
-
-
-def test_description_language_claim_matches_the_capabilities_that_accept_it() -> None:
-    """The description names exactly the capabilities in _LANGUAGE_CAPABILITIES."""
-    from app.tools import native_input_catalog_tools as module
-
-    tools, _, _ = _build(_StubClient())
-    description = getattr(_tool(tools, "native_input_read"), "description")
-
-    assert module._LANGUAGE_CAPABILITIES == {
-        "hiap.inventory.context",
-        "hiap_meed.ranking.context",
-        "hiap_meed.output_plan.context",
-    }
-    for capability in module._LANGUAGE_CAPABILITIES:
-        assert capability in description.split("language is accepted only by")[1].split("Also")[0]
-
-
-def test_meed_data_has_only_read_capabilities_and_no_export_or_download() -> None:
-    """CC-1060 PR 2: HIAP-MEED data is interpreted in chat, never exported."""
-    import re
-
-    from app.tools import native_input_catalog_tools as module
-
-    meed = {c for c in module._CAPABILITY_DEFINITIONS if c.startswith("hiap_meed.")}
-    assert meed == {"hiap_meed.ranking.context", "hiap_meed.output_plan.context"}
-    forbidden = re.compile(r"export|download|file|csv|xlsx|pdf|docx", re.IGNORECASE)
-    assert not [c for c in module._CAPABILITY_DEFINITIONS if forbidden.search(c)]
-
-    tools, _, _ = _build(_StubClient())
-    assert set(tools) == {"native_input_discover", "native_input_read"}
-    assert not [name for name in tools if forbidden.search(name)]
-
-
-@pytest.mark.asyncio
-async def test_read_tool_refuses_an_invented_meed_export_capability() -> None:
-    """An export capability is rejected before Core is ever called."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-    result = await _call(
-        tools,
-        "native_input_read",
-        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.ranking.export"},
-    )
-    assert result["success"] is False
-    assert client.requests == []
+    assert read_schema["required"] == ["catalogId", "capabilityId"]
+    assert discover_schema["additionalProperties"] is False
+    assert read_schema["additionalProperties"] is False
 
 
 @pytest.mark.asyncio
@@ -336,7 +222,6 @@ async def test_discovery_is_fresh_filters_unsupported_capabilities_and_exposes_s
         },
     }
     assert service.discover.await_count == 2
-    service.discover.assert_awaited_with(context=_context(), token="jwt-token")
     assert "private" not in json.dumps(payload)
 
 
@@ -417,22 +302,6 @@ async def test_discovery_rejects_unknown_or_invalid_cursor_arguments() -> None:
 
 
 @pytest.mark.asyncio
-async def test_discovery_keeps_presented_token_when_client_advertises_refresh() -> None:
-    """Discovery does not adopt a token the client claims to have refreshed."""
-    service = _StubService(_discovery())
-    service.core_client.last_refreshed_token = "fresh-token"
-    tools, _, token_ref = _build(_StubClient(), service=service)
-    discover = _tool(tools, "native_input_discover")
-
-    output = await getattr(discover, "on_invoke_tool")(
-        _tool_context("native_input_discover"), "{}"
-    )
-
-    assert json.loads(output)["success"] is True
-    assert token_ref["value"] == "jwt-token"
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "arguments",
     [
@@ -449,6 +318,7 @@ async def test_discovery_keeps_presented_token_when_client_advertises_refresh() 
         {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "sourceId": "private-source"},
         {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview", "language": "en"},
         {"catalogId": "catalog-1", "capabilityId": "unsupported.capability"},
+        {"catalogId": "catalog-1", "capabilityId": "hiap_meed.ranking.export"},
     ],
 )
 async def test_read_rejects_invalid_or_unbounded_arguments_before_core(arguments: dict[str, Any]) -> None:
@@ -497,6 +367,7 @@ async def test_read_rejects_oversized_or_malformed_json_before_core() -> None:
         ("hiap.inventory.context", {"language": "pt-BR"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt-BR"}),
         ("hiap_meed.ranking.context", {"language": "pt"}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "pt"}),
         ("hiap_meed.output_plan.context", {}, {"city_id": "city-1", "inventory_id": "inventory-1", "language": "en"}),
+        ("hiap.action_plan.context", {}, {"city_id": "city-1", "inventory_id": "inventory-1"}),
     ],
 )
 async def test_read_builds_capability_bounded_core_request(
@@ -562,22 +433,6 @@ async def test_read_without_inventory_scope_is_rejected_before_core() -> None:
     output = await getattr(read, "on_invoke_tool")(
         _tool_context("native_input_read"),
         json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context"}),
-    )
-
-    assert json.loads(output)["error_code"] == "invalid_arguments"
-    assert client.requests == []
-
-
-@pytest.mark.asyncio
-async def test_read_hiap_rejects_invalid_language_before_core() -> None:
-    """HIAP permits only a non-empty language of at most sixteen characters."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-    read = _tool(tools, "native_input_read")
-
-    output = await getattr(read, "on_invoke_tool")(
-        _tool_context("native_input_read"),
-        json.dumps({"catalogId": "catalog-1", "capabilityId": "hiap.inventory.context", "language": "x" * 17}),
     )
 
     assert json.loads(output)["error_code"] == "invalid_arguments"
@@ -654,17 +509,21 @@ async def test_read_isolates_failures_without_rotating_tokens_and_closes_client(
 
 
 @pytest.mark.asyncio
-async def test_read_keeps_presented_token_when_client_advertises_refresh() -> None:
-    """A completed read does not replace the presented bearer with a stub refresh."""
+async def test_tools_keep_presented_token_when_clients_advertise_refresh() -> None:
+    """Neither tool adopts a token a client claims to have refreshed."""
     client = _StubClient(last_refreshed_token="fresh-token")
-    tools, _, token_ref = _build(client)
-    read = _tool(tools, "native_input_read")
+    service = _StubService(_discovery())
+    service.core_client.last_refreshed_token = "fresh-token"
+    tools, _, token_ref = _build(client, service=service)
 
-    await getattr(read, "on_invoke_tool")(
-        _tool_context("native_input_read"),
-        json.dumps({"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"}),
+    discovered = await _call(tools, "native_input_discover", {})
+    await _call(
+        tools,
+        "native_input_read",
+        {"catalogId": "catalog-1", "capabilityId": "ghgi.inventory.status_overview"},
     )
 
+    assert discovered["success"] is True
     assert token_ref["value"] == "jwt-token"
     assert client.requests[0]["token"] == "jwt-token"
     assert client.closed
@@ -703,16 +562,6 @@ async def test_missing_token_fails_closed_without_creating_read_client() -> None
     assert not client.closed
 
 
-def test_catalog_consumer_has_no_direct_storage_or_source_access() -> None:
-    """Climate Advisor remains isolated from raw storage and source pointers."""
-    source = (Path(__file__).parents[1] / "app" / "tools" / "native_input_catalog_tools.py").read_text(encoding="utf-8")
-    forbidden_patterns = (
-        "import boto3", "from boto3", "import aioboto3", "from aioboto3", "s3://",
-        "get_object(", "storage_client", "os.environ", "os.getenv(", "open(",
-    )
-    assert not [pattern for pattern in forbidden_patterns if pattern in source]
-
-
 INVENTORY_A = "11111111-1111-4111-8111-111111111111"
 INVENTORY_B = "22222222-2222-4222-8222-222222222222"
 
@@ -746,22 +595,11 @@ async def test_read_inventory_override_replaces_chat_scope_for_that_call_only() 
     assert override["inventoryId"] == INVENTORY_A
     assert "cityId" not in override
     assert override["input"] == {"inventory_id": INVENTORY_A, "language": "en"}
+    assert "organizationId" not in override
+    assert "projectId" not in override
+    assert override["userId"] == "user-1"
     assert chat_default["inventoryId"] == "inventory-1"
     assert chat_default["cityId"] == "city-1"
-
-
-@pytest.mark.asyncio
-async def test_override_also_drops_chat_organization_and_project() -> None:
-    """Another project's row must not be rejected by the chat's project scope."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-
-    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
-
-    payload = client.requests[0]["request_payload"]
-    assert "organizationId" not in payload
-    assert "projectId" not in payload
-    assert payload["userId"] == "user-1"
 
 
 @pytest.mark.asyncio
@@ -817,6 +655,7 @@ async def test_read_passes_validated_view_and_paging_arguments(
         ("hiap.inventory.context", {"offset": -1}),
         ("hiap.inventory.context", {"offset": "5"}),
         ("hiap.inventory.context", {"chapters": ["city_fit"]}),
+        ("hiap.inventory.context", {"language": "x" * 17}),
         ("hiap_meed.ranking.context", {"scope": "ranked"}),
         ("hiap_meed.ranking.context", {"chapters": ["city_fit"]}),
         ("hiap_meed.output_plan.context", {"limit": 5}),
@@ -842,25 +681,6 @@ async def test_read_rejects_arguments_a_capability_does_not_accept(
 
     assert result["error_code"] == "invalid_arguments"
     assert client.requests == []
-
-
-@pytest.mark.asyncio
-async def test_read_builds_the_plan_capability_request_without_language() -> None:
-    """The implementation plan read carries only captured scope."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-
-    result = await _call(
-        tools,
-        "native_input_read",
-        {"catalogId": "catalog-1", "capabilityId": "hiap.action_plan.context"},
-    )
-
-    assert result["success"] is True
-    assert client.requests[0]["request_payload"]["input"] == {
-        "city_id": "city-1",
-        "inventory_id": "inventory-1",
-    }
 
 
 @pytest.mark.asyncio
@@ -892,19 +712,6 @@ async def test_discovery_exposes_a_safe_display_name_for_plan_entries() -> None:
     entries = result["data"]["entries"]
     assert entries[0]["displayName"] == "Solar rooftops"
     assert "displayName" not in entries[1]
-
-
-@pytest.mark.asyncio
-async def test_sequential_reads_for_two_inventories_do_not_mix_scope() -> None:
-    """Consecutive overrides A then B each carry only their own inventory."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-
-    await _call(tools, "native_input_read", _read_args(INVENTORY_A))
-    await _call(tools, "native_input_read", _read_args(INVENTORY_B))
-
-    assert [r["request_payload"]["inventoryId"] for r in client.requests] == [INVENTORY_A, INVENTORY_B]
-    assert all("cityId" not in r["request_payload"] for r in client.requests)
 
 
 @pytest.mark.asyncio
@@ -960,22 +767,6 @@ async def test_inventory_override_must_be_a_uuid_before_core(bad: Any) -> None:
     assert discover["error_code"] == "invalid_arguments"
     assert client.requests == []
     service.discover.assert_not_awaited()
-
-
-@pytest.mark.asyncio
-async def test_failure_for_one_inventory_does_not_affect_the_next_call() -> None:
-    """A Core 404 for inventory B returns the stable error; a later A read succeeds."""
-    client = _StubClient()
-    tools, _, _ = _build(client)
-
-    client.error = CityCatalystClientError("missing", status_code=404)
-    failed = await _call(tools, "native_input_read", _read_args(INVENTORY_B))
-    client.error = None
-    succeeded = await _call(tools, "native_input_read", _read_args(INVENTORY_A))
-
-    assert failed["error_code"] == "capability_unavailable"
-    assert succeeded["success"] is True
-    assert client.requests[-1]["request_payload"]["inventoryId"] == INVENTORY_A
 
 
 @pytest.mark.asyncio

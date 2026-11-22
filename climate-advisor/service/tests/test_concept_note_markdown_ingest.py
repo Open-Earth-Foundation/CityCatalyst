@@ -1,23 +1,20 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 from dataclasses import replace
-from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
 from app.config import get_settings
+from app.db import Base
 from app.main import get_app
-from app.models.cnb.concept_note_markdown import (
-    STRUCTURED_DOCUMENT_SCHEMA_VERSION,
-    ConceptNoteMarkdownRequest,
-    ConceptNoteUploadCreateRequest,
-)
+from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import (
-    ConceptNoteMarkdownRepository,
-    ConceptNoteMarkdownRepositoryError,
     ConceptNoteUploadSnapshot,
+    SqlAlchemyConceptNoteMarkdownRepository,
     get_concept_note_markdown_repository,
 )
 from app.routes.concept_note_markdown import (
@@ -31,6 +28,8 @@ from app.services.citycatalyst_client import (
 )
 from app.services.cnb.context_bundle import get_context_bundle_service
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 
 MARKDOWN = "<!-- page: 1 -->\n# Plan"
 SHA256 = hashlib.sha256(MARKDOWN.encode()).hexdigest()
@@ -96,184 +95,6 @@ class FakeCityCatalystClient:
         return replace(self.structured, upload_id=upload_id)
 
 
-class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
-    """In-memory implementation of the authoritative upload lifecycle."""
-
-    def __init__(self, run_id: UUID, owner_id: str) -> None:
-        self.run_id = run_id
-        self.owner_id = owner_id
-        self.uploads: dict[UUID, ConceptNoteUploadSnapshot] = {}
-
-    def authorize(self, user_id: str, run_id: UUID) -> None:
-        if run_id != self.run_id:
-            raise ConceptNoteMarkdownRepositoryError(
-                "concept_note_run_not_found", 404, "Run not found"
-            )
-        if user_id != self.owner_id:
-            raise ConceptNoteMarkdownRepositoryError(
-                "concept_note_run_forbidden", 403, "Run owner does not match"
-            )
-
-    async def create_upload(
-        self,
-        *,
-        user_id: str,
-        run_id: UUID,
-        payload: ConceptNoteUploadCreateRequest,
-    ) -> ConceptNoteUploadSnapshot:
-        self.authorize(user_id, run_id)
-        existing = self.uploads.get(payload.upload_id)
-        if existing:
-            if (
-                existing.filename != payload.filename
-                or existing.source_label != payload.source_label
-                or existing.source_format != payload.source_format
-            ):
-                raise ConceptNoteMarkdownRepositoryError(
-                    "upload_identity_conflict", 409, "Upload changed"
-                )
-            return existing
-        snapshot = ConceptNoteUploadSnapshot(
-            upload_id=payload.upload_id,
-            run_id=run_id,
-            user_id=user_id,
-            filename=payload.filename,
-            source_label=payload.source_label,
-            source_format=payload.source_format,
-            markdown_s3_key=None,
-            markdown_sha256=None,
-            page_count=None,
-            status="queued",
-            error_code=None,
-            received_at=datetime.now(UTC),
-            completed_at=None,
-        )
-        self.uploads[payload.upload_id] = snapshot
-        return snapshot
-
-    async def get_upload(
-        self,
-        *,
-        user_id: str,
-        run_id: UUID,
-        upload_id: UUID,
-    ) -> ConceptNoteUploadSnapshot:
-        self.authorize(user_id, run_id)
-        try:
-            return self.uploads[upload_id]
-        except KeyError as exc:
-            raise ConceptNoteMarkdownRepositoryError(
-                "concept_note_upload_not_found", 404, "Upload not found"
-            ) from exc
-
-    async def register_markdown(
-        self,
-        *,
-        user_id: str,
-        run_id: UUID,
-        upload_id: UUID,
-        payload: ConceptNoteMarkdownRequest,
-    ) -> ConceptNoteUploadSnapshot:
-        current = await self.get_upload(
-            user_id=user_id,
-            run_id=run_id,
-            upload_id=upload_id,
-        )
-        if current.markdown_sha256:
-            if (
-                current.markdown_s3_key != payload.markdown_s3_key
-                or current.markdown_sha256 != payload.sha256
-                or current.page_count != payload.page_count
-            ):
-                raise ConceptNoteMarkdownRepositoryError(
-                    "markdown_identity_conflict", 409, "Markdown changed"
-                )
-            current_structured = (
-                current.annotation_mode,
-                current.structured_s3_key,
-                current.structured_sha256,
-                current.structured_size_bytes,
-                current.structured_schema_version,
-            )
-            incoming_structured = (
-                payload.annotation_mode,
-                payload.structured_s3_key,
-                payload.structured_sha256,
-                payload.structured_size_bytes,
-                payload.structured_schema_version,
-            )
-            if current_structured != incoming_structured:
-                raise ConceptNoteMarkdownRepositoryError(
-                    "structured_identity_conflict", 409, "Structured identity changed"
-                )
-            return current
-        updated = replace(
-            current,
-            markdown_s3_key=payload.markdown_s3_key,
-            markdown_sha256=payload.sha256,
-            source_format=payload.source_format,
-            page_count=payload.page_count,
-            annotation_mode=payload.annotation_mode,
-            structured_s3_key=payload.structured_s3_key,
-            structured_sha256=payload.structured_sha256,
-            structured_size_bytes=payload.structured_size_bytes,
-            structured_schema_version=payload.structured_schema_version,
-            status="ready",
-            completed_at=datetime.now(UTC),
-        )
-        self.uploads[upload_id] = updated
-        return updated
-
-    async def mark_failed(
-        self,
-        *,
-        user_id: str,
-        run_id: UUID,
-        upload_id: UUID,
-        error_code: str,
-    ) -> ConceptNoteUploadSnapshot:
-        current = await self.get_upload(
-            user_id=user_id,
-            run_id=run_id,
-            upload_id=upload_id,
-        )
-        updated = replace(current, status="failed", error_code=error_code)
-        self.uploads[upload_id] = updated
-        return updated
-
-    async def retry_upload(
-        self,
-        *,
-        user_id: str,
-        run_id: UUID,
-        upload_id: UUID,
-    ) -> ConceptNoteUploadSnapshot:
-        current = await self.get_upload(
-            user_id=user_id,
-            run_id=run_id,
-            upload_id=upload_id,
-        )
-        if current.status == "ready":
-            raise ConceptNoteMarkdownRepositoryError(
-                "upload_not_retryable", 409, "Ready upload"
-            )
-        updated = replace(current, status="queued", error_code=None)
-        self.uploads[upload_id] = updated
-        return updated
-
-    async def get_delivery_context(
-        self,
-        *,
-        upload_id: UUID,
-    ) -> ConceptNoteUploadSnapshot:
-        try:
-            return self.uploads[upload_id]
-        except KeyError as exc:
-            raise ConceptNoteMarkdownRepositoryError(
-                "concept_note_upload_not_found", 404, "Upload not found"
-            ) from exc
-
-
 def create_payload(upload_id: UUID) -> dict[str, object]:
     return {
         "upload_id": str(upload_id),
@@ -320,8 +141,39 @@ def legacy_pointer_payload(**overrides: object) -> dict[str, object]:
 
 @pytest.fixture
 def ingest_client(monkeypatch):
+    """Serve the upload routes over the SQLAlchemy repository on in-memory SQLite."""
     run_id = uuid4()
-    repository = FakeMarkdownRepository(run_id, "owner-user")
+    engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
+        poolclass=StaticPool,
+        connect_args={"check_same_thread": False},
+    )
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def setup() -> None:
+        async with engine.begin() as connection:
+            await connection.run_sync(
+                lambda sync_connection: Base.metadata.create_all(
+                    sync_connection,
+                    tables=[ConceptNoteRun.__table__, ConceptNoteUpload.__table__],
+                )
+            )
+        async with session_factory() as session, session.begin():
+            session.add(
+                ConceptNoteRun(
+                    run_id=run_id,
+                    user_id="owner-user",
+                    name="Test run",
+                    city_id=str(uuid4()),
+                    idempotency_key=uuid4(),
+                    request_fingerprint="a" * 64,
+                    context_summary={},
+                    permission_summary={},
+                )
+            )
+
+    asyncio.run(setup())
+    repository = SqlAlchemyConceptNoteMarkdownRepository(session_factory)
     cc_client = FakeCityCatalystClient()
     app = get_app()
     app.dependency_overrides[get_citycatalyst_client] = lambda: cc_client
@@ -336,10 +188,22 @@ def ingest_client(monkeypatch):
     settings = get_settings()
     original_key = settings.cc_api_key
     settings.cc_api_key = "service-key"
-    with TestClient(app) as client:
-        yield client, repository, cc_client, run_id
-    settings.cc_api_key = original_key
-    app.dependency_overrides.clear()
+    try:
+        with TestClient(app) as client:
+            yield client, repository, cc_client, run_id
+    finally:
+        settings.cc_api_key = original_key
+        app.dependency_overrides.clear()
+        asyncio.run(engine.dispose())
+
+
+def stored(
+    repository: SqlAlchemyConceptNoteMarkdownRepository, run_id: UUID, upload_id: UUID
+) -> ConceptNoteUploadSnapshot:
+    """Read one upload back from the database."""
+    return asyncio.run(
+        repository.get_upload(user_id="owner-user", run_id=run_id, upload_id=upload_id)
+    )
 
 
 def auth(token: str = "owner-user") -> dict[str, str]:
@@ -440,8 +304,8 @@ def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None
 
     assert first.status_code == second.status_code == 202
     assert first.json() == {"upload_id": str(upload_id), "status": "ready"}
-    assert repository.uploads[upload_id].markdown_s3_key == S3_KEY
-    assert repository.uploads[upload_id].status == "ready"
+    assert stored(repository, run_id, upload_id).markdown_s3_key == S3_KEY
+    assert stored(repository, run_id, upload_id).status == "ready"
     assert [item["run_id"] for item in cc_client.scheduled_builds] == [
         run_id,
         run_id,
@@ -466,16 +330,20 @@ def test_verified_legacy_pdf_delivery_is_markdown_only_and_idempotent(
     replay = client.post(path, json=payload, headers=auth())
 
     assert first.status_code == replay.status_code == 202
-    stored = repository.uploads[upload_id]
-    assert stored.status == "ready"
-    assert stored.markdown_s3_key == S3_KEY
-    assert stored.markdown_sha256 == SHA256
-    assert stored.page_count == 1
-    assert stored.annotation_mode is None
-    assert stored.structured_s3_key is None
-    assert stored.structured_sha256 is None
-    assert stored.structured_size_bytes is None
-    assert stored.structured_schema_version is None
+    upload = stored(repository, run_id, upload_id)
+    assert (upload.status, upload.markdown_s3_key, upload.markdown_sha256, upload.page_count) == (
+        "ready",
+        S3_KEY,
+        SHA256,
+        1,
+    )
+    assert {
+        upload.annotation_mode,
+        upload.structured_s3_key,
+        upload.structured_sha256,
+        upload.structured_size_bytes,
+        upload.structured_schema_version,
+    } == {None}
     assert cc_client.structured_reads == 0
 
 
@@ -501,7 +369,7 @@ def test_pdf_without_structured_artifact_requires_cc_legacy_attestation(
 
     assert response.status_code == 422
     assert response.json()["code"] == "structured_metadata_incomplete"
-    assert repository.uploads[upload_id].status == "queued"
+    assert stored(repository, run_id, upload_id).status == "queued"
     assert cc_client.structured_reads == 0
 
 
@@ -566,8 +434,8 @@ def test_native_markdown_delivery_has_no_synthetic_page_count(ingest_client) -> 
     )
 
     assert response.status_code == 202
-    assert repository.uploads[upload_id].source_format == "markdown"
-    assert repository.uploads[upload_id].page_count is None
+    assert stored(repository, run_id, upload_id).source_format == "markdown"
+    assert stored(repository, run_id, upload_id).page_count is None
 
 
 def test_pointer_or_fetched_bytes_conflict_is_rejected(ingest_client) -> None:

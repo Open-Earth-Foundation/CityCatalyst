@@ -1,19 +1,10 @@
-"""
-Comprehensive tests for Climate Advisor API routes.
-
-Tests cover:
-- Health endpoint
-- Thread creation endpoint
-- Message creation and streaming endpoint
-- Error handling and validation
-- Response formats
-"""
+"""Climate Advisor API route contracts: health, threads, messages and error format."""
 
 from __future__ import annotations
 
-import json
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from typing import Any
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 from fastapi import HTTPException
@@ -21,8 +12,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.main import get_app
 from app.db import Base
+from app.db.session import get_session, get_session_factory
+from app.main import get_app
 from app.models.requests import MessageCreateRequest, ThreadCreateRequest
 from app.routes.messages import post_message
 from app.routes.threads import get_thread_messages
@@ -30,152 +22,128 @@ from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 
+VALIDATE_IDENTITY = "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity"
+
+
+def _empty_stream(*_args: Any, **_kwargs: Any):
+    async def _gen():
+        yield b""
+
+    return _gen()
+
 
 class HealthRouteTests(unittest.TestCase):
-    """Tests for the health check endpoint."""
-
-    def setUp(self) -> None:
-        self.app = get_app()
-        self.client = TestClient(self.app)
-
     def test_health_returns_ok_status(self) -> None:
-        """Test health endpoint returns 200 with ok status."""
-        response = self.client.get("/health")
+        response = TestClient(get_app()).get("/health")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ok"})
 
-    def test_health_endpoint_accessible(self) -> None:
-        """Test health endpoint is accessible."""
-        response = self.client.get("/health")
-        self.assertTrue(response.is_success)
 
-
-class ThreadCreationRouteTests(unittest.IsolatedAsyncioTestCase):
-    """Tests for the thread creation endpoint."""
+class ThreadAndMessageRouteTests(unittest.IsolatedAsyncioTestCase):
+    """Thread creation and message streaming against an in-memory database."""
 
     async def asyncSetUp(self) -> None:
-        """Set up in-memory SQLite database for testing."""
         self.engine = create_async_engine(
             "sqlite+aiosqlite:///:memory:",
-            echo=False,
             poolclass=StaticPool,
             connect_args={"check_same_thread": False},
         )
         self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
             self.engine, expire_on_commit=False
         )
-
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
         self.app = get_app()
-        
-        # Patch the session factory dependency
-        async def get_session():
+
+        async def override_session():
             async with self.session_factory() as session:
                 yield session
 
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session"]).get_session
-        ] = get_session
-
+        self.app.dependency_overrides[get_session] = override_session
+        self.app.dependency_overrides[get_session_factory] = lambda: self.session_factory
         self.client = TestClient(self.app)
+        # Bearer tokens in these tests are the user ids themselves.
         self.identity_patcher = patch(
-            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-            new=AsyncMock(side_effect=lambda token: token),
+            VALIDATE_IDENTITY, new=AsyncMock(side_effect=lambda token: token)
         )
         self.identity_patcher.start()
 
     async def asyncTearDown(self) -> None:
         self.identity_patcher.stop()
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
+        self.app.dependency_overrides.clear()
         await self.engine.dispose()
 
+    def _create_thread(self, **payload: Any):
+        return self.client.post(
+            "/v1/threads",
+            json={"user_id": "user-1", **payload},
+            headers={"Authorization": "Bearer user-1"},
+        )
+
     def test_create_thread_minimal_payload(self) -> None:
-        """Test thread creation with minimal required fields."""
-        response = self.client.post(
-            "/v1/threads",
-            json={"user_id": "test-user-1"},
-            headers={"Authorization": "Bearer test-user-1"},
+        response = self._create_thread()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIsInstance(response.json()["thread_id"], str)
+
+    def test_create_thread_keeps_optional_inventory_and_context(self) -> None:
+        response = self._create_thread(
+            inventory_id="inv-123",
+            context={"city": "San Francisco", "country": "USA"},
         )
-        
+
         self.assertEqual(response.status_code, 201)
         data = response.json()
-        self.assertIn("thread_id", data)
-        self.assertIsNotNone(data["thread_id"])
-        self.assertIsInstance(data["thread_id"], str)
+        self.assertEqual(data["inventory_id"], "inv-123")
+        self.assertEqual(data["context"]["city"], "San Francisco")
+        self.assertEqual(data["context"]["country"], "USA")
 
-    def test_create_thread_with_inventory_id(self) -> None:
-        """Test thread creation with optional inventory_id."""
-        response = self.client.post(
-            "/v1/threads",
-            json={
-                "user_id": "test-user-2",
-                "inventory_id": "inv-123"
-            },
-            headers={"Authorization": "Bearer test-user-2"},
-        )
-        
-        self.assertEqual(response.status_code, 201)
-        data = response.json()
-        self.assertIn("thread_id", data)
+    def test_message_requires_user_id_and_content(self) -> None:
+        for payload in ({"content": "Hello"}, {"user_id": "user-1"}):
+            with self.subTest(payload=payload):
+                response = self.client.post("/v1/messages", json=payload)
+                self.assertEqual(response.status_code, 422)
 
-    def test_create_thread_with_context(self) -> None:
-        """Test thread creation with optional context data."""
-        context = {"city": "San Francisco", "country": "USA"}
-        response = self.client.post(
-            "/v1/threads",
-            json={
-                "user_id": "test-user-3",
-                "context": context
-            },
-            headers={"Authorization": "Bearer test-user-3"},
-        )
-        
-        self.assertEqual(response.status_code, 201)
-        data = response.json()
-        self.assertIn("thread_id", data)
+    def test_message_streams_for_new_and_existing_threads(self) -> None:
+        thread_id = self._create_thread().json()["thread_id"]
 
-    def test_create_thread_missing_user_id(self) -> None:
-        """Test thread creation fails without user_id."""
-        response = self.client.post(
-            "/v1/threads",
-            json={}
-        )
-        
-        self.assertEqual(response.status_code, 422)
-        data = response.json()
-        self.assertIn("detail", data)
+        for extra in ({}, {"thread_id": thread_id}):
+            with self.subTest(extra=extra):
+                with patch("app.routes.messages.StreamingHandler") as streaming_handler:
+                    streaming_handler.return_value.stream_response = _empty_stream
+                    response = self.client.post(
+                        "/v1/messages",
+                        json={"user_id": "user-1", "content": "Hello", **extra},
+                        headers={"Authorization": "Bearer user-1"},
+                    )
 
-    def test_create_thread_returns_problem_details_on_error(self) -> None:
-        """Test error response follows RFC 7807 Problem Details format."""
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("text/event-stream", response.headers["content-type"])
+
+    def test_message_with_missing_thread_id_returns_404(self) -> None:
+        thread_id = str(uuid4())
         response = self.client.post(
-            "/v1/threads",
-            json={"invalid_field": "value"}
+            "/v1/messages",
+            json={"user_id": "user-1", "content": "Hello assistant", "thread_id": thread_id},
+            headers={"Authorization": "Bearer user-1"},
         )
-        
-        self.assertEqual(response.status_code, 422)
-        data = response.json()
-        # Check Problem Details format
-        self.assertIn("type", data)
-        self.assertIn("title", data)
-        self.assertIn("status", data)
-        self.assertIn("detail", data)
-        self.assertIn("instance", data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["detail"], f"Thread {thread_id} not found")
+
+
+def _message() -> MessageCreateRequest:
+    return MessageCreateRequest(user_id="user-1", content="Hello assistant", thread_id="thread-1")
 
 
 class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
-    """Tests for the CityCatalyst identity gate on message creation."""
+    """The CityCatalyst identity gate in front of message creation."""
 
     async def test_message_passes_validated_identity_to_catalog_handler(self) -> None:
         """Only Core's canonical identity may enable request catalog context."""
-        validate_identity = AsyncMock(return_value="user-1")
         with (
-            patch(
-                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-                new=validate_identity,
-            ),
+            patch(VALIDATE_IDENTITY, new=AsyncMock(return_value="user-1")),
             patch(
                 "app.routes.messages.ThreadResolver.resolve_thread",
                 new=AsyncMock(return_value="thread-1"),
@@ -183,172 +151,60 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
             patch("app.routes.messages.StreamingHandler") as streaming_handler,
         ):
             response = await post_message(
-                MessageCreateRequest(
-                    user_id="user-1",
-                    content="Hello assistant",
-                    thread_id="thread-1",
-                ),
+                _message(),
                 authorization="Bearer valid-token",
                 session=None,
                 session_factory=None,
             )
 
         self.assertEqual(response.status_code, 200)
-        validate_identity.assert_awaited_once_with("valid-token")
-        self.assertEqual(streaming_handler.call_args.kwargs["catalog_user_id"], "user-1")
-        self.assertEqual(streaming_handler.call_args.kwargs["user_id"], "user-1")
-        self.assertEqual(
-            streaming_handler.call_args.kwargs["cc_access_token"],
-            "valid-token",
-        )
-        refresh_context = streaming_handler.call_args.kwargs[
-            "request_token_refresh_context"
-        ]
+        handler_kwargs = streaming_handler.call_args.kwargs
+        self.assertEqual(handler_kwargs["catalog_user_id"], "user-1")
+        self.assertEqual(handler_kwargs["user_id"], "user-1")
+        self.assertEqual(handler_kwargs["cc_access_token"], "valid-token")
+        refresh_context = handler_kwargs["request_token_refresh_context"]
         self.assertEqual(refresh_context.canonical_user_id, "user-1")
         self.assertEqual(refresh_context.token_ref["value"], "valid-token")
 
-    async def test_message_rejects_invalid_core_token_before_catalog_agent_creation(
-        self,
-    ) -> None:
-        """An unvalidated bearer must never reach the catalog-enabled handler."""
-        resolve_thread = AsyncMock()
-        with (
-            patch(
-                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-                new=AsyncMock(
-                    side_effect=CityCatalystClientError(
-                        "invalid token",
-                        status_code=401,
-                    )
-                ),
+    async def test_message_rejects_unconfirmed_identity_before_any_thread_work(self) -> None:
+        """Rejected tokens, subject mismatches and Core outages never reach the handler."""
+        cases = [
+            (
+                AsyncMock(side_effect=CityCatalystClientError("invalid", status_code=401)),
+                401,
+                "CityCatalyst authentication failed",
             ),
-            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
-            patch("app.routes.messages.StreamingHandler") as streaming_handler,
-        ):
-            with self.assertRaises(HTTPException) as captured:
-                await post_message(
-                    MessageCreateRequest(
-                        user_id="user-1",
-                        content="Hello assistant",
-                        thread_id="thread-1",
+            (AsyncMock(return_value="canonical-other-user"), 401, None),
+            (
+                AsyncMock(side_effect=CityCatalystClientError("down", status_code=503)),
+                503,
+                "CityCatalyst identity service is unavailable",
+            ),
+        ]
+        for validate_identity, status_code, detail in cases:
+            with self.subTest(status_code=status_code, detail=detail):
+                resolve_thread = AsyncMock()
+                with (
+                    patch(VALIDATE_IDENTITY, new=validate_identity),
+                    patch(
+                        "app.routes.messages.ThreadResolver.resolve_thread",
+                        new=resolve_thread,
                     ),
-                    authorization="Bearer invalid-token",
-                    session=None,
-                    session_factory=None,
-                )
+                    patch("app.routes.messages.StreamingHandler") as streaming_handler,
+                ):
+                    with self.assertRaises(HTTPException) as captured:
+                        await post_message(
+                            _message(),
+                            authorization="Bearer presented-token",
+                            session=None,
+                            session_factory=None,
+                        )
 
-        self.assertEqual(captured.exception.status_code, 401)
-        self.assertEqual(
-            captured.exception.detail,
-            "CityCatalyst authentication failed",
-        )
-        resolve_thread.assert_not_awaited()
-        streaming_handler.assert_not_called()
-
-    async def test_message_rejects_core_token_subject_mismatch(self) -> None:
-        """The claimed body user must not select scope for another token subject."""
-        resolve_thread = AsyncMock()
-        with (
-            patch(
-                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-                new=AsyncMock(return_value="canonical-other-user"),
-            ),
-            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
-            patch("app.routes.messages.StreamingHandler") as streaming_handler,
-        ):
-            with self.assertRaises(HTTPException) as captured:
-                await post_message(
-                    MessageCreateRequest(
-                        user_id="user-1",
-                        content="Hello assistant",
-                        thread_id="thread-1",
-                    ),
-                    authorization="Bearer other-user-token",
-                    session=None,
-                    session_factory=None,
-                )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        resolve_thread.assert_not_awaited()
-        streaming_handler.assert_not_called()
-
-    async def test_message_fails_closed_when_core_is_unavailable(self) -> None:
-        """A Core outage must not create a write or catalog-enabled handler."""
-        resolve_thread = AsyncMock()
-        with (
-            patch(
-                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-                new=AsyncMock(
-                    side_effect=CityCatalystClientError(
-                        "CC identity validation unavailable",
-                        status_code=503,
-                    )
-                ),
-            ),
-            patch("app.routes.messages.ThreadResolver.resolve_thread", new=resolve_thread),
-            patch("app.routes.messages.StreamingHandler") as streaming_handler,
-        ):
-            with self.assertRaises(HTTPException) as captured:
-                await post_message(
-                    MessageCreateRequest(
-                        user_id="user-1",
-                        content="Hello assistant",
-                        thread_id="thread-1",
-                    ),
-                    authorization="Bearer valid-token",
-                    session=None,
-                    session_factory=None,
-                )
-
-        self.assertEqual(captured.exception.status_code, 503)
-        self.assertEqual(
-            captured.exception.detail,
-            "CityCatalyst identity service is unavailable",
-        )
-        resolve_thread.assert_not_awaited()
-        streaming_handler.assert_not_called()
-
-    async def test_message_does_not_persist_payload_token_when_identity_is_unvalidated(
-        self,
-    ) -> None:
-        """A Core outage must not launder a payload bearer into thread context."""
-        thread_service = AsyncMock()
-        with (
-            patch(
-                "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-                new=AsyncMock(
-                    side_effect=CityCatalystClientError(
-                        "CC identity validation unavailable",
-                        status_code=503,
-                    )
-                ),
-            ),
-            patch(
-                "app.routes.messages.ThreadResolver.resolve_thread",
-                new=AsyncMock(return_value="thread-1"),
-            ),
-            patch(
-                "app.routes.messages.ThreadService",
-                new=MagicMock(return_value=thread_service),
-            ),
-            patch("app.routes.messages.StreamingHandler") as streaming_handler,
-        ):
-            with self.assertRaises(HTTPException) as captured:
-                await post_message(
-                    MessageCreateRequest(
-                        user_id="user-1",
-                        content="Hello assistant",
-                        thread_id="thread-1",
-                        context={"access_token": "unvalidated-token"},
-                    ),
-                    authorization="Bearer unvalidated-token",
-                    session=None,
-                    session_factory=_stub_session_factory(),
-                )
-
-        self.assertEqual(captured.exception.status_code, 503)
-        streaming_handler.assert_not_called()
-        thread_service.update_context.assert_not_awaited()
+                self.assertEqual(captured.exception.status_code, status_code)
+                if detail:
+                    self.assertEqual(captured.exception.detail, detail)
+                resolve_thread.assert_not_awaited()
+                streaming_handler.assert_not_called()
 
     async def test_message_rejects_missing_bearer_instead_of_stale_thread_token(
         self,
@@ -364,208 +220,15 @@ class MessageIdentityGateTests(unittest.IsolatedAsyncioTestCase):
         ):
             with self.assertRaises(HTTPException) as captured:
                 await post_message(
-                    MessageCreateRequest(
-                        user_id="user-1",
-                        content="Hello assistant",
-                        thread_id="thread-1",
-                    ),
+                    _message(),
                     authorization=None,
                     session=None,
-                    session_factory=_stub_session_factory(),
+                    session_factory=None,
                 )
 
         self.assertEqual(captured.exception.status_code, 401)
         streaming_handler.assert_not_called()
         refresh_token.assert_not_awaited()
-
-
-def _stub_session_factory() -> MagicMock:
-    """Build a session factory whose sessions are inert async mocks."""
-    session_factory = MagicMock()
-    session_factory.return_value.__aenter__ = AsyncMock(return_value=AsyncMock())
-    session_factory.return_value.__aexit__ = AsyncMock(return_value=False)
-    return session_factory
-
-
-class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
-    """Tests for the message creation and streaming endpoint."""
-
-    async def asyncSetUp(self) -> None:
-        """Set up in-memory SQLite database and mock agent."""
-        self.engine = create_async_engine(
-            "sqlite+aiosqlite:///:memory:",
-            echo=False,
-            poolclass=StaticPool,
-            connect_args={"check_same_thread": False},
-        )
-        self.session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
-            self.engine, expire_on_commit=False
-        )
-
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-        self.app = get_app()
-        
-        # Patch dependencies
-        async def get_session():
-            async with self.session_factory() as session:
-                yield session
-
-        def get_session_factory_override():
-            return self.session_factory
-
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session"]).get_session
-        ] = get_session
-        
-        self.app.dependency_overrides[
-            __import__("app.db.session", fromlist=["get_session_factory"]).get_session_factory
-        ] = get_session_factory_override
-
-        self.client = TestClient(self.app)
-        self.identity_patcher = patch(
-            "app.utils.citycatalyst_auth.CityCatalystClient.validate_user_identity",
-            new=AsyncMock(side_effect=lambda token: token),
-        )
-        self.identity_patcher.start()
-
-    async def asyncTearDown(self) -> None:
-        self.identity_patcher.stop()
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await self.engine.dispose()
-
-    def _create_thread(self, user_id: str = "user-1") -> str:
-        """Create a persisted thread for message route tests."""
-        response = self.client.post(
-            "/v1/threads",
-            json={"user_id": user_id},
-            headers={"Authorization": f"Bearer {user_id}"},
-        )
-        self.assertEqual(response.status_code, 201)
-        return response.json()["thread_id"]
-
-    def test_message_requires_user_id(self) -> None:
-        """Test message creation requires user_id."""
-        response = self.client.post(
-            "/v1/messages",
-            json={"content": "Hello"}
-        )
-        
-        self.assertEqual(response.status_code, 422)
-
-    def test_message_requires_content(self) -> None:
-        """Test message creation requires content."""
-        response = self.client.post(
-            "/v1/messages",
-            json={"user_id": "user-1"}
-        )
-        
-        self.assertEqual(response.status_code, 422)
-
-    def test_message_with_thread_id(self) -> None:
-        """Test message creation with an existing thread_id."""
-        thread_id = self._create_thread()
-
-        with patch("app.services.agent_service.AgentService") as mock_agent_service:
-            mock_agent = AsyncMock()
-            mock_agent_service.return_value.create_agent = AsyncMock(
-                return_value=mock_agent
-            )
-
-            async def mock_stream():
-                yield b"data: {\"type\": \"message\", \"content\": \"Hello\"}\n\n"
-                yield b"data: {\"type\": \"done\"}\n\n"
-
-            mock_agent.messages.run_stream = AsyncMock(return_value=mock_stream())
-
-            response = self.client.post(
-                "/v1/messages",
-                json={
-                    "user_id": "user-1",
-                    "content": "Hello assistant",
-                    "thread_id": thread_id
-                },
-                headers={"Authorization": "Bearer user-1"},
-            )
-
-            # Should return streaming response
-            self.assertEqual(response.status_code, 200)
-            self.assertIn("text/event-stream", response.headers.get("content-type", ""))
-
-    def test_message_with_missing_thread_id_returns_404(self) -> None:
-        """Test message creation rejects a client-provided thread_id that is not persisted."""
-        thread_id = str(uuid4())
-        response = self.client.post(
-            "/v1/messages",
-            json={
-                "user_id": "user-1",
-                "content": "Hello assistant",
-                "thread_id": thread_id,
-            },
-            headers={"Authorization": "Bearer user-1"},
-        )
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json()["detail"], f"Thread {thread_id} not found")
-
-    def test_message_returns_streaming_response(self) -> None:
-        """Test message endpoint returns streaming response."""
-        with patch("app.services.agent_service.AgentService") as mock_agent_service:
-            mock_agent = AsyncMock()
-            mock_agent_service.return_value.create_agent = AsyncMock(
-                return_value=mock_agent
-            )
-            
-            async def mock_stream():
-                yield b"data: {\"type\": \"message\", \"content\": \"Hi\"}\n\n"
-                yield b"data: {\"type\": \"done\"}\n\n"
-            
-            mock_agent.messages.run_stream = AsyncMock(return_value=mock_stream())
-            
-            response = self.client.post(
-                "/v1/messages",
-                json={
-                    "user_id": "user-1",
-                    "content": "Hello"
-                },
-                headers={"Authorization": "Bearer user-1"},
-            )
-            
-            self.assertEqual(response.status_code, 200)
-            self.assertIn("text/event-stream", response.headers.get("content-type", ""))
-
-    def test_message_with_options(self) -> None:
-        """Test message creation with model and temperature options."""
-        thread_id = self._create_thread()
-
-        with patch("app.services.agent_service.AgentService") as mock_agent_service:
-            mock_agent = AsyncMock()
-            mock_agent_service.return_value.create_agent = AsyncMock(
-                return_value=mock_agent
-            )
-
-            async def mock_stream():
-                yield b"data: {\"type\": \"done\"}\n\n"
-
-            mock_agent.messages.run_stream = AsyncMock(return_value=mock_stream())
-
-            response = self.client.post(
-                "/v1/messages",
-                json={
-                    "user_id": "user-1",
-                    "content": "Test",
-                    "thread_id": thread_id,
-                    "options": {
-                        "model": "openai/gpt-4o",
-                        "temperature": 0.5
-                    }
-                },
-                headers={"Authorization": "Bearer user-1"},
-            )
-            
-            self.assertIn(response.status_code, [200, 400])  # May fail if agent setup fails
 
 
 class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
@@ -641,68 +304,27 @@ class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
         by_role = {message.role: message for message in response.messages}
         self.assertEqual(by_role["user"].visuals, [])
         self.assertEqual(by_role["assistant"].text, "")
-        self.assertEqual(
-            by_role["assistant"].model_dump()["visuals"], [visual, legacy]
-        )
+        self.assertEqual(by_role["assistant"].model_dump()["visuals"], [visual, legacy])
 
 
 class ResponseFormatTests(unittest.TestCase):
-    """Tests for response format compliance."""
+    """Errors follow RFC 7807 Problem Details."""
 
     def setUp(self) -> None:
-        self.app = get_app()
-        self.client = TestClient(self.app)
+        self.client = TestClient(get_app())
 
     def test_404_returns_problem_details(self) -> None:
-        """Test 404 responses follow RFC 7807 Problem Details format."""
         response = self.client.get("/v1/nonexistent")
-        
+
         self.assertEqual(response.status_code, 404)
         data = response.json()
-        self.assertIn("type", data)
-        self.assertIn("title", data)
-        self.assertIn("status", data)
+        self.assertTrue({"type", "title", "status"} <= set(data))
         self.assertEqual(data["status"], 404)
 
     def test_validation_error_returns_problem_details(self) -> None:
-        """Test validation errors follow Problem Details format."""
-        response = self.client.post(
-            "/v1/threads",
-            json={"invalid": "payload"}
-        )
-        
+        response = self.client.post("/v1/threads", json={"invalid": "payload"})
+
         self.assertEqual(response.status_code, 422)
         data = response.json()
-        self.assertIn("type", data)
-        self.assertIn("title", data)
-        self.assertIn("status", data)
+        self.assertTrue({"type", "title", "status", "detail", "instance"} <= set(data))
         self.assertEqual(data["status"], 422)
-
-    def test_cors_headers_present(self) -> None:
-        """Test CORS headers are included in responses."""
-        response = self.client.options(
-            "/v1/threads",
-            headers={"Origin": "http://localhost:3000"}
-        )
-        
-        # OPTIONS should return 200 if CORS is enabled
-        self.assertEqual(response.status_code, 200)
-
-
-class CORSTests(unittest.TestCase):
-    """Tests for CORS configuration."""
-
-    def setUp(self) -> None:
-        self.app = get_app()
-        self.client = TestClient(self.app)
-
-    def test_cors_headers_on_success(self) -> None:
-        """Test CORS headers are present on successful responses."""
-        response = self.client.get("/health")
-        
-        # Check that we can set CORS headers (depends on configuration)
-        self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)

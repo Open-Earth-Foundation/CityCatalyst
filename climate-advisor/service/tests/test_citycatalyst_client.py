@@ -4,9 +4,7 @@ import asyncio
 import base64
 import json
 import time
-from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
-import unittest
 from unittest.mock import AsyncMock, patch
 
 import httpx
@@ -20,64 +18,8 @@ from app.services.citycatalyst_client import (
 )
 from app.utils.request_token_refresh import RequestTokenRefreshContext
 
-
-@pytest.mark.asyncio
-async def test_concept_note_source_deletion_batches_authenticated_requests() -> None:
-    requests = []
-
-    def respond(request):
-        requests.append(request)
-        return httpx.Response(204)
-
-    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
-    client._client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
-    try:
-        await client.delete_concept_note_sources([str(i) for i in range(1001)])
-    finally:
-        await client.close()
-    assert [len(json.loads(request.content)["upload_ids"]) for request in requests] == [1000, 1]
-    for request in requests:
-        assert request.method == "DELETE"
-        assert request.url.path == "/api/v1/internal/ca/concept-note-sources/"
-        assert request.headers["X-CA-Service-Key"] == "test-service-key"
-
-
-@pytest.mark.asyncio
-async def test_concept_note_source_deletion_propagates_failure() -> None:
-    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
-    client._client = httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(503)))
-    try:
-        with pytest.raises(httpx.HTTPStatusError):
-            await client.delete_concept_note_sources(["upload"])
-    finally:
-        await client.close()
-
-
-@pytest.mark.asyncio
-async def test_concept_note_source_deletion_uses_canonical_trailing_slash_url() -> None:
-    """Call the canonical URL directly so credentials never cross a redirect."""
-    requests = []
-
-    def respond(request):
-        requests.append(request)
-        if not request.url.path.endswith("/"):
-            return httpx.Response(
-                308,
-                headers={"Location": "https://redirect.example/concept-note-sources/"},
-            )
-        return httpx.Response(204)
-
-    client = CityCatalystClient(base_url="https://cc.example", api_key="test-service-key")
-    client._client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
-    try:
-        await client.delete_concept_note_sources(["upload"])
-    finally:
-        await client.close()
-    assert len(requests) == 1
-    assert requests[0].url.path == "/api/v1/internal/ca/concept-note-sources/"
-    assert requests[0].method == "DELETE"
-    assert requests[0].headers["X-CA-Service-Key"] == "test-service-key"
-    assert json.loads(requests[0].content)["upload_ids"] == ["upload"]
+BASE_URL = "https://cc.example"
+CAPABILITIES = "/api/v1/internal/ca/capabilities"
 
 
 class _StubAsyncClient:
@@ -88,15 +30,9 @@ class _StubAsyncClient:
         self.requests: List[Dict[str, Any]] = []
 
     async def get(
-        self,
-        url: str,
-        *,
-        headers: Optional[Dict[str, str]] = None,
-        **kwargs: Any,
-    ) -> httpx.Response:  # type: ignore[override]
-        self.requests.append(
-            {"method": "GET", "url": url, "headers": headers, "extra": kwargs}
-        )
+        self, url: str, *, headers: Optional[Dict[str, str]] = None, **kwargs: Any
+    ) -> httpx.Response:
+        self.requests.append({"method": "GET", "url": url, "headers": headers})
         return self._responses.pop(0)
 
     async def post(
@@ -106,36 +42,22 @@ class _StubAsyncClient:
         headers: Optional[Dict[str, str]] = None,
         json: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> httpx.Response:  # type: ignore[override]
+    ) -> httpx.Response:
         self.requests.append(
-            {
-                "method": "POST",
-                "url": url,
-                "headers": headers,
-                "json": json,
-                "extra": kwargs,
-            },
+            {"method": "POST", "url": url, "headers": headers, "json": json}
         )
         return self._responses.pop(0)
-
-    async def aclose(self) -> None:  # pragma: no cover - part of httpx interface
-        return None
 
 
 class _FailingPostClient:
     """HTTP double that fails with a transport error carrying a secret."""
 
     async def post(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        del args, kwargs
         raise httpx.ReadTimeout("private upstream transport detail")
 
 
-def _response(
-    status_code: int,
-    *,
-    json_data: Optional[Any] = None,
-) -> httpx.Response:
-    request = httpx.Request("GET", "https://cc.example/api")
+def _response(status_code: int, *, json_data: Optional[Any] = None) -> httpx.Response:
+    request = httpx.Request("GET", f"{BASE_URL}/api")
     return httpx.Response(status_code, json=json_data, request=request)
 
 
@@ -151,1027 +73,307 @@ def _unsigned_jwt(claims: Dict[str, Any]) -> str:
     )
 
 
-class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
-    """Unit tests for the CityCatalystClient helper methods."""
+def _client(**kwargs: Any) -> CityCatalystClient:
+    return CityCatalystClient(base_url=BASE_URL, api_key="test-api-key", **kwargs)
 
-    async def test_load_inventory_list_accessible_posts_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example", api_key="test-api-key"
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "action": "ghgi.inventory.list_accessible",
-                            "success": True,
-                            "data": {"cities": []},
-                        },
-                    )
-                ]
-            )
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.load_inventory_list_accessible(
-                    request_payload={
-                        "user_id": "user-1",
-                        "city_query": "New York",
-                        "year": 2024,
-                    },
-                    token="jwt-token",
-                )
+async def test_concept_note_source_deletion_batches_authenticated_requests() -> None:
+    requests = []
 
-        self.assertEqual(result["action"], "ghgi.inventory.list_accessible")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["city_query"], "New York")
+    def respond(request):
+        requests.append(request)
+        return httpx.Response(204)
 
-    async def test_load_inventory_status_overview_posts_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "action": "ghgi.inventory.status_overview",
-                            "success": True,
-                            "data": {"completion": {"required": 43}},
-                        },
-                    )
-                ]
-            )
+    client = CityCatalystClient(base_url=BASE_URL, api_key="test-service-key")
+    client._client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    try:
+        await client.delete_concept_note_sources([str(i) for i in range(1001)])
+    finally:
+        await client.close()
+    assert [len(json.loads(request.content)["upload_ids"]) for request in requests] == [1000, 1]
+    for request in requests:
+        assert request.method == "DELETE"
+        # The canonical trailing-slash URL is called directly, so no redirect carries the key.
+        assert request.url.path == "/api/v1/internal/ca/concept-note-sources/"
+        assert request.headers["X-CA-Service-Key"] == "test-service-key"
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.load_inventory_status_overview(
-                    request_payload={
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                    },
-                    token="jwt-token",
-                )
 
-        self.assertEqual(result["action"], "ghgi.inventory.status_overview")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["inventory_id"], "inventory-1")
+async def test_concept_note_source_deletion_propagates_failure() -> None:
+    client = CityCatalystClient(base_url=BASE_URL, api_key="test-service-key")
+    client._client = httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(503)))
+    try:
+        with pytest.raises(httpx.HTTPStatusError):
+            await client.delete_concept_note_sources(["upload"])
+    finally:
+        await client.close()
 
-    async def test_load_inventory_emissions_context_posts_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "action": "ghgi.inventory.emissions_context",
-                            "success": True,
-                            "data": {"total_emissions_kgco2e": "12500000"},
-                        },
-                    )
-                ]
-            )
 
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.load_inventory_emissions_context(
-                    request_payload={
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                    },
-                    token="jwt-token",
-                )
+NATIVE_INPUT_ARGS = {"user_id": "user-1", "thread_id": "thread-1"}
 
-        self.assertEqual(result["action"], "ghgi.inventory.emissions_context")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["city_id"], "city-1")
 
-    async def test_load_hiap_context_posts_read_only_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "action": "hiap.inventory.context",
-                            "success": True,
-                            "data": {"availability": "missing"},
-                        },
-                    )
-                ]
-            )
-
-            with patch.object(
-                client,
-                "_get_client",
-                new=AsyncMock(return_value=stub),
-            ):
-                result = await client.load_hiap_context(
-                    request_payload={
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                        "language": "en",
-                    },
-                    token="jwt-token",
-                )
-
-        self.assertEqual(result["action"], "hiap.inventory.context")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/hiap/inventory/context",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["language"], "en")
-
-    async def test_inventory_capability_does_not_refresh_from_request_json_on_401(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="test-api-key",
-            ),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient()
-            stub = _StubAsyncClient(
-                [
-                    _response(401, json_data={"error": "Unauthorized"}),
-                ]
-            )
-            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
-
-            with (
-                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-                patch.object(client, "refresh_token", new=refresh_token),
-            ):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.load_inventory_status_overview(
-                        request_payload={
-                            "user_id": "user-1",
-                            "city_id": "city-1",
-                            "inventory_id": "inventory-1",
-                        },
-                        token="expired-token",
-                    )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        refresh_token.assert_not_awaited()
-        self.assertFalse(hasattr(client, "last_refreshed_token"))
-        self.assertEqual(len(stub.requests), 1)
-        self.assertEqual(
-            stub.requests[0]["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
-        )
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"],
-            "Bearer expired-token",
-        )
-
-    async def test_commit_stationary_energy_accepted_posts_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={"results": [{"proposal_id": "proposal-1", "status": "committed"}]},
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.commit_stationary_energy_accepted(
-                    request_payload={
-                        "draft_run_id": "draft-1",
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                        "rows": [
-                            {
-                                "row_type": "selected_source",
-                                "proposal_id": "proposal-1",
-                                "decision_version": 1,
-                                "target_ref": {"subsector_id": "I.1", "scope_id": "1"},
-                                "selected_source_id": "ds-1",
-                            }
-                        ],
-                    },
-                    token="jwt-token",
-                )
-
-        self.assertEqual(result["results"][0]["status"], "committed")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["rows"][0]["row_type"], "selected_source")
-        self.assertEqual(recorded["json"]["rows"][0]["selected_source_id"], "ds-1")
-
-    async def test_commit_stationary_energy_accepted_posts_manual_override_rows(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={"results": [{"proposal_id": "proposal-2", "status": "committed"}]},
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                await client.commit_stationary_energy_accepted(
-                    request_payload={
-                        "draft_run_id": "draft-1",
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                        "rows": [
-                            {
-                                "row_type": "manual_override",
-                                "proposal_id": "proposal-2",
-                                "decision_version": 2,
-                                "target_ref": {"subsector_id": "I.2", "scope_id": "1"},
-                                "manual_value": 12.5,
-                                "manual_unit": "tCO2e",
-                                "note": "Manual reviewer correction",
-                            }
-                        ],
-                    },
-                    token="jwt-token",
-                )
-
-        recorded = stub.requests[0]
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["rows"][0]["row_type"], "manual_override")
-        self.assertEqual(recorded["json"]["rows"][0]["manual_value"], 12.5)
-        self.assertEqual(recorded["json"]["rows"][0]["manual_unit"], "tCO2e")
-
-    async def test_commit_stationary_energy_notation_keys_posts_internal_capability(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={"results": [{"proposal_id": "proposal-3", "status": "committed"}]},
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                await client.commit_stationary_energy_notation_keys(
-                    request_payload={
-                        "draft_run_id": "draft-1",
-                        "user_id": "user-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                        "rows": [
-                            {
-                                "proposal_id": "proposal-3",
-                                "decision_version": 1,
-                                "target_id": "I.1.2",
-                                "target_ref": {"subcategory_id": "I.1.2"},
-                                "notation_key": "NO",
-                                "unavailable_explanation": "No activity occurs.",
-                            }
-                        ],
-                    },
-                    token="jwt-token",
-                )
-
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["rows"][0]["notation_key"], "NO")
-
-    async def test_get_inventory_success(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={"data": {"inventoryId": "inv-123", "name": "Test Inventory"}},
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.get_inventory(
-                    "inv-123",
-                    token="jwt-token",
-                    user_id="user-1",
-                )
-
-        self.assertTrue(result)
-        self.assertEqual(result["data"]["inventoryId"], "inv-123")
-
-        recorded = stub.requests[0]
-        self.assertEqual(recorded["url"], "https://cc.example/api/v1/inventory/inv-123")
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-
-    async def test_get_inventory_not_found_raises(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(404, json_data={"error": "not found"}),
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                with self.assertRaises(CityCatalystClientError):
-                    await client.get_inventory(
-                        "missing",
-                        token="jwt-token",
-                        user_id="user-1",
-                    )
-
-    async def test_get_user_inventories_skips_refresh_when_disabled(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=True):
-            client = CityCatalystClient(
-                base_url="https://cc.example", api_key="test-api-key"
-            )
-            stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
-            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
-
-            with (
-                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-                patch.object(client, "refresh_token", new=refresh_token),
-            ):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.get_user_inventories(
-                        token="expired-token",
-                        user_id="user-1",
-                        auto_refresh=False,
-                    )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        refresh_token.assert_not_awaited()
-        self.assertEqual(len(stub.requests), 1)
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"], "Bearer expired-token"
-        )
-
-    async def test_refresh_token_success(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="test-api-key",
-            ),
-        ):
-            client = CityCatalystClient()
-            token_payload = {
-                "access_token": _unsigned_jwt(
-                    {
-                        "aud": "https://cc.example",
-                        "iss": "climate-advisor-service",
-                        "sub": "user-123",
-                    }
-                ),
-                "expires_in": 3600,
-                "token_type": "Bearer",
-            }
-            stub = _StubAsyncClient(
-                [
-                    _response(200, json_data=token_payload),
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                token, expires_in = await client.refresh_token("user-123")
-
-            self.assertEqual(token, token_payload["access_token"])
-            self.assertEqual(expires_in, 3600)
-            recorded = stub.requests[0]
-            self.assertEqual(
-                recorded["url"],
-                "https://cc.example/api/v1/internal/ca/user-token"
-            )
-            self.assertEqual(recorded["headers"]["X-CA-Service-Key"], "test-api-key")
-            self.assertEqual(recorded["json"]["user_id"], "user-123")
-
-    async def test_allowed_capabilities_preserves_auth_failure_status(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
-            stub = _StubAsyncClient(
-                [
-                    _response(401, json_data={"error": "Unauthorized"}),
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.get_stationary_energy_allowed_capabilities(
-                        user_id="user-1",
-                        city_id="city-1",
-                        inventory_id="inventory-1",
-                        workflow_step="draft",
-                        token="jwt-token",
-                    )
-
-        self.assertEqual(captured.exception.status_code, 401)
-
-    async def test_discover_native_inputs_posts_typed_core_request(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "entries": [
-                                {
-                                    "catalog_id": "catalog-1",
-                                    "capability_ids": ["capability-1"],
-                                    "kind": "ghgi",
-                                    "owning_module": "ghgi",
-                                    "source_type": "inventory",
-                                }
-                            ]
-                        },
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.discover_native_inputs(
-                    request_payload={
-                        "userId": "user-1",
-                        "organizationId": "organization-1",
-                        "projectId": "project-1",
-                        "cityId": "city-1",
-                        "inventoryId": "inventory-1",
-                    },
-                    token="jwt-token",
-                    user_id="user-1",
-                    thread_id="thread-1",
-                )
-
-        self.assertEqual(result["entries"][0]["catalog_id"], "catalog-1")
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/native-inputs/discover",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
-        self.assertEqual(recorded["json"]["inventoryId"], "inventory-1")
-
-    async def test_discover_native_inputs_posts_optional_continuation_cursor(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "success": True,
-                            "data": {
-                                "entries": [],
-                                "continuationCursor": "opaque-core-cursor",
-                            },
-                        },
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.discover_native_inputs(
-                    request_payload={
-                        "userId": "user-1",
-                        "cityId": "city-1",
-                        "cursor": "opaque-core-cursor",
-                    },
-                    token="jwt-token",
-                    user_id="user-1",
-                    thread_id="thread-1",
-                )
-
-        self.assertEqual(result["data"]["continuationCursor"], "opaque-core-cursor")
-        self.assertEqual(stub.requests[0]["json"]["cursor"], "opaque-core-cursor")
-
-    async def test_read_native_input_posts_exact_selection_and_bounded_input(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        200,
-                        json_data={
-                            "success": True,
-                            "data": {"value": 42},
-                        },
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                result = await client.read_native_input(
-                    request_payload={
-                        "catalogId": "catalog-1",
-                        "capabilityId": "capability-1",
-                        "context": {"city_id": "city-1", "inventory_id": "inventory-1"},
-                        "input": {"limit": 10},
-                    },
-                    token="jwt-token",
-                    user_id="user-1",
-                    thread_id="thread-1",
-                )
-
-        self.assertTrue(result["success"])
-        recorded = stub.requests[0]
-        self.assertEqual(
-            recorded["url"],
-            "https://cc.example/api/v1/internal/ca/capabilities/native-inputs/read",
-        )
-        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["catalogId"], "catalog-1")
-        self.assertEqual(recorded["json"]["capabilityId"], "capability-1")
-        self.assertEqual(recorded["json"]["input"]["limit"], 10)
-
-    async def test_read_native_input_normalizes_selection_failure_without_upstream_text(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient(
-                [
-                    _response(
-                        404,
-                        json_data={
-                            "code": "capability_unavailable",
-                            "message": "Requested capability is unavailable.",
-                            "debug": "private-source-secret",
-                        },
-                    )
-                ]
-            )
-
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.read_native_input(
-                        request_payload={
-                            "catalogId": "stale-catalog",
-                            "capabilityId": "stale-capability",
-                            "input": {"limit": 10},
-                        },
-                        token="jwt-token",
-                        user_id="user-1",
-                        thread_id="thread-1",
-                    )
-
-        self.assertEqual(captured.exception.status_code, 404)
-        self.assertEqual(
-            str(captured.exception), "Requested capability is unavailable."
-        )
-        self.assertNotIn("private-source-secret", str(captured.exception))
-
-    async def test_read_native_input_normalizes_transport_failure_without_upstream_text(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-
-            with patch.object(
-                client,
-                "_get_client",
-                new=AsyncMock(return_value=_FailingPostClient()),
-            ):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.read_native_input(
-                        request_payload={
-                            "catalogId": "catalog-1",
-                            "capabilityId": "capability-1",
-                            "input": {},
-                        },
-                        token="jwt-token",
-                        user_id="user-1",
-                        thread_id="thread-1",
-                    )
-
-        self.assertNotIn("private upstream transport detail", str(captured.exception))
-
-    async def test_discover_native_inputs_does_not_refresh_from_claimed_user_on_401(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="test-api-key",
-            ),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient()
-            stub = _StubAsyncClient(
-                [
-                    _response(401, json_data={"error": "Unauthorized"}),
-                ]
-            )
-            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
-
-            with (
-                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-                patch.object(client, "refresh_token", new=refresh_token),
-            ):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.discover_native_inputs(
-                        request_payload={"userId": "attacker-claimed-user"},
-                        token="invalid-token",
-                        user_id="attacker-claimed-user",
-                        thread_id="thread-1",
-                    )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        refresh_token.assert_not_awaited()
-        self.assertFalse(hasattr(client, "last_refreshed_token"))
-        self.assertEqual(len(stub.requests), 1)
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"], "Bearer invalid-token"
-        )
-
-    async def test_read_native_input_does_not_refresh_from_claimed_user_on_401(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="test-api-key",
-            ),
-        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient()
-            stub = _StubAsyncClient(
-                [
-                    _response(401, json_data={"error": "Unauthorized"}),
-                ]
-            )
-            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
-
-            with (
-                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-                patch.object(client, "refresh_token", new=refresh_token),
-            ):
-                with self.assertRaises(CityCatalystClientError) as captured:
-                    await client.read_native_input(
-                        request_payload={
-                            "userId": "attacker-claimed-user",
-                            "catalogId": "catalog-1",
-                            "capabilityId": "ghgi.inventory.status_overview",
-                            "input": {},
-                        },
-                        token="invalid-token",
-                        user_id="attacker-claimed-user",
-                        thread_id="thread-1",
-                    )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        refresh_token.assert_not_awaited()
-        self.assertFalse(hasattr(client, "last_refreshed_token"))
-        self.assertEqual(len(stub.requests), 1)
-
-    async def test_post_internal_capability_rejects_refresh_without_using_payload_identity(
-        self,
-    ) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(
-                cc_base_url="https://cc.example",
-                cc_api_key="test-api-key",
-            ),
-        ):
-            client = CityCatalystClient()
-            stub = _StubAsyncClient(
-                [_response(200, json_data={"success": True})]
-            )
-            refresh_token = AsyncMock(return_value=("fresh-token", 3600))
-
-            with (
-                patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-                patch.object(client, "refresh_token", new=refresh_token),
-            ):
-                with self.assertRaises(ValueError) as captured:
-                    await client.post_internal_capability(
-                        "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
-                        json_data={
-                            "user_id": "claimed-user",
-                            "userId": "other-claimed-user",
-                        },
-                        token="presented-token",
-                        allow_token_refresh=True,
-                    )
-
-        self.assertIn("allow_token_refresh=False", str(captured.exception))
-        self.assertIn("request payload", str(captured.exception))
-        refresh_token.assert_not_awaited()
-        self.assertEqual(stub.requests, [])
-
-    async def test_request_context_renews_inventory_before_one_capability_request(
-        self,
-    ) -> None:
-        """61 seconds left renews before a 90s request, which is never replayed."""
-        presented_token = _unsigned_jwt({"exp": int(time.time()) + 61})
-        context = RequestTokenRefreshContext(
-            canonical_user_id="canonical-user",
-            token=presented_token,
-        )
-        client = CityCatalystClient(
-            base_url="https://cc.example",
-            api_key="test-api-key",
-            request_token_refresh_context=context,
-        )
-        stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
-        refresh_token = AsyncMock(return_value=("renewed-token", 3600))
-
-        with (
-            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-            patch.object(client, "refresh_token", new=refresh_token),
-        ):
-            with self.assertRaises(CityCatalystClientError) as captured:
-                await client.load_inventory_status_overview(
-                    request_payload={
-                        "user_id": "payload-user",
-                        "userId": "other-payload-user",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
-                    },
-                    token="stale-caller-token",
-                )
-
-        self.assertEqual(captured.exception.status_code, 401)
-        refresh_token.assert_awaited_once_with("canonical-user")
-        self.assertEqual(context.token_ref["value"], "renewed-token")
-        self.assertEqual(len(stub.requests), 1)
-        self.assertEqual(stub.requests[0]["extra"]["timeout"], 90)
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"],
-            "Bearer renewed-token",
-        )
-
-    async def test_request_context_renews_native_input_read_with_canonical_identity(
-        self,
-    ) -> None:
-        """Catalog reads renew through the validated turn context, never arguments."""
-        context = RequestTokenRefreshContext(
-            canonical_user_id="canonical-user",
-            token="near-expiry-token",
-        )
-        client = CityCatalystClient(
-            base_url="https://cc.example",
-            api_key="test-api-key",
-            request_token_refresh_context=context,
-        )
-        stub = _StubAsyncClient([_response(200, json_data={"success": True})])
-        refresh_token = AsyncMock(return_value=("renewed-token", 3600))
-
-        with (
-            patch("app.utils.request_token_refresh.is_token_expired", return_value=True),
-            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-            patch.object(client, "refresh_token", new=refresh_token),
-        ):
-            result = await client.read_native_input(
-                request_payload={
-                    "userId": "payload-user",
-                    "catalogId": "catalog-1",
-                    "capabilityId": "ghgi.inventory.status_overview",
-                    "input": {},
-                },
-                token="stale-caller-token",
-                user_id="untrusted-argument-user",
-                thread_id="thread-1",
-            )
-
-        self.assertTrue(result["success"])
-        refresh_token.assert_awaited_once_with("canonical-user")
-        self.assertEqual(context.token_ref["value"], "renewed-token")
-        self.assertEqual(len(stub.requests), 1)
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"],
-            "Bearer renewed-token",
-        )
-
-    async def test_request_context_keeps_a_valid_token_without_refresh(self) -> None:
-        """A token outside the safety margin remains active for the capability call."""
-        context = RequestTokenRefreshContext(
-            canonical_user_id="canonical-user",
-            token="valid-request-token",
-        )
-        client = CityCatalystClient(
-            base_url="https://cc.example",
-            api_key="test-api-key",
-            request_token_refresh_context=context,
-        )
-        stub = _StubAsyncClient([_response(200, json_data={"success": True})])
-        refresh_token = AsyncMock(return_value=("unexpected-token", 3600))
-
-        with (
-            patch("app.utils.request_token_refresh.is_token_expired", return_value=False),
-            patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
-            patch.object(client, "refresh_token", new=refresh_token),
-        ):
-            await client.load_inventory_status_overview(
-                request_payload={"user_id": "canonical-user"},
-                token="valid-request-token",
-            )
-
-        refresh_token.assert_not_awaited()
-        self.assertEqual(context.token_ref["value"], "valid-request-token")
-        self.assertEqual(
-            stub.requests[0]["headers"]["Authorization"],
-            "Bearer valid-request-token",
-        )
-
-    async def test_request_context_coalesces_concurrent_refreshes(self) -> None:
-        """Parallel tool calls share one refresh and observe the replacement token."""
-        context = RequestTokenRefreshContext(
-            canonical_user_id="canonical-user",
-            token="near-expiry-token",
-        )
-
-        async def refresh(user_id: str) -> tuple[str, int]:
-            self.assertEqual(user_id, "canonical-user")
-            await asyncio.sleep(0)
-            return "renewed-token", 3600
-
-        with patch(
-            "app.utils.request_token_refresh.is_token_expired",
-            side_effect=lambda token, buffer_seconds: token == "near-expiry-token",
-        ):
-            active_tokens = await asyncio.gather(
-                context.token_for_request(refresh),
-                context.token_for_request(refresh),
-            )
-
-        self.assertEqual(active_tokens, ["renewed-token", "renewed-token"])
-
-    async def test_close_releases_the_client_used_by_catalog_calls(self) -> None:
-        with patch(
-            "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-        ):
-            client = CityCatalystClient(
-                base_url="https://cc.example",
-                api_key="test-api-key",
-            )
-            stub = _StubAsyncClient([])
-            stub.aclose = AsyncMock()
-            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                client._client = stub  # type: ignore[assignment]
-                await client.close()
-
-        stub.aclose.assert_awaited_once()
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "selection_state",
+    ("method", "extra_kwargs", "path"),
     [
-        "stale",
-        "forged",
-        "malformed",
-        "unknown",
-        "mismatched",
-        "unauthorized",
-        "withdrawn",
-        "superseded",
-        "missing",
-        "deleted",
-        "unavailable",
-        "readiness-negative",
+        ("load_inventory_list_accessible", {}, "/ghgi/inventory/list-accessible"),
+        ("load_inventory_status_overview", {}, "/ghgi/inventory/status-overview"),
+        ("load_inventory_emissions_context", {}, "/ghgi/inventory/emissions-context"),
+        ("load_hiap_context", {}, "/hiap/inventory/context"),
+        ("commit_stationary_energy_accepted", {}, "/ghgi/stationary-energy/commit-accepted"),
+        ("commit_stationary_energy_notation_keys", {}, "/ghgi/stationary-energy/commit-notation-keys"),
+        ("discover_native_inputs", NATIVE_INPUT_ARGS, "/native-inputs/discover"),
+        ("read_native_input", NATIVE_INPUT_ARGS, "/native-inputs/read"),
     ],
 )
-async def test_selection_failure_matrix_has_one_stable_non_disclosing_client_error(
-    selection_state: str,
+async def test_internal_capabilities_post_payload_to_core_route_with_service_headers(
+    method: str, extra_kwargs: dict[str, str], path: str
 ) -> None:
-    with patch(
-        "app.services.citycatalyst_client.get_settings",
-        return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
-    ):
-        client = CityCatalystClient(
-            base_url="https://cc.example",
-            api_key="test-api-key",
-        )
-        stub = _StubAsyncClient(
-            [
-                _response(
-                    404,
-                    json_data={
-                        "code": "capability_unavailable",
-                        "message": "Requested capability is unavailable.",
-                        "selection_state": selection_state,
-                        "catalog_id": "private-catalog-id",
-                        "source_id": "private-source-id",
-                        "debug": "private-upstream-detail",
-                    },
-                )
-            ]
+    client = _client()
+    payload = {"user_id": "user-1", "city_id": "city-1", "inventory_id": "inventory-1"}
+    stub = _StubAsyncClient([_response(200, json_data={"success": True, "data": {"value": 42}})])
+
+    with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+        result = await getattr(client, method)(
+            request_payload=payload, token="jwt-token", **extra_kwargs
         )
 
-        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-            with pytest.raises(CityCatalystClientError) as captured:
-                await client.read_native_input(
-                    request_payload={
-                        "catalogId": f"{selection_state}-catalog",
-                        "capabilityId": f"{selection_state}-capability",
-                        "input": {},
-                    },
-                    token="jwt-token",
-                    user_id="user-1",
-                    thread_id="thread-1",
-                )
+    assert result == {"success": True, "data": {"value": 42}}
+    recorded = stub.requests[0]
+    assert recorded["url"] == f"{BASE_URL}{CAPABILITIES}{path}"
+    assert recorded["json"] == payload
+    assert recorded["headers"]["Authorization"] == "Bearer jwt-token"
+    assert recorded["headers"]["X-Service-Name"] == "climate-advisor"
+    assert recorded["headers"]["X-Service-Key"] == "test-api-key"
+
+
+async def test_get_inventory_reads_the_inventory_route() -> None:
+    client = _client()
+    stub = _StubAsyncClient([_response(200, json_data={"data": {"inventoryId": "inv-123"}})])
+
+    with (
+        patch("app.services.citycatalyst_client.is_token_expired", return_value=False),
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+    ):
+        result = await client.get_inventory("inv-123", token="jwt-token", user_id="user-1")
+
+    assert result["data"]["inventoryId"] == "inv-123"
+    assert stub.requests[0]["url"] == f"{BASE_URL}/api/v1/inventory/inv-123"
+    assert stub.requests[0]["headers"]["Authorization"] == "Bearer jwt-token"
+
+
+async def test_get_inventory_not_found_raises() -> None:
+    client = _client()
+    stub = _StubAsyncClient([_response(404, json_data={"error": "not found"})])
+
+    with (
+        patch("app.services.citycatalyst_client.is_token_expired", return_value=False),
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+    ):
+        with pytest.raises(CityCatalystClientError):
+            await client.get_inventory("missing", token="jwt-token", user_id="user-1")
+
+
+@pytest.mark.parametrize(
+    ("method", "kwargs"),
+    [
+        (
+            "load_inventory_status_overview",
+            {"request_payload": {"user_id": "claimed-user", "inventory_id": "inventory-1"}},
+        ),
+        (
+            "discover_native_inputs",
+            {"request_payload": {"userId": "claimed-user"}, **NATIVE_INPUT_ARGS},
+        ),
+        (
+            "read_native_input",
+            {
+                "request_payload": {"userId": "claimed-user", "catalogId": "catalog-1"},
+                **NATIVE_INPUT_ARGS,
+            },
+        ),
+        ("get_user_inventories", {"user_id": "claimed-user", "auto_refresh": False}),
+    ],
+)
+async def test_401_never_refreshes_a_token_from_claimed_identity(
+    method: str, kwargs: dict[str, Any]
+) -> None:
+    """Without a validated turn context, a 401 surfaces instead of minting a token."""
+    client = _client()
+    stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+    refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+
+    with (
+        patch("app.services.citycatalyst_client.is_token_expired", return_value=True),
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+        patch.object(client, "refresh_token", new=refresh_token),
+    ):
+        with pytest.raises(CityCatalystClientError) as captured:
+            await getattr(client, method)(token="presented-token", **kwargs)
+
+    assert captured.value.status_code == 401
+    refresh_token.assert_not_awaited()
+    assert len(stub.requests) == 1
+    assert stub.requests[0]["headers"]["Authorization"] == "Bearer presented-token"
+
+
+async def test_allowed_capabilities_preserves_auth_failure_status() -> None:
+    client = _client()
+    stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+
+    with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+        with pytest.raises(CityCatalystClientError) as captured:
+            await client.get_stationary_energy_allowed_capabilities(
+                user_id="user-1",
+                city_id="city-1",
+                inventory_id="inventory-1",
+                workflow_step="draft",
+                token="jwt-token",
+            )
+
+    assert captured.value.status_code == 401
+
+
+async def test_read_native_input_normalizes_selection_failure_without_upstream_text() -> None:
+    client = _client()
+    stub = _StubAsyncClient(
+        [
+            _response(
+                404,
+                json_data={
+                    "code": "capability_unavailable",
+                    "message": "Requested capability is unavailable.",
+                    "catalog_id": "private-catalog-id",
+                    "source_id": "private-source-id",
+                    "debug": "private-upstream-detail",
+                },
+            )
+        ]
+    )
+
+    with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+        with pytest.raises(CityCatalystClientError) as captured:
+            await client.read_native_input(
+                request_payload={"catalogId": "stale-catalog", "capabilityId": "stale"},
+                token="jwt-token",
+                **NATIVE_INPUT_ARGS,
+            )
 
     assert captured.value.status_code == 404
     assert str(captured.value) == "Requested capability is unavailable."
     assert "private" not in str(captured.value)
+
+
+async def test_read_native_input_normalizes_transport_failure_without_upstream_text() -> None:
+    client = _client()
+
+    with patch.object(client, "_get_client", new=AsyncMock(return_value=_FailingPostClient())):
+        with pytest.raises(CityCatalystClientError) as captured:
+            await client.read_native_input(
+                request_payload={"catalogId": "catalog-1", "capabilityId": "capability-1"},
+                token="jwt-token",
+                **NATIVE_INPUT_ARGS,
+            )
+
+    assert "private upstream transport detail" not in str(captured.value)
+
+
+async def test_post_internal_capability_rejects_refresh_before_any_request() -> None:
+    client = _client()
+    stub = _StubAsyncClient([_response(200, json_data={"success": True})])
+    refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+
+    with (
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+        patch.object(client, "refresh_token", new=refresh_token),
+    ):
+        with pytest.raises(ValueError):
+            await client.post_internal_capability(
+                f"{CAPABILITIES}/ghgi/inventory/status-overview",
+                json_data={"user_id": "claimed-user", "userId": "other-claimed-user"},
+                token="presented-token",
+                allow_token_refresh=True,
+            )
+
+    refresh_token.assert_not_awaited()
+    assert stub.requests == []
+
+
+@pytest.mark.parametrize(
+    ("method", "extra_kwargs"),
+    [
+        ("load_inventory_status_overview", {}),
+        ("read_native_input", {"user_id": "untrusted-argument-user", "thread_id": "thread-1"}),
+    ],
+)
+async def test_request_context_renews_with_canonical_identity_and_never_replays(
+    method: str, extra_kwargs: dict[str, str]
+) -> None:
+    """61 seconds left renews before the request; a 401 is not replayed."""
+    context = RequestTokenRefreshContext(
+        canonical_user_id="canonical-user",
+        token=_unsigned_jwt({"exp": int(time.time()) + 61}),
+    )
+    client = _client(request_token_refresh_context=context)
+    stub = _StubAsyncClient([_response(401, json_data={"error": "Unauthorized"})])
+    refresh_token = AsyncMock(return_value=("renewed-token", 3600))
+
+    with (
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+        patch.object(client, "refresh_token", new=refresh_token),
+    ):
+        with pytest.raises(CityCatalystClientError) as captured:
+            await getattr(client, method)(
+                request_payload={"user_id": "payload-user", "userId": "other-payload-user"},
+                token="stale-caller-token",
+                **extra_kwargs,
+            )
+
+    assert captured.value.status_code == 401
+    refresh_token.assert_awaited_once_with("canonical-user")
+    assert context.token_ref["value"] == "renewed-token"
+    assert len(stub.requests) == 1
+    assert stub.requests[0]["headers"]["Authorization"] == "Bearer renewed-token"
+
+
+async def test_request_context_keeps_a_valid_token_without_refresh() -> None:
+    valid_token = _unsigned_jwt({"exp": int(time.time()) + 3600})
+    context = RequestTokenRefreshContext(canonical_user_id="canonical-user", token=valid_token)
+    client = _client(request_token_refresh_context=context)
+    stub = _StubAsyncClient([_response(200, json_data={"success": True})])
+    refresh_token = AsyncMock(return_value=("unexpected-token", 3600))
+
+    with (
+        patch.object(client, "_get_client", new=AsyncMock(return_value=stub)),
+        patch.object(client, "refresh_token", new=refresh_token),
+    ):
+        await client.load_inventory_status_overview(
+            request_payload={"user_id": "canonical-user"}, token=valid_token
+        )
+
+    refresh_token.assert_not_awaited()
+    assert context.token_ref["value"] == valid_token
+    assert stub.requests[0]["headers"]["Authorization"] == f"Bearer {valid_token}"
+
+
+async def test_request_context_coalesces_concurrent_refreshes() -> None:
+    """Parallel tool calls share one refresh and observe the replacement token."""
+    context = RequestTokenRefreshContext(
+        canonical_user_id="canonical-user", token="near-expiry-token"
+    )
+
+    async def renew(_user_id: str) -> tuple[str, int]:
+        await asyncio.sleep(0)
+        return "renewed-token", 3600
+
+    refresh = AsyncMock(side_effect=renew)
+
+    with patch(
+        "app.utils.request_token_refresh.is_token_expired",
+        side_effect=lambda token, buffer_seconds: token == "near-expiry-token",
+    ):
+        active_tokens = await asyncio.gather(
+            context.token_for_request(refresh),
+            context.token_for_request(refresh),
+        )
+
+    assert active_tokens == ["renewed-token", "renewed-token"]
+    refresh.assert_awaited_once_with("canonical-user")

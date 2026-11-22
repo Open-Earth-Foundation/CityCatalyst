@@ -3,28 +3,21 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class SectionEvidence(BaseModel):
-    """Evidence for the section at the same position in the input array."""
-
-    model_config = ConfigDict(extra="forbid")
-    excerpts: list[str] = Field(default_factory=list, max_length=20)
-    caveats: list[str] = Field(default_factory=list, max_length=10)
-
-
 class DocumentMappingReading(BaseModel):
-    """One mapping result with an entry for every supplied section, in order."""
+    """One partition's summary, topics and exact quotations; the backend locates each quote."""
 
     model_config = ConfigDict(extra="forbid")
     summary: str = Field(min_length=1, max_length=3000)
     topics: list[str] = Field(default_factory=list, max_length=30)
-    sections: list[SectionEvidence]
+    excerpts: list[str] = Field(default_factory=list, max_length=60)
 
 
 class QuestionReading(BaseModel):
-    """Question evidence aligned to every supplied section, including empty ones."""
+    """Exact quotations answering one question; the backend locates each quote."""
 
     model_config = ConfigDict(extra="forbid")
-    sections: list[SectionEvidence]
+    excerpts: list[str] = Field(default_factory=list, max_length=60)
+    caveats: list[str] = Field(default_factory=list, max_length=10)
 
 
 class ChapterTaggedExcerpt(BaseModel):
@@ -35,27 +28,25 @@ class ChapterTaggedExcerpt(BaseModel):
     chapter_refs: list[str] = Field(min_length=1, max_length=50)
 
 
-class ChapterSectionEvidence(BaseModel):
-    """Chapter evidence for the section at the same position in the input array."""
+class ChapterEvidenceSection(BaseModel):
+    """Quotations found while reviewing one section; the entry's position is never used."""
 
     model_config = ConfigDict(extra="forbid")
-    excerpts: list[ChapterTaggedExcerpt] = Field(default_factory=list, max_length=20)
+    excerpts: list[ChapterTaggedExcerpt] = Field(default_factory=list, max_length=100)
 
 
 class ChapterEvidenceReading(BaseModel):
-    """Chapter-tagged evidence with an entry for every supplied section, in order."""
+    """A section-by-section checklist of chapter-tagged quotations; the backend locates each quote."""
 
     model_config = ConfigDict(extra="forbid")
-    sections: list[ChapterSectionEvidence]
+    sections: list[ChapterEvidenceSection]
 
 
 class ReadableExcerpt(BaseModel):
-    """An exact quotation with a human-readable document location."""
+    """An exact quotation; the backend finds its location in the source."""
 
     model_config = ConfigDict(extra="forbid")
     text: str = Field(min_length=1, max_length=4000)
-    page: int | None = Field(default=None, ge=1)
-    heading: str | None = None
 
 
 class ChapterExcerptChoice(BaseModel):
@@ -63,11 +54,11 @@ class ChapterExcerptChoice(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     chapter_ref: str = Field(min_length=1, max_length=255)
-    excerpts: list[ReadableExcerpt] = Field(default_factory=list, max_length=20)
+    excerpts: list[ReadableExcerpt] = Field(default_factory=list, max_length=300)
 
 
 class ChapterEvidenceSelection(BaseModel):
-    """Per-chapter quotation choices for chapters with more candidates than their quota."""
+    """Prioritized quotation choices for chapters over their token budget."""
 
     model_config = ConfigDict(extra="forbid")
     chapters: list[ChapterExcerptChoice] = Field(default_factory=list, max_length=100)

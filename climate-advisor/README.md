@@ -718,7 +718,7 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the `prompts.cnb_source_*` entries map document partitions, reduce them to
   compact document summaries, read focused questions for exact evidence, and
-  (`cnb_source_chapter_evidence` and `cnb_source_chapter_evidence_selection`)
+  (the chapter evidence reader prompts and `cnb_source_chapter_evidence_selection`)
   choose exact quotations for each template chapter's required fields
 - `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
   its single tool returns the chapter numbers that the source affects
@@ -776,10 +776,17 @@ Above the window, or when a source cannot be re-read, `source_text.mode` is
 `concept_note_sources_query` as before.
 
 Each selected source keeps up to `max_key_excerpts` (8) quotations for the whole
-document and, once an application template is selected, up to
-`max_chapter_excerpts` (8) quotations per template chapter, chosen for that
-chapter's required fields by one chapter-evidence reading of the complete source
-(plus one selection call for chapters with more candidates). The drafter
+document. Once an application template is selected, the source is read for
+each chapter's required fields. One reader call per partition reviews each section in turn and returns the
+quotations it finds, tagged with the chapters they serve. The reader never
+states a location: each quotation is found in the source by its text, ignoring
+punctuation and spacing, so a miscounted section cannot misplace or drop it.
+
+The service verifies quotations against the source and drops contained passages
+within the same page or Markdown block. Chapters above
+`max_chapter_excerpt_tokens` (24,000) go through a selector. The service keeps
+its choices first and fills the remaining budget across pages. A budget of zero
+skips selection. Each chapter stores up to 300 verified quotations. The drafter
 receives only the current chapter's quotations, and the edit planner and
 reviewer read them in each chapter's `source_excerpts`. Chapter quotations
 carry a fingerprint of the template requirements and settings; a funding change

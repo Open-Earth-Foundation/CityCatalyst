@@ -35,11 +35,14 @@ class SourceExcerpt(ContextBundleContract):
         return self
 
 
+MAX_CHAPTER_EXCERPTS = 300
+
+
 class ChapterExcerpts(ContextBundleContract):
     """Exact quotations kept for one template chapter's required fields."""
 
     chapter_ref: str = Field(min_length=1, max_length=255)
-    excerpts: list[SourceExcerpt] = Field(min_length=1, max_length=20)
+    excerpts: list[SourceExcerpt] = Field(min_length=1, max_length=MAX_CHAPTER_EXCERPTS)
 
 
 class SelectedSource(ContextBundleContract):

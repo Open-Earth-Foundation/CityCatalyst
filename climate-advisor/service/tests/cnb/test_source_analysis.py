@@ -20,7 +20,6 @@ from app.models.cnb.source_prompt import (
     DocumentMappingReading,
     DocumentSummary,
     QuestionReading,
-    SectionEvidence,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
@@ -49,7 +48,7 @@ async def test_source_worker_uses_live_stream_and_validates_result(
 ):
     settings, client = analysis_dependencies
     stream = AsyncMock(return_value=SimpleNamespace(final_output={
-        "sections": [{"excerpts": ["Drainage upgrades"], "caveats": []}],
+        "excerpts": ["Drainage upgrades"], "caveats": [],
     }))
     monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
     with bind_cnb_progress(AsyncMock()):
@@ -61,12 +60,11 @@ async def test_source_worker_uses_live_stream_and_validates_result(
             input_text="Drainage upgrades",
             client=client,
             runner=Runner,
-            expected_sections=1,
         )
     stream.assert_awaited_once()
     assert stream.call_args.kwargs["stage"] == "reading"
     assert stream.call_args.kwargs["run_config"].tracing_disabled
-    assert result.sections[0].excerpts == ["Drainage upgrades"]
+    assert result.excerpts == ["Drainage upgrades"]
 
 
 class FakeRunner:
@@ -87,36 +85,21 @@ class FakeRunner:
             self.reader_tools.append(agent.tools)
             await asyncio.sleep(0.001)
             self.covered_pages.extend(section.get("page", 0) for section in payload["sections"])
-            sections = [
-                SectionEvidence(excerpts=["Drainage upgrades"] if "Drainage upgrades" in section["text"] else [], caveats=[])
-                for section in payload["sections"]
-            ]
+            excerpts = ["Drainage upgrades" for section in payload["sections"] if "Drainage upgrades" in section["text"]]
             self.active -= 1
             output = (
-                DocumentMappingReading(summary="Mapped source partition.", topics=["drainage"], sections=sections)
-                if output_type is DocumentMappingReading else QuestionReading(sections=sections)
+                DocumentMappingReading(summary="Mapped source partition.", topics=["drainage"], excerpts=excerpts)
+                if output_type is DocumentMappingReading else QuestionReading(excerpts=excerpts)
             )
         elif output_type is DocumentSummary:
             output = DocumentSummary(
                 summary="The plan describes city drainage priorities.",
                 topics=["drainage", "Drainage"],
-                key_excerpts=[excerpt for item in payload["partition_maps"] for excerpt in item["excerpts"]],
+                key_excerpts=[{"text": excerpt["text"]} for item in payload["partition_maps"] for excerpt in item["excerpts"]],
             )
         else:
             raise AssertionError(f"Unexpected output type: {output_type}")
         return SimpleNamespace(final_output=output)
-
-
-class IncompleteCoverageRunner(FakeRunner):
-    """Claim the wrong segment identity to exercise fail-closed coverage."""
-
-    async def run(self, agent, input_text: str):
-        result = await super().run(agent, input_text)
-        if isinstance(result.final_output, DocumentMappingReading):
-            result.final_output = result.final_output.model_copy(
-                update={"sections": []}
-            )
-        return result
 
 
 @pytest_asyncio.fixture
@@ -350,27 +333,6 @@ async def test_native_markdown_uses_stable_block_anchors_without_pages(
 
 
 @pytest.mark.asyncio
-async def test_incomplete_reader_coverage_fails_the_document(
-    analysis_dependencies,
-) -> None:
-    settings, client = analysis_dependencies
-    with pytest.raises(SourceAnalysisError) as failure:
-        await analyze_document(
-            upload_id=uuid4(),
-            filename="plan.pdf",
-            source_label=None,
-            sha256="a" * 64,
-            pages=[SourcePage(number=1, text="\nDrainage upgrades")],
-            settings=settings,
-            client=client,
-            runner=IncompleteCoverageRunner(),
-        )
-    assert failure.value.code == "incomplete_source_coverage"
-    assert failure.value.reason == "reader_section_count_mismatch"
-    assert failure.value.details == {"expected_sections": 1, "returned_sections": 0}
-
-
-@pytest.mark.asyncio
 async def test_query_question_is_bounded_before_reader_fan_out(
     analysis_dependencies,
 ) -> None:
@@ -415,7 +377,7 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
             "openai/gpt-5.6-terra",
             "medium",
             QuestionReading,
-            {"sections": [{"excerpts": [], "caveats": []}]},
+            {"excerpts": [], "caveats": []},
         ),
         (
             "cnb_source_synthesizer",
@@ -495,7 +457,6 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
             input_text="No budget is stated.",
             client=client,
             runner=LocalRunner,
-            expected_sections=1 if role == "cnb_source_reader" else None,
         )
 
     assert result == output_type.model_validate(output)
@@ -508,9 +469,6 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
     assert not request.get("tools")
     assert request["text"]["format"]["type"] == "json_schema"
     assert request["text"]["format"]["strict"] is True
-    if role == "cnb_source_reader":
-        sections = request["text"]["format"]["schema"]["properties"]["sections"]
-        assert sections["minItems"] == sections["maxItems"] == 1
 
 
 def _set_reader_model(settings: Settings, _: Path) -> None:
@@ -578,75 +536,6 @@ def test_every_analysis_input_invalidates_the_reuse_contract(change, tmp_path) -
     current_contract = source_analysis_contract_version(settings)
     change(settings, tmp_path)
     assert source_analysis_contract_version(settings) != current_contract
-
-
-class SmallGroupCoverageRunner(FakeRunner):
-    """Simulate a reader that omits sections in larger groups, including empty ones."""
-
-    async def run(self, agent, input_text: str):
-        result = await super().run(agent, input_text)
-        if isinstance(result.final_output, (DocumentMappingReading, QuestionReading)):
-            if len(result.final_output.sections) > 1:
-                result.final_output = result.final_output.model_copy(
-                    update={"sections": result.final_output.sections[:-1]}
-                )
-        return result
-
-
-@pytest.mark.asyncio
-async def test_incomplete_groups_are_reread_without_losing_pages_or_citations(
-    analysis_dependencies,
-) -> None:
-    settings, client = analysis_dependencies
-    pages = [
-        SourcePage(number=i, text="Drainage upgrades" if i == 4 else "Blank section")
-        for i in range(1, 5)
-    ]
-    runner = SmallGroupCoverageRunner()
-    source = await analyze_document(
-        upload_id=uuid4(),
-        filename="plan.pdf",
-        source_label=None,
-        sha256="a" * 64,
-        pages=pages,
-        settings=settings,
-        client=client,
-        runner=runner,
-    )
-    assert source.page_count == 4
-    assert any(excerpt.page == 4 for excerpt in source.key_excerpts)
-    assert runner.max_active <= 3
-    result = await query_document(
-        upload_id=source.upload_id,
-        source_label="plan.pdf",
-        pages=pages,
-        question="Drainage?",
-        settings=settings,
-        client=client,
-        runner=runner,
-    )
-    assert result.units_processed == 4
-    assert result.found
-    assert any(excerpt.page == 4 for excerpt in result.excerpts)
-
-
-@pytest.mark.asyncio
-async def test_coverage_recovery_has_a_finite_limit(analysis_dependencies) -> None:
-    settings, client = analysis_dependencies
-    runner = IncompleteCoverageRunner()
-    with pytest.raises(SourceAnalysisError) as failure:
-        await analyze_document(
-            upload_id=uuid4(),
-            filename="plan.pdf",
-            source_label=None,
-            sha256="a" * 64,
-            pages=[SourcePage(number=i, text="Drainage upgrades") for i in range(1, 9)],
-            settings=settings,
-            client=client,
-            runner=runner,
-        )
-    assert failure.value.reason == "reader_section_count_mismatch"
-    assert len(runner.reader_tools) <= 7
 
 
 @pytest.mark.parametrize(

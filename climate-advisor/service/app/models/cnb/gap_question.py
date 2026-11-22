@@ -76,27 +76,6 @@ class GapSubQuestion(BaseModel):
     # Several options can apply together, so the UI lets the user select each one.
     multiple: bool = False
 
-    @classmethod
-    def stored_remainder(cls, question: str) -> "GapSubQuestion":
-        """Return a persisted narrowed question exactly, even above the generation cap.
-
-        Only a remainder that was already stored may exceed the cap, because
-        marker edits reject longer new questions before they are saved, so
-        reopening it must still show the exact text.
-        """
-        if len(question) <= MAX_GAP_QUESTION_CHARS:
-            return cls(question=question, options=[])
-        if not question.strip():
-            raise ValueError("A stored remainder must be nonempty.")
-        # Free-text fields are fixed, so no validator can reject the stored text.
-        return cls.model_construct(
-            question=question,
-            options=[],
-            where_to_find="",
-            confirms=False,
-            multiple=False,
-        )
-
     @field_validator("options")
     @classmethod
     def validate_options(cls, value: list[str]) -> list[str]:

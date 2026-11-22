@@ -48,9 +48,10 @@ whenever the question allows a meaningful choice. For a financing instrument
 these might be Loan, Grant and Guarantee. Categories are possible user answers,
 not verified project facts. Never preselect an answer.
 Each option must be one specific answer on the same dimension as the others.
-Never add an option that stands for other options or for no particular answer,
-such as Other, Another entity, Both, All of these, A combination, Mixed or
-Shared: the UI already offers a free-text answer. Set multiple to true when
+The UI always adds a free-text answer and Not decided yet, so never add an
+option that stands for other options or for no particular answer, such as
+Other, Not decided yet, Another entity, Both, All of these, A combination,
+Mixed or Shared. Set multiple to true when
 several options can apply at once, such as the co-financing sources or the
 partners of a project, so the user selects each one that applies (up to eight
 options); set it to false when exactly one option can be true.
@@ -58,8 +59,6 @@ For an exact amount, date, name, location, or other factual detail without
 defensible alternatives, use an empty options list so the user can write it.
 Do not fabricate amounts, entities, commitments, or source citations. Do not
 turn unrelated evidence snippets into mutually exclusive answers.
-The UI always adds a free-text answer and Not decided yet; do not include
-Other, Not decided yet, or similar options.
 source_suggestions are unverified values found in the user's uploaded sources;
 the UI shows each one with its source next to your questions. For a part a
 suggestion covers, do not ask for it from scratch: ask the user to confirm it,

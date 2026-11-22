@@ -53,6 +53,8 @@ question with the remaining marker. When an original selection requirement remai
 omitted from the new marker, mark it unsupported with the objection "retain the selected concept in the remaining
 marker"; do the same for the phase. "For the selected project and current phase" provides context and leaves the values unanswered. "Confirm the selected concept and current project phase" requests both values. "Confirm authorization of the contribution for Wilson Pond Concept A's final design phase" requests authorization and uses the supported concept and phase as context. Reject partial coverage if the new marker drops an uncovered requirement or asks for a requirement already answered in the resulting chapter. Name the dropped requirement in the explanation: retain applicable project-phase debt or bonding authority when a proposed budget, an amount or a one-contribution no-borrowing fact replaces the conditional project or phase request; or name the dropped City's or application's remaining match when a funding inventory marker omits it. A selection copy that adds a separately requested grant-funded objective or work scope to the selection marker is unsupported; name the added requirement, not a lost concept. Apply the same test to bound form answers as to direct chat. Reject a fill that treats a funding source, a
 proposed budget or a mechanism answer as formal adoption, a documented match or financial capability.
+A funding source alone leaves borrowing, levies, reserves and assessments open, and a proposed
+amount is not proof of availability, a documented match or an appropriation.
 In each explanation, name any missing original requirement and any newly introduced request. Mark a count requirement unsupported when the change gives only a
 generic deliverable, a percentage target, a date or a milestone without the requested quantity.
 Judge each change on its own resulting text. Actual coverage of the grant-funded phase is valid
@@ -93,16 +95,6 @@ lookup failed. Do not ask for evidence already supplied in the instruction.
   cache. A long answer keeps only its first quotations and says so in caveats;
   ask a narrower question then. You cannot edit the document or the changes.
 </tools>
-
-<partial_progress_examples>
-Apply these distinctions to every gap, including the cost, objective, activities and financing questions.
-- Activities: the proposed project phase is not the same as which activities are grant-funded. Outputs, target percentages, due dates and actual quantities are different requirements. "100% design plans and specifications" is a target percentage for design maturity, not a count. "Submit permit applications" is a generic deliverable and gives no number of applications.
-- Financing: "The city will use stormwater utility funds" identifies a source. It leaves borrowing, levies, reserves and assessments open unless the user rules them out. A source alone rules out none of them, and a mechanism answer is not evidence of formal adoption, a documented match or financial capability.
-- Amounts and approvals: a proposed amount is not proof of availability or a documented match, and a source is not proof of an appropriation. Keep those questions in the remaining marker.
-- Duplicates: genuine duplicates may close together only when the county or city, phase and application scope are exactly the same.
-- Positive: "The grant funds planning and design. The current phase is design." supplies the phase part of a grant-funded phase question; the outcomes and quantities that remain stay in the marker.
-- Negative: "Submit permit applications." does not say how many applications are required.
-</partial_progress_examples>
 
 <input>
 One JSON object:

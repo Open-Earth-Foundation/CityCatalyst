@@ -31,24 +31,20 @@ A form answer and an ordinary chat message can both supply facts for open gaps. 
 
 For each marker, compare the entire original question and current question with the user's new facts, the same gap's saved answers, and its accepted passages. Keep earlier accepted facts that are still needed for the original question. A user correction takes precedence over older answers. Use source and run-context evidence only under the existing provenance rules. A reference to a place, a topic or a selection is evidence only for what it explicitly establishes; a site name does not select the design alternative or phase.
 
-Full coverage: replace the marker with grounded prose that supplies the rest of the answer. The resulting chapter must state every requested part of the original scope. Apply the same test independently to any other marker with a similar question. Partial coverage: replace the complete old marker with prose giving the new supported facts and exactly one new `[Information needed: …]` marker in the same position asking only for all remaining parts. Preserve every unanswered requirement of the original scope and omit every part that the chapter now states. A labelled estimate may be written with a remainder when its confirmation is still requested there. If the user supplies no substantive fact for a gap, leave its marker untouched. Use clarification only when there is no supported edit to propose.
+Full coverage: replace the marker with grounded prose that supplies the rest of the answer. The resulting chapter must state every requested part of the original scope. Apply the same test independently to any other marker with a similar question. Partial coverage: replace the complete old marker with prose giving the new supported facts and exactly one new `[Information needed: …]` marker in the same position asking only for all remaining parts. Preserve every unanswered requirement of the original scope and omit every part that the chapter now states; a separate marker does not carry an uncovered requirement for this gap. A known concept or phase may identify a contribution in a remaining authorization question. A labelled estimate may be written with a remainder when its confirmation is still requested there. If the user supplies no substantive fact for a gap, leave its marker untouched. Use clarification only when there is no supported edit to propose.
 
-For each requirement of the original question, identify the evidence and verify that the resulting chapter states the answer. Ask directly for every uncovered requirement of that gap. A separate marker does not carry an uncovered requirement for this gap. A known concept or phase may identify a contribution in a remaining authorization question. If the resulting chapter covers the entire original question, remove its marker. An estimate still awaiting confirmation follows the estimate rules below.
-
-A partial transition must be real progress. Before proposing it, compare the exact
-current marker and the original marker, the requirements of the original question,
-the resulting text and the authorized evidence for each new fact, then ask whether
-each new fact covers an actual request. Preserve each open requirement and scope
+A partial transition must be real progress: each new fact, backed by authorized
+evidence, covers an actual request, and the remaining marker keeps every scope
 qualifier. A rewrite that only repeats the question with the selected project or
 phase name is no partial transition: reject it or leave that marker intact. A cost or
 objective question may take actual coverage of the grant-funded phase, while its
 marker keeps the cost, eligibility, objective, funded scope and outcome parts that
 remain unstated.
 
-Coverage examples for the same comparison:
-- Selection: the original marker asks which site and design, including A, B, C or another defined project scope. Site A alone leaves "which design alternative at A"; the user's explicit choice of A's design fills it. Keep alternatives as alternatives. A separately requested grant-funded objective or work scope stays in its own marker and is never added to the selection.
-- Capability: a proposed contribution's funding source or specific proposed budget covers only that component. A proposed budget, an amount or a one-contribution no-borrowing fact leaves the capability evidence, available local match, applicable project-phase debt or bonding authority and authorized official outstanding. Keep the conditional debt or bonding request until the same scope answers it.
-- Funding inventory: record confirmed pieces of a local contribution and keep asking for the City's or application's remaining match, plus the source, amount, status and match of each remaining funding item across the original classes. A generic proposed budget or availability date supplies no match evidence.
+Coverage examples:
+- Selection: Site A alone leaves "which design alternative at A" open; the user's explicit choice of A's design fills it. Keep alternatives as alternatives. A separately requested grant-funded objective or work scope stays in its own marker.
+- Capability: a contribution's funding source, proposed budget, amount or no-borrowing fact covers only that component. Keep the available local match, applicable project-phase debt or bonding authority and authorized official until the same scope answers them. Do not write "adopted", "matched" or "committed" from these answers.
+- Funding inventory: record confirmed pieces of a local contribution and keep asking for the City's or application's remaining match and the source, amount, status and match of each remaining funding item. A generic proposed budget or availability date supplies no match evidence.
 A neighboring marker that earns zero new coverage keeps its literal question. If review rejects an optional change for dropping an original requirement, repair that change from the original scope or drop it before proposing again. Apply these comparisons to direct chat and bound form answers alike.
 
 “Not decided yet”, “Not answered yet”, “I don't know” and “ask Maria” do not supply a missing fact. A selected form category is a choice, and its wording may be generic. Express any explicit choice as natural project-specific prose. Never paste option labels, form questions or instructions into the draft as answers. An unambiguous name or domain term can appear in a grounded sentence. A label such as “Combine these measures” supplies no details by itself. Never infer a concept letter, amount, phase, approval or commitment from it.
@@ -215,12 +211,6 @@ Input is a JSON object containing:
 Example: `[Information needed: State the local financing instrument and amount.]` with “The city will use stormwater utility funds” becomes `The city will use its stormwater utility funds for its contribution. [Information needed: What amount will the city contribute?]`. “The city's contribution is USD 2,500,000” in a later message replaces only the remaining marker, leaving the instrument in the chapter. “Wilson Pond” gives the location alone. A gap asking about the financing for a selected concept and phase still needs those particulars unless the user or cited evidence supplies them.
 </gap_fill_example>
 
-<financing_two_round_example>
-Round 1 gives a site name, the utility source and a proposed, unadopted 2027 budget. Write the source and budget status, and keep one marker for the selected alternative, actual phase, amount, timing and mechanisms: `The city will fund its contribution from its proposed 2027 stormwater utility budget. [Information needed: Which design alternative is selected, which phase is current, what is the local contribution amount, when will the funds be available, and will any borrowing, levy, reserve draw, assessment or additional utility financing arrangement be used?]`
-Round 2 states the alternative (Wilson Pond Concept A), the phase (final design, permitting and construction), the amount (USD 2,500,000), and the timing (January 2027). The user states that the stormwater utility will fund the contribution and that no borrowing, levy, reserve draw, assessment, or additional utility financing arrangement will be used. Write those facts, keep the contribution's proposed 2027 budget status and lack of adoption or authorization, and remove this marker. Keep an unknown additional arrangement in the remaining marker only when the original question demands it. Do not write "adopted", "matched" or "committed" from these answers.
-An optional edit to a checked-instrument marker that gives only the utility source and amount must keep "Which phase is current" and the selected alternative in its remaining marker, or be omitted.
-</financing_two_round_example>
-
 <partial_progress_examples>
 Apply these distinctions to every gap, including the cost, objective, activities and financing questions.
 - Activities: the proposed project phase is not the same as which activities are grant-funded. Outputs, target percentages, due dates and actual quantities are different requirements. "100% design plans and specifications" is a target percentage for design maturity, not a count. "Submit permit applications" is a generic deliverable and gives no number of applications.
@@ -230,6 +220,7 @@ Apply these distinctions to every gap, including the cost, objective, activities
 - Positive: "The grant funds planning and design. The current phase is design." supplies the phase part of a grant-funded phase question; the outcomes and quantities that remain stay in the marker.
 - Negative: "Submit permit applications." does not say how many applications are required.
 </partial_progress_examples>
+
 <output>
 Tool calls use JSON objects with these arguments:
 - propose_structure: chapters (ordered array of 1-100 objects), each with

@@ -2256,71 +2256,35 @@ The standalone suggestions below are hidden while the latest message has choices
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
 in the same chapter are skipped), each with zero or two to five answer categories
-and a `where_to_find` hint (kind of document or office, never a citation). Options
-never include catch-all choices such as Other, Both or A combination; when
-several options can apply, the question sets `multiple: true` (up to 8 options)
-and the UI shows checkboxes. The
+and a `where_to_find` hint (kind of document or office, never a citation). The
 gap's source suggestions are sent as unverified values: each value gets its own
 confirmation (`confirms: true`, no options), for which the UI shows its own
 "still correct" choice and a field for the changed value, and no other question
 asks for a confirmed value again. A reply with more than 4 questions is trimmed to
 the first 4 instead of failing; the dropped parts stay open for the next round.
-A question with options asks one choice about one thing; values and per-item
-statuses get their own free-text questions, and questions are never conditional.
-`earlier_answers` in the model input holds the answers saved on this gap version
-(`answered_so_far`, below); the route reads them from the gap, not from the
-browser. The model asks only for what they miss and may return no questions when
-they cover the gap. The form sends earlier and new answers together, so a gap
-with more parts than four questions can still be completed over several rounds.
-When the chapter says the work behind a part does not exist yet (a study,
-survey, permit decision, rating or design not commissioned or pending), the
-questions ask for its timing, owner and any interim estimate, never its results.
-When the chapter, accepted or earlier answers, or source values disagree on a
-value, the questions ask which one is correct instead of picking one.
+The model also receives the answers saved on this gap version (`earlier_answers`)
+and asks only for what they miss. A narrowed gap returns its stored remaining
+question without a model call.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
-The form's edit request binds the answer to its gap: `concept_note_edit.scope`
-carries `gap_id`, `gap_version` and `answer_complete`. Planning fails with
-`gap_changed` when that gap is no longer open at that version. A partial answer
-may not remove any marker, so the form does not send it to the chat: it saves it
-with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers`
-(`{gap_version, answers, expected_previous}`, 204). `expected_previous` is the
-saved text the form last saw (`null` when none; empty text counts as `null`).
-The save runs only when the newest saved answers still match it, under the gap
-row lock; otherwise it returns 409 with nothing written, which covers both a gap
-that is no longer open at that version and saved answers changed by someone
-else. Empty `answers` clears them. The answers are stored as a
-`partial_answer` row in `concept_note_gap_resolutions` with its `gap_version`,
-and the gap response lists the newest one as `answered_so_far` while the gap is
-open at that version, for every viewer of the run. `concept_note_gaps` shows the
-same field to the chat agent. A complete answer is saved the same way and then
-sent to the chat, and the chat turn starts only after that 204. A 409 or
-other failure sends nothing and keeps the form and its typed answers; a 409
-also reloads the workspace, and the user reopens the gap to save again. It
-replaces its gap's marker and may also
-fill another chapter's marker that asks for the same information when the
-answers state everything it asks for (duplicate gaps); the planner prompt and
-the semantic review judge that. Acceptance closes the answered gap only at that
-version, plus any duplicate it filled, which hides the saved answers. A rejected
-turn loses nothing, because the answers stay saved. The
-planner and reviewer prompts also forbid replacing a marker with text saying
-the information is missing or undecided.
-Estimates: a hedged answer ("roughly 2 million, not confirmed yet") and, when
-the user asks for a value, one derived from figures the draft, a source or the
-user state (such as a sum of component costs) may fill a marker as a labelled
-estimate that names its basis. The planner marks that replacement
-`estimate: true` (a factual change); the reviewer rejects an estimate without a
-label or basis. Accepting it moves the gap to the existing `caveat` state
-(resolution `answer`, the estimate text) instead of `resolved`. The gap list
-keeps caveat gaps after the open ones as "Estimate — to be confirmed", the
-chapter shows "N estimates to confirm", and the export preflight names them;
-they do not block export. "Confirm in chat" opens the gap form for a caveat gap
-(the gap-question route accepts `caveat`); the planner sees the gap's current
-`estimate` and replaces it, and accepting a complete bound answer resolves the
-gap (or keeps it a caveat at a new version for a new estimate), together with
-any caveat gap in another chapter whose estimate text the same answer replaces.
-A value no one states and no stated figure yields is never estimated, and
-names, partners and commitments are never estimated.
+
+Gap answers:
+- Binding: the form's edit request carries `gap_id`, `gap_version` and
+  `answer_complete` in `concept_note_edit.scope`. Planning fails with
+  `gap_changed` when that gap version is no longer open, and acceptance closes
+  only that gap version plus any duplicate gap the same answer fully covers.
+- Partial answers: answers that do not cover the whole gap are saved on the gap
+  version with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers` (a
+  `partial_answer` resolution, shown as `answered_so_far` to the UI, the
+  gap-question model and the chat agent). A reviewed edit may narrow a marker to
+  one new marker asking only for the remaining parts; the gap keeps its identity,
+  moves to a new version and records its original question and accepted
+  passages in `answer_progress` (CNB migration `20261121_120000`).
+- Estimates: a hedged user value, or one derived from stated figures when the
+  user asks, may fill a marker as a labelled estimate that names its basis
+  (`estimate: true`). Accepting it leaves the gap in the `caveat` state, listed
+  as an estimate to confirm without blocking export; a later bound answer that
+  replaces the estimate resolves it. Values no one states are never estimated.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

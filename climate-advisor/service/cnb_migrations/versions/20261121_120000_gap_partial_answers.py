@@ -1,4 +1,4 @@
-"""Save partial gap-form answers on their gap version.
+"""Save partial gap-form answers and accepted narrowing progress per gap.
 
 Revision ID: 20261121_120000
 Revises: 20261111_120000
@@ -6,6 +6,7 @@ Revises: 20261111_120000
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision = "20261121_120000"
 down_revision = "20261111_120000"
@@ -20,7 +21,8 @@ ACTIONS = "'answer', 'correction', 'not_a_gap', 'defer_as_caveat', 'evidence_upd
 
 
 def upgrade() -> None:
-    """Allow a partial_answer event that names the gap version it answers."""
+    """Allow versioned partial_answer events and add nullable gap answer progress."""
+    # Partial answers name the gap version they answer.
     op.add_column(
         "concept_note_gap_resolutions",
         sa.Column("gap_version", sa.Integer(), nullable=True),
@@ -33,10 +35,18 @@ def upgrade() -> None:
         "concept_note_gap_resolutions",
         f"action IN ({ACTIONS}, 'partial_answer')",
     )
+    # Accepted narrowing progress; existing gaps start as SQL NULL.
+    op.add_column(
+        "concept_note_gaps",
+        sa.Column(
+            "answer_progress", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
+    )
 
 
 def downgrade() -> None:
-    """Drop saved partial answers; resolved gaps and their answers are kept."""
+    """Drop narrowing progress and saved partial answers; resolved gaps are kept."""
+    op.drop_column("concept_note_gaps", "answer_progress")
     op.execute(
         "DELETE FROM concept_note_gap_resolutions WHERE action = 'partial_answer'"
     )

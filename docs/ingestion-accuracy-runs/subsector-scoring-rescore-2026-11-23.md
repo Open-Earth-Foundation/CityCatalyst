@@ -6,6 +6,8 @@ All re-scores are local (`--rescore`, no DB, LLM, OCR or vendor call). Expected 
 
 ## Before and after
 
+The per-attempt `results.json` and `extracted-values.json` files of these runs were removed before merge. They are in commit [`80faf7ebd`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/80faf7ebd8a7f9f45297265b1f81a1cbd7931da4/docs/ingestion-accuracy-runs).
+
 | Run | Measure | Version 2 | Version 3 | Re-score folder |
 | --- | --- | --- | --- | --- |
 | CC-1311 envelopes C-015 to C-021 (`2026-11-20-1237-df11e0909-originals-v2`) | Provisional recall | 68% | 86% | [`2026-11-23-1245-9a7d361aa-originals-v2-3`](2026-11-23-1245-9a7d361aa-originals-v2-3/report.md) |

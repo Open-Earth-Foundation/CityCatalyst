@@ -218,18 +218,28 @@ Two things also change points without a command: a change of setup, and the read
 
 A fictional point: the requested funding amount, a required point. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
 
+```mermaid
+flowchart TB
+  C["Created"] -->|"found in a file"| F1["Found"]
+  C -->|"nothing found"| M["Missing"]
+  M -->|"a file or an answer is added"| F2["Found later"]
+  F1 & F2 --> OK["Confirmed by the model<br/>the user can change or remove it"]
+  OK --> DR["Draft"] --> DI["Disagreement"] --> PA["Parked"] --> RE["Resolved"]
+```
+
 | Step | Answer | Evidence | Work | Text | What the user sees |
 |---|---|---|---|---|---|
 | 1. The setup creates the point | none | nothing | active | not written | Missing |
-| 2. The first files are read. None states the amount | none | nothing found | active | not written | Missing, needs a file or an answer |
-| 3. The user adds file A. It is read | none | A is waiting | active | not written | Found, to confirm |
-| 4. The owner confirms A on the card next to the chat | 4.2 million, from A | nothing | done | not written | Confirmed |
+| 2a. File A is already there. It is read | none | value found | active | not written | Found |
+| 2b. The first files are read. None states the amount | none | nothing found | active | not written | Missing, needs a file or an answer |
+| 3b. The user adds file A, or answers. It is read | none | value found | active | not written | Found |
+| 4. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | Confirmed |
 | 5. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | Confirmed |
 | 6. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | Confirmed · Documents disagree |
 | 7. The owner parks it for the finance director | 4.2 million, from A | B differs | waiting | current | Confirmed · Documents disagree · Waiting |
-| 8. The answer arrives and the owner confirms B | 3.9 million, from B | nothing | done | to review | Confirmed · Text change to review |
+| 8. The answer arrives and the owner picks B | 3.9 million, from B | nothing | done | to review | Confirmed · Text change to review |
 
-Where today's code differs: in step 2 nothing tells the user that reading found nothing, and "Help me find it" does not exist. In steps 6 and 7 the status is "conflict" and the point is not counted as covered. In step 6 the file can only be added in the Context tab, and the chat shows nothing. In step 7 the point is listed under Waiting. In step 8 the whole confirmed chapter gets one proposed change.
+Where today's code differs: in step 2b nothing tells the user that reading found nothing, and "Help me find it" does not exist. In step 4 nothing counts until a person confirms it. In steps 6 and 7 the status is "conflict" and the point is not counted as covered. In step 6 the file can only be added in the Context tab, and the chat shows nothing. In step 7 the point is listed under Waiting. In step 8 the whole confirmed chapter gets one proposed change.
 
 ### 4.5 Five rules
 

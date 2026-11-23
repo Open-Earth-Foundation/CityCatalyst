@@ -8,6 +8,7 @@ import {
   NO_CAUSE_VERDICTS,
   PARTIAL_REASONS,
   VERDICTS,
+  escapeTableCell,
   type GoldWorkbook,
   type ModelStatus,
   type ScoredRow,
@@ -249,12 +250,12 @@ function summaryBlock(s: ScoreSummary, warning?: string): string {
 const EXAMPLES_PER_GROUP = 5;
 const EXAMPLE_CHARS = 300;
 
-/** One table cell: one line, cut at 300 characters, pipes escaped. */
+/** One table cell: one line, cut at 300 characters, backslashes and pipes escaped. */
 function exampleCell(text: string): string {
   const flat = text.replace(/\s+/g, " ").trim();
   const cut =
     flat.length > EXAMPLE_CHARS ? flat.slice(0, EXAMPLE_CHARS) + "…" : flat;
-  return cut.replace(/\|/g, "\\|");
+  return escapeTableCell(cut);
 }
 
 // Code-unit order, so the examples do not depend on the machine's locale.

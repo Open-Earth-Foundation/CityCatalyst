@@ -17,12 +17,22 @@ import {
   parseLog,
   recoverPartRanges,
 } from "../scripts/crva-eval/score-run";
-import type {
-  GoldWorkbook,
-  ModelStatus,
-  ScoredRow,
-  Verdict,
+import {
+  escapeTableCell,
+  type GoldWorkbook,
+  type ModelStatus,
+  type ScoredRow,
+  type Verdict,
 } from "../scripts/crva-eval/types";
+
+describe("escapeTableCell", () => {
+  it("escapes backslashes first, then every pipe", () => {
+    expect(escapeTableCell("a|b|c")).toBe("a\\|b\\|c");
+    expect(escapeTableCell("C:\\dir")).toBe("C:\\\\dir");
+    // An already-escaped pipe must not become a column break.
+    expect(escapeTableCell("x \\| y | z")).toBe("x \\\\\\| y \\| z");
+  });
+});
 
 function row(overrides: Partial<ScoredRow>): ScoredRow {
   return {
@@ -822,11 +832,8 @@ describe("examples where model and gold differ", () => {
 
   it("cuts long text at 300 characters and keeps the table intact", () => {
     const t = sub("Partial: missing_figure (1 rows, 1 shown)");
-    // Cut at 300 characters of the text, then escape the pipe for the table.
-    const cut = `62% of the city | ${long}`
-      .slice(0, 300)
-      .replace("|", "\\|")
-      .concat("…");
+    // Cut at 300 characters of the text (18 + 282), then escape the pipe.
+    const cut = `62% of the city \\| ${"x".repeat(282)}…`;
     expect(t).toContain(
       `| A2.4 | 62% | ${cut} | most of the city | why A2.4 62% |`,
     );

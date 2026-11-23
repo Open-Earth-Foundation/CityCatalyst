@@ -65,6 +65,14 @@ export function formatPartPages(ranges: PartRange[]): string {
     .join(", ");
 }
 
+/**
+ * Escapes text for a Markdown table cell: backslashes first, then every pipe,
+ * so a "\|" already in the text cannot turn into an unescaped column break.
+ */
+export function escapeTableCell(text: string): string {
+  return text.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+}
+
 /** One row of the Gold tab (the human-made answer key). */
 export interface GoldRow {
   /** 1-based row in the Sheet, so reports can point back to it. */

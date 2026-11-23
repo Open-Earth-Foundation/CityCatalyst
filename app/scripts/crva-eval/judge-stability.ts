@@ -11,7 +11,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { ACCEPTED, coverage, precision, summarize } from "./report";
 import { modelsFromLog, readLog } from "./score-run";
-import type { ScoredRow } from "./types";
+import { escapeTableCell, type ScoredRow } from "./types";
 
 const MAX_CHANGED = 50;
 
@@ -148,7 +148,7 @@ const pct = (hits: number, total: number) =>
   total === 0 ? "n/a" : `${((hits / total) * 100).toFixed(1)}%`;
 const share = (hits: number, total: number) =>
   `${hits} of ${total} (${pct(hits, total)})`;
-const cell = (s: string) => s.replace(/\|/g, "\\|").replace(/\s+/g, " ");
+const cell = (s: string) => escapeTableCell(s).replace(/\s+/g, " ");
 
 export function judgeStabilityMarkdown(
   a: ScoredRow[],

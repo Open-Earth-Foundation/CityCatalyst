@@ -18,6 +18,7 @@ import {
   ERROR_CAUSES,
   PARTIAL_REASONS,
   VERDICTS,
+  escapeTableCell,
   type ScoredRow,
 } from "./types";
 
@@ -318,7 +319,7 @@ export function agreement(records: Record<string, string>[]): Agreement {
 
 const pct = (n: number, d: number) =>
   d ? `${((100 * n) / d).toFixed(1)}%` : "n/a";
-const cell = (s: string) => s.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+const cell = (s: string) => escapeTableCell(s).replace(/\r?\n/g, " ");
 
 export function calibrationMarkdown(a: Agreement, blind = false): string {
   const passed = a.rate !== null && a.rate >= AGREEMENT_TARGET;

@@ -1,0 +1,37 @@
+[
+  {
+    "gpc": "II.1.1",
+    "scope": "1",
+    "valueT": 28633200,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.2.1",
+    "scope": "1",
+    "valueT": 160100,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.3.1",
+    "scope": "1",
+    "valueT": 956000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.4.1",
+    "scope": "1",
+    "valueT": 4048200,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "II.5.1",
+    "scope": "1",
+    "valueT": 200,
+    "omit": false,
+    "notation": null
+  }
+]

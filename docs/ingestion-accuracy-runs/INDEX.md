@@ -13,3 +13,9 @@ One line per benchmark run, oldest first. Open the report for per-case numbers a
 | 2026-11-19 03:36 | `c5dec265a` | 1 | n/a | n/a | $0.127 | [2026-11-19-0336-c5dec265a](./2026-11-19-0336-c5dec265a/report.md) |
 | 2026-11-20 12:37 (exploratory) pipeline=precomputed:originals-v2 | `df11e0909` | 7 | n/a | n/a | n/a | [2026-11-20-1237-df11e0909-originals-v2](./2026-11-20-1237-df11e0909-originals-v2/report.md) · [MLflow](https://mlflow-dev.openearth.dev/#/experiments/12/runs/50a1fec9f068482798b0a60c7d08ce01) |
 | 2026-11-20 12:40 (exploratory) pipeline=precomputed:originals-v2 | `df11e0909` | 4 | n/a | n/a | n/a | [2026-11-20-1240-df11e0909-originals-v2](./2026-11-20-1240-df11e0909-originals-v2/report.md) · [MLflow](https://mlflow-dev.openearth.dev/#/experiments/12/runs/7dba254b66ee4e2d86862469bf6bee80) |
+| 2026-11-23 12:45 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `9a7d361aa` | 10 | n/a | n/a | n/a | [2026-11-23-1245-9a7d361aa-originals-v2](./2026-11-23-1245-9a7d361aa-originals-v2/report.md) |
+| 2026-11-23 12:45 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `9a7d361aa` | 1 | n/a | n/a | n/a | [2026-11-23-1245-9a7d361aa-originals-v2-2](./2026-11-23-1245-9a7d361aa-originals-v2-2/report.md) |
+| 2026-11-23 12:45 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `9a7d361aa` | 7 | n/a | n/a | n/a | [2026-11-23-1245-9a7d361aa-originals-v2-3](./2026-11-23-1245-9a7d361aa-originals-v2-3/report.md) |
+| 2026-11-23 12:45 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `9a7d361aa` | 4 | n/a | n/a | n/a | [2026-11-23-1245-9a7d361aa-originals-v2-4](./2026-11-23-1245-9a7d361aa-originals-v2-4/report.md) |
+| 2026-11-23 12:45 (rescore) | `9a7d361aa` | 10 | n/a | n/a | $5.43 | [2026-11-23-1245-9a7d361aa](./2026-11-23-1245-9a7d361aa/report.md) |
+| 2026-11-23 12:46 (rescore) | `9a7d361aa` | 1 | n/a | n/a | $0.127 | [2026-11-23-1246-9a7d361aa](./2026-11-23-1246-9a7d361aa/report.md) |

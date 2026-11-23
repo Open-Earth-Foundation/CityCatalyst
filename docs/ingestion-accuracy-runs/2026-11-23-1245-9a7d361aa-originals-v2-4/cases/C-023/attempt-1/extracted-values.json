@@ -1,0 +1,23 @@
+[
+  {
+    "gpc": "I.1",
+    "scope": null,
+    "valueT": 1510000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "I.2",
+    "scope": null,
+    "valueT": 1613000,
+    "omit": false,
+    "notation": null
+  },
+  {
+    "gpc": "V.2",
+    "scope": "1",
+    "valueT": -247000,
+    "omit": true,
+    "notation": null
+  }
+]

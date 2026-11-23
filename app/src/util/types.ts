@@ -472,6 +472,8 @@ export interface ActivityDataByScope {
   /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
   datasource_source_type: string | null;
   activities?: ActivityValue[];
+  /** GPC refs of subsector values not split by scope; shown as IE in scope columns (CC-1311). */
+  unsplitReferences?: string[];
 }
 
 /** A stored value left out of BASIC/BASIC+ totals: percentage is always null */

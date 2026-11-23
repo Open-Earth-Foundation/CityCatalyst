@@ -182,6 +182,13 @@ describe("subsector-level GPC references", () => {
     expect(
       Object.keys(unsplit.scopes).filter((k) => /^[123]$/.test(k)),
     ).toEqual([]);
+    // The table shows IE for it (GPC Table 2.1), not 0.
+    expect(unsplit.unsplitReferences).toEqual(["I.3"]);
+    expect(Object.keys(unsplit.scopes)).toEqual([]);
+    const scoped = energy.byScope.find(
+      (r) => r.totalEmissions.toString() === "100000",
+    )!;
+    expect(scoped.unsplitReferences ?? []).toEqual([]);
   });
 
   it("an eCRF sheet with a subsector subtotal keeps only its children", async () => {

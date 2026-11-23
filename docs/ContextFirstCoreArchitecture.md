@@ -414,7 +414,7 @@ Two grants for one city show that reading carries over between grants. Generalit
 | 8 | Is it accepted that a new file no longer rechecks the chapters it affects? | Yes | The file creates candidates. The chapter is checked again when a point changes. |
 | 9 | Is the release path "pilot, then one merge"? | Yes | No rollout city by city (6.2). |
 | 12 | Which city and which two grants are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
-| 13 | Does only the owner change a point during the pilot? | Yes | "Waiting on others" is a name and a note. Documents shared by a city are a later change. |
+| 13 | Who may change a point? | **Decided:** every contributor | Every contributor to the document, through the same command. "Waiting on others" is a name and a note. |
 
 **Set aside (was 10).** Whether an existing concept note must reach a final export without starting again. There are no production users yet (6.4).
 

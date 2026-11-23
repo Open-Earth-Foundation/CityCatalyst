@@ -23,8 +23,6 @@ import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-err
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
 import { H } from "@/lib/highlight";
 import { db } from "@/models";
-import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import { OAuthClient } from "@/models/OAuthClient";
 import { Organization } from "@/models/Organization";
 import { logger } from "@/services/logger";
 import {
@@ -460,17 +458,13 @@ export function apiHandler(
                 "Service-to-service token validated",
               );
             } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-              // OAuth validation path for regular client tokens. Only a token
-              // signed with the OAuth key counts. Invite, verification and
-              // other shared-secret tokens never reach a session here.
+              // Resource-server path: trust RS256 tokens (identity OP or legacy
+              // local key until CC-1278 fully cuts over to JWKS). Client and
+              // grant tables live in core-identity-service (CC-1283).
               if (kind !== "oauth") {
                 throw new createHttpError.Unauthorized(
                   "Invalid or expired access token",
                 );
-              }
-              const client = await OAuthClient.findByPk(token.client_id);
-              if (!client) {
-                throw new createHttpError.Unauthorized("Invalid client");
               }
               if (!token.scope) {
                 throw new createHttpError.Unauthorized("Token missing scope");
@@ -500,16 +494,6 @@ export function apiHandler(
                   );
                 }
               }
-              const authz = await OAuthClientAuthz.findOne({
-                where: {
-                  clientId: token.client_id,
-                  userId: token.sub,
-                },
-              });
-              if (!authz) {
-                throw new createHttpError.Unauthorized("Authorization revoked");
-              }
-              await authz.update({ lastUsed: new Date() });
               session = await makeOAuthUserSession(token);
             } else {
               throw new createHttpError.Unauthorized(

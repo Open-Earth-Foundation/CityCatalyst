@@ -13,7 +13,6 @@ export interface UserAttributes {
   name?: string;
   pictureUrl?: string;
   email?: string;
-  passwordHash?: string;
   role?: Roles;
   created?: Date;
   lastUpdated?: Date;
@@ -24,10 +23,6 @@ export interface UserAttributes {
   preferredLanguage?: string;
   defaultCityId?: string | null;
   numberFormat?: string;
-  // Two factor auth settings
-  twoFactorEnabled?: boolean;
-  twoFactorSecret?: string | null;
-  twoFactorRecoveryHashes?: string[];
   /** Set on successful sign-in. Retention uses this as the inactivity clock. */
   lastActiveAt?: Date | null;
   /** Set when retention replaces identifying fields. The row stays for foreign keys. */
@@ -40,7 +35,6 @@ export type UserOptionalAttributes =
   | "name"
   | "pictureUrl"
   | "email"
-  | "passwordHash"
   | "role"
   | "created"
   | "lastUpdated"
@@ -49,9 +43,6 @@ export type UserOptionalAttributes =
   | "preferredLanguage"
   | "defaultCityId"
   | "numberFormat"
-  | "twoFactorEnabled"
-  | "twoFactorSecret"
-  | "twoFactorRecoveryHashes"
   | "lastActiveAt"
   | "anonymizedAt";
 export type UserCreationAttributes = Optional<
@@ -67,7 +58,6 @@ export class User
   declare name?: string;
   declare pictureUrl?: string;
   declare email?: string;
-  declare passwordHash?: string;
   declare role?: Roles;
   declare created?: Date;
   declare lastUpdated?: Date;
@@ -76,9 +66,6 @@ export class User
   declare preferredLanguage?: LANGUAGES;
   declare defaultCityId?: string | null;
   declare numberFormat?: string;
-  declare twoFactorEnabled?: boolean;
-  declare twoFactorSecret?: string | null;
-  declare twoFactorRecoveryHashes?: string[];
   declare lastActiveAt?: Date | null;
   declare anonymizedAt?: Date | null;
 
@@ -229,11 +216,6 @@ export class User
           allowNull: true,
           unique: "User_email_key",
         },
-        passwordHash: {
-          type: DataTypes.CHAR(60),
-          allowNull: true,
-          field: "password_hash",
-        },
         role: {
           type: DataTypes.TEXT,
           allowNull: true,
@@ -267,23 +249,6 @@ export class User
           type: DataTypes.STRING(255),
           allowNull: true,
           field: "number_format",
-        },
-        twoFactorEnabled: {
-          type: DataTypes.BOOLEAN,
-          allowNull: true,
-          defaultValue: false,
-          field: "two_factor_enabled",
-        },
-        twoFactorSecret: {
-          type: DataTypes.TEXT,
-          allowNull: true,
-          field: "two_factor_secret",
-        },
-        twoFactorRecoveryHashes: {
-          type: DataTypes.ARRAY(DataTypes.TEXT),
-          allowNull: true,
-          defaultValue: [],
-          field: "two_factor_recovery_hashes",
         },
         lastActiveAt: {
           type: DataTypes.DATE,

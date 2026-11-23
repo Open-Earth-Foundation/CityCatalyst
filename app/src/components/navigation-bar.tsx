@@ -16,10 +16,7 @@ import {
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import {
-  buildIdentityEndSessionUrl,
-  isIdentityLoginEnabledClient,
-} from "@/lib/identity-config";
+import { buildIdentityEndSessionUrl } from "@/lib/identity-config";
 
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
@@ -217,15 +214,12 @@ export function NavigationBar({
           ? `${window.location.origin}${loginPath}`
           : loginPath;
 
-      if (isIdentityLoginEnabledClient()) {
-        const endSessionUrl = buildIdentityEndSessionUrl(postLogout);
-        await signOut({ redirect: false });
-        if (endSessionUrl) {
-          window.location.href = endSessionUrl;
-          return;
-        }
+      const endSessionUrl = buildIdentityEndSessionUrl(postLogout);
+      await signOut({ redirect: false });
+      if (endSessionUrl) {
+        window.location.href = endSessionUrl;
+        return;
       }
-
       signOut({ callbackUrl: "/auth/login", redirect: true });
     });
   }

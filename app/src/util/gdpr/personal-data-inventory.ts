@@ -38,16 +38,10 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
       "role",
       "defaultCityId",
       "defaultInventoryId",
-      "twoFactorEnabled",
       "lastActiveAt",
       "anonymizedAt",
       "created",
       "lastUpdated",
-    ],
-    omittedFields: [
-      "passwordHash",
-      "twoFactorSecret",
-      "twoFactorRecoveryHashes",
     ],
   },
   {
@@ -193,13 +187,6 @@ export const PERSONAL_DATA_INVENTORY: PersonalDataDataset[] = [
       "lastUpdated",
     ],
     omittedFields: ["tokenHash"],
-  },
-  {
-    table: "OAuthClientAuthz",
-    purpose: "OAuth clients the person authorized.",
-    legalBasis: "Contract (Art. 6(1)(b)).",
-    idFields: ["clientId", "userId"],
-    fields: ["clientId", "userId", "lastUsed", "created"],
   },
   {
     table: "WebhookSubscription",

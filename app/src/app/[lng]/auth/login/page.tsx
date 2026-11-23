@@ -1,69 +1,20 @@
 "use client";
 
-import EmailInput from "@/components/email-input";
-import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Input, Link, Text } from "@chakra-ui/react";
-import { Field } from "@/components/ui/field";
-import { TFunction } from "i18next";
-import { useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, use, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Box, Heading, Text } from "@chakra-ui/react";
+import { useSearchParams } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { UseSuccessToast } from "@/hooks/Toasts";
 import { useLogin } from "@/hooks/useLogin";
-import { LabelLarge } from "@/components";
-import { api } from "@/services/api";
-import { emailPattern } from "@/util/validation";
-
-export type LoginInputs = {
-  email: string;
-  password: string;
-  securityToken: string;
-};
-
-// allow either 6-digit numerical codes or 10-digit hex codes separated by an optional - in the middle
-const securityCodePattern = /^([0-9]{6}|[0-9a-f]{5}-?[0-9a-f]{5})$/i;
-
-function VerifiedNotification({ t }: { t: TFunction }) {
-  const searchParams = useSearchParams();
-  const isVerified = !!searchParams.get("verification-code");
-
-  const { showSuccessToast } = UseSuccessToast({
-    title: t("verified-toast-title"),
-    description: t("verified-toast-description"),
-  });
-
-  useEffect(() => {
-    if (isVerified) {
-      showSuccessToast();
-    }
-  }, [isVerified, showSuccessToast]);
-
-  return null;
-}
+import {
+  getIdentityPublicConfig,
+  isIdentityLoginEnabledClient,
+} from "@/lib/identity-config";
 
 export default function Login(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
-
-  const {
-    login,
-    loginWithIdentity,
-    isLoading,
-    error,
-    clearError,
-    identityLoginEnabled,
-  } = useLogin();
-  const router = useRouter();
-  const {
-    handleSubmit,
-    register,
-    watch,
-    formState: { errors },
-  } = useForm<LoginInputs>();
-  // Gates native form submit until the client handlers are attached (E2E/hydration).
+  const { loginWithIdentity, isLoading, error } = useLogin();
   const [isFormReady, setIsFormReady] = useState(false);
   useEffect(() => {
     setIsFormReady(true);
@@ -72,90 +23,33 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
   let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
-
-  // next-auth's redirect callback throws on anything that isn't a relative
-  // path or same-origin absolute URL, so discard anything else here
   if (callbackUrl && !callbackUrl.startsWith("/")) {
     callbackUrl = "";
   }
-
-  // only redirect to user invite page as a fallback if there is a token present in the search params
-  if (!callbackUrl) {
-    if (!("token" in queryParams)) {
-      callbackUrl = `/`;
-    }
+  if (!callbackUrl && !("token" in queryParams)) {
+    callbackUrl = `/`;
   }
 
-  // redirect to dashboard if user is already authenticated
-  useSession();
+  const identityConfigured =
+    isIdentityLoginEnabledClient() || getIdentityPublicConfig() != null;
 
-  const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
-    title: t("verified-toast-title"),
-    description: t("verified-toast-description"),
-  });
-
-  // check if account with given email has 2FA enabled when the user exits the email field
-  const currentEmail = watch("email");
-  const [check2FAStatus, { data: secondFactorEnabled }] =
-    api.useLazyCheckSecondFactorAuthQuery();
-  const run2FAStatusCheck = async () => {
-    const isValidEmail = emailPattern.test(currentEmail);
-    if (isValidEmail) {
-      return await check2FAStatus({ email: currentEmail })
-        .unwrap()
-        .catch((error) => {
-          console.log("2FA status check error:", error);
-        });
-    }
-  };
-  const showSecurityToken = secondFactorEnabled?.enabled ?? false;
-  const fullError =
-    error == "invalid-email-or-password" && showSecurityToken
-      ? "invalid-email-password-or-security-code"
-      : error;
-
-  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
-    const status = await run2FAStatusCheck();
-    if (status?.enabled && data.securityToken?.length < 6) {
-      return;
-    }
-
-    clearError();
-    const result = await login(data, callbackUrl || `/${lng}/`);
-
-    if (result.success) {
-      showLoginSuccessToast();
-    }
-  };
-
-  // Extract doesInvitedUserExist from callback params
-  // If it is true, redirect to /user/invites page
-  // If it is false, redirect to /auth/signup page
-  // Check if the callbackUrl contains a query string
-  const hasQueryString = callbackUrl.includes("?");
-  // Split the URL into path and query string (if query string exists)
-  const [path, queryString] = hasQueryString
-    ? callbackUrl.split("?")
-    : [callbackUrl, ""];
-  const callbackUrlParams = new URLSearchParams(queryString);
-  const doesInvitedUserExist = callbackUrlParams.get("doesInvitedUserExist");
-
-  if (doesInvitedUserExist && doesInvitedUserExist !== "true") {
-    // remove the doesInvitedUserExist param from the callbackUrl
-    callbackUrlParams.delete("doesInvitedUserExist");
-    const updatedCallbackUrl = `${path}?${callbackUrlParams.toString()}`;
-    return router.push(
-      "/auth/signup/?callbackUrl=" + encodeURIComponent(updatedCallbackUrl),
-    );
-  }
-
-  if (identityLoginEnabled) {
-    return (
-      <Box>
-        <Heading size="xl">{t("login-heading")}</Heading>
-        <Text my={4} color="content.tertiary">
-          {t("login-identity-details")}
+  return (
+    <Box>
+      <Heading size="xl">{t("login-heading")}</Heading>
+      <Text my={4} color="content.tertiary">
+        {t("login-identity-details")}
+      </Text>
+      {error ? (
+        <Text color="semantic.danger" mb={4}>
+          {error}
         </Text>
+      ) : null}
+      {!identityConfigured ? (
+        <Text color="semantic.danger">
+          Identity login is not configured. Set NEXT_PUBLIC_IDENTITY_ISSUER and
+          NEXT_PUBLIC_IDENTITY_CLIENT_ID.
+        </Text>
+      ) : (
         <Button
           type="button"
           data-testid="identity-login-button"
@@ -168,105 +62,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
         >
           {t("log-in-with-identity")}
         </Button>
-        <Suspense>
-          <VerifiedNotification t={t} />
-        </Suspense>
-      </Box>
-    );
-  }
-
-  return (
-    <Box>
-      <Heading size="xl">{t("login-heading")}</Heading>
-      <Text my={4} color="content.tertiary">
-        {t("login-details")}
-      </Text>
-      <form
-        noValidate
-        data-testid="login-form"
-        data-ready={isFormReady ? "true" : "false"}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Box display="flex" flexDirection="column" gap="16px">
-          <EmailInput
-            register={register}
-            error={errors.email}
-            t={t}
-            inputProps={{ onBlur: run2FAStatusCheck }}
-          />
-          <PasswordInput
-            register={register}
-            error={errors.password}
-            t={t}
-            validate={(value) =>
-              value.length >= 8 || t("min-length", { length: 8 })
-            }
-          />
-          {showSecurityToken && (
-            <Field
-              label={<LabelLarge>{t("security-code")}</LabelLarge>}
-              invalid={!!errors.securityToken}
-              errorText={errors.securityToken?.message}
-            >
-              <Input
-                type="text"
-                placeholder={t("security-code-placeholder")}
-                size="lg"
-                shadow="2dp"
-                background={
-                  !!errors.securityToken
-                    ? "sentiment.negativeOverlay"
-                    : "background.default"
-                }
-                {...register("securityToken", {
-                  required: t("security-code-required"),
-                  pattern: {
-                    value: securityCodePattern,
-                    message: t("security-code-invalid"),
-                  },
-                })}
-              />
-            </Field>
-          )}
-          <Text color="semantic.danger">{t(fullError)}</Text>
-          <Box w="full" textAlign="right">
-            <Link href="/auth/forgot-password" textDecoration="underline">
-              {t("forgot-password")}
-            </Link>
-          </Box>
-          <Button
-            type="submit"
-            formNoValidate
-            loading={isLoading}
-            disabled={!isFormReady || isLoading}
-            h={16}
-            width="full"
-            bgColor="interactive.secondary"
-          >
-            {t("log-in")}
-          </Button>
-        </Box>
-      </form>
-      {callbackUrl.includes("token") && (
-        <Text
-          w="full"
-          textAlign="center"
-          mt={4}
-          fontSize="sm"
-          color="content.tertiary"
-        >
-          {t("no-account")}{" "}
-          <Link
-            href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            textDecoration="underline"
-          >
-            {t("sign-up")}
-          </Link>
-        </Text>
       )}
-      <Suspense>
-        <VerifiedNotification t={t} />
-      </Suspense>
     </Box>
   );
 }

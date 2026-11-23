@@ -143,8 +143,6 @@ export const dsarCollectors: Record<string, DsarCollector> = {
       { userId: subject.userId },
       { attributes: { exclude: ["tokenHash"] } },
     ),
-  OAuthClientAuthz: (subject) =>
-    findCollected(db.models.OAuthClientAuthz, { userId: subject.userId }),
   WebhookSubscription: (subject) =>
     findCollected(
       db.models.WebhookSubscription,

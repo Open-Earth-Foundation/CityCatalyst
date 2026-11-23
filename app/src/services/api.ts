@@ -2158,51 +2158,6 @@ export const api = createApi({
         transformResponse: (response: { data: CityLocationResponse[] }) =>
           response.data,
       }),
-      getClients: builder.query<Client[], void>({
-        query: () => `client/`,
-        transformResponse: (response: { data: Client[] }) => response.data,
-        providesTags: ["Client"],
-      }),
-      addClient: builder.mutation({
-        query: ({
-          redirectUri,
-          name,
-          description,
-        }: {
-          redirectUri: string;
-          name: Record<string, string>;
-          description: Record<string, string>;
-        }) => ({
-          method: "POST",
-          url: `/client/`,
-          body: {
-            redirectUri,
-            name,
-            description,
-          },
-        }),
-        transformResponse: (response: { data: Client }) => response.data,
-        invalidatesTags: ["Client"],
-      }),
-      deleteClient: builder.mutation<void, string>({
-        query: (clientId: string) => ({
-          method: "DELETE",
-          url: `/client/${clientId}`,
-        }),
-        invalidatesTags: ["Client"],
-      }),
-      getAuthzs: builder.query<Authz[], void>({
-        query: () => `/user/clients/`,
-        transformResponse: (response: { data: Authz[] }) => response.data,
-        providesTags: ["Authz"],
-      }),
-      revokeAuthz: builder.mutation<void, string>({
-        query: (clientId: string) => ({
-          method: "DELETE",
-          url: `/user/clients/${clientId}/`,
-        }),
-        invalidatesTags: ["Authz"],
-      }),
       enableProjectModuleAccess: builder.mutation({
         query: (data: { projectId: string; moduleId: string }) => ({
           method: "POST",
@@ -3138,12 +3093,7 @@ export const {
   useGetCityHIAPDashboardQuery,
   useGetCityCCRADashboardQuery,
   useGetCityDashboardQuery,
-  useGetClientQuery,
-  useGenerateCodeMutation,
   useGetUserPermissionsQuery,
-  useGetClientsQuery,
-  useAddClientMutation,
-  useDeleteClientMutation,
   useEnableProjectModuleAccessMutation,
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,

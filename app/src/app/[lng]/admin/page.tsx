@@ -15,7 +15,6 @@ import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
 import { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
-import OAuthClientList from "@/app/[lng]/admin/OAuthClientList";
 import ManageModulesList from "@/app/[lng]/admin/ManageModulesList";
 import ManageWebhooksList from "@/app/[lng]/admin/ManageWebhooksList";
 import { api } from "@/services/api";
@@ -43,7 +42,6 @@ import { OrganizationRole } from "@/util/types";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import type { TFunction } from "i18next";
 
 interface OrgData {
@@ -255,9 +253,6 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
             <TabTrigger title="bulk-actions" t={t} />
             <TabTrigger title="manage-modules" t={t} />
             <TabTrigger title="manage-webhooks" t={t} />
-            {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
-              <TabTrigger title="oauth-clients" t={t} />
-            )}
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
           <Tabs.Content value="organizations">
@@ -586,11 +581,6 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
           <Tabs.Content value="manage-webhooks">
             <ManageWebhooksList lng={lng} />
           </Tabs.Content>
-          {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
-            <Tabs.Content value="oauth-clients">
-              <OAuthClientList lng={lng} />
-            </Tabs.Content>
-          )}
         </Tabs.Root>
       </Box>
 

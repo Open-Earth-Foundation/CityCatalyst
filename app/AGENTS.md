@@ -329,8 +329,9 @@ Most API responses wrap data in `{ data: ... }` — use `transformResponse` to u
 
 ```
 ENTERPRISE_MODE, PROJECT_OVERVIEW_ENABLED, ACCOUNT_SETTINGS_ENABLED,
-UPLOAD_OWN_DATA_ENABLED, OAUTH_ENABLED, IDENTITY_SERVICE_LOGIN, ANALYTICS_ENABLED,
-CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
+UPLOAD_OWN_DATA_ENABLED, OAUTH_ENABLED, IDENTITY_SERVICE_LOGIN (required after CC-1283),
+ANALYTICS_ENABLED, CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
+# Login is OIDC via core-identity-service; credentials/2FA columns are gone from User.
 ```
 
 - Parsed from `NEXT_PUBLIC_FEATURE_FLAGS` env (comma-separated) via `env()` from `@/lib/runtime-env`

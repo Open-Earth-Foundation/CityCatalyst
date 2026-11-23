@@ -2,9 +2,13 @@ import { db } from "@/models";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
-import bcrypt from "bcrypt";
 import { Roles } from "@/util/types";
 
+/**
+ * Creates a CityCatalyst profile row for the default admin email.
+ * Credentials live in core-identity-service (CC-1283); register/sign in there
+ * with the same email, using the same userId as `sub` if you seed identity.
+ */
 async function createAdmin() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
@@ -13,9 +17,9 @@ async function createAdmin() {
     await db.initialize();
   }
 
-  if (!process.env.DEFAULT_ADMIN_EMAIL || !process.env.DEFAULT_ADMIN_PASSWORD) {
+  if (!process.env.DEFAULT_ADMIN_EMAIL) {
     logger.error(
-      "create-admin.ts: Missing default admin credentials DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD in env!",
+      "create-admin.ts: Missing DEFAULT_ADMIN_EMAIL in env!",
     );
     await db.sequelize?.close();
     return;
@@ -30,20 +34,15 @@ async function createAdmin() {
     return;
   }
 
-  const passwordHash = await bcrypt.hash(
-    process.env.DEFAULT_ADMIN_PASSWORD,
-    12,
-  );
   const newUser = await db.models.User.create({
     userId: randomUUID(),
     name: "admin",
     email: email,
-    passwordHash,
     role: Roles.Admin,
   });
 
   logger.info(
-    "Created admin user with email %s and ID %s",
+    "Created admin profile with email %s and ID %s. Create matching credentials in core-identity-service (same user_id as OpenID sub).",
     newUser.email as string,
     newUser.userId,
   );

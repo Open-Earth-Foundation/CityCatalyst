@@ -38,7 +38,6 @@ export const GET = apiHandler(async (_req: Request, context) => {
       "title",
       "preferredLanguage",
       "numberFormat",
-      "twoFactorEnabled",
     ],
     where: {
       userId: context.session.user.id,

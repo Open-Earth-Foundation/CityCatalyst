@@ -2,6 +2,8 @@
 
 Proposal reframed November 7, 2026. Repository and PR evidence remains the November 6 snapshot at `c41bd0ba2e0d165809e376380f1d93de79822913`; pending PR heads are identified separately. This revision changes the direction of the proposal, not its evidence date. The Stationary Energy comparison, the AgenticModuleScope alignment, database ownership and the migration plan were added on November 9, 2026 against `develop` at `2ac6ac166`. The full module and prompt map is in [CC-1170-CNB-Module-Map.md](CC-1170-CNB-Module-Map.md).
 
+> **Update, 23 November 2026: gaps are replaced by points.** The context-first core ([ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), CC-1296) keeps missing information in one list of points per document. Gaps stay only as review findings about the text. So the gap part of `collection` below is superseded: gap questions, gap answers and the gap tables do not become a shared Clima capability. Guided questions continue as point questions (CC-1303). The rest of this proposal is unchanged.
+
 ## Objective
 
 Generalize the tools and frontend components currently implemented in CNB into shared Clima capabilities for main chat, agentic flows, document workspaces and future surfaces. Include guided questions, answer/gap collection, visuals, source interaction, proposals, edit review and accepted-change handling. Make compatible implementations replaceable behind those capabilities.
@@ -680,7 +682,7 @@ CNB tables in the CNB DB store `run_id` without a foreign key to `concept_note_r
 | `concept_note_runs`, `concept_note_context_bundles`, `concept_note_uploads` | CA DB | CNB. Upload identity columns are a later `clima_source_artifacts` candidate |
 | `concept_note_edit_proposals` | CNB DB | Later: shared `clima_proposals` in the CA DB |
 | `concept_note_edit_applications`, chapters, revisions, validations, reviews, evidence links, matched projects, exports | CNB DB | CNB (resource-owned version history) |
-| `concept_note_gaps`, `concept_note_gap_resolutions` | CNB DB | CNB for now, read through the Clima collection interface. Move only after a reuse probe succeeds |
+| `concept_note_gaps`, `concept_note_gap_resolutions` | CNB DB | Superseded: replaced by the list of points (see the update at the top). Kept only until the review findings no longer need them |
 | Funding reference tables | CNB DB | CNB |
 | `PdfOcrJob` and S3 artifacts | CC (Sequelize) | CC (already multi-feature) |
 
@@ -703,7 +705,7 @@ Each step ships separately and leaves CNB working. Steps 1–3 move no tables.
 | 3 | Prompt layer: `prompts/clima/{choices,visuals}.md` included by `cnb/chat.md` and `chat.md`; core injection rule; delete settings path defaults; one parametrized prompt contract test | new | 1, 2 | Prompt contract test; existing prompt substring tests | A missing yaml key, hidden today by path defaults |
 | 4 | `services/clima/sources` with an authorized source-resolution adapter; register a CC document read capability | CC-1236 | 0 (#3401), CC-955/957 | CC-750 golden set as the regression gate; source tool tests | The analysis contract hash changes and invalidates saved analyses |
 | 5 | Runtime: declarative tool packs per (workflow, step) filtered by `allowed-capabilities`; per-surface context provider in `streaming_context.py`; typed `ui_event` envelope; `cnb_progress` to `clima/runtime` | new | 1, 2 | SE and CNB chat runtime tests; agent-service tool-binding tests | Changing which tools each surface exposes |
-| 6 | Collection and review: shared proposal envelope with a resource apply adapter; `clima_proposals` and `clima_review_decisions` in the CA DB; dual-write, backfill, then switch reads | new, after a reuse probe | 4, 5 | Apply idempotency, stale-revision and retry tests for both CNB and SE; data migration dry run | Cross-DB atomicity for CNB; preserving proposal ids and `decision_version` that CC commit payloads depend on |
+| 6 | Review (gap collection is superseded by points, see the update at the top): shared proposal envelope with a resource apply adapter; `clima_proposals` and `clima_review_decisions` in the CA DB; dual-write, backfill, then switch reads | new, after a reuse probe | 4, 5 | Apply idempotency, stale-revision and retry tests for both CNB and SE; data migration dry run | Cross-DB atomicity for CNB; preserving proposal ids and `decision_version` that CC commit payloads depend on |
 | 7 | Export and lifecycle | not planned | — | — | No second consumer yet |
 
 Risks that apply to every step:

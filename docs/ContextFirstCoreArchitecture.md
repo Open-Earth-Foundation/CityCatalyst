@@ -287,7 +287,7 @@ CC-1170 looked at the same code from the side of the chat tools. It proposed sha
 | **Sources** | B | Its reader. Point reading already calls it. | Not moved. Reused in place. |
 | **Review** | D | Its proposals. Text updates create them. | Not moved. Reused in storage. |
 | **Choices** | C | Its behaviour for guided questions. | Not moved. Three question formats now. |
-| **Collection (gaps)** | A, C | Nothing as the main list. Points replace it. | Still in use beside the points. |
+| **Collection (gaps)** | A, C | Nothing. Points replace it. | Superseded. Still in the code beside the points until the gap list is removed. |
 | **Visuals** | chat only | Nothing. | Not moved. |
 | **Export** | D | The spike left it for later. The core needs it now. | The rule for final export is built in the core. |
 
@@ -298,6 +298,8 @@ CC-1170 looked at the same code from the side of the chat tools. It proposed sha
 - `gap_reader` served the gap list. The list of points replaces it.
 
 The core adds two pieces the spike did not have: the setup adapter and the host binding.
+
+**Gaps.** Missing information is always a point. Gaps stay only as review findings about the text. So the spike's shared gap collection, and the gap part of its step 6, are dropped. The spike documents carry the same note.
 
 **Proposed order of work.** **Decided:** moving tools into Clima is lower priority, and hardening continues.
 

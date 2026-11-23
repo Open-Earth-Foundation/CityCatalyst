@@ -2,6 +2,8 @@
 
 Companion to [CC-1170-CNB-Modularization.md](CC-1170-CNB-Modularization.md). Snapshot: `develop` at `2ac6ac166` (November 9, 2026). Pending PRs #3350, #3295 and #3401 are not included.
 
+> **Update, 23 November 2026.** Rows about gaps (gap tools, gap persistence, gap panels, gap prompts, `collection`) are superseded: the list of points in [ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md) replaces gaps as the list of missing information. Their `core` tags no longer mean "move to Clima".
+
 ## How to read this map
 
 Tags:

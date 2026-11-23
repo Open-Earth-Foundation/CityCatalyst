@@ -746,7 +746,7 @@ Prompt paths are also configured in `llm_config.yaml`:
   still requires user acceptance in the document review controls
 - the `prompts.cnb_source_*` entries map document partitions, reduce them to
   compact document summaries, read focused questions for exact evidence, and
-  (`cnb_source_chapter_evidence` and `cnb_source_chapter_evidence_selection`)
+  (the chapter evidence reader prompts and `cnb_source_chapter_evidence_selection`)
   choose exact quotations for each template chapter's required fields
 - `prompts.cnb_source_impact_review` runs only after a new source is analyzed;
   its single tool returns the chapter numbers that the source affects
@@ -805,10 +805,17 @@ Above the window, or when a source cannot be re-read, `source_text.mode` is
 `concept_note_sources_query` as before.
 
 Each selected source keeps up to `max_key_excerpts` (8) quotations for the whole
-document and, once an application template is selected, up to
-`max_chapter_excerpts` (8) quotations per template chapter, chosen for that
-chapter's required fields by one chapter-evidence reading of the complete source
-(plus one selection call for chapters with more candidates). The drafter
+document. Once an application template is selected, the source is read for
+each chapter's required fields. One reader call per partition reviews each section in turn and returns the
+quotations it finds, tagged with the chapters they serve. The reader never
+states a location: each quotation is found in the source by its text, ignoring
+punctuation and spacing, so a miscounted section cannot misplace or drop it.
+
+The service verifies quotations against the source and drops contained passages
+within the same page or Markdown block. Chapters above
+`max_chapter_excerpt_tokens` (24,000) go through a selector. The service keeps
+its choices first and fills the remaining budget across pages. A budget of zero
+skips selection. Each chapter stores up to 300 verified quotations. The drafter
 receives only the current chapter's quotations, and the edit planner and
 reviewer read them in each chapter's `source_excerpts`. Chapter quotations
 carry a fingerprint of the template requirements and settings; a funding change
@@ -1725,71 +1732,33 @@ uv run --directory service python -m scripts.run_ca_e2e
 
 ### CNB Golden Set
 
-Fixtures under `benchmark/cnb/fixtures/` evaluate the Concept Note
-Builder pipeline stage by stage on three documents (two English, one Polish):
+[`benchmark/cnb/`](benchmark/cnb/benchmark.md) evaluates the Concept Note
+Builder pipeline stage by stage on three Markdown fixture documents (two
+English, one Polish):
 
 1. **extraction**: production source analysis plus per-chapter quotations for
    the fixture's template; every retained quotation and topic is judged against
    the complete original document.
 2. **chapter_writing**: the production drafter and support check write every
    chapter from that run's extraction; facts transferred, claim support,
-   chapter requirements, and `[Information needed: ...]` gaps (flagged,
-   invented, or answerable) are judged.
+   chapter requirements, and `[Information needed: ...]` gaps are judged.
 3. **verification**: the production chapter validator runs on a frozen reference
    draft with seeded defects; findings are mapped to defects and false alarms.
 4. **editing**: the production edit planner applies chat requests to the reference
    draft; outcomes, scope, fidelity, and post-edit consistency are judged.
 
-Each stage runs once. Python checks the production output's exact quotations,
-locators, marker/gap parity, seeded edits, and changed chapters. A configured
-LLM judge evaluates meaning. Extraction is scored independently for every
-chapter–fact pair: all mandatory pairs must pass, while desirable coverage is
-reported separately. Code verifies extraction citations against retained text
-owned by the receiving chapter. Human approval binds the answer key to its
-source/template/requirement fingerprints; shipped fixtures remain pending.
-Generated source summaries are excluded from all judge inputs.
-Production generation is unchanged.
+Python checks exact quotations, locators, gap markers, seeded edits and changed
+chapters; a configured LLM judge (`models.cnb_golden_set_judge`) evaluates
+meaning. Production generation is unchanged. Nothing runs the benchmark
+automatically; it needs `OPENROUTER_API_KEY` and spends provider usage:
 
 ```bash
-uv run pytest benchmark/cnb/tests -q
-uv run python -m benchmark.cnb.scripts.evaluate --label baseline
-uv run python -m benchmark.cnb.scripts.evaluate \
-  --fixture krakow-flood-drainage-plan --stage verification --stage editing
-# Rebuild the viewer from saved runs (no model calls).
-uv run python -m benchmark.cnb.scripts.publish
+uv run python -m benchmark.cnb.scripts.evaluate --label my-change
 ```
 
-Reports record per-stage wall time, requests, tokens, and the cost OpenRouter
-reports, by agent (`--parallel` runs the fixtures concurrently).
-Every run is saved under `output/cnb_golden_set/runs/<run-id>/` and published to
-the static viewer at `output/cnb_golden_set/index.html` (open it directly in a
-browser). The viewer shows each run by stage and document, and **Compare runs**
-diffs any two runs: configuration, stage results, and changed verdicts.
-CNB-specific code, scripts, viewer, judge prompts, fixtures, tests, and committed
-runs live in [`benchmark/cnb/`](benchmark/cnb/benchmark.md); reusable provider
-usage accounting lives in `benchmark/utils/`. Pass
-`--results-dir benchmark/cnb/results` to save a run with the committed ones. Only the
-runs are committed; build that folder's viewer with
-`uv run python -m benchmark.cnb.scripts.publish --results-dir benchmark/cnb/results`.
-
-The live evaluation requires `OPENROUTER_API_KEY` for the production models and
-`models.cnb_golden_set_judge` in `llm_config.yaml`. Review the four judge prompts in
-[`benchmark/cnb/prompts/`](benchmark/cnb/prompts/). Reports record the configured
-models and hashes of the loaded judge prompts. The separate non-required live CI
-workflow runs only on manual dispatch to control provider usage. It supports frozen Markdown and fresh
-production PDF conversion, partial reports, approved-baseline comparison and
-downloadable viewer bundles. See [delivery setup and approvals](benchmark/cnb/DELIVERY.md)
-for credentials, trusted baseline selection, retention and exit codes.
-
-`python -m benchmark.cnb.scripts.calibrate` evaluates the judge against separately
-human-approved candidates, with labels hidden from requests. The 24 proposed
-cases cover English/Polish, tables, units, dates and responsibilities; none are
-yet human-approved. Reports separate agreement, serious false passes, pending
-approval and unavailable judgments. See [calibration approval](benchmark/cnb/calibration/README.md).
-Offline tests verify these contracts, not live judge accuracy.
-
-See the [fixture README](benchmark/cnb/fixtures/README.md) for
-stage details, gates, reports, and how to add or review fixtures.
+[benchmark.md](benchmark/cnb/benchmark.md) is the guide for running, comparing
+runs, MLflow, the viewer and approving a baseline; the [fixture README](benchmark/cnb/fixtures/README.md) covers
+fixture format, gates and ground-truth approval.
 
 ## Docker Deployment (Local Testing)
 

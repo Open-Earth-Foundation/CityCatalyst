@@ -1,12 +1,13 @@
 # Human-labelled judge calibration
 
-`cases.json` contains 24 **proposed**, unapproved labels. They are not evidence
-that a human has reviewed the judge. Each of six requirement families has a
-correct, partly correct, materially incorrect and missing candidate. Families
-cover English/Polish, funding status, dates, institutional responsibilities,
-table amounts, currencies and units. All currently belong to the held-out split;
-none may be copied into judge prompt examples. A development family can be added
-separately, but all variants of a source fact must remain in one split.
+`cases.json` contains 28 human-reviewed extraction labels across nine held-out
+requirement families. Six families include correct, partial, incorrect and missing
+examples. Every missing candidate contains text, including a true fact routed to
+another chapter. The seventh family tests a source discrepancy in Richfield
+Table 5-7, including a silently recomputed upper bound. Two further candidates swap concept costs or turn a plan estimate into a grant request.
+Piotr Nowakowski reviewed the labels on 2026-11-19 against the revised fixtures.
+A development family can be added separately, but all variants of a source fact
+must remain in one split.
 
 The command loads the frozen source, receiving-chapter requirement and candidate
 into the existing extraction judge. It withholds case identifiers, human
@@ -32,4 +33,4 @@ provider/schema failures are excluded from agreement and counted explicitly.
 Exit 0 means every evaluated approved case agrees; 1 means disagreement;
 2 refuses an existing report; 3 means pending/unavailable/no evaluations.
 This is a controlled judge-only measurement, not proof of whole-pipeline or
-multi-chapter reliability. No accuracy threshold is silently applied to live CI.
+multi-chapter reliability. No accuracy threshold is silently applied to live runs.

@@ -37,6 +37,7 @@ from benchmark.cnb.golden_set.core import (
     LoadedFixture,
     exactly_once,
     marker_parity_problems,
+    reference_problems,
     source_evidence,
 )
 from benchmark.cnb.golden_set.judge import GoldenJudgeError
@@ -57,6 +58,7 @@ from benchmark.cnb.golden_set.workspace import (
     frozen_selected_source,
     golden_id,
     reference_snapshots,
+    text_units,
 )
 
 logger = logging.getLogger(__name__)
@@ -220,9 +222,14 @@ def verification_judge_input(
     loaded: LoadedFixture,
     seeded: list[ReferenceChapter],
     records: list[dict[str, Any]],
+    defects: list[SeededDefect] | None = None,
 ) -> VerificationJudgeInput:
-    """Model findings as outputs; the seeded draft and the source as evidence."""
-    golden = loaded.fixture.verification
+    """Model findings as outputs; the validated draft, template and source as evidence.
+
+    ``defects`` defaults to the fixture's seeded defects; pass ``[]`` to judge the
+    findings on the clean reference draft.
+    """
+    defects = loaded.fixture.verification.defects if defects is None else defects
     outputs = [
         TextUnit(id=r["unit_id"], text=_finding_text(r), kind="output", chapter_ref=r["target_chapter"])
         for r in records
@@ -252,20 +259,42 @@ def verification_judge_input(
             DefectInput(
                 id=d.id, kind=d.kind, description=d.description, chapters=d.expected_chapters
             )
-            for d in golden.defects
+            for d in defects
         ],
         outputs=outputs,
-        evidence=[*draft, *source_evidence(loaded), *context_units(loaded)],
+        evidence=[*draft, *template_units(loaded), *source_evidence(loaded), *context_units(loaded)],
+    )
+
+
+def template_units(loaded: LoadedFixture) -> list[TextUnit]:
+    """The template the validator checks against, so the judge need not guess requirements."""
+    template = loaded.drafting_input
+    return text_units(
+        {"chapter_schema": template.chapter_schema, "required_fields": template.required_fields},
+        "template",
+        "context",
     )
 
 
 def validate_verification_judgment(
     payload: VerificationJudgeInput, judgment: VerificationEvaluation
 ) -> list[str]:
-    """Require one verdict per defect, and one per model finding no defect cites."""
+    """Require one verdict per defect, one per uncited model finding, and real citations.
+
+    A detected or partially detected defect must cite at least one model finding,
+    and every citation must quote its unit exactly.
+    """
     errors = exactly_once(
         "defects", [d.id for d in payload.defects], [d.id for d in judgment.defects]
     )
+    outputs = {unit.id: unit for unit in payload.outputs}
+    evidence = {unit.id: unit for unit in payload.evidence}
+    for item in judgment.defects:
+        if item.verdict != "missed" and not item.finding_refs:
+            errors.append(f"{item.id}: {item.verdict} defect cites no validator finding")
+        errors += reference_problems(item.id, item.finding_refs, outputs)
+    for finding in judgment.findings:
+        errors += reference_problems(finding.unit_id, finding.evidence, evidence)
     matched = {ref.unit_id for item in judgment.defects for ref in item.finding_refs}
     unmatched = [unit.id for unit in payload.outputs if unit.id not in matched]
     errors += exactly_once("findings", unmatched, [f.unit_id for f in judgment.findings])
@@ -312,8 +341,7 @@ def score_verification(
         detected += item.verdict == "detected"
         strict += item.verdict == "detected" and exact
         checks.append({"defect": item.id, "verdict": item.verdict, "category_and_chapters_match": exact})
-        if item.verdict != "detected":
-            report.semantic_failures.append(f"{item.id}: {item.verdict}: {item.reason}")
+    # The recall threshold is the gate; single misses show in the verdict diff.
     total = len(judgment.defects)
     recall = detected / total if total else 1.0
     report.metrics["defect_recall"] = recall
@@ -322,10 +350,15 @@ def score_verification(
         report.semantic_failures.append(
             f"defect_recall {recall:.2f} < {golden.thresholds.min_defect_recall}"
         )
+    # Precision over distinct issues: repeating a finding must not dilute false alarms.
     model_findings = len(payload.outputs)
     false_alarms = sum(f.verdict == "false_alarm" for f in judgment.findings)
-    rate = false_alarms / model_findings if model_findings else 0.0
+    issues = sum(item.verdict != "missed" for item in judgment.defects) + sum(
+        f.verdict != "duplicate" for f in judgment.findings
+    )
+    rate = false_alarms / issues if issues else 0.0
     report.metrics["model_findings"] = model_findings
+    report.metrics["duplicate_findings"] = model_findings - issues
     report.metrics["false_alarms"] = false_alarms
     report.metrics["false_alarm_rate"] = rate
     report.metrics["open_gap_findings"] = sum(r["origin"] == "open_gap" for r in records)
@@ -342,6 +375,62 @@ def score_verification(
     return report
 
 
+async def _validate_and_judge(
+    loaded: LoadedFixture,
+    settings: Settings,
+    chapters: list[ReferenceChapter],
+    defects: list[SeededDefect],
+    output_dir: Path,
+    judge: Judge,
+) -> tuple[list[dict[str, Any]], VerificationJudgeInput, VerificationEvaluation, dict[str, str]]:
+    """Run the production validator on one draft and judge its findings.
+
+    Writes ``findings.json``, ``judge_input.json`` and ``judgment.json`` to ``output_dir``. Raises
+    ``ChapterValidationError`` or ``GoldenJudgeError`` when either call fails.
+    """
+    workspace = build_workspace(
+        loaded, settings, frozen_selected_source(loaded, loaded.reference_draft.selected_source)
+    )
+    snapshots = reference_snapshots(workspace, loaded.fixture.fixture_id, chapters)
+    requests = validation_requests(loaded, workspace, snapshots)
+    decisions = await run_validator(settings, requests)
+    ref_by_id = {s.chapter_id: s.chapter_ref for s in snapshots}
+    records = finding_records(requests, decisions, ref_by_id)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "findings.json").write_text(
+        json.dumps(records, ensure_ascii=False), encoding="utf-8"
+    )
+    payload = verification_judge_input(loaded, chapters, records, defects)
+    (output_dir / "judge_input.json").write_text(payload.model_dump_json(), encoding="utf-8")
+    judgment = await judge(payload, settings)
+    (output_dir / "judgment.json").write_text(judgment.model_dump_json(), encoding="utf-8")
+    assert isinstance(judgment, VerificationEvaluation)
+    statuses = {ref_by_id[d.target_chapter_id]: d.status for d in decisions}
+    return records, payload, judgment, statuses
+
+
+def score_clean_draft(
+    loaded: LoadedFixture,
+    payload: VerificationJudgeInput,
+    judgment: VerificationEvaluation,
+    report: StageReport,
+) -> None:
+    """Add false alarms the validator raises on the unseeded reference draft."""
+    errors = validate_verification_judgment(payload, judgment)
+    if errors:
+        report.evaluation_errors += [f"clean draft: {error}" for error in errors]
+        return
+    findings = [f for f in judgment.findings if f.verdict != "duplicate"]
+    false_alarms = sum(f.verdict == "false_alarm" for f in findings)
+    rate = false_alarms / len(findings) if findings else 0.0
+    report.metrics["clean_model_findings"] = len(payload.outputs)
+    report.metrics["clean_false_alarms"] = false_alarms
+    report.metrics["clean_false_alarm_rate"] = rate
+    limit = loaded.fixture.verification.thresholds.max_false_alarm_rate
+    if rate > limit:
+        report.semantic_failures.append(f"clean_false_alarm_rate {rate:.2f} > {limit}")
+
+
 async def evaluate_verification(
     loaded: LoadedFixture,
     settings: Settings,
@@ -349,37 +438,34 @@ async def evaluate_verification(
     *,
     judge: Judge,
 ) -> StageReport:
-    """Seed, validate every chapter, judge findings, and score one fixture."""
+    """Validate the seeded draft and the clean reference draft, judge both, and score.
+
+    The seeded draft measures defect recall and false alarms among other
+    findings; the clean draft is the control that shows what the validator
+    blocks when nothing was broken on purpose.
+    """
     reference = loaded.reference_draft
     golden = loaded.fixture.verification
     seeded, problems = seed_defects(reference.chapters, golden.defects)
     if problems:
         return StageReport(evaluation_errors=[f"invalid fixture: {p}" for p in problems])
-    workspace = build_workspace(
-        loaded, settings, frozen_selected_source(loaded, reference.selected_source)
-    )
-    snapshots = reference_snapshots(workspace, loaded.fixture.fixture_id, seeded)
-    requests = validation_requests(loaded, workspace, snapshots)
-    try:
-        decisions = await run_validator(settings, requests)
-    except ChapterValidationError as exc:
-        return StageReport(evaluation_errors=[f"validation_failed: {exc.code}"])
-    ref_by_id = {s.chapter_id: s.chapter_ref for s in snapshots}
-    records = finding_records(requests, decisions, ref_by_id)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "seeded_draft.json").write_text(
         json.dumps([c.model_dump(mode="json") for c in seeded], ensure_ascii=False),
         encoding="utf-8",
     )
-    (output_dir / "findings.json").write_text(
-        json.dumps(records, ensure_ascii=False), encoding="utf-8"
-    )
-    payload = verification_judge_input(loaded, seeded, records)
     try:
-        judgment = await judge(payload, settings)
+        records, payload, judgment, statuses = await _validate_and_judge(
+            loaded, settings, seeded, golden.defects, output_dir, judge
+        )
+        clean = await _validate_and_judge(
+            loaded, settings, reference.chapters, [], output_dir / "clean", judge
+        )
+    except ChapterValidationError as exc:
+        return StageReport(evaluation_errors=[f"validation_failed: {exc.code}"])
     except GoldenJudgeError as exc:
-        return StageReport(evaluation_errors=[str(exc)], details={"findings": records})
-    (output_dir / "judgment.json").write_text(judgment.model_dump_json(), encoding="utf-8")
-    assert isinstance(judgment, VerificationEvaluation)
-    statuses = {ref_by_id[d.target_chapter_id]: d.status for d in decisions}
-    return score_verification(loaded, payload, judgment, records, [], statuses)
+        return StageReport(evaluation_errors=[str(exc)])
+    report = score_verification(loaded, payload, judgment, records, [], statuses)
+    if not report.evaluation_errors:
+        score_clean_draft(loaded, clean[1], clean[2], report)
+    return report

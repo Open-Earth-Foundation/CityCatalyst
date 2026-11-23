@@ -22,9 +22,12 @@ Inputs:
 - --run-id: folder name for this run (default: UTC time, YYYYMMDD-HHMMSS, plus
   the label); letters, digits, '.', '_' and '-' only. An existing run is refused.
 - --label: optional short note shown in the viewer, for example "pr-3295".
+- --mlflow: upload the finished run folder to the Clima-CNB-Benchmark MLflow
+  experiment (needs MLFLOW_TRACKING_URI and MLFLOW_TRACKING_USERNAME/PASSWORD);
+  delivery.json records the MLflow run ID or the failure.
 - --baseline-manifest / --baseline-results-dir: reviewed baseline manifest and durable run store.
-- --timeout-seconds: evaluation deadline (default 3600); finalization follows timeout.
-- --input-path: markdown (default) or pdf; --pdf-artifacts-dir optionally reuses validated conversions.
+- --timeout-seconds: evaluation deadline (default 5400; a serial run takes 45-60
+  minutes); finalization follows timeout.
 - --parallel: evaluate fixtures concurrently in one process (faster; default is
   one fixture at a time to keep provider load bounded).
 - OPENROUTER_API_KEY and normal Climate Advisor settings; llm_config.yaml selects
@@ -32,17 +35,22 @@ Inputs:
 
 Outputs (in <results-dir>/runs/<run-id>/; no database writes):
 - report.json and report.md with per-stage integrity failures, semantic findings,
-  evaluation errors, model configuration, prompt hashes, run ID, label, git
-  commit, and per-stage usage: wall time, requests, tokens, and the cost
+  evaluation errors, model configuration, judge and producer prompt hashes,
+  LLM config and uv.lock hashes, run ID, label, git commit (plus a diff hash when
+  dirty), and per-stage usage: wall time, requests, tokens, and the cost
   OpenRouter reports (per agent too). No full source text.
+- llm_config.json: the complete effective, non-secret LLM configuration.
 - outputs/<fixture>/analysis.json, chapter_writing/drafts.json,
   verification/seeded_draft.json and findings.json, editing/cases.json, and
   <stage>/judgment.json for review.
 - viewer.js, and the refreshed viewer at <results-dir>/index.html (see
   benchmark/cnb/scripts/publish.py). Open it to browse and compare runs.
 - delivery.json, comparison.json/.md, and review-bundle.zip with candidate and approved baseline.
-- Exit 0 for approved passing evaluation; 1 for quality failure; 2 for an existing
-  run; 3 for unavailable/incomplete evaluation, approval, comparison or publication.
+- Exit 0 when nothing regressed against the approved baseline (outcome improved or
+  unchanged); 1 when something regressed (outcome regressed or mixed); 2 for an
+  existing run; 3 for unavailable/incomplete evaluation, approval, comparison or
+  publication. Absolute quality gates are reported, not used as the exit code.
+  A failed MLflow upload is logged and recorded in delivery.json only.
 
 Usage (from climate-advisor/):
 - uv run python -m benchmark.cnb.scripts.evaluate
@@ -54,14 +62,13 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
 import re
-import shutil
 import subprocess
 import sys
 import time
-from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -94,6 +101,7 @@ from benchmark.cnb.golden_set.core import (
 )
 from benchmark.cnb.golden_set.judge import (
     GoldenJudgeError,
+    judge_example_problems,
     judge_output,
     judge_prompt_versions,
 )
@@ -110,12 +118,15 @@ from benchmark.cnb.golden_set.models import (
 from benchmark.utils.usage import UsageRecorder, measure, prompt_names
 from benchmark.cnb.golden_set.viewer import publish_run, publish_bundle
 from benchmark.cnb.golden_set.baseline import (
+    content_digest,
     evaluation_fingerprints,
     load_approved_baseline,
+    load_repeat_reports,
     compare_reports,
     render_comparison,
 )
 from benchmark.cnb.golden_set.workspace import fixture_template, golden_id
+from benchmark.cnb.scripts.mlflow_log import log_run_dir
 
 logger = logging.getLogger(__name__)
 BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
@@ -164,29 +175,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--baseline-results-dir",
         type=Path,
         default=BENCHMARK_ROOT / "results",
-        help="Durable approved runs (trusted base checkout in CI)",
+        help="Durable approved runs",
     )
     parser.add_argument(
         "--timeout-seconds",
         type=int,
-        default=3600,
+        default=5400,
         help="Maximum evaluation wall time; preserve partial reports on timeout",
-    )
-    parser.add_argument(
-        "--input-path",
-        choices=("markdown", "pdf"),
-        default="markdown",
-        help="Frozen Markdown or fresh production PDF conversion",
-    )
-    parser.add_argument(
-        "--pdf-artifacts-dir",
-        type=Path,
-        help="Validated precomputed conversions, one directory per fixture",
     )
     parser.add_argument(
         "--run-id", help="Run folder name (default: UTC timestamp plus label)"
     )
     parser.add_argument("--label", help="Short note shown in the viewer")
+    parser.add_argument(
+        "--mlflow",
+        action="store_true",
+        help="Upload the finished run to the Clima-CNB-Benchmark MLflow experiment",
+    )
     parser.add_argument(
         "--parallel",
         action="store_true",
@@ -206,25 +211,45 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def code_version() -> str | None:
-    """The current git commit, with ``-dirty`` for uncommitted tracked changes."""
+    """The current git commit; local changes add ``-dirty-<hash>``.
+
+    The hash covers tracked changes (``git diff HEAD``) and the content of
+    untracked, non-ignored files under climate-advisor/, so a new helper module
+    also tells two runs apart.
+    """
+    root = BENCHMARK_ROOT.parents[1]
     try:
         commit = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=BENCHMARK_ROOT,
+            capture_output=True, text=True, check=True, cwd=root,
         ).stdout.strip()
-        dirty = subprocess.run(
-            ["git", "status", "--porcelain", "--untracked-files=no"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=BENCHMARK_ROOT,
-        ).stdout.strip()
+        diff = subprocess.run(
+            ["git", "diff", "HEAD"], capture_output=True, check=True, cwd=root,
+        ).stdout
+        untracked = subprocess.run(
+            ["git", "ls-files", "--others", "--exclude-standard", "-z"],
+            capture_output=True, check=True, cwd=root,
+        ).stdout.split(b"\0")
     except (OSError, subprocess.CalledProcessError):
         return None
-    return f"{commit}-dirty" if dirty else commit
+    digest = hashlib.sha256(diff)
+    for name in sorted(path for path in untracked if path):
+        digest.update(name + b"\0" + (root / name.decode()).read_bytes())
+    local = bool(diff) or any(untracked)
+    return f"{commit}-dirty-{digest.hexdigest()[:8]}" if local else commit
+
+
+def prompt_versions(settings: Settings) -> dict[str, str]:
+    """SHA-256 of every configured prompt as loaded, with includes resolved."""
+    prompts = settings.llm.prompts
+    versions = {}
+    for name in type(prompts).model_fields:
+        try:
+            text = prompts.get_prompt(name)
+        except (OSError, ValueError, TypeError):
+            continue
+        versions[name] = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    return versions
 
 
 def selected_stages(requested: list[str] | None) -> list[str]:
@@ -261,10 +286,16 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         raise GoldenJudgeError(
             "Configure models.cnb_golden_set_judge before evaluation"
         )
+    # Worked examples must never quote the answer key of an evaluated item.
+    leaks = judge_example_problems(
+        load_golden_fixtures(args.fixtures_dir),
+        {stage: settings.llm.prompts.get_prompt(f"cnb_golden_set_{stage}_judge") for stage in STAGES},
+    )
+    if leaks:
+        raise GoldenJudgeError(f"Judge prompt examples overlap the golden set: {leaks[:3]}")
     report = args.report
     report.requested_stages = stages
     report.expected_fixture_ids = [item.fixture.fixture_id for item in fixtures]
-    report.input_path = args.input_path
     models = settings.llm.models
     report.analysis_contract_version = source_analysis_contract_version(settings)
     report.judge_prompt_versions = judge_prompt_versions(settings, stages)
@@ -285,8 +316,20 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         ),
         "judge": _model_summary(models.cnb_golden_set_judge),
     }
+    # Pin every non-model input; the full LLM config is saved for side-by-side review.
+    report.producer_prompt_versions = prompt_versions(settings)
+    llm_config = settings.llm.model_dump(mode="json")
+    (args.output_dir / "llm_config.json").write_text(
+        json.dumps(llm_config, ensure_ascii=False, sort_keys=True), encoding="utf-8"
+    )
+    report.llm_config_sha256 = content_digest(llm_config)
+    report.dependency_lock_sha256 = hashlib.sha256(
+        (BENCHMARK_ROOT.parents[1] / "uv.lock").read_bytes()
+    ).hexdigest()
     args.delivery["fingerprints"] = evaluation_fingerprints(
-        fixtures, report.model_dump(mode="json"), stages, args.input_path
+        load_golden_fixtures(args.fixtures_dir),
+        report.models["judge"],
+        judge_prompt_versions(settings),
     )
     report.corpus_fingerprint = args.delivery["fingerprints"]["corpus"]
     report.evaluator_fingerprint = args.delivery["fingerprints"]["judge_policy"]
@@ -312,46 +355,16 @@ async def evaluate(args: argparse.Namespace) -> GoldenSetReport:
         report.wall_seconds = round(time.monotonic() - started, 1)
         _write_report(args, report)
 
-    async def run(loaded: LoadedFixture) -> None:
-        """Prepare candidate input and preserve conversion failures as unavailable."""
-        output = args.output_dir / "outputs" / loaded.fixture.fixture_id
-        candidate = None
-        if args.input_path == "pdf":
-            from benchmark.cnb.golden_set.pdf import (
-                convert_pdf_fixture,
-                load_pdf_conversion,
-            )
-
-            conversion_dir = output / "conversion"
-            if loaded.fixture.source.original_pdf is None:
-                candidate = load_pdf_conversion(loaded, conversion_dir)
-            elif args.pdf_artifacts_dir:
-                origin = args.pdf_artifacts_dir / loaded.fixture.fixture_id
-                shutil.copytree(origin, conversion_dir)
-                candidate = load_pdf_conversion(loaded, conversion_dir)
-            else:
-                candidate = await convert_pdf_fixture(loaded, conversion_dir)
-            if candidate.status == "not_applicable":
-                args.delivery.setdefault("not_applicable", []).append(
-                    loaded.fixture.fixture_id
-                )
-                checkpoint(
-                    FixtureReport(
-                        fixture_id=loaded.fixture.fixture_id,
-                        source_sha256=loaded.fixture.source.sha256,
-                        source_format=loaded.fixture.source.source_format,
-                        inapplicable_reason=candidate.reason or "No pinned PDF",
-                    )
-                )
-                return
-        await _evaluate_fixture(
-            loaded, settings, stages, output, checkpoint=checkpoint, candidate=candidate
-        )
-
     async def retain_failure(loaded: LoadedFixture) -> None:
         """Isolate a failed fixture in either execution mode and keep completed stages."""
         try:
-            await run(loaded)
+            await _evaluate_fixture(
+                loaded,
+                settings,
+                stages,
+                args.output_dir / "outputs" / loaded.fixture.fixture_id,
+                checkpoint=checkpoint,
+            )
         except Exception as exc:
             fid = loaded.fixture.fixture_id
             message = f"fixture_unavailable: {type(exc).__name__}"
@@ -394,7 +407,6 @@ async def _evaluate_fixture(
     output_dir: Path,
     *,
     checkpoint: Callable[[FixtureReport], None] | None = None,
-    candidate: Any = None,
 ) -> FixtureReport:
     """Run each enabled stage; extraction output feeds chapter writing."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -409,12 +421,7 @@ async def _evaluate_fixture(
     approval = evaluated_approval(loaded)
     report.approval_status = approval["approval_status"]
     report.approval_errors = approval["approval_errors"]
-    report.input_provenance = {
-        "ground_truth": approval["fingerprints"],
-        "input_path": "pdf" if candidate else "markdown",
-    }
-    if candidate is not None:
-        report.input_provenance["conversion"] = candidate.metadata
+    report.input_provenance = {"ground_truth": approval["fingerprints"]}
     if checkpoint:
         checkpoint(report)
     problems = fixture_problems(loaded)
@@ -434,14 +441,9 @@ async def _evaluate_fixture(
     source = None
     if "extraction" in stages:
         with measure(usage("extraction")):
-            if candidate is None:
-                report.extraction, source = await _evaluate_extraction(
-                    loaded, settings, output_dir
-                )
-            else:
-                report.extraction, source = await _evaluate_extraction(
-                    loaded, settings, output_dir, candidate=candidate
-                )
+            report.extraction, source = await _evaluate_extraction(
+                loaded, settings, output_dir
+            )
         if checkpoint:
             checkpoint(report)
     if "chapter_writing" in stages and fixture.chapter_writing:
@@ -461,7 +463,6 @@ async def _evaluate_fixture(
                     if isinstance(extraction, JudgeEvaluation)
                     and not report.extraction.evaluation_errors
                     else None,
-                    producer_input=_candidate_fixture(loaded, candidate),
                 )
         if checkpoint:
             checkpoint(report)
@@ -486,44 +487,21 @@ async def _evaluate_fixture(
     return report
 
 
-def _candidate_fixture(loaded: LoadedFixture, candidate: Any) -> LoadedFixture:
-    """Give producers fresh OCR while preserving the independent judging reference."""
-    if candidate is None:
-        return loaded
-    artifact = candidate.artifact
-    source = loaded.fixture.source.model_copy(
-        update={
-            "sha256": artifact.sha256,
-            "page_count": artifact.page_count,
-            "source_format": artifact.source_format,
-        }
-    )
-    return replace(
-        loaded,
-        fixture=loaded.fixture.model_copy(update={"source": source}),
-        markdown=candidate.markdown,
-        units=candidate.units,
-    )
-
-
 async def _evaluate_extraction(
     loaded: LoadedFixture,
     settings: Settings,
     output_dir: Path,
-    *,
-    candidate: Any = None,
 ) -> tuple[StageReport, SelectedSource | None]:
-    """Analyze current input; judge its meaning against the independent reference."""
+    """Analyze the pinned Markdown; judge its meaning against the full source."""
     fixture = loaded.fixture
-    extraction_input = _candidate_fixture(loaded, candidate)
     try:
         source = await analyze_document(
             upload_id=golden_id(fixture.fixture_id, "upload"),
             filename=fixture.source.filename,
             source_label=fixture.source.source_label,
-            sha256=extraction_input.fixture.source.sha256,
-            source_format=extraction_input.fixture.source.source_format,
-            pages=extraction_input.units,
+            sha256=fixture.source.sha256,
+            source_format=fixture.source.source_format,
+            pages=loaded.units,
             settings=settings,
             reader_limit=asyncio.Semaphore(
                 settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
@@ -539,7 +517,7 @@ async def _evaluate_extraction(
             chapter_excerpts = await extract_chapter_evidence(
                 source_label=source.source_label,
                 source_format=source.source_format,
-                pages=extraction_input.units,
+                pages=loaded.units,
                 chapters=chapters,
                 settings=settings,
                 reader_limit=asyncio.Semaphore(
@@ -561,9 +539,7 @@ async def _evaluate_extraction(
     (output_dir / "analysis.json").write_text(
         source.model_dump_json(), encoding="utf-8"
     )
-    payload, integrity = extraction_judge_input(
-        loaded, source, candidate=extraction_input
-    )
+    payload, integrity = extraction_judge_input(loaded, source)
     judgment = await _judge(payload, settings, output_dir / "extraction")
     if isinstance(judgment, StageReport):
         judgment.integrity_failures = integrity
@@ -577,14 +553,10 @@ async def _evaluate_chapter_writing(
     output_dir: Path,
     source: SelectedSource,
     extraction: JudgeEvaluation | None,
-    *,
-    producer_input: LoadedFixture | None = None,
 ) -> StageReport:
     """Draft from fresh extraction, then judge transfer, support, and gap handling."""
     try:
-        drafted, supplied = await write_chapters(
-            producer_input or loaded, settings, source
-        )
+        drafted, supplied = await write_chapters(loaded, settings, source)
     except ChapterDraftingError:
         return StageReport(evaluation_errors=["drafting_failed"])
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -602,12 +574,16 @@ async def _evaluate_chapter_writing(
 
 
 async def _judge(payload: JudgeInput, settings: Settings, output_dir: Path) -> Any:
-    """Save a structured judgment, or return an evaluation-error report."""
+    """Save the judge's input and structured judgment, or return an evaluation-error report.
+
+    The saved input lets scripts/rescore.py re-score the judgment offline.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "judge_input.json").write_text(payload.model_dump_json(), encoding="utf-8")
     try:
         judgment = await judge_output(payload, settings)
     except GoldenJudgeError as exc:
         return StageReport(evaluation_errors=[str(exc)])
-    output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "judgment.json").write_text(
         judgment.model_dump_json(), encoding="utf-8"
     )
@@ -633,15 +609,13 @@ def render_markdown(report: GoldenSetReport) -> str:
         )
     for stage, digest in report.judge_prompt_versions.items():
         lines.append(f"- {stage} judge prompt SHA-256: `{digest}`")
+    lines.append(
+        f"- Code `{report.code_version}`; LLM config SHA-256 `{report.llm_config_sha256}`; "
+        f"uv.lock SHA-256 `{report.dependency_lock_sha256}`; "
+        f"{len(report.producer_prompt_versions)} configured prompts hashed in report.json."
+    )
     lines += _render_usage(report)
     for fixture in report.fixtures:
-        if fixture.inapplicable_reason:
-            lines += [
-                "",
-                f"## {fixture.fixture_id}: NOT APPLICABLE",
-                fixture.inapplicable_reason,
-            ]
-            continue
         lines += [
             "",
             f"## {fixture.fixture_id}: {'PASS' if fixture.passed else 'FAIL'}",
@@ -662,12 +636,7 @@ def _render_usage(report: GoldenSetReport) -> list[str]:
         for fixture in report.fixtures
         for stage, usage in fixture.usage.items()
     ]
-    conversions = [
-        (fixture.fixture_id, fixture.input_provenance["conversion"])
-        for fixture in report.fixtures
-        if "conversion" in fixture.input_provenance
-    ]
-    if not rows and not conversions:
+    if not rows:
         return []
     lines = [
         "",
@@ -684,18 +653,10 @@ def _render_usage(report: GoldenSetReport) -> list[str]:
     ]
     total = sum(u.cost_usd for _, _, u in rows)
     wall = f"{report.wall_seconds:.0f} s wall time, " if report.wall_seconds else ""
-    completeness = (
-        "complete"
-        if all(u.cost_complete for _, _, u in rows) and not conversions
-        else "partial"
-    )
+    completeness = "complete" if all(u.cost_complete for _, _, u in rows) else "partial"
     lines.append(
         f"\nReported total: {wall}{sum(u.requests for _, _, u in rows)} model requests, USD {total:.2f} ({completeness})."
     )
-    for fixture, conversion in conversions:
-        lines.append(
-            f"- {fixture} PDF conversion: {conversion.get('elapsed_seconds', 'unavailable')} s; cost unavailable (excluded from reported total)."
-        )
     return lines
 
 
@@ -723,8 +684,10 @@ def _render_stage(name: str, stage: StageReport) -> list[str]:
     ):
         lines += [f"- **{label}:** {_snippet(item)}" for item in findings]
     for record in stage.details.get("transfer", []):
+        route = record.get("extraction_pair", record["fact"])
+        priority = f" ({record['priority']})" if record.get("priority") else ""
         lines.append(
-            f"- Transfer `{record['fact']}`: extraction **{record['extraction_verdict']}**"
+            f"- Transfer `{record['fact']}` via `{route}`{priority}: extraction **{record['extraction_verdict']}**"
             f" → draft **{record['draft_verdict']}** ({record['outcome']})"
         )
     if stage.judgment is not None:
@@ -789,12 +752,10 @@ def main(argv: list[str] | None = None) -> int:
         models={},
         fixtures=[],
         completed=False,
-        input_path=args.input_path,
     )
     args.delivery = {
         "execution": "running",
         "errors": [],
-        "input_path": args.input_path,
         "fingerprints": {},
     }
     _write_report(args, args.report)
@@ -822,19 +783,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     args.delivery["baseline"] = selection
     args.delivery["approval_pending"] = [
-        f.fixture_id
-        for f in args.report.fixtures
-        if not f.inapplicable_reason and f.approval_status != "approved"
+        f.fixture_id for f in args.report.fixtures if f.approval_status != "approved"
     ]
     baseline_report = (
         json.loads((baseline_dir / "report.json").read_text(encoding="utf-8"))
         if baseline_dir
         else None
     )
-    comparison = compare_reports(args.report.model_dump(mode="json"), baseline_report)
-    if args.delivery["execution"] != "complete" or not any(
-        not f.inapplicable_reason for f in args.report.fixtures
-    ):
+    comparison = compare_reports(
+        args.report.model_dump(mode="json"),
+        baseline_report,
+        load_repeat_reports(baseline_dir, selection) if baseline_dir else [],
+    )
+    if args.delivery["execution"] != "complete" or not args.report.fixtures:
         comparison["evaluation_unavailable"] = True
     comparison["baseline"] = selection
     (args.output_dir / "comparison.json").write_text(
@@ -875,6 +836,20 @@ def main(argv: list[str] | None = None) -> int:
     (args.output_dir / "comparison.md").write_text(
         render_comparison(comparison, args.delivery), encoding="utf-8"
     )
+    # Upload the finished run folder last, so MLflow holds exactly what is on disk.
+    if args.mlflow:
+        mlflow_run_id = log_run_dir(args.output_dir)
+        args.delivery["mlflow"] = (
+            {"status": "logged", "run_id": mlflow_run_id}
+            if mlflow_run_id
+            else {"status": "failed"}
+        )
+        delivery_path.write_text(
+            json.dumps(args.delivery, ensure_ascii=False), encoding="utf-8"
+        )
+        if not mlflow_run_id:
+            logger.error("MLflow upload failed; the run is complete on disk, retry with mlflow_log log")
+    # The exit code answers "did this change make things worse than the baseline?".
     unavailable = (
         args.delivery["execution"] != "complete"
         or comparison["evaluation_unavailable"]
@@ -882,7 +857,8 @@ def main(argv: list[str] | None = None) -> int:
         or args.delivery["approval_pending"]
         or args.delivery["publication"]["status"] != "published"
     )
-    return 3 if unavailable else (0 if args.report.passed else 1)
+    logger.info("Outcome against the baseline: %s", comparison["outcome"])
+    return 3 if unavailable else (1 if comparison["quality_regression"] else 0)
 
 
 if __name__ == "__main__":

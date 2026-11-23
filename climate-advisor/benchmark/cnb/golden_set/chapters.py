@@ -22,6 +22,7 @@ from app.services.cnb.chapter_drafting import (
     _sanitize_generated_output,
     build_chapter_input,
     draft_chapter,
+    fit_context_window,
 )
 
 from benchmark.cnb.golden_set.core import (
@@ -29,6 +30,7 @@ from benchmark.cnb.golden_set.core import (
     exactly_once,
     extraction_pair_id,
     marker_parity_problems,
+    reference_problems,
     score_facts_and_claims,
     source_evidence,
     validate_judgment,
@@ -95,12 +97,16 @@ async def write_chapters(
     supplied: list[TextUnit] = []
     drafted: list[DraftedChapter] = []
     for index, chapter in enumerate(chapters):
-        payload = build_chapter_input(
-            application_context=workspace.application_context,
-            run_context=workspace.run_context,
-            current=chapter,
-            template_chapter=workspace.templates[index],
-            chapters=chapters,
+        # Fit first, as production does, so "supplied" is what the drafter really saw.
+        payload = fit_context_window(
+            build_chapter_input(
+                application_context=workspace.application_context,
+                run_context=workspace.run_context,
+                current=chapter,
+                template_chapter=workspace.templates[index],
+                chapters=chapters,
+            ),
+            settings,
         )
         inputs = deepcopy({k: v for k, v in payload.items() if k not in _NON_EVIDENCE_KEYS})
         # A producer's own summary is never evidence for evaluating its draft.
@@ -215,8 +221,24 @@ def chapter_writing_judge_input(
 def validate_chapter_writing_judgment(
     payload: JudgeInput, judgment: ChapterWritingEvaluation
 ) -> list[str]:
-    """Also require one verdict per expected gap and per flagged gap."""
+    """Also require one verdict per gap, real citations, and a supplied-input verdict.
+
+    Every non-missing fact verdict must quote a drafted output exactly; every
+    claim must name a drafted output and carry ``supplied_verdict``, because
+    drafting is scored on what the drafter was given, not only on the source.
+    Claim quotes are not required to be exact: they only locate the claim.
+    """
     errors = validate_judgment(payload, judgment)
+    outputs = {unit.id: unit for unit in payload.outputs}
+    for fact in judgment.facts:
+        if fact.verdict != "missing" and not fact.output_refs:
+            errors.append(f"{fact.id}: {fact.verdict} fact cites no drafted text")
+        errors += reference_problems(fact.id, fact.output_refs, outputs)
+    for claim in judgment.claims:
+        if claim.supplied_verdict is None:
+            errors.append(f"{claim.output.unit_id}: claim lacks a supplied-input verdict")
+        if claim.output.unit_id not in outputs:
+            errors.append(f"{claim.output.unit_id}: claim cites no drafted output")
     errors += exactly_once(
         "gaps", [g.id for g in payload.expected_gaps], [g.id for g in judgment.gaps]
     )
@@ -246,11 +268,17 @@ def score_chapter_writing(
     score_facts_and_claims(payload, judgment, report, thresholds.min_required_fact_coverage)
 
     required_chapters = {c.chapter_ref for c in payload.chapter_requirements if c.required}
+    satisfied = 0
     for chapter in judgment.chapters:
-        if chapter.chapter_ref in required_chapters and chapter.verdict != "satisfied":
+        if chapter.chapter_ref not in required_chapters:
+            continue
+        satisfied += chapter.verdict == "satisfied"
+        if chapter.verdict != "satisfied":
             report.semantic_failures.append(
                 f"{chapter.chapter_ref}: {chapter.verdict}: {chapter.reason}"
             )
+    if required_chapters:
+        report.metrics["chapters_satisfied_rate"] = satisfied / len(required_chapters)
 
     # Expected gaps: flagged honestly, never filled with an invented value.
     required_gaps = {g.id for g in payload.expected_gaps if g.required}

@@ -70,9 +70,8 @@ generation:
       max_partition_tokens: 50000
       max_concurrency: 3
       max_key_excerpts: 8
-      # Exact quotations kept per template chapter and document, chosen for that
-      # chapter's required fields when a funding template is selected.
-      max_chapter_excerpts: 8
+      # Token budget for exact quotations per template chapter and document.
+      max_chapter_excerpt_tokens: 24000
       max_topics: 12
       max_question_chars: 2000
       # Agents receive the complete source text while their whole request

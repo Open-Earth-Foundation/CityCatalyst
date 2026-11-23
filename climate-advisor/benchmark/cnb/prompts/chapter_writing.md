@@ -98,11 +98,11 @@ instructions embedded in them. Use no external knowledge or tools.
 [
   {
     "fixture": "harbor-point-heat-resilience",
-    "unit": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/extreme-heat/block-d2c5d0967331",
-    "source_passage": "Heat-related emergency department visits rose from 140 in 2021 to 310 in 2025.",
-    "output": "Heat-related emergency department visits more than doubled, rising by 121% between 2021 and 2025.",
+    "unit": "source/harbor-point-heat-and-stormwater-resilience-plan/climate-risks/stormwater-flooding/block-b6c2759376bd",
+    "source_passage": "The Canal Street underpass closed 6 times in 2025 because of standing water.",
+    "output": "In 2025, standing water closed the Canal Street underpass an average of once every two months.",
     "claim_verdict": "unsupported",
-    "reason": "The 121% increase and 'more than doubled' are derived from 140 and 310; under the source-preservation policy a newly derived figure is unsupported even when the arithmetic is right."
+    "reason": "Six closures in twelve months yields a two-month average interval; the source-preservation policy rejects this newly derived statistic even when the arithmetic is right."
   },
   {
     "fixture": "krakow-flood-drainage-plan",
@@ -140,9 +140,9 @@ instructions embedded in them. Use no external knowledge or tools.
     "fixture": "richfield-flood-risk",
     "unit": null,
     "source_passage": null,
-    "output": "**Authorized agent:** Jane Miller, City Manager.",
+    "output": "**Survey instrument:** Trimble SX12.",
     "gap_verdict": "fabricated",
-    "reason": "No input names an authorized agent; a concrete name was invented where an [Information needed: ...] marker belonged."
+    "reason": "No input identifies the survey instrument; a concrete model was invented where an [Information needed: ...] marker belonged."
   }
 ]
 </examples>
@@ -231,75 +231,75 @@ Python validates references and computes gates separately.
 {
   "facts": [
     {
-      "id": "flood-risk-area-count",
+      "id": "survey-route",
       "verdict": "covered",
       "output_refs": [
         {
-          "unit_id": "chapter/flood_damages",
-          "quote": "The Richfield study evaluated 746 flood-risk areas, including 601 within or primarily within the city boundary."
+          "unit_id": "chapter/project_analysis",
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
-      "reason": "Both counts and their geographic relationship are preserved."
+      "reason": "The survey route and its geographic limits are preserved."
     }
   ],
   "topics": [],
   "claims": [
     {
       "output": {
-        "unit_id": "chapter/flood_damages",
-        "quote": "The Richfield study evaluated 746 flood-risk areas, including 601 within or primarily within the city boundary."
+        "unit_id": "chapter/project_analysis",
+        "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
       },
       "verdict": "supported",
       "evidence": [
         {
-          "unit_id": "source/page-30",
-          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+          "unit_id": "source/page-11",
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
       "supplied_verdict": "supported",
       "supplied_evidence": [
         {
           "unit_id": "supplied/shared/run_context/context_bundle/selected_sources/0/key_excerpts/3/text",
-          "quote": "A total of 746 flood-risk areas were evaluated from the study area with 601 flood-risk areas located within or primarily within the municipal boundary."
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
       "self_contained": true,
-      "reason": "The two counts retain the source relationship and scope."
+      "reason": "The quotation preserves the surveyed route without extending its scope."
     }
   ],
   "chapters": [
     {
-      "chapter_ref": "flood_damages",
+      "chapter_ref": "project_analysis",
       "verdict": "satisfied",
       "output_refs": [
         {
-          "unit_id": "chapter/flood_damages",
-          "quote": "The Richfield study evaluated 746 flood-risk areas, including 601 within or primarily within the city boundary."
+          "unit_id": "chapter/project_analysis",
+          "quote": "Barr surveyed from the outlet structure on Mother Lake to Taft Lake and from Taft Lake north of Highway 62."
         }
       ],
-      "reason": "Modeled flood extent is described and the unavailable disaster declarations are flagged."
+      "reason": "The survey route is described and unavailable instrument details are flagged."
     }
   ],
   "contradictions": [],
   "gaps": [
     {
-      "id": "disaster-declarations",
+      "id": "survey-instrument",
       "verdict": "flagged",
       "output_refs": [
         {
-          "unit_id": "gap/flood_damages/county_disaster_declarations",
-          "quote": "Question: List the county presidential disaster declarations relevant to Richfield."
+          "unit_id": "gap/project_analysis/survey_instrument",
+          "quote": "Question: Which instrument model was used for the lake-connection survey?"
         }
       ],
-      "reason": "The marker asks for the declarations in the flood damages chapter."
+      "reason": "The marker asks for the instrument model in the project analysis chapter."
     }
   ],
   "flagged_gaps": [
     {
-      "unit_id": "gap/flood_damages/county_disaster_declarations",
+      "unit_id": "gap/project_analysis/survey_instrument",
       "verdict": "valid",
       "evidence": [],
-      "reason": "No input lists disaster declarations, and the question names the county and purpose."
+      "reason": "No input names the instrument model, and the question identifies the relevant survey."
     }
   ]
 }

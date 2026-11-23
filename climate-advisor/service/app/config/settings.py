@@ -165,7 +165,10 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
+    # Retained for the historical golden-set viewer.
     max_chapter_excerpts: int = Field(default=8, ge=1, le=20)
+    # Quotations per template chapter; above it a selector sets priorities, 0 keeps all.
+    max_chapter_excerpt_tokens: int = Field(default=24000, ge=0)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
     # Above this whole-request size, agents fall back to summaries and quotations.

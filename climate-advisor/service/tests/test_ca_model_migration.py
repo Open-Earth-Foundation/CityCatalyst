@@ -119,7 +119,10 @@ async def test_chat_modes_round_trip_function_tools_with_medium_reasoning(
         (
             "cnb_source_reader",
             QuestionReading,
-            {"sections": [{"excerpts": [], "caveats": []}]},
+            {
+                "excerpts": ["The town plans to replace two pumps."],
+                "caveats": ["Funding is provisional."],
+            },
         ),
         (
             "cnb_source_synthesizer",

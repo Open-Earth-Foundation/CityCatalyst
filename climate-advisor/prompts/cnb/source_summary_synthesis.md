@@ -28,14 +28,10 @@ The input is a JSON object containing:
 Return `DocumentSummary` JSON only with:
 - `summary` (string): compact, self-contained document summary in which every factual sentence can be traced to a retained key excerpt and understood without partition context.
 - `topics` (array of strings): deduplicated topics.
-- `key_excerpts` (array of objects): `text` is an exact supplied excerpt; copy its `page` number or readable `heading`, and set the other location field to null.
-Stay within the configured limits and do not invent locators.
+- `key_excerpts` (array of objects): each with only `text`, an exact supplied excerpt; the backend attaches locations.
+Stay within the configured limits and do not invent text.
 </output>
 
-<example_output format="pdf">
-{"summary":"The supplied document calls for upgrading primary drainage channels.","topics":["drainage infrastructure"],"key_excerpts":[{"text":"Upgrade primary drainage channels","page":3,"heading":null}]}
-</example_output>
-
-<example_output format="markdown">
-{"summary":"The supplied document calls for upgrading primary drainage channels.","topics":["drainage infrastructure"],"key_excerpts":[{"text":"Upgrade primary drainage channels","page":null,"heading":"priorities/drainage"}]}
+<example_output>
+{"summary":"The supplied document calls for upgrading primary drainage channels.","topics":["drainage infrastructure"],"key_excerpts":[{"text":"Upgrade primary drainage channels"}]}
 </example_output>

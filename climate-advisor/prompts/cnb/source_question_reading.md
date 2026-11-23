@@ -16,12 +16,11 @@ Input is JSON with:
 
 <output>
 Return `QuestionReading` JSON only:
-- `sections` (array): exactly one result for every input section in the same order.
-  - `excerpts` (array of strings): exact contiguous substrings from that section.
-  - `caveats` (array of strings): self-contained material limitations affecting the excerpts.
-Return empty arrays for sections without support. Never omit or reorder section results. Do not invent locators; the backend attaches the supplied document location.
+- `excerpts` (array of strings): one flat list of exact contiguous substrings, each from one section's `text`, never joined across sections.
+- `caveats` (array of strings): self-contained material limitations affecting the excerpts.
+Return empty arrays when nothing supports the question. Do not state pages, headings, or section positions; the backend finds each excerpt in the source and attaches its location.
 </output>
 
 <example_output>
-{"sections":[{"excerpts":["Upgrade primary drainage channels"],"caveats":[]},{"excerpts":[],"caveats":[]}]}
+{"excerpts":["Upgrade primary drainage channels"],"caveats":[]}
 </example_output>

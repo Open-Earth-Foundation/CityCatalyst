@@ -7,9 +7,10 @@ import hashlib
 import json
 import logging
 import re
-from collections.abc import Awaitable, Sequence
+from collections.abc import Awaitable, Collection, Sequence
 from dataclasses import dataclass
-from itertools import pairwise
+from functools import lru_cache
+from itertools import pairwise, zip_longest
 from typing import Any, TypeVar, cast
 
 from agents import (
@@ -22,6 +23,7 @@ from agents import (
 from app.config.settings import ResearchModelConfig
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
+    MAX_CHAPTER_EXCERPTS,
     ChapterExcerpts,
     ChapterPartitionEvidence,
     ChapterTaggedSourceExcerpt,
@@ -63,7 +65,6 @@ MARKDOWN_HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILI
 _GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(3)
 MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
-MAX_COVERAGE_SPLIT_DEPTH = 2
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
 PartitionOutput = TypeVar(
     "PartitionOutput", SourcePartitionMap, SourceQuestionReading, ChapterPartitionEvidence
@@ -245,6 +246,7 @@ async def analyze_document(
                     client=client,
                     runner=runner,
                     reader_limit=reader_limit,
+                    units=pages,
                 )
                 for partition in partitions
             )
@@ -327,7 +329,7 @@ def chapter_evidence_fingerprint(
         },
         "limits": {
             "max_partition_tokens": budget.max_partition_tokens,
-            "max_chapter_excerpts": budget.max_chapter_excerpts,
+            "max_chapter_excerpt_tokens": budget.max_chapter_excerpt_tokens,
             "tokenizer_encoding": settings.llm.generation.prompt_budget.tokenizer_encoding,
         },
     }
@@ -346,12 +348,13 @@ async def extract_chapter_evidence(
     runner: Any = Runner,
     reader_limit: asyncio.Semaphore | None = None,
 ) -> list[ChapterExcerpts]:
-    """Read the whole source for each template chapter and keep a quota per chapter.
+    """Read every partition section by section, then apply the chapter token budget.
 
-    ``chapters`` holds each chapter's ``chapter_ref``, ``title``,
-    ``description``, and ``required_fields``. One reader call per partition
-    tags exact passages with the chapters they serve; one selection call runs
-    only for chapters with more verified candidates than ``max_chapter_excerpts``.
+    ``chapters`` holds each chapter's ``chapter_ref``, ``title``, ``description``,
+    and ``required_fields``. One reader call per partition reviews each section in
+    turn and tags exact passages with the chapters they serve; every passage is
+    located by its text. Chapters whose quotations exceed
+    ``max_chapter_excerpt_tokens`` go through one selector call.
     """
     if not chapters:
         return []
@@ -376,7 +379,7 @@ async def extract_chapter_evidence(
             fallback_encoding=tokenizer_encoding,
             source_label=source_label,
         )
-        partition_readings = await gather_all_or_raise(
+        readings = await gather_all_or_raise(
             *(
                 _read_partition(
                     name="Concept Note chapter evidence reader",
@@ -388,46 +391,63 @@ async def extract_chapter_evidence(
                     client=client,
                     runner=runner,
                     reader_limit=reader_limit,
+                    units=pages,
                 )
                 for partition in partitions
             )
         )
 
-        # Group verified passages by chapter; unknown chapter references are dropped.
+        # Group verified passages by chapter before prioritizing any of them.
         unit_text = {source_unit_anchor(unit): unit.text for unit in pages}
+        unit_order = {anchor: index for index, anchor in enumerate(unit_text)}
         candidates: dict[str, list[SourceExcerpt]] = {
             chapter["chapter_ref"]: [] for chapter in chapters
         }
-        for group in partition_readings:
-            for reading in group:
-                for excerpt in reading.excerpts:
-                    located = SourceExcerpt(
-                        text=excerpt.text, page=excerpt.page, anchor=excerpt.anchor
-                    )
-                    for ref in dict.fromkeys(excerpt.chapter_refs):
-                        if ref in candidates:
-                            candidates[ref].append(located)
+        for reading in (reading for group in readings for reading in group):
+            for excerpt in reading.excerpts:
+                located = SourceExcerpt(
+                    text=excerpt.text, page=excerpt.page, anchor=excerpt.anchor
+                )
+                for ref in excerpt.chapter_refs:
+                    if ref in candidates:
+                        candidates[ref].append(located)
         candidates = {
             ref: verified_excerpts(items, unit_text) for ref, items in candidates.items()
         }
 
-        quota = budget.max_chapter_excerpts
-        overfull = {ref: items for ref, items in candidates.items() if len(items) > quota}
+        # Remove covered passages per source unit and put the rest in document order.
+        candidates = {
+            ref: _ordered_chapter_excerpts(items, unit_text, unit_order)
+            for ref, items in candidates.items()
+        }
+        token_limit = budget.max_chapter_excerpt_tokens
+        overfull = {}
+        costs = {}
+        if token_limit:
+            costs = {
+                quote: count_prompt_tokens(
+                    [quote], model=reader_model.name, fallback_encoding=tokenizer_encoding
+                ).tokens
+                for quote in {item.text for items in candidates.values() for item in items}
+            }
+            overfull = {
+                ref: items for ref, items in candidates.items()
+                if sum(costs[item.text] for item in items) > token_limit
+            }
         if overfull:
-            candidates.update(
-                await _select_chapter_excerpts(
-                    source_label=source_label,
-                    source_format=source_format,
-                    chapters=[c for c in chapters if c["chapter_ref"] in overfull],
-                    overfull=overfull,
-                    pages=pages,
-                    settings=settings,
-                    client=client,
-                    runner=runner,
-                )
+            chosen = await _select_chapter_excerpts(
+                source_label=source_label,
+                source_format=source_format,
+                chapters=[c for c in chapters if c["chapter_ref"] in overfull],
+                overfull=overfull,
+                settings=settings,
+                client=client,
+                runner=runner,
             )
+            for ref, items in overfull.items():
+                candidates[ref] = _fill_chapter_budget(items, chosen.get(ref, []), costs, token_limit)
         return [
-            ChapterExcerpts(chapter_ref=ref, excerpts=items[:quota])
+            ChapterExcerpts(chapter_ref=ref, excerpts=items[:MAX_CHAPTER_EXCERPTS])
             for ref, items in candidates.items()
             if items
         ]
@@ -436,23 +456,60 @@ async def extract_chapter_evidence(
             await client.close()
 
 
+def _ordered_chapter_excerpts(
+    items: list[SourceExcerpt], unit_text: dict[str, str], unit_order: dict[str, int]
+) -> list[SourceExcerpt]:
+    """Keep maximal passages within each page or Markdown block, in source order."""
+    by_unit: dict[str, list[SourceExcerpt]] = {}
+    for item in items:
+        by_unit.setdefault(excerpt_source_anchor(item), []).append(item)
+
+    ordered = []
+    for anchor in sorted(by_unit, key=unit_order.__getitem__):
+        maximal: list[SourceExcerpt] = []
+        for item in sorted(by_unit[anchor], key=lambda item: -len(item.text)):
+            if not any(item.text in longer.text for longer in maximal):
+                maximal.append(item)
+        ordered.extend(sorted(maximal, key=lambda item: unit_text[anchor].index(item.text)))
+    return ordered
+
+
+def _fill_chapter_budget(
+    items: list[SourceExcerpt], chosen: list[SourceExcerpt], costs: dict[str, int], limit: int
+) -> list[SourceExcerpt]:
+    """Pack selector choices first, then take one remaining excerpt per page per turn."""
+    by_unit: dict[str, list[int]] = {}
+    positions = {(excerpt_source_anchor(item), item.text): index for index, item in enumerate(items)}
+    priority = [positions[excerpt_source_anchor(item), item.text] for item in chosen]
+    chosen_positions = set(priority)
+    for index, item in enumerate(items):
+        if index not in chosen_positions:
+            by_unit.setdefault(excerpt_source_anchor(item), []).append(index)
+    for turn in zip_longest(*by_unit.values()):
+        priority.extend(index for index in turn if index is not None)
+
+    retained = []
+    for index in priority:
+        cost = costs[items[index].text]
+        if cost <= limit:
+            retained.append(index)
+            limit -= cost
+        if len(retained) == MAX_CHAPTER_EXCERPTS:
+            break
+    return [items[index] for index in sorted(retained)]
+
+
 async def _select_chapter_excerpts(
     *,
     source_label: str,
     source_format: ConceptNoteSourceFormat,
     chapters: list[dict[str, Any]],
     overfull: dict[str, list[SourceExcerpt]],
-    pages: Sequence[SourceUnit],
     settings: Settings,
     client: AsyncOpenAI,
     runner: Any,
 ) -> dict[str, list[SourceExcerpt]]:
-    """Let the synthesizer choose each overfull chapter's quota from its candidates.
-
-    A chapter whose choice cannot be matched to its own candidates keeps its
-    candidates in document order.
-    """
-    quota = settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpts
+    """Resolve each over-budget chapter's priority list to its verified candidates."""
     selection = await run_agent(
         name="Concept Note chapter evidence selector",
         prompt=settings.llm.prompts.get_prompt("cnb_source_chapter_evidence_selection"),
@@ -472,7 +529,6 @@ async def _select_chapter_excerpts(
                     }
                     for ref, items in overfull.items()
                 ],
-                "limits": {"max_excerpts_per_chapter": quota},
             },
             ensure_ascii=False,
         ),
@@ -481,16 +537,19 @@ async def _select_chapter_excerpts(
     )
     chosen: dict[str, list[SourceExcerpt]] = {}
     for choice in selection.chapters:
-        allowed = {
-            (excerpt_source_anchor(e), e.text) for e in overfull.get(choice.chapter_ref, [])
-        }
-        restored = [
-            e
-            for e in _restore_readable_excerpts(choice.excerpts, pages)
-            if (excerpt_source_anchor(e), e.text) in allowed
+        # Match the complete quotation so a short passage cannot select a longer one on another page.
+        candidates = [
+            (_letters_and_digits(e.text)[0], e) for e in overfull.get(choice.chapter_ref, [])
         ]
-        if restored:
-            chosen[choice.chapter_ref] = restored[:quota]
+        restored = chosen.setdefault(choice.chapter_ref, [])
+        for excerpt in choice.excerpts:
+            needle = _letters_and_digits(excerpt.text)[0]
+            match = next(
+                (e for text, e in candidates if needle and needle == text and e not in restored),
+                None,
+            )
+            if match:
+                restored.append(match)
     return chosen
 
 
@@ -549,6 +608,7 @@ async def query_document(
                     client=client,
                     runner=runner,
                     reader_limit=reader_limit,
+                    units=pages,
                 )
                 for partition in partitions
             )
@@ -622,9 +682,9 @@ async def _read_partition(
     client: AsyncOpenAI,
     runner: Any,
     reader_limit: asyncio.Semaphore,
-    split_depth: int = 0,
+    units: Sequence[SourceUnit],
 ) -> list[PartitionOutput]:
-    """Read all sections, bisecting incomplete groups at most twice before failing."""
+    """Read one partition; the model returns quotations only and code locates each one."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
         result = await run_agent(
             name=name,
@@ -634,107 +694,137 @@ async def _read_partition(
             input_text=input_text,
             client=client,
             runner=runner,
-            expected_sections=len(partition),
         )
-    if len(result.sections) != len(partition):
-        # Never guess which section was skipped: discard the incomplete response
-        # and reread both halves. Release reader permits before scheduling children.
-        if len(partition) > 1 and split_depth < MAX_COVERAGE_SPLIT_DEPTH:
-            logger.warning(
-                "Retrying incomplete source coverage expected_sections=%s returned_sections=%s split_depth=%s",
-                len(partition),
-                len(result.sections),
-                split_depth,
-            )
-            payload = json.loads(input_text)
-            midpoint = len(partition) // 2
-            groups = await gather_all_or_raise(
-                *(
-                    _read_partition(
-                        name=name,
-                        partition=group,
-                        prompt=prompt,
-                        output_type=output_type,
-                        input_text=_render_with_context(group, payload),
-                        settings=settings,
-                        client=client,
-                        runner=runner,
-                        reader_limit=reader_limit,
-                        split_depth=split_depth + 1,
-                    )
-                    for group in (partition[:midpoint], partition[midpoint:])
-                )
-            )
-            return [reading for group in groups for reading in group]
-        raise SourceAnalysisError(
-            "incomplete_source_coverage",
-            "Reader must return every supplied section in order",
-            reason="reader_section_count_mismatch",
-            details={
-                "expected_sections": len(partition),
-                "returned_sections": len(result.sections),
-            },
-        )
-    # Match evidence to the exact section; the model never chooses an internal locator.
+    # Models lose count of pages on long inputs, so they never state a location:
+    # each quotation is found by its text, preferring this partition's own units.
     covered = [s.segment_id for s in partition]
+    own = {segment_source_anchor(segment) for segment in partition}
+    # Chapter evidence is a section-by-section checklist; entry count and order are ignored.
+    excerpts = (
+        [excerpt for section in result.sections for excerpt in section.excerpts]
+        if isinstance(result, ChapterEvidenceReading)
+        else result.excerpts
+    )
+    located = [
+        (excerpt, locate_excerpt(
+            excerpt if isinstance(excerpt, str) else excerpt.text, units, prefer=own
+        ))
+        for excerpt in excerpts
+    ]
     if output_type is ChapterPartitionEvidence:
         tagged = [
             ChapterTaggedSourceExcerpt(
-                text=excerpt.text,
+                text=found.text,
                 chapter_refs=excerpt.chapter_refs,
-                page=segment.page,
-                anchor=segment.anchor,
+                page=found.page,
+                anchor=found.anchor,
             )
-            for segment, reading in zip(partition, result.sections, strict=True)
-            for excerpt in reading.excerpts
-            if excerpt.text in segment.text
+            for excerpt, pieces in located
+            for found in pieces
         ]
         return [ChapterPartitionEvidence(excerpts=tagged, covered_segment_ids=covered)]
-    excerpts = []
-    caveats = []
-    for segment, reading in zip(partition, result.sections, strict=True):
-        excerpts.extend(
-            SourceExcerpt(text=text, page=segment.page, anchor=segment.anchor)
-            for text in reading.excerpts
-            if text and text in segment.text
-        )
-        caveats.extend(reading.caveats)
+    excerpts = [found for _, pieces in located for found in pieces]
     values = {"excerpts": excerpts[:20], "covered_segment_ids": covered}
     if output_type is SourcePartitionMap:
         values.update(summary=result.summary, topics=result.topics)
     else:
-        values["caveats"] = deduplicate_strings(caveats)[:10]
+        values["caveats"] = deduplicate_strings(result.caveats)[:10]
     return [output_type.model_validate(values)]
 
 
 def _restore_readable_excerpts(
     excerpts: Sequence[ReadableExcerpt], pages: Sequence[SourceUnit]
 ) -> list[SourceExcerpt]:
-    """Resolve readable citations to verified backend locations without guessing."""
-    restored = []
-    for excerpt in excerpts:
-        for unit in pages:
-            matches_location = (
-                isinstance(unit, SourcePage)
-                and excerpt.page == unit.number
-                and excerpt.heading is None
-            ) or (
-                isinstance(unit, SourceBlock)
-                and excerpt.page is None
-                and excerpt.heading == readable_source_heading(unit.anchor)
-            )
-            if matches_location and excerpt.text in unit.text:
-                restored.append(
-                    SourceExcerpt(
-                        text=excerpt.text,
-                        page=unit.number if isinstance(unit, SourcePage) else None,
-                        anchor=unit.anchor if isinstance(unit, SourceBlock) else None,
-                    )
-                )
-                break
+    """Locate each quotation in the source; the model never states a location."""
     return verified_excerpts(
-        restored, {source_unit_anchor(unit): unit.text for unit in pages}
+        [found for excerpt in excerpts for found in locate_excerpt(excerpt.text, pages)],
+        {source_unit_anchor(unit): unit.text for unit in pages},
     )
+
+
+@lru_cache(maxsize=4096)
+def _letters_and_digits(text: str) -> tuple[str, tuple[int, ...]]:
+    """Lowercase letters and digits of ``text``, with each one's index in ``text``."""
+    chars: list[str] = []
+    index: list[int] = []
+    for i, char in enumerate(text):
+        if char.isalnum():
+            folded = char.lower()
+            chars.append(folded)
+            index.extend([i] * len(folded))
+    return "".join(chars), tuple(index)
+
+
+# Shorter lines ("2)", "| --- |") match almost anywhere, so they are never located alone.
+MIN_LOCATED_LINE_CHARS = 8
+MAX_EXCERPT_CHARS = 4000  # SourceExcerpt.text limit
+
+
+def _find_in_unit(
+    text: str, units: Sequence[SourceUnit], prefer: Collection[str]
+) -> tuple[SourceUnit, int, int] | None:
+    """Return the unit and character span holding ``text``, ignoring punctuation, spacing and case."""
+    needle, _ = _letters_and_digits(text)
+    if not needle:
+        return None
+    hits = []
+    for i, unit in enumerate(units):
+        haystack, index = _letters_and_digits(unit.text)
+        start = haystack.find(needle)
+        if start >= 0:
+            hits.append((unit.anchor not in prefer, i, unit, index[start], index[start + len(needle) - 1] + 1))
+    if not hits:
+        return None
+    _, _, unit, start, end = min(hits, key=lambda hit: hit[:2])
+    # Widen to whole tokens so units, signs and markup stay attached ("50%", "**7**").
+    while start > 0 and not unit.text[start - 1].isspace():
+        start -= 1
+    while end < len(unit.text) and not unit.text[end].isspace():
+        end += 1
+    return unit, start, end
+
+
+def locate_excerpt(
+    text: str, units: Sequence[SourceUnit], *, prefer: Collection[str] = ()
+) -> list[SourceExcerpt]:
+    """Find a quotation anywhere in the source, ignoring punctuation, spacing and case.
+
+    Returns the source's own wording at its real location. A quotation that is
+    not one stretch of the source (joined across a page break, or from table rows
+    that are not adjacent) is located line by line; consecutive lines on the same
+    unit become one span of source text. Only text absent from the document is dropped.
+    Repeated text resolves to the first unit in ``prefer`` (the partition read), else the first.
+    """
+    whole = _find_in_unit(text, units, prefer)
+    if whole:
+        spans = [whole]
+    else:
+        spans = []
+        for line in text.splitlines():
+            if len(_letters_and_digits(line)[0]) < MIN_LOCATED_LINE_CHARS:
+                continue
+            found = _find_in_unit(line, units, prefer)
+            if not found:
+                continue
+            unit, start, end = found
+            last = spans[-1] if spans else None
+            if last and last[0] is unit and last[1] <= start and end <= last[2]:
+                continue  # already inside the previous span
+            # Keep one span per unit, including rows the model skipped between its lines.
+            if last and last[0] is unit and last[2] <= start and end - last[1] <= MAX_EXCERPT_CHARS:
+                spans[-1] = (unit, last[1], end)
+            else:
+                spans.append(found)
+    if not spans:
+        logger.warning("Discarded Concept Note excerpt not found in the source")
+    return [
+        SourceExcerpt(
+            text=unit.text[start:end],
+            page=source_unit_page(unit),
+            anchor=unit.anchor if isinstance(unit, SourceBlock) else None,
+        )
+        for unit, start, end in spans
+    ]
 
 
 async def run_agent(
@@ -746,18 +836,9 @@ async def run_agent(
     input_text: str,
     client: AsyncOpenAI,
     runner: Any,
-    expected_sections: int | None = None,
 ) -> OutputModel:
     """Run one tool-free worker with its configured model and reasoning effort."""
-    # Constrain the provider's array length as well as checking coverage in code.
-    # Local validation keeps the base model so count errors retain our diagnostic
-    # and bounded recovery path even if a provider ignores the schema constraint.
     output_schema = AgentOutputSchema(output_type)
-    if expected_sections is not None:
-        output_schema.json_schema()["properties"]["sections"].update(
-            minItems=expected_sections,
-            maxItems=expected_sections,
-        )
     # Select reasoning by worker role even when both roles share one model.
     agent = Agent(
         name=name,

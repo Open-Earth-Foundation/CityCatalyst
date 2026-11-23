@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from app.config.settings import PromptsConfig, _load_llm_config
+from app.models.cnb.source_prompt import DocumentSummary
 
 CA_ROOT = Path(__file__).resolve().parents[2]
 
@@ -275,7 +276,7 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "general CityCatalyst climate and inventory chat" not in composed
 
 
-def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
+def test_cnb_source_configuration_matches_quote_only_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources
 
@@ -297,8 +298,8 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
         assert "substring" in prompt
 
     prompt = config.prompts.get_prompt("cnb_source_summary_synthesis")
-    assert '"page":3' in prompt
-    assert '"heading":' in prompt
+    example = prompt.split("<example_output>", 1)[1].split("</example_output>", 1)[0]
+    assert DocumentSummary.model_validate_json(example).key_excerpts
     assert "covered_segment_ids" not in config.prompts.get_prompt(
         "cnb_source_document_mapping"
     )

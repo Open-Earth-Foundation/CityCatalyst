@@ -29,7 +29,7 @@
         "requirements": [
           {
             "chapter_ref": "project_summary",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -53,11 +53,11 @@
           },
           {
             "chapter_ref": "expected_results",
-            "priority": "mandatory"
+            "priority": "desirable"
           },
           {
             "chapter_ref": "project_summary",
-            "priority": "mandatory"
+            "priority": "desirable"
           }
         ]
       },
@@ -204,6 +204,134 @@
             "priority": "desirable"
           }
         ]
+      },
+      {
+        "id": "lead-agency",
+        "statement": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience leads delivery together with the Department of Public Works.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_summary",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "delivery-period",
+        "statement": "The measures are delivered between 2027 and 2032.",
+        "evidence": [
+          {
+            "text": "The Harbor Point Heat and Stormwater Resilience Plan sets out how the fictional coastal city of Harbor Point will reduce extreme-heat exposure and street flooding between 2027 and 2032.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/summary"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "project_summary",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_components",
+            "priority": "desirable"
+          },
+          {
+            "chapter_ref": "expected_results",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "canopy-target",
+        "statement": "The tree canopy target for Eastside and Millbrook is 25 percent by 2032.",
+        "evidence": [
+          {
+            "text": "in Eastside and Millbrook.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"
+              }
+            ]
+          },
+          {
+            "text": "The tree canopy target for both neighbourhoods is 25 percent by 2032.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/measures/cool-corridors"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "expected_results",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "project_components",
+            "priority": "desirable"
+          }
+        ]
+      },
+      {
+        "id": "partners",
+        "statement": "Public Works delivers green stormwater infrastructure, the Unified School District hosts schoolyard conversions, and Millbrook Neighbours Alliance co-designs cool corridor routes.",
+        "evidence": [
+          {
+            "text": "The Department of Public Works delivers green stormwater infrastructure. The Harbor Point Unified School District hosts schoolyard conversions. The community organisation Millbrook Neighbours Alliance co-designs cool corridor routes with residents.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/governance/partners"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          }
+        ]
+      },
+      {
+        "id": "monitoring",
+        "statement": "The Office of Climate Resilience publishes an annual progress report tracking canopy cover, flooded intersections and heat-related emergency visits.",
+        "evidence": [
+          {
+            "text": "The Office of Climate Resilience will publish an annual progress report. Indicators include tree canopy cover, the number of flooded intersections during monitored storms, and heat-related emergency department visits.",
+            "locators": [
+              {
+                "heading": "harbor-point-heat-and-stormwater-resilience-plan/monitoring"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          {
+            "chapter_ref": "implementation",
+            "priority": "mandatory"
+          },
+          {
+            "chapter_ref": "expected_results",
+            "priority": "desirable"
+          }
+        ]
       }
     ],
     "topics": [
@@ -244,7 +372,8 @@
         "chapters": [
           "project_summary",
           "implementation"
-        ]
+        ],
+        "extraction_fact": "lead-agency"
       },
       {
         "id": "delivery-period",
@@ -254,13 +383,13 @@
           "project_summary",
           "project_components",
           "expected_results"
-        ]
+        ],
+        "extraction_fact": "delivery-period"
       },
       {
         "id": "population",
         "statement": "Harbor Point has 182,400 residents.",
         "origin": "document",
-        "required": false,
         "chapters": [
           "climate_context",
           "expected_results",
@@ -311,7 +440,8 @@
         "chapters": [
           "expected_results",
           "project_components"
-        ]
+        ],
+        "extraction_fact": "canopy-target"
       },
       {
         "id": "programme-financing",
@@ -339,7 +469,8 @@
         "origin": "document",
         "chapters": [
           "implementation"
-        ]
+        ],
+        "extraction_fact": "partners"
       },
       {
         "id": "monitoring",
@@ -348,7 +479,8 @@
         "chapters": [
           "implementation",
           "expected_results"
-        ]
+        ],
+        "extraction_fact": "monitoring"
       }
     ],
     "gaps": [
@@ -618,8 +750,28 @@
           {
             "id": "exposure-marker",
             "statement": "The chapter still asks for the number and characteristics of people exposed in Eastside and Millbrook."
+          },
+          {
+            "id": "delivery-period",
+            "statement": "The plan addresses the heat and flooding risks between 2027 and 2032."
+          },
+          {
+            "id": "canopy-baseline",
+            "statement": "Eastside and Millbrook have the city's lowest tree-canopy cover, at 11 percent and 13 percent respectively."
+          },
+          {
+            "id": "population",
+            "statement": "Harbor Point has 182,400 residents."
+          },
+          {
+            "id": "cooling-threshold",
+            "statement": "Cooling facilities are to be available on days above 32 °C."
           }
-        ]
+        ],
+        "length_ratio": {
+          "min_ratio": 0.5,
+          "max_ratio": 0.8
+        }
       },
       {
         "id": "contact-without-value",
@@ -631,15 +783,85 @@
             "statement": "The concept note is unchanged; no contact person is invented."
           }
         ]
+      },
+      {
+        "id": "add-country-from-earlier-message",
+        "instruction": "Please add the country now. Leave the accredited entity open.",
+        "recent_messages": [
+          {
+            "role": "user",
+            "content": "Two things for later: Harbor Point is in the Republic of Marenia, and the accredited entity should be confirmed next month."
+          },
+          {
+            "role": "assistant",
+            "content": "Noted. I have not changed the concept note. Tell me when you want either of them added."
+          }
+        ],
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "project_summary"
+        ],
+        "expected_changes": [
+          {
+            "id": "country-stated",
+            "statement": "The project summary states that Harbor Point is in the Republic of Marenia, the country the user named in an earlier message, instead of asking for the country."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "accredited-entity-open",
+            "statement": "The project summary and the implementation chapter still ask for the GCF-accredited entity; none is named."
+          },
+          {
+            "id": "adoption-and-population",
+            "statement": "The project summary still says the plan was adopted by the Harbor Point City Council on 14 March 2026 and serves a city with 182,400 residents."
+          },
+          {
+            "id": "gcf-request-open",
+            "statement": "The amount of GCF grant funding requested is still asked for, not invented."
+          }
+        ]
+      },
+      {
+        "id": "delete-partner-roles-sentence",
+        "instruction": "In the Project summary, delete the sentence that lists what the Department of Public Works, the school district and Millbrook Neighbours Alliance each do. Keep the sentence before it about who leads delivery.",
+        "expected_outcome": "edit",
+        "allowed_chapters": [
+          "project_summary"
+        ],
+        "expected_changes": [
+          {
+            "id": "partner-sentence-removed",
+            "statement": "The project summary no longer contains the sentence saying that the Department of Public Works will deliver green stormwater infrastructure, the Harbor Point Unified School District will host schoolyard conversions, and Millbrook Neighbours Alliance will co-design cool-corridor routes."
+          }
+        ],
+        "must_preserve": [
+          {
+            "id": "lead-sentence",
+            "statement": "The project summary still says the Office of Climate Resilience will lead delivery in partnership with the Department of Public Works."
+          },
+          {
+            "id": "entity-marker",
+            "statement": "The project summary still asks for the GCF-accredited entity that will submit and oversee the proposal."
+          },
+          {
+            "id": "scope-paragraph",
+            "statement": "The project summary still lists 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas and 18 community cooling centres."
+          },
+          {
+            "id": "roles-elsewhere",
+            "statement": "The project components and implementation chapters still state the roles of the Department of Public Works, the Harbor Point Unified School District and Millbrook Neighbours Alliance."
+          }
+        ]
       }
     ]
   },
   "approval": {
-    "status": "pending",
-    "reviewer": null,
-    "reviewed_at": null,
+    "status": "approved",
+    "reviewer": "Piotr Nowakowski",
+    "reviewed_at": "2026-11-19",
     "source_sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
     "template_sha256": "096b99db207606ba322afefa2ad3ad97bb117b8c2d3e4b7bf16217cc9cb2bc02",
-    "requirements_sha256": "6db17145ed0a6bd6c94f3854c69dee8eba619fbd052c7e749684bbeca1efe019"
+    "requirements_sha256": "01dbcf9ad1f57e2608ea0fcccbcf906b36483f912aa1926d29539eb7f90cee28"
   }
 }

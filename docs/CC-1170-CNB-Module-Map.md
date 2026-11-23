@@ -28,7 +28,7 @@ Proposed target paths are a packaging proposal for stage 6 of the proposal, not 
 - `(stays)`: the file keeps its current location.
 - `(keep; shared)`: the file is already outside CNB folders. Remove the CNB coupling in place.
 
-Capability names: `choices`, `visuals`, `sources`, `collection` (guided questions, gap answers), `review` (proposals, edit review, apply), `runtime` (tool composition, execution, streaming), `context` (scoped context, authorization), `export`, `lifecycle` (runs, status), and `chat` (the frontend transcript and composer only).
+Capability names: `choices`, `visuals`, `sources`, `collection` (guided questions and their answers; gap answers are superseded by points), `review` (proposals, edit review, apply), `runtime` (tool composition, execution, streaming), `context` (scoped context, authorization), `export`, `lifecycle` (runs, status), and `chat` (the frontend transcript and composer only).
 
 Path prefixes: `ca/` = `climate-advisor/service/app/`, `P/` = `climate-advisor/prompts/`.
 

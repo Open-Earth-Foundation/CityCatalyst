@@ -40,7 +40,7 @@
 2. **Every screen shows the same list.** One request returns the list of points. Every change a person makes to a point is one command, and it is kept in the point's history. The user can save on the point card next to the chat. Clima itself cannot save yet.
 3. **Four missing pieces matter most.**
    - Files are not sorted into the categories the document needs (CC-1299).
-   - A setup can only be made from a Builder template, and a point's key depends on that template. So the same label in two chapters is two points, and saving the template again loses the answers (CC-1297, CC-1298).
+   - A setup can only be made from a Builder template. A field given only as a label gets a key tied to that template, so for such fields the same label in two chapters is two points, and saving the template again loses the answers. Fields with their own key do not have this problem (CC-1297, CC-1298).
    - A changed point rewrites the whole chapter, not the passage (CC-1305, CC-1306).
    - Nothing on the server makes the draft come after the points.
 4. **The core and CC-1170 share two connecting pieces.** The core uses Builder code directly in four places. CC-1170 planned adapters for two of them: access to files and editing of draft text. **Proposed:** define them once, for both tickets, and build them when a second user of them exists.
@@ -102,7 +102,7 @@ The table shows the target. The lists under it show the state today.
 
 - **Built.** The points are made from the Builder template when the user selects it, again when drafting starts, and when a document is first opened. A copy of the template is kept for the document, with a version. Every change is kept in a history, with who made it.
 - **Partial.** Builder templates hold only lists of text labels. So every point is a required free-text point today. The core can already handle numbers, dates, choices, optional points and allowed exceptions, but no screen or import can create them.
-- **Partial.** A point's key is made from the template, the chapter and the label. The same label in two chapters is two points, each answered on its own. Saving the note's own template again, or changing the funder, retires every point. The answers stay only in the history.
+- **Partial.** A field with its own key (`semantic_key`) is one point across chapters and survives saving the template again. A field given only as a label, as in the existing templates, gets a fallback key made from the template, the chapter and the label. For those fields, the same label in two chapters is two points, each answered on its own, and saving the note's own template again, or changing the funder, retires them. The answers stay only in the history.
 - **Missing.** A setup that is its own record for a document type. A document type other than the concept note. File categories. Rules between points, for example totals that must add up.
 
 ### B. Reading, sorting and checking
@@ -139,7 +139,7 @@ The table shows the target. The lists under it show the state today.
 
 | Part | What it is | State |
 |---|---|---|
-| **Identity** | A key that is unique in the document and does not depend on the text. | **Built**, but the key depends on the template and the chapter today (3, A). |
+| **Identity** | A key that is unique in the document and does not depend on the text. | **Built** for fields with their own key. A label-only field gets a key tied to the template and the chapter (3, A). |
 | **Definition** | Copied from the setup: label, fact or decision, shape of the answer, required or optional, allowed exceptions, unit, chapters. | **Built** |
 | **Value** | One accepted value. | **Built** |
 | **Source** | For a value from a file: the exact file, the quote and the page. For a person's answer: who, when and why. | **Partial.** All of it is stored. The screens get the quote and the reason, but not who or when. |
@@ -234,7 +234,7 @@ Where today's code differs: in steps 5 and 6 the status is "conflict" and the po
 | **One way to save.** A person changes a point only through the command. | **Built** |
 | **Evidence is kept.** New evidence after a confirmation opens a disagreement. It does not change the accepted value. | **Built** |
 | **Saving does not wait for the text.** | **Built** |
-| **An out-of-date save is refused.** The user reloads and decides again. | **Built** |
+| **An out-of-date save is refused.** The user reloads and decides again. | **Partial.** The server refuses an old version. But the card takes the new version every 5 seconds and keeps the typed text, so a second click can save that text over a change the user has not seen. |
 
 ---
 
@@ -318,7 +318,7 @@ The spike documents follow this order. Their migration plan maps each old step t
 
 **Today.** Climate Advisor has two databases. The Clima database holds conversations, Stationary Energy and the Builder's runs. The Builder database holds chapters, revisions, edit proposals, gaps and funding data, and is set up outside this repository. The eleven point tables are in the **Builder database**: `document_workspaces`, `document_setup_snapshots`, `document_points`, `document_point_candidates`, `document_point_revisions`, `document_operations`, `document_needs`, `document_point_dependencies`, `document_update_jobs`, `document_exports`, `document_source_readings`. The CityCatalyst database gets one change to the document pool.
 
-**Proposed.** Keep the point tables in the Builder database for the pilot. A command saves the point and queues its text update in one step only because both live next to the chapters and revisions.
+**Proposed.** Keep the point tables in the Builder database for the pilot. One transaction saves the point, its history and the queued text update. Applying a reviewed change saves the chapter revision and marks the point current, also in one transaction. Both work only because the point tables share a database with the chapters and revisions. Moving the point tables alone would split them.
 
 **Revisit** when the paused move of capabilities into Clima resumes, or when the generality check passes. The spike's rule then applies to what has proven shared: shared tables in the Clima database with a `clima_` prefix, and the move done by double writing, filling and switching reads, never by renaming in place.
 
@@ -370,8 +370,8 @@ flowchart LR
 | Check | Question | What we show |
 |---|---|---|
 | **Quality** | Does it sort, read and write correctly? | CC-1301. A real grant for a real city, then a different grant for the same city in a second document. The answer key and the pass marks are agreed before the run. Scores: files in the right category; points found with the right value, quote and page; statements in the draft backed by an accepted point. No value is accepted without a yes, and none is carried over from the first grant. |
-| **Generality** | Does a new document type need programming? | A setup that is not a grant runs on the same build: setup, files, one answer, a working draft. No funder template. No special case in the core. |
-| **Release** | Is it safe for existing documents? | The database changes are rehearsed on a copy. An existing concept note opens and can be brought to a final export. Old and new versions are tried together. Repeated and out-of-date saves behave. The chapter checks are retested. Going back is rehearsed. |
+| **Generality** | Does a new document type need programming? | A setup that is not a grant runs on the same build: setup, files, one answer, a working draft. No funder template. No special case in the core. It runs inside the Builder: the document type is still `concept_note` and the draft starts from a Builder template. So it proves a second setup, not independence from the Builder. |
+| **Release** | Is it safe for existing documents? | The database changes are rehearsed on a copy. An existing concept note still opens. Old and new versions are tried together. Repeated and out-of-date saves behave. The chapter checks are retested. Going back is rehearsed. |
 
 Two grants for one city show that reading carries over between grants. They do not show that a second document type needs no programming. Both are needed.
 
@@ -379,7 +379,7 @@ Two grants for one city show that reading carries over between grants. They do n
 
 **Proposed.** Keep each note's address, owner, chat, files, text and history. Its points start as missing. A gap that was resolved earlier does not become a confirmed fact.
 
-**Open (decision 10).** The final export. Today the user is told to start a new concept note. The other way is to read the attached files again, let the user confirm the points, and write or review the affected text again in the same note. That way needs new code.
+**Decided (23 November).** There are no production users yet, so existing notes are test data. They must still open. They need not reach a final export: the user starts a new concept note, as the app already tells them.
 
 ### 6.5 If the cutover goes wrong
 
@@ -410,12 +410,13 @@ Two grants for one city show that reading carries over between grants. They do n
 | 4 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
 | 5 | Is a setup its own reviewed record, apart from a Builder template? | Yes | One versioned setup for each document type and programme, pinned for each document. For the pilot an engineer loads it from a reviewed file. Joaquin names the reviewer for each setup. Builder templates are translated now and rewritten later. |
 | 6 | Is the generality check a small setup that is not a grant? | Yes | For example the outline of a climate action plan, as the JVP mapping suggested. |
-| 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and the first files are read | The server refuses before that. Open points show as marked gaps in a working draft (**Decided:** draft last). |
+| 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and every attached file is read or has failed to read | The server refuses before that. With no files, the setup is enough. Only accepted values are written as facts. Open points and unconfirmed candidates show as marked gaps in a working draft, even when no point is accepted yet (**Decided:** draft last). |
 | 8 | Is it accepted that a new file no longer rechecks the chapters it affects? | Yes | The file creates candidates. The chapter is checked again when a point changes. |
 | 9 | Is the release path "pilot, then one merge"? | Yes | No rollout city by city (6.2). |
-| 10 | Must an existing concept note reach a final export without starting again? | Yes, before the replacement on dev and test | It needs new code (6.4). |
 | 12 | Which city and which two grants are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
 | 13 | Does only the owner change a point during the pilot? | Yes | "Waiting on others" is a name and a note. Documents shared by a city are a later change. |
+
+**Set aside (was 10).** Whether an existing concept note must reach a final export without starting again. There are no production users yet (6.4).
 
 **Set aside (was 11).** Whether real documents of a city may be stored on the Mikrus test server. The tests with real documents will probably run on dev, so the question does not arise now. It returns only if real documents go to that server. The other numbers are kept.
 
@@ -515,14 +516,14 @@ A new product needs edits in two fixed lists (allowed prompts, context keys) and
 
 These are defects or risks. They are not architecture decisions.
 
-1. **Keys.** A point's key contains the template id, the chapter and the label. Saving the note's own template again, or changing the funder, retires every point. The same label in two chapters is two points.
+1. **Keys.** A field given only as a label gets a key that contains the template id, the chapter and the label. Saving the note's own template again, or changing the funder, retires those points. The same label in two chapters is two points. Fields with their own key are not affected.
 2. **Source of a typed answer.** A command that is not a confirmation still stores the candidate id it was sent. The card never sends one, so it needs a hand-made request today. It must be closed before the chat can prepare answers.
-3. **Rejected proposal.** When the user rejects a proposed change that came from a point, the update is tried again, up to five times. The text stays out of date and the final export stays blocked.
+3. **Rejected proposal.** Today, when the user rejects a proposed change that came from a point, the update is marked failed and tried again, up to five times. The text stays out of date and the final export stays blocked. **Proposed:** treat it like any other rejected proposal today. That one proposal goes away and is not retried. The point stays confirmed, the chapter keeps its text, and the final export is not blocked by it.
 4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date.
 5. **Copies.** A copied concept note keeps its text. Its points start as missing.
 6. **Have it, or answers it.** A file reaches a category only when it produced a candidate.
 7. **Reading fails quietly.** After three failed tries the reading stops. Nothing tells the user.
-8. **Out-of-date save.** The refusal carries a message, not the current point. Every refusal is shown as "changed in another session".
+8. **Out-of-date save.** The refusal carries a message, not the current point. Every refusal is shown as "changed in another session". The card also takes a newer version while keeping the typed text, so a second click can save over a change the user has not seen.
 9. **Other documents.** The Builder architecture document does not describe points. The Clima architecture document shows one database where there are two. The JVP implementation notes say the Builder "supplies adapters". There is no adapter interface yet.
 
 ### 9.5 Inherited from CC-1170

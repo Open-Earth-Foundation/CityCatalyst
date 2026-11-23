@@ -6,7 +6,7 @@ Proposal reframed November 7, 2026. Repository and PR evidence remains the Novem
 
 ## Objective
 
-Generalize the tools and frontend components currently implemented in CNB into shared Clima capabilities for main chat, agentic flows, document workspaces and future surfaces. Include guided questions, answer/gap collection, visuals, source interaction, proposals, edit review and accepted-change handling. Make compatible implementations replaceable behind those capabilities.
+Generalize the tools and frontend components currently implemented in CNB into shared Clima capabilities for main chat, agentic flows, document workspaces and future surfaces. Include guided questions, answer collection, visuals, source interaction, proposals, edit review and accepted-change handling. Make compatible implementations replaceable behind those capabilities.
 
 CNB names the current source implementation; Clima owns the target shared capabilities. Resource-specific permissions, document schemas, revision rules and allowed operations become explicit dependencies. This is a path for generalizing behavior and proving reuse. It does not prescribe new APIs, request fields, class names, a registry, a provider, a Clima feature or a production rollout. The target paths in the module map are a packaging proposal for stage 6, not a precondition for stages 1–5. Current code excerpts below are evidence, not proposed implementation.
 
@@ -30,7 +30,7 @@ Keep stable: Interaction meaning, partial and answered states, safe rendering, r
 
 Potential variation: The consuming surface, compatible result producer and resource-specific input data.
 
-Target responsibility: Clima owns the reusable interaction components, including gap collection and edit review. Each surface supplies its session and resource context.
+Target responsibility: Clima owns the reusable interaction components, including answer collection and edit review. Each surface supplies its session and resource context.
 
 Open question: Which interaction modes need distinct contracts? Immediate conversational replies and collected answers can both be reusable without being forced into one behavior.
 
@@ -108,7 +108,7 @@ Outcome: A proposed separation between reusable Clima behavior and the informati
 
 Work: Include the full interaction scope: question generation, collecting partial answers, presenting results, proposing changes, reviewing them and applying accepted changes. Distinguish shared lifecycle behavior from resource schemas, permissions, revision rules and completion criteria.
 
-Evidence to move forward: Gap collection and edit review are included as shared Clima capabilities. Chapter or gap semantics are supplied by the relevant resource context rather than hardcoded as a reason to keep the capability inside its original feature.
+Evidence to move forward: Answer collection and edit review are included as shared Clima capabilities. Chapter or point semantics are supplied by the relevant resource context rather than hardcoded as a reason to keep the capability inside its original feature.
 
 Scope boundary: Keep exact interface names, schema shapes, package locations and selection mechanisms open.
 
@@ -693,7 +693,7 @@ Rules:
 - Feature chains keep only feature tables.
 - The `cnb` chain and its migrations stay owned by CNB. Any change to the CNB DB needs ops coordination.
 
-**Update, 23 November 2026: the point tables stay in the CNB DB.** The context-first core added eleven point tables (`document_workspaces`, `document_points`, `document_point_candidates` and others) to the CNB DB, next to the chapters and revisions they update. That is the current position: they stay there for the pilot, because a point command and its text update are saved in one step only when they share a database. The rules above are not dropped. They apply when the paused move of capabilities into Clima resumes, or when the core's generality check passes, and only to tables that have proven shared. See [ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), section 5.5.
+**Update, 23 November 2026: the point tables stay in the CNB DB.** The context-first core added eleven point tables (`document_workspaces`, `document_points`, `document_point_candidates` and others) to the CNB DB, next to the chapters and revisions they update. That is the current position: they stay there for the pilot. One transaction saves a point, its history and the queued text update, and applying a reviewed change saves the chapter revision and marks the point current in one transaction too. Both need the point tables in the same database as the chapters and revisions. The rules above are not dropped. They apply when the paused move of capabilities into Clima resumes, or when the core's generality check passes, and only to tables that have proven shared. See [ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), section 5.5.
 
 ## Migration plan
 

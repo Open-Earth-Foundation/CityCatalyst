@@ -410,7 +410,6 @@ Two grants for one city show that reading carries over between grants. Generalit
 | 6 | Is generality checked in the code, with testing focused on the concept note? | Yes | No second document type is built for the check. The core keeps no special case for the concept note, and the document type comes from the setup (6.3). |
 | 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and every attached file is read or has failed to read | The server refuses before that. With no files, the setup is enough. Points without a value show as marked gaps in a working draft (**Decided:** draft last). |
 | 8 | Does a new file recheck chapters? | **Decided:** no | The text is written only at the last stage, so a new file only adds candidates to the context. There is nothing to recheck. |
-| 9 | Is the release path "pilot, then one merge"? | Yes | No rollout city by city (6.2). |
 | 12 | Which city and which two grants are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
 | 13 | Who may change a point? | **Decided:** every contributor | Every contributor to the document, through the same command. "Waiting on others" is a name and a note. |
 

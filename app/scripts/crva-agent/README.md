@@ -1,6 +1,6 @@
 # crva-agent
 
-Prototype: agentic CRVA extractor on the OpenAI Agents SDK, compared against the CRVA adapter v0 with the CC-1285 eval harness. Isolated package: `@openai/agents` is installed only here, never in `app/package.json`.
+Prototype: agentic CRVA extractor on the OpenAI Agents SDK, compared against the CRVA adapter v0 with the CC-1285 eval harness. Isolated package: `@openai/agents` is installed only here, never in `app/package.json`, so `app/tsconfig.json` excludes this folder and `next build` does not type-check it.
 
 Setup (Node 22+, Docker Desktop running):
 

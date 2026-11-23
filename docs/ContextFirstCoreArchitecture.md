@@ -81,7 +81,7 @@ flowchart LR
 | 4 | Clima reads the file against every point. Each value is stored as a candidate with its quote and, for a PDF, its page. | **Built, to change.** It will be used in a different way. |
 | 5 | Every screen shows the new candidates. | **Built** |
 | 6 | The chat shows one entry for the file: who added it, from which point or passage, and what was found. | **Missing** |
-| 7 | Nothing is accepted until a person says yes. | **Built** |
+| 7 | A found value counts without a click. The user sees it and may change or remove it. | **To change.** Today nothing counts until a person says yes. **Decided** (23 November). |
 
 Today a file can be added only in the Context tab. "Add source" on a point card opens that same uploader. Nothing stores which screen, point or conversation a file came from.
 
@@ -95,7 +95,7 @@ The table shows the target. The lists under it show the state today.
 |---|---|---|---|---|
 | **Goal** | Turn the chosen document type into one stable list of facts and decisions. | Turn each file into a category and into candidate answers with a quote and a page. | Show the person the next piece of work and what they need to do it. | Write text from accepted points and keep it aligned when a point changes. |
 | **Owns** | The setup. The point record. The command. The one list that every screen reads. Rules between points. | The category of each file. Candidates and their evidence. Disagreement between files. | The to-do groups. The guided question. Help to find a file. Park and wait. | Which text depends on which point. Whether the text is up to date. The rule for final export. |
-| **Does not** | Read files, write text, or choose a funder. | Accept a value. Only a person does that. | Save anything by itself. | Change a point. |
+| **Does not** | Read files, write text, or choose a funder. | Hide a value from the user. | Save anything by itself. | Change a point. |
 | **Tickets** | CC-1297, CC-1298 | CC-1299, CC-1300, CC-1301 | CC-1302, CC-1303, CC-1304 | CC-1305, CC-1306 |
 
 ### A. Setup and list of points
@@ -147,7 +147,7 @@ The table shows the target. The lists under it show the state today.
 | **Version** | A number that goes up with every change. | **Built** |
 | **History** | Every change, in order, with who made it. | **Partial.** Stored. No screen shows it yet. |
 
-Candidates are stored next to the point. A candidate never changes the accepted value.
+Candidates are stored next to the point. **Decided (23 November):** A value found in a file counts without a click. The user sees it and may change or remove it, but does not have to accept every value by hand. Today nothing counts until a person says yes.
 
 ### 4.2 Status: four facts
 
@@ -230,7 +230,7 @@ Where today's code differs: in steps 5 and 6 the status is "conflict" and the po
 
 | Rule | State |
 |---|---|
-| **Only a person accepts.** The reading step and Clima may add a candidate or prefill an answer. Neither may accept it. | **Built.** As product policy: **Proposed** (decision 3). |
+| **The user stays in control.** A value found in a file counts without a click. The user sees it and may change or remove it, but does not have to accept every value by hand. | **To change.** Today nothing counts until a person says yes. **Decided** (23 November). |
 | **One way to save.** A person changes a point only through the command. | **Built** |
 | **Evidence is kept.** New evidence after a confirmation opens a disagreement. It does not change the accepted value. | **Built** |
 | **Saving does not wait for the text.** | **Built** |
@@ -369,7 +369,7 @@ flowchart LR
 
 | Check | Question | What we show |
 |---|---|---|
-| **Quality** | Does it sort, read and write correctly? | CC-1301. A real grant for a real city, then a different grant for the same city in a second document. The answer key and the pass marks are agreed before the run. Scores: files in the right category; points found with the right value, quote and page; statements in the draft backed by an accepted point. No value is accepted without a yes, and none is carried over from the first grant. |
+| **Quality** | Does it sort, read and write correctly? | CC-1301. A real grant for a real city, then a different grant for the same city in a second document. The answer key and the pass marks are agreed before the run. Scores: files in the right category; points found with the right value, quote and page; statements in the draft backed by an accepted point. No value is carried over from the first grant. |
 | **Generality** | Is the core free of rules for one document type? | The document type comes from the setup, not from code. The core has no special case for the concept note. Checked in the code and in review. No second document type is built for the check: testing focuses on the concept note. Today the type is fixed to `concept_note` in three places, and the draft starts from a Builder template. |
 | **Release** | Is it safe for existing documents? | The database changes are rehearsed on a copy. An existing concept note still opens. Old and new versions are tried together. Repeated and out-of-date saves behave. The chapter checks are retested. Going back is rehearsed. |
 
@@ -405,11 +405,10 @@ Two grants for one city show that reading carries over between grants. Generalit
 | # | Question | Proposed | What a yes means |
 |---|---|---|---|
 | 1 | May a point show its answer and an open disagreement together? | Yes | A confirmed value stays visible and saved when a new file disagrees. It is not cleared for final export until someone decides (4.2). |
-| 3 | Must a person say yes to every value before it counts as a fact? | Yes, in the first version | City data from CityCatalyst arrives as a candidate. No point starts as covered. |
 | 4 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
 | 5 | Is a setup its own reviewed record, apart from a Builder template? | Yes | One versioned setup for each document type and programme, pinned for each document. For the pilot an engineer loads it from a reviewed file. Joaquin names the reviewer for each setup. Builder templates are translated now and rewritten later. |
 | 6 | Is generality checked in the code, with testing focused on the concept note? | Yes | No second document type is built for the check. The core keeps no special case for the concept note, and the document type comes from the setup (6.3). |
-| 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and every attached file is read or has failed to read | The server refuses before that. With no files, the setup is enough. Only accepted values are written as facts. Open points and unconfirmed candidates show as marked gaps in a working draft, even when no point is accepted yet (**Decided:** draft last). |
+| 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and every attached file is read or has failed to read | The server refuses before that. With no files, the setup is enough. Points without a value show as marked gaps in a working draft (**Decided:** draft last). |
 | 8 | Does a new file recheck chapters? | **Decided:** no | The text is written only at the last stage, so a new file only adds candidates to the context. There is nothing to recheck. |
 | 9 | Is the release path "pilot, then one merge"? | Yes | No rollout city by city (6.2). |
 | 12 | Which city and which two grants are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
@@ -424,7 +423,7 @@ Two grants for one city show that reading carries over between grants. Generalit
 | # | Question | Proposed | What a yes means |
 |---|---|---|---|
 | 14 | In December, may a changed point still rewrite the whole chapter? | Yes | Protected text still gets a proposed change. How a passage records its points is agreed first. Passage rewrites follow. |
-| 15 | Must every fact in generated text come from an accepted point? | Yes | The files stay available for reference and review. Confirm with the benchmark before switching. |
+| 15 | Must every fact in generated text come from a point? | Yes | The files stay available for reference and review. Confirm with the benchmark before switching. |
 | 16 | Are the merge date and the cutover dates set at this gate? | Yes | Set from the results of the three release checks. |
 
 ---

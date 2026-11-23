@@ -101,7 +101,7 @@ The table shows the target. The lists under it show the state today.
 ### A. Setup and list of points
 
 - **Built.** The points are made from the Builder template when the user selects it, again when drafting starts, and when a document is first opened. A copy of the template is kept for the document, with a version. Every change is kept in a history, with who made it.
-- **Partial.** Builder templates hold only lists of text labels. So every point is a required free-text point today. The core can already handle numbers, dates, choices, optional points and allowed exceptions, but no screen or import can create them.
+- **Built.** Every point is plain text, and it stays that way.
 - **Partial.** A field with its own key (`semantic_key`) is one point across chapters and survives saving the template again. A field given only as a label, as in the existing templates, gets a fallback key made from the template, the chapter and the label. For those fields, the same label in two chapters is two points, each answered on its own, and saving the note's own template again, or changing the funder, retires them. The answers stay only in the history.
 - **Missing.** A setup that is its own record for a document type. A document type other than the concept note. File categories. Rules between points, for example totals that must add up.
 
@@ -212,7 +212,7 @@ Two things also change points without a command: a change of setup, and the read
 
 ### 4.4 One point, followed through
 
-A fictional point: the requested funding amount, a required number in EUR. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
+A fictional point: the requested funding amount, a required point. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
 
 | Step | Answer | Evidence | Work | Text | What the user sees |
 |---|---|---|---|---|---|
@@ -434,7 +434,7 @@ Two grants for one city show that reading carries over between grants. They do n
 
 | Ticket | Core | Built | To build |
 |---|---|---|---|
-| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. A way to write typed points. File categories. Keys that do not depend on the template. A second document type. |
+| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. File categories. Keys that do not depend on the template. A second document type. |
 | CC-1298 One list of points | A | One list, one read, one command, history, storage between sessions. | The same point across chapters. Answer and evidence as separate fields. A typed chat reply saved to a point. History shown. |
 | CC-1299 Sort files | B | Categories with a status, including missing. | A sorting step. "Anything else". A file in a category when it gave no value. |
 | CC-1300 Match and confirm | B | Candidates with quote and page. Confirm, correct, dismiss. Disagreement shown. | Disagreement stored with its files. Comparison that understands units and formats. |

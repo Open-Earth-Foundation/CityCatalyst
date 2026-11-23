@@ -275,6 +275,27 @@ function generateOpenAPISpec() {
       fs.mkdirSync(publicDir, { recursive: true });
     }
 
+    // CC-1283 moved the in-process AS / credential routes to identity. Keep their
+    // OpenAPI paths (deprecated + sunset) so oasdiff against platform-contracts
+    // does not treat the hard cut as an undeclared removal.
+    const deprecatedPathsFile = path.join(
+      process.cwd(),
+      "openapi",
+      "cc-1283-deprecated-paths.json",
+    );
+    if (fs.existsSync(deprecatedPathsFile)) {
+      const fragment = JSON.parse(
+        fs.readFileSync(deprecatedPathsFile, "utf8"),
+      ) as { paths?: Record<string, unknown> };
+      const paths = (spec as { paths?: Record<string, unknown> }).paths ?? {};
+      for (const [apiPath, operations] of Object.entries(fragment.paths ?? {})) {
+        if (!paths[apiPath]) {
+          paths[apiPath] = operations;
+        }
+      }
+      (spec as { paths: Record<string, unknown> }).paths = paths;
+    }
+
     // Write the spec to a public JSON file
     const outputPath = path.join(publicDir, "openapi-spec.json");
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));

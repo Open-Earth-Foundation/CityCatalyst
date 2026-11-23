@@ -17,32 +17,27 @@ describe("DSAR coverage", () => {
     );
   });
 
-  it("leaves password and two-factor secrets out of the user export", () => {
+  it("exports profile fields only (credentials live in identity after CC-1283)", () => {
     expect(userDataset).toBeDefined();
-    expect(userDataset!.omittedFields).toEqual([
-      "passwordHash",
-      "twoFactorSecret",
-      "twoFactorRecoveryHashes",
-    ]);
+    expect(userDataset!.omittedFields).toBeUndefined();
+    expect(userDataset!.fields).not.toEqual(
+      expect.arrayContaining([
+        "passwordHash",
+        "twoFactorSecret",
+        "twoFactorRecoveryHashes",
+      ]),
+    );
     const [row] = shapeDataset(userDataset!, [
       {
         userId: "user-1",
         name: "Ada",
         email: "ada@example.com",
-        passwordHash: "hashed-secret",
-        twoFactorSecret: "totp-secret",
-        twoFactorRecoveryHashes: ["recovery-code"],
+        role: "user",
       },
     ]);
 
     expect(row.name).toBe("Ada");
-    expect(row).not.toHaveProperty("passwordHash");
-    expect(row).not.toHaveProperty("twoFactorSecret");
-    expect(row).not.toHaveProperty("twoFactorRecoveryHashes");
-    const serialized = JSON.stringify(row);
-    expect(serialized).not.toContain("hashed-secret");
-    expect(serialized).not.toContain("totp-secret");
-    expect(serialized).not.toContain("recovery-code");
+    expect(row.email).toBe("ada@example.com");
   });
 
   it("escapes commas and quotes in the CSV", () => {

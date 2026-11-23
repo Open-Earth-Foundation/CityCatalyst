@@ -429,14 +429,6 @@ Two grants for one city show that reading carries over between grants. Generalit
 
 **Set aside (was 11).** Whether real documents of a city may be stored on the Mikrus test server. The tests with real documents will probably run on dev, so the question does not arise now. It returns only if real documents go to that server. The other numbers are kept.
 
-### By 8 December
-
-| # | Question | Proposed | What a yes means |
-|---|---|---|---|
-| 14 | In December, may a changed point still rewrite the whole chapter? | Yes | Protected text still gets a proposed change. How a passage records its points is agreed first. Passage rewrites follow. |
-| 15 | Must every fact in generated text come from a point? | Yes | The files stay available for reference and review. Confirm with the benchmark before switching. |
-| 16 | Are the merge date and the cutover dates set at this gate? | Yes | Set from the results of the three release checks. |
-
 ---
 
 ## 8. The tickets against this architecture

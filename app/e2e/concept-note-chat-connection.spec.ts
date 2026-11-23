@@ -373,8 +373,6 @@ test("recovers drafts after a stale answer and loads the next reply after discon
     [question, rejected, accepted],
     history,
   );
-  const chatToggle = page.getByRole("button", { name: "Clima", exact: true });
-  await chatToggle.click();
   await ask(page, "Give me two complete alternative introductions.");
 
   const card = page.getByTestId("concept-note-chat-question");
@@ -442,7 +440,6 @@ ${draft}`,
   });
 
   await page.reload();
-  await chatToggle.click();
   await expect(freshChoice).toBeDisabled();
   await expect(freshChoice).toHaveAttribute("aria-pressed", "true");
 });

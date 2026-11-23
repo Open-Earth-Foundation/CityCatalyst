@@ -8,6 +8,10 @@
  * with a null scope is mapped as given: approve stores it at subsector level,
  * or drops it as `gpc-parent-superseded` / `gpc-parent-gap` when its child
  * rows came too (CC-1311); `lostRows` counts those by issue code.
+ * `scope_basis` and `total_inclusion` are copied as given: on an unsplit
+ * subsector row, `combined` or `unclear` makes the review ask whether the
+ * value belongs in the totals (`gpc-subsector-scope-combined`); the runner
+ * keeps held rows, so the score is unchanged.
  */
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { PipelineAttempt } from "@/backend/ingestion-benchmark/report";
@@ -68,6 +72,8 @@ export function mapEnvelope(envelope: ReadEnvelope): MappedEnvelope {
       notationKey: toCanonical(r.notation_key),
       rowType: "line_item",
       ...(r.total_inclusion === "excluded" ? { omitFromTotal: true } : {}),
+      scopeBasis: r.scope_basis ?? null,
+      totalInclusion: r.total_inclusion ?? null,
     });
   }
 

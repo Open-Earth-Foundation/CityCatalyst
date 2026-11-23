@@ -175,6 +175,8 @@
  *                               - gpc-parent-superseded
  *                               - gpc-parent-gap
  *                               - subsector-not-split-by-scope
+ *                               - gpc-subsector-total-at-risk
+ *                               - gpc-subsector-scope-combined
  *                           tonnes:
  *                             type: number
  *                             nullable: true

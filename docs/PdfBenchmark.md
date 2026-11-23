@@ -166,6 +166,7 @@ The mapping is field by field, with no repair or guessing.
 - `row_role` `emission`, `removal` and `notation` become rows. `information` rows are dropped and counted. Any other role is skipped and counted under `unknownRowRoles`.
 - A `notation` row has no value; its `notation_key` is kept in canonical form.
 - `total_inclusion: excluded` maps to `omitFromTotal: true`: the row is stored and left out of the application total (CC-1311).
+- `scope_basis` and `total_inclusion` are carried to the row review. On an unsplit subsector row, `combined` or `unclear` holds the row with `gpc-subsector-scope-combined`; the runner keeps every held row, so scores do not change.
 - Approve drops some mapped rows. Since CC-1311 a parent reference such as `I.3` with `scope: null` is stored at subsector level, unless its child rows (`I.3.1`, ...) came in the same envelope: then it is dropped as `gpc-parent-superseded`, or as `gpc-parent-gap` when the children sum differs from it by more than the larger of 1% and 1 t. A row with neither a value nor a notation key is dropped too. The report lists them as lost rows, by import issue code, in the Pipeline notes. `unexplained` or `notSkipped` marks a mismatch between the rows approve skipped and the issues it reported.
 
 The Pipeline notes table shows these counts per attempt, with the reported totals, scope basis and cost. It is not scored.

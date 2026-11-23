@@ -148,7 +148,12 @@ export interface ECRFRowReviewData {
   directionEvidenceFound: boolean | null;
   page: number | null;
   source: string | null;
-  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  decision:
+    "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure" | null;
+  /** External pipelines only: how the scope was set (`combined` = several scopes in one value). */
+  scopeBasis?: string | null;
+  /** External pipelines only: whether the source counts the row in its total. */
+  totalInclusion?: string | null;
   finalScope?: string | null;
   decisionToken?: string;
   catalogueScope?: number | null;
@@ -1034,6 +1039,10 @@ export default class ECRFImportService {
             : {}),
           scopeSource: row.scopeSource ?? null,
           originalScope: row.originalScope ?? null,
+          ...(row.scopeBasis != null && { scopeBasis: row.scopeBasis }),
+          ...(row.totalInclusion != null && {
+            totalInclusion: row.totalInclusion,
+          }),
         },
         co2: num(row.co2),
         ch4: num(row.ch4),

@@ -191,6 +191,16 @@ describe("subsector-level GPC references", () => {
     expect(scoped.unsplitReferences ?? []).toEqual([]);
   });
 
+  it("carries scope basis and total inclusion onto the review", async () => {
+    const extracted = await ECRFImportService.fromExtractedRows([
+      { ...row("I.3", 500), scopeBasis: "combined", totalInclusion: "unclear" },
+    ]);
+    expect(extracted.rows[0].review).toMatchObject({
+      scopeBasis: "combined",
+      totalInclusion: "unclear",
+    });
+  });
+
   it("an eCRF sheet with a subsector subtotal keeps only its children", async () => {
     const headers = ["GPC ref. no.", "Total CO2e"];
     const data = [

@@ -119,6 +119,10 @@ export type ExtractedRow = {
   totalCO2e: number | null;
   /** Stored but left out of the inventory total (the source marks it excluded). */
   omitFromTotal?: boolean;
+  /** External pipeline `scope_basis` (`combined` = several scopes in one value). */
+  scopeBasis?: string | null;
+  /** External pipeline `total_inclusion` (`included`, `excluded`, `unclear`). */
+  totalInclusion?: string | null;
   co2?: number | null;
   ch4?: number | null;
   n2o?: number | null;

@@ -91,11 +91,43 @@ function isUnsplitSubsectorRow(row: ImportRow): boolean {
   return row.subcategoryId == null && /^(I|II|III)\.\d+$/.test(row.gpcRefNo);
 }
 
+/** Several scopes in one label: "Scope 1, 2 & 3", "Scopes 1-3", "Scope 1 + 2". */
+const COMBINED_SCOPE_TEXT = /\bscopes?\s*\d\s*(?:,|&|\+|-|–|and|to)\s*\d/i;
+
+/**
+ * An unsplit subsector value that may include parts the totals treat
+ * differently (scope 3 T&D losses, I.4.4, III.x.3; GPC Box 4.1). The user
+ * decides before it counts.
+ */
+function isSubsectorScopeCombined(row: ImportRow): boolean {
+  const review = row.review;
+  if (!review || !isUnsplitSubsectorRow(row)) return false;
+  return (
+    review.scopeBasis === "combined" ||
+    review.totalInclusion === "unclear" ||
+    [review.scope, review.category, review.subsector, review.activityType].some(
+      (text) => text != null && COMBINED_SCOPE_TEXT.test(text),
+    )
+  );
+}
+
+/** The issue listed for an imported unsplit subsector row, or null. */
+function unsplitIssue(row: ImportRow): ImportRowIssue | null {
+  if (!isUnsplitSubsectorRow(row)) return null;
+  const decision = row.review?.decision;
+  if (decision === "unsure") return "gpc-subsector-total-at-risk";
+  // Box 4.1 items live in sectors I and III; sector II warns only via the ask.
+  if (decision !== "keep" && /^(I|III)\./.test(row.gpcRefNo))
+    return "gpc-subsector-total-at-risk";
+  return "subsector-not-split-by-scope";
+}
+
 export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
+  if (isSubsectorScopeCombined(row)) return "gpc-subsector-scope-combined";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))
     return "excluded-reference-unconfirmed";
@@ -300,9 +332,7 @@ export async function previewImportRows(
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"
-          : isUnsplitSubsectorRow(row)
-            ? "subsector-not-split-by-scope"
-            : null;
+          : unsplitIssue(row);
     if (issue) {
       const leftOutOfTotal =
         issue === "omitted-from-total" || issue === "reported-apart-from-total";
@@ -317,7 +347,10 @@ export async function previewImportRows(
         notationKey: row.notationKey ?? null,
         // An unsplit subsector row counts in the total; it is listed so the user sees it.
         status:
-          issue === "subsector-not-split-by-scope" ? "imported" : "not-counted",
+          issue === "subsector-not-split-by-scope" ||
+          issue === "gpc-subsector-total-at-risk"
+            ? "imported"
+            : "not-counted",
         issue,
         tonnes,
       });

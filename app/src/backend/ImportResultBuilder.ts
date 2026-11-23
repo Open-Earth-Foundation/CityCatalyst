@@ -65,9 +65,15 @@ export async function applyReviewedRows(
       review.decision = "skip";
       continue;
     }
+    const askedTotal = reviewIssue(row) === "gpc-subsector-scope-combined";
     if (
       !["keep", "reclassify", "correct-scope"].includes(
         String(decision.reviewDecision),
+      ) &&
+      // Only the total-at-risk question offers "leave out" and "not sure".
+      !(
+        askedTotal &&
+        ["omit", "unsure"].includes(String(decision.reviewDecision))
       )
     )
       continue;
@@ -140,7 +146,9 @@ export async function applyReviewedRows(
         : String(normalizedScope);
     review.finalCatalogueScope = expected;
     review.decision = decision.reviewDecision as
-      "keep" | "reclassify" | "correct-scope";
+      "keep" | "reclassify" | "correct-scope" | "omit" | "unsure";
+    // "Leave out" stores the value apart from the totals (GPC Box 4.1).
+    if (askedTotal) row.omitFromTotal = decision.reviewDecision === "omit";
   }
   // A reclassify can move a child into or out of a subsector (CC-1311).
   supersedeParentsWithChildren(result.rows, result.warnings);

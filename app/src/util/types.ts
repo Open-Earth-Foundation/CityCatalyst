@@ -1048,7 +1048,9 @@ export type ImportRowIssue =
   | "skipped-in-review"
   | "gpc-parent-superseded"
   | "gpc-parent-gap"
-  | "subsector-not-split-by-scope";
+  | "subsector-not-split-by-scope"
+  | "gpc-subsector-total-at-risk"
+  | "gpc-subsector-scope-combined";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1145,7 +1147,8 @@ export interface ImportRowReview {
   quoteFound: boolean | null;
   page: number | null;
   source: string | null;
-  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  decision:
+    "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure" | null;
   finalScope?: string | null;
   decisionToken?: string;
   finalCatalogueScope?: number | null;

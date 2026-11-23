@@ -128,6 +128,16 @@ describe("mapEnvelope", () => {
     expect(result.rows[0].omitFromTotal).toBeUndefined();
   });
 
+  it("carries scope basis and total inclusion for the total-at-risk ask", () => {
+    const result = ok(
+      envelope([row({ total_inclusion: "unclear", scope_basis: "combined" })]),
+    );
+    expect(result.rows[0]).toMatchObject({
+      totalInclusion: "unclear",
+      scopeBasis: "combined",
+    });
+  });
+
   it("tallies row roles and scope basis and copies reported totals", () => {
     const { attempt } = ok(
       envelope([

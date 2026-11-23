@@ -1,6 +1,7 @@
 /** Stored per row in `mappingConfiguration.overrides`. */
 export type ImportRowDecision = {
-  reviewDecision: "keep" | "reclassify" | "correct-scope" | "skip";
+  reviewDecision:
+    "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure";
   gpcRefNo?: string;
   scope?: string;
   decisionFileId: string;

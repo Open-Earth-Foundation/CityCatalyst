@@ -1,0 +1,25 @@
+name: Delete caches of closed PRs
+
+# A PR's caches (refs/pull/N/merge) can only be restored by that PR, so they are dead
+# once it closes. Deleting them keeps the repo under GitHub's 10 GB cache limit instead
+# of waiting 7 days for eviction. Fork PRs get a read-only token; their caches age out.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    # A fork's read-only token cannot delete caches, so the job would fail on every closed fork PR
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      REF: refs/pull/${{ github.event.pull_request.number }}/merge
+    steps:
+      - name: Delete the PR's caches
+        run: |
+          gh cache list --ref "$REF" --limit 100 --json id --jq '.[].id' | xargs -r -n1 gh cache delete

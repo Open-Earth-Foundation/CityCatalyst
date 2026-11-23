@@ -181,6 +181,10 @@ export class PermissionService {
     context: PermissionContext,
     options: PermissionOptions = {},
   ) {
+    if (options.allowPublicRead === false) {
+      return;
+    }
+
     logger.debug(
       { inventoryId: context.inventoryId },
       "Checking public inventory access",
@@ -378,7 +382,7 @@ export class PermissionService {
   }
 
   /**
-   * All roles can edit inventories they have access to
+   * Legacy inventory permission check. Use a membership check for scoped writes.
    */
   static async canEditInventory(
     session: AppSession | null,

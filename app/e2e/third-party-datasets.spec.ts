@@ -1,7 +1,7 @@
 import { expect, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryThroughOnboarding,
-  dismissCookieConsent,
+  skipCookieConsent,
   navigateToDataPage,
 } from "./helpers";
 
@@ -85,9 +85,8 @@ test.describe("Third Party Datasets", () => {
     await context.close();
   });
 
-  test.beforeEach(async ({ page }) => {
-    await dismissCookieConsent(page);
-  });
+  // Pre-decline consent so no banner renders (the old dismiss ran before any page loaded).
+  test.beforeEach(({ context }) => skipCookieConsent(context));
 
   test("should search and manage third-party datasets on sector page", async ({
     page,

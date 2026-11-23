@@ -1,5 +1,5 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Op, Optional } from "sequelize";
 import type { User, UserId } from "./User";
 import type { City, CityId } from "./City";
 import type { Inventory, InventoryId } from "./Inventory";
@@ -22,7 +22,8 @@ export interface ImportReviewHistory {
 
 export interface ImportedInventoryFileAttributes {
   id: string;
-  userId: string;
+  /** Null once the user who uploaded the file has been deleted. */
+  userId: string | null;
   cityId: string;
   inventoryId: string;
   fileName: string;
@@ -44,6 +45,15 @@ export interface ImportedInventoryFileAttributes {
   created?: Date;
   lastUpdated?: Date;
   completedAt?: Date | null;
+}
+
+/**
+ * Filter for finding an import the signed-in user may open: one they uploaded,
+ * or one whose uploader has been deleted (user_id is null). Without the null
+ * case a kept file could never be found again, because no one's id matches.
+ */
+export function uploadedByOrOrphaned(userId: string) {
+  return { [Op.or]: [userId, null] };
 }
 
 export type ImportedInventoryFilePk = "id";
@@ -75,7 +85,7 @@ export class ImportedInventoryFile
   implements Partial<ImportedInventoryFileAttributes>
 {
   declare id: string;
-  declare userId: string;
+  declare userId: string | null;
   declare cityId: string;
   declare inventoryId: string;
   declare fileName: string;
@@ -96,8 +106,8 @@ export class ImportedInventoryFile
   declare lastUpdated?: Date;
   declare completedAt?: Date | null;
 
-  // ImportedInventoryFile belongsTo User via userId
-  declare user: User;
+  // ImportedInventoryFile belongsTo User via userId. Null once the user is deleted.
+  declare user: User | null;
   declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
@@ -130,11 +140,13 @@ export class ImportedInventoryFile
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           references: {
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "user_id",
         },
         cityId: {

@@ -32,6 +32,7 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
   const state = searchParams.get("state");
   const responseType = searchParams.get("response_type");
   const scope = searchParams.get("scope")!;
+  const nonce = searchParams.get("nonce") ?? undefined;
   const codeChallenge = searchParams.get("code_challenge")!;
   const codeChallengeMethod = searchParams.get("code_challenge_method")!;
   const { data: client, isLoading: isClientLoading } =
@@ -93,10 +94,11 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
     if (
       redirectUri &&
       clientId &&
-      (!scope || scope.split(" ").some((s) => !["read", "write"].includes(s)))
+      (!scope ||
+        scope.split(" ").some((s) => !["openid", "read", "write"].includes(s)))
     ) {
       const error = "invalid_scope";
-      const error_description = "Valid scopes: read, write";
+      const error_description = "Valid scopes: openid, read, write";
       const params = new URLSearchParams(
         state
           ? { error, error_description, state }
@@ -144,6 +146,7 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
       redirectUri,
       codeChallenge,
       scope,
+      nonce,
       csrfToken
     });
     toaster.dismiss();
@@ -175,6 +178,9 @@ export default function AuthorizeForm(props: { lng: string, csrfToken: string}) 
           <Heading size="lg">{t("oauth-authorize-heading")}</Heading>
           <Text>{t("oauth-authorize-prompt", { clientName: (isClientLoading) ? t("oauth-unknown-app") : client?.name.en })}</Text>
           <List.Root>
+            { (scope.split(" ").some(s => s === "openid")) &&
+              <List.Item>{t("oauth-authorize-scope-openid")}</List.Item>
+            }
             { (scope.split(" ").some(s => s === "read")) &&
               <List.Item>{t("oauth-authorize-scope-read")}</List.Item>
             }

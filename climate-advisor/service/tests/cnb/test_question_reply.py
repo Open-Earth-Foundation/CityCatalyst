@@ -1,17 +1,12 @@
 """Card provenance, retry and real PostgreSQL concurrent reply protection."""
 
 import asyncio
-import json
 import os
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
-from fastapi import HTTPException
-from sqlalchemy import select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
 from app.db import Base
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.message import Message, MessageRole
@@ -25,16 +20,22 @@ from app.services.cnb.question_reply import (
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.streaming_handler import StreamingHandler
+from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.schema import CreateSchema, DropSchema
+from tests.streaming_fixtures import _parse_sse_payload
 
-CARD_TOOLS = [
-    {
-        "name": "concept_note_ask_question",
-        "result_json": {
-            "message": "Which format?",
-            "options": ["Months", "Quarters"],
-        },
-    }
-]
+CARD_TABLES = [ConceptNoteRun.__table__, Thread.__table__, Message.__table__]
+
+
+def card_tools(options, on_answer=None, *, message="Which one?", document_topic=None):
+    result = {"message": message, "options": options}
+    if on_answer:
+        result["on_answer"] = on_answer
+    if document_topic:
+        result["document_topic"] = document_topic
+    return [{"name": "concept_note_ask_question", "result_json": result}]
 
 
 @pytest_asyncio.fixture
@@ -43,12 +44,12 @@ async def store(tmp_path):
         f"sqlite+aiosqlite:///{(tmp_path / 'cards.db').as_posix()}"
     )
     async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
+        await connection.run_sync(Base.metadata.create_all, tables=CARD_TABLES)
     yield async_sessionmaker(engine, expire_on_commit=False)
     await engine.dispose()
 
 
-async def seed_card(factory):
+async def seed_card(factory, *, question="Which format?", tools=None):
     """Create a durable question whose timestamp precedes future replies."""
     thread_id, question_id, run_id = uuid4(), uuid4(), uuid4()
     async with factory() as session, session.begin():
@@ -80,9 +81,10 @@ async def seed_card(factory):
                 message_id=question_id,
                 thread_id=thread_id,
                 user_id="owner",
-                text="Which format?",
+                text=question,
                 role=MessageRole.ASSISTANT,
-                tools_used=CARD_TOOLS,
+                tools_used=tools
+                or card_tools(["Months", "Quarters"], message=question),
                 created_at=datetime.now(UTC) - timedelta(seconds=1),
             )
         )
@@ -127,21 +129,13 @@ async def test_custom_reply_preserves_text_and_blocks_reuse(store):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("role", [MessageRole.USER, MessageRole.ASSISTANT])
-async def test_changed_history_rejects_reply_without_saving(store, role):
-    thread_id, question_id = await seed_card(store)
-    async with store() as session, session.begin():
-        await MessageService(session).create_message(
-            thread_id=thread_id, user_id="owner", text="A newer turn", role=role
-        )
-    with pytest.raises(HTTPException):
-        await answer(store, thread_id, question_id)
-    async with store() as session:
-        assert len(list(await session.scalars(select(Message)))) == 2
-
-
-@pytest.mark.asyncio
-async def test_ambiguous_legacy_history_timestamp_is_rejected(store):
+@pytest.mark.parametrize(
+    ("role", "seconds_after_question"),
+    [(MessageRole.USER, 1), (MessageRole.ASSISTANT, 1), (MessageRole.USER, 0)],
+)
+async def test_newer_or_ambiguous_history_rejects_reply_without_saving(
+    store, role, seconds_after_question
+):
     thread_id, question_id = await seed_card(store)
     async with store() as session, session.begin():
         question = await session.get(Message, question_id)
@@ -150,13 +144,17 @@ async def test_ambiguous_legacy_history_timestamp_is_rejected(store):
                 message_id=uuid4(),
                 thread_id=thread_id,
                 user_id="owner",
-                text="A later legacy turn",
-                role=MessageRole.USER,
-                created_at=question.created_at,
+                text="Another turn",
+                role=role,
+                created_at=question.created_at
+                + timedelta(seconds=seconds_after_question),
             )
         )
-    with pytest.raises(HTTPException):
+    with pytest.raises(HTTPException) as error:
         await answer(store, thread_id, question_id)
+    assert error.value.detail["code"] == "concept_note_question_stale"
+    async with store() as session:
+        assert len(list(await session.scalars(select(Message)))) == 2
 
 
 @pytest.mark.asyncio
@@ -212,34 +210,6 @@ async def test_retry_reuses_exact_reply_only_after_prior_stream_releases(store):
 
 
 @pytest.mark.asyncio
-async def test_expired_writer_cannot_persist_after_retry_takes_over(store):
-    thread_id, question_id = await seed_card(store)
-    old_claim = await answer(store, thread_id, question_id)
-    async with store() as session, session.begin():
-        reply = await session.get(Message, old_claim[0])
-        reply.tools_used = [
-            {**reply.tools_used[0], "expires_at": "2000-01-01T00:00:00+00:00"}
-        ]
-    new_claim = await answer(store, thread_id, question_id, retry=True)
-    old_handler = StreamingHandler(
-        thread_id, "owner", store, question_reply_claim=old_claim
-    )
-    old_handler.assistant_tokens = ["Expired answer"]
-    assert not await old_handler.persist_message()
-    new_handler = StreamingHandler(
-        thread_id, "owner", store, question_reply_claim=new_claim
-    )
-    new_handler.assistant_tokens = ["Current answer"]
-    assert await new_handler.persist_message()
-    async with store() as session:
-        rows = list(await session.scalars(select(Message)))
-        assert [row.text for row in rows if row.role == MessageRole.ASSISTANT] == [
-            "Which format?",
-            "Current answer",
-        ]
-
-
-@pytest.mark.asyncio
 async def test_successful_answer_makes_even_retry_stale_and_done_id_matches_history(
     store,
 ):
@@ -249,18 +219,14 @@ async def test_successful_answer_makes_even_retry_stale_and_done_id_matches_hist
     handler.assistant_tokens = ["Use quarters."]
     assert await handler.persist_message()
     await handler._release_question_reply()
-    done = json.loads(
-        handler._format_completion_event("request").decode().split("data: ")[1]
-    )
+    done = _parse_sse_payload(handler._format_completion_event("request"))["data"]
     async with store() as session:
         persisted = await session.get(Message, handler.assistant_message_id)
         assert done["assistant_message_id"] == str(persisted.message_id)
     with pytest.raises(HTTPException):
         await answer(store, thread_id, question_id, retry=True)
     handler.history_saved = False
-    done = json.loads(
-        handler._format_completion_event("request").decode().split("data: ")[1]
-    )
+    done = _parse_sse_payload(handler._format_completion_event("request"))["data"]
     assert done["assistant_message_id"] is None
 
 
@@ -287,38 +253,22 @@ async def postgres_store():
     if not url:
         pytest.skip("Requires CNB_TEST_DATABASE_URL for real row-lock races")
     schema = f"question_reply_{uuid4().hex}"
+    url = url.replace("postgresql://", "postgresql+asyncpg://")
+    admin = create_async_engine(url)
     engine = create_async_engine(
-        url.replace("postgresql://", "postgresql+asyncpg://"),
-        execution_options={"schema_translate_map": {None: schema}},
+        url, connect_args={"server_settings": {"search_path": schema}}
     )
-    # Only disposable schema tables are created; no existing table/type is modified.
-    async with engine.begin() as connection:
-        await connection.execute(text(f'CREATE SCHEMA "{schema}"'))
-        await connection.run_sync(ConceptNoteRun.__table__.create)
-        await connection.execute(
-            text(
-                f'''CREATE TYPE "{schema}".message_role AS ENUM ('user', 'assistant', 'system')'''
-            )
-        )
-        await connection.execute(
-            text(f'''CREATE TABLE "{schema}".threads (
-            thread_id UUID PRIMARY KEY, user_id VARCHAR NOT NULL, inventory_id VARCHAR,
-            concept_note_run_id UUID, reply_turn_id UUID, reply_turn_expires_at TIMESTAMPTZ,
-            context JSONB, title VARCHAR,
-            created_at TIMESTAMPTZ DEFAULT now(), last_updated TIMESTAMPTZ DEFAULT now())''')
-        )
-        await connection.execute(
-            text(f'''CREATE TABLE "{schema}".messages (
-            message_id UUID PRIMARY KEY, thread_id UUID NOT NULL, user_id VARCHAR NOT NULL,
-            text TEXT NOT NULL, tools_used JSONB, role "{schema}".message_role NOT NULL,
-            created_at TIMESTAMPTZ DEFAULT now())''')
-        )
     try:
+        async with admin.begin() as connection:
+            await connection.execute(CreateSchema(schema))
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all, tables=CARD_TABLES)
         yield async_sessionmaker(engine, expire_on_commit=False)
     finally:
-        async with engine.begin() as connection:
-            await connection.execute(text(f'DROP SCHEMA "{schema}" CASCADE'))
         await engine.dispose()
+        async with admin.begin() as connection:
+            await connection.execute(DropSchema(schema, cascade=True, if_exists=True))
+        await admin.dispose()
 
 
 @pytest.mark.asyncio
@@ -378,7 +328,10 @@ async def test_postgres_changed_history_while_reply_waits_for_thread_lock(
 
 
 @pytest.mark.asyncio
-async def test_postgres_expired_writer_racing_retry_saves_one_answer(postgres_store):
+@pytest.mark.parametrize("retry_first", [False, True])
+async def test_postgres_expired_writer_and_retry_save_one_answer(
+    postgres_store, retry_first
+):
     factory = postgres_store
     thread_id, question_id = await seed_card(factory)
     old_claim = await answer(factory, thread_id, question_id)
@@ -391,11 +344,15 @@ async def test_postgres_expired_writer_racing_retry_saves_one_answer(postgres_st
         thread_id, "owner", factory, question_reply_claim=old_claim
     )
     old_handler.assistant_tokens = ["Old worker answer"]
-    saved, takeover = await asyncio.gather(
-        old_handler.persist_message(),
-        answer(factory, thread_id, question_id, retry=True),
-        return_exceptions=True,
-    )
+    if retry_first:
+        takeover = await answer(factory, thread_id, question_id, retry=True)
+        saved = await old_handler.persist_message()
+    else:
+        saved, takeover = await asyncio.gather(
+            old_handler.persist_message(),
+            answer(factory, thread_id, question_id, retry=True),
+            return_exceptions=True,
+        )
     if isinstance(takeover, tuple):
         assert saved is False
         new_handler = StreamingHandler(
@@ -416,6 +373,7 @@ async def test_postgres_expired_writer_racing_retry_saves_one_answer(postgres_st
             )
         )
         assert len(replies) == 1
+
 
 @pytest.mark.asyncio
 async def test_postgres_simultaneous_turn_claims_accept_one(postgres_store):

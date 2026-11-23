@@ -9,13 +9,12 @@
  *
  * With --pipeline precomputed the rows come from an external pipeline's
  * envelope folder (manifest.json + one file per case and attempt) instead of
- * OCR and extraction; a case with no envelope fails as setup_error and marks
- * the run incomplete.
+ * OCR and extraction; a case with no envelope fails as setup_error, which
+ * marks the run incomplete and gives the case the verdict error (exit 1).
  *
  * Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error,
- * 3 incomplete (an --all run with missing or unfinished cases, or a precomputed
- * run with a case that has no envelope; no regression or error), 130
- * interrupted.
+ * 3 incomplete (an --all run with missing or unfinished cases; no regression
+ * or error), 130 interrupted.
  */
 import env from "@next/env";
 import { execFileSync } from "node:child_process";

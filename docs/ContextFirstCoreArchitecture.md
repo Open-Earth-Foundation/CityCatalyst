@@ -71,7 +71,7 @@ flowchart LR
 
 ### When a file arrives
 
-**Decided:** a file added while editing the document routes back into the chat, so that its origin is tracked.
+**Decided:** a file added while editing the document routes back into the chat, so that its origin is tracked. It still shows in the Context tab. The document is not written right away, so a new file is added to the context but does not start a rewrite of the document.
 
 | Step | What happens | State |
 |---|---|---|

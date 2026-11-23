@@ -36,7 +36,7 @@
 
 ## 1. Summary
 
-1. **The core exists for one document type.** It is the `document_workspace` code in Clima, with its screens in the web app. It is built on this branch for the concept note. Earlier checks are in the JVP implementation notes. There is no run with a real grant yet.
+1. **The core is general, tested on one document type.** It is the `document_workspace` code in Clima, with its screens in the web app. **Decided (23 November):** the core is built general now, for any document type. Testing focuses on one, the concept note. Today the code still fixes the document type to `concept_note` in three places. Earlier checks are in the JVP implementation notes. There is no run with a real grant yet.
 2. **Every screen shows the same list.** One request returns the list of points. Every change a person makes to a point is one command, and it is kept in the point's history. The user can save on the point card next to the chat. Clima itself cannot save yet.
 3. **Four missing pieces matter most.**
    - Files are not sorted into the categories the document needs (CC-1299).
@@ -103,7 +103,7 @@ The table shows the target. The lists under it show the state today.
 - **Built.** The points are made from the Builder template when the user selects it, again when drafting starts, and when a document is first opened. A copy of the template is kept for the document, with a version. Every change is kept in a history, with who made it.
 - **Built.** Every point is plain text, and it stays that way.
 - **Partial.** A field with its own key (`semantic_key`) is one point across chapters and survives saving the template again. A field given only as a label, as in the existing templates, gets a fallback key made from the template, the chapter and the label. For those fields, the same label in two chapters is two points, each answered on its own, and saving the note's own template again, or changing the funder, retires them. The answers stay only in the history.
-- **Missing.** A setup that is its own record for a document type. A document type other than the concept note. File categories. Rules between points, for example totals that must add up.
+- **Missing.** A setup that is its own record for a document type. A document type that comes from the setup: today it is fixed to `concept_note` in code. File categories. Rules between points, for example totals that must add up.
 
 ### B. Reading, sorting and checking
 
@@ -261,7 +261,7 @@ The Builder and the Stationary Energy flow already share these: stored conversat
 
 **The limit.** Clima cannot take a new product without programming. It knows three: the general chat, Stationary Energy and the Builder. The core lives inside the Builder. Its web addresses, its chat tools and its storage all belong to a concept note. The document type is fixed to `concept_note` in three places.
 
-**Proposed.** The pilot keeps the Builder screens, addresses and document identity. What changes is the setup: the Builder chooses and pins a setup for each document, and the core runs from it without a funder template. Another product or another address comes later.
+**Proposed.** The pilot keeps the Builder screens, addresses and document identity. What changes is the setup: the Builder chooses and pins a setup for each document, and the core runs from it without a funder template. The core itself stays free of rules for the concept note: the Builder is only the first place it is tested. Another product or another address comes later.
 
 ### 5.3 What is reused from the Builder
 
@@ -370,10 +370,10 @@ flowchart LR
 | Check | Question | What we show |
 |---|---|---|
 | **Quality** | Does it sort, read and write correctly? | CC-1301. A real grant for a real city, then a different grant for the same city in a second document. The answer key and the pass marks are agreed before the run. Scores: files in the right category; points found with the right value, quote and page; statements in the draft backed by an accepted point. No value is accepted without a yes, and none is carried over from the first grant. |
-| **Generality** | Does a new document type need programming? | A setup that is not a grant runs on the same build: setup, files, one answer, a working draft. No funder template. No special case in the core. It runs inside the Builder: the document type is still `concept_note` and the draft starts from a Builder template. So it proves a second setup, not independence from the Builder. |
+| **Generality** | Is the core free of rules for one document type? | The document type comes from the setup, not from code. The core has no special case for the concept note. Checked in the code and in review. No second document type is built for the check: testing focuses on the concept note. Today the type is fixed to `concept_note` in three places, and the draft starts from a Builder template. |
 | **Release** | Is it safe for existing documents? | The database changes are rehearsed on a copy. An existing concept note still opens. Old and new versions are tried together. Repeated and out-of-date saves behave. The chapter checks are retested. Going back is rehearsed. |
 
-Two grants for one city show that reading carries over between grants. They do not show that a second document type needs no programming. Both are needed.
+Two grants for one city show that reading carries over between grants. Generality is not tested with a second document type. **Decided (23 November):** the core is built general now, for any document type. Testing focuses on one, the concept note.
 
 ### 6.4 Existing concept notes
 
@@ -409,7 +409,7 @@ Two grants for one city show that reading carries over between grants. They do n
 | 3 | Must a person say yes to every value before it counts as a fact? | Yes, in the first version | City data from CityCatalyst arrives as a candidate. No point starts as covered. |
 | 4 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
 | 5 | Is a setup its own reviewed record, apart from a Builder template? | Yes | One versioned setup for each document type and programme, pinned for each document. For the pilot an engineer loads it from a reviewed file. Joaquin names the reviewer for each setup. Builder templates are translated now and rewritten later. |
-| 6 | Is the generality check a small setup that is not a grant? | Yes | For example the outline of a climate action plan, as the JVP mapping suggested. |
+| 6 | Is generality checked in the code, with testing focused on the concept note? | Yes | No second document type is built for the check. The core keeps no special case for the concept note, and the document type comes from the setup (6.3). |
 | 7 | May the user start the draft while points are still open? | Yes, after the setup is pinned and every attached file is read or has failed to read | The server refuses before that. With no files, the setup is enough. Only accepted values are written as facts. Open points and unconfirmed candidates show as marked gaps in a working draft, even when no point is accepted yet (**Decided:** draft last). |
 | 8 | Is it accepted that a new file no longer rechecks the chapters it affects? | Yes | The file creates candidates. The chapter is checked again when a point changes. |
 | 9 | Is the release path "pilot, then one merge"? | Yes | No rollout city by city (6.2). |
@@ -434,7 +434,7 @@ Two grants for one city show that reading carries over between grants. They do n
 
 | Ticket | Core | Built | To build |
 |---|---|---|---|
-| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. File categories. Keys that do not depend on the template. A second document type. |
+| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. File categories. Keys that do not depend on the template. A document type that comes from the setup. |
 | CC-1298 One list of points | A | One list, one read, one command, history, storage between sessions. | The same point across chapters. Answer and evidence as separate fields. A typed chat reply saved to a point. History shown. |
 | CC-1299 Sort files | B | Categories with a status, including missing. | A sorting step. "Anything else". A file in a category when it gave no value. |
 | CC-1300 Match and confirm | B | Candidates with quote and page. Confirm, correct, dismiss. Disagreement shown. | Disagreement stored with its files. Comparison that understands units and formats. |

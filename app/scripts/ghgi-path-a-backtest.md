@@ -2,7 +2,7 @@
 
 Engineering script. Product drops files and reads the report. Do not commit golden `.xlsx` files.
 
-It runs each Path A file (exact eCRF, near-eCRF / Data Portal CRF, and **CIRIS with an `eCRF_3` sheet**) through `GhgiIngestPlugin`, then compares **stored inventory values** to the answer key or to the source file. It does **not** use the Excel/CSV export.
+It runs each Path A file (exact eCRF, near-eCRF / Data Portal CRF, and **CIRIS with an `eCRF_3` sheet**) through `GhgiIngestPlugin`, then compares **stored inventory values** to the answer key or to the source file.
 
 CIRIS packs **without** `eCRF_3` are not Path A and are not scored ([CC-1217](https://linear.app/openearth/issue/CC-1217)).
 

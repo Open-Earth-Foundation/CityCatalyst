@@ -1,9 +1,8 @@
 /**
- * CC-950 / CC-1217: run Path A files (exact eCRF, near-eCRF, CIRIS with eCRF_3)
- * through GhgiIngestPlugin and score stored InventoryValues against the product
- * answer-key workbook or the source file.
- *
- * Does not use the Excel/CSV export.
+ * CC-950 / CC-1217 / CC-1330: run Path A files (exact eCRF, near-eCRF, CIRIS
+ * with eCRF_3) through GhgiIngestPlugin, score stored InventoryValues against
+ * the answer key or source file, then generate CityCatalyst's eCRF export and
+ * score that workbook against the ingested (stored) GPC values.
  *
  *   npx tsx scripts/ghgi-path-a-backtest.ts --files ./ingestion-script-files
  */
@@ -23,6 +22,8 @@ import {
 import { createIngestRuntime } from "@/backend/ingest/http";
 import { ingestGhgiBuffer } from "@/backend/ingest/ghgi-run";
 import { getEmissionResults } from "@/backend/ResultsService";
+import ECRFDownloadService from "@/backend/ECRFDownloadService";
+import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 import InventoryReplaceService from "@/backend/InventoryReplaceService";
 import FileValidatorService from "@/backend/FileValidatorService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
@@ -81,6 +82,11 @@ interface CaseResult {
   expectedFileTotalT: number | null;
   totalsMatchExclEnergy: boolean | null;
   totalsMatchFile: boolean | null;
+  exportRecall: number | null;
+  exportPrecision: number | null;
+  exportValueAccuracy: number | null;
+  exportTotalT: number | null;
+  exportPass: boolean;
   flags: string[];
   pass: boolean;
 }
@@ -373,6 +379,169 @@ async function expectedByGpc(
   return { values, notations };
 }
 
+function mapsFromInventoryValues(rows: {
+  gpcReferenceNumber?: string | null;
+  co2eq?: unknown;
+  unavailableReason?: string | null;
+}[]): { values: Map<string, number>; notations: Map<string, string> } {
+  const values = new Map<string, number>();
+  const notations = new Map<string, string>();
+  for (const row of rows) {
+    const gpc = row.gpcReferenceNumber?.trim();
+    if (!gpc) continue;
+    if (row.co2eq != null) {
+      values.set(gpc, Number(row.co2eq) / 1000);
+    }
+    const note = toCanonical(row.unavailableReason);
+    if (note) notations.set(gpc, note);
+  }
+  return { values, notations };
+}
+
+function scoreMaps(
+  expected: { values: Map<string, number>; notations: Map<string, string> },
+  actual: { values: Map<string, number>; notations: Map<string, string> },
+): {
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+  totalExclEnergyT: number;
+} {
+  const expectedIds = new Set([
+    ...expected.values.keys(),
+    ...expected.notations.keys(),
+  ]);
+  const actualIds = new Set([...actual.values.keys(), ...actual.notations.keys()]);
+  let intersection = 0;
+  for (const id of expectedIds) {
+    if (actualIds.has(id)) intersection += 1;
+  }
+  let valuePairs = 0;
+  let valueHits = 0;
+  for (const [gpc, tonnes] of expected.values) {
+    const got = actual.values.get(gpc);
+    if (got == null) continue;
+    valuePairs += 1;
+    if (withinTol(got, tonnes)) valueHits += 1;
+  }
+  let totalExclEnergyT = 0;
+  for (const [gpc, tonnes] of actual.values) {
+    if (!isOmittedGPCReference(gpc)) totalExclEnergyT += tonnes;
+  }
+  return {
+    recall: expectedIds.size > 0 ? intersection / expectedIds.size : null,
+    precision: actualIds.size > 0 ? intersection / actualIds.size : null,
+    valueAccuracy: valuePairs > 0 ? valueHits / valuePairs : null,
+    totalExclEnergyT,
+  };
+}
+
+function meetsScoreBars(score: {
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+}): boolean {
+  return (
+    (score.recall ?? 0) >= RECALL_BAR &&
+    (score.precision ?? 0) >= PRECISION_BAR &&
+    (score.valueAccuracy ?? 0) >= 1
+  );
+}
+
+async function loadInventoryForEcrfExport(
+  inventoryId: string,
+): Promise<InventoryWithInventoryValuesAndActivityValues> {
+  const inventory = await db.models.Inventory.findByPk(inventoryId, {
+    include: [
+      { model: db.models.City, as: "city" },
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValues",
+        include: [
+          {
+            model: db.models.ActivityValue,
+            as: "activityValues",
+            include: [
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                separate: true,
+                include: [
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.models.DataSource,
+            attributes: [
+              "datasourceId",
+              "sourceType",
+              "datasetName",
+              "datasourceName",
+              "dataQuality",
+            ],
+            as: "dataSource",
+          },
+          {
+            model: db.models.SubSector,
+            as: "subSector",
+            attributes: ["subsectorId", "subsectorName"],
+          },
+        ],
+      },
+    ],
+  });
+  if (!inventory) {
+    throw new Error(`Inventory ${inventoryId} not found for eCRF export`);
+  }
+  return inventory.toJSON() as InventoryWithInventoryValuesAndActivityValues;
+}
+
+/** CityCatalyst eCRF download of ingested values, scored against stored GPC maps. */
+async function scoreEcrfExport(
+  inventoryId: string,
+  year: number,
+  stored: { values: Map<string, number>; notations: Map<string, string> },
+): Promise<{
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+  totalT: number | null;
+  pass: boolean;
+  error?: string;
+}> {
+  try {
+    const output = await loadInventoryForEcrfExport(inventoryId);
+    const buffer = await ECRFDownloadService.downloadECRF(output);
+    const exported = await expectedByGpc(
+      buffer,
+      "eCRF-inventory-export.xlsx",
+      year,
+    );
+    const scored = scoreMaps(stored, exported);
+    return {
+      recall: scored.recall,
+      precision: scored.precision,
+      valueAccuracy: scored.valueAccuracy,
+      totalT: scored.totalExclEnergyT,
+      pass: meetsScoreBars(scored),
+    };
+  } catch (err) {
+    return {
+      recall: null,
+      precision: null,
+      valueAccuracy: null,
+      totalT: null,
+      pass: false,
+      error: `ecrf export: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+}
+
 async function wipeInventory(inventoryId: string, userId: string) {
   const count = await db.models.InventoryValue.count({
     where: { inventoryId },
@@ -400,46 +569,23 @@ async function scoreStored(
   const rows = await db.models.InventoryValue.findAll({
     where: { inventoryId },
   });
-  const storedValues = new Map<string, number>();
-  const storedNotes = new Map<string, string>();
-  for (const row of rows) {
-    const gpc = row.gpcReferenceNumber?.trim();
-    if (!gpc) continue;
-    if (row.co2eq != null) {
-      storedValues.set(gpc, Number(row.co2eq) / 1000);
-    }
-    const note = toCanonical(row.unavailableReason);
-    if (note) storedNotes.set(gpc, note);
-  }
-
+  const stored = mapsFromInventoryValues(rows);
+  const vsSource = scoreMaps(expected, stored);
   const expectedIds = new Set([
     ...expected.values.keys(),
     ...expected.notations.keys(),
   ]);
-  const storedIds = new Set([...storedValues.keys(), ...storedNotes.keys()]);
+  const storedIds = new Set([
+    ...stored.values.keys(),
+    ...stored.notations.keys(),
+  ]);
   let intersection = 0;
   for (const id of expectedIds) {
     if (storedIds.has(id)) intersection += 1;
   }
 
-  const storedValueRows = storedValues.size;
-  const storedNotationRows = storedNotes.size;
-  const rowRecall =
-    expectedIds.size > 0 ? intersection / expectedIds.size : null;
-  const rowPrecision =
-    storedIds.size > 0 ? intersection / storedIds.size : null;
   const classified = rows.filter((row) => row.gpcReferenceNumber).length;
   const classification = rows.length > 0 ? classified / rows.length : null;
-
-  let valuePairs = 0;
-  let valueHits = 0;
-  for (const [gpc, tonnes] of expected.values) {
-    const stored = storedValues.get(gpc);
-    if (stored == null) continue;
-    valuePairs += 1;
-    if (withinTol(stored, tonnes)) valueHits += 1;
-  }
-  const valueAccuracy = valuePairs > 0 ? valueHits / valuePairs : null;
 
   const results = await getEmissionResults(inventoryId);
   // InventoryValue.co2eq is kilograms; the answer key is metric tonnes.
@@ -451,11 +597,21 @@ async function scoreStored(
   const totalsMatchFile =
     key.fileTotalT == null ? null : withinTol(storedTotalT, key.fileTotalT);
 
+  const exportScore =
+    ingestStatus === "completed"
+      ? await scoreEcrfExport(inventoryId, key.year, stored)
+      : {
+          recall: null,
+          precision: null,
+          valueAccuracy: null,
+          totalT: null,
+          pass: false,
+          error: "ecrf export skipped (ingest did not complete)",
+        };
+
   const flags: string[] = [];
   if (family === "exact-ecrf") {
-    flags.push(
-      "exact-ecrf uses DPC Mexico totals as control; export file may differ",
-    );
+    flags.push("exact-ecrf uses DPC Mexico totals as ingest control");
   }
   if (!key.fromWorkbook) {
     flags.push(
@@ -474,10 +630,8 @@ async function scoreStored(
 
   const pass =
     ingestStatus === "completed" &&
-    (rowRecall ?? 0) >= RECALL_BAR &&
-    (rowPrecision ?? 0) >= PRECISION_BAR &&
     (classification ?? 0) >= CLASS_BAR &&
-    (valueAccuracy ?? 0) >= 1 &&
+    meetsScoreBars(vsSource) &&
     totalsMatchExclEnergy === true;
 
   return {
@@ -489,18 +643,23 @@ async function scoreStored(
     ingestStatus,
     error,
     expectedValueRows: expected.values.size,
-    storedValueRows,
-    storedNotationRows,
+    storedValueRows: stored.values.size,
+    storedNotationRows: stored.notations.size,
     matchedRows: intersection,
-    rowRecall,
-    rowPrecision,
-    valueAccuracy,
+    rowRecall: vsSource.recall,
+    rowPrecision: vsSource.precision,
+    valueAccuracy: vsSource.valueAccuracy,
     classification,
     storedTotalT,
     expectedTotalExclEnergyT: key.totalExclEnergyT,
     expectedFileTotalT: key.fileTotalT,
     totalsMatchExclEnergy,
     totalsMatchFile,
+    exportRecall: exportScore.recall,
+    exportPrecision: exportScore.precision,
+    exportValueAccuracy: exportScore.valueAccuracy,
+    exportTotalT: exportScore.totalT,
+    exportPass: exportScore.pass,
     flags,
     pass,
   };

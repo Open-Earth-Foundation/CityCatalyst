@@ -2,9 +2,9 @@
 
 Engineering script. Product drops files and reads the report. Do not commit golden `.xlsx` files.
 
-It runs each Path A file (exact eCRF and near-eCRF / Data Portal CRF) through `GhgiIngestPlugin`, then compares **stored inventory values** to the answer key or to the source file. It does **not** use the Excel/CSV export.
+It runs each Path A file (exact eCRF, near-eCRF / Data Portal CRF, and **CIRIS with an `eCRF_3` sheet**) through `GhgiIngestPlugin`, then compares **stored inventory values** to the answer key or to the source file. It does **not** use the Excel/CSV export.
 
-CIRIS is skipped until [CC-1217](https://linear.app/openearth/issue/CC-1217).
+CIRIS packs **without** `eCRF_3` are not Path A and are not scored ([CC-1217](https://linear.app/openearth/issue/CC-1217)).
 
 ## Who does what
 
@@ -28,9 +28,10 @@ From `app/` in Command Prompt:
 
 ```
 npx tsx scripts/ghgi-path-a-backtest.ts --files "C:\Users\frank\Desktop\ingestion-script-files"
+npx tsx scripts/ghgi-path-a-backtest.ts --files "C:\Users\frank\Desktop\Workspace\CIRIS Files"
 ```
 
-`--files` is the folder of inventories. If omitted, the script looks for `./ingestion-script-files` relative to `app/`.
+`--files` is the folder of inventories. If omitted, the script looks for `./ingestion-script-files` relative to `app/`. CIRIS folders do not need the DPC answer-key workbook; those files are scored against `eCRF_3`. `.xlsm` is accepted (macros ignored).
 
 Output:
 
@@ -53,7 +54,7 @@ ingestion-script-files\
   Banana_CRFFormat_2022_20261106.xlsx
 ```
 
-The script ignores the answer-key workbook as an inventory. Every other `.xlsx` is a candidate.
+The script ignores the answer-key workbook as an inventory. Every other `.xlsx` / `.xlsm` is a candidate (except Excel lock files `~$…`). If the answer-key workbook is missing, every file is scored against the source.
 
 ### Names it understands
 
@@ -62,8 +63,7 @@ The script ignores the answer-key workbook as an inventory. Every other `.xlsx` 
 | Data Portal / DPC | `DPC_eCRF_Sao_Paulo_2024_INPUT.xlsx` | Matched to the **Answer key** sheet by city name (`Sao_Paulo`, `Buenos_Aires`, …). `(1)` and `_INPUT` in the filename are fine. |
 | CRFFormat (no key row) | `Banana_CRFFormat_2022_20261106.xlsx` | City = text before `_CRFFormat_`. Year = the four digits after that. Scored against the **source file**. Flag: `no workbook key row; scored against the source file`. |
 | CityCatalyst export | `eCRF-inventory-MX MEX-2016.xlsx` | Treated as exact eCRF. Today only Mexico City is wired to a workbook row. |
-
-CIRIS workbooks (many sheets, `eCRF_3`) are not a Path A target for this script.
+| CIRIS (eCRF_3) | `A3-04_Boston_2023_CIRIS_slim.xlsx`, `CIRIS_BuenosAires_GEI_2020_CDP.xlsx`, `Boston, USA 2023 Final CIRIS (2025).xlsm` | Family `ciris`. City/year from the filename. Scored against **eCRF_3** GPC totals. Flag: `CIRIS; scored against eCRF_3`. |
 
 ## Add a file
 
@@ -81,11 +81,17 @@ Sydney only started appearing once the file was in the folder; the row was alrea
 2. Drop it in the folder.
 3. Rerun. Totals are the sum of imported GPC values, excluding I.4.4 / III.x.3 / VI.1, same as the dashboard.
 
+**CIRIS (eCRF_3)**
+
+1. Put CIRIS workbooks (`.xlsx` or `.xlsm`) in a folder. Names should include `CIRIS` and a city + year (`A3-04_Boston_2023_CIRIS_slim.xlsx` or `CIRIS_BuenosAires_GEI_2020_CDP.xlsx`).
+2. Rerun with `--files` pointing at that folder.
+3. Only packs with `eCRF_3` are ingested. Totals are the imported GPC sum excluding omitted refs, same as CRFFormat.
+
 ## What the columns mean
 
 | Column | Meaning | Pass bar |
 | --- | --- | --- |
-| Path | Format the plugin used (`near-ecrf` or `ecrf`) | Must complete |
+| Path | Format the plugin used (`near-ecrf`, `ecrf`, or CIRIS as `ecrf` / `ciris`) | Must complete |
 | Recall | Expected GPC refs that were stored | ≥ 99% |
 | Precision | Stored GPC refs that were expected | ≥ 99% |
 | Value acc | Among GPC refs present on both sides, share of totals within 0.1% | 100% |
@@ -133,4 +139,4 @@ Rerun the same command. They show up at the bottom of `report.md` with the sourc
 
 1. Run the command.
 2. Attach the new `report.md` on [CC-950](https://linear.app/openearth/issue/CC-950/upload-inventory-flow-automated-backtest-on-the-cc-951-golden-set).
-3. If a row is marked `key?` or “no workbook key row”, product checks the key or the file. If Pass is `no` with no key flag, treat it as an import bug.
+3. If a row is marked `key?`, “no workbook key row”, or “CIRIS; scored against eCRF_3”, product checks the key or the file. If Pass is `no` with no key flag, treat it as an import bug.

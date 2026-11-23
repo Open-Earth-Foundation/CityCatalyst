@@ -1,8 +1,9 @@
 /**
- * CC-950 v1: run Path A (exact eCRF + near-eCRF) files through GhgiIngestPlugin
- * and score stored InventoryValues against the product answer-key workbook.
+ * CC-950 / CC-1217: run Path A files (exact eCRF, near-eCRF, CIRIS with eCRF_3)
+ * through GhgiIngestPlugin and score stored InventoryValues against the product
+ * answer-key workbook or the source file.
  *
- * Does not use the Excel/CSV export. CIRIS is out of scope until CC-1217.
+ * Does not use the Excel/CSV export.
  *
  *   npx tsx scripts/ghgi-path-a-backtest.ts --files ./ingestion-script-files
  */
@@ -44,7 +45,7 @@ const RECALL_BAR = 0.99;
 const PRECISION_BAR = 0.99;
 const CLASS_BAR = 0.98;
 
-type Family = "exact-ecrf" | "near-ecrf";
+type Family = "exact-ecrf" | "near-ecrf" | "ciris";
 
 interface AnswerKeyRow {
   city: string;
@@ -122,12 +123,14 @@ function withinTol(actual: number, expected: number): boolean {
 }
 
 function familyOf(fileName: string): Family {
+  if (/ciris/i.test(fileName)) return "ciris";
   return /^ecrf-inventory/i.test(fileName) ? "exact-ecrf" : "near-ecrf";
 }
 
 function isInventoryXlsx(file: string): boolean {
   const s = slug(file);
-  return s.endsWith("xlsx") && !s.startsWith("answer_keys");
+  if (s.startsWith("answer_keys") || file.startsWith("~$")) return false;
+  return s.endsWith("xlsx") || s.endsWith("xlsm");
 }
 
 /** e.g. Banana_CRFFormat_2022_20261106.xlsx → { city, year } */
@@ -137,6 +140,43 @@ function parseCrfFormatName(
   const match = file.match(/^(.*)_CRFFormat_(\d{4})_/i);
   if (!match) return null;
   return { city: match[1].trim(), year: Number(match[2]) };
+}
+
+function splitCamelCity(value: string): string {
+  return value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
+    .trim();
+}
+
+/**
+ * CIRIS filenames, e.g. A3-04_Boston_2023_CIRIS_slim.xlsx,
+ * CIRIS_BuenosAires_GEI_2020_CDP.xlsx, Boston, USA 2023 Final CIRIS (2025).xlsm.
+ */
+function parseCirisName(
+  file: string,
+): { city: string; year: number } | null {
+  if (!/ciris/i.test(file)) return null;
+  const a3 = file.match(/^A\d+-\d+_([^_]+)_(\d{4})_CIRIS/i);
+  if (a3) return { city: splitCamelCity(a3[1]), year: Number(a3[2]) };
+  const prefixed = file.match(/^CIRIS_([^_]+).*?(\d{4})/i);
+  if (prefixed) {
+    return { city: splitCamelCity(prefixed[1]), year: Number(prefixed[2]) };
+  }
+  const yearMatch = file.match(/\b((?:19|20)\d{2})\b/);
+  if (!yearMatch) return null;
+  const city = file
+    .replace(/\.(xlsx|xlsm)$/i, "")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/,?\s*(USA|US)\b/gi, "")
+    .replace(/\bFinal\s+CIRIS\b.*$/i, "")
+    .replace(/\bCIRIS\b/gi, "")
+    .replace(/\b((?:19|20)\d{2})\b/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!city) return null;
+  return { city, year: Number(yearMatch[1]) };
 }
 
 function keyFromSource(
@@ -167,6 +207,11 @@ function keyFromSource(
 
 async function loadAnswerKeys(dir: string): Promise<AnswerKeyRow[]> {
   const keyPath = path.join(dir, "Answer_Keys_and_Results_eCRF_DP4C.xlsx");
+  try {
+    await access(keyPath, fsConstants.R_OK);
+  } catch {
+    return [];
+  }
   const wb = new Excel.Workbook();
   await wb.xlsx.readFile(keyPath);
   const sheet = wb.getWorksheet("Answer key");
@@ -413,7 +458,11 @@ async function scoreStored(
     );
   }
   if (!key.fromWorkbook) {
-    flags.push("no workbook key row; scored against the source file");
+    flags.push(
+      family === "ciris"
+        ? "CIRIS; scored against eCRF_3 (no workbook key row)"
+        : "no workbook key row; scored against the source file",
+    );
   }
   if (totalsMatchExclEnergy === false && totalsMatchFile === true) {
     flags.push("key?: dashboard total matches file total, not excl. I.4.4");
@@ -464,10 +513,10 @@ function pct(n: number | null): string {
 
 function renderReport(results: CaseResult[], missing: string[]): string {
   const lines = [
-    "# GHGI Path A backtest (CC-950 v1)",
+    "# GHGI Path A backtest (eCRF, near-eCRF, CIRIS)",
     "",
     `Ran ${results.length} file(s). Rows are scored as stored GPC refs (import sums eCRF_3 lines that share a ref).`,
-    "CIRIS is not in this folder and is skipped until CC-1217.",
+    "CIRIS with eCRF_3 is Path A (CC-1217). Packs without eCRF_3 are not scored.",
     "",
     "| City | Family | Path | Status | Recall | Precision | Value acc | Class | Stored t | Excl. energy t | Pass | Flags |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -584,8 +633,8 @@ async function main() {
 
   for (const file of names) {
     if (!isInventoryXlsx(file) || used.has(file)) continue;
-    const parsed = parseCrfFormatName(file);
-    const city = parsed?.city ?? file.replace(/\.xlsx$/i, "");
+    const parsed = parseCirisName(file) ?? parseCrfFormatName(file);
+    const city = parsed?.city ?? file.replace(/\.(xlsx|xlsm)$/i, "");
     const year = parsed?.year ?? new Date().getFullYear();
     results.push(
       await runCase({

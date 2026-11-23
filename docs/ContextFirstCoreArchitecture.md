@@ -216,7 +216,7 @@ Two things also change points without a command: a change of setup, and the read
 
 ### 4.4 One point, followed through
 
-A fictional point: the requested funding amount, a required point. A point starts in one of two ways: created with a file that states it (path a), or missing because no file does (path b). On both paths the value is then found in a file or filled in by the user. The two paths meet when the value is confirmed. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
+A fictional point: the requested funding amount, a required point. A point starts in one of two ways. Path a starts from the setup: the document type lists the point. Path b starts from the model: the setup did not list it, but while reading the model sees that the document needs it, and no file has it, so it adds the point as missing. On both paths the value is then found in a file or filled in by the user. The two paths meet when the value is confirmed. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
 
 ```mermaid
 flowchart TB
@@ -228,17 +228,17 @@ flowchart TB
 
 | Step | Answer | Evidence | Work | Text | What the user sees |
 |---|---|---|---|---|---|
-| 1. The setup creates the point | none | nothing | active | not written | Missing |
-| 2a. File A is already there. It is read | none | value found | active | not written | Found |
-| 2b. The first files are read. None states the amount | none | nothing found | active | not written | Missing, needs a file or an answer |
-| 3b. The user adds file A, or answers. It is read | none | value found | active | not written | Found |
-| 4. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | AI verified |
-| 5. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | AI verified |
-| 6. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | AI verified · Documents disagree |
-| 7. The owner parks it for the finance director | 4.2 million, from A | B differs | waiting | current | AI verified · Documents disagree · Waiting |
-| 8. The answer arrives and the owner picks B | 3.9 million, from B | nothing | done | to review | Verified · Text change to review |
+| 1a. The setup creates the point | none | nothing | active | not written | Missing |
+| 2a. Found in the files already attached (file A), or filled in by the user | none | value found | active | not written | Found |
+| 1b. The model sees the document needs the amount. The setup did not list it and no file has it, so the model adds the point | none | nothing found | active | not written | Missing, needs a file or an answer |
+| 2b. Found in a file added later (file A), or filled in by the user | none | value found | active | not written | Found |
+| 3. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | AI verified |
+| 4. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | AI verified |
+| 5. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | AI verified · Documents disagree |
+| 6. The owner parks it for the finance director | 4.2 million, from A | B differs | waiting | current | AI verified · Documents disagree · Waiting |
+| 7. The answer arrives and the owner picks B | 3.9 million, from B | nothing | done | to review | Verified · Text change to review |
 
-Where today's code differs: in step 2b nothing tells the user that reading found nothing, and "Help me find it" does not exist. In step 4 nothing counts until a person confirms it. In steps 6 and 7 the status is "conflict" and the point is not counted as covered. In step 6 the file can only be added in the Context tab, and the chat shows nothing. In step 7 the point is listed under Waiting. In step 8 the whole confirmed chapter gets one proposed change.
+Where today's code differs: path b does not exist, because the model cannot add a point, and nothing tells the user that reading found nothing; "Help me find it" does not exist either. In step 3 nothing counts until a person confirms it. In steps 5 and 6 the status is "conflict" and the point is not counted as covered. In step 5 the file can only be added in the Context tab, and the chat shows nothing. In step 6 the point is listed under Waiting. In step 7 the whole confirmed chapter gets one proposed change.
 
 ### 4.5 Five rules
 

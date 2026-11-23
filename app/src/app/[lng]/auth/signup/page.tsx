@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { Heading, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -19,6 +19,10 @@ import { LANGUAGES } from "@/util/types";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { getHomePath } from "@/util/routes";
 import { getApiErrorMessage } from "@/util/helpers";
+import {
+  getIdentityPublicConfig,
+  isIdentityLoginEnabledClient,
+} from "@/lib/identity-config";
 
 type Inputs = {
   inventory?: string;
@@ -67,10 +71,38 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const watchPassword = watch("password", "");
 
   const [error, setError] = useState("");
+  const identityLoginEnabled = isIdentityLoginEnabledClient();
 
   let callbackUrl = searchParams.get("callbackUrl") ?? undefined;
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = undefined;
+  }
+
+  // When identity owns credentials, registration happens on the OP.
+  useEffect(() => {
+    if (!identityLoginEnabled) return;
+    const config = getIdentityPublicConfig();
+    if (!config) return;
+    window.location.href = `${config.issuer}/signup/`;
+  }, [identityLoginEnabled]);
+
+  if (identityLoginEnabled) {
+    return (
+      <>
+        <Heading
+          fontFamily="heading"
+          fontSize="display.sm"
+          fontWeight={600}
+          lineHeight="44px"
+          color="content.secondary"
+        >
+          {t("signup-heading")}
+        </Heading>
+        <Text mt={4} mb={8} color="content.tertiary">
+          {t("signup-identity-redirect")}
+        </Text>
+      </>
+    );
   }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {

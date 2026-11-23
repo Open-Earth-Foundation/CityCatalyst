@@ -48,7 +48,14 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
 
-  const { login, isLoading, error, clearError } = useLogin();
+  const {
+    login,
+    loginWithIdentity,
+    isLoading,
+    error,
+    clearError,
+    identityLoginEnabled,
+  } = useLogin();
   const router = useRouter();
   const {
     handleSubmit,
@@ -139,6 +146,32 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     const updatedCallbackUrl = `${path}?${callbackUrlParams.toString()}`;
     return router.push(
       "/auth/signup/?callbackUrl=" + encodeURIComponent(updatedCallbackUrl),
+    );
+  }
+
+  if (identityLoginEnabled) {
+    return (
+      <Box>
+        <Heading size="xl">{t("login-heading")}</Heading>
+        <Text my={4} color="content.tertiary">
+          {t("login-identity-details")}
+        </Text>
+        <Button
+          type="button"
+          data-testid="identity-login-button"
+          loading={isLoading}
+          disabled={!isFormReady || isLoading}
+          h={16}
+          width="full"
+          bgColor="interactive.secondary"
+          onClick={() => loginWithIdentity(callbackUrl || `/${lng}/`)}
+        >
+          {t("log-in-with-identity")}
+        </Button>
+        <Suspense>
+          <VerifiedNotification t={t} />
+        </Suspense>
+      </Box>
     );
   }
 

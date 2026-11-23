@@ -6,7 +6,9 @@ import {
   CredentialInput,
   CredentialsConfig,
 } from "next-auth/providers/credentials";
+import type { OAuthConfig } from "next-auth/providers/oauth";
 import { Roles } from "@/util/types";
+import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import crypto from "node:crypto";
 import {
@@ -15,6 +17,8 @@ import {
   verifyToken,
 } from "./2fa";
 import { RateLimiter } from "@/util/rate-limiter";
+import { getIdentityServerConfig } from "./identity-config";
+import { ensureLocalUserFromOidc } from "./identity-user";
 
 const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
 // 5 attempts/15 minutes per email — brute-force throttle for the login path.
@@ -64,6 +68,151 @@ export class Auth {
   }
 }
 
+type AuthUser = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: Roles;
+};
+
+const credentialsProvider = Credentials({
+  name: "Credentials",
+  credentials: {
+    email: {
+      label: "Email",
+      type: "email",
+      placeholder: "yourname@city.example",
+    },
+    password: { label: "Password", type: "password" },
+    securityToken: { label: "Security token", type: "securityToken" },
+  },
+  async authorize(credentials): Promise<AuthUser | null> {
+    if (!credentials?.email || !credentials?.password) {
+      return null;
+    }
+
+    const email = credentials.email.toLowerCase();
+
+    if (loginLimiter && !loginLimiter.checkLimit(email)) {
+      logger.error({ email }, "Login rate limit exceeded");
+      throw new Error("rate-limited");
+    }
+
+    let user: User | null = null;
+    try {
+      if (!db.initialized) {
+        await db.initialize();
+      }
+      user = await db.models.User.findOne({
+        where: { email },
+      });
+    } catch (err: unknown) {
+      logger.error({ err: err }, "Failed to login:");
+      return null;
+    }
+
+    if (!user || !user.passwordHash || user.anonymizedAt) {
+      logger.error("No user found!");
+      return null;
+    }
+
+    const isValid = await bcrypt.compare(
+      credentials.password,
+      user.passwordHash,
+    );
+    if (!isValid) {
+      logger.error("Invalid password!");
+      return null;
+    }
+
+    if (user.twoFactorEnabled && user.twoFactorSecret) {
+      if (!credentials.securityToken) {
+        logger.error("No securityToken passed for user with 2FA enabled");
+        return null;
+      }
+      let tokenValid = false;
+      if (credentials.securityToken.length >= recoveryTokenMinLength) {
+        // allow using a single-use recovery code and delete it from user record if successful
+        tokenValid = await verifyRecoveryCode(user, credentials.securityToken);
+      } else {
+        tokenValid = await verifyToken(
+          credentials.securityToken,
+          user.twoFactorSecret,
+        );
+      }
+      if (!tokenValid) {
+        logger.error("Invalid securityToken for 2FA");
+        return null;
+      }
+    }
+
+    // Inactivity for retention is measured from a successful sign-in.
+    // A failed stamp must not block the login itself.
+    try {
+      await user.update({ lastActiveAt: new Date() });
+    } catch (err: unknown) {
+      logger.error({ err }, "Failed to record lastActiveAt");
+    }
+
+    return {
+      id: user.userId,
+      name: user.name,
+      email: user.email,
+      image: user.pictureUrl,
+      role: user.role,
+    };
+  },
+});
+
+type IdentityIdToken = {
+  sub: string;
+  email?: string;
+  name?: string;
+};
+
+function buildIdentityProvider(): OAuthConfig<IdentityIdToken> | null {
+  if (!hasServerFeatureFlag(FeatureFlags.IDENTITY_SERVICE_LOGIN)) {
+    return null;
+  }
+  const config = getIdentityServerConfig();
+  if (!config) {
+    logger.warn(
+      "IDENTITY_SERVICE_LOGIN is on but IDENTITY_ISSUER / CLIENT_ID / CLIENT_SECRET are incomplete",
+    );
+    return null;
+  }
+
+  return {
+    id: "identity",
+    name: "CityCatalyst Identity",
+    type: "oauth",
+    wellKnown: `${config.issuer}/.well-known/openid-configuration/`,
+    clientId: config.clientId,
+    clientSecret: config.clientSecret,
+    authorization: { params: { scope: "openid read" } },
+    idToken: true,
+    checks: ["pkce", "state"],
+    client: { token_endpoint_auth_method: "client_secret_basic" },
+    profile(profile) {
+      return {
+        id: profile.sub,
+        name: profile.name ?? profile.email ?? profile.sub,
+        email: profile.email,
+      };
+    },
+  };
+}
+
+function buildProviders(): NextAuthOptions["providers"] {
+  const providers: NextAuthOptions["providers"] = [credentialsProvider];
+  const identity = buildIdentityProvider();
+  if (identity) {
+    providers.push(identity);
+  }
+  return providers;
+}
+
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/login",
@@ -71,108 +220,33 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "yourname@city.example",
-        },
-        password: { label: "Password", type: "password" },
-        securityToken: { label: "Security token", type: "securityToken" },
-      },
-      async authorize(credentials): Promise<{
-        id: string;
-        name?: string;
-        email?: string;
-        image?: string | null;
-        role?: Roles;
-      } | null> {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const email = credentials.email.toLowerCase();
-
-        if (loginLimiter && !loginLimiter.checkLimit(email)) {
-          logger.error({ email }, "Login rate limit exceeded");
-          throw new Error("rate-limited");
-        }
-
-        let user: User | null = null;
-        try {
-          if (!db.initialized) {
-            await db.initialize();
-          }
-          user = await db.models.User.findOne({
-            where: { email },
-          });
-        } catch (err: unknown) {
-          logger.error({ err: err }, "Failed to login:");
-          return null;
-        }
-
-        if (!user || !user.passwordHash || user.anonymizedAt) {
-          logger.error("No user found!");
-          return null;
-        }
-
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash,
-        );
-        if (!isValid) {
-          logger.error("Invalid password!");
-          return null;
-        }
-
-        if (user.twoFactorEnabled && user.twoFactorSecret) {
-          if (!credentials.securityToken) {
-            logger.error("No securityToken passed for user with 2FA enabled");
-            return null;
-          }
-          let isValid = false;
-          if (credentials.securityToken.length >= recoveryTokenMinLength) {
-            // allow using a single-use recovery code and delete it from user record if successful
-            isValid = await verifyRecoveryCode(user, credentials.securityToken);
-          } else {
-            isValid = await verifyToken(
-              credentials.securityToken,
-              user.twoFactorSecret,
-            );
-          }
-          if (!isValid) {
-            logger.error("Invalid securityToken for 2FA");
-            return null;
-          }
-        }
-
-        // Inactivity for retention is measured from a successful sign-in.
-        // A failed stamp must not block the login itself.
-        try {
-          await user.update({ lastActiveAt: new Date() });
-        } catch (err: unknown) {
-          logger.error({ err }, "Failed to record lastActiveAt");
-        }
-
-        return {
-          id: user.userId,
-          name: user.name,
-          email: user.email,
-          image: user.pictureUrl,
-          role: user.role,
-        };
-      },
-    }),
-  ],
+  providers: buildProviders(),
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "identity") {
+        return true;
+      }
+      try {
+        const local = await ensureLocalUserFromOidc({
+          sub: user.id,
+          email: user.email,
+          name: user.name,
+        });
+        user.id = local.id;
+        (user as AuthUser).role = local.role;
+        if (local.email) user.email = local.email;
+        if (local.name) user.name = local.name;
+        return true;
+      } catch (err: unknown) {
+        logger.error({ err }, "Failed to provision CityCatalyst user from identity");
+        return false;
+      }
+    },
     jwt: async ({ token, user }) => {
       if (user) {
-        // user is what's returned from authorize
-        token.sub = user.id; // or token.id = user.id;
-        token.role = (user as unknown as User).role;
+        // user is what's returned from authorize / OIDC profile (+ signIn upsert)
+        token.sub = user.id;
+        token.role = (user as AuthUser).role;
         token.picture = user.image;
         token.name = user.name;
         token.csrfSecret = crypto.randomBytes(32).toString("hex");

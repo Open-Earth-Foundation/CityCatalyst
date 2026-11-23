@@ -203,7 +203,7 @@ Two things also change points without a command: a change of setup, and the read
 
 | Place | Today | Proposed |
 |---|---|---|
-| **Chat** | The card next to the chat saves through the same command. Clima's two point tools only read. An answer typed as a chat message does not reach the point. | Clima turns a typed reply into a filled-in card for one point. The user's Save sends the same command. Clima never saves by itself (decision 2). |
+| **Chat** | The card next to the chat saves through the same command. Clima's two point tools only read. An answer typed as a chat message does not reach the point. | Clima turns a typed reply into a filled-in card for one point. The user's Save sends the same command. Clima never saves by itself. |
 | **Uploads** | A file can be added only in the Context tab. Its origin is not stored. | A file added from any screen takes the same path, and the chat shows one entry for it (**Decided**; see section 2). |
 | **Draft** | The first draft reads the accepted points. Later changes reach the text through the background update. | Keep this. The screen always shows whether the text is up to date. |
 | **Gaps** | The Builder's older list of gaps still exists. A gap with no matching point is still answered through a chat edit, and that does not update any point. | Gaps stay only as review findings about the text. Missing information is always a point. |
@@ -405,7 +405,6 @@ Two grants for one city show that reading carries over between grants. Generalit
 | # | Question | Proposed | What a yes means |
 |---|---|---|---|
 | 1 | May a point show its answer and an open disagreement together? | Yes | A confirmed value stays visible and saved when a new file disagrees. It is not cleared for final export until someone decides (4.2). |
-| 2 | May Clima prepare an answer from a typed chat reply, for the user to save? | Yes | The user saves with one click in the chat. Clima never saves by itself (4.3). |
 | 3 | Must a person say yes to every value before it counts as a fact? | Yes, in the first version | City data from CityCatalyst arrives as a candidate. No point starts as covered. |
 | 4 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
 | 5 | Is a setup its own reviewed record, apart from a Builder template? | Yes | One versioned setup for each document type and programme, pinned for each document. For the pilot an engineer loads it from a reviewed file. Joaquin names the reviewer for each setup. Builder templates are translated now and rewritten later. |

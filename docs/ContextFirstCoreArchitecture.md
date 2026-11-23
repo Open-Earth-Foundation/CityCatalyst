@@ -278,6 +278,8 @@ The Builder and the Stationary Energy flow already share these: stored conversat
 
 There is no adapter interface today. The core imports Builder code in five of its six files and uses some of its private parts. Eight Builder files import the core. This is why the core works for the concept note and for nothing else.
 
+**Direction, outside this scope.** The core stays inside the Builder for now. Over time, part of these tools should move out of the Builder into shared Clima capabilities, as the CC-1170 spike proposes, so that other products can use them. That move is not part of this work. Until then, the four connecting pieces above are the places where the core and the Builder should meet.
+
 ### 5.4 How this connects to CC-1170
 
 CC-1170 looked at the same code from the side of the chat tools. It proposed shared homes for five tools. Nothing from the spike has been moved. The core was built next to the five tools.
@@ -291,11 +293,12 @@ CC-1170 looked at the same code from the side of the chat tools. It proposed sha
 | **Visuals** | chat only | Nothing. | Not moved. |
 | **Export** | D | The spike left it for later. The core needs it now. | The rule for final export is built in the core. |
 
-**The interconnection.** The spike planned three new adapters. Two meet the core:
+**The interconnection.** The spike names two adapters, without code names. Both meet the core:
 
-- `source_resolver` is a starting point for the core's source resolver. The core also needs the files that come through the reading job, and the check that a file is unchanged.
-- `edit_resource` is the review-and-apply part of the core's draft adapter. The core also needs the first draft and the updates.
-- `gap_reader` served the gap list. The list of points replaces it.
+- **An authorized source-resolution adapter** (spike step 4). It is a starting point for the core's source resolver. The core also needs the files that come through the reading job, and the check that a file is unchanged.
+- **A resource apply adapter** for review (spike step 6). It is the review-and-apply part of the core's draft adapter. The core also needs the first draft and the updates.
+
+The spike had no gap adapter. It treated gap collection as a Clima capability, which the points replace (see **Gaps** below).
 
 The core adds two pieces the spike did not have: the setup adapter and the host binding.
 
@@ -308,6 +311,24 @@ The core adds two pieces the spike did not have: the setup adapter and the host 
 3. **Source resolver and draft adapter.** When a second user needs the same contract: the main Clima chat, or a product that is not the Builder.
 4. **One question format.** CC-1303.
 5. **Visuals and tools in the main Clima chat.**
+
+The spike documents follow this order. Their migration plan maps each old step to a step here; steps 1 to 3 and 5 of the spike are paused.
+
+### 5.5 Where the data lives
+
+**Today.** Climate Advisor has two databases. The Clima database holds conversations, Stationary Energy and the Builder's runs. The Builder database holds chapters, revisions, edit proposals, gaps and funding data, and is set up outside this repository. The eleven point tables are in the **Builder database**: `document_workspaces`, `document_setup_snapshots`, `document_points`, `document_point_candidates`, `document_point_revisions`, `document_operations`, `document_needs`, `document_point_dependencies`, `document_update_jobs`, `document_exports`, `document_source_readings`. The CityCatalyst database gets one change to the document pool.
+
+**Proposed.** Keep the point tables in the Builder database for the pilot. A command saves the point and queues its text update in one step only because both live next to the chapters and revisions.
+
+**Revisit** when the paused move of capabilities into Clima resumes, or when the generality check passes. The spike's rule then applies to what has proven shared: shared tables in the Clima database with a `clima_` prefix, and the move done by double writing, filling and switching reads, never by renaming in place.
+
+### 5.6 Where the prompts live
+
+**Today.** The core's prompts sit with the Builder: `prompts/cnb/document_point_extraction.md` and `prompts/cnb/document_point_question.md` (keys `document_point_extraction`, `document_point_question`), and `prompts/tools/document_workspace.md`, included by `prompts/cnb/chat.md`.
+
+**Proposed.** Leave them there for the pilot.
+
+**Revisit** when the paused move of capabilities from the Builder and the agentic flows into Clima resumes. Then the prompts of tools that more than one product uses move to the main `prompts/` folder as core prompts, next to `core.md`, following the spike's prompt proposal (module map, "Proposal: versioning and ownership").
 
 ---
 

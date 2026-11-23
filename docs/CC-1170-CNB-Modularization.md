@@ -663,7 +663,7 @@ Gaps between the two documents, and how to resolve them:
 6. **CNB authorization.** It is not step-scoped, and CNB's CC routes are outside the registry. Resolution: add a module or workflow parameter to `allowed-capabilities` (today it returns only SE capabilities), and register document read capabilities.
 7. **Progress model.** AMS specifies polling; CNB pushes SSE. Resolution: one status shape, with SSE as an optional push of that shape.
 8. **Observability.** Resolution: Clima runtime owns trace metadata: workflow, run id, capability ids and outcome.
-9. **First capability pack.** It covers city, GHGI and HIAP only, while stage 4 needs a consumer outside CNB. Resolution: the first reuse probes are Clima choices and visuals in main chat (CC-1234, CC-1235). They need no new product capabilities.
+9. **First capability pack.** It covers city, GHGI and HIAP only, while stage 4 needs a consumer outside CNB. Resolution: the first reuse probes are Clima choices and visuals in main chat (CC-1234, CC-1235). They need no new product capabilities. **Paused** (23 November 2026): see the order of work under the migration plan.
 
 ## Database ownership
 
@@ -693,7 +693,26 @@ Rules:
 - Feature chains keep only feature tables.
 - The `cnb` chain and its migrations stay owned by CNB. Any change to the CNB DB needs ops coordination.
 
+**Update, 23 November 2026: the point tables stay in the CNB DB.** The context-first core added eleven point tables (`document_workspaces`, `document_points`, `document_point_candidates` and others) to the CNB DB, next to the chapters and revisions they update. That is the current position: they stay there for the pilot, because a point command and its text update are saved in one step only when they share a database. The rules above are not dropped. They apply when the paused move of capabilities into Clima resumes, or when the core's generality check passes, and only to tables that have proven shared. See [ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), section 5.5.
+
 ## Migration plan
+
+### Order of work (updated 23 November 2026)
+
+The order now follows the context-first core ([ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), section 5.4). The team decided that moving tools into Clima is lower priority and that hardening continues.
+
+**The Builder stays as the context-first core describes it.** The core is built inside the Builder, and the Builder is not split now. The direction is unchanged: some day part of these tools moves out of the Builder into shared Clima capabilities. That move is not part of the current scope.
+
+| New step | Work | Steps of this plan |
+|---|---|---|
+| 1 | Hardening of the core before the pilot | — |
+| 2 | Setup adapter and host binding: the only pieces the pilot needs | — |
+| 3 | Source resolver and draft adapter, when a second user needs the same contract | Step 4 (sources) and the apply part of step 6 (review) |
+| 4 | One question format | Part of step 1 (choices) |
+| 5 | Visuals and tools in the main Clima chat | Steps 1, 2, 3 and 5 |
+| — | Paused, not scheduled | Step 6 shared proposal tables; step 7 export (the core already has its own final export rule) |
+
+Step 0 still applies before any file it lists is moved. The table below keeps the original plan for when the move resumes.
 
 Each step ships separately and leaves CNB working. Steps 1–3 move no tables.
 

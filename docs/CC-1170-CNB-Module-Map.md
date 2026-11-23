@@ -286,6 +286,8 @@ Paths in this table are relative to `app/src/components/ConceptNoteWorkspace/`; 
 
 ### Main Clima chat (the first consumer)
 
+**Paused (23 November 2026).** Main chat is the last step in the current order of work. See the migration plan in [CC-1170-CNB-Modularization.md](CC-1170-CNB-Modularization.md).
+
 | Current path | Purpose | Tag | Proposed target | Coupling to remove |
 |---|---|---|---|---|
 | app/src/components/ChatBot/chat-bot.tsx | Main chat body | core | (stays; consumer) | text-only `useChat`; no tool-result slots |
@@ -340,6 +342,8 @@ The `concept-notes` namespace has 915 lines in `en`. The shared chat, edit, choi
 10. A third chat implementation, `app/src/components/StationaryEnergyDraft/`, interprets tool results its own way.
 
 ## Prompt map
+
+> **Update, 23 November 2026: prompts stay where they are for now.** This follows the context-first core ([ContextFirstCoreArchitecture.md](ContextFirstCoreArchitecture.md), section 5.6). The Builder's prompts, including the new point prompts (`cnb/document_point_extraction.md`, `cnb/document_point_question.md`, `tools/document_workspace.md`), are not moved or renamed in the current scope. **Raise this again** when the paused move of capabilities from the Builder and the agentic flows into Clima resumes. Then the prompts of tools that more than one product uses move to the main `prompts/` folder as core prompts, and the proposal below is the starting point. The table below is the November 9 snapshot and does not list the prompts added since.
 
 Proposed layers:
 

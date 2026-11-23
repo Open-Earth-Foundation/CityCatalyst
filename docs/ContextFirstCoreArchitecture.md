@@ -216,13 +216,12 @@ Two things also change points without a command: a change of setup, and the read
 
 ### 4.4 One point, followed through
 
-A fictional point: the requested funding amount, a required point. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
+A fictional point: the requested funding amount, a required point. A point starts in one of two ways: created with a file that states it (path a), or missing because no file does (path b). The two paths meet when the value is confirmed. File A is a financing plan. Page 7 says EUR 4.2 million. File B is a council resolution. Page 2 says EUR 3.9 million.
 
 ```mermaid
 flowchart TB
   C["Created"] -->|"found in a file"| F1["Found"]
-  C -->|"nothing found"| M["Missing"]
-  M -->|"a file or an answer is added"| F2["Found later"]
+  M["Missing"] -->|"a file or an answer is added"| F2["Filled"]
   F1 & F2 --> OK["Confirmed by the model<br/>the user can change or remove it"]
   OK --> DR["Draft"] --> DI["Disagreement"] --> PA["Parked"] --> RE["Resolved"]
 ```
@@ -232,7 +231,7 @@ flowchart TB
 | 1. The setup creates the point | none | nothing | active | not written | Missing |
 | 2a. File A is already there. It is read | none | value found | active | not written | Found |
 | 2b. The first files are read. None states the amount | none | nothing found | active | not written | Missing, needs a file or an answer |
-| 3b. The user adds file A, or answers. It is read | none | value found | active | not written | Found |
+| 3b. The user adds file A, or answers. It is read | none | value found | active | not written | Filled |
 | 4. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | AI verified |
 | 5. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | AI verified |
 | 6. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | AI verified · Documents disagree |

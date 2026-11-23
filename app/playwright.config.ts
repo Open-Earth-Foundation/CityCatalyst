@@ -107,6 +107,18 @@ export default defineConfig({
       PLAYWRIGHT_TEST: "1",
       NEXTAUTH_URL: baseURL,
       HOST: baseURL,
+      // Stub OP so the login CTA renders; full authorize is not exercised in CI.
+      IDENTITY_ISSUER:
+        process.env.IDENTITY_ISSUER || "http://localhost:3001",
+      IDENTITY_CLIENT_ID:
+        process.env.IDENTITY_CLIENT_ID || "e2e-playwright-client",
+      IDENTITY_CLIENT_SECRET:
+        process.env.IDENTITY_CLIENT_SECRET || "e2e-playwright-secret",
+      NEXT_PUBLIC_IDENTITY_ISSUER:
+        process.env.NEXT_PUBLIC_IDENTITY_ISSUER || "http://localhost:3001",
+      NEXT_PUBLIC_IDENTITY_CLIENT_ID:
+        process.env.NEXT_PUBLIC_IDENTITY_CLIENT_ID || "e2e-playwright-client",
     },
   },
 });
+

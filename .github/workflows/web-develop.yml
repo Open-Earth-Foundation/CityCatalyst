@@ -266,7 +266,13 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
-      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,IDENTITY_SERVICE_LOGIN,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC"
+      # Stub identity OP for the login CTA / NextAuth provider (authorize not hit in CI).
+      IDENTITY_ISSUER: "http://localhost:3001"
+      IDENTITY_CLIENT_ID: "e2e-playwright-client"
+      IDENTITY_CLIENT_SECRET: "e2e-playwright-secret"
+      NEXT_PUBLIC_IDENTITY_ISSUER: "http://localhost:3001"
+      NEXT_PUBLIC_IDENTITY_CLIENT_ID: "e2e-playwright-client"
       # Inside a container job the database is reached by its service name.
       # Process env wins over the DATABASE_HOST="localhost" copied from env.example.
       DATABASE_HOST: postgres
@@ -308,7 +314,12 @@ jobs:
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
           echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
-          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,IDENTITY_SERVICE_LOGIN,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "IDENTITY_ISSUER=http://localhost:3001" >> .env && \
+          echo "IDENTITY_CLIENT_ID=e2e-playwright-client" >> .env && \
+          echo "IDENTITY_CLIENT_SECRET=e2e-playwright-secret" >> .env && \
+          echo "NEXT_PUBLIC_IDENTITY_ISSUER=http://localhost:3001" >> .env && \
+          echo "NEXT_PUBLIC_IDENTITY_CLIENT_ID=e2e-playwright-client" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
 

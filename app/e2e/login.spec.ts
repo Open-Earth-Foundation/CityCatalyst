@@ -1,57 +1,40 @@
 import { test, expect } from "@playwright/test";
-import {
-  expectText,
-  expectFieldInvalid,
-  signup,
-  waitForAuthFormReady,
-  dismissCookieConsent,
-} from "./helpers";
-import { randomUUID } from "node:crypto";
+import { expectText, dismissCookieConsent } from "./helpers";
 
-test.setTimeout(120000);
+test.use({ storageState: { cookies: [], origins: [] } });
+
+test.setTimeout(60000);
 
 test.beforeEach(async ({ page, context }) => {
-  // make sure user is logged out to prevent order of execution issues
   await context.clearCookies();
   await page.goto("/en/auth/login");
   await dismissCookieConsent(page);
-  // Wait until client handlers are attached so submit is not a native GET.
-  await expect(page.getByTestId("login-form")).toHaveAttribute(
-    "data-ready",
-    "true",
-    { timeout: 30000 },
-  );
-  await waitForAuthFormReady(page, { expectEnabled: true });
 });
 
 test.describe("Login page", () => {
-  test("redirects away from login after entering correct data", async ({
+  test("shows identity sign-in CTA when public identity config is present", async ({
     page,
-    request,
   }) => {
-    const email = `login-test+${randomUUID()}@openearth.org`;
-    const password = "Test123!";
-    await signup(request, email, password, password);
-
     await expectText(page, "Log In");
-
-    await page.locator('input[name="email"]').fill(email);
-    await page.locator('input[name="password"]').fill(password);
-    await page.getByRole("button", { name: /log in/i }).click();
-
-    // Successful login uses a full-page redirect to callbackUrl (default `/`).
-    await expect(page).not.toHaveURL(/\/en\/auth\/login/, { timeout: 30000 });
+    const button = page.getByTestId("identity-login-button");
+    await expect(button).toBeVisible({ timeout: 30000 });
+    await expect(button).toBeEnabled();
   });
 
-  test("shows errors when entering invalid data", async ({ page }) => {
-    await expectText(page, "Log In");
+  test("starts the identity OIDC redirect when Continue is clicked", async ({
+    page,
+  }) => {
+    const button = page.getByTestId("identity-login-button");
+    await expect(button).toBeVisible({ timeout: 30000 });
+    await expect(button).toBeEnabled();
 
-    await page.locator('input[name="email"]').fill("testopenearthorg");
-    await page.locator('input[name="password"]').fill("pas");
-    await page.getByRole("button", { name: /log in/i }).click();
+    await button.click();
 
-    await expect(page).toHaveURL(/\/en\/auth\/login\/?$/);
-    await expectFieldInvalid(page, "email");
-    await expectFieldInvalid(page, "password");
+    // NextAuth routes through its signin endpoint, then to the OP authorize URL.
+    // Identity is not running in CI; either hop is enough to prove the RP path.
+    await expect(page).toHaveURL(
+      /\/api\/auth\/signin\/identity|\/oauth\/authorize|localhost:3001/,
+      { timeout: 30000 },
+    );
   });
 });

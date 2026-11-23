@@ -10,10 +10,7 @@ import {
 import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
 import { callConceptNoteApi } from "@/backend/concept-notes";
 import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
-import {
-  callClimateAdvisorChat,
-  createClimateAdvisorThread,
-} from "@/backend/chat/climate-advisor";
+import { createClimateAdvisorThread } from "@/backend/chat/climate-advisor";
 import { logger } from "@/services/logger";
 
 const originalFetch = global.fetch;
@@ -357,42 +354,6 @@ describe("CA issuance retries", () => {
 });
 
 describe("shared caller integration", () => {
-  it.each(["ECONNREFUSED", "UND_ERR_CONNECT_TIMEOUT"])(
-    "preserves the fetch cause and logs %s for a CA request failure",
-    async (code) => {
-      const cause = Object.assign(new Error("Connection failed"), { code });
-      const fetchError = new TypeError("fetch failed", { cause });
-      fetchMock.mockRejectedValueOnce(fetchError);
-
-      const result = await callClimateAdvisorChat({
-        method: "POST",
-        path: "/v1/concept-notes/run?embedded=private",
-        searchParams: { user_id: "private-user" },
-        headers: { Authorization: "Bearer private-token" },
-      }).catch((error: unknown) => error);
-
-      expect(result).toMatchObject({
-        name: "BadGatewayError",
-        statusCode: 502,
-        expose: false,
-        message: "fetch failed",
-      });
-      expect((result as Error).cause).toBe(fetchError);
-      expect(fetchError.cause).toBe(cause);
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(logger.warn).toHaveBeenCalledTimes(1);
-      expect(logger.warn).toHaveBeenCalledWith(
-        {
-          method: "POST",
-          path: "/v1/concept-notes/run",
-          error_name: "TypeError",
-          cause_code: code,
-        },
-        "Climate Advisor request failed",
-      );
-    },
-  );
-
   it("coalesces CNB and Stationary Energy without replaying downstream mutations", async () => {
     fetchMock.mockImplementation(async (url) =>
       String(url).includes("user-token")

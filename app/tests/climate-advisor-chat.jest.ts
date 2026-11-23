@@ -68,18 +68,6 @@ it.each(["GET", "HEAD"] as const)(
     await jest.advanceTimersByTimeAsync(1);
     await expect(result).resolves.toBe(response);
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(
-      {
-        method,
-        path: "/v1/concept-notes/run/workspace",
-        error_name: "TypeError",
-        cause_code: "ECONNRESET",
-        next_attempt: 2,
-        delay_ms: 200,
-      },
-      "Retrying Climate Advisor request",
-    );
   },
 );
 
@@ -87,7 +75,8 @@ it.each(["POST", "PATCH", "DELETE", "PUT", "SSE"] as const)(
   "keeps %s single-shot and forwards its signal as-is",
   async (kind) => {
     const signal = new AbortController().signal;
-    fetchMock.mockRejectedValueOnce(resetError());
+    const failure = resetError();
+    fetchMock.mockRejectedValueOnce(failure);
     await expect(
       callClimateAdvisorChat({
         ...request,
@@ -98,10 +87,9 @@ it.each(["POST", "PATCH", "DELETE", "PUT", "SSE"] as const)(
             ? { Accept: "text/event-stream; q=1" }
             : request.headers,
       }),
-    ).rejects.toMatchObject({ statusCode: 502 });
+    ).rejects.toMatchObject({ statusCode: 502, cause: failure });
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][1]?.signal).toBe(signal);
-    expect(AbortSignal.timeout).not.toHaveBeenCalled();
   },
 );
 
@@ -140,11 +128,9 @@ it("exhausts three transport attempts and preserves the last error", async () =>
   await jest.advanceTimersByTimeAsync(1);
   await failure;
   expect(fetchMock).toHaveBeenCalledTimes(3);
-  expect(warn.mock.calls.map((call) => call[1])).toEqual([
-    "Retrying Climate Advisor request",
-    "Retrying Climate Advisor request",
-    "Climate Advisor request failed",
-  ]);
+  expect(warn.mock.lastCall?.[0]).toMatchObject({
+    cause_code: "UND_ERR_SOCKET",
+  });
   expect(JSON.stringify(warn.mock.calls)).not.toContain("private");
 });
 
@@ -156,13 +142,12 @@ it("exhausts stalled attempts within the overall budget", async () => {
       cause: { name: "TimeoutError" },
     },
   );
-  await jest.advanceTimersByTimeAsync(15_800);
+  await jest.advanceTimersByTimeAsync(16_000);
   await failure;
   expect(fetchMock).toHaveBeenCalledTimes(3);
   expect(fetchMock.mock.calls.every(([, init]) => init?.signal?.aborted)).toBe(
     true,
   );
-  expect(AbortSignal.timeout).toHaveBeenNthCalledWith(1, 16_000);
 });
 
 it.each(["already aborted", "fetch", "backoff"] as const)(

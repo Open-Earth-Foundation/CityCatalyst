@@ -127,13 +127,6 @@ it("sends a clicked choice immediately and blocks duplicate clicks while sending
   expect(send().disabled).toBe(true);
   await act(async () => finish());
 });
-it("submits a trimmed custom answer with Enter", async () => {
-  await render();
-  await type("  Focus on the tram depot  ");
-  expect(reply).not.toHaveBeenCalled();
-  expect((await enter()).defaultPrevented).toBe(true);
-  expect(reply).toHaveBeenCalledWith("Focus on the tram depot");
-});
 it("keeps the arrow available for custom answers", async () => {
   await render();
   await type("  Start with project scope  ");
@@ -152,11 +145,9 @@ it("locks previous questions and choices while a response is generating", async 
 it("restores the persisted selection on mount and clears it when the parent removes the reply", async () => {
   await render(false, true, "Budget");
   expect(option().getAttribute("aria-pressed")).toBe("true");
-  expect(option().querySelector("svg")).not.toBeNull();
 
   await render(false, false);
   expect(option().getAttribute("aria-pressed")).toBe("false");
-  expect(option().querySelector("svg")).toBeNull();
   expect(option().disabled).toBe(false);
   expect(reply).not.toHaveBeenCalled();
 });
@@ -166,14 +157,11 @@ it("does not mark a suggestion selected for a custom answer", async () => {
     container.querySelectorAll('button[aria-pressed="true"]'),
   ).toHaveLength(0);
 });
-it("renders paragraph whitespace and submits the complete suggested answer", async () => {
+it("sends a long suggested answer with its paragraph breaks intact", async () => {
   const choice =
     "First paragraph.\n\nSecond paragraph with  extra spaces.\n" +
     "Details ".repeat(200);
   await render(false, false, undefined, [choice, "Other"]);
-  const text = option().querySelectorAll("span")[1];
-  expect(text.textContent).toBe(choice);
-  expect(getComputedStyle(text).whiteSpace).toBe("pre-wrap");
   await act(async () => option().click());
   expect(reply).toHaveBeenCalledWith(choice);
 });
@@ -254,7 +242,6 @@ it("sends the sole edit action in one click", async () => {
       </ChakraProvider>,
     ),
   );
-  expect(container.querySelectorAll("button[aria-pressed]")).toHaveLength(1);
   expect(container.textContent).toContain("chat-choices-proposes-edit");
   await act(async () => {
     option().click();

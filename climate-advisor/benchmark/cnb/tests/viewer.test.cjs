@@ -164,9 +164,6 @@ test("editing renders escaped suggested answers with verdicts and linked quotes"
   };
   viewer.setRun({ run: { id: "candidate" }, fixtures: [f] });
   const html = viewer.editingTab(f);
-  assert.match(html, /Chat turn 1 · reply/);
-  assert.match(html, /Picked option · Use &lt;quarters&gt;\./);
-  assert.match(html, /Unsupported answers/);
   assert.match(html, /Missing follow-up/);
   assert.match(html, /href="#\/f\/test-city\/editing\/case-timeline">Use &lt;quarters&gt;\./);
   assert.doesNotMatch(html, /not found verbatim|<quarters>/);

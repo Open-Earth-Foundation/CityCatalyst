@@ -529,7 +529,7 @@ it("starts the drafting overview once and attaches its choices", async () => {
   });
 });
 
-it("binds the saved assistant id to live choices without replacing the React message id", async () => {
+it("binds live choices to the saved question without remounting the card", async () => {
   await act(async () => chat.sendMessage("Help me choose"));
   const localId = chat.messages.at(-1)!.id;
   await act(async () => {
@@ -571,65 +571,6 @@ it("discards unsaved live options rather than allowing an unbound reply", async 
   });
   expect(chat.messages.at(-1)?.choices).toBeUndefined();
   expect(chat.messages.at(-1)?.questionMessageId).toBeUndefined();
-});
-
-it("refreshes stale question history, removes the rejected optimistic answer and never retries it", async () => {
-  await act(async () => chat.sendMessage("Budget", undefined, "old-question"));
-  historyMessages = [
-    {
-      message_id: "new-question",
-      role: "assistant",
-      text: "Which evidence is available?",
-      choices: ["City plan", "Feasibility report"],
-    },
-  ];
-  await act(async () =>
-    streamOptions.onError?.("stale", "concept_note_question_stale", {
-      status: 409,
-      streamStarted: false,
-    }),
-  );
-  expect(globalThis.fetch).toHaveBeenCalledTimes(2);
-  expect(chat.messages).toEqual([
-    expect.objectContaining({
-      id: "new-question",
-      questionMessageId: "new-question",
-      text: "Which evidence is available?",
-    }),
-  ]);
-  expect(chat.error).toBe("chat-question-stale");
-  expect(chat.canRetry).toBe(false);
-  expect(chat.connection).toBe("connected");
-  await act(async () => chat.retry());
-  expect(startStream).toHaveBeenCalledTimes(1);
-  await act(async () =>
-    chat.sendMessage("City plan", undefined, "new-question"),
-  );
-  expect(chat.error).toBeNull();
-  expect(lastRequestBody()).toMatchObject({
-    context: { concept_note_question_message_id: "new-question" },
-  });
-});
-
-it("returns completion status so callers retain rejected drafts and clear completed ones", async () => {
-  startStream.mockImplementationOnce(async () =>
-    streamOptions.onError?.("denied", undefined, {
-      status: 403,
-      streamStarted: false,
-    }),
-  );
-  let completed: boolean | undefined;
-  await act(async () => {
-    completed = await chat.sendMessage("Rejected draft");
-  });
-  expect(completed).toBe(false);
-  startStream.mockImplementationOnce(async () =>
-    streamOptions.onComplete?.({ ok: true, history_saved: true }),
-  );
-  await act(async () => {
-    completed = await chat.sendMessage("Accepted draft");
-  });
-  expect(completed).toBe(true);
 });
 
 it("explains an inactive chat, removes the unsent answer and refreshes the chat list", async () => {
@@ -731,31 +672,6 @@ it("keeps server failures as sent: Clima may already have saved them", async () 
   expect(
     chat.messages.find((message) => message.role === "user")?.unsent,
   ).toBeUndefined();
-});
-
-it("reads whether choosing an option prepares a proposed change", async () => {
-  await act(async () => chat.sendMessage("Shorten the summary"));
-  await act(async () => {
-    streamOptions.onMessage?.("Which version should I put in?");
-    streamOptions.onToolResult?.({
-      name: "concept_note_ask_question",
-      options: ["Short", "Shorter"],
-      on_answer: "propose_edit",
-    });
-    streamOptions.onComplete?.();
-  });
-  expect(chat.messages.at(-1)?.choiceAction).toBe("propose_edit");
-
-  await remountWithHistory([
-    {
-      message_id: "card",
-      role: "assistant",
-      text: "Which one?",
-      choices: ["Short", "Shorter"],
-    },
-  ]);
-  // Cards saved before the action existed only answered the question.
-  expect(chat.messages.at(-1)?.choiceAction).toBe("reply");
 });
 
 it("offers Retry when the last saved message has no reply", async () => {

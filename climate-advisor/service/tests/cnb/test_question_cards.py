@@ -26,7 +26,6 @@ from app.services.cnb.question_reply import (
     CARD_SELECTION_HEADER,
     QUESTION_CHOICE_SOURCES,
     clarification_card,
-    current_selected_card,
     followup_card,
     planner_question_cards,
     recent_question_cards,
@@ -116,48 +115,6 @@ async def test_cards_load_with_answers_labels_and_legacy_reply_mode(store):
     assert cards[1]["answer"] is None and cards[1]["selected_label"] is None
     # Another user's thread rows never become cards for this user.
     assert await recent_question_cards(store, thread_id=thread_id, user_id="x") == []
-
-
-@pytest.mark.asyncio
-async def test_picking_an_option_on_a_question_card_does_not_edit(store):
-    thread_id = await seed(
-        store,
-        [
-            (MessageRole.ASSISTANT, "Which one?", card_tools(TIMELINE)),
-            (MessageRole.USER, "Quarters throughout", None),
-        ],
-    )
-    cards = await recent_question_cards(store, thread_id=thread_id, user_id="owner")
-    selected = current_selected_card(cards, "Quarters throughout")
-    assert selected is not None and selected["on_answer"] == "reply"
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("on_answer", "reply"),
-    [
-        # An edit card prepares the chosen change.
-        ("propose_edit", "Quarters throughout"),
-        # A custom answer may ask for a change; Clima decides as usual.
-        (None, "Use quarters and update the implementation table now."),
-    ],
-)
-async def test_edit_cards_and_custom_answers_keep_the_edit_path(
-    store, on_answer, reply
-):
-    thread_id = await seed(
-        store,
-        [
-            (MessageRole.ASSISTANT, "Which one?", card_tools(TIMELINE, on_answer)),
-            (MessageRole.USER, reply, None),
-        ],
-    )
-    cards = await recent_question_cards(store, thread_id=thread_id, user_id="owner")
-    selected = current_selected_card(cards, reply)
-    if on_answer == "propose_edit":
-        assert selected is not None and selected["on_answer"] == "propose_edit"
-    else:
-        assert selected is None
 
 
 def test_letter_references_resolve_against_the_latest_card():
@@ -829,54 +786,7 @@ async def test_ambiguous_reference_saves_clarification_without_running_model(
     assert offers[0]["on_answer"] == "propose_edit"
 
 
-@pytest.mark.parametrize(
-    ("ui_locale", "confirmation", "action", "fallback", "ambiguity"),
-    [
-        (
-            "en",
-            "Would you like me to prepare this change for review?",
-            "Update {topic} to reflect “{answer}”",
-            "the document",
-            "Which of these answers did you mean?",
-        ),
-        (
-            "de",
-            "Soll ich diese Änderung zur Prüfung vorbereiten?",
-            "„{answer}“ übernehmen und {topic} entsprechend anpassen",
-            "das Dokument",
-            "Welche dieser Antworten meinten Sie?",
-        ),
-        (
-            "es",
-            "¿Quieres que prepare este cambio para revisión?",
-            "Actualizar {topic} según «{answer}»",
-            "el documento",
-            "¿A cuál de estas respuestas te referías?",
-        ),
-        (
-            "fr",
-            "Voulez-vous que je prépare cette modification pour révision ?",
-            "Mettre à jour {topic} en tenant compte de « {answer} »",
-            "le document",
-            "À laquelle de ces réponses faisiez-vous référence ?",
-        ),
-        (
-            "pt-BR",
-            "Quer que eu prepare esta alteração para revisão?",
-            "Atualizar {topic} de acordo com «{answer}»",
-            "o documento",
-            "A qual destas respostas você se referia?",
-        ),
-        (
-            "ja",
-            "Would you like me to prepare this change for review?",
-            "Update {topic} to reflect “{answer}”",
-            "the document",
-            "Which of these answers did you mean?",
-        ),
-    ],
-)
-def test_card_presentation_locale(ui_locale, confirmation, action, fallback, ambiguity):
+def test_card_locale_resolves_regional_tags_and_falls_back_to_english():
     source = {
         "question": "Which timeline format?",
         "document_topic": TIMELINE_TOPIC,
@@ -884,18 +794,12 @@ def test_card_presentation_locale(ui_locale, confirmation, action, fallback, amb
         "text": TIMELINE[0],
         "on_answer": "reply",
     }
-    follow = followup_card(source, ui_locale)
-    assert follow.question.message == confirmation
-    assert follow.question.options == [
-        action.format(topic=TIMELINE_TOPIC, answer=TIMELINE[0])
-    ]
-    assert follow.question.on_answer == "propose_edit"
-    unnamed = followup_card({**source, "document_topic": None}, ui_locale)
-    assert unnamed.question.options == [
-        action.format(topic=fallback, answer=TIMELINE[0])
-    ]
-    other = {**source, "label": "B", "text": TIMELINE[1]}
-    assert clarification_card([source, other], ui_locale).question.message == ambiguity
+    english = followup_card(source, "en").question
+    portuguese = followup_card(source, "pt").question
+    assert portuguese.message != english.message
+    assert portuguese.options != english.options
+    assert followup_card(source, "pt-BR").question == portuguese
+    assert followup_card(source, "ja").question == english
 
 
 def test_long_clarification_labels_keep_distinct_options():

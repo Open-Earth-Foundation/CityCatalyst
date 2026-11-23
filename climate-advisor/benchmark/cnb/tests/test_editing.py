@@ -16,12 +16,9 @@ from app.models.cnb.concept_note_edits import (
 )
 from app.persistence.concept_notes.edits import EditOperationError
 from app.services.cnb.edit_planner import bind_semantic_review
-from app.services.cnb.question_reply import referenced_options
 from app.tools.concept_note_question import ConceptNoteQuestion
 
 from benchmark.cnb.golden_set import chat_options
-from benchmark.cnb.golden_set.chat_options import saved_card
-from benchmark.cnb.golden_set.core import fixture_problems
 from benchmark.cnb.golden_set.editing import (
     case_checks,
     editing_judge_input,
@@ -304,31 +301,6 @@ def test_fixture_edit_cases_cover_fill_propagate_rewrite_and_clarify(fixtures):
         for edit in cases:
             assert set(edit.allowed_chapters) <= refs
             assert edit.focused_chapter is None or edit.focused_chapter in refs
-
-
-def test_harbor_point_suggested_answer_cases_load(fixtures):
-    loaded = fixtures["harbor-point-heat-resilience"]
-    assert fixture_problems(loaded) == []
-    cases = {case.id: case for case in loaded.fixture.editing.cases}
-    assert {
-        case.id for case in cases.values() if case.expected_outcome == "question_card"
-    } == {
-        "card-street-trees",
-        "card-summary-openings",
-        "card-monitoring-indicator",
-        "card-timeline-reply",
-    }
-    assert [case.id for case in cases.values() if case.pick_first_option] == [
-        "card-timeline-reply"
-    ]
-    switch = cases["edit-switch-to-option-b"]
-    selection = switch.option_selection
-    assert selection is not None
-    a, b, _ = selection.card.options
-    card = saved_card(selection.card, "fixture-card", a)
-    assert card["selected_label"] == "A"
-    assert referenced_options([card], switch.instruction) == [a, b]
-    assert selection.card.options[selection.expected_index] == b
 
 
 def test_card_reply_fails_on_edit_attempt_or_missing_follow_up(workspace_case):

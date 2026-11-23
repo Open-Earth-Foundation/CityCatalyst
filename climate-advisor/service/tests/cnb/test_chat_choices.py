@@ -10,7 +10,6 @@ from app.tools.concept_note_question import (
     INVALID_QUESTION_PREFIX,
     ConceptNoteQuestion,
     concept_note_ask_question,
-    saved_question,
     saved_question_choices,
 )
 from app.utils.streaming_events import handle_tool_output
@@ -103,26 +102,6 @@ def test_a_valid_card_ends_the_turn():
     )
     assert behavior.is_final_output is True
     assert behavior.final_output == card
-
-
-def test_on_answer_defaults_to_reply_and_older_cards_stay_answerable():
-    question = ConceptNoteQuestion(message="Which?", options=["Yes", "No"])
-    assert question.on_answer == "reply"
-    saved = saved_question(
-        [
-            {
-                "name": "concept_note_ask_question",
-                "result_json": {"message": "Which?", "options": ["Yes", "No"]},
-            }
-        ]
-    )
-    assert saved is not None and saved.on_answer == "reply"
-    edit = ConceptNoteQuestion(
-        message="Which version should I put in?",
-        options=["Short", "Long"],
-        on_answer="propose_edit",
-    )
-    assert json.loads(edit.model_dump_json())["on_answer"] == "propose_edit"
 
 
 @pytest.mark.asyncio

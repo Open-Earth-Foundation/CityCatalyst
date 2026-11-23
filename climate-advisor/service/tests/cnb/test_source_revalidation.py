@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
+from app.config import get_settings
 from app.db import Base
 from app.models.cnb.context_bundle import SelectedSource
 from app.models.db.concept_note import (
@@ -381,6 +382,62 @@ async def test_failed_revalidation_leaves_the_job_pending(session_factory) -> No
         "upload_ids": [str(upload_id)],
         "attempts": 1,
     }
+
+
+def shorten_edit_wait(monkeypatch, timeout_seconds: float) -> None:
+    """Poll without sleeping and bound the wait by a test-sized planning deadline."""
+    settings = get_settings().model_copy(deep=True)
+    settings.llm.generation.prompt_budget.cnb_edits = (
+        settings.llm.generation.prompt_budget.cnb_edits.model_copy(
+            update={"timeout_seconds": timeout_seconds}
+        )
+    )
+    monkeypatch.setattr("app.services.cnb.context_bundle.get_settings", lambda: settings)
+    monkeypatch.setattr("app.services.cnb.context_bundle.EDIT_WAIT_POLL_SECONDS", 0)
+
+
+async def test_revalidation_runs_once_the_chat_edit_finishes(
+    session_factory, monkeypatch
+) -> None:
+    """A source uploaded mid-edit is revalidated when the edit ends, not by the reconciler."""
+    shorten_edit_wait(monkeypatch, timeout_seconds=60)
+    run_id, _ = await queue_bundle_with_pending_job(session_factory)
+    revalidate = AsyncMock(return_value=True)
+    editing = AsyncMock(side_effect=[True, True, False])
+    service = ContextBundleService(
+        session_factory,
+        verify_source_artifact_fn=verified_page,
+        cc_client_factory=retry_client,
+        revalidate_fn=revalidate,
+        edit_in_progress_fn=editing,
+    )
+
+    assert await service.run_source_revalidation(run_id=run_id) is True
+
+    assert editing.await_count == 3
+    revalidate.assert_awaited_once()
+    assert await load_job(session_factory, run_id) is None
+
+
+async def test_revalidation_stops_waiting_after_the_planning_deadline(
+    session_factory, monkeypatch
+) -> None:
+    """A stuck edit cannot hold the job; it stays queued for the reconciler."""
+    shorten_edit_wait(monkeypatch, timeout_seconds=0)
+    run_id, _ = await queue_bundle_with_pending_job(session_factory)
+    revalidate = AsyncMock(return_value=True)
+    service = ContextBundleService(
+        session_factory,
+        cc_client_factory=retry_client,
+        revalidate_fn=revalidate,
+        edit_in_progress_fn=AsyncMock(return_value=True),
+    )
+
+    assert await service.run_source_revalidation(run_id=run_id) is False
+
+    revalidate.assert_not_awaited()
+    job = await load_job(session_factory, run_id)
+    assert job["status"] == "pending" and job["attempts"] == 0
 
 
 async def test_reconciler_schedules_every_pending_job(

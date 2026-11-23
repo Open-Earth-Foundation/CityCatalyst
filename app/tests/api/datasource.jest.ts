@@ -53,6 +53,11 @@ const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
+const unrelatedSession: AppSession = {
+  user: { id: randomUUID(), role: Roles.User },
+  expires: "1h",
+};
+let currentSession: AppSession | null = mockSession;
 
 const apiEndpoint =
   "http://localhost:4000/api/v1/climatetrace/city/:locode/:year/:gpcReferenceNumber";
@@ -94,7 +99,7 @@ describe("DataSource API", () => {
 
   beforeAll(async () => {
     setupTests();
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+    Auth.getServerSession = jest.fn(() => Promise.resolve(currentSession));
 
     await db.initialize();
     await cleanupDatabase();
@@ -303,5 +308,109 @@ describe("DataSource API", () => {
       }),
     });
     await expectStatusCode(res, 404);
+  });
+
+  describe("inventory access control", () => {
+    const privateValueId = randomUUID();
+    const privateAmount = "7421000";
+    const publicValueId = randomUUID();
+    const publicAmount = "1234567";
+    let publicInventory: Inventory;
+
+    const getAll = (inventoryId: string) =>
+      getAllDataSources(mockRequest(), {
+        params: Promise.resolve({ inventoryId }),
+      });
+    const getForSector = (inventoryId: string) =>
+      getDataSourcesForSector(mockRequest(), {
+        params: Promise.resolve({ inventoryId, sectorId: sector.sectorId }),
+      });
+
+    beforeAll(async () => {
+      const source = await db.models.DataSource.findOne({
+        where: { sectorId: sector.sectorId, geographicalLocation: "EARTH" },
+      });
+      if (!source) throw new Error("Test setup failed: datasource not found");
+      // registered user with no org, project or city membership
+      await db.models.User.create({
+        userId: unrelatedSession.user.id,
+        name: "XX_DATASOURCE_OUTSIDER",
+      });
+      publicInventory = await db.models.Inventory.create({
+        ...inventoryData,
+        inventoryId: randomUUID(),
+        cityId: testData.cityId,
+        isPublic: true,
+      });
+      await db.models.InventoryValue.bulkCreate([
+        {
+          id: privateValueId,
+          datasourceId: source.datasourceId,
+          inventoryId: inventory.inventoryId,
+          co2eq: BigInt(privateAmount),
+        },
+        {
+          id: publicValueId,
+          datasourceId: source.datasourceId,
+          inventoryId: publicInventory.inventoryId,
+          co2eq: BigInt(publicAmount),
+        },
+      ]);
+    });
+
+    afterAll(async () => {
+      currentSession = mockSession;
+      await db.models.InventoryValue.destroy({
+        where: { id: [privateValueId, publicValueId] },
+      });
+      await publicInventory?.destroy();
+      await db.models.User.destroy({
+        where: { userId: unrelatedSession.user.id },
+      });
+    });
+
+    it("returns the private source-linked value to an authorized member", async () => {
+      currentSession = mockSession;
+      const res = await getAll(inventory.inventoryId);
+      await expectStatusCode(res, 200);
+      const body = await res.text();
+      expect(body).toContain(privateValueId);
+      expect(body).toContain(privateAmount);
+    });
+
+    it.each([
+      ["anonymous", null, 401],
+      ["unrelated user", unrelatedSession, 403],
+    ] as const)(
+      "denies %s access to a private inventory",
+      async (_label, session, status) => {
+        currentSession = session;
+        for (const res of [
+          await getAll(inventory.inventoryId),
+          await getForSector(inventory.inventoryId),
+        ]) {
+          await expectStatusCode(res, status);
+          const body = await res.text();
+          expect(body).not.toContain(privateValueId);
+          expect(body).not.toContain(privateAmount);
+        }
+      },
+    );
+
+    it("lets anonymous callers read a public inventory without exposing private ones", async () => {
+      currentSession = null;
+      const res = await getAll(publicInventory.inventoryId);
+      await expectStatusCode(res, 200);
+      const body = await res.text();
+      expect(body).toContain(publicValueId);
+      expect(body).toContain(publicAmount);
+      expect(body).not.toContain(privateValueId);
+      expect(body).not.toContain(privateAmount);
+      await expectStatusCode(
+        await getForSector(publicInventory.inventoryId),
+        200,
+      );
+      await expectStatusCode(await getAll(inventory.inventoryId), 401);
+    });
   });
 });

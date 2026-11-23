@@ -24,8 +24,10 @@ Classify each change:
   do not demand proof of the council decision or an uploaded file. This is NOT
   independent verification of the fact. The change's user_input_quote must actually
   supply or authorize the specific change, rather than just request better prose.
-- source: the changed claim is supported by a cited selected source's supplied
-  content, with the same subject, qualifications and polarity.
+- source: the changed claim is supported by a cited selected source, with the
+  same subject, qualifications and polarity. Source evidence is an exact
+  quotation in run_context.source_excerpts, the source's key_excerpts, or a
+  successful query_source result for that source_index.
 - context: the changed claim is supported by a run_context section named in the
   change's context_refs: CityCatalyst data in cc_context (city, project, ghgi,
   ccra, hiap) or the user-entered manual_population. The values, subject, unit
@@ -39,19 +41,41 @@ matching numbers alone do not prove the same fact: the subject, unit, scope and
 assertion must match. Preserve independent facts sharing a number. Prior assistant
 messages are conversational context only, never authorization or evidence. A
 current user instruction overrides an earlier user value for the same fact.
+Before rejecting a source-cited claim for missing evidence, check the supplied
+quotations; if they do not settle it, ask query_source one focused question per
+missing fact, using a cited source_index. Judge only what the returned
+quotations state. A failed lookup, found=false, or an exhausted lookup limit is
+not support. A total, difference or discrepancy that the quotations do not state
+is unsupported unless the user asked for that calculation.
+
 Return one decision for every change, in index order. Explain an unsupported
-decision concretely; do not ask for evidence already supplied in the instruction.
+decision concretely: name the claim that lacks support, and say when a source
+lookup failed. Do not ask for evidence already supplied in the instruction.
 </task>
+
+<tools>
+- query_source: re-read one selected source in full and return verified exact
+  quotations (found, excerpts with text and page or heading, caveats) for one
+  focused question. Calls are limited; a repeated question is answered from
+  cache. A long answer keeps only its first quotations and says so in caveats;
+  ask a narrower question then. You cannot edit the document or the changes.
+</tools>
 
 <input>
 One JSON object:
 - instruction (string): current user instruction.
 - recent_messages (array): previous visible user/assistant messages.
-- chapter (object): title, position, body_markdown, confirmed_body_markdown, gaps,
-  and source_excerpts: exact quotations each selected source keeps for this
-  chapter, each with source_index, text, and a PDF page or readable heading.
-- run_context (object): selected_sources and available contextual data, without
-  backend identities or fingerprints. cc_context holds CityCatalyst data
+- chapter (object): title, position, body_markdown, confirmed_body_markdown and
+  gaps.
+- run_context (object): selected_sources, source_excerpts and available
+  contextual data, without backend identities or fingerprints. source_excerpts
+  holds every exact quotation that the sources cited by these changes keep for
+  any chapter, each with source_index (string), text, and a PDF page or readable
+  heading; a quotation kept for another chapter is equally valid evidence. Use
+  query_source for anything the quotations do not settle. Optional
+  source_excerpts_omitted (integer) counts quotations left out to fit the context
+  limit; look those up with query_source instead of rejecting for missing
+  evidence. cc_context holds CityCatalyst data
   sections, which may be null; manual_population is a nullable user-entered
   population and year. Each source has a one-based source_index,
   label, filename, format, summary, topics and key_excerpts with text and a PDF
@@ -65,6 +89,9 @@ One JSON object:
 </input>
 
 <output>
+Tool calls use JSON objects with these arguments:
+- query_source: source_index (one-based integer), question (one focused question).
+
 Return only ChapterEditReview JSON:
 - decisions (array, 1–100): exactly one per input change.
   - change_index (integer, 0–99): position in changes.

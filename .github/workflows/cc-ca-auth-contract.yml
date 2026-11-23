@@ -22,9 +22,26 @@ on:
       - .github/workflows/web-tag.yml
       - .github/workflows/web-test.yml
 
+concurrency:
+  # A new push to a PR cancels that PR's older run.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   cc-ca-auth-contract:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       NODE_ENV: test
       DATABASE_HOST: localhost
@@ -48,20 +65,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
+        id: node
         with:
           node-version: 22
-          cache: "npm"
-          cache-dependency-path: app/package-lock.json
+
+      # Same key as web-develop's host jobs, so whichever runs first fills it.
+      - name: Restore node_modules
+        id: node_modules
+        uses: actions/cache@v4
+        with:
+          path: app/node_modules
+          key: node-modules-host-${{ steps.node.outputs.node-version }}-${{ hashFiles('app/package-lock.json') }}
 
       - name: Install app dependencies
+        if: steps.node_modules.outputs.cache-hit != 'true'
         working-directory: app
         run: npm ci
 
       - name: Set up app database and smoke fixture
         working-directory: app
         run: |
-          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
-          sleep 10
+          # The service is healthy before steps start. Keep citycatalyst a non-superuser DB owner, as in web-develop.
           createuser -w -h localhost -p 5432 -U postgres citycatalyst
           createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
           cp env.example .env

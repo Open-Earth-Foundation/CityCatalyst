@@ -188,6 +188,7 @@
  *         description: Unauthorized.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
 import { buildImportResult } from "@/backend/ImportResultBuilder";
@@ -290,7 +291,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId: session.user.id,
+      userId: uploadedByOrOrphaned(session.user.id),
     },
   });
 

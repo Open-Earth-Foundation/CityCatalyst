@@ -503,7 +503,10 @@ async def test_structural_refinement_replaces_prior_preview_without_applying(wor
         refines_proposal_id=old.proposal_id,
     )
     result = await service._propose(
-        SimpleNamespace(run_id=run_id, user_id="owner"), request, recent_messages=None
+        SimpleNamespace(run_id=run_id, user_id="owner", context_summary={}),
+        request,
+        token="token",
+        recent_messages=None,
     )
     assert result.structure.after == after
     assert result.status == "proposed"

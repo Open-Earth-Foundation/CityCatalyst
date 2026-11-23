@@ -41,6 +41,7 @@
  *         description: Unauthorized.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import FileParserService, {
   type ParsedFileData,
@@ -554,7 +555,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId: session.user.id,
+      userId: uploadedByOrOrphaned(session.user.id),
     },
   });
 

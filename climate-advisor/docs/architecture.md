@@ -21,7 +21,9 @@ The planner searches a fixed draft snapshot, reads chapter context on demand,
 and proposes replacements using server-issued match IDs or an explicit
 all-match selection. Tools compute anchors and return validation errors to the
 agent for correction. Independent semantic review checks affected chapters
-before a durable proposal is created. Protected-match exclusions are counted in
+before a durable proposal is created; planner and reviewers share every source
+quotation and a snapshot-pinned `query_source` lookup, and a final rejection
+keeps its reviewer explanations for chat. Protected-match exclusions are counted in
 the proposal and remain visible after reload. Only acceptance writes revisions,
 subject to the existing revision and idempotency checks.
 See the [CNB revision boundary](../../docs/ConceptNoteBuilderArchitecture.md#implemented-chat-revision-boundary-cc-732)

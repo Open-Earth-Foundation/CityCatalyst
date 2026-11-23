@@ -25,4 +25,4 @@ RUN mkdir -p plan_creator_legacy/data/output
 EXPOSE 8000
 
 # Command to run the application
-CMD ["./run.sh"] 
+CMD ["ddtrace-run", "./run.sh"] 

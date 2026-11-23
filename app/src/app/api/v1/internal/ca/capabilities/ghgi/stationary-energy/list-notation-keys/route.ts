@@ -1,4 +1,3 @@
-import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 import { listStationaryEnergyNotationKeyTargets } from "@/backend/agentic/ghgi/stationary-energy/notation-keys";
@@ -9,9 +8,8 @@ import {
   requireClimateAdvisorServiceRequest,
   requireRequestUser,
   requireStationaryEnergyAgenticEnabled,
+  requireStationaryEnergyInventoryEditor,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
@@ -23,16 +21,11 @@ export const POST = apiHandler(async (req, { session }) => {
   );
   requireRequestUser(session, body.user_id);
 
-  const { resource } = await PermissionService.canEditInventory(
+  const inventory = await requireStationaryEnergyInventoryEditor(
     session,
     body.inventory_id,
+    body.city_id,
   );
-  const inventory = resource as Inventory;
-  if (!inventory || inventory.cityId !== body.city_id) {
-    throw new createHttpError.BadRequest(
-      "Inventory does not belong to the requested city",
-    );
-  }
 
   return NextResponse.json(await listStationaryEnergyNotationKeyTargets(inventory));
 });

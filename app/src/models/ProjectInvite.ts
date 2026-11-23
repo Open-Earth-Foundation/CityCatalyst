@@ -7,7 +7,7 @@ import { Project } from "@/models/Project";
 export interface ProjectInviteAttributes {
   id: string;
   projectId: string;
-  userId?: string;
+  userId?: string | null;
   email?: string;
   status?: InviteStatus;
   created?: Date;
@@ -33,7 +33,8 @@ export class ProjectInvite
 {
   declare id: string;
   declare projectId: string;
-  declare userId?: string;
+  /** Null once the invited user's account has been deleted. */
+  declare userId?: string | null;
   declare email?: string;
   declare status?: InviteStatus;
   declare created?: Date;
@@ -70,6 +71,8 @@ export class ProjectInvite
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
         },
         email: {
           type: Sequelize.STRING,

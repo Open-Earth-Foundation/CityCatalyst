@@ -91,9 +91,9 @@ Today a file can be added only in the Context tab. "Add source" on a point card 
 
 The table shows the target. The lists under it show the state today.
 
-| | **A. Setup and list of points** | **B. Reading, sorting and checking** | **C. Asking and guiding** | **D. Draft and consistency** |
+| | **A. Setup and list of points** | **B. Reading, sorting and checking** | **C. To-do list and guiding** | **D. Draft and consistency** |
 |---|---|---|---|---|
-| **Goal** | Turn the chosen document type into one stable list of facts and decisions. | Turn each file into a category and into candidate answers with a quote and a page. | Show the person the next piece of work and what they need to do it. | Write text from accepted points and keep it aligned when a point changes. |
+| **Goal** | Turn the chosen document type into one stable list of facts and decisions. | Turn each file into a category and into candidate answers with a quote and a page. | Give the person a to-do list of the open points, and what they need to close each one. | Write text from accepted points and keep it aligned when a point changes. |
 | **Owns** | The setup. The point record. The command. The one list that every screen reads. Rules between points. | The category of each file. Candidates and their evidence. Disagreement between files. | The to-do groups. The guided question. Help to find a file. Park and wait. | Which text depends on which point. Whether the text is up to date. The rule for final export. |
 | **Does not** | Read files, write text, or choose a funder. | Hide a value from the user. | Save anything by itself. | Change a point. |
 | **Tickets** | CC-1297, CC-1298 | CC-1299, CC-1300, CC-1301 | CC-1302, CC-1303, CC-1304 | CC-1305, CC-1306 |
@@ -114,9 +114,9 @@ The table shows the target. The lists under it show the state today.
 - **Missing.** Sorting. Today a file is linked to a category only when it produced a candidate. The user gets no progress or failure signal for reading. City data from CityCatalyst does not create candidates.
 - **Cost.** Each file is read once for each point. Ten files and forty points are 400 full reads.
 
-### C. Asking and guiding
+### C. To-do list and guiding
 
-- **Built.** The To do tab shows a point card. A compact form of the same card appears next to the chat, and it can confirm a found value. Parking stores who is waited on and what is needed. A guided question is written on request.
+- **Built.** The To do tab is the to-do list: the open points in groups, with a card for each point. A compact form of the same card appears next to the chat, and it can confirm a found value. Parking stores who is waited on and what is needed. A guided question is written on request.
 - **Partial.** The to-do groups have the five product names and a sixth, "covered". The browser works them out, so the chat does not know them.
 - **Partial.** The question format has six patterns. The screen shows one layout. There are three question formats today: the chat choice question, the older gap question and the point question.
 - **Partial.** "Assume" and "does not apply" are offered only when the setup allows them. No Builder template does. CC-1303 asks for them always.

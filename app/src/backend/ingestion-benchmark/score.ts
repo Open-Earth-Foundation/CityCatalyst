@@ -7,6 +7,8 @@
  * source does not split are compared as sums; several key rows with the same
  * ref and scope are compared as one sum; "not in total" values must be stored
  * but stay out of the total; notation keys are scored only when marked.
+ * Since scorer 3 (PDF profile), a key wildcard such as `I.3.x` with no tail
+ * also matches a stored subsector-level row `I.3`; scope is still compared.
  *
  * The app stores one InventoryValue per GPC reference and scope, so a "stored
  * row" here is one stored (ref, scope) group, not one extracted line item.

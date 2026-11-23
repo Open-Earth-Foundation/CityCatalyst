@@ -7,7 +7,7 @@ MLFLOW_TRACKING_* values without overriding existing variables.
 Inputs on log: report.json, optional delivery.json and comparison.json in RUN_DIR.
 Outputs: readable run descriptions, parent quality/mean metrics, and fixture runs
 with provenance and stage status in Clima-CNB-Benchmark, an MLflow evaluation with
-one row per golden-set item (Evaluation runs → compare to another run), or verified files in
+one row per golden-set item (Evaluation runs -> compare to another run), or verified files in
 DIR/runs/<original-run-id>. Logs the parent ID. No benchmark providers are called.
 
 Usage from climate-advisor/:

@@ -128,7 +128,7 @@ The table shows the target. The lists under it show the state today.
 - **Built.** Chapter review keeps its existing checks: completeness, consistency and answered gaps. **Decided:** they stay and are retested.
 - **Built.** The server decides the final export. It needs every required point accepted, no open disagreement, text that is up to date, every required chapter reviewed and confirmed, and files that are still available. A working export is always possible and lists its caveats.
 - **Partial.** The link is from a point to a chapter, and the template declares it. The writer also reads the full text of the files, so a value that nobody confirmed can reach the text.
-- **Changed.** For a document with a setup, a new file no longer rechecks the chapters it affects. It creates candidates. This needs a yes, because existing checks stay (decision 8).
+- **Changed.** For a document with a setup, a new file no longer rechecks the chapters it affects. It creates candidates. This needs a yes, because existing checks stay (decision 4).
 - **Missing.** Passages with their own identity. Sources per passage. Rules between points checked by code. A server rule for when the first draft may start. A way from a text edit that changes a fact back to the point. A "keep my text" outcome after the user rejects a proposed change.
 
 ---
@@ -419,15 +419,11 @@ Two grants for one city show that reading carries over between grants. Generalit
 | # | Question | Proposed | What a yes means |
 |---|---|---|---|
 | 1 | When a new file disagrees with a value, does the user decide, or does the model decide alone? | Open. Proposed: the model only for AI verified values | Example: the point says 4.2 million from file A, and file B says 3.9 million. Option 1: the point keeps its value, shows "Documents disagree" with both files and pages, and the user picks one. Until then it is not cleared for final export. Option 2: the model picks the value by itself and marks it AI verified. Proposed: the model may decide alone only when the value is AI verified, and the user sees what changed. A value a person confirmed (Verified) is never overwritten: the user always decides. |
-| 4 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
-| 5 | Does the document type fix the list of points, or does the model find as many as it can? | Open. Proposed: the middle | Fixed list: the model fills only the points the setup names. Predictable and easy to score against an answer key, but it misses what the list did not foresee. Open extraction: the model takes everything it finds. Nothing is missed, but there is no focus, more noise, and it is hard to test. Proposed middle: the setup names the required points and gives the direction (the purpose of the document, its chapters, the programme's criteria) as a guardrail. The model fills those first and may add extra points, which the user sees and can remove. Either way the setup is its own versioned record, pinned for each document, not a Builder template. |
-| 8 | Does a new file recheck chapters? | **Decided:** no | The text is written only at the last stage, so a new file only adds candidates to the context. There is nothing to recheck. |
-| 12 | Which city and which two grants are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
-| 13 | Who may change a point? | **Decided:** every contributor | Every contributor to the document, through the same command. "Waiting on others" is a name and a note. |
-
-**Set aside (was 10).** Whether an existing concept note must reach a final export without starting again. There are no production users yet (6.4).
-
-**Set aside (was 11).** Whether real documents of a city may be stored on the Mikrus test server. The tests with real documents will probably run on dev, so the question does not arise now. It returns only if real documents go to that server. The other numbers are kept.
+| 2 | Is every file sorted, even when it answers no point? | Yes | One category per file, or "anything else". The category does not decide whether a file is read. The user may move a file by hand. |
+| 3 | Does the document type fix the list of points, or does the model find as many as it can? | Open. Proposed: the middle | Fixed list: the model fills only the points the setup names. Predictable and easy to score against an answer key, but it misses what the list did not foresee. Open extraction: the model takes everything it finds. Nothing is missed, but there is no focus, more noise, and it is hard to test. Proposed middle: the setup names the required points and gives the direction (the purpose of the document, its chapters, the programme's criteria) as a guardrail. The model fills those first and may add extra points, which the user sees and can remove. Either way the setup is its own versioned record, pinned for each document, not a Builder template. |
+| 4 | Does a new file recheck chapters? | **Decided:** no | The text is written only at the last stage, so a new file only adds candidates to the context. There is nothing to recheck. |
+| 5 | Which city and which grant are the test case, and who writes the answer key? | Open | Not decided. The Quality check (6.3) cannot run until it is. |
+| 6 | Who may change a point? | **Decided:** every contributor | Every contributor to the document, through the same command. "Waiting on others" is a name and a note. |
 
 ---
 
@@ -445,7 +441,7 @@ Two grants for one city show that reading carries over between grants. Generalit
 | CC-1304 Help me find it | C | One default guidance sentence for each category. | The helper on a point. The request note. |
 | CC-1305 Draft from points | D | The first draft reads the accepted points and records their versions. | Points as the only source of facts. Sources per passage. Marks for assumed and parked points. |
 | CC-1306 Rewrite what changed | D | A background update for each changed point. Proposed changes for protected text. Chapter review. | Passage identity. Passage rewrites. Rules between points in code. The retest of the chapter checks. |
-| No ticket yet | B | | Reading progress and failure shown to the user. City data read like a file. Points the model adds when the setup did not list them (path b, decision 5). |
+| No ticket yet | B | | Reading progress and failure shown to the user. City data read like a file. Points the model adds when the setup did not list them (path b, decision 3). |
 | No ticket yet | Hardening | | The items in 9.4. |
 
 ---
@@ -523,7 +519,7 @@ These are defects or risks. They are not architecture decisions.
 1. **Keys.** Every point's key contains the template id, the chapter and the label. Every save of the note's own template makes a new template id, so every point is retired and the answers stay only in the history. The same label in two chapters is two points. **Proposed fix:** keep the template's id when the user edits their own template. Fields that did not change keep their keys and answers. Only fields that were removed are retired.
 2. **Source of a typed answer.** A command that is not a confirmation still stores the candidate id it was sent. The card never sends one, so it needs a hand-made request today. It must be closed before the chat can prepare answers.
 3. **Rejected proposal.** Today, when the user rejects a proposed change that came from a point, the update is marked failed and tried again, up to five times. The text stays out of date and the final export stays blocked. **Proposed:** treat it like any other rejected proposal today. That one proposal goes away and is not retried. The point stays confirmed, the chapter keeps its text, and the final export is not blocked by it.
-4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date. Decision 8 says a new file does not recheck chapters, so reading a file should not touch reviews.
+4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date. Decision 4 says a new file does not recheck chapters, so reading a file should not touch reviews.
 5. **Copies.** A copied concept note keeps its text. Its points start as missing.
 6. **Have it, or answers it.** A file reaches a category only when it produced a candidate.
 7. **Reading fails quietly.** After three failed tries the reading stops. Nothing tells the user.

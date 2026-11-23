@@ -155,7 +155,7 @@
  *                             nullable: true
  *                           status:
  *                             type: string
- *                             enum: [skipped, not-counted]
+ *                             enum: [skipped, not-counted, pending, imported]
  *                           issue:
  *                             type: string
  *                             enum:
@@ -174,6 +174,7 @@
  *                               - skipped-in-review
  *                               - gpc-parent-superseded
  *                               - gpc-parent-gap
+ *                               - subsector-not-split-by-scope
  *                           tonnes:
  *                             type: number
  *                             nullable: true

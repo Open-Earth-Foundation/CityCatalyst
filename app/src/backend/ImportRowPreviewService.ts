@@ -86,6 +86,11 @@ function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
   );
 }
 
+/** A sector I-III subsector value (`I.3`) with no scope split, GPC Table 2.1. */
+function isUnsplitSubsectorRow(row: ImportRow): boolean {
+  return row.subcategoryId == null && /^(I|II|III)\.\d+$/.test(row.gpcRefNo);
+}
+
 export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
@@ -295,7 +300,9 @@ export async function previewImportRows(
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"
-          : null;
+          : isUnsplitSubsectorRow(row)
+            ? "subsector-not-split-by-scope"
+            : null;
     if (issue) {
       const leftOutOfTotal =
         issue === "omitted-from-total" || issue === "reported-apart-from-total";
@@ -308,7 +315,9 @@ export async function previewImportRows(
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
-        status: "not-counted",
+        // An unsplit subsector row counts in the total; it is listed so the user sees it.
+        status:
+          issue === "subsector-not-split-by-scope" ? "imported" : "not-counted",
         issue,
         tonnes,
       });

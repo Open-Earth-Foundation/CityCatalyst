@@ -178,6 +178,41 @@ describe("previewImportRows", () => {
     expect(preview).toMatchObject({ importedRows: 1, rows: [] });
   });
 
+  // CC-1311: GPC Table 2.1, BASIC needs the scope split, so the user sees it.
+  it("flags an imported subsector row not split by scope", async () => {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+
+    const preview = await previewImportRows(
+      importResult([
+        row(0, {
+          gpcRefNo: "I.1",
+          subcategoryId: null,
+          scopeId: "",
+          totalCO2e: 500,
+        }),
+        row(1, {
+          gpcRefNo: "IV.1",
+          sectorId: "sector-IV",
+          subsectorId: "subsector-IV.1",
+          subcategoryId: null,
+          totalCO2e: 50,
+        }),
+      ]),
+      InventoryTypeEnum.GPC_BASIC_PLUS,
+    );
+
+    expect(preview.importedRows).toBe(2);
+    expect(
+      preview.rows.map(({ gpcRefNo, status, issue }) => [
+        gpcRefNo,
+        status,
+        issue,
+      ]),
+    ).toEqual([["I.1", "imported", "subsector-not-split-by-scope"]]);
+  });
+
   it("falls back to Excel row index+2 when there is no file row number", async () => {
     jest
       .spyOn(InventoryProgressService, "getSortedInventoryStructure")
@@ -695,11 +730,7 @@ describe("scope notes", () => {
 
   it("gives a notation-key row with a total of 0 no value", async () => {
     const result = await notes([
-      noted(
-        "I.1.1",
-        { finalScope: "1" },
-        { totalCO2e: 0, notationKey: "NO" },
-      ),
+      noted("I.1.1", { finalScope: "1" }, { totalCO2e: 0, notationKey: "NO" }),
     ]);
     expect(result.inferredScopeRows?.[0]).toMatchObject({
       gpcRefNo: "I.1.1",

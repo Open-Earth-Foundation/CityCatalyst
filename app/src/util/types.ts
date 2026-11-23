@@ -1047,7 +1047,8 @@ export type ImportRowIssue =
   | "reference-conflict"
   | "skipped-in-review"
   | "gpc-parent-superseded"
-  | "gpc-parent-gap";
+  | "gpc-parent-gap"
+  | "subsector-not-split-by-scope";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1057,7 +1058,7 @@ export interface ImportRowOutcome {
   sourceLabel: string | null;
   /** Notation key as written in the file, for unknown-notation-key rows. */
   notationKey: string | null;
-  status: "skipped" | "not-counted" | "pending";
+  status: "skipped" | "not-counted" | "pending" | "imported";
   issue: ImportRowIssue;
   /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
   tonnes?: number | null;

@@ -40,7 +40,7 @@
 2. **Every screen shows the same list.** One request returns the list of points. Every change a person makes to a point is one command, and it is kept in the point's history. The user can save on the point card next to the chat. Clima itself cannot save yet.
 3. **Four missing pieces matter most.**
    - Files are not sorted into the categories the document needs (CC-1299).
-   - A setup can only be made from a Builder template. A field given only as a label gets a key tied to that template, so for such fields the same label in two chapters is two points, and saving the template again loses the answers. Fields with their own key do not have this problem (CC-1297, CC-1298).
+   - A setup can only be made from a Builder template, and every point's key contains that template's id. Each save of the note's own template gives it a new id, so every point is retired and the answers stay only in the history. The same label in two chapters is two points (CC-1297, CC-1298). **Proposed fix:** keep the template's id when the user edits their own template. Fields that did not change keep their keys and answers. Only fields that were removed are retired.
    - A changed point rewrites the whole chapter, not the passage (CC-1305, CC-1306).
    - Nothing on the server makes the draft come after the points.
 4. **The core and CC-1170 share two connecting pieces.** The core uses Builder code directly in four places. CC-1170 planned adapters for two of them: access to files and editing of draft text. **Proposed:** define them once, for both tickets, and build them when a second user of them exists.
@@ -102,7 +102,7 @@ The table shows the target. The lists under it show the state today.
 
 - **Built.** The points are made from the Builder template when the user selects it, again when drafting starts, and when a document is first opened. A copy of the template is kept for the document, with a version. Every change is kept in a history, with who made it.
 - **Built.** Every point is plain text, and it stays that way.
-- **Partial.** A field with its own key (`semantic_key`) is one point across chapters and survives saving the template again. A field given only as a label, as in the existing templates, gets a fallback key made from the template, the chapter and the label. For those fields, the same label in two chapters is two points, each answered on its own, and saving the note's own template again, or changing the funder, retires them. The answers stay only in the history.
+- **Partial.** Templates store fields as plain labels, so every point's key is made from the template id, the chapter and the label. The same label in two chapters is two points, each answered on its own. Retiring a point whose field was removed is intended: the point leaves the list and its answer stays in the history. But every save of the note's own template gives the template a new id, so every key changes and every point is retired, even when one word changed. **Proposed fix:** keep the template's id when the user edits their own template. Fields that did not change keep their keys and answers. Only fields that were removed are retired. Changing the funder still starts the points again, which fits a new programme. Later, CC-1297 takes the key from the setup instead of the template.
 - **Missing.** A setup that is its own record for a document type. A document type that comes from the setup: today it is fixed to `concept_note` in code. File categories. Rules between points, for example totals that must add up.
 
 ### B. Reading, sorting and checking
@@ -139,7 +139,7 @@ The table shows the target. The lists under it show the state today.
 
 | Part | What it is | State |
 |---|---|---|
-| **Identity** | A key that is unique in the document and does not depend on the text. | **Built** for fields with their own key. A label-only field gets a key tied to the template and the chapter (3, A). |
+| **Identity** | A key that is unique in the document and does not depend on the text. | **Partial.** Every key contains the template id and the chapter (3, A). |
 | **Definition** | Copied from the setup: label, fact or decision, shape of the answer, required or optional, allowed exceptions, unit, chapters. | **Built** |
 | **Value** | One accepted value. | **Built** |
 | **Source** | For a value from a file: the exact file, the quote and the page. For a person's answer: who, when and why. | **Partial.** All of it is stored. The screens get the quote and the reason, but not who or when. |
@@ -463,6 +463,7 @@ Two grants for one city show that reading carries over between grants. Generalit
 | Contracts | `ca/models/document_workspace/contracts.py`; `app/src/util/document-workspace.ts` |
 | Service: load, setup, command, list, question, export | `ca/services/document_workspace/service.py:102, 117, 442, 740, 1068, 1120` |
 | Point keys and value checks | `ca/services/document_workspace/requirements.py:27, 63, 159` |
+| Own template gets a new id on every save | `ca/services/cnb/funder_creation.py:533` |
 | Reading files into candidates | `ca/services/document_workspace/extraction.py:36` |
 | Queueing the reading | `ca/services/document_workspace/source_sync.py:23, 74` |
 | File check at confirm and export | `ca/services/document_workspace/source_access.py:14` |
@@ -516,7 +517,7 @@ A new product needs edits in two fixed lists (allowed prompts, context keys) and
 
 These are defects or risks. They are not architecture decisions.
 
-1. **Keys.** A field given only as a label gets a key that contains the template id, the chapter and the label. Saving the note's own template again, or changing the funder, retires those points. The same label in two chapters is two points. Fields with their own key are not affected.
+1. **Keys.** Every point's key contains the template id, the chapter and the label. Every save of the note's own template makes a new template id, so every point is retired and the answers stay only in the history. The same label in two chapters is two points. **Proposed fix:** keep the template's id when the user edits their own template. Fields that did not change keep their keys and answers. Only fields that were removed are retired.
 2. **Source of a typed answer.** A command that is not a confirmation still stores the candidate id it was sent. The card never sends one, so it needs a hand-made request today. It must be closed before the chat can prepare answers.
 3. **Rejected proposal.** Today, when the user rejects a proposed change that came from a point, the update is marked failed and tried again, up to five times. The text stays out of date and the final export stays blocked. **Proposed:** treat it like any other rejected proposal today. That one proposal goes away and is not retried. The point stays confirmed, the chapter keeps its text, and the final export is not blocked by it.
 4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date.

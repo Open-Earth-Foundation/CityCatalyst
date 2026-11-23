@@ -94,6 +94,7 @@ describe("ByScopeView", () => {
       </ChakraProvider>,
     );
     expect(html.match(/>IE</g)).toHaveLength(2);
-    expect(html).toContain("included-elsewhere-unsplit:I.4");
+    expect(html).toContain(">included-elsewhere-unsplit:I.4<");
+    expect(html).not.toContain("title=");
   });
 });

@@ -14,7 +14,7 @@ import {
   SECTORS,
 } from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
-import { BodyMedium } from "@/components/package/Texts/Body";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
 import { LuChevronDown } from "react-icons/lu";
 
@@ -88,14 +88,15 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   ) => (
     <Table.Cell key={scope}>
       {value === undefined && unsplitReferences.length > 0 ? (
-        <BodyMedium
-          color="content.secondary"
-          title={tDashboard("included-elsewhere-unsplit", {
-            ref: unsplitReferences.join(", "),
-          })}
-        >
-          IE
-        </BodyMedium>
+        <>
+          <BodyMedium color="content.secondary">IE</BodyMedium>
+          {/* Visible text, not a tooltip, so touch and screen readers get it. */}
+          <BodySmall>
+            {tDashboard("included-elsewhere-unsplit", {
+              ref: unsplitReferences.join(", "),
+            })}
+          </BodySmall>
+        </>
       ) : (
         <BodyMedium color="content.secondary">
           {formatEmissionsOrRemoval(

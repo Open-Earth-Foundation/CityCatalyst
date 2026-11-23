@@ -50,45 +50,34 @@ export type ModelPrice = {
   date: string;
 };
 
-/** USD per page of a document-extraction API, with where the price was read. */
-export type VendorPrice = {
-  perPage: number;
-  /** List price of one vendor credit, for vendors that report credits used. */
-  perCredit?: number;
-  source: string;
-  date: string;
-};
-
 /**
  * Unit prices in USD. Any missing price makes the cost "n/a" instead of a
  * guess. The llm and ocr prices are those of the built-in extraction; `models`
- * and `vendors` price the envelopes of a precomputed pipeline.
+ * prices the envelopes of a precomputed pipeline.
  */
 export type Prices = {
   llmInputPerMTok?: number;
   llmOutputPerMTok?: number;
   ocrPerPage?: number;
   models?: Record<string, ModelPrice>;
-  vendors?: Record<string, VendorPrice>;
 };
 
-/** prices.json: built-in prices by model name, plus `models` and `vendors` for precomputed pipelines. */
+/** prices.json: built-in prices by model name, plus `models` for precomputed pipelines. */
 export type PricesFile = {
   models?: Record<string, ModelPrice>;
-  vendors?: Record<string, VendorPrice>;
   [builtInModel: string]: unknown;
 };
 
 /**
  * The prices of one run: the built-in model's entry, or for a precomputed
- * pipeline only `models` and `vendors` (it used no built-in OCR or LLM).
+ * pipeline only `models` (it used no built-in OCR or LLM).
  */
 export function pricesFor(
   file: PricesFile,
   run: { pipeline: boolean; model?: string },
 ): Prices | undefined {
   if (run.pipeline) {
-    return { models: file.models ?? {}, vendors: file.vendors ?? {} };
+    return { models: file.models ?? {} };
   }
   return run.model ? (file[run.model] as Prices | undefined) : undefined;
 }

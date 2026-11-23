@@ -888,7 +888,6 @@ describe("pipeline cost", () => {
         date: "2026-11-18",
       },
     },
-    vendors: {},
   };
   const envelope = (
     over: Partial<Pick<ReadEnvelope, "costUsd" | "usage">> = {},
@@ -937,14 +936,14 @@ describe("pipeline cost", () => {
     const none = { costUsd: null, costSource: "none" };
     expect(pipelineCostUsd(envelope({}, "other/model"), prices)).toEqual(none);
     expect(pipelineCostUsd(envelope({}, null), prices)).toEqual(none);
-    expect(pipelineCostUsd(envelope(), { vendors: {} })).toEqual(none);
+    expect(pipelineCostUsd(envelope(), {})).toEqual(none);
     expect(pipelineCostUsd(envelope(), undefined)).toEqual(none);
     expect(
       pipelineCostUsd(envelope({ usage: { input_tokens: 5 } }), prices),
     ).toEqual(none);
   });
 
-  it("keeps the built-in prices of prices.json and gives a pipeline run only its models and vendors", () => {
+  it("keeps the built-in prices of prices.json and gives a pipeline run only its models", () => {
     const file = {
       "openai/gpt-x": {
         llmInputPerMTok: 1,
@@ -952,7 +951,6 @@ describe("pipeline cost", () => {
         ocrPerPage: 3,
       },
       models: prices.models,
-      vendors: {},
     };
     expect(pricesFor(file, { pipeline: false, model: "openai/gpt-x" })).toBe(
       file["openai/gpt-x"],
@@ -960,11 +958,9 @@ describe("pipeline cost", () => {
     expect(pricesFor(file, { pipeline: false })).toBeUndefined();
     expect(pricesFor(file, { pipeline: true, model: "openai/gpt-x" })).toEqual({
       models: prices.models,
-      vendors: {},
     });
     expect(pricesFor({}, { pipeline: true })).toEqual({
       models: {},
-      vendors: {},
     });
   });
 

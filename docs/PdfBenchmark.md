@@ -7,7 +7,7 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
 - Command: `npx tsx scripts/pdf-benchmark.ts` from `app/`.
 - Code: `app/src/backend/ingestion-benchmark/` (scoring, metrics, baseline, report, MLflow) and `app/scripts/pdf-benchmark/` (runner).
 - Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`, `schemas/`).
-- `prices.json` holds the built-in model prices (by model name), plus `models` (USD per million tokens, with `source` and `date`) and `vendors` (USD per page or credit, with `source` and `date`) that price the envelopes of an external pipeline.
+- `prices.json` holds the built-in model prices (by model name), plus `models` (USD per million tokens, with `source` and `date`) that prices the envelopes of an external pipeline.
 - Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`. The folder is named `<date>-<HHMM>-<commit>`, with `-<study>` added for an [external pipeline](#external-pipelines) run. A run never overwrites a folder: if the name exists (two runs finishing in the same minute), it adds `-2`, `-3` and so on.
 
 ## Prerequisites
@@ -26,7 +26,6 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
    - `pdfDir`: one folder, or a list of folders searched in order.
    - `answerKeys`: path to `answer-keys.json` (see [Add a PDF and its key](#add-a-pdf-and-its-key)).
    - `outRoot`: where run folders go (default `../docs/ingestion-accuracy-runs`).
-   - `allowedVendors`: vendors the generators may send PDFs to (`mistral`, `reducto`, `llamacloud`). Empty by default; see [Generators](#generators).
 4. Optional, for MLflow: `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD` (see [MLflow](#mlflow)).
 
 Never commit PDFs, OCR text, answer-key JSON, `app/.env` or `config.local.json`.
@@ -173,7 +172,7 @@ The Pipeline notes table shows these counts per attempt, with the reported total
 
 ### Cost
 
-In order: the envelope's `cost_usd` (`envelope`); else its tokens at the price of a model in `prices.json` `models` (`tokens`), found by the envelope `version` or by `<model>.input_tokens` keys in `usage`; else `n/a`. The built-in `prices.json` entries are not used for a pipeline run. The generators write `cost_usd` from `prices.json` `vendors`: a price per page (and per credit for LlamaExtract) with the `source` URL and `date` it was read. A missing price gives `n/a`, never a guess.
+In order: the envelope's `cost_usd` (`envelope`); else its tokens at the price of a model in `prices.json` `models` (`tokens`), found by the envelope `version` or by `<model>.input_tokens` keys in `usage`; else `n/a`. The built-in `prices.json` entries are not used for a pipeline run. A missing price gives `n/a`, never a guess.
 
 ### Score variant
 
@@ -181,35 +180,11 @@ The standard score is the headline. A pipeline can report an unsplit subsector (
 
 ### Generators
 
-Three scripts create a rows folder from a vendor API. Each sends the case PDFs to the vendor, writes the envelopes and `manifest.json`, and prints a line per attempt (rows, pages, cost).
-
-```bash
-# Mistral OCR with a document annotation. --model is an exact id; "-latest" aliases are refused.
-npx tsx scripts/pdf-benchmark/generators/mistral-annotations.ts --model mistral-ocr-4-1 --cases C-015,C-016 --runs 3 [--ranges whole|8] --out benchmarks/pdf/generated/mistral-<date>
-
-# Reducto Deep Extract with citations.
-npx tsx scripts/pdf-benchmark/generators/reducto.ts --cases C-018 --runs 1 --out benchmarks/pdf/generated/reducto-<date>
-
-# LlamaExtract Agentic Plus.
-npx tsx scripts/pdf-benchmark/generators/llamaextract.ts --cases C-018 --runs 1 --out benchmarks/pdf/generated/llamaextract-<date>
-```
-
-Then score the folder with `--pipeline precomputed --rows-dir <out>`.
-
-- `--cases` and `--out` are required; `--runs` defaults to 1 and is at most 3 (3 attempts per case; more exits before any key is loaded or call made); `--config` selects another local config. Reducto and LlamaExtract have a fixed model and mode and refuse `--model` and `--ranges`.
-- Mistral `--ranges whole` (default) makes one call over the whole document. `--ranges 8` makes one call per 8 pages and joins the rows without removing duplicates, so a table that two ranges both read counts twice. It is a fallback for a document the API refuses whole.
-- Sending a PDF to a vendor needs clearance: the vendor (`mistral`, `reducto` or `llamacloud`) must be in `allowedVendors` of `config.local.json`. The example config has `"allowedVendors": []`, so nothing is sent until you add one. Held-out cases are never sent.
-- The keys are `MISTRAL_API_KEY`, `REDUCTO_API_KEY` and `LLAMA_CLOUD_API_KEY`. They are taken from the environment, else loaded with Next.js `loadEnvConfig` from `app/`, which reads `.env`, `.env.local` and the `.env.<NODE_ENV>` file (for example `.env.production`). A key goes only into a request header and is removed from the saved raw answers.
-- The raw vendor answers go to `<out>/raw/` and contain document text. Use a folder under `app/benchmarks/pdf/generated/`: it is git-ignored. Do not commit them.
-- Retries: an upload or a GET is retried once on 429, 5xx or timeout. A call that starts a paid job (Mistral `POST /v1/ocr`, Reducto `POST /extract_async`, LlamaExtract `POST /api/v2/extract`) is retried once, only on 429 or 503, because a timeout or another 5xx may come after the vendor accepted it and a second request would be billed again.
-- LlamaExtract refuses a `system_prompt` over 10,000 characters and a schema description over 16,000; the built-in instructions are about 26,000. The generator sends the role, task and input sections as the `system_prompt`, and the output rules and taxonomy in the schema description. It leaves out `<example_output>` only. This layout is recorded in `manifest.json` (`instructions`) and in each raw answer.
-- A folder holds one vendor, model, mode and instruction layout. The generator refuses to add to a folder made with another one; use another `--out`. Running it again for a case and attempt replaces that envelope.
-- A failed vendor call writes an envelope with `execution_status: failed` and no rows, with whatever usage and cost the call recorded, so the attempt is scored as `extraction_error`. The generator exits 1 if any attempt failed.
+The vendor generators (Mistral annotations, Reducto Deep Extract, LlamaExtract Agentic Plus) and the runs of the 19 Nov 2026 study were removed from the branch before merge. They are kept in commit `54b066c8a`; the study report is `docs/ingestion-accuracy-runs/external-pipelines-2026-11-19.md`. A rows folder can come from any pipeline that writes the layout above, for example Mirco's agent pipeline.
 
 ### Limits
 
-- Vendor calls are paid and slow (minutes per document). Check `prices.json` and run a small selection first.
-- The result depends on the instructions the generator sends and on a vendor model that can change; the envelope `version` records what ran.
+- The result depends on the pipeline's instructions and on a model that can change; the envelope `version` records what ran.
 - Approve cannot carry `total_inclusion` or scope for parent references, so some correct pipeline output is lost (see the Pipeline notes and the score variant).
 - No baseline, no regression verdict and no comparison with the built-in import: read the report side by side.
 

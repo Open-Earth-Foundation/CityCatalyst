@@ -2,6 +2,8 @@
 
 Comparison of the built-in PDF import with three external document-extraction services and with Mirco's agent pipeline. All runs used the same scorer, the same import path (approve, then read back) and commit `c5dec265a`. This is a reduced study (about US$ 3 budget, approved 18 Nov). The full run (about US$ 320) was not done, so read every vendor result as a single data point.
 
+The per-attempt `results.json` and `extracted-values.json` files and the vendor generators were removed before merge. They are in commit [`54b066c8a`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/54b066c8acf67898fe78477b9bb2b153ee904c60/docs/ingestion-accuracy-runs) (generators under [`app/scripts/pdf-benchmark/generators/`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/54b066c8acf67898fe78477b9bb2b153ee904c60/app/scripts/pdf-benchmark/generators)).
+
 ## Runs
 
 | Pipeline | Cases | Attempts | Run folders |

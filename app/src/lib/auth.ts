@@ -45,7 +45,7 @@ function buildIdentityProvider(): OAuthConfig<IdentityIdToken> | null {
 
   return {
     id: "identity",
-    name: "CityCatalyst Identity",
+    name: "OpenEarth Identity",
     type: "oauth",
     wellKnown: `${config.issuer}/.well-known/openid-configuration/`,
     clientId: config.clientId,

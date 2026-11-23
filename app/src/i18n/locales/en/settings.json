@@ -250,7 +250,7 @@
   "apps": "Apps",
   "please-enter-password": "Please enter a password",
   "security": "Security",
-  "security-managed-by-identity": "Passwords and two-factor authentication are managed in CityCatalyst Identity.",
+  "security-managed-by-identity": "Passwords and two-factor authentication are managed in OpenEarth Identity.",
   "open-identity-security": "Open identity security settings",
   "two-factor-heading": "Two-Factor Authentication",
   "two-factor-setup-message": "Click the button below to set up two-factor authentication for additional account security. You will need an authenticator app on your phone.",

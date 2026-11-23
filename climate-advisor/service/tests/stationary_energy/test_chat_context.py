@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import pytest
-
 from app.utils.streaming_context import resolve_workflow_context
 
-pytest.importorskip("pgvector.sqlalchemy")
 from uuid import uuid4
 
 from sqlalchemy import select

@@ -6,6 +6,15 @@ import os
 
 import pytest
 
+from evals.real.harness import configure_environment
+
+
+@pytest.hookimpl(trylast=True)  # after evals/conftest.py forces MLFLOW_ENABLED=false
+def pytest_configure(config: pytest.Config) -> None:
+    """Load .env and tracing settings only for opted-in real runs."""
+    if os.getenv("RUN_REAL_LLM") == "1":
+        configure_environment()
+
 
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]

@@ -16,8 +16,6 @@ from uuid import UUID, uuid4
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-pytest.importorskip("pgvector.sqlalchemy")
-
 from agents import Runner
 
 import app.models.db.message  # noqa: F401

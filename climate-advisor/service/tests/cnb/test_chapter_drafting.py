@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
@@ -38,7 +39,7 @@ from app.services.cnb.chapter_drafting import (
     ChapterDraftingTemplateError,
     ConceptNoteChapterDraftService,
     _chapter_input_messages,
-    recover_stale_drafts,
+    run_chapter_drafting_reconciler,
 )
 from fastapi import HTTPException, Response
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
@@ -537,12 +538,43 @@ async def test_revalidation_redrafts_drafted_chapters_without_a_template() -> No
     assert [item["chapter_id"] for item in saved] == [chapters[1].chapter_id]
 
 
-async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> None:
+async def run_one_reconciler_pass(monkeypatch: pytest.MonkeyPatch, reconciler: Any) -> None:
+    """Start the real worker, let exactly one pass run, then cancel it."""
+    real_sleep = asyncio.sleep
+    ticks = 0
+    parked = asyncio.Event()
+
+    async def sleep(delay: float, result: Any = None) -> Any:
+        nonlocal ticks
+        if delay != 3600:
+            return await real_sleep(delay, result)
+        ticks += 1
+        if ticks > 1:  # The first pass is done; wait here until cancelled.
+            parked.set()
+            await real_sleep(delay)
+
+    monkeypatch.setattr(asyncio, "sleep", sleep)
+    worker = asyncio.create_task(
+        reconciler(interval_seconds=3600, stale_after=timedelta(hours=1))
+    )
+    await asyncio.wait_for(parked.wait(), timeout=5)
+    worker.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await worker
+    assert worker.cancelled()
+
+
+async def test_reconciler_marks_only_stale_running_drafts_retryable(
+    monkeypatch, tmp_path
+) -> None:
     """Recover an interrupted lease without disturbing recent or complete drafts."""
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{(tmp_path / 'chapter-drafts.db').as_posix()}"
     )
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    monkeypatch.setattr(
+        "app.services.cnb.chapter_drafting.get_session_factory", lambda: session_factory
+    )
     async with engine.begin() as connection:
         await connection.run_sync(
             lambda sync_connection: Base.metadata.create_all(
@@ -573,16 +605,12 @@ async def test_recovery_marks_only_stale_running_drafts_retryable(tmp_path) -> N
         async with session_factory() as session, session.begin():
             session.add_all([stale, recent, complete])
 
-        recovered = await recover_stale_drafts(
-            session_factory=session_factory,
-            stale_before=now - timedelta(hours=1),
-        )
+        await run_one_reconciler_pass(monkeypatch, run_chapter_drafting_reconciler)
 
         async with session_factory() as session:
             stored_stale = await session.get(ConceptNoteRun, stale.run_id)
             stored_recent = await session.get(ConceptNoteRun, recent.run_id)
             stored_complete = await session.get(ConceptNoteRun, complete.run_id)
-        assert recovered == 1
         assert stored_stale is not None
         assert stored_recent is not None
         assert stored_complete is not None

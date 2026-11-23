@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 from uuid import UUID, uuid4
 
 from app.services.stationary_energy.stationary_energy_review_models import (

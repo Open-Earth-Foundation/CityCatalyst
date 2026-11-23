@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 from dataclasses import replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import Any
 from unittest.mock import AsyncMock, patch
@@ -11,6 +12,12 @@ from uuid import uuid4
 
 import pytest
 from app.config import get_settings
+from app.db import Base
+from app.models.db.concept_note import (
+    ConceptNoteContextBundle,
+    ConceptNoteRun,
+    ConceptNoteUpload,
+)
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_markdown import STRUCTURED_DOCUMENT_SCHEMA_VERSION
 from app.models.cnb.context_bundle import ChapterExcerpts, SelectedSource, SourceExcerpt
@@ -25,7 +32,10 @@ from app.services.citycatalyst_client import (
     ConceptNoteStructuredArtifact,
 )
 from app.services.cnb.application_context import template_chapter_requirements
-from app.services.cnb.context_bundle import ContextBundleService
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    run_context_bundle_reconciler,
+)
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
@@ -36,6 +46,7 @@ from app.services.cnb.source_analysis import (
 from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
 from app.services.concept_note_city_context import ConceptNoteCityContextDataError
 from app.utils.prompt_budget import count_prompt_tokens
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 SERVICE = "app.services.cnb.context_bundle"
 CITY_PROFILE = {"name": "Kraków", "population": 800000, "population_year": 2024}
@@ -726,3 +737,92 @@ async def test_refresh_rebuilds_when_quotations_predate_the_template(monkeypatch
     ]
     assert await service.refresh_if_stale(user_id="owner", run_id=uuid4(), token="t") == "current"
     queue.assert_awaited_once()
+
+
+async def run_one_reconciler_pass(monkeypatch: pytest.MonkeyPatch, reconciler: Any) -> None:
+    """Start the real worker, let exactly one pass run, then cancel it."""
+    real_sleep = asyncio.sleep
+    ticks = 0
+    parked = asyncio.Event()
+
+    async def sleep(delay: float, result: Any = None) -> Any:
+        nonlocal ticks
+        if delay != 3600:
+            return await real_sleep(delay, result)
+        ticks += 1
+        if ticks > 1:  # The first pass is done; wait here until cancelled.
+            parked.set()
+            await real_sleep(delay)
+
+    monkeypatch.setattr(asyncio, "sleep", sleep)
+    worker = asyncio.create_task(
+        reconciler(interval_seconds=3600, stale_after=timedelta(hours=1))
+    )
+    await asyncio.wait_for(parked.wait(), timeout=5)
+    worker.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await worker
+    assert worker.cancelled()
+
+
+async def test_reconciler_pass_recovers_stale_build_and_resumes_revalidation(
+    monkeypatch, tmp_path
+) -> None:
+    engine = create_async_engine(
+        f"sqlite+aiosqlite:///{(tmp_path / 'reconcile.db').as_posix()}"
+    )
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    async with engine.begin() as connection:
+        await connection.run_sync(
+            lambda sync_connection: Base.metadata.create_all(
+                sync_connection,
+                tables=[
+                    ConceptNoteRun.__table__,
+                    ConceptNoteContextBundle.__table__,
+                    ConceptNoteUpload.__table__,
+                ],
+            )
+        )
+    monkeypatch.setattr(f"{SERVICE}.get_session_factory", lambda: sessions)
+    # A local CNB_DATABASE_URL would make the job wait on a real reference DB.
+    monkeypatch.setattr(get_settings(), "cnb_database_url", None)
+    stale =datetime.now(UTC) - timedelta(hours=2)
+    run = ConceptNoteRun(
+        run_id=uuid4(),
+        user_id="owner",
+        name="Run",
+        city_id=str(uuid4()),
+        idempotency_key=uuid4(),
+        request_fingerprint="a" * 64,
+        context_summary={
+            "context_bundle": {"status": "building"},
+            # A crashed worker left this lease; its upload has since been removed.
+            "source_revalidation": {
+                "status": "running",
+                "upload_ids": [str(uuid4())],
+                "attempts": 1,
+                "started_at": stale.isoformat(),
+            },
+        },
+        permission_summary={},
+        updated_at=stale,
+    )
+    try:
+        async with sessions() as session, session.begin():
+            session.add(run)
+
+        await run_one_reconciler_pass(monkeypatch, run_context_bundle_reconciler)
+        # Let the revalidation job scheduled by the pass finish.
+        background = asyncio.all_tasks() - {asyncio.current_task()}
+        await asyncio.wait_for(asyncio.gather(*background), timeout=5)
+
+        async with sessions() as session:
+            stored = await session.get(ConceptNoteRun, run.run_id)
+    finally:
+        await engine.dispose()
+
+    bundle = stored.context_summary["context_bundle"]
+    assert bundle["status"] == "failed"
+    assert bundle["retryable"] is True
+    # The released lease was claimed and finished again, which clears the job.
+    assert "source_revalidation" not in stored.context_summary

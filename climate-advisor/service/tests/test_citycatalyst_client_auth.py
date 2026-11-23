@@ -10,9 +10,6 @@ from typing import Any, Optional
 from unittest.mock import AsyncMock, patch
 
 import httpx
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 
 from app.services import citycatalyst_client as citycatalyst_client_module
 from app.services.citycatalyst_client import (

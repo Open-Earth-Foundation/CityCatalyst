@@ -10,7 +10,9 @@ CC_SERVICE_API_KEY or CC_API_KEY, OPENROUTER_API_KEY, CC1021_FIXTURE_PATH
 REAL_LLM_COST_CAP_USD (default 2). MLflow tracing is off unless
 REAL_LLM_MLFLOW=1 (then REAL_LLM_MLFLOW_EXPERIMENT, default cc1060-local-review,
 and REAL_LLM_MLFLOW_ENVIRONMENT, default local-david; credentials come from the
-environment or climate-advisor/.env and are never printed). Each trace is tagged
+environment or climate-advisor/.env and are never printed). configure_environment()
+applies these settings; evals/real/conftest.py calls it only when RUN_REAL_LLM=1,
+so importing this module has no side effects. Each trace is tagged
 with scenario_id and scenario_run, and the trace IDs go to records.jsonl.
 
 Outputs: evals/real/out/records.jsonl and evals/real/out/report.md. The runner
@@ -27,7 +29,7 @@ import re
 import time
 import unicodedata
 from contextlib import contextmanager
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterator, Optional
 
@@ -43,27 +45,27 @@ UUID_PATTERN = re.compile(
 OPENROUTER_KEY_URL = "https://openrouter.ai/api/v1/key"
 
 
-def _load_env_files() -> None:
-    """Load climate-advisor/.env without overriding variables already set."""
-    try:
-        from dotenv import load_dotenv
-    except ImportError:  # pragma: no cover - python-dotenv ships with the service
-        return
-    load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=False)
-
-
-_load_env_files()
-# Local test traces must not reach hosted tracing services.
-os.environ["LANGSMITH_TRACING"] = "false"
-os.environ["LANGCHAIN_TRACING_V2"] = "false"
-
-
 def tracing_requested() -> bool:
     """Return True when REAL_LLM_MLFLOW=1 asks for MLflow traces of the runs."""
     return os.getenv("REAL_LLM_MLFLOW") == "1"
 
 
-if tracing_requested():
+def configure_environment() -> None:
+    """Prepare os.environ for an opted-in real run; importing this module changes nothing.
+
+    Side effects: fills unset variables from climate-advisor/.env, turns
+    LangSmith tracing off, and sets MLFLOW_ENABLED (plus the experiment and
+    environment tag when REAL_LLM_MLFLOW=1).
+    """
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=False)
+    # Local test traces must not reach hosted tracing services.
+    os.environ["LANGSMITH_TRACING"] = "false"
+    os.environ["LANGCHAIN_TRACING_V2"] = "false"
+    if not tracing_requested():
+        os.environ["MLFLOW_ENABLED"] = "false"
+        return
     # Opt-in: keep the MLflow settings from the environment/.env, but send the
     # traces to a dedicated experiment and tag the environment as local evidence.
     os.environ["MLFLOW_ENABLED"] = "true"
@@ -71,8 +73,6 @@ if tracing_requested():
         os.getenv("REAL_LLM_MLFLOW_EXPERIMENT") or "cc1060-local-review"
     )
     os.environ["MLFLOW_ENVIRONMENT"] = os.getenv("REAL_LLM_MLFLOW_ENVIRONMENT") or "local-david"
-else:
-    os.environ["MLFLOW_ENABLED"] = "false"
 
 # Scenario id and run number stamped on every trace while tracing is on, and
 # the trace IDs seen since the last pop_trace_ids().

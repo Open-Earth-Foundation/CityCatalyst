@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 from tests.stationary_energy.draft_case import StationaryEnergyDraftCase
 from tests.stationary_energy.fixtures import _active_jwt, _auth_headers, _mock_cc_client
 

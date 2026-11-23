@@ -1,4 +1,4 @@
-"""Climate Advisor API route contracts: health, threads, messages and error format."""
+"""Climate Advisor API route contracts: threads, messages and error format."""
 
 from __future__ import annotations
 
@@ -30,13 +30,6 @@ def _empty_stream(*_args: Any, **_kwargs: Any):
         yield b""
 
     return _gen()
-
-
-class HealthRouteTests(unittest.TestCase):
-    def test_health_returns_ok_status(self) -> None:
-        response = TestClient(get_app()).get("/health")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"status": "ok"})
 
 
 class ThreadAndMessageRouteTests(unittest.IsolatedAsyncioTestCase):

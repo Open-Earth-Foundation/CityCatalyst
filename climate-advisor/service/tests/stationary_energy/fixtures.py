@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 import base64
 import json
 from typing import Any

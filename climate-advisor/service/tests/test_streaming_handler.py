@@ -9,7 +9,11 @@ from uuid import uuid4
 
 import pytest
 from agents.tool import ToolContext
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 
+from app.db import Base
+from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.services.native_input_catalog_service import ActiveRequestContext
 from app.tools.concept_note_visual_tools import concept_note_render_visual
@@ -363,21 +367,54 @@ def test_cnb_chat_drops_source_text_when_history_exceeds_the_window() -> None:
     assert [fitted[0], *fitted[2:]] == [runner_input[0], *runner_input[2:]]
 
 
-@pytest.mark.asyncio
-async def test_token_refreshed_during_a_turn_is_persisted() -> None:
-    """A CityCatalyst token the agent refreshed mid-turn is kept for later turns."""
-    handler = StreamingHandler(
-        thread_id="thread-1",
-        user_id="user-1",
-        session_factory=MagicMock(),
-        cc_access_token="old-token",
+async def test_token_refreshed_during_a_turn_is_persisted(chat_service) -> None:
+    """A CityCatalyst token a tool refreshed mid-turn is stored on the thread."""
+    engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
+        poolclass=StaticPool,
+        connect_args={"check_same_thread": False},
     )
-    handler.agent_service = MagicMock()
-    handler.agent_service.current_cc_token.return_value = "fresh-token"
-    handler.token_handler = MagicMock()
-    handler.token_handler.handle_refreshed_token = AsyncMock(return_value=True)
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    thread_id = uuid4()
 
-    await handler._persist_refreshed_token_from_agent()
+    async def refreshing_stream(self, agent, request_payload, conversation_history):
+        # A CityCatalyst tool call renewed the agent's token during the turn.
+        chat_service.current_cc_token.return_value = "fresh-token"
+        self.assistant_tokens.append("Done")
+        yield b""
 
-    handler.token_handler.handle_refreshed_token.assert_awaited_once()
-    assert handler.cc_access_token == "fresh-token"
+    try:
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+        async with session_factory() as session:
+            session.add(
+                Thread(
+                    thread_id=thread_id,
+                    user_id="user-1",
+                    context={"access_token": "old-token"},
+                )
+            )
+            await session.commit()
+
+        handler = StreamingHandler(
+            thread_id=thread_id,
+            user_id="user-1",
+            session_factory=session_factory,
+            cc_access_token="old-token",
+        )
+        with patch(
+            "app.utils.streaming_handler.stream_agent_events", new=refreshing_stream
+        ):
+            chunks = [
+                chunk
+                async for chunk in handler.stream_response(
+                    MessageCreateRequest(user_id="user-1", content="hello")
+                )
+            ]
+
+        assert _parse_sse_payload(chunks[-1])["data"]["ok"] is True
+        async with session_factory() as session:
+            thread = await session.get(Thread, thread_id)
+            assert thread.get_access_token() == "fresh-token"
+    finally:
+        await engine.dispose()

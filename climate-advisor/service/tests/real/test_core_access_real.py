@@ -13,7 +13,12 @@ import uuid
 import pytest
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 
-from evals.real.harness import issue_token, load_fixture, normalized_response
+from evals.real.harness import (
+    configure_environment,
+    issue_token,
+    load_fixture,
+    normalized_response,
+)
 
 pytestmark = [
     pytest.mark.real_llm,
@@ -28,6 +33,7 @@ UNKNOWN_INVENTORY = "00000000-0000-4000-8fff-ffffffffffff"
 
 async def test_unknown_and_no_access_inventories_are_indistinguishable() -> None:
     """Against the real local Core: unknown and no-access inventories look identical."""
+    configure_environment()
     fixture = load_fixture()
     token = issue_token(fixture.user_id)
     thread_id = str(uuid.uuid4())

@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 from unittest.mock import AsyncMock
 
 from app.services.citycatalyst_client import CityCatalystClientError

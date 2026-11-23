@@ -23,6 +23,13 @@ def _client() -> TestClient:
     return TestClient(get_app())
 
 
+def test_health_returns_ok_status() -> None:
+    response = _client().get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 def test_readiness_returns_ready_when_database_query_succeeds() -> None:
     session = AsyncMock()
 

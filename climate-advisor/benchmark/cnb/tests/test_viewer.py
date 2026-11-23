@@ -96,19 +96,13 @@ def test_viewer_retains_conversion_time_and_unknown_cost(tmp_path):
     assert summary["usage"]["extraction"]["unpriced_requests"] == 2
 
 
-def test_stage_status_mirrors_stage_report_passed():
-    assert publish.stage_status(None) == "notrun"
-    assert publish.stage_status(STAGE_OK) == "pass"
-    assert publish.stage_status({**STAGE_OK, "semantic_failures": ["x"]}) == "fail"
-    assert publish.stage_status({**STAGE_OK, "evaluation_errors": ["x"]}) == "error"
-    assert publish.stage_status({**STAGE_OK, "judgment": None}) == "error"
-
-
 def test_publish_builds_viewer_index_and_missing_snapshots(tmp_path):
     older = make_run(tmp_path, "older", "2026-10-01T10:00:00+00:00", extraction=STAGE_OK)
     newer = make_run(
         tmp_path, "newer", "2026-10-02T10:00:00+00:00",
         extraction={**STAGE_OK, "semantic_failures": ["coverage below gate"]},
+        verification={**STAGE_OK, "evaluation_errors": ["judge timed out"]},
+        editing={**STAGE_OK, "judgment": None},
     )
     index = publish.publish_viewer(tmp_path)
 
@@ -123,9 +117,12 @@ def test_publish_builds_viewer_index_and_missing_snapshots(tmp_path):
         (tmp_path / "runs" / "index.js").read_text(encoding="utf-8").split(" = ", 1)[1].rstrip(";\n")
     )
     assert [e["id"] for e in entries] == ["newer", "older"]  # newest first
-    stage = entries[0]["fixtures"]["harbor-point-heat-resilience"]["stages"]["extraction"]
-    assert stage["status"] == "fail"
-    assert stage["metrics"] == {"required_fact_coverage": 0.8}  # headline metrics only
+    stages = entries[0]["fixtures"]["harbor-point-heat-resilience"]["stages"]
+    assert {name: s["status"] for name, s in stages.items()} == {
+        "extraction": "fail", "verification": "error", "editing": "error",
+    }
+    assert stages["extraction"]["metrics"] == {"required_fact_coverage": 0.8}  # headline metrics only
+    assert entries[1]["fixtures"]["harbor-point-heat-resilience"]["stages"]["extraction"]["status"] == "pass"
     assert entries[0]["code_version"] == "abc1234" and entries[0]["label"] == "label newer"
 
     payload = read_viewer(older / "viewer.js")
@@ -163,8 +160,12 @@ def test_run_ids_default_to_utc_time_plus_label_and_reject_unsafe_names(tmp_path
         evaluator.parse_args(["--run-id", "../escape"])
 
 
-def test_existing_run_is_never_overwritten(tmp_path, monkeypatch):
-    make_run(tmp_path, "taken", "2026-10-01T10:00:00+00:00", extraction=STAGE_OK)
+@pytest.mark.parametrize("partial", [False, True], ids=["populated", "partial"])
+def test_existing_run_is_never_overwritten(tmp_path, monkeypatch, partial):
+    if partial:
+        (tmp_path / "runs" / "taken").mkdir(parents=True)
+    else:
+        make_run(tmp_path, "taken", "2026-10-01T10:00:00+00:00", extraction=STAGE_OK)
 
     def must_not_run(args):
         raise AssertionError("evaluation must not start")

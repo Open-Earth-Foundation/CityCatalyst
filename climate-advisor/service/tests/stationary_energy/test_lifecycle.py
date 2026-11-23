@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip("pgvector.sqlalchemy")
 import os
 from unittest.mock import AsyncMock, patch
 

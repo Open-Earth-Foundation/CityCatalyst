@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from ipaddress import ip_address
 from urllib.parse import urlsplit
@@ -8,8 +9,6 @@ from uuid import uuid4
 import httpx
 import pytest
 
-pytest.importorskip("pgvector.sqlalchemy")
-
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -17,6 +16,11 @@ from app.services.citycatalyst_client import (
 )
 
 
+CATALOG_PATH = "/api/v1/internal/native-input-catalog"
+DYNAMIC_CATALOG_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+DYNAMIC_USER_ID = "11111111-1111-4111-8111-111111111111"
+DYNAMIC_CITY_ID = "22222222-2222-4222-8222-222222222222"
+DYNAMIC_INVENTORY_ID = "33333333-3333-4333-8333-333333333333"
 DYNAMIC_CAPABILITY_ID = "ghgi.inventory.status_overview"
 DYNAMIC_FIXTURE_LABEL = "CC-737 dynamic contract fixture"
 DYNAMIC_FIXTURE_MARKER_LABEL = "cc_737_dynamic_contract_marker"
@@ -224,6 +228,186 @@ def _dynamic_read_payload(
             "inventory_id": inventory_id,
         },
     }
+
+
+def _set_contract_env(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    base_url: str,
+    mutation_opt_in: str | None,
+) -> None:
+    for name, value in {
+        "CC_BASE_URL": base_url,
+        "CC_API_KEY": "test-service-key",
+        "CA_AUTH_CONTRACT_USER_ID": DYNAMIC_USER_ID,
+        "CA_AUTH_CONTRACT_OTHER_USER_ID": "other-user",
+        "CA_AUTH_CONTRACT_CITY_ID": DYNAMIC_CITY_ID,
+        "CA_AUTH_CONTRACT_INVENTORY_ID": DYNAMIC_INVENTORY_ID,
+    }.items():
+        monkeypatch.setenv(name, value)
+    if mutation_opt_in is None:
+        monkeypatch.delenv("CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION", raising=False)
+    else:
+        monkeypatch.setenv("CA_AUTH_CONTRACT_ALLOW_CATALOG_MUTATION", mutation_opt_in)
+
+
+def _mock_core(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    created: bool = True,
+) -> list[httpx.Request]:
+    """Route every httpx client in the test to a fake Core and record its requests."""
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        path = request.url.path
+        if path.endswith("/user-token"):
+            return httpx.Response(
+                200,
+                json={"access_token": "test-token", "token_type": "Bearer", "expires_in": 3600},
+            )
+        if path.endswith("/native-inputs/discover"):
+            registrations = [
+                json.loads(r.content)
+                for r in requests
+                if r.method == "POST" and r.url.path == CATALOG_PATH
+            ]
+            # Echo the registered labels so marker-based cleanup recovery can find the entry.
+            entries = [
+                {
+                    "catalog_id": DYNAMIC_CATALOG_ID,
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": [
+                        DYNAMIC_CAPABILITY_ID,
+                        "ghgi.inventory.emissions_context",
+                    ],
+                    "labels": registration["labels"],
+                }
+                for registration in registrations[-1:]
+            ]
+            return httpx.Response(200, json={"success": True, "data": {"entries": entries}})
+        if path == CATALOG_PATH:
+            return httpx.Response(
+                201 if created else 200,
+                json={"data": {"id": DYNAMIC_CATALOG_ID}, "created": created},
+            )
+        if path.endswith("/native-inputs/read"):
+            return httpx.Response(
+                200,
+                json={"action": DYNAMIC_CAPABILITY_ID, "success": True, "data": {"status": "ready"}},
+            )
+        if request.method == "DELETE":
+            return httpx.Response(204)
+        return httpx.Response(404)
+
+    real_async_client = httpx.AsyncClient
+    monkeypatch.setattr(
+        httpx,
+        "AsyncClient",
+        lambda **kwargs: real_async_client(transport=httpx.MockTransport(handler), **kwargs),
+    )
+    return requests
+
+
+def test_fixture_catalog_recovery_rejects_ambiguous_marker() -> None:
+    marker = "one-live-execution"
+    discovery: dict[str, object] = {
+        "data": {
+            "entries": [
+                {"catalog_id": catalog_id, "labels": {DYNAMIC_FIXTURE_MARKER_LABEL: marker}}
+                for catalog_id in (DYNAMIC_CATALOG_ID, None)
+            ]
+        }
+    }
+
+    assert _fixture_catalog_id(discovery, marker) is None
+
+
+@pytest.mark.parametrize(
+    ("base_url", "mutation_opt_in", "expected_reason"),
+    [
+        ("https://core.example", "1", "loopback"),
+        ("http://localhost:3000", None, "explicit opt-in"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_dynamic_contract_in_unsafe_context_sends_no_requests(
+    monkeypatch: pytest.MonkeyPatch,
+    base_url: str,
+    mutation_opt_in: str | None,
+    expected_reason: str,
+) -> None:
+    _set_contract_env(monkeypatch, base_url=base_url, mutation_opt_in=mutation_opt_in)
+    requests = _mock_core(monkeypatch)
+
+    with pytest.raises(pytest.skip.Exception, match=expected_reason):
+        await test_dynamic_runtime_sequence_against_running_core()
+
+    assert requests == []
+
+
+@pytest.mark.asyncio
+async def test_native_input_read_sends_bounded_camel_case_payload_without_minting_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    requests = _mock_core(monkeypatch)
+    read_payload = _dynamic_read_payload(
+        catalog_id=DYNAMIC_CATALOG_ID,
+        user_id=DYNAMIC_USER_ID,
+        city_id=DYNAMIC_CITY_ID,
+        inventory_id=DYNAMIC_INVENTORY_ID,
+    )
+
+    async with CityCatalystClient(
+        base_url="https://core.example",
+        api_key="test-service-key",
+    ) as client:
+        await client.discover_native_inputs(
+            request_payload=_dynamic_discovery_payload(
+                user_id=DYNAMIC_USER_ID,
+                city_id=DYNAMIC_CITY_ID,
+                inventory_id=DYNAMIC_INVENTORY_ID,
+            ),
+            token="test-token",
+            user_id=DYNAMIC_USER_ID,
+            thread_id="dynamic-contract",
+        )
+        selected_read = await client.read_native_input(
+            request_payload=read_payload,
+            token="test-token",
+            user_id=DYNAMIC_USER_ID,
+            thread_id="dynamic-contract",
+        )
+
+    assert selected_read["success"] is True
+    read_bodies = [
+        json.loads(r.content) for r in requests if r.url.path.endswith("/native-inputs/read")
+    ]
+    assert read_bodies == [read_payload]
+    _assert_no_forbidden_contract_fields(read_bodies[0])
+    assert not any(r.url.path.endswith("/user-token") for r in requests)
+
+
+@pytest.mark.parametrize("created", [True, False])
+@pytest.mark.asyncio
+async def test_dynamic_live_contract_withdraws_only_entry_it_created(
+    monkeypatch: pytest.MonkeyPatch,
+    created: bool,
+) -> None:
+    _set_contract_env(monkeypatch, base_url="http://localhost:3000", mutation_opt_in="1")
+    requests = _mock_core(monkeypatch, created=created)
+
+    if created:
+        await test_dynamic_runtime_sequence_against_running_core()
+    else:
+        with pytest.raises(AssertionError, match="must create a new catalog entry"):
+            await test_dynamic_runtime_sequence_against_running_core()
+
+    withdrawals = [r.url.path for r in requests if r.method == "DELETE"]
+    assert withdrawals == ([f"{CATALOG_PATH}/{DYNAMIC_CATALOG_ID}"] if created else [])
 
 
 @pytest.mark.asyncio

@@ -8,11 +8,7 @@ from uuid import uuid4
 import pytest
 from agents.tool import ToolContext
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
-from app.tools.concept_note_ui_labels import (
-    UI_LABEL_KEYS,
-    UI_LABELS,
-    normalize_ui_locale,
-)
+from app.tools.concept_note_ui_labels import UI_LABEL_KEYS, UI_LABELS
 
 FRONTEND_LOCALES = Path(__file__).resolve().parents[4] / "app/src/i18n/locales"
 
@@ -123,7 +119,14 @@ ENGLISH_LABELS = [
             ],
             ['"Draft preview"', '"Upload file"'],
         ),
-        *[(locale, "en", ENGLISH_LABELS, []) for locale in ["en", None, "xx", "en-GB"]],
+        *[
+            (locale, "pt", ['"Visualização do rascunho"'], ['"Draft preview"'])
+            for locale in ["pt-BR", " PT_br "]
+        ],
+        *[
+            (locale, "en", ENGLISH_LABELS, [])
+            for locale in ["en", None, "xx", "en-GB", 42]
+        ],
     ],
 )
 async def test_guide_names_the_controls_in_the_ui_language(
@@ -136,12 +139,6 @@ async def test_guide_names_the_controls_in_the_ui_language(
         assert label in result["guide"]
     for label in absent:
         assert label not in result["guide"]
-
-
-def test_locale_tags_normalize_to_supported_languages():
-    assert normalize_ui_locale("pt-BR") == "pt"
-    assert normalize_ui_locale(" PT_br ") == "pt"
-    assert normalize_ui_locale(42) == "en"
 
 
 @pytest.mark.parametrize("ui_locale", sorted(UI_LABELS))

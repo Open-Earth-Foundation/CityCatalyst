@@ -8,3 +8,6 @@ venv/
 
 # Vector DB files - manage documents externally (e.g., Google Drive)
 vector_db/files/*.pdf
+# Python coverage data
+.coverage
+.coverage.*

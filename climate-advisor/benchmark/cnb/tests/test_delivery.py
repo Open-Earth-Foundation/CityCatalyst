@@ -42,6 +42,11 @@ def test_baseline_requires_explicit_approval_and_rejects_changed_content(tmp_pat
     }
     manifest.write_text(json.dumps(value), encoding="utf-8")
     assert load_approved_baseline(manifest, tmp_path, fingerprints)[0] == run
+    changed_corpus = {**fingerprints, "corpus": "different"}
+    assert (
+        load_approved_baseline(manifest, tmp_path, changed_corpus)[1]["status"]
+        == "incompatible"
+    )
     (run / "viewer.js").write_text("tampered", encoding="utf-8")
     assert (
         load_approved_baseline(manifest, tmp_path, fingerprints)[1]["status"]

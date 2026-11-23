@@ -2,7 +2,6 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { expect, test, type Page, type Route } from "@playwright/test";
 import type { CityDashboardResponse } from "@/util/types";
-import type { DocumentWorkspace } from "@/util/document-workspace";
 import { skipCookieConsent } from "./helpers";
 
 test.beforeEach(({ context }) => skipCookieConsent(context));
@@ -115,29 +114,6 @@ async function openWorkspace(
       return route.fulfill({ json: { data: { hasAccess: true } } });
     if (!path.includes(`/concept-notes/${runId}`))
       return route.fulfill({ json: { data: [] } });
-    if (path.endsWith("/workspace"))
-      return route.fulfill({
-        json: {
-          revision: 1,
-          setup: null,
-          points: [],
-          needs: [],
-          overview: {
-            required_total: 0,
-            required_covered: 0,
-            optional_total: 0,
-            optional_covered: 0,
-            waiting_count: 0,
-            next_steps: [],
-          },
-          export_eligibility: {
-            working: false,
-            final: false,
-            blockers: [],
-            workspace_revision: 1,
-          },
-        } satisfies DocumentWorkspace,
-      });
     if (path.endsWith("/context-bundle/refresh"))
       return route.fulfill({ json: { run_id: runId, status: "current" } });
     if (path.endsWith("/draft"))

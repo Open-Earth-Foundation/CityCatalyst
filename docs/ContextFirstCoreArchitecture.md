@@ -164,7 +164,11 @@ CC-1298 lists one status per point: found, confirmed, assumed, parked, does not 
 
 **Proposed (decision 1).** Keep answer and evidence apart. A point always shows its answer. If evidence is open, it also shows "Found, to confirm" or "Documents disagree". If it is parked, it also shows who is waited on. "Answered" and "cleared for final export" become two separate counts.
 
-### 4.3 One record, every screen and the chat
+### 4.3 One source of truth for each point
+
+**Target.** Each point has one source of truth: the list of points. Every screen and the chat show it. A change comes from To do, or from the chat once the user confirms it on the card. When a decision is made or context is added, the model checks whether it changes the point. If it does, it proposes the change on the card. Each saved change becomes the new version of the point.
+
+**Today:**
 
 ```mermaid
 flowchart TB

@@ -435,17 +435,17 @@ Two grants for one city show that reading carries over between grants. Generalit
 
 | Ticket | Core | Built | To build |
 |---|---|---|---|
-| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. File categories. Keys that do not depend on the template. A document type that comes from the setup. |
-| CC-1298 One list of points | A | One list, one read, one command, history, storage between sessions. | The same point across chapters. Answer and evidence as separate fields. A typed chat reply saved to a point. History shown. |
+| CC-1297 Setup of points | A | Typed point definitions in code. A copy of the template for each document, with a version. | Setup as its own record. File categories. Keys that do not depend on the template; until then, the own template keeps its id when edited. A document type that comes from the setup. |
+| CC-1298 One list of points | A | One list, one read, one command, history, storage between sessions. | The same point across chapters. Answer and evidence as separate fields. A change prepared in the chat, saved when the user confirms it on the card. History shown. |
 | CC-1299 Sort files | B | Categories with a status, including missing. | A sorting step. "Anything else". A file in a category when it gave no value. |
-| CC-1300 Match and confirm | B | Candidates with quote and page. Confirm, correct, dismiss. Disagreement shown. | Disagreement stored with its files. Comparison that understands units and formats. |
-| CC-1301 Benchmark | B | The Builder benchmark: extraction, writing, verification, editing. | Scores for sorting and point finding against an answer key. |
+| CC-1300 Match and confirm | B | Candidates with quote and page. Confirm, correct, dismiss. Disagreement shown. | Found values count without a click and are marked AI verified; a value a person confirmed is marked Verified. Disagreement stored with its files. Comparison that understands units and formats. |
+| CC-1301 Benchmark | B | The Builder benchmark: extraction, writing, verification, editing. | Scores for sorting and point finding against an answer key. The A to Z test of one concept note. |
 | CC-1302 To-do list | C | To do tab. Confirm. Park and resume. | Groups worked out on the server. Evidence linked to the point it was brought for. The same actions from the chat. |
 | CC-1303 Guided questions | C | A question on request, with the waiting evidence above it. | Compare options. What each option means. One question format. Exceptions always offered. |
 | CC-1304 Help me find it | C | One default guidance sentence for each category. | The helper on a point. The request note. |
 | CC-1305 Draft from points | D | The first draft reads the accepted points and records their versions. | Points as the only source of facts. Sources per passage. Marks for assumed and parked points. |
 | CC-1306 Rewrite what changed | D | A background update for each changed point. Proposed changes for protected text. Chapter review. | Passage identity. Passage rewrites. Rules between points in code. The retest of the chapter checks. |
-| No ticket yet | B | | Reading progress and failure shown to the user. City data as candidates. |
+| No ticket yet | B | | Reading progress and failure shown to the user. City data read like a file. Points the model adds when the setup did not list them (path b, decision 5). |
 | No ticket yet | Hardening | | The items in 9.4. |
 
 ---
@@ -490,7 +490,9 @@ Two grants for one city show that reading carries over between grants. Generalit
 | Point | `document_points` row; `DocumentWorkspacePoint` |
 | Setup | `document_workspaces.setup` and `document_setup_snapshots`; made from `ApplicationContextTemplate` |
 | Found | `status: needs_confirmation`, with a `pending` candidate |
-| Confirmed | `disposition: answered` |
+| Missing | `disposition: missing` |
+| AI verified | not in the code yet: today every answer needs a person |
+| Verified | `disposition: answered`, set by a person |
 | Assumed | `disposition: assumption` |
 | Does not apply | `disposition: not_applicable` |
 | Documents that disagree | `status: conflict`, worked out on read |
@@ -521,7 +523,7 @@ These are defects or risks. They are not architecture decisions.
 1. **Keys.** Every point's key contains the template id, the chapter and the label. Every save of the note's own template makes a new template id, so every point is retired and the answers stay only in the history. The same label in two chapters is two points. **Proposed fix:** keep the template's id when the user edits their own template. Fields that did not change keep their keys and answers. Only fields that were removed are retired.
 2. **Source of a typed answer.** A command that is not a confirmation still stores the candidate id it was sent. The card never sends one, so it needs a hand-made request today. It must be closed before the chat can prepare answers.
 3. **Rejected proposal.** Today, when the user rejects a proposed change that came from a point, the update is marked failed and tried again, up to five times. The text stays out of date and the final export stays blocked. **Proposed:** treat it like any other rejected proposal today. That one proposal goes away and is not retried. The point stays confirmed, the chapter keeps its text, and the final export is not blocked by it.
-4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date.
+4. **Reviews go out of date too easily.** Any command on any point, and the reading of any file, makes every chapter review out of date. Decision 8 says a new file does not recheck chapters, so reading a file should not touch reviews.
 5. **Copies.** A copied concept note keeps its text. Its points start as missing.
 6. **Have it, or answers it.** A file reaches a category only when it produced a candidate.
 7. **Reading fails quietly.** After three failed tries the reading stops. Nothing tells the user.
@@ -545,4 +547,4 @@ These are defects or risks. They are not architecture decisions.
 
 ### 9.7 How this draft was made
 
-A first pass read nine parts of the code and the two CC-1170 documents. An independent consult (Sol 6.2) proposed the shape of the document and later reviewed the draft. Seven checkers then tried to refute every statement about the code: 254 statements, of which 94 were corrected or tightened in this version. Nothing was run: every statement about the code comes from reading it.
+A first pass read nine parts of the code and the two CC-1170 documents. An independent consult (Sol 6.2) proposed the shape of the document and later reviewed the draft. Seven checkers then tried to refute every statement about the code: 254 statements, of which 94 were corrected or tightened. On 23 November Sol 6.2 and Astra 6.2 reviewed the documents again, and the team decisions of that day were added. Nothing was run: every statement about the code comes from reading it.

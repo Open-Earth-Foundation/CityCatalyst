@@ -78,7 +78,7 @@ flowchart LR
 | 1 | The browser sends the file to CityCatalyst. CityCatalyst checks access and stores it. A PDF is turned into text. | **Built** |
 | 2 | Clima fetches the text and checks that it comes from exactly that file. | **Built** |
 | 3 | The file gets a category from the setup, or "anything else". The category does not decide whether the file is read. | **Missing** |
-| 4 | Clima reads the file against every point. Each value is stored as a candidate with its quote and, for a PDF, its page. | **Built** |
+| 4 | Clima reads the file against every point. Each value is stored as a candidate with its quote and, for a PDF, its page. | **Built, to change.** It will be used in a different way. |
 | 5 | Every screen shows the new candidates. | **Built** |
 | 6 | The chat shows one entry for the file: who added it, from which point or passage, and what was found. | **Missing** |
 | 7 | Nothing is accepted until a person says yes. | **Built** |

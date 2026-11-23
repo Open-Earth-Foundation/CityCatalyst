@@ -344,6 +344,7 @@
   "import-row-issue-excluded-reference-unconfirmed": "Left out of BASIC and BASIC+ totals, but the row looks like energy use or losses. Needs your decision before the import can finish.",
   "import-row-issue-gpc-subsector-total-at-risk": "This subsector value has no scope split. It may include scope 3 T&D losses (BASIC+ only), energy supplied to the grid (I.4.4) or imported waste (III.x.3), which the totals treat differently.",
   "import-row-issue-gpc-subsector-scope-combined": "The report labels this value “{{scopeText}}”. Tell us whether all of it belongs in the totals.",
+  "import-row-issue-gpc-subsector-total-unstated": "The report does not say whether this value counts in the total. Tell us whether all of it belongs in the totals.",
   "import-row-issue-subsector-not-split-by-scope": "Imported as a subsector total with no split by scope. Results show it as IE (included elsewhere) in each scope column; GPC BASIC needs the split by scope.",
   "import-row-issue-reported-apart-from-total": "Imported and shown in detail, but left out of BASIC and BASIC+ totals.",
   "not-specified": "Not specified",

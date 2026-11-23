@@ -1057,6 +1057,16 @@ describe("unsplit subsector total at risk", () => {
     ]);
   });
 
+  it.each([
+    [{ scope: "Scope 1, 2 & 3" }, "Scope 1, 2 & 3"],
+    [{ category: "Residential (Scopes 1-3)" }, "Residential (Scopes 1-3)"],
+    [{ totalInclusion: "unclear" }, null],
+    [{ scopeBasis: "combined" }, null],
+  ])("quotes only real scope text (%o)", (review, scopeText) => {
+    const [held] = findPendingRows(result([unsplit("I.3", review)]));
+    expect(held.scopeText ?? null).toBe(scopeText);
+  });
+
   it("asks on sector II with scope text", () => {
     expect(
       findPendingRows(result([unsplit("II.1", { scope: "Scope 1 + 2" })])),

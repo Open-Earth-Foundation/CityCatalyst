@@ -205,9 +205,11 @@ export default function ImportReviewRows({
           )}
           {row.issue === "gpc-subsector-scope-combined" && (
             <Text fontSize="body.sm" color="sentiment.warningDefault">
-              {t("import-row-issue-gpc-subsector-scope-combined", {
-                scopeText: row.scope || row.category || row.suggestedRefNo,
-              })}
+              {row.scopeText
+                ? t("import-row-issue-gpc-subsector-scope-combined", {
+                    scopeText: row.scopeText,
+                  })
+                : t("import-row-issue-gpc-subsector-total-unstated")}
             </Text>
           )}
           <SourceContext t={t} row={row} />

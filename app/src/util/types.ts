@@ -1149,6 +1149,8 @@ export interface ImportRowReview {
   source: string | null;
   decision:
     "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure" | null;
+  /** Row text naming several scopes, for gpc-subsector-scope-combined; null when only pipeline flags raised it. */
+  scopeText?: string | null;
   finalScope?: string | null;
   decisionToken?: string;
   finalCatalogueScope?: number | null;

@@ -105,9 +105,17 @@ function isSubsectorScopeCombined(row: ImportRow): boolean {
   return (
     review.scopeBasis === "combined" ||
     review.totalInclusion === "unclear" ||
-    [review.scope, review.category, review.subsector, review.activityType].some(
-      (text) => text != null && COMBINED_SCOPE_TEXT.test(text),
-    )
+    combinedScopeText(row) != null
+  );
+}
+
+/** The row text that names several scopes, or null. */
+function combinedScopeText(row: ImportRow): string | null {
+  const review = row.review;
+  return (
+    [review?.scope, review?.category, review?.subsector, review?.activityType]
+      .map((text) => text?.trim())
+      .find((text) => text && COMBINED_SCOPE_TEXT.test(text)) ?? null
   );
 }
 
@@ -217,6 +225,9 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     page: review.page,
     source: review.source,
     decision: review.decision,
+    ...(issue === "gpc-subsector-scope-combined" && {
+      scopeText: combinedScopeText(row),
+    }),
     referenceOptions: Array.from(
       new Set([
         ...siblingReferences(suggestedRefNo),

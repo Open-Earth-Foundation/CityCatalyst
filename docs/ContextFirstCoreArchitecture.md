@@ -155,7 +155,7 @@ CC-1298 lists one status per point: found, confirmed, assumed, parked, does not 
 
 | Fact | Values | Product words |
 |---|---|---|
-| **Answer** | none, answered, assumed, does not apply | Missing, Confirmed, Assumed, Does not apply |
+| **Answer** | none, answered, assumed, does not apply | Missing, AI verified, Verified, Assumed, Does not apply |
 | **Evidence** | nothing waiting, a candidate waiting, candidates that differ | Found; Documents that disagree |
 | **Work** | active, parked, waiting, done | Parked; Waiting on others |
 | **Text** | not written, current, stale, updating, to review, failed | Shown on the draft |
@@ -233,11 +233,11 @@ flowchart TB
 | 2a. File A is already there. It is read | none | value found | active | not written | Found |
 | 2b. The first files are read. None states the amount | none | nothing found | active | not written | Missing, needs a file or an answer |
 | 3b. The user adds file A, or answers. It is read | none | value found | active | not written | Found |
-| 4. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | Confirmed |
-| 5. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | Confirmed |
-| 6. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | Confirmed · Documents disagree |
-| 7. The owner parks it for the finance director | 4.2 million, from A | B differs | waiting | current | Confirmed · Documents disagree · Waiting |
-| 8. The answer arrives and the owner picks B | 3.9 million, from B | nothing | done | to review | Confirmed · Text change to review |
+| 4. Both paths meet. The model confirms the value; the user can change or remove it | 4.2 million, from A | nothing | done | not written | AI verified |
+| 5. The draft is written and the chapter is confirmed | 4.2 million, from A | nothing | done | current | AI verified |
+| 6. The owner adds file B while editing | 4.2 million, from A | B differs | done | current | AI verified · Documents disagree |
+| 7. The owner parks it for the finance director | 4.2 million, from A | B differs | waiting | current | AI verified · Documents disagree · Waiting |
+| 8. The answer arrives and the owner picks B | 3.9 million, from B | nothing | done | to review | Verified · Text change to review |
 
 Where today's code differs: in step 2b nothing tells the user that reading found nothing, and "Help me find it" does not exist. In step 4 nothing counts until a person confirms it. In steps 6 and 7 the status is "conflict" and the point is not counted as covered. In step 6 the file can only be added in the Context tab, and the chat shows nothing. In step 7 the point is listed under Waiting. In step 8 the whole confirmed chapter gets one proposed change.
 
@@ -245,7 +245,7 @@ Where today's code differs: in step 2b nothing tells the user that reading found
 
 | Rule | State |
 |---|---|
-| **The user stays in control.** A value found in a file counts without a click. The user sees it and may change or remove it, but does not have to accept every value by hand. | **To change.** Today nothing counts until a person says yes. **Decided** (23 November). |
+| **The user stays in control.** A value found in a file counts without a click. The user sees it and may change or remove it, but does not have to accept every value by hand. **Decided (23 November): two marks.** A value that counts without a human click is **AI verified**, shown in light green. A value a person confirmed or entered is **Verified**, shown in dark green. So it is always clear where a value came from, how well it was checked, and what comes from AI. | **To change.** Today nothing counts until a person says yes. **Decided** (23 November). |
 | **One way to save.** A person changes a point only through the command. | **Built** |
 | **Evidence is kept.** New evidence after a confirmation opens a disagreement. It does not change the accepted value. | **Built** |
 | **Saving does not wait for the text.** | **Built** |

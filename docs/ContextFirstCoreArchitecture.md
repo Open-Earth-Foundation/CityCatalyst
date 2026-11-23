@@ -328,7 +328,7 @@ The spike documents follow this order. Their migration plan maps each old step t
 
 **Proposed.** Leave them there for the pilot.
 
-**Revisit** when the paused move of capabilities from the Builder and the agentic flows into Clima resumes. Then the prompts of tools that more than one product uses move to the main `prompts/` folder as core prompts, next to `core.md`, following the spike's prompt proposal (module map, "Proposal: versioning and ownership").
+**Revisit** when the paused move of capabilities from the Builder and the agentic flows into Clima resumes. Then the prompts of tools that more than one product uses move to the main `prompts/` folder as core prompts, following the spike's prompt proposal (module map, "Proposal: versioning and ownership"). The exact folder is decided then.
 
 ---
 

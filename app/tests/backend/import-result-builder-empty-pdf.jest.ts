@@ -21,6 +21,7 @@ jest.unstable_mockModule("@/backend/ECRFImportService", () => ({
     processECRFFile: jest.fn(),
   },
   supersedeParentsWithChildren: jest.fn(),
+  markParentSuperseded: jest.fn(),
 }));
 
 const { buildImportResult } = await import("@/backend/ImportResultBuilder");

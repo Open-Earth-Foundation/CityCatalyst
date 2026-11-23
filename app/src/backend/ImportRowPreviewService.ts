@@ -343,7 +343,8 @@ export async function previewImportRows(
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"
-          : unsplitIssue(row);
+          : (unsplitIssue(row) ??
+            (row.storedParent ? "gpc-subsector-already-stored" : null));
     if (issue) {
       const leftOutOfTotal =
         issue === "omitted-from-total" || issue === "reported-apart-from-total";
@@ -359,11 +360,15 @@ export async function previewImportRows(
         // An unsplit subsector row counts in the total; it is listed so the user sees it.
         status:
           issue === "subsector-not-split-by-scope" ||
-          issue === "gpc-subsector-total-at-risk"
+          issue === "gpc-subsector-total-at-risk" ||
+          issue === "gpc-subsector-already-stored"
             ? "imported"
             : "not-counted",
         issue,
         tonnes,
+        ...(issue === "gpc-subsector-already-stored" && {
+          storedParent: row.storedParent,
+        }),
       });
     }
   }

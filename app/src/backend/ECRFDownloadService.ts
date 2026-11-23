@@ -16,6 +16,7 @@ import CityBoundaryService, {
 } from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
 import { toShort } from "@/util/notation-keys";
+import { isUnsplitSubsectorRef } from "@/util/GHGI/reported-totals";
 import fs from "fs";
 import path from "path";
 
@@ -170,6 +171,27 @@ export default class ECRFDownloadService {
       fugitive: fugitive_emissions_data,
     };
 
+    // A subsector value with no scope split has no cell of its own: its
+    // subcategories show IE and the subsector note says where the value is.
+    // It stays out of the scope totals (GPC Table 2.1, p. 71; CC-1311).
+    const unsplitNotes = new Map<string, string>();
+    for (const value of output.inventoryValues) {
+      const ref = value.gpcReferenceNumber;
+      const entry = ref ? dataDictionary[ref] : undefined;
+      if (!isUnsplitSubsectorRef(ref) || !entry || entry.total == null)
+        continue;
+      unsplitNotes.set(
+        ref!,
+        t("ecrf-included-elsewhere-unsplit", {
+          ref,
+          tonnes: (Number(entry.total) / 1000).toLocaleString("en-US"),
+        }),
+      );
+    }
+    const unsplitParent = (ref: string) =>
+      unsplitNotes.has(ref.split(".").slice(0, 2).join(".")) &&
+      ref.split(".").length === 3;
+
     // now loop over the rows and columns.
     const worksheet = workbook.getWorksheet(2);
 
@@ -194,6 +216,16 @@ export default class ECRFDownloadService {
           if (targetIdentifier === "full-total") {
             // if sector total placeholder read from totals
             replacementValue = totals[referenceNoIdentifier];
+          } else if (
+            targetIdentifier === "explanation" &&
+            unsplitNotes.has(referenceNoIdentifier)
+          ) {
+            replacementValue = [
+              justificationString,
+              unsplitNotes.get(referenceNoIdentifier),
+            ]
+              .filter(Boolean)
+              .join(", ");
           } else if (referenceNoIdentifier in updatedDataDictionary) {
             replacementValue =
               updatedDataDictionary[referenceNoIdentifier]?.[targetIdentifier]; // eg dataDictionary.I.total or dataDictionary.I.notation-key
@@ -222,7 +254,7 @@ export default class ECRFDownloadService {
             }
           } else if (targetIdentifier === "notation-key") {
             // Leave blank. Filling NE here invents a claim the city did not make.
-            replacementValue = "";
+            replacementValue = unsplitParent(referenceNoIdentifier) ? "IE" : "";
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }

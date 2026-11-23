@@ -187,6 +187,28 @@ it("shows the parent value, children sum and gap of a superseded subsector", () 
   );
 });
 
+it("names the stored subsector value an imported child may count again", () => {
+  preview = {
+    totalRows: 1,
+    importedRows: 1,
+    skippedRows: 0,
+    skippedByIssue: {},
+    rows: [
+      outcome(2, {
+        gpcRefNo: "I.3.1",
+        status: "imported",
+        issue: "gpc-subsector-already-stored",
+        storedParent: { gpcRefNo: "I.3", tonnes: 50000 },
+      }),
+    ],
+  };
+  render({});
+  const reason = container.querySelector("tbody tr td:last-child")?.textContent;
+  expect(reason).toBe(
+    `import-row-issue-gpc-subsector-already-stored:{"notationKey":null,"parentRef":"I.3","parentValue":"${(50000).toLocaleString()}"}`,
+  );
+});
+
 it("collapses long lists until the user asks for all rows", () => {
   preview = {
     totalRows: 12,

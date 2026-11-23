@@ -159,6 +159,44 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     expect(i11?.getCell(28).value).toBe("");
   });
 
+  it("writes IE and a note for a subsector value not split by scope (CC-1311)", async () => {
+    const value = (gpcReferenceNumber: string, co2eq: bigint) => ({
+      id: `iv-${gpcReferenceNumber}`,
+      gpcReferenceNumber,
+      co2eq,
+      inputMethodology: "direct-measure",
+      dataSource: null,
+      unavailableReason: null,
+      activityValues: [],
+    });
+    const buffer = await ECRFDownloadService.downloadECRF({
+      ...baseInventory([]),
+      inventoryValues: [
+        value("I.3", 50000000n),
+        value("I.3.1", 1000000n),
+        value("I.1.1", 2000000n),
+      ],
+    } as unknown as InventoryWithInventoryValuesAndActivityValues);
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const sheet2 = workbook.getWorksheet(2)!;
+    // Template row 7: I.3.1..I.3.3 total / notation key pairs, then I.3_explanation.
+    const i3 = sheet2.getRow(7);
+    expect(i3.getCell(2).value).toBe(1000);
+    expect(i3.getCell(3).value).toBe("");
+    expect(i3.getCell(5).value).toBe("IE");
+    expect(i3.getCell(7).value).toBe("IE");
+    expect(i3.getCell(8).value).toBe(
+      "Included in I.3: 50,000 t CO2e, not split by scope in the source",
+    );
+    // Row 10: scope totals. Scope 1 and 2 are never summed with an unsplit value (GPC p. 71).
+    expect(sheet2.getRow(10).getCell(2).value).toBe(3000);
+    // A subsector without an unsplit value keeps its blanks.
+    expect(sheet2.getRow(4).getCell(5).value).toBe("");
+  });
+
   it("does not invent NE for GPC refs the inventory never reported (CC-1153)", async () => {
     const buffer = await ECRFDownloadService.downloadECRF(baseInventory([]));
     const workbook = new Excel.Workbook();

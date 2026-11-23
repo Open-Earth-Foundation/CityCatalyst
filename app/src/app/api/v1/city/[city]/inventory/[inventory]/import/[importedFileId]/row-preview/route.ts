@@ -177,6 +177,7 @@
  *                               - subsector-not-split-by-scope
  *                               - gpc-subsector-total-at-risk
  *                               - gpc-subsector-scope-combined
+ *                               - gpc-subsector-already-stored
  *                           tonnes:
  *                             type: number
  *                             nullable: true
@@ -188,6 +189,12 @@
  *                               childrenSum: { type: number, nullable: true }
  *                               childrenCount: { type: integer }
  *                               gap: { type: number, nullable: true }
+ *                           storedParent:
+ *                             type: object
+ *                             description: Subsector value with no scope split already on the inventory; set for gpc-subsector-already-stored.
+ *                             properties:
+ *                               gpcRefNo: { type: string }
+ *                               tonnes: { type: number }
  *       400:
  *         description: File is not waiting for approval.
  *       401:

@@ -12,8 +12,15 @@ import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
-import type { ImportRowIssue, ParentSupersededDetail } from "@/util/types";
-import { supersedeParentRows } from "./import/parent-child-rows";
+import type {
+  ImportRowIssue,
+  ParentSupersededDetail,
+  StoredParentDetail,
+} from "@/util/types";
+import {
+  supersedeParentRows,
+  type ParentSuperseded,
+} from "./import/parent-child-rows";
 import { resolveImportedTotalCO2e } from "./InventoryImportService";
 import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
 import { excelRowNumber } from "@/util/excel-row-number";
@@ -56,6 +63,9 @@ export function supersedeParentsWithChildren(
 ): void {
   for (const row of rows) {
     if (!row.parentSuperseded) continue;
+    // Drop the warning of the earlier run too, so a re-run never repeats it.
+    const stale = warnings.indexOf(parentGapWarning(row, row.parentSuperseded));
+    if (stale !== -1) warnings.splice(stale, 1);
     delete row.parentSuperseded;
     delete row.issue;
     delete row.errors;
@@ -78,20 +88,30 @@ export function supersedeParentsWithChildren(
       notationKey: row.notationKey ?? null,
     })),
   );
-  for (const { index, severity, ...detail } of superseded) {
-    const row = rows[index];
-    row.issue =
-      severity === "warning" ? "gpc-parent-gap" : "gpc-parent-superseded";
-    row.parentSuperseded = detail;
-    row.errors = [
-      `Replaced by ${detail.childrenCount} child rows of the same subsector`,
-    ];
-    if (severity === "warning") {
-      warnings.push(
-        `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`,
-      );
-    }
-  }
+  for (const { index, ...result } of superseded)
+    markParentSuperseded(rows[index], result, warnings);
+}
+
+function parentGapWarning(
+  row: ECRFRowData,
+  detail: ParentSupersededDetail,
+): string {
+  return `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`;
+}
+
+/** Drops a subsector-level row replaced by its children (CC-1311). */
+export function markParentSuperseded(
+  row: ECRFRowData,
+  { severity, ...detail }: Omit<ParentSuperseded, "index">,
+  warnings: string[],
+): void {
+  row.issue =
+    severity === "warning" ? "gpc-parent-gap" : "gpc-parent-superseded";
+  row.parentSuperseded = detail;
+  row.errors = [
+    `Replaced by ${detail.childrenCount} child rows of the same subsector`,
+  ];
+  if (severity === "warning") warnings.push(parentGapWarning(row, detail));
 }
 
 export interface ECRFRowData {
@@ -131,6 +151,8 @@ export interface ECRFRowData {
   omitFromTotal?: boolean;
   /** Set when a subsector-level row is replaced by its child rows. */
   parentSuperseded?: ParentSupersededDetail;
+  /** A subsector value with no scope split already stored for this child's subsector. */
+  storedParent?: StoredParentDetail;
   errors?: string[];
   warnings?: string[];
   /** What the import review needs; extracted rows only. */

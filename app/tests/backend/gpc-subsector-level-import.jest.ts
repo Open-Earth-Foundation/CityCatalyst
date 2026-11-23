@@ -10,6 +10,8 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import type { ParsedFileData } from "@/backend/FileParserService";
 import InventoryImportService from "@/backend/InventoryImportService";
+import { supersedeParentsWithStoredValues } from "@/backend/ImportResultBuilder";
+import { previewImportRows } from "@/backend/ImportRowPreviewService";
 import {
   getEmissionResults,
   getEmissionsBreakdown,
@@ -243,5 +245,95 @@ describe("subsector-level GPC references", () => {
     expect(parent.issue).toBeUndefined();
     expect(parent.errors).toBeUndefined();
     expect(parent.parentSuperseded).toBeUndefined();
+  });
+
+  it("re-running the rule keeps a single gap warning", async () => {
+    const extracted = await ECRFImportService.fromExtractedRows([
+      row("I.3", 1000),
+      row("I.3.1", 500),
+    ]);
+    // applyReviewedRows runs the rule again after the parse.
+    supersedeParentsWithChildren(extracted.rows, extracted.warnings);
+    expect(
+      extracted.warnings.filter((w) => w.includes("gap 500")),
+    ).toHaveLength(1);
+  });
+
+  describe("values already stored on the inventory", () => {
+    it("drops an imported subsector row when its children are stored", async () => {
+      const { inventoryId } = await importRows([
+        row("I.3.1", 300),
+        row("I.3.2", 200),
+      ]);
+      const extracted = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        row("I.1.1", 10),
+      ]);
+      await supersedeParentsWithStoredValues(extracted, inventoryId);
+      const parent = extracted.rows.find((r) => r.gpcRefNo === "I.3")!;
+      expect(parent.issue).toBe("gpc-parent-superseded");
+      expect(parent.errors).toHaveLength(1);
+      expect(parent.parentSuperseded).toEqual({
+        parentValue: 500,
+        childrenSum: 500,
+        childrenCount: 2,
+        gap: 0,
+      });
+      await InventoryImportService.importECRFData(
+        inventoryId,
+        extracted,
+        user.userId,
+      );
+      const refs = (await stored(inventoryId))
+        .map((v) => v.gpcReferenceNumber)
+        .sort();
+      expect(refs).toEqual(["I.1.1", "I.3.1", "I.3.2"]);
+    });
+
+    it("flags a gap against the stored children once", async () => {
+      const { inventoryId } = await importRows([row("I.3.1", 500)]);
+      const extracted = await ECRFImportService.fromExtractedRows([
+        row("I.3", 1000),
+      ]);
+      await supersedeParentsWithStoredValues(extracted, inventoryId);
+      const parent = extracted.rows[0];
+      expect(parent.issue).toBe("gpc-parent-gap");
+      expect(parent.parentSuperseded?.gap).toBe(500);
+      expect(extracted.warnings.filter((w) => w.includes("gap 500"))).toHaveLength(1);
+    });
+
+    it("keeps the subsector row when the stored children are left out of the total", async () => {
+      const { inventoryId } = await importRows([row("I.3.1", 300, true)]);
+      const extracted = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+      ]);
+      await supersedeParentsWithStoredValues(extracted, inventoryId);
+      expect(extracted.rows[0].errors).toBeUndefined();
+      expect(extracted.rows[0].issue).toBeUndefined();
+    });
+
+    it("warns, without deleting, when a stored subsector value gets children", async () => {
+      const { inventoryId } = await importRows([row("I.3", 500)]);
+      const extracted = await ECRFImportService.fromExtractedRows([
+        row("I.3.1", 300),
+        row("I.3.2", 200),
+      ]);
+      await supersedeParentsWithStoredValues(extracted, inventoryId);
+      expect(extracted.rows.every((r) => !r.errors)).toBe(true);
+      const preview = await previewImportRows(
+        extracted,
+        InventoryTypeEnum.GPC_BASIC_PLUS,
+      );
+      const flagged = preview.rows.filter(
+        (r) => r.issue === "gpc-subsector-already-stored",
+      );
+      expect(flagged).toHaveLength(1);
+      expect(flagged[0]).toMatchObject({
+        gpcRefNo: "I.3.1",
+        status: "imported",
+        storedParent: { gpcRefNo: "I.3", tonnes: 500 },
+      });
+      expect(preview.importedRows).toBe(2);
+    });
   });
 });

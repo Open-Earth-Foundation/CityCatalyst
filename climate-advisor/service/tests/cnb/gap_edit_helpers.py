@@ -1,11 +1,7 @@
 """Shared builders for Concept Note Builder gap-editing tests."""
 
 from datetime import UTC, datetime
-from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
 from uuid import UUID, uuid4
-
-import pytest
 
 from app.models.cnb.concept_note_edits import EditProposalRequest, EditScope
 from app.persistence.concept_notes.gaps import (
@@ -91,28 +87,6 @@ def edit_request(
         )
     return EditProposalRequest(
         instruction=instruction, scope=scope, idempotency_key=uuid4()
-    )
-
-
-def mock_run_authorization(
-    monkeypatch: pytest.MonkeyPatch,
-) -> tuple[SimpleNamespace, AsyncMock]:
-    """Make the run routes authorize one fake run; return it and the check."""
-    run = SimpleNamespace(run_id=uuid4())
-    authorize = AsyncMock(return_value=run)
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.ConceptNoteRunService",
-        Mock(return_value=SimpleNamespace(get_authorized_run=authorize)),
-    )
-    return run, authorize
-
-
-def mock_cnb_session(monkeypatch: pytest.MonkeyPatch, session: Mock) -> None:
-    """Make the run routes open ``session`` as their reference-data session."""
-    session.__aenter__.return_value = session
-    monkeypatch.setattr(
-        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
-        Mock(return_value=Mock(return_value=session)),
     )
 
 

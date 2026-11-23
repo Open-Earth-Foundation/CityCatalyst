@@ -345,6 +345,7 @@ export function GapAnswerForm({
 
   /** Save every answer given so far on the gap version, against the text last seen. */
   async function saveAnswers(answers: string): Promise<SaveResult> {
+    setSaving(true);
     const { gap } = request.row;
     if (!gap) return "failed";
     try {
@@ -450,17 +451,17 @@ export function GapAnswerForm({
     headingRef.current?.closest("form")?.scrollIntoView({ block: "start" });
   }, []);
 
-  /** Saves the answers on the gap for everyone, without starting a chat turn. */
-  async function saveSoFar() {
-    setSaving(true);
-    const result = await saveAnswers(answerText);
-    if (!bound.current) return;
+  function finishSave(result: SaveResult): boolean {
+    if (!bound.current) return false;
     setSaving(false);
     setSaveResult(result);
-    if (result !== "saved") {
-      if (result === "conflict") onRefreshDraft?.();
-      return;
-    }
+    if (result === "conflict") onRefreshDraft?.();
+    return result === "saved";
+  }
+
+  /** Saves the answers on the gap for everyone, without starting a chat turn. */
+  async function saveSoFar() {
+    if (!finishSave(await saveAnswers(answerText))) return;
     // The answers wait on the gap; the chapter changes only when a preview is accepted.
     saveDraft(draftKey, null);
     onSaved(answerText);
@@ -494,20 +495,10 @@ export function GapAnswerForm({
       onSubmit={async (event) => {
         event.preventDefault();
         if (submitBlocked) return;
-        setSaving(true);
-        // A row without a gap has no version to save on; it is sent as before.
         const result = request.row.gap
           ? await saveAnswers(answerText)
           : "saved";
-        // The gap changed or closed while the save was pending.
-        if (!bound.current) return;
-        setSaving(false);
-        setSaveResult(result);
-        if (result !== "saved") {
-          // Nothing was sent; the form keeps its input for copying.
-          if (result === "conflict") onRefreshDraft?.();
-          return;
-        }
+        if (!finishSave(result)) return;
         // The answers are on the gap now, so the draft shows them even when
         // chat refuses the send below.
         if (request.row.gap) onRefreshDraft?.();
@@ -678,15 +669,7 @@ export function GapAnswerForm({
               disabled={saving}
               onClick={async () => {
                 // Clearing applies to everyone, since the answers are on the gap.
-                setSaving(true);
-                const cleared = await saveAnswers("");
-                if (!bound.current) return;
-                setSaving(false);
-                setSaveResult(cleared);
-                if (cleared !== "saved") {
-                  if (cleared === "conflict") onRefreshDraft?.();
-                  return;
-                }
+                if (!finishSave(await saveAnswers(""))) return;
                 onSaved("");
                 keepTypedAnswers();
                 setEarlier("");

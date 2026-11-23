@@ -1,16 +1,21 @@
 /** @jest-environment jsdom */
 
-import { beforeAll, beforeEach, expect, it, jest } from "@jest/globals";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { act, type ReactNode, useState } from "react";
+import { createRoot, type Root } from "react-dom/client";
 import type {
   ConceptNoteApplicationContext,
   ConceptNoteDraftRunStatus,
 } from "@/util/types";
-import {
-  mockTranslation,
-  setupDomShims,
-  setupTestRoot,
-} from "./helpers/concept-note-ui";
 
 const context: ConceptNoteApplicationContext = {
   run_id: "run",
@@ -51,7 +56,9 @@ let setApplicationContext: (value: ConceptNoteApplicationContext) => void;
 const refetch = jest.fn<() => Promise<{ isSuccess: boolean }>>();
 const refetchDraft = jest.fn();
 
-mockTranslation((key: string) => key);
+jest.unstable_mockModule("@/i18n/client", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
 jest.unstable_mockModule("@/services/api", () => ({
   api: { useConfirmConceptNoteChapterMutation: () => [jest.fn(), {}] },
 }));
@@ -188,24 +195,49 @@ jest.unstable_mockModule(
 );
 
 let ConceptNoteWorkspace: typeof import("@/components/ConceptNoteWorkspace").ConceptNoteWorkspace;
-setupDomShims();
-const view = setupTestRoot();
+let root: Root;
+let container: HTMLDivElement;
+const originalResizeObserver = globalThis.ResizeObserver;
+const originalStructuredClone = globalThis.structuredClone;
 beforeAll(async () => {
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  globalThis.structuredClone = (value) =>
+    value === undefined ? value : JSON.parse(JSON.stringify(value));
+  globalThis.ResizeObserver = class {
+    disconnect() {}
+    observe() {}
+    unobserve() {}
+  };
   ({ ConceptNoteWorkspace } =
     await import("@/components/ConceptNoteWorkspace"));
+});
+afterAll(() => {
+  globalThis.IS_REACT_ACT_ENVIRONMENT = false;
+  globalThis.ResizeObserver = originalResizeObserver;
+  globalThis.structuredClone = originalStructuredClone;
 });
 beforeEach(() => {
   initialContext = undefined;
   initialWorkspaceState = { draftStatus: "not_started", contextState: "none" };
-  refetch.mockReset();
   refetchDraft.mockReset();
+  refetch.mockReset();
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
 });
-
+afterEach(async () => {
+  await act(async () => root.unmount());
+  container.remove();
+});
 async function clickSetup() {
-  await view.render(
-    <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />,
-  );
-  const button = [...view.container.querySelectorAll("button")].find(
+  await act(async () => {
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ConceptNoteWorkspace cityId="city" runId="run" lng="en" />
+      </ChakraProvider>,
+    );
+  });
+  const button = [...container.querySelectorAll("button")].find(
     (item) => item.getAttribute("aria-label") === "open-funding-setup",
   );
   await act(async () => button!.click());
@@ -214,11 +246,11 @@ async function clickSetup() {
 it("keeps funding closed after a failed context retry and allows another attempt", async () => {
   await clickSetup();
   await act(async () => finishRefetch(false));
-  expect(view.container.querySelector('[role="dialog"]')).toBeNull();
+  expect(container.querySelector('[role="dialog"]')).toBeNull();
   await clickSetup();
   await act(async () => finishRefetch(true));
   expect(refetch).toHaveBeenCalledTimes(2);
-  expect(view.container.querySelector('[role="dialog"]')).not.toBeNull();
+  expect(container.querySelector('[role="dialog"]')).not.toBeNull();
 });
 
 it("clears ready-to-draft guidance when the saved template is removed", async () => {
@@ -228,11 +260,11 @@ it("clears ready-to-draft guidance when the saved template is removed", async ()
   } as unknown as ConceptNoteApplicationContext["template"];
   initialContext = { ...context, template };
   await clickSetup();
-  const save = view.container.querySelector('[aria-label="save-funding"]');
+  const save = container.querySelector('[aria-label="save-funding"]');
   await act(async () => (save as HTMLButtonElement).click());
 
   const banner = () =>
-    view.container.querySelector('[data-testid="concept-note-next-step"]');
+    container.querySelector('[data-testid="concept-note-next-step"]');
   expect(banner()?.textContent).toContain("next-step-funding-saved-title");
 
   await act(async () => setApplicationContext({ ...context, template: null }));
@@ -250,15 +282,13 @@ it("clears completion guidance when a chapter is added and drafting resumes", as
   await act(async () =>
     setWorkspaceState({ ...initialWorkspaceState, draftStatus: "complete" }),
   );
-  expect(view.container.textContent).toContain(
-    "next-step-draft-complete-title",
-  );
+  expect(container.textContent).toContain("next-step-draft-complete-title");
   for (const draftStatus of ["not_started", "running", "failed"] as const) {
     await act(async () =>
       setWorkspaceState({ ...initialWorkspaceState, draftStatus }),
     );
     expect(
-      view.container.querySelector('[data-testid="concept-note-next-step"]'),
+      container.querySelector('[data-testid="concept-note-next-step"]'),
     ).toBeNull();
   }
 });
@@ -273,8 +303,8 @@ it("uses funding that loads after sources become ready", async () => {
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
   await act(async () => setApplicationContext(fundedContext));
-  expect(view.container.textContent).toContain("next-step-funding-saved-title");
-  expect(view.container.textContent).not.toContain(
+  expect(container.textContent).toContain("next-step-funding-saved-title");
+  expect(container.textContent).not.toContain(
     "next-step-sources-ready-funding",
   );
 });
@@ -289,14 +319,14 @@ it("keeps dismissed source guidance closed when funding arrives", async () => {
   await act(async () =>
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
-  const dismiss = view.container.querySelector<HTMLButtonElement>(
+  const dismiss = container.querySelector<HTMLButtonElement>(
     '[data-testid="concept-note-next-step-dismiss"]',
   );
   expect(dismiss).not.toBeNull();
   await act(async () => dismiss!.click());
   await act(async () => setApplicationContext(fundedContext));
   expect(
-    view.container.querySelector('[data-testid="concept-note-next-step"]'),
+    container.querySelector('[data-testid="concept-note-next-step"]'),
   ).toBeNull();
 });
 
@@ -307,15 +337,15 @@ it("waits for sources before showing ready-to-draft guidance after saving fundin
     contextState: "processing",
   };
   await clickSetup();
-  const save = view.container.querySelector<HTMLButtonElement>(
+  const save = container.querySelector<HTMLButtonElement>(
     '[aria-label="save-funding"]',
   );
   await act(async () => save!.click());
   expect(
-    view.container.querySelector('[data-testid="concept-note-next-step"]'),
+    container.querySelector('[data-testid="concept-note-next-step"]'),
   ).toBeNull();
   await act(async () =>
     setWorkspaceState({ draftStatus: "not_started", contextState: "ready" }),
   );
-  expect(view.container.textContent).toContain("next-step-funding-saved-title");
+  expect(container.textContent).toContain("next-step-funding-saved-title");
 });

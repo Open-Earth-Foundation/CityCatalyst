@@ -8,20 +8,15 @@ from uuid import uuid4
 import pytest
 from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
-    GapAnswersRequest,
     GapQuestionOutput,
     GapQuestionRequest,
     GapSubQuestion,
 )
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.persistence.concept_notes.edits import applied_gap_answers
-from app.routes.concept_note_runs import (
-    propose_gap_question,
-    save_gap_answers,
-)
+from app.routes.concept_note_runs import propose_gap_question
 from fastapi import HTTPException
 from pydantic import ValidationError
-from tests.cnb.gap_edit_helpers import mock_cnb_session, mock_run_authorization
 from tests.test_concept_note_lifecycle import _workspace_repository
 
 
@@ -36,7 +31,12 @@ def test_rejects_single_or_invalid_choices(options):
 @pytest.fixture
 def gap_route(monkeypatch):
     chapter_id, gap_id = uuid4(), uuid4()
-    run, authorize = mock_run_authorization(monkeypatch)
+    run = SimpleNamespace(run_id=uuid4())
+    authorize = AsyncMock(return_value=run)
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.ConceptNoteRunService.get_authorized_run",
+        authorize,
+    )
     chapter = SimpleNamespace(
         chapter_id=chapter_id,
         title="Financing",
@@ -71,7 +71,11 @@ def gap_route(monkeypatch):
     monkeypatch.setattr("app.routes.concept_note_runs.generate_suggestion", generate)
     previous = AsyncMock(return_value=["Earlier answer " * 300])
     monkeypatch.setattr("app.routes.concept_note_runs.applied_gap_answers", previous)
-    mock_cnb_session(monkeypatch, AsyncMock())
+    sessions = MagicMock()
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
+        lambda: sessions,
+    )
     return SimpleNamespace(
         authorize=authorize,
         chapter=chapter,
@@ -202,63 +206,6 @@ async def test_excerpt_is_centered_on_the_gap(gap_route, kept, body, resolution)
     excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
     assert len(excerpt) == 12000
     assert kept in excerpt
-
-
-@pytest.mark.parametrize("saved", [True, False])
-async def test_saving_answers_authorizes_and_rejects_a_changed_gap(
-    gap_route, monkeypatch, saved
-):
-    save = AsyncMock(return_value=saved)
-    monkeypatch.setattr("app.routes.concept_note_runs.save_partial_answer", save)
-    # MagicMock supports `async with`, including the session's begin().
-    mock_cnb_session(monkeypatch, MagicMock())
-    args = {
-        "run_id": gap_route.args["run_id"],
-        "gap_id": gap_route.chapter.gaps[0].gap_id,
-        "payload": GapAnswersRequest(
-            gap_version=3,
-            answers=" 1. Instrument?\nLoan ",
-            expected_previous=" 1. Instrument?\nOld ",
-        ),
-        "session": AsyncMock(),
-        "user_id": "teammate",
-        "authorization": "Bearer test",
-    }
-    if saved:
-        response = await save_gap_answers(**args)
-        assert response.status_code == 204
-    else:
-        with pytest.raises(HTTPException) as error:
-            await save_gap_answers(**args)
-        assert error.value.status_code == 409
-    gap_route.authorize.assert_awaited_once()
-    assert save.call_args.kwargs == {
-        "run_id": args["run_id"],
-        "gap_id": args["gap_id"],
-        "gap_version": 3,
-        "answer": "1. Instrument?\nLoan",
-        "expected_previous": "1. Instrument?\nOld",
-        "user_id": "teammate",
-    }
-
-
-async def test_saving_answers_checks_access_before_writing(gap_route, monkeypatch):
-    save = AsyncMock(return_value=True)
-    monkeypatch.setattr("app.routes.concept_note_runs.save_partial_answer", save)
-    gap_route.authorize.side_effect = HTTPException(status_code=403)
-    with pytest.raises(HTTPException) as error:
-        await save_gap_answers(
-            run_id=gap_route.args["run_id"],
-            gap_id=uuid4(),
-            payload=GapAnswersRequest(
-                gap_version=1, answers="x", expected_previous=None
-            ),
-            session=AsyncMock(),
-            user_id="owner",
-            authorization=None,
-        )
-    assert error.value.status_code == 403
-    save.assert_not_called()
 
 
 async def test_provider_failure_is_explicit_and_retryable(gap_route):

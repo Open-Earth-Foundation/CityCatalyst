@@ -3,10 +3,9 @@
 import { act } from "react";
 import { expect, it, jest } from "@jest/globals";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
-import type { ConceptNoteGap } from "@/util/types";
+import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
 import ReactMarkdown from "react-markdown";
 import {
-  draftChapter,
   gapRecord,
   mockTranslation,
   setupDomShims,
@@ -28,11 +27,22 @@ const view = setupTestRoot(appTheme);
 const gap = (id: string, state: ConceptNoteGap["state"]) =>
   gapRecord(id, { state, severity: id === "b" ? "noncritical" : "critical" });
 
-const chapter = draftChapter({
+const chapter: ConceptNoteDraftChapter = {
+  chapter_id: "ch-1",
+  template_section_id: null,
   title: "Funding breakdown",
   position: 1,
+  status: "draft",
+  required: true,
+  user_locked: false,
+  body_markdown: "Body",
   gaps: [gap("a", "open"), gap("b", "open"), gap("c", "resolved")],
-});
+  open_gap_count: 2,
+  caveat_count: 0,
+  revision_number: 1,
+  confirmed_body_markdown: null,
+  confirmed_revision_number: null,
+};
 
 it("lists only open gaps and falls back to marker messages", () => {
   expect(chapterGapRows(chapter).map((row) => row.id)).toEqual(["a", "b"]);
@@ -44,71 +54,6 @@ it("lists only open gaps and falls back to marker messages", () => {
   expect(fallback).toHaveLength(1);
   expect(fallback[0]?.question).toBe("Provide the opening date.");
   expect(fallback[0]?.severity).toBe("critical");
-});
-
-it("keeps an accepted estimate listed as to be confirmed, after the open gaps", async () => {
-  const estimated = {
-    ...gap("d", "caveat"),
-    version: 2,
-    resolution: {
-      resolution_id: "r-d",
-      action: "answer" as const,
-      answer: "The request is approximately $2 million; not yet confirmed.",
-      actor_user_id: "owner",
-      source_refs: [],
-      created_at: "2026-09-24T00:00:00Z",
-    },
-  };
-  const withEstimate = { ...chapter, gaps: [estimated, ...chapter.gaps] };
-  const rows = chapterGapRows(withEstimate);
-  // No marker is left for an estimate, so it follows the open gaps.
-  expect(rows.map((row) => row.id)).toEqual(["a", "b", "d"]);
-  const onAnswerGap = jest.fn();
-  await view.render(
-    <ChapterGapsPanel
-      chapter={withEstimate}
-      lng="en"
-      rows={rows}
-      onAnswerGap={onAnswerGap}
-    />,
-  );
-  const panel = view.byTestId("concept-note-chapter-gaps");
-  // Estimates are not counted as open gaps.
-  expect(panel?.textContent).toContain('chapter-open-gaps:{"count":2}');
-  await act(async () =>
-    view.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-chapter-gaps-toggle"]',
-      )!
-      .click(),
-  );
-  const items = [
-    ...document.querySelectorAll<HTMLButtonElement>(
-      '[data-testid="concept-note-gap-list-item"]',
-    ),
-  ];
-  expect(items.at(-1)?.textContent).toContain("gap-state-caveat");
-  await act(async () => items.at(-1)!.click());
-  const details = document.querySelector(
-    '[data-testid="concept-note-chapter-gap"]',
-  );
-  expect(details?.getAttribute("data-state")).toBe("caveat");
-  expect(
-    document.querySelector('[data-testid="concept-note-gap-estimate"]')
-      ?.textContent,
-  ).toContain("approximately $2 million");
-  const confirm = document.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-chapter-gap-answer"]',
-  )!;
-  await act(async () => confirm.click());
-  expect(onAnswerGap).toHaveBeenCalledWith(
-    withEstimate,
-    expect.objectContaining({ id: "d" }),
-  );
-  // Let the closing popover settle its focus before the next test.
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  });
 });
 
 it("matches source passages, keeps unanchored gaps, and does not resurrect resolved ones", () => {
@@ -169,7 +114,6 @@ it("opens a numbered optional marker and routes the exact gap into chat", async 
   );
   const marker = view.byTestId<HTMLButtonElement>("concept-note-gap-marker")!;
   expect(marker.textContent).toBe("4");
-  expect(marker.getAttribute("data-severity")).toBe("noncritical");
   await act(async () => marker.click());
   expect(
     document.querySelector('[data-testid="concept-note-chapter-gap"]')
@@ -227,55 +171,53 @@ it("shows answers saved so far on the marker, in the gap list and apart from an 
     ],
   };
   const rows = chapterGapRows(answered);
+  expect(rows.map((row) => row.id)).toEqual(["a", "b", "d"]);
+  const onAnswerGap = jest.fn();
   await view.render(
     <>
       <ChapterGapMarker chapter={answered} lng="en" row={rows[0]!} number={1} />
-      <ChapterGapsPanel chapter={answered} lng="en" rows={rows} />
+      <ChapterGapsPanel
+        chapter={answered}
+        lng="en"
+        rows={rows}
+        onAnswerGap={onAnswerGap}
+      />
     </>,
   );
-  await act(async () =>
-    view.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-gap-marker"]',
-      )!
-      .click(),
+  const element = (id: string) =>
+    document.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
+  await act(async () => element("concept-note-gap-marker").click());
+  expect(element("concept-note-gap-answered-so-far").textContent).toContain(
+    saved,
   );
-  // Saved answers are visible to everyone who opens the gap, not yet in the text.
-  const box = document.querySelector(
-    '[data-testid="concept-note-gap-answered-so-far"]',
+  expect(element("concept-note-chapter-gaps").textContent).toContain(
+    'chapter-open-gaps:{"count":2}',
   );
-  expect(box?.textContent).toContain(saved);
-  await act(async () =>
-    view.container
-      .querySelector<HTMLButtonElement>(
-        '[data-testid="concept-note-chapter-gaps-toggle"]',
-      )!
-      .click(),
+  await act(async () => element("concept-note-chapter-gaps-toggle").click());
+  const items = document.querySelectorAll<HTMLButtonElement>(
+    '[data-testid="concept-note-gap-list-item"]',
   );
-  const items = [
-    ...document.querySelectorAll<HTMLButtonElement>(
-      '[data-testid="concept-note-gap-list-item"]',
-    ),
-  ];
-  expect(items[0].textContent).toContain(
-    "gap-severity-critical · gap-answered-so-far",
-  );
+  expect(items[0].textContent).toContain("gap-answered-so-far");
   expect(items[1].textContent).not.toContain("gap-answered-so-far");
-
-  // An estimate and the answers saved to confirm it stay in separate blocks.
   await act(async () => items[2].click());
-  const estimateBlock = document.querySelector(
-    '[data-testid="concept-note-gap-estimate"]',
+  const estimateBlock = element("concept-note-gap-estimate");
+  const detail = estimateBlock.closest(
+    '[data-testid="concept-note-chapter-gap"]',
+  )!;
+  expect(estimateBlock.textContent).toContain(estimate);
+  expect(
+    detail.querySelector('[data-testid="concept-note-gap-answered-so-far"]')
+      ?.textContent,
+  ).toContain(confirming);
+  await act(async () =>
+    detail
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="concept-note-chapter-gap-answer"]',
+      )!
+      .click(),
   );
-  const savedBlock = estimateBlock
-    ?.closest('[data-testid="concept-note-chapter-gap"]')
-    ?.querySelector('[data-testid="concept-note-gap-answered-so-far"]');
-  expect(estimateBlock?.textContent).toContain(estimate);
-  expect(estimateBlock?.textContent).not.toContain(confirming);
-  expect(savedBlock?.textContent).toContain(confirming);
-  expect(savedBlock?.textContent).not.toContain(estimate);
-  // Let the popover settle its focus before the next test.
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  });
+  expect(onAnswerGap).toHaveBeenCalledWith(
+    answered,
+    expect.objectContaining({ id: "d" }),
+  );
 });

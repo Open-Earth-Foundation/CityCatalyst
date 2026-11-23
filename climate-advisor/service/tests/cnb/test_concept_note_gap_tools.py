@@ -3,15 +3,13 @@
 import json
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-import pytest
 from agents.tool import ToolContext
-from app.services.cnb.ui_context import (
-    UnknownChapterNumberError,
-    build_gap_list,
-)
+from app.services.cnb import ui_context
+from app.services.cnb.ui_context import build_gap_list
+from app.tools import concept_note_gap_tools
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
 
 START = datetime(2026, 9, 25, tzinfo=UTC)
@@ -151,17 +149,6 @@ def test_filters_by_chapter_number_severity_and_closed_state():
     assert "filled_from" not in with_closed["gaps"][0]
 
 
-@pytest.mark.parametrize("number", [0, 4, 10])
-def test_unknown_chapter_number_names_the_valid_chapters(number):
-    # 10 is the deleted chapter's parked position + 1; deleted chapters never count.
-    with pytest.raises(UnknownChapterNumberError) as error:
-        build_gap_list(eucf_like_chapters(), chapter_number=number)
-    assert str(error.value) == (
-        f'No chapter {number}. Chapters: 1 "Applicant", '
-        '2 "Political commitments", 3 "Budget".'
-    )
-
-
 def test_gap_numbers_follow_marker_order_not_record_order():
     late = gap(5, "Asked first in the text")
     early = gap(1, "Asked second in the text")
@@ -219,74 +206,44 @@ def test_gap_numbers_match_formatted_and_multiline_markers():
     assert result["open_total"] == 1
 
 
-def make_tool():
-    return build_concept_note_gap_tools(
-        session_factory=MagicMock(), run_id=uuid4(), user_id="owner"
-    )[0]
-
-
-async def invoke(tool, arguments):
-    context = ToolContext(
-        context=None,
-        tool_call_id="gaps-1",
-        tool_name=tool.name,
-        tool_arguments=json.dumps(arguments),
+async def test_gap_tool_filters_real_chapters_and_reauthorizes_each_read(monkeypatch):
+    run_id = uuid4()
+    sessions = MagicMock()
+    authorize = AsyncMock(return_value={})
+    read = AsyncMock(return_value=eucf_like_chapters())
+    monkeypatch.setattr(concept_note_gap_tools, "load_agent_context", authorize)
+    monkeypatch.setattr(
+        ui_context, "get_cnb_reference_session_factory", lambda: sessions
     )
-    return json.loads(await tool.on_invoke_tool(context, json.dumps(arguments)))
+    monkeypatch.setattr(
+        ui_context.ConceptNoteWorkspaceRepository, "list_chapters", read
+    )
+    [tool] = build_concept_note_gap_tools(
+        session_factory=sessions, run_id=run_id, user_id="owner"
+    )
 
-
-async def test_tool_reauthorizes_and_passes_filters():
-    listing = {"gaps": [{"chapter_number": 2, "gap_number": 1}], "open_total": 1}
-    with (
-        patch(
-            "app.tools.concept_note_gap_tools.load_agent_context",
-            new=AsyncMock(return_value={}),
-        ) as authorize,
-        patch(
-            "app.tools.concept_note_gap_tools.load_gap_list",
-            new=AsyncMock(return_value=listing),
-        ) as load,
-    ):
-        tool = make_tool()
-        result = await invoke(
-            tool,
-            {"chapter_number": 2, "severity": "critical", "include_closed": False},
+    async def invoke(**filters):
+        args = json.dumps(filters)
+        context = ToolContext(
+            context=None, tool_name=tool.name, tool_call_id="gaps", tool_arguments=args
         )
-    assert result == {"success": True, **listing}
-    authorize.assert_awaited_once()
-    assert load.await_args.kwargs == {
-        "chapter_number": 2,
-        "severity": "critical",
-        "include_closed": False,
-    }
+        return json.loads(await tool.on_invoke_tool(context, args))
 
-
-async def test_tool_reports_an_unknown_chapter_number_with_the_valid_ones():
-    error = UnknownChapterNumberError('No chapter 7. Chapters: 1 "Summary".')
-    with (
-        patch(
-            "app.tools.concept_note_gap_tools.load_agent_context",
-            new=AsyncMock(return_value={}),
-        ),
-        patch(
-            "app.tools.concept_note_gap_tools.load_gap_list",
-            new=AsyncMock(side_effect=error),
-        ),
-    ):
-        result = await invoke(make_tool(), {"chapter_number": 7})
-    assert result == {"success": False, "error": 'No chapter 7. Chapters: 1 "Summary".'}
-
-
-@pytest.mark.parametrize("failure", ["unauthorized", "storage"])
-async def test_tool_reports_failures_instead_of_an_empty_list(failure):
-    authorize = AsyncMock(return_value=None if failure == "unauthorized" else {})
-    load = AsyncMock(side_effect=OSError("workspace down"))
-    with (
-        patch("app.tools.concept_note_gap_tools.load_agent_context", new=authorize),
-        patch("app.tools.concept_note_gap_tools.load_gap_list", new=load),
-    ):
-        result = await invoke(make_tool(), {})
-    assert result["success"] is False
-    assert "gaps" not in result
-    if failure == "unauthorized":
-        load.assert_not_awaited()
+    result = await invoke(chapter_number=1, severity="noncritical")
+    assert result["success"] and numbered(result["gaps"]) == [(1, 2, "Contact persons")]
+    assert result["open_total"] == 3
+    read.assert_awaited_once_with(run_id=run_id)
+    authorize.assert_awaited_once_with(
+        session_factory=sessions, user_id="owner", run_id=run_id
+    )
+    for number in (0, 4, 10):  # Deleted chapters do not extend the valid range.
+        assert await invoke(chapter_number=number) == {
+            "success": False,
+            "error": f'No chapter {number}. Chapters: 1 "Applicant", 2 "Political commitments", 3 "Budget".',
+        }
+    read.side_effect = OSError("workspace down")
+    assert await invoke() == {"success": False, "error": "CNB gaps unavailable"}
+    read.reset_mock()
+    authorize.return_value = None
+    assert await invoke() == {"success": False, "error": "CNB context unavailable"}
+    read.assert_not_awaited()

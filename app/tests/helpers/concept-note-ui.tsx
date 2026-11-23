@@ -2,94 +2,31 @@
 // Call the setup* helpers at the top level of a test file: they register the
 // Jest hooks themselves. Module mocks must still be registered before the
 // test file's dynamic import of the component under test.
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  jest,
-} from "@jest/globals";
+import { afterEach, beforeAll, beforeEach, jest } from "@jest/globals";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { LuInfo } from "react-icons/lu";
 import { createInstance, type i18n as I18n, type TFunction } from "i18next";
 import translations from "@/i18n/locales/en/concept-notes.json";
-import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
-import type { EditController } from "@/components/ConceptNoteWorkspace/document-review";
-import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
-import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
+import type { ConceptNoteGap } from "@/util/types";
 
 type Theme = Parameters<typeof ChakraProvider>[0]["value"];
 
-/** Tells React that updates are wrapped in act(). */
-function setActEnvironment(enabled: boolean): void {
-  (
-    globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
-  ).IS_REACT_ACT_ENVIRONMENT = enabled;
-}
-
-/**
- * Swaps in the browser APIs jsdom lacks (and Chakra or the workspace use),
- * returning a function that restores the originals. With `immediate`, the
- * ResizeObserver reports each observed element at once, as a first layout would.
- */
-function installDomShims({
-  resizeObserver = "noop",
-}: { resizeObserver?: "noop" | "immediate" } = {}): () => void {
-  const originals = {
-    fetch: globalThis.fetch,
-    ResizeObserver: globalThis.ResizeObserver,
-    structuredClone: globalThis.structuredClone,
-    CSS: globalThis.CSS,
-    scrollIntoView: HTMLElement.prototype.scrollIntoView,
-    scrollTo: HTMLElement.prototype.scrollTo,
-  };
-  setActEnvironment(true);
-  // Chakra clones JSON-compatible recipes.
-  globalThis.structuredClone = (value) =>
-    value === undefined ? value : JSON.parse(JSON.stringify(value));
-  globalThis.CSS = { ...originals.CSS, escape: (value: string) => value };
-  HTMLElement.prototype.scrollIntoView = jest.fn();
-  HTMLElement.prototype.scrollTo = jest.fn() as never;
-  globalThis.ResizeObserver =
-    resizeObserver === "immediate"
-      ? class {
-          constructor(private callback: ResizeObserverCallback) {}
-          disconnect() {}
-          observe(target: Element) {
-            this.callback(
-              [{ target } as ResizeObserverEntry],
-              this as unknown as ResizeObserver,
-            );
-          }
-          unobserve() {}
-        }
-      : class {
-          disconnect() {}
-          observe() {}
-          unobserve() {}
-        };
-  return () => {
-    globalThis.fetch = originals.fetch;
-    globalThis.ResizeObserver = originals.ResizeObserver;
-    globalThis.structuredClone = originals.structuredClone;
-    globalThis.CSS = originals.CSS;
-    HTMLElement.prototype.scrollIntoView = originals.scrollIntoView;
-    HTMLElement.prototype.scrollTo = originals.scrollTo;
-    setActEnvironment(false);
-  };
-}
-
-/** Installs the DOM shims for the whole file. */
-export function setupDomShims(
-  options?: Parameters<typeof installDomShims>[0],
-): void {
-  let restore = () => {};
+/** Each Jest suite owns its jsdom window. Install only the missing browser behavior. */
+export function setupDomShims(): void {
   beforeAll(() => {
-    restore = installDomShims(options);
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    globalThis.structuredClone = (value) =>
+      value === undefined ? value : JSON.parse(JSON.stringify(value));
+    globalThis.CSS = { ...globalThis.CSS, escape: (value: string) => value };
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+    HTMLElement.prototype.scrollTo = jest.fn() as never;
+    globalThis.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
   });
-  afterAll(() => restore());
 }
 
 /** A React root in a fresh container per test, with query helpers. */
@@ -205,24 +142,13 @@ export function jsonResponse(body: unknown = {}, status = 200): Response {
   } as Response;
 }
 
-/**
- * Real English concept-note strings. `namespaced` loads them under the
- * "concept-notes" namespace, as the app does; otherwise as the default one.
- */
-export async function conceptNotesI18n({
-  namespaced = false,
-}: { namespaced?: boolean } = {}): Promise<I18n> {
+export async function conceptNotesI18n(): Promise<I18n> {
   const i18n = createInstance();
-  await i18n.init(
-    namespaced
-      ? {
-          lng: "en",
-          ns: ["concept-notes"],
-          defaultNS: "concept-notes",
-          resources: { en: { "concept-notes": translations } },
-        }
-      : { lng: "en", resources: { en: { translation: translations } } },
-  );
+  await i18n.init({
+    lng: "en",
+    defaultNS: "concept-notes",
+    resources: { en: { "concept-notes": translations } },
+  });
   return i18n;
 }
 
@@ -234,52 +160,6 @@ export function mockTranslation(
   jest.unstable_mockModule("@/i18n/client", () => ({
     useTranslation: () => (i18n ? { t, i18n } : { t }),
   }));
-}
-
-/** Stubs the chat surfaces around the composer and gap form. */
-export function mockChatPanelSurroundings(): void {
-  for (const [path, name] of [
-    ["chat-progress", "ChatProgress"],
-    ["drafting-progress-card", "DraftingProgressCard"],
-    ["chat-welcome", "ChatWelcome"],
-  ]) {
-    jest.unstable_mockModule(
-      `@/components/ConceptNoteWorkspace/${path}`,
-      () => ({ [name]: () => null }),
-    );
-  }
-  jest.unstable_mockModule(
-    "@/components/ConceptNoteWorkspace/chat-threads",
-    () => ({
-      ChatThreadSwitcher: () => null,
-      OlderChatNotice: () => null,
-      useConceptNoteChatThreads: () => ({}),
-    }),
-  );
-}
-
-export function contextPresentation(
-  state = "ready",
-): ConceptNoteContextPresentation {
-  return {
-    state,
-    blocked: false,
-    title: "",
-    description: "",
-    icon: LuInfo,
-    actionIcon: LuInfo,
-    actionLabel: "",
-    color: "content.secondary",
-    surface: "base.light",
-  } as unknown as ConceptNoteContextPresentation;
-}
-
-export function editControllerStub(): EditController {
-  return {
-    error: null,
-    loadProposal: jest.fn(),
-    refresh: jest.fn(),
-  } as unknown as EditController;
 }
 
 /** An open gap record; fields default from its id. */
@@ -301,59 +181,5 @@ export function gapRecord(
     created_at: "2026-10-15T00:00:00Z",
     updated_at: "2026-10-15T00:00:00Z",
     ...overrides,
-  };
-}
-
-/** A draft chapter whose open-gap count follows its gaps. */
-export function draftChapter(
-  overrides: Partial<ConceptNoteDraftChapter> = {},
-): ConceptNoteDraftChapter {
-  const gaps = overrides.gaps ?? [];
-  return {
-    chapter_id: "ch-1",
-    template_section_id: null,
-    title: "Chapter",
-    position: 0,
-    status: "draft",
-    required: true,
-    user_locked: false,
-    body_markdown: "Body",
-    gaps,
-    open_gap_count: gaps.filter((gap) => gap.state === "open").length,
-    caveat_count: 0,
-    revision_number: 1,
-    confirmed_body_markdown: null,
-    confirmed_revision_number: null,
-    ...overrides,
-  };
-}
-
-/** The recorded financing gap the gap-form tests answer. */
-export function financingGapRequest({
-  chapterTitle = "Financing plan",
-  question = "What is the requested instrument?",
-  whyAsking = "The funder needs the type of support.",
-  gap = {},
-}: {
-  chapterTitle?: string;
-  question?: string;
-  whyAsking?: string;
-  gap?: Partial<ConceptNoteGap>;
-} = {}): GapAnswerRequest {
-  return {
-    chapterId: "financing-chapter",
-    chapterTitle,
-    row: {
-      id: "financing-gap",
-      question,
-      whyAsking,
-      severity: "critical",
-      gap: gapRecord("financing-gap", {
-        field_key: "financing_instrument",
-        question,
-        why_asking: whyAsking,
-        ...gap,
-      }),
-    },
   };
 }

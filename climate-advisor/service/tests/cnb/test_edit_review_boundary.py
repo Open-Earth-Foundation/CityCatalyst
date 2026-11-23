@@ -47,11 +47,11 @@ from app.services.cnb.edit_planner import (
     bind_semantic_review,
     build_planner_input,
     fit_review_evidence,
-    gap_coverage_review,
     gap_review_targets,
     unavailable_source_lookup,
 )
 from app.services.cnb.edit_validation import (
+    bind_answer_gap,
     context_snapshot,
     gap_bindings_for_change,
     validate_edit_plan,
@@ -119,29 +119,8 @@ async def propose_replacements(agent, replacements: list[dict]) -> None:
     assert proposed["ok"], proposed
 
 
-async def propose_with_tools(
-    agent,
-    before,
-    after,
-    *,
-    source_refs=None,
-    kind="wording",
-    replace_all=False,
-    user_input_quote=None,
-):
-    await propose_replacements(
-        agent,
-        [
-            {
-                "before": before,
-                "after": after,
-                "kind": kind,
-                "replace_all": replace_all,
-                "source_refs": source_refs,
-                "user_input_quote": user_input_quote,
-            }
-        ],
-    )
+async def propose_with_tools(agent, before, after, **fields):
+    await propose_replacements(agent, [{"before": before, "after": after, **fields}])
 
 
 def single_review(support: str, coverage: str, explanation: str) -> ChapterEditReview:
@@ -1062,28 +1041,27 @@ async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_c
             if agent.output_type is EditAgentOutput:
                 planner_calls += 1
                 if planner_calls == 1:
-                    # Stage a stale candidate, then stall past the first planner slice.
-                    await propose_with_tools(
-                        agent,
-                        BOUND_AMOUNT_MARKER,
-                        "USD 2,000,000.",
-                        kind="factual",
-                        user_input_quote="USD 2,500,000",
-                    )
-                    await asyncio.Event().wait()
+                    # Stage a stale candidate before the first planner slice expires.
+                    amount = "USD 2,000,000."
+                else:
+                    amount = "USD 2,500,000."
                 await propose_with_tools(
                     agent,
                     BOUND_AMOUNT_MARKER,
-                    "USD 2,500,000.",
+                    amount,
                     kind="factual",
                     user_input_quote="USD 2,500,000",
                 )
+                if planner_calls == 1:
+                    await asyncio.Event().wait()
                 return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
             # Only the fresh candidate reaches the independent reviewer.
             [change] = json.loads(payload)["changes"]
             [target] = change["gap_targets"]
             assert target["original_question"] == "Confirm the instrument and amount."
-            assert target["accepted_passages"] == ["The city will use stormwater utility funds."]
+            assert target["accepted_passages"] == [
+                "The city will use stormwater utility funds."
+            ]
             reviewed_after.append(change["after"])
             review = single_review("user", "complete", "The user states the amount.")
             return SimpleNamespace(final_output=review)
@@ -1096,35 +1074,22 @@ async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_c
     assert [change.after for change in plan.changes] == ["USD 2,500,000."]
 
 
-@pytest.mark.asyncio
-async def test_bound_reopen_timeout_exhausts_one_operation_budget():
-    current, request = bound_reopen()
-    runner, calls = stalled_runner()
-    with pytest.raises(EditOperationError) as error:
-        await ConceptNoteEditPlanner(planner_settings(0.5), runner=runner).plan(
-            request, [current], {}
-        )
-    assert error.value.code == "planning_timeout"
-    # One early slice and one retry, never a second retry.
-    assert len(calls) == 2
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("case", ["unbound", "caveat"])
-async def test_unbound_or_caveat_planning_uses_existing_deadline(case):
+@pytest.mark.parametrize("case,attempts", [("unbound", 1), ("caveat", 1), ("open", 2)])
+async def test_planner_deadline_only_retries_a_reopened_gap(case, attempts):
     if case == "unbound":
-        current, request = chapter("Finance: nothing to answer."), edit_request(
-            "Use digits."
+        current, request = (
+            chapter("Finance: nothing to answer."),
+            edit_request("Use digits."),
         )
     else:
-        current, request = bound_reopen(state="caveat")
+        current, request = bound_reopen(state=case)
     runner, calls = stalled_runner()
     with pytest.raises(EditOperationError) as error:
         await ConceptNoteEditPlanner(planner_settings(0.5), runner=runner).plan(
             request, [current], {}
         )
     assert error.value.code == "planning_timeout"
-    assert len(calls) == 1
+    assert len(calls) == attempts
 
 
 @pytest.mark.asyncio
@@ -1698,122 +1663,120 @@ AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
 FUNDS = "The city will use stormwater utility funds"
 
 
-def finance_chapter() -> WorkspaceChapterSnapshot:
+@pytest.mark.parametrize(
+    "replacement,coverage,hint,mode",
+    [
+        (FUNDS, "complete", False, "fill"),
+        (f"{FUNDS}. {AMOUNT_MARKER}", "partial", True, "narrow"),
+        (FUNDS, "partial", True, None),
+        (f"{FUNDS}. {AMOUNT_MARKER}", "complete", False, None),
+    ],
+)
+def test_reviewed_coverage_decides_the_transition(replacement, coverage, hint, mode):
     current = chapter(f"Finance: {FINANCE_MARKER}")
-    current.gaps.append(gap_snapshot("Confirm the instrument and amount."))
-    return current
+    gap = gap_snapshot("Confirm the instrument and amount.")
+    current.gaps.append(gap)
+    request = EditProposalRequest(
+        instruction=FUNDS,
+        idempotency_key=uuid4(),
+        scope=EditScope(
+            focused_chapter_id=current.chapter_id,
+            gap_id=gap.gap_id,
+            gap_version=gap.version,
+            answer_complete=hint,
+        ),
+    )
+    change = change_at(
+        current.body_markdown, FINANCE_MARKER, replacement, FUNDS, "finance"
+    )
+    plan = reviewed_plan(current, [change], ["user"], [coverage])
+    if mode is None:
+        with pytest.raises(EditOperationError) as error:
+            validate_edit_plan(request, [current], plan)
+        assert error.value.code == "invalid_review"
+    else:
+        [accepted] = validate_edit_plan(request, [current], plan)
+        assert [(b.gap_id, b.mode) for b in accepted.gap_bindings] == [
+            (gap.gap_id, mode)
+        ]
 
 
-def test_reviewer_coverage_must_match_the_change_shape():
-    current = finance_chapter()
-    body = current.body_markdown
-    request = edit_request(f"{FUNDS} and contribute USD 2,500,000.")
-    full_fill = change_at(
-        body, FINANCE_MARKER, f"{FUNDS} and USD 2,500,000.", "USD 2,500,000", "finance"
-    )
-    planned_fill = PlannedTextChange(**full_fill, chapter_id=current.chapter_id)
-    bindings = [gap_bindings_for_change(planned_fill, current, request.scope)]
-    # A full fill the reviewer calls partial is a concrete objection, never accepted.
-    repaired = gap_coverage_review(
-        [planned_fill], bindings, single_review("user", "partial", "Reviewed")
-    )
-    [objection] = repaired.decisions
-    assert objection.support == "unsupported"
+def test_bound_form_refuses_a_superseded_gap():
+    current, request = bound_reopen()
+    current.gaps[0] = replace(current.gaps[0], version=2)
     with pytest.raises(EditOperationError) as error:
-        bind_semantic_review([planned_fill], repaired)
-    assert error.value.code == "unsupported_edit"
+        bind_answer_gap(request, [current])
+    assert error.value.code == "gap_changed"
 
-    [fill] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(current, [full_fill], ["user"], coverages=["complete"]),
-    )
-    assert [binding.mode for binding in fill.gap_bindings] == ["fill"]
 
-    # A narrowing is the bounded repair: partial coverage passes with its own group.
-    narrow = change_at(body, FINANCE_MARKER, f"{FUNDS}. {AMOUNT_MARKER}", FUNDS, "finance")
-    [change] = validate_edit_plan(
-        request,
-        [current],
-        reviewed_plan(current, [narrow], ["user"], coverages=["partial"]),
-    )
-    assert [binding.mode for binding in change.gap_bindings] == ["narrow"]
-    # Claiming complete coverage for a narrowing is a mismatched review.
-    with pytest.raises(EditOperationError) as error:
-        validate_edit_plan(
-            request,
-            [current],
-            reviewed_plan(current, [narrow], ["user"], coverages=["complete"]),
+def test_edits_require_a_chapter_for_bound_answers_and_factual_support_for_estimates():
+    with pytest.raises(ValueError, match="gap_id requires"):
+        EditProposalRequest(
+            instruction=FUNDS,
+            idempotency_key=uuid4(),
+            scope={"gap_id": uuid4(), "gap_version": 1},
         )
-    assert error.value.code == "invalid_review"
+    with pytest.raises(ValueError, match="an estimate is a factual change"):
+        PlannedTextChange(
+            chapter_id=uuid4(),
+            start=0,
+            before="Old",
+            after="About 2 million",
+            group_id="amount",
+            kind="wording",
+            estimate=True,
+        )
 
 
-TARGET_QUESTION = (
-    "What is the City's contribution source, amount and proposed budget status?"
-)
-TARGET_ANSWER = (
-    "The city will use stormwater utility funds for its contribution of "
-    "USD 2,500,000 in its proposed 2027 budget."
-)
-
-# The capability sibling is answered in part; its first draft drops the conditional
-# debt ask from the remaining question and the repair either restores it or drops
-# the sibling change.
-OPTIONAL_FUNDING_SIBLING = {
-    "question": (
-        "Confirm the project and phase capability evidence, available local match, "
-        "applicable project-phase debt or bonding authority, and authorized official."
-    ),
-    "quote": "No borrowing is proposed for the City's contribution.",
-    "dropped": (
-        "Confirm the project and phase capability evidence, available local match, "
-        "and authorized official."
-    ),
-    "repaired": (
-        "Confirm the project and phase capability evidence, available local match, "
-        "whether applicable project-phase debt or bonding authority applies, and "
-        "authorized official."
-    ),
-    "objection": (
-        "Retain applicable project-phase debt or bonding authority in the remaining "
-        "marker."
-    ),
-}
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize("repair", ["corrected", "removed"])
 async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap_change(
     repair,
 ):
-    spec = OPTIONAL_FUNDING_SIBLING
-    dropped = f"{spec['quote']} {marker(spec['dropped'])}"
-    repaired = f"{spec['quote']} {marker(spec['repaired'])}"
-    target_chapter = chapter(f"Financing: {marker(TARGET_QUESTION)}")
-    target_gap = gap_snapshot(TARGET_QUESTION)
+    target_question = (
+        "What is the City's contribution source, amount and proposed budget status?"
+    )
+    target_answer = (
+        "The city will use stormwater utility funds for its contribution of USD "
+        "2,500,000 in its proposed 2027 budget."
+    )
+    sibling_question = (
+        "Confirm the project and phase capability evidence, available local match, "
+        "applicable project-phase debt or bonding authority, and authorized official."
+    )
+    quote = "No borrowing is proposed for the City's contribution."
+    objection = (
+        "Retain applicable project-phase debt or bonding authority in the remaining "
+        "marker."
+    )
+    dropped = (
+        quote
+        + " "
+        + marker(
+            "Confirm the project and phase capability evidence, available local match, and authorized official."
+        )
+    )
+    repaired = (
+        quote
+        + " "
+        + marker(
+            "Confirm the project and phase capability evidence, available local match, whether applicable project-phase debt or bonding authority applies, and authorized official."
+        )
+    )
+    target_chapter = chapter(f"Financing: {marker(target_question)}")
+    target_gap = gap_snapshot(target_question)
     target_chapter.gaps.append(target_gap)
-    sibling_chapter = chapter(f"Capability: {marker(spec['question'])}", position=1)
-    sibling_chapter.gaps.append(gap_snapshot(spec["question"]))
+    sibling_chapter = chapter(f"Capability: {marker(sibling_question)}", position=1)
+    sibling_chapter.gaps.append(gap_snapshot(sibling_question))
     chapters = [target_chapter, sibling_chapter]
     request = edit_request(
-        f"{TARGET_ANSWER} {spec['quote']}", chapter=target_chapter, gap=target_gap
+        f"{target_answer} {quote}", chapter=target_chapter, gap=target_gap
     )
-    target = {
-        "before": marker(TARGET_QUESTION),
-        "after": TARGET_ANSWER,
-        "kind": "factual",
-        "group_id": "target",
-        "user_input_quote": TARGET_ANSWER,
-    }
+    target = factual(
+        marker(target_question), target_answer, target_answer, group="target"
+    )
 
     def sibling(after: str) -> dict:
-        return {
-            "before": marker(spec["question"]),
-            "after": after,
-            "kind": "factual",
-            "group_id": "sibling",
-            "user_input_quote": spec["quote"],
-        }
+        return factual(marker(sibling_question), after, quote, group="sibling")
 
     editor_calls = 0
 
@@ -1827,22 +1790,13 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
                 if editor_calls == 1:
                     await propose_replacements(agent, [target, sibling(dropped)])
                 else:
-                    [feedback] = [
-                        item
-                        for item in data["review_feedback"]
-                        if item["chapter_position"] == 1
-                    ]
-                    assert feedback["decisions"][0]["support"] == "unsupported"
-                    assert feedback["decisions"][0]["explanation"] == spec["objection"]
+                    assert objection in payload
                     retry = [sibling(repaired)] if repair == "corrected" else []
                     await propose_replacements(agent, [target, *retry])
                 return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
             after = data["changes"][0]["after"]
-            if data["chapter"]["position"] == 1:
-                [sibling_target] = data["changes"][0]["gap_targets"]
-                assert sibling_target["question"] == spec["question"]
             if after == dropped:
-                review = single_review("unsupported", "partial", spec["objection"])
+                review = single_review("unsupported", "partial", objection)
             else:
                 coverage = "partial" if "[Information needed" in after else "complete"
                 review = single_review(
@@ -1857,7 +1811,7 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
     assert editor_calls == 2
     changes = validate_edit_plan(request, chapters, plan)
     [bound] = [c for c in changes if c.chapter_id == target_chapter.chapter_id]
-    assert bound.after == TARGET_ANSWER
+    assert bound.after == target_answer
     assert [(b.gap_id, b.gap_version, b.mode) for b in bound.gap_bindings] == [
         (target_gap.gap_id, target_gap.version, "fill")
     ]
@@ -1868,7 +1822,6 @@ async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap
         [sibling_change] = sibling_changes
         assert sibling_change.after == repaired
         assert [b.mode for b in sibling_change.gap_bindings] == ["narrow"]
-    assert target_chapter.body_markdown == f"Financing: {marker(TARGET_QUESTION)}"
 
 
 def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():

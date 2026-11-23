@@ -6,6 +6,7 @@ import {
 } from "@/backend/climate-advisor-connection";
 
 import { issueClimateAdvisorUserToken } from "@/backend/climate-advisor-token";
+import { logger } from "@/services/logger";
 
 type QueryValue = string | number | boolean | null | undefined;
 
@@ -114,8 +115,27 @@ export async function callClimateAdvisorChat(
       },
     );
   } catch (error) {
-    throw new createHttpError.BadGateway(
+    const cause: unknown =
+      error instanceof Error ? (error.cause ?? error) : error;
+    logger.warn(
+      {
+        method: params.method ?? "GET",
+        path: params.path.split(/[?#]/, 1)[0],
+        error_name: error instanceof Error ? error.name : undefined,
+        cause_code:
+          cause &&
+          typeof cause === "object" &&
+          "code" in cause &&
+          typeof cause.code === "string"
+            ? cause.code
+            : undefined,
+      },
+      "Climate Advisor request failed",
+    );
+    throw createHttpError(
+      502,
       error instanceof Error ? error.message : "Climate Advisor request failed",
+      { cause: error },
     );
   }
 }

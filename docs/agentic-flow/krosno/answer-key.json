@@ -1,0 +1,1724 @@
+{
+ "case": "Krosno, European City Facility application 03PL000622X, submitted 17 December 2021",
+ "documents_allowed": [
+  "Krosno-low-emission-plan-2019-update.pdf",
+  "Krosno-local-development-plan-submitted.pdf",
+  "Krosno-institutional-development-plan-submitted.pdf"
+ ],
+ "status": "Draft. Built by Claude from the extracted text of the files in the manifest; every quote was re-checked against its page by script. Not yet reviewed by a Polish speaker.",
+ "counts": {
+  "in_documents": {
+   "found": 8,
+   "not_found": 16,
+   "partly": 22
+  },
+  "todo_type": {
+   "confirm": 11,
+   "bring_evidence": 15,
+   "ask_someone": 8,
+   "decide": 12
+  }
+ },
+ "points": [
+  {
+   "key": "applicant.name",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "The Municipality of Krosno (organisation: Krosno Municipal Office). Legal name in Polish: Gmina Miasto Krosno.",
+    "quote": "The Municipality of Krosno",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "The legal entity is 'Gmina Miasto Krosno' (Municipality City of Krosno); the city is 'Miasto Krosno'.",
+    "quote_pl": "Podmiot realizujący działanie (lider działania): Gmina Miasto Krosno",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 218,
+    "note": "Matches the submitted name. The feedback report (p. 2) shows the name simply as 'Krosno' and the organisation as 'Krosno Municipal Office'."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 is signed 'Piotr Przytocki, Prezydent Miasta Krosna'; the city name is unchanged.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 2
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "applicant.type",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Single municipality (not a grouping). Not stated as a field in the public files; inferred from Annex E, where only one name is given under 'Name of municipality/local authority' and no grouping is listed.",
+    "quote": "Name of municipality/local authority or local public entity",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "Krosno is a city with county rights (a municipality that also performs county tasks), i.e. a single local authority with its own LAU code.",
+    "quote_pl": "Krosno jest miastem na prawach powiatu, zlokalizowanym w południowo - wschodniej części Polski, w województwie podkarpackim",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 5,
+    "note": "The documents state the legal status, not the EUCF category; 'single municipality' follows from it. Note the low-emission plan covers Krosno plus six neighbouring communes, so a grouping would have been possible; applying alone was the applicant's choice."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked further; status unchanged.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "The form category is inferred, not quoted. A person should confirm Krosno applied alone and not on behalf of the functional area (MOF)."
+  },
+  {
+   "key": "applicant.country",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Poland. Not a quoted field in the public files; evident from the application (Polish/English, application number 03PL000622X).",
+    "quote": "Application number 03PL000622X",
+    "file": "EUCF-feedback-for-applicant-Krosno.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "Krosno lies in south-eastern Poland, Podkarpackie voivodeship.",
+    "quote_pl": "zlokalizowanym w południowo - wschodniej części Polski, w województwie podkarpackim",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 5,
+    "note": "Direct match."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not needed.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "applicant.nuts3_code",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not present in any submitted file available here. The objectively correct value under NUTS 2016 is PL821 (Krośnieński subregion); this comes from the Eurostat classification, not from the files.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "The pre-2021 documents only say Krosno is in Podkarpackie voivodeship; no NUTS code and no mention of the 'podregion krośnieński' was found (searched NUTS, PL82, podregion).",
+    "quote_pl": "zlokalizowanym w południowo - wschodniej części Polski, w województwie podkarpackim",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 5,
+    "note": "Only general context (the region) exists; the code itself is a lookup in the Eurostat LAU-NUTS table that the EUCF guidelines point to."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "No NUTS code found in the later documents either (not searched exhaustively).",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Wydział Rozwoju Miasta i Obsługi Inwestorów (named in the institutional development plan, p. 55, as the unit that seeks external funding) or the city statistics contact; the value is public in the Eurostat table.",
+   "simulated_file": {
+    "name": "EU-28-LAU-2019-NUTS-2016_Krosno-extract.xlsx",
+    "what": "One-row extract of the Eurostat LAU-NUTS correspondence table showing Krosno with its NUTS 3 code and LAU code.",
+    "based_on": "Eurostat 'EU-28-LAU-2019-NUTS-2016.xlsx', the table named in the EUCF guidelines (p. 12)"
+   },
+   "confidence": "medium",
+   "doubt": "PL821 is from my own knowledge of the NUTS 2016 classification, not from the files; verify against the Eurostat table."
+  },
+  {
+   "key": "applicant.lau_code",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not present in any submitted file available here. In the Eurostat LAU 2019 table Polish LAU codes are the 7-digit TERYT commune codes; for the city of Krosno this should be 1861011. Value comes from general knowledge, not from the files.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No LAU or TERYT code appears in the three pre-2021 documents (searched LAU, TERYT, 1861011).",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "Nothing to cite. The code is a lookup in the same Eurostat table as the NUTS 3 code."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Wydział Rozwoju Miasta i Obsługi Inwestorów (institutional development plan, p. 55); the value is public in the Eurostat table.",
+   "simulated_file": {
+    "name": "EU-28-LAU-2019-NUTS-2016_Krosno-extract.xlsx",
+    "what": "Same one-row Eurostat extract as for the NUTS 3 code, showing the LAU code of Krosno.",
+    "based_on": "Eurostat LAU-NUTS table 2019 referenced in the EUCF guidelines (p. 12)"
+   },
+   "confidence": "low",
+   "doubt": "The code 1861011 is recalled, not read from a file. Must be checked in the Eurostat table before being used as an answer key."
+  },
+  {
+   "key": "applicant.population",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not present in the public submitted files. The official figure nearest to the application date would be 45,165 (GUS, 31 Dec 2020), which only appears in a later document.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "Local development plan (2020): 46,291 residents at the end of 2019 (GUS Local Data Bank). Low-emission plan 2019 update: table for the city shows 46,565 (2016), 46,600 (2017), 46,511 (2018), 45,147 (2019), and elsewhere 47,223 (31 Dec 2013).",
+    "quote_pl": "Krosno według danych Banku Danych Lokalnych GUS, zajmowało na koniec 2019 r. obszar 44 km2 (4 350 ha) oraz liczyło 46 291 mieszkańców",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 7,
+    "note": "The two source documents disagree for 2019: 46,291 (development plan, p. 7 and p. 21) versus 45,147 (low-emission plan, p. 61, table 'Struktura ludności na terenie Miasta Krosno'; 47,223 for 2013 on p. 39). The development plan figure matches what the later State of the City report gives for 2019, so it is the reliable one. The number Krosno typed in the form is unknown."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 chart: 46,291 (2019), 45,165 (2020), 44,687 (2021), 44,322 (2022), 44,060 (2023). State of the City 2024 adds 43,594 (2024).",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 5
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "The 45,147 for 2019 in the low-emission plan looks like an error or a different population concept ('faktyczne miejsce zamieszkania'); a person should pick the year and source. The chart values in the 2023 report are read from extracted chart labels, so the year-to-value pairing should be eyeballed in the PDF."
+  },
+  {
+   "key": "applicant.contact_person",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not present in the public submitted files (contact details are not published).",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No named contact for EUCF or energy projects exists in the 2019/2020 documents. The institutional plan only names the unit that looks for external funding.",
+    "quote_pl": "Komórką organizacyjną odpowiedzialną za poszukiwanie zewnętrznych źródeł finansowania dla działań strategicznych jest Wydział Rozwoju Miasta i Obsługi Inwestorów ORAZ Wydział Budżetowo-Finansowy",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 55,
+    "note": "Only the responsible department can be derived, not a person, role or contact details."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "No contact person for the EUCF project found in the later documents.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "Wydział Rozwoju Miasta i Obsługi Inwestorów (institutional development plan, p. 55; also coordinates the local development plan, local development plan p. 263), or the office of the Deputy Mayor who led the team.",
+   "simulated_file": {
+    "name": "EUCF_contact_person_Krosno.txt",
+    "what": "Short note with the name, position, e-mail and phone of the officer responsible for the EUCF application.",
+    "based_on": "City hall staff directory / BIP page of Wydział Rozwoju Miasta i Obsługi Inwestorów"
+   },
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "applicant.political_representative",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Mayor (Prezydent Miasta) Piotr Przytocki, who supervises the project and takes final decisions; he is the natural signatory of the Annex B letter of support. The signed letter itself is not among the public files.",
+    "quote": "The Mayor - Piotr Przytocki supervises the EUCF project and makes final decisions in the project.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The office is described (the city hall is run by the Mayor with two Deputies, the Secretary and the Treasurer) but the Mayor's name does not appear anywhere in the three pre-2021 documents.",
+    "quote_pl": "Urzędem Miasta zarządza Prezydent wspomagany przez dwóch Zastępców, Sekretarza oraz Skarbnika.",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 7,
+    "note": "Role found, name not found (searched 'Przytock' in all three; the only hit is an unrelated conductor, Paweł Przytocki, in the local development plan p. 161). The low-emission plan even calls the head of the city 'Burmistrz' (p. 151), which is the wrong title for Krosno."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 foreword is signed 'Piotr Przytocki, Prezydent Miasta Krosna'.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 2
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Mayor's office (Prezydent Miasta) / Wydział Organizacyjny, Zarządzania Kadrami i Kontroli (institutional development plan, p. 6).",
+   "simulated_file": {
+    "name": "Annex_B_Letter_of_support_Krosno_signed.pdf",
+    "what": "Letter of support on the EUCF Annex B template, in English, signed by Mayor Piotr Przytocki.",
+    "based_on": "EUCF Annex B template (guidelines p. 13 and p. 18) and the Mayor named in the application"
+   },
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "concept.title",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Krosno Zero emission path",
+    "quote": "Krosno Zero emission path",
+    "file": "EUCF-feedback-for-applicant-Krosno.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "The title was created for the 2021 application; it does not appear in the 2019/2020 documents.",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "A 2021 choice; no earlier document can contain it."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 lists the project 'Opracowanie koncepcji inwestycyjnej dotyczącej transformacji energetycznej Miasta Krosna „Krosno Zero emission path”' funded by EUCF.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 43
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "grant.allocation",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "The tick-box answer is not in the public files. From section 2.4 the grant clearly goes at least to external experts/sub-contractors (feasibility study, legal analysis, technical guidelines); whether in-house staff or other positions were also ticked is unknown.",
+    "quote": "For the preparation of the investment concept external experts will be engaged in the fields of: renewable energy, energy and climate efficiency, environmental protection, hydrogen technologies, law and finance.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "Nothing about how a EUR 60,000 EUCF grant would be split. The only related statement is in the low-emission plan, which says existing city hall staff are enough to implement that plan without new hires.",
+    "quote_pl": "Obecne zasoby ludzkie Urzędu zapewniają sprawną jego realizację bez konieczności zatrudniania dodatkowych pracowników.",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 151,
+    "note": "General context only; the allocation is a budgeting choice made when applying."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "activities.long_term_goal",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Climate neutrality and energy self-sufficiency by 2040, in two phases (to 2030 and 2030-2040). Note that sections 2.5 and 3.2 of the same application say climate neutrality 'by 2050'.",
+    "quote": "Krosno goal is to transform to climate neutrality & energy self-sufficiency by 2040. Process will include two phases: till to 2030 and 2030-2040.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "No climate-neutrality or energy self-sufficiency target exists in the pre-2021 documents (zero hits for neutralność klimatyczna, zeroemisyjny, samowystarczalność energetyczna, wodór). The low-emission plan's goal for the city is a CO2 cut of at least 20% by 2020; the local development plan lists 'improve energy efficiency of buildings' and 'increase use of renewable energy' as intervention areas for 2021-2030.",
+    "quote_pl": "osiągnięcia zakładanej redukcji emisji CO2 o minimum 20% do 2020 roku",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 138,
+    "note": "Differs from the submitted answer: the documents hold an older, much weaker target (minus 20% CO2 by 2020) and general directions (local development plan p. 186: 'Poprawa efektywności energetycznej budynków', 'Zwiększenie wykorzystania energii ze źródeł odnawialnych'). The 2040 neutrality goal is a 2021 political decision; the application cites an attachment 'Summary_Development_Plan' that is not among the files."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "The 2024 ZIT strategy only mentions 'dążenie do neutralności klimatycznej' in general terms (p. 107), with no target year for Krosno.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": "The application itself is inconsistent (2040 in 2.3, 2050 in 2.5 and 3.2). The answer key should accept either, with 2040 as the stated goal of field 2.3."
+  },
+  {
+   "key": "activities.missing_components",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Not spelled out as a gap list; implied by what the grant funds: Krosno lacks a feasibility study for a decentralised heating network with island hybrid systems and green hydrogen, a legal analysis of how the city can support civic energy and an energy community, and technical standards/guidelines for nZEB buildings.",
+    "quote": "The grant will fund: 1. Feasibility study for the construction of a decentralized heating network based on island energy production systems",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The local development plan lists the underlying deficits: no climate adaptation plan, 57% of municipal buildings need energy-efficiency work, low energy efficiency of buildings, low use of renewables. It does not say that a feasibility study, legal analysis or building standards are missing.",
+    "quote_pl": "57% budynków miejskich wymaga działań w zakresie podniesienia efektywności",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 134,
+    "note": "Documents give the diagnosis of the problem, not the list of missing preparatory studies. The specific gaps (hydrogen, energy community, nZEB guidelines) are 2021 thinking."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked in detail; the 2024 report shows the Krosno Energy Cluster operating (State of the City 2024, p. 109), i.e. the gap was later filled.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "The EUCF project team led by the Deputy Mayor; Wydział Rozwoju Miasta i Obsługi Inwestorów (institutional development plan p. 55) and the municipal utility MPGK - Krośnieński Holding Komunalny (heat supplier, low-emission plan p. 81).",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "activities.funded_list",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Three items: (1) feasibility study for a decentralised heating network based on island hybrid systems (heat pumps, PV, storage) and a green-hydrogen solution; (2) legal analysis of the city's technical, organisational and financial support for civic energy plus a concept for an energy community; (3) guidelines for technical standards for public, private and residential energy-efficient (nZEB) buildings.",
+    "quote": "2. Legal analysis in the field of technical, organizational and financial support by the city for the development of civic energy",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "None of the three studies is mentioned. The low-emission plan only lists generic technologies (PV, solar collectors, heat pumps, biomass) and extension of heating lines; no hydrogen, energy storage, energy community or nZEB guidelines.",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "A 2021 decision. Searched: studium wykonalności, wodór, magazyn energii, wspólnota energetyczna, energetyka obywatelska, klaster energii: no relevant hits in the three documents."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 confirms the concept was prepared under EUCF ('Krosno Zero emission path') but does not list the three studies.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 43
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "governance.lead_decision_maker",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "The Mayor, Piotr Przytocki: supervises the EUCF project and takes final decisions.",
+    "quote": "The Mayor - Piotr Przytocki supervises the EUCF project and makes final decisions in the project.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The Mayor (Prezydent) runs the city hall and most units report directly to him; in the local development plan's implementation structure the Mayor is at the top ('Nadzór wdrażania PRL'). His name is not in the documents.",
+    "quote_pl": "Urzędem Miasta zarządza Prezydent wspomagany przez dwóch Zastępców, Sekretarza oraz Skarbnika. Większość komórek organizacyjnych podlega bezpośrednio Prezydentowi Miasta.",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 7,
+    "note": "The role is found and consistent with the submitted answer; the person's name and the fact that he supervises this specific project are not."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "Piotr Przytocki signs the State of the City 2023 as Prezydent Miasta Krosna.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 2
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "governance.team_manager",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Deputy Mayor Tomasz Soliński manages the project team.",
+    "quote": "The team will be managed by the Deputy Mayor of Krosno - Tomasz Soliński.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The local development plan says project teams are supervised directly by the Second Deputy Mayor, supported by the city development department; no name is given, and the EUCF team did not exist yet.",
+    "quote_pl": "Prace poszczególnych zespołów projektowych będą bezpośrednio nadzorowane przez II Zastępcę Prezydenta wspieranego przez Wydział Rozwoju Miasta i Obsługi Inwestorów.",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 264,
+    "note": "Role pattern found (a deputy mayor leads project teams); the name Soliński does not appear in any pre-2021 document, and the appointment is a 2021 act (file 'Project_Team_Krosno')."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2024 mentions Tomasz Soliński only as a city councillor sworn in during 2024 (resolution of 26.09.2024), not as deputy mayor.",
+    "file": "Krosno-state-of-the-city-2024.txt",
+    "page": 152
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Mayor's office / Wydział Organizacyjny, Zarządzania Kadrami i Kontroli (institutional development plan, p. 6), which keeps the Mayor's orders.",
+   "simulated_file": {
+    "name": "Project_Team_Krosno.pdf",
+    "what": "The Mayor's order (zarządzenie Prezydenta Miasta Krosna) appointing the EUCF / energy transformation project team, naming Deputy Mayor Tomasz Soliński as its head.",
+    "based_on": "The file name cited in section 2.4 of the application; modelled on order no. 635/20 of 1 April 2020 that set up the Zespół Miejski (institutional development plan p. 219)"
+   },
+   "confidence": "high",
+   "doubt": "Whether Soliński was the 'II Zastępca' mentioned in the 2020 plan is not stated anywhere; do not assume it."
+  },
+  {
+   "key": "governance.project_team",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "A project team formally appointed by the Mayor (file 'Project_Team_Krosno', not public) drawn from city hall departments: staff closest to the energy/climate-neutrality topic, plus people who run externally funded projects and people who manage city finances. The actual list of departments and names is not in the public files.",
+    "quote": "projects with external funding and in managing the city's finances.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The institutional plan lists all 19 departments (among them Wydział Ochrony Środowiska, Wydział Gospodarki Komunalnej, Wydział Inwestycji, Wydział Rozwoju Miasta i Obsługi Inwestorów, Wydział Budżetowo-Finansowy) and says task teams are formed across units for strategic tasks. The low-emission plan lists the profiles needed (energy, municipal property, spatial planning, environment, structural funds). The EUCF team composition is not there.",
+    "quote_pl": "Na potrzeby realizacji zadań wielodziedzinowych a w szczególności zadań strategicznych tworzone są zespoły zadaniowe, w prace, których są angażowani przedstawiciele różnych komórek organizacyjnych",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 66,
+    "note": "A plausible team can be assembled from the department list (institutional plan pp. 6-7) and the specialist profiles (low-emission plan p. 151), but which departments and people were actually appointed is a 2021 fact held in the appointment order."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Wydział Organizacyjny, Zarządzania Kadrami i Kontroli (institutional development plan, p. 6) for the order; Wydział Rozwoju Miasta i Obsługi Inwestorów (p. 55) for the content.",
+   "simulated_file": {
+    "name": "Project_Team_Krosno.pdf",
+    "what": "Mayor's order appointing the project team, with an annex listing members by department (environment, municipal services, investments, city development/external funds, budget and finance).",
+    "based_on": "Section 2.4 of the application and the department list in the institutional development plan pp. 6-7"
+   },
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "governance.roles_tasks",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Only at headline level: Mayor supervises and decides; Deputy Mayor manages the team; team members cover energy/climate competences, externally funded project management and city finance; the chairman of the municipal utility takes part in concept work and decisions; stakeholder representatives participate. The evaluator noted that more detail on specific tasks could be added.",
+    "quote": "The project team will work on a schedule of activities - transformation roadmap, issues, risks, and the scope of responsibility of people for the performance of specific tasks.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "General rule only: every member of a project team gets specific tasks and each team has a coordinator; the low-emission plan says a team with a coordinator will handle planning, implementation, fundraising and monitoring. No task split for the EUCF project.",
+    "quote_pl": "Każdy członek zespołu projektowego będzie miał przypisane konkretne zadania. W odniesieniu do każdego zespołu projektowego zostanie wyznaczony koordynator.",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 264,
+    "note": "Only the general pattern exists; the concrete tasks per person are in the 2021 appointment order."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "Head of the project team (Deputy Mayor) / Wydział Rozwoju Miasta i Obsługi Inwestorów (institutional development plan p. 55).",
+   "simulated_file": {
+    "name": "Project_Team_Krosno_annex_tasks.pdf",
+    "what": "Annex to the Mayor's order: table of team members with their role and tasks in preparing the investment concept.",
+    "based_on": "Mirrors how order no. 635/20 fixed 'skład osobowy ... oraz zakres zadań członków' of the Zespół Miejski (institutional development plan p. 219)"
+   },
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "governance.decision_process",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "The Mayor takes final decisions; the Deputy Mayor runs the team; the team works to a schedule of activities (transformation roadmap) tracking issues, risks and who is responsible for each task; the chairman of the municipal holding takes part in decision-making; stakeholder representatives take part in the process.",
+    "quote": "The project team will work on a schedule of activities - transformation roadmap, issues, risks, and the scope of responsibility of people for the performance of specific tasks.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The 2020 plans describe the city's standard project governance: project teams report bottom-up to the coordinating department, then to the Second Deputy Mayor, the Mayor and the advisory bodies; a risk analysis is kept for each project; rules for task teams are in the Organisational Regulations (order no. 143/19) and the EU-projects procedure (order no. 530/16).",
+    "quote_pl": "Proces przepływu informacji monitoringowych będzie przebiegał zgodnie z logiką bottom up, czyli od poziomu zespołów projektowych, do komórki koordynującej",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 267,
+    "note": "Consistent with what was submitted (team -> deputy mayor -> mayor, schedule, risks) but written for the local development plan, not for the EUCF project. The formal orders are listed in the institutional plan p. 61."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "City Secretary / Wydział Organizacyjny, Zarządzania Kadrami i Kontroli (institutional development plan p. 6) and Wydział Rozwoju Miasta i Obsługi Inwestorów (coordinating unit, local development plan p. 263).",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "governance.municipal_companies",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Municipal companies will be involved, including Krośnieński Holding Komunalny (municipal utility), represented by Janusz Fic, Chairman of the Board, who will take part in concept work and decision-making.",
+    "quote": "Krosnienski Holding Komunalny - municipal utility company managed by Janusz Fic - Chairman of the Board",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The company exists in the documents: the institutional plan lists the city's companies (Miejskie Przedsiębiorstwo Gospodarki Komunalnej, Krośnieński Inkubator Technologiczny, Centrum Dziedzictwa Szkła, Towarzystwo Budownictwa Społecznego, Lotnisko), and the low-emission plan names MPGK - Krośnieński Holding Komunalny Sp. z o.o. as the main heat supplier. The chairman's name is not in any of them.",
+    "quote_pl": "Głównym źródłem zaopatrzenia w ciepło miasta Krosno jest Oddział Energetyki Cieplnej wchodzący w skład Miejskiego Przedsiębiorstwa Gospodarki Komunalnej – Krośnieńskiego Holdingu Komunalnego Sp. z o.o.",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 81,
+    "note": "Company found (also institutional plan p. 12, where it is listed only as 'Miejskie Przedsiębiorstwo Gospodarki Komunalnej' without the 'Holding' name); the representative Janusz Fic and his role in the EUCF project are not found (searched 'Fic')."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 and 2024 name 'Miejskie Przedsiębiorstwo Gospodarki Komunalnej – Krośnieński Holding Komunalny Sp. z o.o.' repeatedly; the chairman's name was not found there either.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 42
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "Board of MPGK - Krośnieński Holding Komunalny Sp. z o.o.; in city hall, Wydział Gospodarki Komunalnej (institutional development plan p. 6).",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": "The plan lists the company as 'Miejskie Przedsiębiorstwo Gospodarki Komunalnej' and the application as 'Krośnieński Holding Komunalny'; they are the same company (full name combines both)."
+  },
+  {
+   "key": "governance.external_experts",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "External experts will be engaged in: renewable energy, energy and climate efficiency, environmental protection, hydrogen technologies, law and finance. Internal staff cover project management, external funding and city finance.",
+    "quote": "external experts will be engaged in the fields of: renewable energy, energy and climate efficiency, environmental protection, hydrogen technologies, law and finance.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "No statement on external experts for an energy investment concept. The low-emission plan claims internal staff are sufficient and lists the in-house profiles needed; the local development plan uses experts of the Association of Polish Cities in an advisory role.",
+    "quote_pl": "Istotną rolę w procesie odegrają eksperci ze Związku Miast Polskich, którzy będą pełnili rolę konsultacyjno-doradczą.",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 264,
+    "note": "Differs from the submitted answer: the low-emission plan (p. 151) says current staff can implement it without extra hires, while the application says external experts are needed in six fields. The fields were chosen in 2021 to match the three studies."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "stakeholders.groups",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Residents of single-family houses; residents of multi-family houses and housing communities/cooperatives; entrepreneurs, with a separate subgroup of local 'native' entrepreneurs; utility suppliers (electricity and district heating); public entities.",
+    "quote": "residents of single-family houses; residents of multi-family houses, communities/cooperatives, entrepreneurs including a separate subgroup of local, \"native\" entrepreneurs, utility suppliers (electricity and district heating), public entities.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The local development plan has a stakeholder table (Table 33) with categories: youth, seniors, entrepreneurs/investors, business support institutions, NGOs, education, culture and sport, city authorities/offices, districts, housing market entities (TBS, Krośnieńska Spółdzielnia Mieszkaniowa), social assistance, activists, media. The low-emission plan lists the housing cooperatives and the heat supplier.",
+    "quote_pl": "Tabela 33. Interesariusze bezpośrednio zaangażowani w opracowanie Planu Rozwoju Lokalnego",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 222,
+    "note": "Overlaps (entrepreneurs, housing cooperatives, public bodies, residents) but the energy-specific split into single-family vs multi-family residents and utility suppliers is not made in the documents. Housing cooperatives: low-emission plan p. 64; table continues on local development plan p. 223."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "stakeholders.needs_expectations",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Only indirectly: the transformation should support the community and bottom-up initiatives, with projects that let people reach self-sufficiency and make gains; engagement will communicate these benefits. No need or expectation is given per group.",
+    "quote": "The overall transformation includes support for the community, a bottom-up initiative in the field of energy & climate transformation, including projects that allow to attain self-sufficiency and enable gains.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The local development plan records problems rather than stated needs per group: low ecological awareness of residents, low energy efficiency of buildings, low use of renewables; intervention areas include removing non-ecological heat sources and raising ecological awareness of residents and entrepreneurs.",
+    "quote_pl": "Mieszkańcy nie przywiązują wagi do ekologii",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 134,
+    "note": "General context only (also p. 186: 'Likwidacja nieekologicznych źródeł ciepła', 'Poprawa świadomości ekologicznej mieszkańców i przedsiębiorców'). Nothing on what each group expects from an energy investment programme (costs, savings, heat prices)."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "Wydział Ochrony Środowiska and Wydział Gospodarki Komunalnej (institutional development plan p. 6); housing cooperatives and MPGK for their own expectations.",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "'Mieszkańcy nie przywiązują wagi do ekologii' is a conclusion from a focus group with local leaders, not a survey result."
+  },
+  {
+   "key": "stakeholders.activities",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "A targeted campaign to start work with stakeholders during concept preparation and implementation; selecting active representatives from each group; workshops as a knowledge base and context for the planned measures; working groups that are actively involved, later turned into permanent, even informal, expert groups; progress shared via website and Facebook.",
+    "quote": "- selecting active representatives from each group of stakeholders - workshops providing a knowledge base and context for the planned measures - establishing workgroups that will be pro-actively involved",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The same kinds of activity were used in 2020 for the development plans (information campaign, online surveys, focus groups, workshop work of the Zespół Miejski and Rada Rozwoju) and the institutional plan describes open meetings and working groups as the intended way of involving residents. Nothing is planned for an energy concept.",
+    "quote_pl": "organizacji otwartych spotkań oraz powoływania grup roboczych z zapewnieniem otwartego dostępu dla przedstawicieli mieszkańców oraz innych grup interesariuszy",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 125,
+    "note": "Precedent and method exist (see also local development plan pp. 223-226, Table 34 of participation tools); the specific EUCF activities are a 2021 plan."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "stakeholders.timing_objectives",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "No dates. Timing: during preparation of the investment concept and during its implementation. Objectives: activate stakeholders, raise awareness of city users on energy/climate, communicate the benefits, and turn the working teams into permanent expert groups that promote the energy transformation (goal 'by 2050').",
+    "quote": "The long-term goal of stakeholder engagement is to activate them, increase the awareness of city users in the fields of energy/climate.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No timing or objectives for energy-concept engagement. The local development plan only gives dates of its own past participation steps (e.g. online surveys II/2020, workshops VI/2020).",
+    "quote_pl": "Tabela 34. Zastosowane narzędzia partycypacyjne i efekty włączenia interesariuszy w tworzenie Planu",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 225,
+    "note": "The table is about a different, already finished process; it can serve as a template but contains no answer."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not found.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "stakeholders.communication_channels",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Official town website and the town's Facebook page, including feedback.",
+    "quote": "information on the progress will be widely disseminated through channels: official town web and FB page including feedback.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "The city's information channels are the official website Krosno.pl and the Facebook profiles 'Krosno Miasto Szkła' (city profile) and 'Invest in Krosno' (business profile); local media (e.g. Krosno24.pl) supported the campaign.",
+    "quote_pl": "profile Facebooka: Krosno Miasto Szkła – profil miejski oraz Invest in Krosno – profil o tematyce gospodarczej",
+    "file": "Krosno-institutional-development-plan-submitted.txt",
+    "page": 219,
+    "note": "Matches the submitted answer and adds the profile names. The same text is in the local development plan p. 223."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "Not checked.",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "sectors.main",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Residential buildings (first sector listed under 'Investment Sector(s) targeted' in Annex E; the application text file has no field 3.1, so the main/other split is inferred from the order in Annex E).",
+    "quote": "Investment Sector(s) targeted Residential buildings",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The plan does not name a 'main sector' for a new programme, but its 2018 inventory says households are the largest CO2 source in Krosno (forecast 145,579.91 Mg CO2 in 2019 from fuels burnt by households) and recommends heat-source replacement and thermal modernisation.",
+    "quote_pl": "największa emisja pochodzi z tytułu spalania paliw przez",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 124,
+    "note": "Supports the choice of residential buildings but the choice itself is not in any document."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "EUCF project team (Deputy Mayor's office)",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "By money the largest sector in Annex E is Innovative energy infrastructure (EUR 86,000,000, 53.5%), not Residential buildings (EUR 27,183,000). Which one was ticked as 'main' in the online form is not visible in the files."
+  },
+  {
+   "key": "sectors.other",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Building integrated renewables; Innovative energy infrastructure; Smart grids; Public buildings; District heating; Public lighting (Sustainable urban mobility and 'Other sector' are EUR 0).",
+    "quote": "Smart Grids, Public buildings, District heating, Public lighting",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "The plan's measure table (Table 64) covers public buildings, district heating network, street lighting, PV on public sites and boiler replacement in housing. It contains nothing on smart grids, hydrogen or decentralised heat-pump 'energy islands'.",
+    "quote_pl": "Tabela 64. Planowane do realizacji zadania w ramach Planu",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 140,
+    "note": "Sector selection for the 2040 programme is an applicant choice; the plan only shows which sectors already had measures."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "EUCF project team (Deputy Mayor's office)",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "measures.description",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Two-phase programme (to 2030, 2030-2040): RES and 'green' energy islands, hydrogen technologies, local low-temperature heating networks, distributed and civic energy; details in Annex D: thermal modernisation of public buildings (about 62,300 m2 phase I, 89,000 m2 phase II) and residential buildings, rooftop PV on public buildings 2.12 MWp + 0.79 MWp, PV on residential buildings 4 MWp + 6 MWp, hybrid heat pump+PV+storage for single-family houses, decentralised HP+PV heat sources 1 MWt + 1.5 MWt, PV farms 21 MWp, electrolyser/green hydrogen with fuel-cell CHP, heat storage about 78,000 m3, central IT energy platform and smart meters, replacement of about 3,500 sodium street lamps by LED.",
+    "quote": "energy islands, hydrogen technologies,",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Only the conventional part is in the plan (Table 64, pp. 140-150): thermal modernisation and PV on municipal buildings, LED street lighting (3,500 points, PLN 8.60 m, saving 525 MWh/yr), modernisation of 13.5 km of district heating network (PLN 26.0 m) and 5 km of new network (PLN 7.5 m), PV at municipal company sites (650 kWp, 243 kWp, 200 kWp, 125 kWp, 75 kWp), replacement of 96 solid-fuel boilers. Hydrogen, electrolyser, heat-pump energy islands, PV farms of 21 MWp, heat storage, smart grid/VPP are in none of the three pre-2021 documents (no hit for 'wodór', 'elektrolizer', 'magazyn ciepła' in the development plans).",
+    "quote_pl": "Przewiduje się modernizację",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 144,
+    "note": "The submitted technology list is a new concept; it cannot be derived from the 2019 plan. The Local Development Plan 2021-2030 only adds 'PV and hybrid installations on 14 public buildings' (PLN 4,400,000, p. 251) and boiler-replacement grants."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 only lists the project 'Opracowanie koncepcji inwestycyjnej dotyczącej transformacji energetycznej Miasta Krosna \"Krosno Zero emission path\" (EUCF)' among externally funded projects; no figures.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 43
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "EUCF project team; MPGK Krosno - Krośnieński Holding Komunalny (district heating branch, Oddział Energetyki Cieplnej); external RES/hydrogen experts",
+   "simulated_file": {
+    "name": "Krosno_Zero_Emission_Path_technical_concept_v1.docx",
+    "what": "Internal concept note listing each investment component with size (m2, MWp, MWt, number of lamps) per phase",
+    "based_on": "Component descriptions in the filled Annex D (pages 1-2)"
+   },
+   "confidence": "high",
+   "doubt": "Annex D row 'Hybrid Heating installation for one family buildings' gives no number of houses or kW; a row with 10.9 GWh/yr renewable generation has no legible component label in the text extraction."
+  },
+  {
+   "key": "measures.phases",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Two stages: 2021-2030 (phase I) and 2030-2040 (phase II), built complementarily.",
+    "quote": "stages are planned: 2021-2030 and",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "The plan's measures run 2020-2027 at most (e.g. street lighting 'I etap 2020', heating network 2020-2024, sewage works 2020-2027); the Local Development Plan covers 2021-2030. No document has a 2030-2040 phase.",
+    "quote_pl": "2020-2024",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 141,
+    "note": "Phasing to 2040 is a decision of the new programme."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "EUCF project team (Deputy Mayor)",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": "The application itself is inconsistent on the end year: field 2.3 says climate neutrality by 2040, fields 3.2 and 2.5 say by 2050, and phases end in 2040."
+  },
+  {
+   "key": "measures.plan_alignment",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "The application does not cite the low-emission plan in field 3.2; it refers to the city's 'development map for carbon neutrality' and an attached file 'Summary_Development_Plan' (not among the available files).",
+    "quote": "Summary_Development_Plan",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Two adopted/drafted plans exist to link to: (1) the Low-Emission Plan 2019 update with its measure table and a minimum 20% CO2 reduction target; (2) the Local Development Plan 2021-2030, whose intervention areas include 'improving energy efficiency of buildings' and 'increasing use of renewable energy' (p. 186) and supplementary action 6 'Programme to eliminate low-emission sources' (PLN 6,200,000, p. 251). Neither mentions climate neutrality or hydrogen.",
+    "quote_pl": "Zwiększenie wykorzystania energii ze źródeł odnawialnych.",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 186,
+    "note": "The attachment 'Summary_Development_Plan' is probably a summary of the Local Development Plan, but that is an inference. How the 2040 measures relate to the plan is not written anywhere."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "The 2021-2027 functional-area (ZIT) strategy lists 'strive for climate neutrality' as a project objective.",
+    "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+    "page": 19
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City development/strategy department (authors of the Local Development Plan); environment department for the low-emission plan",
+   "simulated_file": {
+    "name": "Summary_Development_Plan.pdf",
+    "what": "2-3 page English summary of the Local Development Plan 2021-2030 goals and actions relevant to energy and climate",
+    "based_on": "Local Development Plan pp. 186 and 251; Low-Emission Plan Table 64 (pp. 140-150)"
+   },
+   "confidence": "medium",
+   "doubt": "Whether the Local/Institutional Development Plans were formally adopted before 17 Dec 2021 is not stated in the files (file names say 'submitted')."
+  },
+  {
+   "key": "measures.eib_eligibility",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Declaration that all measures are being aligned with the EIB energy lending policy.",
+    "quote": "aligned with EIB energy lending policy.",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No pre-2021 document mentions the EIB energy lending policy.",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "Note for the reviewer: the existing plan includes a waste-fuel (RDF) CHP block (PLN 80 m, p. 140) and coal boilers at the heating plant (p. 82); these are not part of the EUCF measures but show why an explicit check is needed. Natural-gas emission factor 202 is used in Annex D for hydrogen CHP and hybrid heating rows."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "EUCF project team with external finance/legal expert",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "investment.total_eur",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "EUR 160,644,000 expected total investment size.",
+    "quote": "Expected total investment size 160 644 000 EUR",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No total for this programme. The 2019 plan gives only costs of individual, different measures in PLN million (e.g. RDF energy block 80.00; heating network modernisation 26.0; new heating network 7.5; street lighting 8.60; boiler replacement project 11.260) and no overall total.",
+    "quote_pl": "Koszty mln PLN",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 140,
+    "note": "The submitted figure is for a new programme to 2040 and is not derivable from the plan."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "State of the City 2023 only lists the project 'Opracowanie koncepcji inwestycyjnej dotyczącej transformacji energetycznej Miasta Krosna \"Krosno Zero emission path\" (EUCF)' among externally funded projects; no figures.",
+    "file": "Krosno-state-of-the-city-2023.txt",
+    "page": 43
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City investment department; MPGK Krosno - Krośnieński Holding Komunalny; city treasurer",
+   "simulated_file": {
+    "name": "Krosno_EUCF_investment_estimate_2021-12.xlsx",
+    "what": "Cost estimate spreadsheet: one row per Annex D component with quantity, unit cost in PLN, EUR conversion and sector subtotal",
+    "based_on": "Annex E sector totals (sum EUR 160,644,000) and Annex D quantities (m2, MWp, MWt, 3,500 lamps, 78,000 m3 heat storage)"
+   },
+   "confidence": "high",
+   "doubt": "Exchange rate and price base used for EUR are not stated."
+  },
+  {
+   "key": "investment.by_sector",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Public buildings EUR 3,761,000; Residential buildings EUR 27,183,000; Building integrated renewables EUR 23,920,000; District heating EUR 5,040,000; Smart grids EUR 13,340,000; Sustainable urban mobility EUR 0; Innovative energy infrastructure EUR 86,000,000; Public lighting EUR 1,400,000; Other sector EUR 0.",
+    "quote": "Innovative energy infrastructure 86 000 000 EUR",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Only related cost items exist, for different scopes and in PLN: street lighting modernisation of 3,500 points PLN 8.60 m (p. 144); district heating network modernisation PLN 26.0 m and new network PLN 7.5 m (p. 141); PV on public buildings about PLN 0.1-0.2 m per 20-40 kWp (pp. 143-146).",
+    "quote_pl": "Modernizacja publicznego",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 144,
+    "note": "None of the Annex E sector amounts can be derived from the plan. Street lighting: plan PLN 8.60 m vs Annex E EUR 1,400,000 for a similar 3,500-lamp scope."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City investment department; MPGK Krosno (district heating, PV, hydrogen); municipal lighting unit",
+   "simulated_file": {
+    "name": "Krosno_EUCF_investment_estimate_2021-12.xlsx",
+    "what": "Same spreadsheet as for the total, sheet 'by sector' matching the nine Annex E rows",
+    "based_on": "Annex E summary table"
+   },
+   "confidence": "high",
+   "doubt": "Sum check: the seven non-zero rows add to exactly 160,644,000."
+  },
+  {
+   "key": "investment.calculation_basis",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not shown. Annex E gives only sector totals and a narrative comment; no unit costs. Quantities are in Annex D (e.g. 62,300 m2 + 89,000 m2 public buildings; 2.12 + 0.79 MWp and 4 + 6 MWp PV; 21 MWp PV farms; 3,500 lamps; heat storage about 78,000 m3).",
+    "quote": "Calculation Log - Expected Size of Investment",
+    "file": "Krosno-Annex-E-investment-size-filled.txt",
+    "page": 1
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Implied unit costs can be read from the 2019 plan: rooftop PV PLN 0.2 m for 40 kWp (about PLN 5,000/kWp, 38 MWh/yr); street lighting PLN 8.60 m for 3,500 points; heating network PLN 26.0 m for about 13.5 km and PLN 7.5 m for about 5 km. No unit costs for thermal modernisation per m2, heat pumps, hydrogen or storage.",
+    "quote_pl": "Planowana długość ok. 13,5",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 141,
+    "note": "These are the plan's own figures for other projects; whether Krosno used them is unknown."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City investment department; MPGK Krosno; external experts named in field 2.4",
+   "simulated_file": {
+    "name": "Krosno_EUCF_unit_costs_and_assumptions.xlsx",
+    "what": "Assumptions sheet: PLN/m2 for thermal modernisation, PLN/kWp for PV, PLN/kW for heat pumps, PLN per LED luminaire, electrolyser and fuel-cell CHP budget quotes, EUR/PLN rate",
+    "based_on": "Quantities in Annex D; unit costs implied by Low-Emission Plan Table 64 (pp. 141-147)"
+   },
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "impacts.energy_savings_gwh",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "164.51 GWh/year total energy savings (public buildings 13.9; residential on district heating 111.7; residential on gas 22.1; residential on coal 14.7; public lighting 2.11). The application text (3.4) gives only percentage targets.",
+    "quote": "TOTAL 275,5 110,99 0 0 164,51 76,1",
+    "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "Not in the plan. Related: the plan assumes thermal modernisation cuts a building's energy use by 50% (Table 63) and expects 525 MWh/yr saved from street lighting modernisation (p. 144).",
+    "quote_pl": "Obniżenie zużycia energii o 50%",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 136,
+    "note": "Annex D applies about 50% to public, gas and coal buildings but 66% to district-heated housing (170 -> 58.3 GWh). Lighting saving 2.11 GWh/yr is four times the plan's 0.525 GWh/yr."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "MPGK Krosno district heating branch (heat sales per building group); city energy/environment department; housing cooperatives (Krośnieńska Spółdzielnia Mieszkaniowa)",
+   "simulated_file": {
+    "name": "Krosno_energy_savings_calculation.xlsx",
+    "what": "Calculation of savings per building group: heated area x specific heat demand before/after, split by fuel",
+    "based_on": "Annex D rows (areas 180,000/230,000/150,000/190,000/100,000/130,000 m2) and Low-Emission Plan heat demand of 224 kWh/m2 (p. 121)"
+   },
+   "confidence": "high",
+   "doubt": "Residential baseline on district heating is 170 GWh/yr in Annex D, but the plan reports only 39,640.03 MWh heat bought by households from the network (p. 84) and total network sales of 212,690.55 GJ (about 59 GWh) in 2019. An engineer should check this."
+  },
+  {
+   "key": "impacts.renewable_production_gwh",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "76.1 GWh/year total renewable generation (PV public buildings 2.9; PV residential 10; hybrid heating single-family 7.8; unlabeled row 10.9; decentralised HP+PV phase I 6.3 and phase II 9.5; PV farms 21; heat storage 4.5; green-hydrogen CHP 3.2).",
+    "quote": "TOTAL 275,5 110,99 0 0 164,51 76,1",
+    "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "Not in the plan. Related existing capacity (2018-2019): 392 household PV installations totalling 1,433 kWp, municipal PV of 20-100 kWp per site, biomass ORC CHP 6.716 MWt / 1.4 MWe; planned PV in Table 64 produces about 38 MWh/yr per 40 kWp.",
+    "quote_pl": "Instalacje fotowoltaiczne wykonane na terenie Miasta Krosna.",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 91,
+    "note": "The 76.1 GWh figure is for new 2040 installations and is not derivable."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "MPGK Krosno (PV, hydrogen, heat storage); external RES experts",
+   "simulated_file": {
+    "name": "Krosno_RES_production_estimate.xlsx",
+    "what": "Yield estimate per installation: MWp x kWh/kWp for PV, heat output for heat-pump islands, hydrogen chain balance",
+    "based_on": "Annex D capacities (2.12+0.79, 4+6, 21 MWp; 1 and 1.5 MWt) and plan yield of about 950 kWh/kWp (p. 139)"
+   },
+   "confidence": "medium",
+   "doubt": "Possible double counting: 7 GWh of the PV electricity feeds the electrolyser and the hydrogen CHP output (3.2 GWh) is counted again; heat storage (4.5 GWh) is counted as generation. 21 MWp giving 21 GWh assumes 1,000 kWh/kWp."
+  },
+  {
+   "key": "impacts.savings_exceed_renewables",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Yes. Savings 164.51 GWh/yr vs renewable production 76.1 GWh/yr; renewables are 31.6% of the total impact (240.61 GWh/yr), below the 50% limit. Derived from the Annex D totals, not stated in words.",
+    "quote": "TOTAL 275,5 110,99 0 0 164,51 76,1",
+    "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "A rule check on the new figures; no city document can contain it.",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "Follows arithmetically from the two previous points."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "Whoever fills Annex D (EUCF project team)",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": "todo_type set to 'confirm' because the tool can compute it once savings and renewables are supplied, although nothing is found in documents."
+  },
+  {
+   "key": "impacts.baseline_energy",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Annex D 'energy consumption before' for the components covered: 275.5 GWh/year in total (public buildings heat 28.6; residential district heat 170; residential gas 44.4; residential coal 29.6; street lighting 2.9). No baseline year is given.",
+    "quote": "TOTAL 275,5 110,99 0 0 164,51 76,1",
+    "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "City-wide final energy use is in the plan: 815,726.84 MWh (table headed 'year 2013' but built from 2018 data), of which residential buildings 272,888.32 MWh, municipal buildings 6,016.80 MWh, public lighting 3,390.00 MWh, industry 385,819.06 MWh, transport 147,612.66 MWh (p. 128). Elsewhere: electricity 26,797.69 MWh in 2018 (p. 100); street lighting 3,390 MWh in 2018 with over 6,000 luminaires (p. 107); gas for public buildings 2,626.8 MWh (p. 115); gas for heating dwellings 82,638.9 MWh in 2018 (p. 79); district heat bought by households 39,640.03 MWh and by offices/institutions 16,422.30 MWh (p. 84).",
+    "quote_pl": "Końcowe zużycie energii [MWh] w roku 2013",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 128,
+    "note": "The Annex D sector baselines do not match the plan: residential district heat 170 GWh vs 39.6 GWh; residential gas 44.4 vs 82.6-86.0 GWh; coal 29.6 vs 48.7 GWh; public buildings 28.6 GWh vs 2.6 GWh gas + 16.4 GWh district heat; lighting 2.9 vs 3.39 GWh. The submitted baseline is therefore not derivable from the plan."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "MPGK Krosno district heating branch; city energy/environment department; PGE Dystrybucja and gas operator for sales data",
+   "simulated_file": {
+    "name": "Krosno_baseline_energy_by_sector_2020.xlsx",
+    "what": "Baseline consumption table by sector and carrier with source and year for each figure",
+    "based_on": "Annex D 'before' column (275.5 GWh) and Low-Emission Plan inventory tables (pp. 79, 84, 100, 107, 115, 121-122, 128)"
+   },
+   "confidence": "medium",
+   "doubt": "The 815,726.84 MWh total is reconstructed from table cells split over two text lines; the residential electricity for heating is given in the plan as 14,335.60 MWh (p. 122) but 16,639.53 MWh in the summary table. The plan table header says 2013 while all text says 2018."
+  },
+  {
+   "key": "impacts.co2_avoided",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "72,910.29 t CO2eq/year (Annex D total 'savings'); emissions before 88,870.10 and after 35,046.51 t CO2eq/year. Factors used: 341 (heat/coal), 202 (natural gas), 719 (electricity, KOBiZE). The application text gives only 'emission reduction of at least 55% by 2030'.",
+    "quote": "TOTAL 275,5 110,99 0 0 164,51 76,1 88 870,10 35 046,51 72 910,29",
+    "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+    "page": 2
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "Not in the plan. Related: plan target of at least 20% CO2 reduction (p. 138), city emissions 223,990.33 Mg CO2 (pp. 129-130), and different emission factors (electricity 0.812 Mg CO2/MWh, network heat 0.094 Mg/GJ, wood 0.112 Mg/GJ, p. 99).",
+    "quote_pl": "Energia elektryczna",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 99,
+    "note": "Annex D uses 0.719 for electricity, the plan 0.812, so even the method differs."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City environment department; external energy auditor",
+   "simulated_file": {
+    "name": "Krosno_CO2_reduction_calculation.xlsx",
+    "what": "CO2 calculation per Annex D row with emission factor source (IPCC 2006, KOBiZE 2020)",
+    "based_on": "Annex D CO2 columns"
+   },
+   "confidence": "high",
+   "doubt": "The 72,910.29 total equals the sum of the row savings but leaves out the PV farms (21 GWh) and heat storage (4.5 GWh), which have no CO2 entered; 'before minus after' is only 53,823.59. Hybrid heating replacing coal and hydrogen CHP are valued with the natural-gas factor 202."
+  },
+  {
+   "key": "impacts.other",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Percentage targets for the concept: RES share 40% by 2030; energy efficiency at least 36% by 2030; emission reduction at least 55% by 2030; at least 37% final-energy savings; at least 41% primary-energy savings. Jobs only qualitatively (new jobs/small businesses related to RES, field 3.5); no number.",
+    "quote": "- RES energy production share at the",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 3
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "No jobs or co-benefit estimate for this programme. Related air-quality figure: the boiler-replacement project is expected to cut PM10 by 13.339 Mg/yr.",
+    "quote_pl": "zmniejszenie emisji pyłu PM10 o 13,339 Mg/rok.",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 88,
+    "note": "The percentage targets copy EU 2030 policy targets rather than local data."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "City development department; county labour office for job estimates; environment department for air quality",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "replication.how",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Replicable through a governance model with co-creation, co-management and co-design with residents; new business models for residents to invest; workshops, training and manuals for installers and designers; a technical model suitable for small and large cities (positive energy districts) shared as project know-how.",
+    "quote": "solutions will be suitable for small and",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 4
+   },
+   "in_documents": {
+    "status": "not_found",
+    "value_en": "Nothing on replication of an energy programme. The Local Development Plan describes participatory planning in general.",
+    "quote_pl": "",
+    "file": null,
+    "page": null,
+    "note": "Narrative written for the application."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "decide",
+   "who_would_know": "EUCF project team",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": ""
+  },
+  {
+   "key": "replication.networks",
+   "submitted": {
+    "has_public_answer": true,
+    "value_en": "Sharing within the region/voivodeship; events with the Polish City Association (Związek Miast Polskich), Podkarpacka Hydrogen Valley and the Marshal Office; Krosno leads the urban functional area, enabling knowledge transfer to other municipalities.",
+    "quote": "Podkarpacka Hydrogen Valley, Marshal",
+    "file": "Krosno-EUCF-application-2021-12-17-PL-EN.txt",
+    "page": 4
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Two of the four are evidenced: the Local Development Plan was prepared with City Advisors delegated by the Association of Polish Cities (p. 4); the low-emission plan is a joint plan for Krosno and six municipalities of the functional area (p. 1) and Krosno ran a joint low-emission transport project with them (Local Development Plan p. 91). Podkarpacka Hydrogen Valley and the Marshal Office events are not mentioned anywhere.",
+    "quote_pl": "delegowanych przez Związek Miast Polskich.",
+    "file": "Krosno-local-development-plan-submitted.txt",
+    "page": 4,
+    "note": "That Krosno is the formal 'leader' of the functional area is not stated in the pre-2021 files."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "The 2021-2027 functional-area strategy names 'Gmina Miasto Krosno - Lider' of the inter-municipal ZIT agreement (2023).",
+    "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+    "page": 5
+   },
+   "todo_type": "ask_someone",
+   "who_would_know": "Mayor's office / city promotion and development department",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": ""
+  },
+  {
+   "key": "plan.name_and_adoption",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not in the available submitted files (Annex A is not among them; field 3.2 cites only 'Summary_Development_Plan').",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "partly",
+    "value_en": "Name: 'Plan gospodarki niskoemisyjnej dla obszaru obejmującego Miasto Krosno oraz Gminy: Jedlicze, Miejsce Piastowe, Chorkówka, Korczyna, Wojaszówka i Krościenko Wyżne - Aktualizacja 2019' (Low-Emission Economy Plan for Krosno and six municipalities, 2019 update). The adopting council resolution and its date are NOT stated in the plan; the legal-basis section (p. 8) cites only national law. The development plans call the earlier version '... na lata 2015-2020' (Local Development Plan p. 287; Institutional Development Plan p. 39), again without a resolution number.",
+    "quote_pl": "Wojaszówka i Krościenko Wyżne – Aktualizacja 2019",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 1,
+    "note": "Resolution number and date must be supplied."
+   },
+   "later_documents": {
+    "found": true,
+    "value_en": "The 2021-2027 strategy cites the plan by the same title as a data source, without a resolution.",
+    "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+    "page": 40
+   },
+   "todo_type": "bring_evidence",
+   "who_would_know": "City Council office (Biuro Rady Miasta) / public information bulletin (BIP); environment department",
+   "simulated_file": {
+    "name": "Uchwala_Rady_Miasta_Krosna_przyjecie_PGN_aktualizacja_2019.pdf",
+    "what": "Council resolution adopting the 2019 update of the low-emission plan (number, date, signed)",
+    "based_on": "Plan title page; the 2019 update cites the amended energy-efficiency act 'Dz. U. z 2020 r. poz. 264', so adoption was in 2020 or later"
+   },
+   "confidence": "high",
+   "doubt": "The document is titled 'Aktualizacja 2019' but cites a 2020 legal gazette entry and data as of 31.12.2019, so the adoption date is probably 2020; this is an inference."
+  },
+  {
+   "key": "plan.target",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not in the available submitted files.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "For Krosno: reduce CO2 emissions by at least 20% by 2020.",
+    "quote_pl": "osiągnięcia zakładanej redukcji emisji CO2 o minimum 20% do 2020 roku",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 138,
+    "note": "Stated in section 4.1.22 as the 'assumed' reduction; the plan gives no absolute target in Mg and no explicit reference year for the 20%."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "City environment department",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "A 2019 update still giving 2020 as target year looks like text left from the 2015 plan; the chapters for other municipalities in the same document say 'by 2025' (pp. 280, 343). A native reader should confirm which year applies to Krosno."
+  },
+  {
+   "key": "plan.baseline_emissions",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not in the available submitted files.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "Total 223,990.33 Mg CO2/year (buildings, equipment, lighting and industry 187,627.76; transport 36,362.57), from the inventory table on pp. 129-130. The companion energy table (p. 128) is headed 'Final energy consumption [MWh] in year 2013' although every input is described as 2018 data (electricity p. 100, lighting p. 107, public buildings p. 115, private sector p. 120). Wood is counted as emitting CO2: 81,759.11 Mg (39,449.27 residential + 42,309.85 industry), 36.5% of the total, using 0.112 Mg CO2/GJ (p. 99).",
+    "quote_pl": "Końcowe zużycie energii [MWh] w roku 2013",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 128,
+    "note": "No sentence names a base year. A different, higher total appears in the forecast table 58 (p. 124): 445,076.32 Mg CO2 for 2019, 9.62 Mg per inhabitant; that table repeats the private-sector figure in the public-buildings row, so it looks inflated."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "City environment department",
+   "simulated_file": null,
+   "confidence": "medium",
+   "doubt": "Year (2013 header vs 2018 data), total (223,990.33 vs 445,076.32) and the wood emission factor all need a human decision. The 223,990.33 figure is reconstructed from cells split across text lines on pp. 129-130. On p. 93 the same plan says biomass has a zero CO2 balance."
+  },
+  {
+   "key": "plan.key_measures",
+   "submitted": {
+    "has_public_answer": false,
+    "value_en": "Not in the available submitted files.",
+    "quote": "",
+    "file": null,
+    "page": null
+   },
+   "in_documents": {
+    "status": "found",
+    "value_en": "Table 64 (pp. 140-150), costs in PLN million: integrated waste-to-energy system incl. RDF-fired energy block, MPGK, 80.00, 2021-2022; modernisation of district heating network to pre-insulated pipes, about 13.5 km, 26.0, 2020-2024; new district heating network about 5 km, 7.5, 2020-2024; energy efficiency of heating-branch buildings 1.7; thermal modernisation, lighting, solar collectors and PV (20-40 kWp) in municipal buildings (care homes, schools, nursery), 0.1-1.2 each; street lighting modernisation of 3,500 points and 150 control cabinets, 8.60, stage I 2020, saving 525 MWh and 420 Mg CO2; 'Air quality in Krosno - heat source replacement': 96 solid-fuel boilers to gas and removal of 883 gas water heaters, 11.260; PV at MPGK sites (650, 125, 243, 200, 75 kWp), 0.45-3.20 each, 2020-2021; covered ice rink with 224 kWp PV, 31.0; sewage network 15.0 and wastewater plant modernisation 10.0, 2020-2027.",
+    "quote_pl": "Tabela 64. Planowane do realizacji zadania w ramach Planu",
+    "file": "Krosno-low-emission-plan-2019-update.txt",
+    "page": 140,
+    "note": "The plan gives no total cost and no total reduction for the table."
+   },
+   "later_documents": {
+    "found": false,
+    "value_en": "",
+    "file": null,
+    "page": null
+   },
+   "todo_type": "confirm",
+   "who_would_know": "City environment department; MPGK Krosno",
+   "simulated_file": null,
+   "confidence": "high",
+   "doubt": "Column order in the table is CO2 reduction (Mg), RES produced (MWh), energy saved (MWh); for some rows only two numbers appear, so the assignment (e.g. lighting '420 | 525') is inferred from 525 MWh x 0.812 = 426 Mg."
+  }
+ ],
+ "extras": {
+  "dates": {
+   "zit_strategy_date": {
+    "answer": "The document is dated 'KROSNO 2024' on its cover. It was commissioned by contract no. RI.021.5.2023.M of 29 May 2023 and cannot have been adopted before mid-October 2024, because it describes public consultations that ran until 16 October 2024. Every page carries a signed-resolution footer ('Id: ... Podpisany'), so it is an annex to an adopted resolution, but the resolution number and date are not in the extracted text. It did not exist in December 2021.",
+    "quotes": [
+     {
+      "quote_pl": "KROSNO 2024",
+      "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+      "page": 1
+     },
+     {
+      "quote_pl": "jest umowa nr RI.021.5.2023.M z dnia 29 maja 2023 r., pomiędzy Gminą Miasto Krosno, a firmą Cpoint Sp. z o.o.",
+      "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+      "page": 5
+     },
+     {
+      "quote_pl": "od 25 września do 16 października 2024 r.",
+      "file": "Krosno-functional-area-investment-strategy-2021-2027.txt",
+      "page": 27
+     }
+    ],
+    "confidence": "medium",
+    "doubt": "Exact adoption date/resolution not stated in the text; check the resolution on the city's BIP."
+   },
+   "plans_dates": {
+    "local_development_plan": {
+     "title": "Plan Rozwoju Lokalnego Miasta Krosna na lata 2021-2030",
+     "date": "September 2020",
+     "quote_pl": "Krosno, wrzesień 2020 r.",
+     "file": "Krosno-local-development-plan-submitted.txt",
+     "page": 1,
+     "adoption_resolution": "not stated (searched for 'uchwała ... Rady Miasta Krosna'; hits refer to other documents)"
+    },
+    "institutional_development_plan": {
+     "title": "Plan Rozwoju Instytucjonalnego Miasta Krosna na lata 2021-2030",
+     "date": "October 2020",
+     "quote_pl": "Krosno, październik 2020 r.",
+     "file": "Krosno-institutional-development-plan-submitted.txt",
+     "page": 1,
+     "adoption_resolution": "not stated; staffing data are 'as of 1 June 2020' (p. 5)"
+    },
+    "low_emission_plan": {
+     "title": "Plan gospodarki niskoemisyjnej dla obszaru obejmującego Miasto Krosno oraz Gminy: Jedlicze, Miejsce Piastowe, Chorkówka, Korczyna, Wojaszówka i Krościenko Wyżne – Aktualizacja 2019",
+     "date": "2019 update (title only; no day or month)",
+     "quote_pl": "Wyżne – Aktualizacja 2019",
+     "file": "Krosno-low-emission-plan-2019-update.txt",
+     "page": 1,
+     "adoption_resolution": "not stated",
+     "note": "The text uses end-of-2019 data (e.g. Chorkówka population 'na koniec 2019 roku', p. 235) and refers to a project ending 30 September 2020 (p. 176), so it was finalised in 2020 at the earliest despite the '2019' label. Emission forecast horizon: 2025 (p. 52)."
+    }
+   }
+  },
+  "annex_d_and_consistency": {
+   "annex_d_summary": {
+    "unit": "GWh/year for energy; t CO2eq/year for emissions",
+    "rows": [
+     {
+      "sector": "Public buildings",
+      "component": "Thermomodernisation (62,300 m2 to 2030; 89,000 m2 to 2040)",
+      "carrier": "Heat/cold",
+      "before": 28.6,
+      "after": 14.7,
+      "energy_savings": 13.9,
+      "re_generation": 0,
+      "co2_before": 9752.6,
+      "co2_after": 5012.7,
+      "co2_savings": 4739.9,
+      "factor": 341
+     },
+     {
+      "sector": "Residential buildings",
+      "component": "Thermomodernisation, district-heated (180,000 m2 + 230,000 m2)",
+      "carrier": "Heat/cold",
+      "before": 170,
+      "after": 58.3,
+      "energy_savings": 111.7,
+      "re_generation": 0,
+      "co2_before": 57970,
+      "co2_after": 19880.3,
+      "co2_savings": 38089.7,
+      "factor": 341
+     },
+     {
+      "sector": "Residential buildings",
+      "component": "Thermomodernisation, not on district heating (150,000 m2 + 190,000 m2)",
+      "carrier": "Natural gas",
+      "before": 44.4,
+      "after": 22.3,
+      "energy_savings": 22.1,
+      "re_generation": 0,
+      "co2_before": 8968.8,
+      "co2_after": 4504.6,
+      "co2_savings": 4464.2,
+      "factor": 202
+     },
+     {
+      "sector": "Residential buildings",
+      "component": "Thermomodernisation, not on district heating (100,000 m2 + 130,000 m2)",
+      "carrier": "Coal",
+      "before": 29.6,
+      "after": 14.9,
+      "energy_savings": 14.7,
+      "re_generation": 0,
+      "co2_before": 10093.6,
+      "co2_after": 5080.9,
+      "co2_savings": 5012.7,
+      "factor": 341
+     },
+     {
+      "sector": "Building integrated renewables",
+      "component": "PV on public buildings 2.12 MWp + 0.79 MWp",
+      "carrier": "Electricity",
+      "energy_savings": 0,
+      "re_generation": 2.9,
+      "co2_savings": 2085.1,
+      "factor": 719
+     },
+     {
+      "sector": "Building integrated renewables",
+      "component": "PV on residential buildings 4 MWp + 6 MWp",
+      "carrier": "Electricity",
+      "energy_savings": 0,
+      "re_generation": 10,
+      "co2_savings": 7190,
+      "factor": 719
+     },
+     {
+      "sector": "Building integrated renewables",
+      "component": "Hybrid heating (heat pump + PV + heat storage) for single-family houses, replacing coal",
+      "carrier": "Coal",
+      "energy_savings": 0,
+      "re_generation": 7.8,
+      "co2_savings": 1575.6,
+      "factor": 202
+     },
+     {
+      "sector": "unclear (row at the bottom of page 1, label not legible in the text extraction)",
+      "component": "unlabeled",
+      "energy_savings": 0,
+      "re_generation": 10.9,
+      "co2_savings": 2201.8,
+      "factor": 202
+     },
+     {
+      "sector": "District heating",
+      "component": "New heating network for hydrogen cogeneration plant; micro heating networks for 'energy islands' phase I and II",
+      "carrier": "Heat/cold",
+      "energy_savings": 0,
+      "re_generation": 0,
+      "co2_savings": 0
+     },
+     {
+      "sector": "Smart grids",
+      "component": "Central IT energy management platform; smart meters",
+      "energy_savings": 0,
+      "re_generation": 0,
+      "co2_savings": 0
+     },
+     {
+      "sector": "Sustainable urban mobility",
+      "component": "none",
+      "energy_savings": 0,
+      "re_generation": 0,
+      "co2_savings": 0
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "Decentralised HP+PV heat source, phase I, about 1 MWt (2 x 0.5)",
+      "carrier": "Heat/cold",
+      "energy_savings": 0,
+      "re_generation": 6.3,
+      "co2_savings": 2148.3,
+      "factor": 341
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "Decentralised HP+PV heat source, phase II, about 1.5 MWt (3 x 0.5)",
+      "carrier": "Heat/cold",
+      "energy_savings": 0,
+      "re_generation": 9.5,
+      "co2_savings": 3239.5,
+      "factor": 341
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "Electrolyser for green hydrogen with storage (uses about 7 GWh of PV electricity)",
+      "energy_savings": null,
+      "re_generation": null,
+      "co2_savings": null
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "New PV farms, 21 MWp in total",
+      "carrier": "Electricity",
+      "energy_savings": 0,
+      "re_generation": 21,
+      "co2_savings": null,
+      "factor": 719
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "Large heat storage, about 78,000 m3",
+      "carrier": "Heat/cold",
+      "energy_savings": 0,
+      "re_generation": 4.5,
+      "co2_savings": null,
+      "factor": 341
+     },
+     {
+      "sector": "Innovative energy infrastructure",
+      "component": "Green-hydrogen fuel cell / CHP pilot plant",
+      "carrier": "hydrogen",
+      "energy_savings": 0,
+      "re_generation": 3.2,
+      "co2_savings": 646.4,
+      "factor": 202
+     },
+     {
+      "sector": "Public lighting",
+      "component": "About 3,500 sodium lamps replaced by LED with lighting management system",
+      "carrier": "Electricity",
+      "before": 2.9,
+      "after": 0.79,
+      "energy_savings": 2.11,
+      "re_generation": 0,
+      "co2_before": 2085.1,
+      "co2_after": 568.01,
+      "co2_savings": 1517.09,
+      "factor": 719
+     }
+    ],
+    "totals": {
+     "consumption_before": 275.5,
+     "consumption_after": 110.99,
+     "energy_savings": 164.51,
+     "re_generation": 76.1,
+     "co2_before": 88870.1,
+     "co2_after": 35046.51,
+     "co2_savings": 72910.29
+    },
+    "by_sector": {
+     "Public buildings": {
+      "energy_savings": 13.9,
+      "re_generation": 0
+     },
+     "Residential buildings": {
+      "energy_savings": 148.5,
+      "re_generation": 0
+     },
+     "Building integrated renewables": {
+      "energy_savings": 0,
+      "re_generation": 20.7,
+      "note": "31.6 if the unlabeled 10.9 row belongs here"
+     },
+     "District heating": {
+      "energy_savings": 0,
+      "re_generation": 0
+     },
+     "Smart grids": {
+      "energy_savings": 0,
+      "re_generation": 0
+     },
+     "Innovative energy infrastructure": {
+      "energy_savings": 0,
+      "re_generation": 44.5
+     },
+     "Public lighting": {
+      "energy_savings": 2.11,
+      "re_generation": 0
+     },
+     "unassigned": {
+      "re_generation": 10.9
+     }
+    },
+    "source": {
+     "file": "Krosno-Annex-D-energy-calculation-filled.txt",
+     "pages": [
+      1,
+      2
+     ]
+    }
+   },
+   "consistency_checks": [
+    "Totals reproduce: row savings sum to 164.51 GWh and row renewables to 76.1 GWh; Annex E rows sum to EUR 160,644,000.",
+    "Savings vs renewables rule is met: 164.51 > 76.1; renewables are 31.6% of total impact.",
+    "Annex E lists seven targeted sectors and those seven have non-zero investment; Sustainable urban mobility is EUR 0 and has no Annex D rows, yet the Annex E comment says green hydrogen will fuel public transport buses.",
+    "District heating (EUR 5,040,000) and Smart grids (EUR 13,340,000) carry investment but zero energy savings and zero renewable generation in Annex D.",
+    "Innovative energy infrastructure is 53.5% of investment (EUR 86,000,000) but delivers no savings, only 44.5 GWh of the 76.1 GWh renewable generation; 92% of savings come from Residential and Public buildings, which get 19.3% of investment (EUR 30,944,000).",
+    "CO2 total 'savings' 72,910.29 t is the sum of row values and is larger than before minus after (53,823.59 t) because it adds avoided emissions from renewables; it omits the PV farms (21 GWh, would be about 15,099 t at 719) and heat storage (4.5 GWh), which have blank CO2 cells.",
+    "Emission factors are mixed: 'Heat/cold' and coal both 341; hybrid heating that replaces coal and the hydrogen CHP are valued at 202 (natural gas).",
+    "Possible double counting of renewables: about 7 GWh of PV electricity is used for hydrogen and the hydrogen CHP output (3.2 GWh) is counted again; heat storage 4.5 GWh is counted as generation.",
+    "One Annex D row (10.9 GWh renewable, 2,201.8 t CO2, factor 202) has no legible component name in the text extraction.",
+    "Application text inconsistency: climate neutrality 'by 2040' in field 2.3 but 'by 2050' in fields 3.2 and 2.5; field 3.4 gives only 2030 percentage targets, no GWh, while Annex D runs to 2040.",
+    "Annex D baselines conflict with the 2019 plan: residential district heat 170 GWh vs 39.6 GWh bought by households (plan p. 84); street lighting 2.9 GWh for 3,500 lamps vs 3.39 GWh for over 6,000 luminaires (plan p. 107); lighting saving 2.11 GWh vs 0.525 GWh for the same 3,500-point scope (plan p. 144).",
+    "Evaluator feedback (score 20.50/25; A1 investment 4.0, A2 energy 4.0, B1 4.3, B2 4.5, B3 4.0) raised no inconsistency; only asked for more detail on tasks of the actors."
+   ]
+  }
+ }
+}

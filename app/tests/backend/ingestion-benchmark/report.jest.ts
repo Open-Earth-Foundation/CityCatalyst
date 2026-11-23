@@ -235,6 +235,22 @@ describe("spec 5.4 metrics", () => {
   });
 });
 
+describe("rows stored without scope", () => {
+  it("shows the count per case and per block", () => {
+    const a = result("A", 0.5);
+    const b = result("B", 0.5);
+    const verdicts = [
+      { ...verdict(a), unscopedRows: 2 },
+      { ...verdict(b), unscopedRows: 1 },
+    ];
+    const report = renderReport(summary([a, b]), verdicts, [block({})], []);
+    expect(report).toContain("| Distractors stored | Unscoped rows |");
+    expect(report).toContain(
+      "- Rows stored without scope (subsector ref, scope null): 3",
+    );
+  });
+});
+
 describe("usage and cost", () => {
   const withUsage = (id: string, pages: number | null): CaseResult => ({
     ...result(id, 0.5),

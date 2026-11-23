@@ -41,7 +41,7 @@ export type StoredValue = {
  * metrics). Raise it on every change to them: a baseline entry recorded with
  * another version is rescored from its run folder, so both sides use the same rules.
  */
-export const SCORER_VERSION = "2";
+export const SCORER_VERSION = "3";
 
 export type FileScore = {
   keyValueRows: number;
@@ -77,6 +77,12 @@ export type FileScore = {
   }[];
   unexpectedStored: { gpc: string; scope: string | null; valueT: number }[];
   missingRows: { description: string; gpc: string; value: number | null }[];
+  /**
+   * Data quality, reported only: stored value groups at a subsector ref (I.3,
+   * IV.1, ...) with no scope. GPC BASIC requires the scope split, so each is a
+   * gap even when it scores as correct. Absent on scores before scorer 3.
+   */
+  unscopedRows?: number;
 };
 
 const REF_PATTERN = /\b(?:VI|IV|V|III|II|I)(?:\.(?:\d+|x))+/g;
@@ -96,6 +102,8 @@ export function parseRefs(gpc: string): ParsedRefs {
 
 /** A subsector-level ref such as "I.1": its stored refs are "I.1.1", "I.1.2", ... */
 const SUBSECTOR_REF = /^(?:I|II|III)\.\d+$/;
+/** Any subsector-level ref, for the unscoped-rows count. */
+const UNSCOPED_SUBSECTOR_REF = /^(?:I|II|III|IV|V)\.\d+$/;
 
 function refMatches(
   pattern: string,
@@ -108,6 +116,15 @@ function refMatches(
   if (!pattern.includes(".x")) return pattern === ref;
   const prefix = pattern.slice(0, pattern.indexOf(".x") + 1);
   const tail = pattern.slice(pattern.indexOf(".x") + 2);
+  // Scorer 3: a key wildcard I.3.x (no tail) also matches a stored subsector-level I.3.
+  if (
+    parentRefMatchesChildren &&
+    !tail &&
+    SUBSECTOR_REF.test(prefix.slice(0, -1)) &&
+    ref === prefix.slice(0, -1)
+  ) {
+    return true;
+  }
   if (!ref.startsWith(prefix)) return false;
   if (!tail) return true;
   return ref.endsWith(tail);
@@ -419,5 +436,8 @@ export function scoreFile(
     distractorsStored,
     unexpectedStored: rows ? unexpectedStored : [],
     missingRows: rows ? missingRows : [],
+    unscopedRows: [...groups.values()].filter(
+      (g) => g.scope === "" && UNSCOPED_SUBSECTOR_REF.test(g.gpc),
+    ).length,
   };
 }

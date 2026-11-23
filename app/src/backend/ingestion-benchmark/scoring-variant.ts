@@ -11,7 +11,9 @@
  * written as `I.3` or `I.3.x`, never an exact scoped child row such as I.3.1
  * scope 1, so no scope or child reference is invented.
  *
- * scoreFile and SCORER_VERSION are unchanged.
+ * Since scorer 3 the standard score matches a stored I.3 to a key I.3.x, so
+ * after CC-1311 the variant equals the standard score; it still differs for
+ * runs whose approve dropped the parent rows.
  */
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {

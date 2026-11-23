@@ -14,7 +14,7 @@ All re-scores are local (`--rescore`, no DB, LLM, OCR or vendor call). Expected 
 | same | C-021 recall / precision | 27% / 30% | 91% / 100% | |
 | same | C-015 to C-019 | | unchanged | |
 | same | Variant, every case | | equal to standard | |
-| CC-1311 envelopes C-022 to C-025 (`2026-11-20-1240-df11e0909-originals-v2`) | Totals only | | unchanged | [`2026-11-23-1245-9a7d361aa-originals-v2-4`](2026-11-23-1245-9a7d361aa-originals-v2-4/report.md) |
+| CC-1311 envelopes C-022 to C-025 (`2026-11-20-1240-df11e0909-originals-v2`) | Totals only | | unchanged | [`2026-11-23-1348-4ce9bed03-originals-v2`](2026-11-23-1348-4ce9bed03-originals-v2/report.md) (unscoped-rows fix; first run `2026-11-23-1245-9a7d361aa-originals-v2-4`) |
 | Round 2 C-015 to C-021 (`2026-11-19-0209-c5dec265a-originals-v2`) | Provisional recall / precision | 68% / 97% | 68% / 97% | [`2026-11-23-1245-9a7d361aa-originals-v2`](2026-11-23-1245-9a7d361aa-originals-v2/report.md) |
 | same | Variant recall (mean of cases) | 86% | 86% | |
 | Round 2 C-022 to C-025 (`2026-11-19-0211-c5dec265a-originals-v2`) | Totals only | | unchanged | [`2026-11-23-1245-9a7d361aa-originals-v2-2`](2026-11-23-1245-9a7d361aa-originals-v2-2/report.md) |
@@ -25,7 +25,7 @@ Totals within tolerance, 10x counts and notation keys (26 of 39 for the envelope
 
 ## Rows stored without scope (CC-1311 envelopes)
 
-Mean per scored attempt: C-020 7.3, C-021 7, C-023 2, C-024 9; every other case 0. Round 2 and built-in runs store none (approve dropped subsector rows before CC-1311). Under GPC BASIC the scope split is required, so each is a data-quality gap even when it scores as correct.
+Mean per scored attempt: C-020 7.3, C-021 7; every other case 0. Cases scored on the total only (C-022 to C-025) report 0 since commit `4ce9bed03`; before it C-023 showed 2 and C-024 9. Round 2 and built-in runs store none (approve dropped subsector rows before CC-1311). Under GPC BASIC the scope split is required, so each is a data-quality gap even when it scores as correct.
 
 ## Not done
 

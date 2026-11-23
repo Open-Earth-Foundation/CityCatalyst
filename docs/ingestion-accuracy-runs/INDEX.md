@@ -19,3 +19,4 @@ One line per benchmark run, oldest first. Open the report for per-case numbers a
 | 2026-11-23 12:45 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `9a7d361aa` | 4 | n/a | n/a | n/a | [2026-11-23-1245-9a7d361aa-originals-v2-4](./2026-11-23-1245-9a7d361aa-originals-v2-4/report.md) |
 | 2026-11-23 12:45 (rescore) | `9a7d361aa` | 10 | n/a | n/a | $5.43 | [2026-11-23-1245-9a7d361aa](./2026-11-23-1245-9a7d361aa/report.md) |
 | 2026-11-23 12:46 (rescore) | `9a7d361aa` | 1 | n/a | n/a | $0.127 | [2026-11-23-1246-9a7d361aa](./2026-11-23-1246-9a7d361aa/report.md) |
+| 2026-11-23 13:48 (exploratory) (rescore) pipeline=precomputed:originals-v2 | `4ce9bed03` | 4 | n/a | n/a | n/a | [2026-11-23-1348-4ce9bed03-originals-v2](./2026-11-23-1348-4ce9bed03-originals-v2/report.md) |

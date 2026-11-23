@@ -504,4 +504,18 @@ describe("scoreFile subsector-level stored rows (scorer 3)", () => {
     expect(score.unscopedRows).toBe(2);
     expect(scoreFile(key([wildcard()]), rows.slice(0, 1)).unscopedRows).toBe(1);
   });
+
+  it("does not count unscoped rows for a file scored on the total only", () => {
+    const score = scoreFile(
+      keyFile([wildcard()], { expectedTotal: 100, nonGpc: true }),
+      [unscoped("I.3", 100)],
+    );
+    expect(score.unscopedRows).toBe(0);
+  });
+
+  it("matches a stored scoped subsector row to an unscoped key wildcard", () => {
+    const score = scoreFile(key([wildcard()]), [stored("I.3", "1", 100)]);
+    expect(score.rowRecall).toBe(1);
+    expect(score.unscopedRows).toBe(0);
+  });
 });

@@ -438,8 +438,11 @@ export function scoreFile(
     distractorsStored,
     unexpectedStored: rows ? unexpectedStored : [],
     missingRows: rows ? missingRows : [],
-    unscopedRows: [...groups.values()].filter(
-      (g) => g.scope === "" && UNSCOPED_SUBSECTOR_REF.test(g.gpc),
-    ).length,
+    // Total-only files are not scored by row, so they report no unscoped rows.
+    unscopedRows: rows
+      ? [...groups.values()].filter(
+          (g) => g.scope === "" && UNSCOPED_SUBSECTOR_REF.test(g.gpc),
+        ).length
+      : 0,
   };
 }

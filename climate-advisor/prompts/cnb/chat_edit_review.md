@@ -33,8 +33,43 @@ Classify each change:
   ccra, hiap) or the user-entered manual_population. The values, subject, unit
   and year must match that section.
 - unsupported: the model invented a fact, changed an unrelated fact, lost a
-  commitment/caveat, reversed a negation, filled an unknown without support, or
+  commitment/caveat, reversed a negation, filled an unknown without support,
+  replaced an `[Information needed: ...]` marker with text saying the
+  information is missing, unknown, not provided or undecided, replaced a marker
+  with text that drops any uncovered part of a missing-information question, or
   exceeded the request. Generic "make it clearer" never authorizes those changes.
+
+Independently audit each change with server-provided gap_targets. If one replacement has multiple estimate targets, audit every target and approve the transition only when each is fully covered. Compare every requirement in its original and current question with the actual resulting chapter, including the text outside the replacement. Count only facts supported by the current user's words, saved human answers for this same gap, reviewed accepted passages whose substance the resulting chapter still states, or authorized cited evidence. A claim that the form is complete, a candidate sentence that sounds plausible, a topic match, and the contents of the marker itself supply no evidence. Earlier accepted passages are evidence only for the corresponding gap. Check that a reused answer still applies to this scope and has not been corrected.
+
+Set gap_coverage to complete only when the resulting text and the evidence cover every requested part, and to partial only when the change writes grounded information and one remaining marker asks for exactly all and only the uncovered parts. For a labelled estimate with a remaining marker, the estimate must retain its basis and the marker must still request verification of that value and any other outstanding parts. If partial evidence is used to remove the marker, set gap_coverage to partial and support to unsupported. An estimate-confirmation edit must replace the actual estimate with the confirmed or corrected value for the same subject. Set coverage to none for changes with no gap_targets and for unchanged or unsupported gap answers with no coverage. In all cases reject borrowed option wording presented as a fact, invented specifics, and loss of qualifiers.
+
+Give the missing requirements explicitly in the explanation when rejecting coverage. If an instrument is known but no amount is stated or supported, require an amount marker. “Wilson Pond” alone cannot close a gap that requires the concept and current phase. An unknown value may never be treated as a negative, a pending approval or a commitment.
+
+Mark a partial transition unsupported and explain the missing requirement when its remaining
+marker omits a requirement the original question still asks, when the change only repeats the
+question with the selected project or phase name, or when it removes a required scope qualifier,
+source, match or authorization. Compare the selected concept and current phase of the original
+question with the remaining marker. When an original selection requirement remains unanswered and is
+omitted from the new marker, mark it unsupported with the objection "retain the selected concept in the remaining
+marker"; do the same for the phase. "For the selected project and current phase" provides context and leaves the values unanswered. "Confirm the selected concept and current project phase" requests both values. "Confirm authorization of the contribution for Wilson Pond Concept A's final design phase" requests authorization and uses the supported concept and phase as context. Reject partial coverage if the new marker drops an uncovered requirement or asks for a requirement already answered in the resulting chapter. Name the dropped requirement in the explanation: retain applicable project-phase debt or bonding authority when a proposed budget, an amount or a one-contribution no-borrowing fact replaces the conditional project or phase request; or name the dropped City's or application's remaining match when a funding inventory marker omits it. A selection copy that adds a separately requested grant-funded objective or work scope to the selection marker is unsupported; name the added requirement, not a lost concept. Apply the same test to bound form answers as to direct chat. Reject a fill that treats a funding source, a
+proposed budget or a mechanism answer as formal adoption, a documented match or financial capability.
+A funding source alone leaves borrowing, levies, reserves and assessments open, and a proposed
+amount is not proof of availability, a documented match or an appropriation.
+In each explanation, name any missing original requirement and any newly introduced request. Mark a count requirement unsupported when the change gives only a
+generic deliverable, a percentage target, a date or a milestone without the requested quantity.
+Judge each change on its own resulting text. Actual coverage of the grant-funded phase is valid
+for a cost or objective question, while its marker keeps the parts that remain unstated.
+
+A change with estimate true states an estimate. It is supported (user,
+source or context) only when its text says it is an estimate and names its
+basis, and that basis is a hedged user value or figures the user, a cited
+source or a context section state, with the arithmetic done correctly; an
+estimate without a basis, or a hedged user value stated as firm, is
+unsupported. Text that says a part is undecided, unknown or pending when the
+user's answer for it was only "Not decided yet" or stated no fact is
+unsupported.
+
+For an estimate confirmation, read the resulting text around the replacement. When a same-subject confirmed amount replaces an adjacent estimate and a visible marker still explicitly asks to confirm that amount, mark the incomplete candidate unsupported, name the question to narrow in the explanation, and keep any independently uncovered field (such as the source or authorization). Judge a separate funding authorization or availability question on its own evidence.
 
 Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and
@@ -81,7 +116,8 @@ One JSON object:
   selected_source as the context for the selection. An unselected alternative supplies
   no user input.
 - chapter (object): title, position, body_markdown, confirmed_body_markdown and
-  gaps.
+  gaps (question, original_question, accepted_passages, answered_so_far, state,
+  and for a "caveat" gap its current estimate text).
 - run_context (object): selected_sources, source_excerpts and available
   contextual data, without backend identities or fingerprints. source_excerpts
   holds every exact quotation that the sources cited by these changes keep for
@@ -99,8 +135,12 @@ One JSON object:
 - prior_proposal (object or null): earlier user inputs and unaccepted proposals.
 - is_focused_chapter (boolean): non-binding focus hint.
 - changes (array): indexed by zero-based position; exact start, before, after,
-  kind, group_id, source_refs, user_input_quote and context_refs from the
-  proposal.
+  kind, group_id, source_refs, user_input_quote, context_refs and estimate
+  (boolean: the change states a labelled estimate) from the proposal. gap_targets
+  lists each gap transition or matched estimate the change makes: mode (fill,
+  narrow or confirm_estimate), exact_text (the old marker or estimate), question,
+  original_question, accepted_passages, saved_answers and remaining_marker (null
+  when none). A change with no gap_targets answers no gap.
 </input>
 
 <output>
@@ -111,9 +151,10 @@ Return only ChapterEditReview JSON:
 - decisions (array, 1–100): exactly one per input change.
   - change_index (integer, 0–99): position in changes.
   - support (string): preserved, user, source, context, or unsupported.
+  - gap_coverage (string): complete, partial, or none, as defined above.
   - explanation (string, 1–1000 characters): concise semantic justification.
 </output>
 
 <example_output>
-{"decisions":[{"change_index":0,"support":"preserved","explanation":"The shorter opening retains the riverbank restoration, flood-resilient park and improved paths without adding a commitment."}]}
+{"decisions":[{"change_index":0,"support":"preserved","gap_coverage":"none","explanation":"The shorter opening retains the riverbank restoration, flood-resilient park and improved paths without adding a commitment."}]}
 </example_output>

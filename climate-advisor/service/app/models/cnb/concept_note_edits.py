@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 
@@ -40,6 +41,21 @@ class EditScope(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     kind: Literal["auto"] = "auto"
     focused_chapter_id: UUID | None = None
+    # A gap-form answer is bound to the gap version the user answered. It names
+    # the question for the planner; it never grants permission or proves coverage.
+    gap_id: UUID | None = None
+    gap_version: PositiveInt | None = None
+    # UI hint only, kept for wire compatibility; the reviewed transition decides.
+    answer_complete: bool = False
+
+    @model_validator(mode="after")
+    def validate_gap_binding(self) -> EditScope:
+        """A bound answer must name the chapter and version it answers."""
+        if self.gap_id is not None and (
+            self.focused_chapter_id is None or self.gap_version is None
+        ):
+            raise ValueError("gap_id requires focused_chapter_id and gap_version")
+        return self
 
 
 class EditProposalRequest(BaseModel):
@@ -79,12 +95,17 @@ class ChapterPlannedTextChange(BaseModel):
         max_length=len(EDIT_CONTEXT_LABELS),
         description="Run context sections (CityCatalyst data or user-entered population) supporting the change.",
     )
+    # The text states a labelled estimate (a hedged user value or a value derived
+    # from cited figures); a gap it fills becomes a caveat, not resolved.
+    estimate: bool = False
 
     @model_validator(mode="after")
     def validate_change(self) -> PlannedTextChange:
         """Reject no-ops and require a provenance claim for factual changes."""
         if self.before == self.after:
             raise ValueError("a change must alter the selected text")
+        if self.estimate and self.kind != "factual":
+            raise ValueError("an estimate is a factual change")
         if self.kind == "factual" and not (
             self.source_refs or self.user_input_quote or self.context_refs
         ):
@@ -102,6 +123,10 @@ class PlannedTextChange(ChapterPlannedTextChange):
     semantic_support: Literal["preserved", "user", "source", "context"] | None = Field(
         default=None, exclude=True
     )
+    # Assigned only by the independent review, and checked against the transition.
+    reviewed_gap_coverage: Literal["complete", "partial", "none"] | None = Field(
+        default=None, exclude=True
+    )
 
 
 class EditSemanticDecision(BaseModel):
@@ -110,6 +135,8 @@ class EditSemanticDecision(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     change_index: int = Field(ge=0, le=99)
     support: Literal["preserved", "user", "source", "context", "unsupported"]
+    # Whether the resulting text covers every requested part of the gap's question.
+    gap_coverage: Literal["complete", "partial", "none"] = "none"
     explanation: str = Field(min_length=1, max_length=1000)
 
 
@@ -151,6 +178,7 @@ class DraftReplacement(BaseModel):
     context_refs: list[EditContextSection] = Field(
         default_factory=list, max_length=len(EDIT_CONTEXT_LABELS)
     )
+    estimate: bool = False
 
 
 class EditAgentOutput(BaseModel):
@@ -206,6 +234,16 @@ class EditContextSnapshot(BaseModel):
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+class GapEditBinding(BaseModel):
+    """Exact gap identity, version and saved answers that one change was reviewed against."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    gap_id: UUID
+    gap_version: PositiveInt
+    mode: Literal["fill", "narrow", "confirm_estimate"]
+    saved_answers_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class EditChange(PlannedTextChange):
     """A reviewed replacement with server-assigned identity and real chapter title."""
 
@@ -214,6 +252,8 @@ class EditChange(PlannedTextChange):
     base_revision: PositiveInt
     source_snapshots: list[EditSourceSnapshot] = Field(default_factory=list)
     context_snapshots: list[EditContextSnapshot] = Field(default_factory=list)
+    # Server-derived only; the planner can never supply these identities.
+    gap_bindings: list[GapEditBinding] = Field(default_factory=list)
 
 
 class EditApplyRequest(BaseModel):
@@ -266,3 +306,14 @@ class EditProposalResponse(BaseModel):
     result: EditApplicationResult | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class ConceptNotePreviewResponse(BaseModel):
+    """Read-only view of one note for anyone who can currently open its city."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    run_id: UUID
+    name: str
+    city_id: str
+    draft: ConceptNoteDraftResponse
+    proposals: list[EditProposalResponse] = Field(default_factory=list)

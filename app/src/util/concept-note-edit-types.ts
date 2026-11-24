@@ -5,6 +5,12 @@ export const editScopeSchema = z
   .object({
     kind: z.literal("auto").default("auto"),
     focused_chapter_id: z.string().uuid().nullable().optional(),
+    // A partial gap-form answer closes nothing; a complete one closes this gap
+    // version and any duplicate gap it also fills.
+    // Climate Advisor returns null for proposals that answer no gap.
+    gap_id: z.string().uuid().nullable().optional(),
+    gap_version: z.number().int().positive().nullable().optional(),
+    answer_complete: z.boolean().optional(),
   })
   .strict();
 

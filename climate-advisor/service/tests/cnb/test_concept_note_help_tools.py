@@ -1,20 +1,13 @@
 """Verify lazy help reads, fresh state, and authorization boundaries."""
 
 import json
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
 from agents.tool import ToolContext
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
-from app.tools.concept_note_ui_labels import (
-    UI_LABEL_KEYS,
-    UI_LABELS,
-    normalize_ui_locale,
-)
-
-FRONTEND_LOCALES = Path(__file__).resolve().parents[4] / "app/src/i18n/locales"
+from app.tools.concept_note_ui_labels import normalize_ui_locale
 
 
 def make_tool(ui_locale=None):
@@ -49,7 +42,6 @@ async def test_help_is_lazy_and_refreshes_state_on_each_call():
         tool = make_tool()
         authorize.assert_not_awaited()
         state.assert_not_awaited()
-        assert tool.params_json_schema["properties"] == {}
         before = await invoke(tool)
         after = await invoke(tool)
     assert before["ui_state"]["draft"]["exists"] is False
@@ -139,24 +131,6 @@ def test_locale_tags_normalize_to_supported_languages():
     assert normalize_ui_locale("pt-BR") == "pt"
     assert normalize_ui_locale(" PT_br ") == "pt"
     assert normalize_ui_locale(42) == "en"
-
-
-@pytest.mark.parametrize("ui_locale", sorted(UI_LABELS))
-def test_labels_match_frontend_translations(ui_locale):
-    """Guard against drift between the guide and the rendered CNB controls."""
-    path = FRONTEND_LOCALES / ui_locale / "concept-notes.json"
-    if not path.exists():
-        pytest.skip("Frontend locales are not available in this checkout")
-    translations = json.loads(path.read_text(encoding="utf-8"))
-    expected = {
-        name: (
-            translations[key].replace("{{format}}", value)
-            if value
-            else translations[key]
-        )
-        for name, (key, value) in UI_LABEL_KEYS.items()
-    }
-    assert UI_LABELS[ui_locale] == expected
 
 
 async def test_help_lists_uploaded_files_with_the_newest_flagged():

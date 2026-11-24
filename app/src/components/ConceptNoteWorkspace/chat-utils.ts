@@ -130,6 +130,77 @@ export function readConceptNoteToolVisual(
   });
 }
 
+/** The i18n templates that wrap gap-form answers in the requests sent to Clima now. */
+export const GAP_ANSWER_REQUEST_KEYS = [
+  "gap-answer-request",
+  "gap-answer-estimate-confirm-request",
+] as const;
+
+/** The longest gap question a request shows; the server still uses the whole one. */
+const REQUEST_QUESTION_MAX_CHARS = 2000;
+
+/** The question as a request shows it: the first 2,000 characters, then an ellipsis. */
+export function requestQuestion(question: string): string {
+  const characters = Array.from(question);
+  return characters.length > REQUEST_QUESTION_MAX_CHARS
+    ? `${characters.slice(0, REQUEST_QUESTION_MAX_CHARS).join("")}…`
+    : question;
+}
+
+// Stand-ins for the template slots; control characters never occur in a translation.
+export const GAP_ANSWER_SLOTS = {
+  chapter: "\u0001",
+  question: "\u0002",
+  answer: "\u0003",
+} as const;
+
+export interface GapAnswerMessage {
+  chapter: string;
+  /** The gap's original question. */
+  question: string;
+  /** The numbered questions and answers, as the form wrote them. */
+  answer: string;
+}
+
+/** Turns a template rendered with GAP_ANSWER_SLOTS into a pattern for its slot values. */
+function gapAnswerPattern(template: string): RegExp {
+  const names = Object.fromEntries(
+    Object.entries(GAP_ANSWER_SLOTS).map(([name, slot]) => [slot, name]),
+  );
+  const source = template
+    .split(/([\u0001-\u0003])/)
+    .map((part) => {
+      const name = names[part];
+      if (!name) return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return `(?<${name}>[\\s\\S]+?)`;
+    })
+    .join("");
+  return new RegExp(`^${source}$`);
+}
+
+/**
+ * Reads a gap-form request back into what the user answered, or returns null
+ * for any other message. History returns the request as the same plain text
+ * that was sent, so live and reloaded messages read the same. `templates` are
+ * the request templates rendered with GAP_ANSWER_SLOTS.
+ */
+export function readGapAnswerMessage(
+  text: string,
+  templates: readonly string[],
+): GapAnswerMessage | null {
+  for (const template of templates) {
+    const groups = gapAnswerPattern(template).exec(text)?.groups;
+    if (groups?.chapter && groups.question && groups.answer) {
+      return {
+        chapter: groups.chapter,
+        question: groups.question,
+        answer: groups.answer,
+      };
+    }
+  }
+  return null;
+}
+
 export function readConceptNoteReplyInProgress(payload: unknown): boolean {
   return isRecord(payload) && payload.reply_in_progress === true;
 }

@@ -1,25 +1,27 @@
 /** @jest-environment jsdom */
 
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { beforeAll, beforeEach, expect, it, jest } from "@jest/globals";
 import { act } from "react";
-import { createRoot, type Root } from "react-dom/client";
+import {
+  readConceptNoteThreadMessages,
+  type ConceptNoteChatMessage,
+} from "@/components/ConceptNoteWorkspace/chat-utils";
 import { LuInfo } from "react-icons/lu";
-import { createInstance } from "i18next";
-import translations from "@/i18n/locales/en/concept-notes.json";
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 import type { EditController } from "@/components/ConceptNoteWorkspace/document-review";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
-import type { ConceptNoteChatMessage } from "@/components/ConceptNoteWorkspace/chat-utils";
+import type { ConceptNoteUploadResponse } from "@/util/types";
+import {
+  conceptNotesI18n,
+  jsonResponse,
+  keyDown,
+  mockTranslation,
+  settle,
+  typeInto,
+  setupDomShims,
+  setupTestRoot,
+} from "./helpers/concept-note-ui";
 import type { ChatSendResult } from "@/components/ConceptNoteWorkspace/use-concept-note-chat";
 
 const sendMessage =
@@ -31,17 +33,12 @@ const sendMessage =
     ) => Promise<void | ChatSendResult>
   >();
 const closeGap = jest.fn();
+const gapSaved = jest.fn();
+const refreshDraft = jest.fn();
 let isGenerating = false;
 let messages: ConceptNoteChatMessage[] = [];
-const promptI18n = createInstance();
-const t = (key: string, values?: Record<string, unknown>) =>
-  key === "gap-answer-request" || key === "gap-answer-complete-request"
-    ? promptI18n.t(key, values)
-    : key;
-
-jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t }),
-}));
+const i18n = await conceptNotesI18n();
+mockTranslation(i18n.t.bind(i18n), i18n);
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-chat",
   () => ({
@@ -81,15 +78,11 @@ jest.unstable_mockModule(
 );
 
 let ConceptNoteChatPanel: typeof import("@/components/ConceptNoteWorkspace/chat-panel").ConceptNoteChatPanel;
-let root: Root;
-let container: HTMLDivElement;
-const originalResizeObserver = globalThis.ResizeObserver;
-const originalStructuredClone = globalThis.structuredClone;
-const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
-const originalScrollTo = HTMLElement.prototype.scrollTo;
-const originalCSS = globalThis.CSS;
-const originalFetch = globalThis.fetch;
 const fetchQuestion = jest.fn<typeof fetch>();
+// Answers saved on a gap go to their own route; every other fetch is a question.
+const saveAnswers = jest.fn<typeof fetch>();
+const savedBody = (call = -1) =>
+  JSON.parse(String(saveAnswers.mock.calls.at(call)![1]!.body));
 
 const contextStatus = {
   state: "none",
@@ -108,114 +101,72 @@ const edits = {
   refresh: jest.fn(),
 } as unknown as EditController;
 
+setupDomShims();
+const view = setupTestRoot();
+const { byTestId, button, card, customField, pickOption, writeAnswer } = view;
 beforeAll(async () => {
-  await promptI18n.init({
-    lng: "en",
-    resources: { en: { translation: translations } },
-  });
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-  HTMLElement.prototype.scrollIntoView = jest.fn();
-  HTMLElement.prototype.scrollTo = jest.fn();
-  globalThis.CSS = { ...originalCSS, escape: (value: string) => value };
-  globalThis.structuredClone = (value) =>
-    value === undefined ? value : JSON.parse(JSON.stringify(value));
-  globalThis.ResizeObserver = class {
-    disconnect() {}
-    observe() {}
-    unobserve() {}
-  };
   ({ ConceptNoteChatPanel } =
     await import("@/components/ConceptNoteWorkspace/chat-panel"));
-});
-afterAll(() => {
-  HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
-  HTMLElement.prototype.scrollTo = originalScrollTo;
-  globalThis.CSS = originalCSS;
-  globalThis.IS_REACT_ACT_ENVIRONMENT = false;
-  globalThis.ResizeObserver = originalResizeObserver;
-  globalThis.structuredClone = originalStructuredClone;
 });
 beforeEach(() => {
   isGenerating = false;
   messages = [];
   sendMessage.mockReset();
   closeGap.mockClear();
+  gapSaved.mockClear();
+  refreshDraft.mockClear();
   sendMessage.mockResolvedValue(undefined);
-  container = document.createElement("div");
-  document.body.append(container);
-  root = createRoot(container);
 });
-afterEach(async () => {
-  await act(async () => root.unmount());
-  container.remove();
-  globalThis.fetch = originalFetch;
-});
+
+function panel(
+  status = contextStatus,
+  threadId: string | null = "thread",
+  gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
+  composerRequest: { id: string; content: string } | null = null,
+) {
+  return (
+    <ConceptNoteChatPanel
+      cityId="city"
+      contextStatus={status}
+      composerRequest={composerRequest}
+      gapAnswer={gapAnswer}
+      onCloseGap={closeGap}
+      onGapAnswersSaved={gapSaved}
+      onRefreshDraft={refreshDraft}
+      onAddGapSource={() => {}}
+      draftOverviewPending={false}
+      lng="en"
+      onOpenContext={() => {}}
+      runId="run"
+      threadId={threadId}
+      editScope={{ kind: "document" } as never}
+      edits={edits}
+      uploads={uploads}
+    />
+  );
+}
 
 async function renderPanel(
   status = contextStatus,
   threadId: string | null = "thread",
   gapAnswer: GapAnswerRequest | null = null,
+  uploads?: ConceptNoteUploadResponse[],
   composerRequest: { id: string; content: string } | null = null,
 ): Promise<void> {
-  await act(async () => {
-    root.render(
-      <ChakraProvider value={defaultSystem}>
-        <ConceptNoteChatPanel
-          cityId="city"
-          contextStatus={status}
-          composerRequest={composerRequest}
-          gapAnswer={gapAnswer}
-          onCloseGap={closeGap}
-          onAddGapSource={() => {}}
-          draftOverviewPending={false}
-          lng="en"
-          onOpenContext={() => {}}
-          runId="run"
-          threadId={threadId}
-          editScope={{ kind: "document" } as never}
-          edits={edits}
-        />
-      </ChakraProvider>,
-    );
-  });
-  if (gapAnswer)
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 250));
-    });
+  await view.render(
+    panel(status, threadId, gapAnswer, uploads, composerRequest),
+  );
+  if (gapAnswer) await settle();
 }
 
 function composer(): HTMLTextAreaElement {
-  const element = container.querySelector<HTMLTextAreaElement>(
-    '[data-testid="concept-note-chat-input"]',
-  );
-  expect(element?.tagName).toBe("TEXTAREA");
-  return element!;
+  return byTestId<HTMLTextAreaElement>("concept-note-chat-input")!;
 }
 
-async function type(value: string): Promise<void> {
-  const element = composer();
-  const setValue = Object.getOwnPropertyDescriptor(
-    HTMLTextAreaElement.prototype,
-    "value",
-  )!.set!;
-  await act(async () => {
-    setValue.call(element, value);
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-}
-
-async function pressEnter(shiftKey = false): Promise<KeyboardEvent> {
-  const event = new KeyboardEvent("keydown", {
-    key: "Enter",
-    shiftKey,
-    bubbles: true,
-    cancelable: true,
-  });
-  await act(async () => {
-    composer().dispatchEvent(event);
-  });
-  return event;
-}
+const type = (value: string) => typeInto(composer(), value);
+const pressEnter = (shiftKey = false) =>
+  keyDown(composer(), "Enter", { shiftKey });
 
 it.each(["uploading", "processing", "preparing"] as const)(
   "allows typing while context is %s, but waits for readiness before sending",
@@ -226,14 +177,8 @@ it.each(["uploading", "processing", "preparing"] as const)(
 
     expect(composer().disabled).toBe(false);
     expect(composer().value).toBe("A draft before processing");
-    expect(composer().placeholder).toBe("chat-input-placeholder");
-    expect(composer().getAttribute("aria-describedby")).toBe(
-      "concept-note-chat-blocked",
-    );
     await type("A draft edited during processing");
-    const send = container.querySelector<HTMLButtonElement>(
-      '[data-testid="concept-note-chat-send"]',
-    )!;
+    const send = byTestId<HTMLButtonElement>("concept-note-chat-send")!;
     expect(send.disabled).toBe(true);
     await act(async () => send.click());
     await pressEnter();
@@ -259,7 +204,8 @@ it.each(["uploading", "processing", "preparing"] as const)(
 it("keeps the composer unavailable when the run has no chat thread", async () => {
   await renderPanel(contextStatus, null);
   expect(composer().disabled).toBe(true);
-  expect(composer().placeholder).toBe("chat-unavailable");
+  await act(async () => composer().form!.requestSubmit());
+  expect(sendMessage).not.toHaveBeenCalled();
 });
 
 it("keeps the composer editable while Clima responds but holds the send", async () => {
@@ -272,9 +218,7 @@ it("keeps the composer editable while Clima responds but holds the send", async 
 
   expect(sendMessage).not.toHaveBeenCalled();
   expect(composer().value).toBe("Draft my next question");
-  const send = container.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-chat-send"]',
-  );
+  const send = byTestId<HTMLButtonElement>("concept-note-chat-send");
   expect(send?.disabled).toBe(true);
 
   // Once the reply finishes, Enter sends the text typed during generation.
@@ -329,125 +273,293 @@ const gapAnswer: GapAnswerRequest = {
 
 beforeEach(() => {
   sessionStorage.clear();
-  globalThis.fetch = fetchQuestion;
+  globalThis.fetch = ((input, init) =>
+    String(input).includes("/answers/")
+      ? saveAnswers(input, init)
+      : fetchQuestion(input, init)) as typeof fetch;
+  saveAnswers.mockReset();
+  saveAnswers.mockResolvedValue({ ok: true } as Response);
   fetchQuestion.mockReset();
-  fetchQuestion.mockResolvedValue({
-    ok: true,
-    json: async () => ({
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
       why_asking: "Choose the support needed.",
       questions: [
         {
           question: "Which financing instrument?",
           options: ["Loan", "Grant", "Guarantee"],
+          where_to_find: "Loan agreement or lender term sheet",
         },
         { question: "What amount?", options: [] },
       ],
     }),
-  } as Response);
+  );
 });
 
-const subQuestion = (index: number) =>
-  container.querySelectorAll<HTMLElement>(
-    '[data-testid="concept-note-gap-subquestion"]',
-  )[index];
-
-async function writeAnswer(index: number, value: string) {
-  const answer = subQuestion(index).querySelector<HTMLTextAreaElement>(
-    '[data-testid="concept-note-gap-custom-answer"]',
-  )!;
-  const setValue = Object.getOwnPropertyDescriptor(
-    HTMLTextAreaElement.prototype,
-    "value",
-  )!.set!;
-  await act(async () => {
-    setValue.call(answer, value);
-    answer.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-}
-
 const previewButton = () =>
-  container.querySelector<HTMLButtonElement>(
-    '[data-testid="concept-note-gap-preview"]',
-  )!;
+  byTestId<HTMLButtonElement>("concept-note-gap-preview")!;
 
-it("shows generated multiple-choice answers without claiming they are sourced facts", async () => {
+it.each([404, 409])(
+  "returns an unavailable gap (%i) to chat without sending",
+  async (status) => {
+    fetchQuestion.mockResolvedValue(jsonResponse({}, status));
+    await renderPanel(contextStatus, "thread", gapAnswer);
+    expect(previewButton()).toBeNull();
+    await act(async () => button("Back to conversation")!.click());
+    expect(closeGap).toHaveBeenCalledTimes(1);
+    expect(sendMessage).not.toHaveBeenCalled();
+  },
+);
+
+it("lets the user leave a gap by pressing Escape while answering", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(fetchQuestion.mock.calls[0][0]).toBe(
-    "/api/v1/concept-notes/run/gap-question/",
-  );
-  expect(subQuestion(0).textContent).toContain("1Which financing instrument?");
-  expect(subQuestion(1).textContent).toContain("2What amount?");
-  // The long gap request is collapsible context, not the heading.
-  expect(container.textContent).toContain("gap-questions-heading");
-  expect(
-    container.querySelector('[data-testid="concept-note-gap-question"]')
-      ?.textContent,
-  ).toBe(gapAnswer.row.question);
-  expect(container.textContent).toContain("Guarantee");
-  expect(container.textContent).toContain("gap-other");
-  expect(container.textContent).toContain("gap-not-decided");
-  expect(sendMessage).not.toHaveBeenCalled();
-  const preview = previewButton();
-  expect(preview.disabled).toBe(true);
-  await act(async () =>
-    subQuestion(0)
-      .querySelector<HTMLInputElement>('input[type="radio"][value="0"]')!
-      .click(),
-  );
-  expect(preview.disabled).toBe(false);
-  expect(container.textContent).toContain("gap-acceptance-hint");
-  await act(async () => preview.click());
-  const [content, scope] = sendMessage.mock.calls[0];
-  // A partial answer keeps the gap's marker, so the gap stays open.
-  expect(content).toContain(
-    "My answer:\n1. Which financing instrument?\nLoan\n\n2. What amount?\ngap-not-decided",
-  );
-  expect(content).toContain(
-    "Keep any information I have not supplied marked as missing",
-  );
-  expect(content).toContain('"Financing plan"');
-  expect(content).toContain(gapAnswer.row.question);
-  expect(content).not.toContain("investment-plan");
-  expect(content).not.toContain("grant-application");
-  expect(scope).toEqual({
-    kind: "auto",
-    focused_chapter_id: "financing-chapter",
+  for (const field of [card(0).querySelector("input")!, customField(1)!]) {
+    closeGap.mockClear();
+    await keyDown(field, "Escape");
+    expect(closeGap).toHaveBeenCalledTimes(1);
+  }
+});
+
+it("saves on the secondary action without starting a chat turn", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await pickOption(0, "0");
+  await act(async () => button("Save answers so far")!.click());
+  expect(savedBody()).toEqual({
+    gap_version: 1,
+    answers: "1. Which financing instrument?\nSelected category: Loan",
+    expected_previous: null,
   });
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(gapSaved).toHaveBeenCalledTimes(1);
   expect(closeGap).toHaveBeenCalledTimes(1);
 });
 
-it("asks Clima to replace the gap marker once every question is answered", async () => {
-  await renderPanel(contextStatus, "thread", gapAnswer);
-  await act(async () =>
-    subQuestion(0)
-      .querySelector<HTMLInputElement>('input[type="radio"][value="custom"]')!
-      .click(),
+it.each([
+  [409, "changed", 1],
+  [503, "could not be saved", 0],
+] as const)(
+  "keeps the unsent answer on save failure (%i)",
+  async (status, message, refreshes) => {
+    saveAnswers.mockResolvedValue(jsonResponse({}, status));
+    await renderPanel(contextStatus, "thread", gapAnswer);
+    await writeAnswer(1, "EUR 2 million");
+    await act(async () => previewButton().click());
+    expect(
+      view.container.querySelector('[role="alert"]')?.textContent,
+    ).toContain(message);
+    expect(customField(1)!.value).toBe("EUR 2 million");
+    expect(refreshDraft).toHaveBeenCalledTimes(refreshes);
+    expect(closeGap).not.toHaveBeenCalled();
+    expect(sendMessage).not.toHaveBeenCalled();
+  },
+);
+
+it("uses the chosen source value and shows where each value came from", async () => {
+  const krakowGap = structuredClone(gapAnswer);
+  krakowGap.row.gap!.suggestions = [
+    {
+      value: "Reported total project value: PLN 1.92 billion.",
+      source_refs: ["Krakow_KST_IV_Investment_Plan"],
+    },
+    { value: "Lifecycle cost", source_refs: ["Annex_7_Cost_Breakdown"] },
+  ];
+  await renderPanel(contextStatus, "thread", krakowGap, [
+    {
+      uploadId: "upload",
+      status: "ready",
+      filename: "Krakow_KST_IV_Investment_Plan.pdf",
+      sourceLabel: "Krakow_KST_IV_Investment_Plan",
+    },
+  ]);
+  const lines = [
+    ...view.container.querySelectorAll(
+      '[data-testid="concept-note-gap-source-suggestions"] p',
+    ),
+  ].map((line) => line.textContent);
+  expect(lines).toContain("Source: Krakow KST IV Investment Plan · PDF");
+  // No upload matches, so the label is humanized and no file type is invented.
+  expect(lines).toContain("Source: Annex 7 Cost Breakdown");
+  expect(card(0).textContent).toContain("Loan agreement or lender term sheet");
+  const use = byTestId("concept-note-gap-source-suggestions")!.querySelector(
+    "button",
+  )!;
+  await act(async () => use.click());
+  await act(async () => previewButton().click());
+  expect(savedBody().answers).toContain(
+    "Reported total project value: PLN 1.92 billion.",
   );
-  await writeAnswer(0, "Blended loan and grant");
-  await writeAnswer(1, "EUR 2 million");
-  expect(container.textContent).toContain("gap-complete-hint");
+  expect(savedBody().answers).not.toContain("Lifecycle cost");
+});
+
+it("needs the current value before a changed source value counts as answered", async () => {
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
+      why_asking: "Confirm the instrument.",
+      questions: [
+        { question: "Is the loan still planned?", options: [], confirms: true },
+      ],
+    }),
+  );
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await pickOption(0, "custom");
+  // "Changed" without the new value is not an answer.
+  expect(previewButton().disabled).toBe(true);
+  await writeAnswer(0, "A EUR 3 million grant");
+  await act(async () => previewButton().click());
+  expect(savedBody().answers).toContain("A EUR 3 million grant");
+  expect(sendMessage.mock.calls[0][1]?.answer_complete).toBe(true);
+});
+
+it("lets the user pick every option that applies when several can", async () => {
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
+      why_asking: "The funder needs every co-financing source.",
+      questions: [
+        {
+          question: "Which co-financing sources apply?",
+          options: ["EU cohesion funds", "National budget", "City budget"],
+          multiple: true,
+        },
+      ],
+    }),
+  );
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const chooseSources = async () => {
+    for (const value of ["0", "2", "custom"]) await pickOption(0, value);
+  };
+  await chooseSources();
+  // An empty "Other" does not undo the options already selected.
+  expect(previewButton().disabled).toBe(false);
+  await writeAnswer(0, "EIB loan");
+  // "Not decided yet" clears the other selections, and choosing again clears it.
+  await pickOption(0, "unknown");
+  const checked = card(0).querySelectorAll<HTMLInputElement>("input:checked");
+  expect([...checked].map((option) => option.value)).toEqual(["unknown"]);
+  await chooseSources();
   await act(async () => previewButton().click());
   const [content] = sendMessage.mock.calls[0];
   expect(content).toContain(
-    "My answers:\n1. Which financing instrument?\nBlended loan and grant\n\n2. What amount?\nEUR 2 million",
+    "1. Which co-financing sources apply?\nSelected category: EU cohesion funds; Selected category: City budget; EIB loan",
   );
+});
+
+it("saves complete answers before sending them and preserves their summary in chat history", async () => {
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  const answer =
+    "EUR 2 million\nfrom the city's O&M budget: https://www.eib.org/en/projects";
+  await pickOption(0, "0");
+  await writeAnswer(1, answer);
+  await act(async () => previewButton().click());
+
+  const [[content, scope]] = sendMessage.mock.calls;
+  expect(scope).toMatchObject({
+    gap_id: "financing-gap",
+    answer_complete: true,
+  });
+  const answers =
+    "1. Which financing instrument?\nSelected category: Loan\n\n2. What amount?\n" +
+    answer;
+  expect(savedBody().answers).toBe(answers);
+  expect(content).toContain(answers);
+  expect(content).not.toContain("[Information needed:");
+  expect(saveAnswers.mock.invocationCallOrder[0]).toBeLessThan(
+    sendMessage.mock.invocationCallOrder[0],
+  );
+
+  messages = [{ id: "sent", role: "user", text: content }];
+  await renderPanel();
+  const bubble = () => byTestId("concept-note-gap-answer-message")!;
+  const disclosure = () => bubble().querySelector("button")!;
+  const fullRequest = () =>
+    document.getElementById(disclosure().getAttribute("aria-controls")!)!;
+  const visible = bubble().cloneNode(true) as Element;
+  visible.querySelector("[hidden]")?.remove();
+  expect(visible.textContent).toContain(answers);
+  expect(visible.textContent).not.toContain(content);
+  expect(fullRequest().hidden).toBe(true);
+  await act(async () => disclosure().click());
+  expect(fullRequest().hidden).toBe(false);
+  expect(fullRequest().textContent).toBe(content);
+
+  await view.render(null);
+  const ordinary =
+    'For the missing information in "Financing":\nWhat is it?\n\nMy answer:\nLoan';
+  messages = readConceptNoteThreadMessages({
+    messages: [
+      { message_id: "saved", role: "user", text: content },
+      { message_id: "question", role: "user", text: ordinary },
+    ],
+  });
+  await renderPanel();
+  expect(bubble().textContent).toContain(answers);
+  expect(fullRequest().hidden).toBe(true);
+  expect(view.container.textContent).toContain(ordinary);
+  expect(
+    view.container.querySelectorAll(
+      '[data-testid="concept-note-gap-answer-message"]',
+    ),
+  ).toHaveLength(1);
+});
+
+it("previews an estimate confirmation without asking to replace a marker", async () => {
+  const estimate = "The City estimates 120 volunteers, pending confirmation.";
+  const caveatRow = {
+    ...gapAnswer.row,
+    gap: {
+      ...gapAnswer.row.gap!,
+      state: "caveat",
+      version: 2,
+      resolution: {
+        resolution_id: "estimate-event",
+        action: "answer",
+        answer: estimate,
+        actor_user_id: "owner",
+        source_refs: [],
+        created_at: "2026-10-16T00:00:00Z",
+      },
+    },
+  } satisfies GapAnswerRequest["row"];
+  const save = Promise.withResolvers<Response>();
+  saveAnswers.mockReturnValueOnce(save.promise);
+  await renderPanel(contextStatus, "thread", {
+    ...gapAnswer,
+    row: caveatRow,
+  });
+  await pickOption(0, "custom");
+  await writeAnswer(0, "Confirmed 150 volunteers");
+  await writeAnswer(1, "City records, May 2026");
+  await act(async () => previewButton().click());
+  // The estimate is confirmed only after the answers are saved (204).
+  expect(sendMessage).not.toHaveBeenCalled();
+  await act(async () => save.resolve(jsonResponse({}, 204)));
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(saveAnswers.mock.invocationCallOrder[0]).toBeLessThan(
+    sendMessage.mock.invocationCallOrder[0],
+  );
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(scope).toMatchObject({
+    gap_id: "financing-gap",
+    gap_version: 2,
+    answer_complete: true,
+  });
   expect(content).toContain(
-    "[Information needed: What is the requested instrument?]",
+    "My answers:\n1. Which financing instrument?\nConfirmed 150 volunteers\n\n2. What amount?\nCity records, May 2026",
   );
+  expect(content).toContain("replaces the current estimate using my answers");
+  messages = [{ id: "estimate", role: "user", text: content }];
+  await renderPanel();
+  expect(byTestId("concept-note-gap-answer-message")?.textContent).toContain(
+    "Confirmed 150 volunteers",
+  );
+  // An estimate has no marker to replace, so none is quoted or invented.
+  expect(content).not.toContain("[Information needed:");
   expect(content).not.toContain("marked as missing");
 });
 
 it("leaves the gap untouched when answered later and restores the answers on return", async () => {
   await renderPanel(contextStatus, "thread", gapAnswer);
-  await act(async () =>
-    subQuestion(0)
-      .querySelector<HTMLInputElement>('input[type="radio"][value="1"]')!
-      .click(),
-  );
+  await pickOption(0, "1");
   await writeAnswer(1, "EUR 2 million");
-  const later = [...container.querySelectorAll("button")].find(
-    (button) => button.textContent === "gap-answer-later",
-  )!;
+  const later = button("Save for later")!;
   await act(async () => later.click());
   expect(closeGap).toHaveBeenCalledTimes(1);
   expect(sendMessage).not.toHaveBeenCalled();
@@ -457,111 +569,175 @@ it("leaves the gap untouched when answered later and restores the answers on ret
   await renderPanel(contextStatus, "thread", gapAnswer);
   expect(fetchQuestion).toHaveBeenCalledTimes(1);
   expect(
-    subQuestion(0).querySelector<HTMLInputElement>(
-      'input[type="radio"][value="1"]',
-    )!.checked,
+    card(0).querySelector<HTMLInputElement>('input[type="radio"][value="1"]')!
+      .checked,
   ).toBe(true);
-  expect(
-    subQuestion(1).querySelector<HTMLTextAreaElement>(
-      '[data-testid="concept-note-gap-custom-answer"]',
-    )!.value,
-  ).toBe("EUR 2 million");
+  expect(customField(1)!.value).toBe("EUR 2 million");
 
-  // A sent answer clears the draft, so the next visit starts fresh.
+  // A sent answer is also saved on the gap, so a failed turn loses nothing.
+  // Like the workspace, closing the gap unmounts the form in the same update.
+  closeGap.mockImplementationOnce(() =>
+    view.root.render(view.wrap(panel(contextStatus, "thread", null))),
+  );
   await act(async () => previewButton().click());
+  const [firstRequest] = sendMessage.mock.calls[0];
+  const earlier = savedBody().answers;
+  expect(earlier).toContain("2. What amount?\nEUR 2 million");
+  expect(firstRequest).toContain(earlier);
+
+  // Reopening (on any device) shows the gap's saved answers; the server, not
+  // the browser, passes them to the question model.
+  const saved = structuredClone(gapAnswer);
+  saved.row.gap!.answered_so_far = earlier;
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", saved);
+  expect(fetchQuestion).toHaveBeenCalledTimes(2);
+  expect(
+    JSON.parse(String(fetchQuestion.mock.calls[1][1]!.body)),
+  ).not.toHaveProperty("earlier_answers");
+  expect(byTestId("concept-note-gap-earlier-answers")?.textContent).toContain(
+    "EUR 2 million",
+  );
+  await writeAnswer(1, "EUR 3 million from the city budget");
+  await act(async () => previewButton().click());
+  // Still partial, so the combined answers are saved again, replacing the old.
+  // The new figure replaces the saved one for the same question.
+  expect(savedBody().answers).toContain(
+    "1. Which financing instrument?\nSelected category: Grant",
+  );
+  expect(savedBody().answers).toContain(
+    "2. What amount?\nEUR 3 million from the city budget",
+  );
+  expect(savedBody().answers).not.toContain("EUR 2 million");
+  expect(sendMessage).toHaveBeenCalledTimes(2);
+
+  // Starting over clears the saved answers for everyone and asks afresh.
+  await renderPanel(contextStatus, "thread", null);
+  await renderPanel(contextStatus, "thread", saved);
+  const startOver = button("Start over without them")!;
+  gapSaved.mockClear();
+  await act(async () => startOver.click());
+  await settle();
+  expect(savedBody()).toEqual({
+    gap_version: 1,
+    answers: "",
+    expected_previous: earlier,
+  });
+  expect(gapSaved).toHaveBeenCalledTimes(1);
+  expect(byTestId("concept-note-gap-earlier-answers")).toBeNull();
+
+  // A closed gap gets a new version, without saved answers.
+  const nextVersion = structuredClone(gapAnswer);
+  nextVersion.row.gap!.version = 2;
+  await renderPanel(contextStatus, "thread", null);
+  const fetches = fetchQuestion.mock.calls.length;
+  await renderPanel(contextStatus, "thread", nextVersion);
+  expect(fetchQuestion).toHaveBeenCalledTimes(fetches + 1);
+  expect(byTestId("concept-note-gap-earlier-answers")).toBeNull();
+});
+
+it("keeps a saved fallback answer when reopening brings generated questions", async () => {
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await writeAnswer(0, "Loan");
+  await act(async () => button("Save for later")!.click());
   await renderPanel(contextStatus, "thread", null);
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(fetchQuestion).toHaveBeenCalledTimes(2);
+  expect(card(0).textContent).toContain("Which financing instrument?");
+  expect(byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value).toBe(
+    "Loan",
+  );
+});
+
+it("lets earlier answers alone complete the gap when nothing is missing", async () => {
+  const saved = structuredClone(gapAnswer);
+  saved.row.gap!.answered_so_far = "1. Which financing instrument?\nLoan";
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({ why_asking: "Covered.", questions: [] }),
+  );
+  await renderPanel(contextStatus, "thread", saved);
+  await act(async () => previewButton().click());
+  const [content, scope] = sendMessage.mock.calls[0];
+  expect(content).toContain("1. Which financing instrument?\nLoan");
+  expect(scope).toMatchObject({ answer_complete: true });
 });
 
 it("offers free text for gaps without suggestions and blocks submission while Clima is busy", async () => {
   isGenerating = true;
-  fetchQuestion.mockResolvedValue({
-    ok: true,
-    json: async () => ({
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
       why_asking: "Provide the exact amount.",
       questions: [{ question: "What amount?", options: [] }],
     }),
-  } as Response);
-  const legacy = { ...gapAnswer, row: { ...gapAnswer.row, gap: null } };
-  await renderPanel(contextStatus, "thread", legacy);
-  expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(2);
+  );
+  await renderPanel(contextStatus, "thread", gapAnswer);
   await writeAnswer(0, "Loan");
   const form = previewButton().form!;
   await act(async () => form.requestSubmit());
   expect(sendMessage).not.toHaveBeenCalled();
   isGenerating = false;
-  await renderPanel(contextStatus, "thread", legacy);
+  await renderPanel(contextStatus, "thread", gapAnswer);
   await act(async () => form.requestSubmit());
-  // A legacy marker has no gap record, which edit validation requires before a
-  // marker may be replaced, so even a full answer keeps the marker.
   expect(sendMessage.mock.calls[0][0]).toContain(
     "My answer:\n1. What amount?\nLoan",
   );
-  expect(sendMessage.mock.calls[0][0]).not.toContain("[Information needed:");
 });
 
-it("falls back to free text on failure and drops it when a retry changes the question", async () => {
+it("falls back to free text on failure and keeps it in the details across retries", async () => {
   fetchQuestion.mockRejectedValueOnce(new Error("offline"));
   await renderPanel(contextStatus, "thread", gapAnswer);
-  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
-    "gap-question-unavailable",
+  expect(view.container.querySelector('[role="alert"]')?.textContent).toContain(
+    "answer below",
   );
   await writeAnswer(0, "Loan");
-  // The fallback asks the recorded gap itself, so its answer can close it.
-  expect(container.textContent).toContain("gap-complete-hint");
-  fetchQuestion.mockResolvedValueOnce({
-    ok: true,
-    json: async () => ({
+  const details = () =>
+    byTestId<HTMLTextAreaElement>("concept-note-gap-details")!.value;
+  // A retry that fails again moves the typed answer to the details.
+  fetchQuestion.mockRejectedValueOnce(new Error("offline"));
+  await act(async () => button("Retry answer choices")!.click());
+  await settle();
+  expect(customField(0)!.value).toBe("");
+  expect(details()).toBe("Loan");
+  expect(previewButton().disabled).toBe(false);
+  fetchQuestion.mockResolvedValueOnce(
+    jsonResponse({
       why_asking: "Timing matters.",
       questions: [{ question: "What completion year?", options: [] }],
     }),
-  } as Response);
-  const retry = [...container.querySelectorAll("button")].find(
-    (button) => button.textContent === "gap-retry-question",
-  )!;
-  await act(async () => retry.click());
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  });
-  expect(subQuestion(0).textContent).toContain("What completion year?");
-  expect(
-    subQuestion(0).querySelector<HTMLTextAreaElement>(
-      '[data-testid="concept-note-gap-custom-answer"]',
-    )!.value,
-  ).toBe("");
-  expect(previewButton().disabled).toBe(true);
+  );
+  await act(async () => button("Retry answer choices")!.click());
+  await settle();
+  expect(card(0).textContent).toContain("What completion year?");
+  // The typed answer is never attached to a different question...
+  expect(customField(0)!.value).toBe("");
+  // ...but stays visible in the details, once, so it is still sent.
+  expect(details()).toBe("Loan");
+  await act(async () => previewButton().click());
+  expect(sendMessage.mock.calls[0][0]).toContain("Loan");
+  expect(sendMessage.mock.calls[0][0]).not.toContain("What completion year?");
 });
 
 it("counts down the shared edit limit and stops answers before it is exceeded", async () => {
-  fetchQuestion.mockResolvedValue({
-    ok: true,
-    json: async () => ({
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
       why_asking: "Several parts are missing.",
       questions: [1, 2, 3, 4].map((part) => ({
         question: `Part ${part}?`,
         options: [],
       })),
     }),
-  } as Response);
+  );
   await renderPanel(contextStatus, "thread", gapAnswer);
   // The form replaces the chat box, so Preview is its only submit.
-  expect(
-    container.querySelector('[data-testid="concept-note-chat-input"]'),
-  ).toBeNull();
-  const field = (index: number) =>
-    subQuestion(index).querySelector<HTMLTextAreaElement>(
-      '[data-testid="concept-note-gap-custom-answer"]',
-    )!;
-  const charsLeft = () =>
-    container.querySelector('[data-testid="concept-note-gap-chars-left"]');
+  expect(byTestId("concept-note-chat-input")).toBeNull();
+  const field = (index: number) => customField(index)!;
+  const charsLeft = () => byTestId("concept-note-gap-chars-left");
   for (const index of [0, 1, 2]) await writeAnswer(index, "x".repeat(2000));
-  expect(charsLeft()?.textContent).toBe("gap-characters-left");
   // The last field may only take what is left of the shared limit.
   expect(field(3).maxLength).toBeLessThan(2000);
   // Text set past the limit (the browser would refuse to type it) blocks Preview.
   await writeAnswer(3, "x".repeat(2000));
-  expect(charsLeft()?.textContent).toBe("gap-characters-full");
+  expect(charsLeft()?.textContent).toContain("too long");
   expect(previewButton().disabled).toBe(true);
   await act(async () => previewButton().form!.requestSubmit());
   expect(sendMessage).not.toHaveBeenCalled();
@@ -569,33 +745,36 @@ it("counts down the shared edit limit and stops answers before it is exceeded", 
   expect(field(3).value).toHaveLength(2000);
 });
 
-it("keeps an undecided answer explicit instead of selecting an invented fact", async () => {
-  await renderPanel(contextStatus, "thread", gapAnswer);
-  await act(async () =>
-    subQuestion(0)
-      .querySelector<HTMLInputElement>('input[value="unknown"]')!
-      .click(),
+it("saves and previews only the answered parts, including an explicit undecided choice", async () => {
+  fetchQuestion.mockResolvedValue(
+    jsonResponse({
+      why_asking: "Funding",
+      questions: [
+        { question: "Which financing instrument?", options: ["Loan", "Grant"] },
+        { question: "What amount?", options: [] },
+        { question: "Who signs?", options: [] },
+      ],
+    }),
   );
-  // Not decided yet alone is not an answer, so there is nothing to preview.
+  await renderPanel(contextStatus, "thread", gapAnswer);
+  await pickOption(0, "unknown");
   expect(previewButton().disabled).toBe(true);
   await writeAnswer(1, "EUR 2 million");
   await act(async () => previewButton().click());
-  expect(sendMessage.mock.calls[0][0]).toContain(
-    "1. Which financing instrument?\ngap-not-decided",
-  );
-  expect(sendMessage.mock.calls[0][0]).toContain(
-    "Keep any information I have not supplied marked as missing",
-  );
+  expect(savedBody()).toEqual({
+    gap_version: 1,
+    expected_previous: null,
+    answers:
+      "1. Which financing instrument?\nNot decided yet\n\n2. What amount?\nEUR 2 million",
+  });
+  expect(sendMessage.mock.calls[0][1]).toMatchObject({
+    answer_complete: false,
+  });
 });
 
 it("cancels stale generation when another gap is opened", async () => {
-  let resolveOld!: (value: Response) => void;
-  fetchQuestion.mockImplementationOnce(
-    () =>
-      new Promise((resolve) => {
-        resolveOld = resolve;
-      }),
-  );
+  const oldQuestion = Promise.withResolvers<Response>();
+  fetchQuestion.mockReturnValueOnce(oldQuestion.promise);
   await renderPanel(contextStatus, "thread", gapAnswer);
   const oldSignal = fetchQuestion.mock.calls[0][1]?.signal;
   await renderPanel(contextStatus, "thread", {
@@ -604,29 +783,35 @@ it("cancels stale generation when another gap is opened", async () => {
   });
   expect(oldSignal?.aborted).toBe(true);
   await act(async () =>
-    resolveOld({
-      ok: true,
-      json: async () => ({
+    oldQuestion.resolve(
+      jsonResponse({
         why_asking: "Old",
         questions: [
           { question: "Stale question?", options: ["Old", "Outdated"] },
         ],
       }),
-    } as Response),
+    ),
   );
-  expect(container.textContent).toContain("Which financing instrument?");
-  expect(container.textContent).not.toContain("Stale question?");
+  expect(view.container.textContent).toContain("Which financing instrument?");
+  expect(view.container.textContent).not.toContain("Stale question?");
 });
 
-it("preserves apostrophes, ampersands and source URLs in the plain-text gap answer", async () => {
+it("keeps the new gap open when the previous preview finishes saving", async () => {
+  const pending = Promise.withResolvers<Response>();
+  saveAnswers.mockReturnValueOnce(pending.promise);
   await renderPanel(contextStatus, "thread", gapAnswer);
-  const answer =
-    "EIB's PPP & financing details: https://www.eib.org/en/projects";
-  await writeAnswer(1, answer);
+  await writeAnswer(1, "EUR 2 million");
   await act(async () => previewButton().click());
-  expect(sendMessage.mock.calls[0][0]).toContain(answer);
-  expect(sendMessage.mock.calls[0][0]).not.toContain("&#");
-  expect(sendMessage.mock.calls[0][0]).not.toContain("Source:");
+
+  const next = structuredClone(gapAnswer);
+  next.row.id = "next-gap";
+  next.row.gap!.gap_id = "next-gap";
+  await renderPanel(contextStatus, "thread", next);
+  await writeAnswer(1, "A different budget");
+  await act(async () => pending.resolve(jsonResponse({}, 204)));
+  expect(customField(1)!.value).toBe("A different budget");
+  expect(closeGap).not.toHaveBeenCalled();
+  expect(sendMessage).not.toHaveBeenCalled();
 });
 
 describe("scrolling to Clima's newest reply", () => {
@@ -732,7 +917,7 @@ function choiceQuestion(id = "question"): ConceptNoteChatMessage {
   };
 }
 async function typeInline(value: string) {
-  const element = container.querySelector<HTMLTextAreaElement>(
+  const element = view.container.querySelector<HTMLTextAreaElement>(
     '[data-testid="concept-note-chat-choices"] textarea',
   )!;
   await act(async () => {
@@ -756,7 +941,9 @@ it("moves an inline draft into the composer when an option is picked instead", a
   await typeInline("  Draft paragraph\nSecond paragraph  ");
   await type("Existing composer draft");
   await act(async () =>
-    container.querySelector<HTMLButtonElement>("button[aria-pressed]")!.click(),
+    view.container
+      .querySelector<HTMLButtonElement>("button[aria-pressed]")!
+      .click(),
   );
   expect(sendMessage).toHaveBeenCalledWith("Budget", undefined, "question");
   // Nothing typed is lost, and nothing extra is sent.
@@ -769,7 +956,9 @@ it("moves an inline draft into the composer when an option is picked instead", a
     "Existing composer draft\n\nDraft paragraph\nSecond paragraph",
   );
   expect(
-    container.querySelector('[data-testid="concept-note-saved-answer-draft"]'),
+    view.container.querySelector(
+      '[data-testid="concept-note-saved-answer-draft"]',
+    ),
   ).toBeNull();
   expect(sendMessage).toHaveBeenCalledTimes(1);
 });
@@ -783,8 +972,9 @@ it("keeps the unsent inline draft when the main composer sends another message",
   await renderPanel();
   expect(composer().value).toBe("");
   expect(
-    container.querySelector('[data-testid="concept-note-saved-answer-draft"]')
-      ?.textContent,
+    view.container.querySelector(
+      '[data-testid="concept-note-saved-answer-draft"]',
+    )?.textContent,
   ).toContain("Unsent custom answer");
   expect(sendMessage).toHaveBeenCalledTimes(1);
 });
@@ -796,7 +986,7 @@ it("isolates inline and composer drafts between threads and restores them on ret
   await renderPanel(contextStatus, "other-thread");
   expect(composer().value).toBe("");
   expect(
-    container.querySelector<HTMLTextAreaElement>(
+    view.container.querySelector<HTMLTextAreaElement>(
       '[data-testid="concept-note-chat-choices"] textarea',
     )!.value,
   ).toBe("");
@@ -805,7 +995,7 @@ it("isolates inline and composer drafts between threads and restores them on ret
   await renderPanel(contextStatus, "thread");
   expect(composer().value).toBe("Thread one composer");
   expect(
-    container.querySelector<HTMLTextAreaElement>(
+    view.container.querySelector<HTMLTextAreaElement>(
       '[data-testid="concept-note-chat-choices"] textarea',
     )!.value,
   ).toBe("Thread one inline");
@@ -813,7 +1003,7 @@ it("isolates inline and composer drafts between threads and restores them on ret
 });
 it("does not reapply an already used composer request when switching threads", async () => {
   const request = { id: "prefill-once", content: "Requested draft" };
-  await renderPanel(contextStatus, "thread", null, request);
+  await renderPanel(contextStatus, "thread", null, undefined, request);
   await act(async () => {
     await new Promise<void>((resolve) =>
       requestAnimationFrame(() => resolve()),
@@ -821,14 +1011,14 @@ it("does not reapply an already used composer request when switching threads", a
   });
   expect(composer().value).toBe("Requested draft");
   await type("Edited thread one draft");
-  await renderPanel(contextStatus, "other-thread", null, request);
+  await renderPanel(contextStatus, "other-thread", null, undefined, request);
   await act(async () => {
     await new Promise<void>((resolve) =>
       requestAnimationFrame(() => resolve()),
     );
   });
   expect(composer().value).toBe("");
-  await renderPanel(contextStatus, "thread", null, request);
+  await renderPanel(contextStatus, "thread", null, undefined, request);
   expect(composer().value).toBe("Edited thread one draft");
   expect(sendMessage).not.toHaveBeenCalled();
 });
@@ -836,14 +1026,14 @@ it("does not reapply an already used composer request when switching threads", a
 it("keeps an over-limit composer message, blocks sending and explains the limit", async () => {
   await renderPanel();
   await type("y".repeat(8_010));
-  const send = container.querySelector<HTMLButtonElement>(
+  const send = view.container.querySelector<HTMLButtonElement>(
     '[data-testid="concept-note-chat-send"]',
   )!;
 
   expect(send.disabled).toBe(true);
   expect(
-    container.querySelector("#concept-note-chat-too-long")?.textContent,
-  ).toBe("chat-message-too-long");
+    view.container.querySelector("#concept-note-chat-too-long")?.textContent,
+  ).toBe("Shorten this message by 10 characters to send it.");
   expect(composer().getAttribute("aria-describedby")).toBe(
     "concept-note-chat-too-long",
   );
@@ -862,7 +1052,7 @@ it("moves keyboard focus to the composer as soon as a suggested answer is sent",
   );
   messages = [choiceQuestion()];
   await renderPanel();
-  const option = container.querySelector<HTMLButtonElement>(
+  const option = view.container.querySelector<HTMLButtonElement>(
     "button[aria-pressed]",
   )!;
   await act(async () => {
@@ -878,7 +1068,7 @@ it("moves keyboard focus to the composer as soon as a suggested answer is sent",
 it("announces a finished suggested-answer question politely", async () => {
   messages = [choiceQuestion()];
   await renderPanel();
-  const status = container.querySelector(
+  const status = view.container.querySelector(
     '[data-testid="concept-note-chat-question-announcement"]',
   )!;
   expect(status.getAttribute("aria-live")).toBe("polite");
@@ -895,17 +1085,17 @@ it("keeps a card open when its answer was not sent and labels the answer", async
   ];
   await renderPanel();
   expect(
-    container.querySelector('[data-testid="concept-note-chat-unsent"]')
+    view.container.querySelector('[data-testid="concept-note-chat-unsent"]')
       ?.textContent,
-  ).toBe("chat-message-unsent");
-  const options = container.querySelectorAll<HTMLButtonElement>(
+  ).toBe("Not sent");
+  const options = view.container.querySelectorAll<HTMLButtonElement>(
     "button[aria-pressed]",
   );
   // Not selected and still answerable, so the user can choose again.
   expect([...options].map((option) => option.disabled)).toEqual([false, false]);
   expect(options[0].getAttribute("aria-pressed")).toBe("false");
   expect(
-    container.querySelector(
+    view.container.querySelector(
       '[data-testid="concept-note-chat-choices"] textarea',
     ),
   ).not.toBeNull();

@@ -5,7 +5,9 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -47,6 +49,12 @@ import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
 import { ChatVisualFrame } from "./chat-visual-frame";
 import { ChatChoices } from "./chat-choices";
+import {
+  GAP_ANSWER_REQUEST_KEYS,
+  GAP_ANSWER_SLOTS,
+  readGapAnswerMessage,
+  requestQuestion,
+} from "./chat-utils";
 import type { ConceptNoteContextPresentation } from "./context-status";
 import { ContextChangesNotice } from "./context-changes-notice";
 import type { ConceptNoteContextChange } from "@/components/ConceptNoteDashboard/utils";
@@ -55,10 +63,17 @@ import {
   EDIT_INSTRUCTION_MAX_CHARS,
   type EditScope,
 } from "@/util/concept-note-edit-types";
-import type { ConceptNoteDraftState } from "@/util/types";
+import type {
+  ConceptNoteDraftState,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 // About eight lines of composer text before it scrolls.
 const COMPOSER_MAX_HEIGHT_PX = 190;
+// Focus scrolling exposes a radio's 1 px hidden input (the top of its option)
+// or a textarea's caret line, so keep two more lines clear above the gap
+// form's footer for the rest of the option or field.
+const GAP_FOOTER_FOCUS_SLACK_PX = 40;
 
 const CONNECTION_BADGE: Record<
   ChatConnectionState,
@@ -79,6 +94,8 @@ interface ConceptNoteChatPanelProps {
   gapAnswer: GapAnswerRequest | null;
   onCloseGap: () => void;
   onAddGapSource: () => void;
+  /** The run's uploads, so gap source refs show as document names. */
+  uploads?: ConceptNoteUploadResponse[];
   draftOverviewPending: boolean;
   lng: string;
   onOpenContext: () => void;
@@ -93,6 +110,10 @@ interface ConceptNoteChatPanelProps {
   onOpenDraft?: () => void;
   onOpenFundingSetup?: () => void;
   onDraftOverviewComplete?: () => void;
+  /** Answers saved on a gap changed, so the workspace reloads its gaps. */
+  onGapAnswersSaved?: () => void;
+  /** Reloads the draft without closing the gap form, after a save conflict. */
+  onRefreshDraft?: () => void;
 }
 
 interface ContextStatusNoticeProps {
@@ -230,6 +251,86 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
+interface UserMessageTextProps {
+  lng: string;
+  text: string;
+  /** The gap request templates, rendered with GAP_ANSWER_SLOTS. */
+  gapTemplates: readonly string[];
+}
+
+/**
+ * A user message as sent. A gap-form request shows the answers the user gave;
+ * the instruction around them, which Clima still receives, sits behind a toggle.
+ */
+function UserMessageText({ lng, text, gapTemplates }: UserMessageTextProps) {
+  const { t } = useTranslation(lng, "concept-notes");
+  const [showRequest, setShowRequest] = useState(false);
+  const requestId = useId();
+  const gapAnswer = readGapAnswerMessage(text, gapTemplates);
+
+  if (!gapAnswer) {
+    return (
+      <Text
+        fontSize="body.sm"
+        lineHeight="22px"
+        color="content.primary"
+        whiteSpace="pre-wrap"
+      >
+        {text}
+      </Text>
+    );
+  }
+
+  return (
+    <Box data-testid="concept-note-gap-answer-message">
+      <Text fontSize="label.sm" color="content.tertiary" lineClamp={2}>
+        {t("gap-answer-message-heading", {
+          chapter: gapAnswer.chapter,
+          question: gapAnswer.question,
+          interpolation: { escapeValue: false },
+        })}
+      </Text>
+      <Text
+        mt={1}
+        fontSize="body.sm"
+        lineHeight="22px"
+        color="content.primary"
+        whiteSpace="pre-wrap"
+        overflowWrap="anywhere"
+      >
+        {gapAnswer.answer}
+      </Text>
+      <chakra.button
+        type="button"
+        mt={1}
+        fontSize="label.sm"
+        fontWeight="semibold"
+        color="content.link"
+        aria-expanded={showRequest}
+        aria-controls={requestId}
+        onClick={() => setShowRequest((value) => !value)}
+      >
+        {t(
+          showRequest
+            ? "gap-answer-message-hide-request"
+            : "gap-answer-message-show-request",
+        )}
+      </chakra.button>
+      <Text
+        id={requestId}
+        hidden={!showRequest}
+        mt={2}
+        fontSize="label.sm"
+        color="content.secondary"
+        whiteSpace="pre-wrap"
+        overflowWrap="anywhere"
+      >
+        {text}
+      </Text>
+    </Box>
+  );
+}
+
 /**
  * Scroll offset for the chat column that keeps the newest reply in view.
  * Follows the bottom while the reply fits. When the reply is taller than the
@@ -265,6 +366,7 @@ export function ConceptNoteChatPanel({
   gapAnswer,
   onCloseGap,
   onAddGapSource,
+  uploads,
   draftOverviewPending,
   lng,
   onOpenContext,
@@ -279,6 +381,8 @@ export function ConceptNoteChatPanel({
   onOpenDraft,
   onOpenFundingSetup,
   onDraftOverviewComplete,
+  onGapAnswersSaved,
+  onRefreshDraft,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const draftThreadKey = `${runId}:${threadId ?? ""}`;
@@ -308,6 +412,8 @@ export function ConceptNoteChatPanel({
       [draftThreadKey]: { ...current[draftThreadKey], [questionId]: value },
     }));
   }
+  // Chapter whose gap answers were just saved without a chat turn.
+  const [savedGapChapter, setSavedGapChapter] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const appliedComposerRequestRef = useRef<string | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
@@ -362,6 +468,21 @@ export function ConceptNoteChatPanel({
     isGenerating ||
     Boolean(replyStatus) ||
     chatThreads.busy;
+  // The gap form replaces the chat notices that explain a held send, so it
+  // gets the reason itself, from the same conditions as chatDisabled.
+  const gapDisabledReason = !threadId
+    ? t("chat-unavailable")
+    : contextBlocked
+      ? t(
+          contextState === "failed"
+            ? "gap-preview-disabled-context-failed"
+            : "gap-preview-disabled-context",
+        )
+      : historyLoading || chatThreads.busy
+        ? t("gap-preview-disabled-loading")
+        : isGenerating || replyStatus
+          ? t("gap-preview-disabled-replying")
+          : undefined;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
@@ -505,6 +626,40 @@ export function ConceptNoteChatPanel({
     // The composer remounts when a gap form closes.
   }, [input, gapAnswer]);
 
+  // Closing the gap form (back, save for later, Escape or a send) remounts the
+  // composer; focus it so keyboard focus does not fall back to the page.
+  const gapOpenRef = useRef(false);
+  useEffect(() => {
+    if (gapOpenRef.current && !gapAnswer) inputRef.current?.focus();
+    gapOpenRef.current = Boolean(gapAnswer);
+  }, [gapAnswer]);
+
+  // The gap form's sticky footer covers the bottom of the scroll area. Scroll
+  // padding of its height (plus GAP_FOOTER_FOCUS_SLACK_PX) makes the browser
+  // scroll keyboard focus above it.
+  const [gapFooterHeight, setGapFooterHeight] = useState(0);
+  useEffect(() => {
+    const chatScroll = chatScrollRef.current;
+    if (!gapAnswer || !chatScroll) return;
+    let element = chatScroll.querySelector<HTMLElement>(
+      '[data-testid="concept-note-gap-preview"]',
+    );
+    while (
+      element &&
+      element !== chatScroll &&
+      getComputedStyle(element).position !== "sticky"
+    ) {
+      element = element.parentElement;
+    }
+    const footer = element !== chatScroll ? element : null;
+    if (!footer) return;
+    const observer = new ResizeObserver(() =>
+      setGapFooterHeight(footer.offsetHeight),
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, [gapAnswer]);
+
   async function submitMessage(
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
@@ -530,23 +685,42 @@ export function ConceptNoteChatPanel({
     });
   }
 
+  /** Saved answers wait on the gap; the chat says so instead of starting a turn. */
+  function gapAnswersSaved(answers: string): void {
+    onGapAnswersSaved?.();
+    if (!gapAnswer || !answers) return;
+    setSavedGapChapter(gapAnswer.chapterTitle);
+    onCloseGap();
+  }
+
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
   function answerGap(answer: string, complete: boolean): boolean {
     if (!gapAnswer || chatDisabled) return false;
-    // Only a complete answer may replace the marker; that is what closes the gap.
+    // An estimate has no marker left: a complete answer confirms its value.
+    const confirmsEstimate = complete && gapAnswer.row.gap?.state === "caveat";
+    // One neutral request for an open gap: Clima's coverage review decides what
+    // the answer closes, so the request states no completeness.
     const content = t(
-      complete ? "gap-answer-complete-request" : "gap-answer-request",
+      confirmsEstimate
+        ? "gap-answer-estimate-confirm-request"
+        : "gap-answer-request",
       {
         chapter: gapAnswer.chapterTitle,
-        question: gapAnswer.row.question,
+        question: requestQuestion(gapAnswer.row.question),
         answer,
         interpolation: { escapeValue: false },
       },
     );
     if (content.length > EDIT_INSTRUCTION_MAX_CHARS) return false;
+    const { gap } = gapAnswer.row;
     const scope: EditScope = {
       kind: "auto",
       focused_chapter_id: gapAnswer.chapterId,
+      ...(gap && {
+        gap_id: gap.gap_id,
+        gap_version: gap.version,
+        answer_complete: complete,
+      }),
     };
     onCloseGap();
     onOpenDraft?.();
@@ -559,17 +733,25 @@ export function ConceptNoteChatPanel({
   const gapAnswerLimit = gapAnswer
     ? EDIT_INSTRUCTION_MAX_CHARS -
       Math.max(
-        ...["gap-answer-request", "gap-answer-complete-request"].map(
+        ...GAP_ANSWER_REQUEST_KEYS.map(
           (key) =>
             t(key, {
               chapter: gapAnswer.chapterTitle,
-              question: gapAnswer.row.question,
+              question: requestQuestion(gapAnswer.row.question),
               answer: "",
               interpolation: { escapeValue: false },
             }).length,
         ),
       )
     : 0;
+  // Sent gap requests are shown as the user's answers (UserMessageText).
+  const gapTemplates = useMemo(
+    () =>
+      GAP_ANSWER_REQUEST_KEYS.map((key) =>
+        t(key, { ...GAP_ANSWER_SLOTS, interpolation: { escapeValue: false } }),
+      ),
+    [t],
+  );
 
   return (
     <VStack
@@ -637,7 +819,9 @@ export function ConceptNoteChatPanel({
               bg={CONNECTION_BADGE[connection].color}
             />
           )}
-          <Text fontSize="label.sm">
+          {/* The side-by-side chat column is too narrow for the label until xl;
+              the dot stays and screen readers still hear the status. */}
+          <Text fontSize="label.sm" srOnly={{ md: true, xl: false }}>
             {t(CONNECTION_BADGE[connection].label)}
           </Text>
         </HStack>
@@ -674,6 +858,11 @@ export function ConceptNoteChatPanel({
         flex={1}
         minH={0}
         overflowY="auto"
+        scrollPaddingBottom={
+          gapAnswer
+            ? `${gapFooterHeight + GAP_FOOTER_FOCUS_SLACK_PX}px`
+            : undefined
+        }
         bg="base.light"
         p={4}
       >
@@ -684,10 +873,14 @@ export function ConceptNoteChatPanel({
             request={gapAnswer}
             lng={lng}
             disabled={chatDisabled}
+            disabledReason={gapDisabledReason}
             answerLimit={gapAnswerLimit}
             onAnswer={answerGap}
+            onSaved={gapAnswersSaved}
+            onRefreshDraft={onRefreshDraft}
             onClose={onCloseGap}
             onAddSource={onAddGapSource}
+            uploads={uploads}
           />
         ) : (
           <>
@@ -776,14 +969,11 @@ export function ConceptNoteChatPanel({
                       </ReactMarkdown>
                     ) : message.role === "user" ? (
                       <>
-                        <Text
-                          fontSize="body.sm"
-                          lineHeight="22px"
-                          color="content.primary"
-                          whiteSpace="pre-wrap"
-                        >
-                          {message.text}
-                        </Text>
+                        <UserMessageText
+                          lng={lng}
+                          text={message.text}
+                          gapTemplates={gapTemplates}
+                        />
                         {message.unsent && (
                           <HStack
                             gap={1}
@@ -884,6 +1074,38 @@ export function ConceptNoteChatPanel({
                 ))}
               </Fragment>
             ))}
+
+            {savedGapChapter && (
+              <HStack
+                role="status"
+                align="start"
+                justify="space-between"
+                gap={2}
+                px={3}
+                py={2.5}
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="rounded"
+                bg="background.neutral"
+                data-testid="concept-note-gap-saved-note"
+              >
+                <Text fontSize="body.sm" lineHeight="22px">
+                  {t("gap-answers-saved-note", {
+                    chapter: savedGapChapter,
+                    interpolation: { escapeValue: false },
+                  })}
+                </Text>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  flexShrink={0}
+                  onClick={() => setSavedGapChapter(null)}
+                >
+                  {t("gap-answers-saved-dismiss")}
+                </Button>
+              </HStack>
+            )}
 
             {draft && (
               <DraftingProgressCard

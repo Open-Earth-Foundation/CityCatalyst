@@ -26,7 +26,11 @@ from app.persistence.concept_notes.edits import (
 from app.persistence.concept_notes.source_revalidation import SOURCE_REVALIDATION_KEY
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
-from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
+from app.services.cnb.edit_validation import (
+    bind_answer_gap,
+    context_snapshot,
+    validate_edit_plan,
+)
 from app.tools.concept_note_draft_tools import SourceLookup
 from app.tools.concept_note_source_tools import (
     error_payload,
@@ -234,6 +238,7 @@ class ConceptNoteEditService:
                     "This draft exceeds the automatic edit revision-vector limit.",
                     status_code=422,
                 )
+            chapters = bind_answer_gap(request, chapters)
             plan = await self.planner.plan(
                 request,
                 chapters,

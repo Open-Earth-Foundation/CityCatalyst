@@ -64,19 +64,28 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
      in the existing context bundle. The result also carries
-     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `ui_state.open_gaps_by_chapter` (open and Required counts per chapter, by
+     `chapter_number`) and
      `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
    - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
      reauthorizes the run and lists missing-information gaps with their
-     chapter, question, reason, severity, and state, filtered by
-     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
-     handle numbered in creation order, so handles stay stable across filters.
-   - `concept_note_render_visual(title, html)` validates one static HTML/SVG
+     chapter, question, reason, severity with its UI `label` ("Required" or
+     "Optional"), and state, filtered by `chapter_number`, `severity`, or
+     `include_closed`. Gaps use the numbers the Draft preview shows:
+     `chapter_number` is the chapter's 1-based number (`position + 1`) and
+     `gap_number` is the per-chapter "Gap N" of an open gap, reproduced from
+     the chapter's `[Information needed: …]` marker order as in the UI's
+     `chapterGapRows` (markers without a gap record take a number too). An
+     unknown `chapter_number` fails with the valid chapter numbers and titles
+     instead of returning an empty list.
+   - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
      chart, diagram, table, expandable sections or CSS radio tabs (title at
-     most 200 characters, HTML at most 200,000) and returns
-     `concept_note.visual.render` with the title and size; the HTML stays only
-     in the call arguments. The SSE `done` event and the stored message keep one
-     copy, `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
+     most 200 characters, HTML at most 200,000) and returns `concept_note.visual.render` with the title and size;
+     the HTML stays only in the call arguments. CityCatalyst strips scripts,
+     links, forms and external resources with DOMPurify and renders the rest in
+     a script-free sandboxed iframe, so a visual cannot send note context out.
+     The SSE `done` event and the stored message keep one copy of the HTML,
+     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
      replayed history replaces it with a short placeholder. A visual-only turn
      is saved with empty text. See the
      [chat visual rendering policy](#concept-note-chat-visual-rendering-cc-1241).
@@ -683,7 +692,11 @@ Each proposal permits up to 100 draft searches, shared across repair attempts,
 configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. The planner and
+only affected chapters, with at most 12 reviews concurrently
+(`cnb_edits.max_concurrency`), so a whole-document edit is reviewed in one wave.
+When review asks for a repair, a chapter whose changes come back unchanged and
+were fully supported keeps its earlier review instead of being reviewed again.
+The planner and
 the reviewers draw on the same evidence: `run_context.source_excerpts` lists every
 quotation the selected sources keep for any template chapter, deduplicated (each
 reviewer receives the quotations of the sources its changes cite; when a large
@@ -1098,7 +1111,11 @@ same transaction, without a separate interview or background regeneration.
 revision; open critical gaps and any remaining missing-information markers block
 confirmation. Generated markers must match the structured gap questions before
 the chapter is saved; mismatches fail generation rather than producing a chapter
-that can be incorrectly marked Ready.
+that can be incorrectly marked Ready. A marker matches its gap when both have the
+same `information_marker_key` (lowercased letter and digit runs, so Markdown
+emphasis, quotes, punctuation, spacing and line breaks do not matter); the web
+app mirrors this key and the marker pattern in `draft-markdown.ts`, so every
+recorded gap opens from its marker.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;
@@ -2317,9 +2334,36 @@ The standalone suggestions below are hidden while the latest message has choices
 `POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
-in the same chapter are skipped), each with zero or two to five answer categories.
+in the same chapter are skipped), each with zero or two to five answer categories
+and a `where_to_find` hint (kind of document or office, never a citation). The
+gap's source suggestions are sent as unverified values: each value gets its own
+confirmation (`confirms: true`, no options), for which the UI shows its own
+"still correct" choice and a field for the changed value, and no other question
+asks for a confirmed value again. A reply with more than 4 questions is trimmed to
+the first 4 instead of failing; the dropped parts stay open for the next round.
+The model also receives the answers saved on this gap version (`earlier_answers`)
+and asks only for what they miss. A narrowed gap returns its stored remaining
+question without a model call.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
+
+Gap answers:
+- Binding: the form's edit request carries `gap_id`, `gap_version` and
+  `answer_complete` in `concept_note_edit.scope`. Planning fails with
+  `gap_changed` when that gap version is no longer open, and acceptance closes
+  only that gap version plus any duplicate gap the same answer fully covers.
+- Partial answers: answers that do not cover the whole gap are saved on the gap
+  version with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers` (a
+  `partial_answer` resolution, shown as `answered_so_far` to the UI, the
+  gap-question model and the chat agent). A reviewed edit may narrow a marker to
+  one new marker asking only for the remaining parts; the gap keeps its identity,
+  moves to a new version and records its original question and accepted
+  passages in `answer_progress` (CNB migration `20261121_120000`).
+- Estimates: a hedged user value, or one derived from stated figures when the
+  user asks, may fill a marker as a labelled estimate that names its basis
+  (`estimate: true`). Accepting it leaves the gap in the `caveat` state, listed
+  as an estimate to confirm without blocking export; a later bound answer that
+  replaces the estimate resolves it. Values no one states are never estimated.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

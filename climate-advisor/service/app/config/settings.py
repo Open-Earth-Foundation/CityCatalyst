@@ -184,7 +184,8 @@ class CnbEditPromptBudgetConfig(BaseModel):
     """Limits for the edit tool loop and concurrent chapter semantic reviews."""
 
     max_prompt_tokens: int = Field(default=50000, ge=2000)
-    max_concurrency: int = Field(default=5, ge=1, le=5)
+    # Parallel chapter reviews; 12 reviews a typical whole-document edit in one wave.
+    max_concurrency: int = Field(default=5, ge=1, le=12)
     max_agent_turns: int = Field(default=12, ge=3, le=30)
     max_review_repairs: int = Field(default=2, ge=0, le=3)
     max_searches: int = Field(default=100, ge=1, le=1000)

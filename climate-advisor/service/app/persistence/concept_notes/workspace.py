@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -57,6 +58,8 @@ from app.utils.cnb_information_markers import (
 from pydantic import ValidationError
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+logger = logging.getLogger(__name__)
 
 
 class WorkspaceConflictError(Exception):
@@ -423,7 +426,7 @@ class ConceptNoteWorkspaceRepository:
                     ) from exc
 
             # Reconcile evidence-filled and newly reopened gaps before status choice.
-            gaps_changed = _reconcile_evidence_gaps(
+            gaps_changed = await _reconcile_evidence_gaps(
                 session,
                 chapter,
                 existing,

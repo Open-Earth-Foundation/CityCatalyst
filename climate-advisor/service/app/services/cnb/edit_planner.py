@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
+from uuid import UUID
 from collections.abc import Callable
 from typing import Any
 
@@ -18,12 +20,19 @@ from app.models.cnb.concept_note_edits import (
     EditProposalRequest,
     EditProposalResponse,
     EditReviewObjection,
+    GapEditBinding,
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
-from app.services.cnb.edit_validation import prior_user_inputs, recent_user_inputs
+from app.services.cnb.edit_validation import (
+    expected_gap_coverage,
+    gap_bindings_for_change,
+    prior_user_inputs,
+    recent_user_inputs,
+)
+from app.utils.cnb_gap_edit import marker_edit_shape
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.concept_note_draft_tools import (
     SourceLookup,
@@ -39,6 +48,35 @@ from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
+
+# A bound reopen gets this much of the operation budget for its first planner call.
+FIRST_PLANNER_SLICE_SECONDS = 120.0
+
+
+class _FirstPlannerStalled(Exception):
+    """Private signal: the first planner call hit its early slice, not the deadline."""
+
+
+def is_bound_accepted_narrowing(
+    request: EditProposalRequest, chapters: list[WorkspaceChapterSnapshot]
+) -> bool:
+    """Return True when a bound answer targets an open gap with accepted passages.
+
+    The check uses only the request binding and the stored snapshot; it never reads
+    the simulator's answer completeness.
+    """
+    scope = request.scope
+    if scope.gap_id is None:
+        return False
+    return any(
+        gap.gap_id == scope.gap_id
+        and gap.version == scope.gap_version
+        and gap.state == "open"
+        and bool(gap.accepted_passages)
+        for chapter in chapters
+        if chapter.chapter_id == scope.focused_chapter_id
+        for gap in chapter.gaps
+    )
 
 
 async def unavailable_source_lookup(source_index: int, question: str) -> str:
@@ -71,22 +109,50 @@ class ConceptNoteEditPlanner:
         """Bound the complete tool loop and semantic review by one operation deadline.
 
         ``source_lookup`` gives the planner and every reviewer the same verified,
-        snapshot-pinned access to the selected sources.
+        snapshot-pinned access to the selected sources. A bound reopen whose first
+        planner call stalls gets one fresh attempt within the same deadline.
         """
+        cnb_edits = self._settings.llm.generation.prompt_budget.cnb_edits
+        started = time.monotonic()
+        first_slice = (
+            min(FIRST_PLANNER_SLICE_SECONDS, cnb_edits.timeout_seconds * 0.4)
+            if is_bound_accepted_narrowing(request, chapters)
+            else None
+        )
         try:
-            async with asyncio.timeout(
-                self._settings.llm.generation.prompt_budget.cnb_edits.timeout_seconds
-            ):
-                return await self._plan(
-                    request,
-                    chapters,
-                    run_context,
-                    prior_proposal,
-                    recent_messages,
-                    source_lookup,
-                    question_cards or [],
-                    chosen_options or [],
-                )
+            async with asyncio.timeout(cnb_edits.timeout_seconds):
+                try:
+                    return await self._plan(
+                        request,
+                        chapters,
+                        run_context,
+                        prior_proposal,
+                        recent_messages,
+                        source_lookup,
+                        question_cards or [],
+                        chosen_options or [],
+                        first_planner_timeout=first_slice,
+                    )
+                except _FirstPlannerStalled:
+                    # Log counts and timing only; the retry rebuilds all draft state.
+                    logger.info(
+                        "Retrying a stalled initial edit planner",
+                        extra={
+                            "stage": "planning",
+                            "retry_count": 1,
+                            "elapsed_seconds": round(time.monotonic() - started, 1),
+                        },
+                    )
+                    return await self._plan(
+                        request,
+                        chapters,
+                        run_context,
+                        prior_proposal,
+                        recent_messages,
+                        source_lookup,
+                        question_cards or [],
+                        chosen_options or [],
+                    )
         except TimeoutError:
             raise EditOperationError(
                 "planning_timeout",
@@ -110,8 +176,14 @@ class ConceptNoteEditPlanner:
         source_lookup: SourceLookup,
         question_cards: list[dict[str, Any]],
         chosen_options: list[str],
+        *,
+        first_planner_timeout: float | None = None,
     ) -> EditPlanOutput:
-        """Repair rejected candidates within one deadline, reviewing each independently."""
+        """Repair rejected candidates within one deadline, reviewing each independently.
+
+        ``first_planner_timeout`` bounds only the operation's first planner call and
+        raises ``_FirstPlannerStalled`` when that bound expires.
+        """
         prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_planner")
         review_prompt = self._settings.llm.prompts.get_prompt("cnb_chat_edit_review")
         model = (
@@ -157,6 +229,16 @@ class ConceptNoteEditPlanner:
                     "revision": chapter.revision_number,
                     "locked": chapter.user_locked,
                     "focused": chapter.chapter_id == request.scope.focused_chapter_id,
+                    # Editable gap questions let a bare fact target several chapters.
+                    "open_gaps": (
+                        []
+                        if chapter.user_locked
+                        else [
+                            {"question": gap.question, "state": gap.state}
+                            for gap in chapter.gaps
+                            if gap.state in {"open", "caveat"}
+                        ]
+                    ),
                 }
                 for chapter in chapters
             ],
@@ -210,6 +292,11 @@ class ConceptNoteEditPlanner:
             )
             # One answer cache per operation; each agent run gets its own lookup limit.
             lookup_cache: SourceLookupCache = {}
+            # A repair resubmits the whole proposal; a chapter whose changes are
+            # unchanged and were fully supported keeps its review.
+            approved: dict[
+                tuple[UUID, str], tuple[list[PlannedTextChange], ChapterEditReview]
+            ] = {}
             for attempt in range(budget.cnb_edits.max_review_repairs + 1):
                 session.plan = None
                 if (
@@ -250,14 +337,24 @@ class ConceptNoteEditPlanner:
                     tracing_disabled=True, trace_include_sensitive_data=False
                 )
                 await emit_cnb_progress("planning")
-                result = await run_with_cnb_reasoning(
-                    self._runner,
-                    agent,
-                    json.dumps(payload, ensure_ascii=False),
-                    run_config=run_config,
-                    stage="planning",
-                    max_turns=budget.cnb_edits.max_agent_turns,
+                # Only the first planner call of this operation has an early slice.
+                planner_deadline = asyncio.timeout(
+                    first_planner_timeout if attempt == 0 else None
                 )
+                try:
+                    async with planner_deadline:
+                        result = await run_with_cnb_reasoning(
+                            self._runner,
+                            agent,
+                            json.dumps(payload, ensure_ascii=False),
+                            run_config=run_config,
+                            stage="planning",
+                            max_turns=budget.cnb_edits.max_agent_turns,
+                        )
+                except TimeoutError:
+                    if not planner_deadline.expired():
+                        raise
+                    raise _FirstPlannerStalled from None
                 raw = result.final_output
                 outcome = (
                     EditAgentOutput.model_validate_json(raw)
@@ -300,6 +397,19 @@ class ConceptNoteEditPlanner:
                 ) -> tuple[list[PlannedTextChange], ChapterEditReview]:
                     """Review the actual resolved text; the only tool reads sources."""
                     nonlocal completed
+                    key = (
+                        chapter.chapter_id,
+                        json.dumps(
+                            [
+                                change.model_dump(mode="json")
+                                for change in chapter_changes[chapter.chapter_id]
+                            ],
+                            sort_keys=True,
+                        ),
+                    )
+                    if key in approved:
+                        completed += 1
+                        return approved[key]
                     async with limit:
                         # A per-chapter agent gives each review its own lookup limit.
                         reviewer = Agent(
@@ -321,6 +431,11 @@ class ConceptNoteEditPlanner:
                             output_type=ChapterEditReview,
                         )
                         changes = chapter_changes[chapter.chapter_id]
+                        # Derived from the same snapshot the proposal tools validated.
+                        bindings = [
+                            gap_bindings_for_change(change, chapter, request.scope)
+                            for change in changes
+                        ]
                         chapter_input = chapter_inputs[chapter.position]
                         # A source claim is judged against its cited sources, so the
                         # reviewer gets those sources' quotations from every chapter.
@@ -339,8 +454,15 @@ class ConceptNoteEditPlanner:
                             "question_cards": question_cards,
                             "chosen_options": chosen_options,
                             "changes": [
-                                change.model_dump(exclude={"chapter_id"})
-                                for change in changes
+                                {
+                                    **change.model_dump(exclude={"chapter_id"}),
+                                    "gap_targets": gap_review_targets(
+                                        change, chapter, change_bindings
+                                    ),
+                                }
+                                for change, change_bindings in zip(
+                                    changes, bindings, strict=True
+                                )
                             ],
                         }
                         # Large rewrites can leave no room for every quotation; the
@@ -381,6 +503,7 @@ class ConceptNoteEditPlanner:
                             if isinstance(raw_review, str)
                             else ChapterEditReview.model_validate(raw_review)
                         )
+                        review = gap_coverage_review(changes, bindings, review)
                         # Collect semantic objections, but never retry incomplete reviews.
                         try:
                             changes = bind_semantic_review(changes, review)
@@ -405,6 +528,7 @@ class ConceptNoteEditPlanner:
                             completed=completed,
                             total=len(affected),
                         )
+                        approved[key] = (changes, review)
                         return changes, review
 
                 logger.info(
@@ -545,8 +669,22 @@ def build_planner_input(
             "revision": chapter.revision_number,
             "body_markdown": chapter.body_markdown,
             "confirmed_body_markdown": chapter.confirmed_body_markdown,
+            # A caveat gap's estimate is in the text; a confirmed value replaces it.
             "gaps": [
-                {"question": gap.question, "state": gap.state} for gap in chapter.gaps
+                {
+                    "question": gap.question,
+                    "original_question": gap.original_question or gap.question,
+                    "accepted_passages": list(gap.accepted_passages),
+                    "answered_so_far": gap.answered_so_far,
+                    "is_bound_answer": request.scope.gap_id == gap.gap_id,
+                    "state": gap.state,
+                    **(
+                        {"estimate": gap.resolution.answer}
+                        if gap.state == "caveat" and gap.resolution
+                        else {}
+                    ),
+                }
+                for gap in chapter.gaps
             ],
         },
         "run_context": omit_context_identifiers(context),
@@ -569,6 +707,7 @@ def build_planner_input(
                                 "group_id",
                                 "user_input_quote",
                                 "context_refs",
+                                "estimate",
                             },
                         ),
                         # Rebind verified snapshots after source reordering; never replay IDs.
@@ -651,6 +790,74 @@ def document_source_excerpts(sources: list[dict[str, Any]]) -> list[dict[str, An
     return excerpts
 
 
+def gap_review_targets(
+    change: PlannedTextChange,
+    chapter: WorkspaceChapterSnapshot,
+    bindings: list[GapEditBinding],
+) -> list[dict[str, Any]]:
+    """Describe each gap transition for the reviewer, with server-derived facts only."""
+    shape = marker_edit_shape(change.before, change.after)
+    targets = []
+    for binding in bindings:
+        gap = next(item for item in chapter.gaps if item.gap_id == binding.gap_id)
+        estimate = binding.mode == "confirm_estimate"
+        targets.append(
+            {
+                "mode": binding.mode,
+                "exact_text": (
+                    gap.resolution.answer
+                    if estimate and gap.resolution
+                    else (shape.old_marker if shape else change.before)
+                ),
+                "question": gap.question,
+                "original_question": gap.original_question or gap.question,
+                "accepted_passages": list(gap.accepted_passages),
+                "saved_answers": gap.answered_so_far,
+                "remaining_marker": shape.new_marker if shape else None,
+            }
+        )
+    return targets
+
+
+def gap_coverage_review(
+    changes: list[PlannedTextChange],
+    bindings: list[list[GapEditBinding]],
+    review: ChapterEditReview,
+) -> ChapterEditReview:
+    """Turn a gap-coverage mismatch into an indexed objection for the repair loop."""
+    decisions = []
+    for decision in review.decisions:
+        if not 0 <= decision.change_index < len(changes) or (
+            decision.support == "unsupported"
+        ):
+            decisions.append(decision)
+            continue
+        expected = expected_gap_coverage(bindings[decision.change_index])
+        objection = _coverage_objection(expected, decision.gap_coverage)
+        if objection is None:
+            decisions.append(decision)
+        else:
+            decisions.append(
+                decision.model_copy(
+                    update={"support": "unsupported", "explanation": objection}
+                )
+            )
+    return ChapterEditReview(decisions=decisions)
+
+
+def _coverage_objection(expected: str, reported: str) -> str | None:
+    """Name the mismatch between a transition's shape and the reviewer's coverage."""
+    if expected == reported:
+        return None
+    if expected == "complete":
+        if reported == "partial":
+            return "The replacement leaves part of this gap unanswered. Keep one marker for the missing part."
+        return "The replacement does not establish coverage of this gap's question. Supply every requested part or keep its marker."
+    if expected == "partial":
+        return "This change keeps part of the gap open. Report its coverage as partial and keep exactly one marker for the missing part."
+    return "This change is not an answer to a missing-information question. Report its gap coverage as none."
+
+
 def bind_semantic_review(
     changes: list[PlannedTextChange],
     review: ChapterEditReview,
@@ -671,6 +878,11 @@ def bind_semantic_review(
             status_code=422,
         )
     return [
-        change.model_copy(update={"semantic_support": decision.support})
+        change.model_copy(
+            update={
+                "semantic_support": decision.support,
+                "reviewed_gap_coverage": decision.gap_coverage,
+            }
+        )
         for change, decision in zip(changes, decisions, strict=True)
     ]

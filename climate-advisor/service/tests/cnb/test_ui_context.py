@@ -87,7 +87,7 @@ async def test_unavailable_workspace_does_not_become_empty_draft():
 
 
 def test_open_gaps_are_counted_per_chapter_in_document_order():
-    """The status points the agent at chapters with gaps without listing them."""
+    """The status points the agent at chapters with gaps by the draft's number."""
     gaps = [
         SimpleNamespace(severity="critical", state="open"),
         SimpleNamespace(severity="noncritical", state="processing"),
@@ -95,15 +95,16 @@ def test_open_gaps_are_counted_per_chapter_in_document_order():
     ]
     chapters = [
         SimpleNamespace(
-            position=2, title="Commitments", status="draft", body_markdown="x", gaps=gaps
+            position=1, title="Commitments", status="draft", body_markdown="x", gaps=gaps
         ),
         SimpleNamespace(
-            position=1, title="Applicant", status="draft", body_markdown="x", gaps=[]
+            position=0, title="Applicant", status="draft", body_markdown="x", gaps=[]
         ),
         SimpleNamespace(
             position=3, title="Removed", status="deleted", body_markdown="x", gaps=gaps
         ),
     ]
+    # Position 1 is shown as chapter 2; "required" matches the popover label.
     assert build_ui_state(chapters)["open_gaps_by_chapter"] == [
-        {"chapter_position": 2, "chapter": "Commitments", "open": 2, "critical": 1}
+        {"chapter_number": 2, "chapter": "Commitments", "open": 2, "required": 1}
     ]

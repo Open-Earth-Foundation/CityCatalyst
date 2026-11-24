@@ -35,9 +35,18 @@ from app.models.cnb.funding_catalogue import (
     FundingCatalogueResponse,
     FundingSelectionRequest,
 )
-from app.models.cnb.gap_question import GapQuestionOutput, GapQuestionRequest
+from app.models.cnb.gap_question import (
+    GapAnswersRequest,
+    GapQuestionOutput,
+    GapQuestionRequest,
+    GapSubQuestion,
+)
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
 from app.persistence.concept_notes.edits import applied_gap_answers
+from app.persistence.concept_notes.gaps import (
+    LEGACY_GENERIC_GAP_RATIONALE,
+    save_partial_answer,
+)
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -62,6 +71,7 @@ from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.message_service import MessageService
 from app.utils.citycatalyst_auth import extract_bearer_token
+from app.utils.cnb_information_markers import find_information_marker
 from app.utils.cnb_observability import CNBInteraction
 from app.utils.mlflow_logging import (
     async_start_run as start_mlflow_run,
@@ -141,15 +151,36 @@ async def propose_gap_question(
     if chapter is None:
         raise HTTPException(status_code=404, detail="Chapter not found")
     gap = next((item for item in chapter.gaps if item.gap_id == payload.gap_id), None)
-    if payload.gap_id and (gap is None or gap.state not in {"open", "processing"}):
+    # A caveat gap holds an estimate that the user can still confirm.
+    if payload.gap_id and (
+        gap is None or gap.state not in {"open", "processing", "caveat"}
+    ):
         raise HTTPException(status_code=409, detail="Gap is no longer open")
+    # A narrowed gap asks exactly its persisted remainder, so no model call is needed.
+    if (
+        gap is not None
+        and gap.state in {"open", "processing"}
+        and gap.has_accepted_narrowing
+    ):
+        return GapQuestionOutput(
+            why_asking=(gap.why_asking or LEGACY_GENERIC_GAP_RATIONALE)[:240],
+            questions=[GapSubQuestion(question=gap.question, options=[])],
+        )
     body = chapter.body_markdown or ""
     # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
     if not payload.gap_id and payload.question not in body:
         raise HTTPException(status_code=404, detail="Gap question not found")
-    question = gap.question if gap else payload.question
-    # Center long chapters on the gap so facts confirmed near it stay in context.
-    start = max(0, min(body.find(question) - 6000, len(body) - 12000))
+    question = gap.question if gap else payload.question or ""
+    # Center long chapters on the gap's marker, even when it is formatted
+    # differently from the question, so facts near it stay in context.
+    marker_start = find_information_marker(body, question)
+    # An estimate's text is the marker-free part to confirm, so center on it.
+    if gap is not None and gap.state == "caveat" and gap.resolution is not None:
+        estimate = gap.resolution.answer or ""
+        estimate_start = body.find(estimate) if estimate else -1
+        if estimate_start >= 0:
+            marker_start = estimate_start
+    start = max(0, min(marker_start - 6000, len(body) - 12000))
     async with get_cnb_reference_session_factory()() as cnb_session:
         previous_answers = await applied_gap_answers(
             cnb_session, run_id=run_id, chapter_id=chapter.chapter_id, question=question
@@ -165,6 +196,13 @@ async def propose_gap_question(
                 "question": question,
                 "why_asking": gap.why_asking if gap else "",
                 "previous_answers": previous_answers,
+                # Saved on the gap version, so every device and teammate sees them.
+                "earlier_answers": (gap.answered_so_far or "") if gap else "",
+                "source_suggestions": [
+                    suggestion.model_dump() for suggestion in gap.suggestions
+                ]
+                if gap
+                else [],
             },
             "cnb_gap_question",
             GapQuestionOutput,
@@ -173,6 +211,45 @@ async def propose_gap_question(
     if output is None:
         raise HTTPException(status_code=503, detail="Gap question unavailable")
     return output
+
+
+@router.post(
+    "/concept-notes/{run_id}/gaps/{gap_id}/answers",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def save_gap_answers(
+    run_id: UUID,
+    gap_id: UUID,
+    payload: GapAnswersRequest,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> Response:
+    """Save the answers given so far for an open gap version, without a chat turn.
+
+    The draft stays unchanged; the gap lists them as answered_so_far for every
+    viewer, and the next gap question asks only for what they miss.
+    """
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    async with get_cnb_reference_session_factory()() as cnb_session:
+        async with cnb_session.begin():
+            saved = await save_partial_answer(
+                cnb_session,
+                run_id=run_id,
+                gap_id=gap_id,
+                gap_version=payload.gap_version,
+                answer=payload.answers,
+                expected_previous=payload.expected_previous,
+                user_id=user_id,
+            )
+    if not saved:
+        raise HTTPException(
+            status_code=409,
+            detail="Gap is no longer open or its saved answers changed",
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(

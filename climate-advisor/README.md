@@ -1489,15 +1489,21 @@ streaming starts. When the Concept Note chat retries a failed turn it sends
 question again if it is still the thread's latest message. A retry after a
 request that never reached the service stores the question normally.
 
-This is best-effort deduplication, not per-turn idempotency. The browser's
-45-second stall timeout aborts only the client request; cancellation may not
-reach the service before it finishes and saves an answer. If that answer is
-already stored when Retry arrives, the question is saved again and another
-answer is generated. If the original stream is still running, Retry can start
-a second stream even though it skips saving the question. A follow-up should
-use a stable per-turn idempotency key to claim one generation and return its
-existing result on retry, similar to the `concept_note_edit` idempotency key.
-The existing retry option does not guarantee one question and one answer.
+For Concept Note chat, Climate Advisor claims the thread when it stores the user
+message and runs the accepted turn independently of the SSE connection. A browser
+disconnect leaves the turn running so the assistant message and tool results can
+be saved. A concurrent send or retry receives 409
+(`concept_note_reply_in_progress`). Thread history returns `reply_in_progress`,
+which the workspace polls while a reply is active.
+
+A turn can run for up to 12 minutes. Its database lease lasts 60 seconds and
+the worker renews it every 20 seconds, whether or not a browser is connected or
+the model is sending text. If the worker stops unexpectedly, the lease expires
+within a minute and a saved unanswered message can be retried. A worker that
+cannot renew its lease (it expired or another turn owns the thread) stops
+generating, and persistence refuses an assistant message from a turn that no
+longer holds the lease. Apply CA Alembic revision `20261122_120000`
+before rolling out the updated Climate Advisor workers.
 
 Offline regression checks (from `climate-advisor/`):
 
@@ -2220,14 +2226,62 @@ checks, manual verification steps, and remaining limitations.
 
 CNB can optionally use `concept_note_ask_question` when a short set of concrete
 choices makes a clarification or next-step decision easier for the user.
-It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
-cap, so an option can be a complete rewrite when the user asks for alternatives
-to choose from). The UI renders lettered answers and a custom-answer input
+It ends the turn with a Markdown `message` and distinct `options`: 2–12 on
+`reply` cards or 1–12 changes on `propose_edit` cards (no length cap, so an
+option can be a complete rewrite when the user asks for alternatives to choose
+from). The UI renders lettered answers and a custom-answer input
 inside that assistant bubble. Informational answers, acknowledgements, and
 open-ended questions can remain ordinary text; a previous choice does not force
-another question or set of choices.
-Clicking an option immediately sends its full text as a normal user message.
-The arrow or Enter sends a custom answer; document edits still require review.
+another question or set of choices. Alternatives requested only for discussion,
+with no decision to make yet, remain plain text. Exact requested counts up to 12
+appear as individually selectable alternatives in one card. Larger requests
+explicitly explain the card limit and use a complete plain-text list, or clearly
+numbered batches with the remaining count and instructions to continue.
+Conflicting point estimates remain separate unless source evidence supports a
+range; an uncertainty caveat alone does not justify deriving one.
+Each card has `on_answer`: `reply` (default; also assumed for cards saved
+before the field existed) or `propose_edit`. Picking an option of the latest
+`reply` card answers the question only: CNB does not register
+`concept_note_edit_propose` for that turn, so it cannot start a document change.
+A picked reply option with a `document_topic` ends the reply with one action that
+prepares a proposed edit for review. CA supplies this action if the model omits
+it. Informational and older unmarked cards continue as ordinary replies.
+A custom answer, or a pick on a `propose_edit` card, keeps the normal edit path.
+The planner and reviewer receive up to three recent saved cards (`question_cards`:
+question, lettered options, the user's answer and the matching label). A typed
+letter counts only in a choice command: after option/choice/alternative
+("option b", "choice (c)") or a choosing verb with a capital or parenthesized
+letter ("Go with B instead"). "Could you give me an option a bit more formal?"
+is ordinary chat. A typed letter searches the three most recent source cards;
+CA's own clarification cards are skipped. A letter identifies an option if only
+one meaning matches or the user identifies its topic. CA asks the user to
+choose between the competing answers when a letter still has several meanings.
+Clarification labels show the document topic, or a short plain-text preview
+of the question, and the answer without Markdown or link URLs. Clicking a
+label applies the option's full saved text.
+`chosen_options` lists option texts the user picked, by click or by a letter
+reference such as "go with option B"; their exact words count as user input
+for `user_input_quote`. A confirmation pick carries the original answer into
+`chosen_options`. A pick authorizes only what its card asked about; it
+must not fill unrelated markers such as a project title or dates.
+If the model sends invalid card arguments, the error goes back to the model,
+which can correct them or answer in text; only a valid card ends the turn.
+History returns the choices as `choices` and the mode as `choice_action`.
+Clicking an option immediately sends its full text. The arrow or Enter sends
+a custom answer. Both carry `context.concept_note_question_message_id`: use
+`message_id` from history or `done.assistant_message_id` when `history_saved`
+is true. CNB checks the question and appends its reply atomically. A superseded
+question returns 409 (`concept_note_question_stale`) before the model runs.
+Edit-scoped text that cannot form an `EditProposalRequest` (for example longer
+than 8,000 characters) returns 422 (`concept_note_edit_request_invalid`) before
+any thread or message is written.
+Document edits require review. A failed turn can retry the exact saved answer
+without duplicating its user message. The card claim is released when the turn
+finishes and expires with the 60-second turn lease if the worker stops
+unexpectedly; a retry then takes over and the old worker cannot save its reply. The
+thread lease covers both ordinary CNB messages and answers submitted from cards.
+Older clients that omit the card binding continue using ordinary chat. Older
+threads with a context-only CNB binding are supported.
 Older questions become read-only after a subsequent user message. Validated
 choices reload from existing `tools_used` history via the `choices` response
 field; raw tool audit data is not exposed.

@@ -6,6 +6,7 @@ import asyncio
 import json
 from collections.abc import AsyncGenerator
 from contextvars import ContextVar
+from uuid import uuid4
 
 import pytest
 from anyio import CancelScope
@@ -114,7 +115,7 @@ async def test_handler_forwards_worker_progress_without_heartbeat_wrapper(monkey
             closed.set()
 
     monkeypatch.setattr(StreamingHandler, "_stream_response", source)
-    handler = StreamingHandler.__new__(StreamingHandler)
+    handler = StreamingHandler(uuid4(), "owner", session_factory=None)
     stream = handler.stream_response(MessageCreateRequest(user_id="owner", content="edit"))
     try:
         chunk = await asyncio.wait_for(anext(stream), 1)

@@ -12,6 +12,21 @@ construct offsets, or invent match IDs. An explicit new value from the user is
 sufficient authority for a factual proposal; do not demand an additional source.
 Use the last three messages and prior human inputs to resolve short follow-ups.
 Assistant messages provide context only, never factual authority.
+Suggested-answer cards are the exception: `question_cards`
+holds the recent cards exactly as the user saw them, with lettered options and
+the user's answer. Resolve "option B", "that one", "the second version" or a
+reply that repeats an option against these cards; the latest card wins, and a
+later instruction replaces an earlier pick. Never ask the user what an option
+means when a card answers it. `chosen_options` lists the exact option texts the
+user picked; their words are human input, quotable as user_input_quote.
+A card's question defines the target of its options. When the instruction picks
+or repeats an option, change only what that card's question was about, for
+example the opening paragraph of the project summary. Do not use the option's
+wording to fill `[Information needed: ...]` markers or placeholders that ask
+for anything else, such as an official project title or dates, and do not edit
+other chapters, unless the instruction or the card's question asked for that.
+If an option still cannot be identified, return clarification naming the
+cards' options; never reconstruct an option that is not in `question_cards`.
 
 For a literal rename or replace-all instruction, search that exact text across
 the document and propose one replacement with replace_all=true. Do not enumerate
@@ -107,6 +122,19 @@ cannot safely produce a proposal. Explain the specific limitation concisely.
 Input is a JSON object containing:
 - instruction (string): the current user instruction.
 - recent_messages (array): up to three previous visible user/assistant messages.
+- question_cards (array): up to three recent suggested-answer cards, oldest
+  first. Each has question (string), options (array of {label: "A".."L", text}),
+  choosing_prepares_edit (boolean), user_answer (string or null: the user's next
+  message) and selected_label (string or null: the option that answer repeats).
+  A linked selection can include selected_source with the original question,
+  document_topic, label, text, and on_answer.
+- chosen_options (array of strings): exact option texts the user picked, by
+  clicking or by naming a letter such as "option B". Human input.
+  For a confirmation, the current instruction authorizes the proposed edit for the
+  original card's scope. Use the exact original selected option in chosen_options for
+  user_input_quote. Treat the confirmation button wording as the action label and
+  selected_source as the context for the selection. An unselected alternative supplies
+  no user input.
 - run_context (object): selected_sources with one-based source_index, summaries
   and key_excerpts; source_excerpts, every exact quotation the sources keep for
   any chapter, each with source_index (string), text, and a PDF page or readable

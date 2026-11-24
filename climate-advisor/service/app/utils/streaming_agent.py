@@ -17,6 +17,15 @@ from app.services.agent_service import AgentService
 from app.services.cnb.draft_overview import (
     draft_overview_instructions,
 )
+from app.services.cnb.question_reply import (
+    card_selection_message,
+    clarification_card,
+    current_selected_card,
+    followup_card,
+    option_source,
+    recent_question_cards,
+    resolve_letter_options,
+)
 from app.utils.mlflow_logging import (
     log_json_artifact,
     log_tags,
@@ -39,7 +48,7 @@ async def prepare_stream_agent(
     settings: Settings,
     payload: MessageCreateRequest,
     req_id: str,
-) -> tuple[Agent, list[dict[str, str]]]:
+) -> tuple[Agent | None, list[dict[str, str]]]:
     """Load scoped history and configure the agent; retain it on the handler for cleanup."""
     draft_run_id = handler.workflow_context.stationary_energy_draft_run_id
     concept_note_run_id = handler.workflow_context.concept_note_run_id
@@ -78,13 +87,59 @@ async def prepare_stream_agent(
         if concept_note_run_id and isinstance(edit_context, dict)
         else None
     )
-    handler.concept_note_edit_request = edit_request
     # The CNB frontend sends its active language so help quotes visible labels.
     concept_note_ui_locale = (
         payload.context.get("ui_locale")
         if concept_note_run_id and isinstance(payload.context, dict)
         else None
     )
+    # Cards tell the planner what "option B" or "that one" means, and a pick on
+    # a card that only asks a question answers it instead of editing the draft.
+    question_cards = (
+        await recent_question_cards(
+            handler.session_factory,
+            thread_id=handler.thread_id,
+            user_id=str(handler.user_id),
+        )
+        if concept_note_run_id
+        and handler.thread_id
+        and not handler.draft_overview_claim
+        else []
+    )
+    selection_source = None
+    if concept_note_run_id and not handler.draft_overview_claim:
+        claim = handler.question_reply_claim
+        selected = current_selected_card(
+            question_cards,
+            payload.content,
+            reply_message_id=claim[0] if claim else None,
+        )
+        if selected is not None and selected["on_answer"] == "reply":
+            edit_request = None
+            option = next(
+                option
+                for option in selected["options"]
+                if option["label"] == selected["selected_label"]
+            )
+            source = option_source(selected, option)
+            linked = bool(selected.get("choice_sources"))
+            if source["document_topic"] or (
+                linked and source["on_answer"] == "propose_edit"
+            ):
+                handler.card_presentation = followup_card(
+                    source, concept_note_ui_locale
+                )
+            if linked or handler.card_presentation is not None:
+                selection_source = source
+        elif selected is None and question_cards:
+            _, ambiguous = resolve_letter_options(question_cards, payload.content)
+            if ambiguous:
+                handler.concept_note_edit_request = None
+                handler.card_presentation = clarification_card(
+                    ambiguous, concept_note_ui_locale
+                )
+                return None, []
+    handler.concept_note_edit_request = edit_request
 
     # Load the effective chat input before tool registration so the edit
     # planner can resolve short follow-ups from a bounded visible window.
@@ -97,6 +152,10 @@ async def prepare_stream_agent(
         if edit_request is not None
         else []
     )
+    if selection_source is not None:
+        conversation_history.append(
+            card_selection_message(selection_source, handler.card_presentation)
+        )
     handler.agent_service = AgentService(
         cc_access_token=handler.cc_access_token,
         request_token_refresh_context=handler.request_token_refresh_context,
@@ -111,6 +170,7 @@ async def prepare_stream_agent(
         native_input_catalog_context=native_input_catalog_context,
         concept_note_edit_request=edit_request,
         concept_note_edit_history=concept_note_edit_history,
+        concept_note_question_cards=question_cards if edit_request else [],
         concept_note_ui_locale=concept_note_ui_locale,
     )
 

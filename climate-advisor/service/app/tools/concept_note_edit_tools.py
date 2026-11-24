@@ -30,6 +30,7 @@ def build_concept_note_edit_tools(
     token_ref: dict[str, str | None],
     request: EditProposalRequest,
     recent_messages: list[dict[str, str]] | None = None,
+    question_cards: list[dict[str, Any]] | None = None,
     request_token_refresh_context: RequestTokenRefreshContext | None = None,
 ) -> list:
     """Bind edit inputs and optional authenticated-turn renewal outside the model."""
@@ -95,6 +96,7 @@ def build_concept_note_edit_tools(
                         request,
                         token=token,
                         recent_messages=recent_messages,
+                        question_cards=question_cards,
                     )
                 finally:
                     await run_service.cc_client.close()

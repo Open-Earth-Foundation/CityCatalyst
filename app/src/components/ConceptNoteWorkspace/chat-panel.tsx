@@ -19,6 +19,7 @@ import {
   Spinner,
   Text,
   Textarea,
+  VisuallyHidden,
   VStack,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
@@ -254,12 +255,46 @@ export function ConceptNoteChatPanel({
   onDraftOverviewComplete,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [input, setInput] = useState("");
+  const draftThreadKey = `${runId}:${threadId ?? ""}`;
+  const [composerDrafts, setComposerDrafts] = useState<Record<string, string>>(
+    {},
+  );
+  const [choiceDrafts, setChoiceDrafts] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const input = composerDrafts[draftThreadKey] ?? "";
+  const inlineDrafts = choiceDrafts[draftThreadKey] ?? {};
+  const setInput = useCallback(
+    (value: string | ((current: string) => string)) => {
+      setComposerDrafts((current) => ({
+        ...current,
+        [draftThreadKey]:
+          typeof value === "function"
+            ? value(current[draftThreadKey] ?? "")
+            : value,
+      }));
+    },
+    [draftThreadKey],
+  );
+  function setChoiceDraft(questionId: string, value: string) {
+    setChoiceDrafts((current) => ({
+      ...current,
+      [draftThreadKey]: { ...current[draftThreadKey], [questionId]: value },
+    }));
+  }
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const appliedComposerRequestRef = useRef<string | null>(null);
   const { formRef, onKeyDown: submitOnEnter } = useEnterSubmit();
+  const chatThreads = useConceptNoteChatThreads({
+    cityId,
+    lng,
+    runId,
+    threadId,
+  });
   const {
     connection,
     error: chatError,
+    replyStatus,
     canRetry,
     overviewFailed,
     historyLoading,
@@ -277,28 +312,65 @@ export function ConceptNoteChatPanel({
     editScope,
     onProposal: edits.loadProposal,
     onDraftOverviewComplete,
-  });
-  const chatThreads = useConceptNoteChatThreads({
-    cityId,
-    lng,
-    runId,
-    threadId,
+    onObservedReplyEnd: () => {
+      void edits.refresh();
+      onDraftOverviewComplete?.();
+    },
+    // The chat list then shows the newer chat and offers a way back to it.
+    onThreadInactive: chatThreads.refresh,
   });
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  const latestQuestionRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
   const contextBlocked = contextStatus.blocked;
+  // A pending chat switch has not made this chat active on the server yet.
   const chatDisabled =
-    contextBlocked || !threadId || historyLoading || isGenerating;
+    contextBlocked ||
+    !threadId ||
+    historyLoading ||
+    isGenerating ||
+    Boolean(replyStatus) ||
+    chatThreads.busy;
   // Switching chats mid-turn or mid-drafting would strand the reply.
   const threadSwitchDisabled =
     historyLoading || isGenerating || draft?.status === "running";
   // Typing stays open while context is processing or Clima responds.
   // Only submission waits for context readiness and the current turn.
   const composerDisabled = !threadId;
+  // Every CNB message becomes an edit request, which the service caps.
+  const composerOverLimit = input.trim().length - EDIT_INSTRUCTION_MAX_CHARS;
+  // An unsent answer is shown but not saved; the card it answered stays open.
+  const latestMessage = messages.findLast((message) => !message.unsent);
+  const activeQuestionId = latestMessage?.choices
+    ? (latestMessage.questionMessageId ?? latestMessage.id)
+    : undefined;
+  const recoverableDrafts = Object.entries(inlineDrafts).filter(
+    ([questionId, draft]) => draft.trim() && questionId !== activeQuestionId,
+  );
   const requestedOverviewThreadRef = useRef<string | null>(null);
+
+  const scrollToLatest = useCallback(() => {
+    const scroll = chatScrollRef.current;
+    if (!scroll) return;
+    const question = latestQuestionRef.current;
+    // A tall card opens at its question and first answers, not at the top of a
+    // long summary or at the last answer option.
+    const choices = question?.querySelector(
+      '[data-testid="concept-note-chat-choices"]',
+    );
+    const anchor = choices?.previousElementSibling ?? choices ?? question;
+    const top =
+      question && anchor && question.offsetHeight > scroll.clientHeight - 24
+        ? scroll.scrollTop +
+          anchor.getBoundingClientRect().top -
+          scroll.getBoundingClientRect().top -
+          12
+        : scroll.scrollHeight;
+    scroll.scrollTo({ behavior: "auto", top: Math.max(0, top) });
+  }, []);
 
   // Ask Clima once for the drafting overview; the service claims it per build.
   useEffect(() => {
@@ -330,33 +402,56 @@ export function ConceptNoteChatPanel({
       if (!chatScroll) {
         return;
       }
-      chatScroll.scrollTo({
-        behavior: "auto",
-        top: chatScroll.scrollHeight,
-      });
+      scrollToLatest();
       initiallyScrolledThreadRef.current = threadId;
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [gapAnswer, historyLoading, messages, reasoning, threadId]);
+  }, [
+    gapAnswer,
+    historyLoading,
+    messages,
+    reasoning,
+    threadId,
+    scrollToLatest,
+  ]);
 
   // Visuals resize after they load; keep the latest message in view if the user follows it.
   const keepLatestInView = useCallback(() => {
     const chatScroll = chatScrollRef.current;
     if (chatScroll && followLatestRef.current) {
-      chatScroll.scrollTo({ behavior: "auto", top: chatScroll.scrollHeight });
+      scrollToLatest();
     }
-  }, []);
+  }, [scrollToLatest]);
+
+  // Narrow layouts load history while the chat pane is hidden (zero height),
+  // so scroll again once the user opens Clima.
+  useEffect(() => {
+    const chatScroll = chatScrollRef.current;
+    if (!chatScroll || typeof ResizeObserver === "undefined") return;
+    let visible = chatScroll.clientHeight > 0;
+    const observer = new ResizeObserver(() => {
+      const nowVisible = chatScroll.clientHeight > 0;
+      if (nowVisible && !visible) keepLatestInView();
+      visible = nowVisible;
+    });
+    observer.observe(chatScroll);
+    return () => observer.disconnect();
+  }, [keepLatestInView]);
 
   useEffect(() => {
-    if (!composerRequest) {
+    if (
+      !composerRequest ||
+      appliedComposerRequestRef.current === composerRequest.id
+    ) {
       return;
     }
     const frame = requestAnimationFrame(() => {
+      appliedComposerRequestRef.current = composerRequest.id;
       setInput(composerRequest.content);
       inputRef.current?.focus();
     });
     return () => cancelAnimationFrame(frame);
-  }, [composerRequest]);
+  }, [composerRequest, setInput]);
 
   // Grow the composer with its content, then scroll past the max height.
   useLayoutEffect(() => {
@@ -377,12 +472,24 @@ export function ConceptNoteChatPanel({
   ): Promise<void> {
     event.preventDefault();
     const content = input.trim();
-    if (chatDisabled || !content) {
+    if (chatDisabled || !content || composerOverLimit > 0) {
       return;
     }
+    // Restore into the chat it was written for, even if the user moved on.
+    const sentFromKey = draftThreadKey;
     setInput("");
     followLatestRef.current = true;
-    await sendChatMessage(content);
+    if ((await sendChatMessage(content)) !== "not_saved") return;
+    // Nothing was saved, so nothing is resent: the text returns to the composer
+    // and stays apart from anything typed since.
+    setComposerDrafts((current) => {
+      const typed = (current[sentFromKey] ?? "").trim();
+      return {
+        ...current,
+        [sentFromKey]:
+          typed && typed !== content ? `${content}\n\n${typed}` : content,
+      };
+    });
   }
 
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
@@ -441,10 +548,11 @@ export function ConceptNoteChatPanel({
     >
       <Flex
         align="center"
-        gap={3}
+        // Tighter spacing on phones keeps the "Clima" title whole beside the status and switcher.
+        gap={{ base: 2, sm: 3 }}
         borderBottom="1px solid"
         borderColor="border.neutral"
-        px={4}
+        px={{ base: 3, sm: 4 }}
         py={3}
       >
         <Flex
@@ -463,6 +571,7 @@ export function ConceptNoteChatPanel({
             fontSize="18px"
             fontWeight="semibold"
             color="content.primary"
+            truncate
           >
             {t("clima")}
           </Text>
@@ -501,6 +610,17 @@ export function ConceptNoteChatPanel({
           threadId={threadId}
         />
       </Flex>
+
+      {/* Announce a finished question once; streaming text is not announced. */}
+      <VisuallyHidden
+        role="status"
+        aria-live="polite"
+        data-testid="concept-note-chat-question-announcement"
+      >
+        {!isGenerating && latestMessage?.choices
+          ? t("chat-choices-arrived", { count: latestMessage.choices.length })
+          : ""}
+      </VisuallyHidden>
 
       <VStack
         ref={chatScrollRef}
@@ -587,6 +707,14 @@ export function ConceptNoteChatPanel({
                   message.choices ||
                   message.role === "user") && (
                   <Box
+                    ref={
+                      message.choices && message.id === latestMessage?.id
+                        ? latestQuestionRef
+                        : undefined
+                    }
+                    data-testid={
+                      message.choices ? "concept-note-chat-question" : undefined
+                    }
                     alignSelf={message.role === "user" ? "end" : "start"}
                     maxW="92%"
                     border={message.choices ? "none" : "1px solid"}
@@ -608,25 +736,93 @@ export function ConceptNoteChatPanel({
                         {message.text}
                       </ReactMarkdown>
                     ) : message.role === "user" ? (
-                      <Text
-                        fontSize="body.sm"
-                        lineHeight="22px"
-                        color="content.primary"
-                        whiteSpace="pre-wrap"
-                      >
-                        {message.text}
-                      </Text>
+                      <>
+                        <Text
+                          fontSize="body.sm"
+                          lineHeight="22px"
+                          color="content.primary"
+                          whiteSpace="pre-wrap"
+                        >
+                          {message.text}
+                        </Text>
+                        {message.unsent && (
+                          <HStack
+                            gap={1}
+                            mt={1}
+                            justify="end"
+                            color="sentiment.negativeDefault"
+                            data-testid="concept-note-chat-unsent"
+                          >
+                            <Icon as={LuCircleAlert} boxSize={3.5} />
+                            <Text fontSize="label.sm">
+                              {t("chat-message-unsent")}
+                            </Text>
+                          </HStack>
+                        )}
+                      </>
                     ) : null}
                     {message.role === "assistant" && message.choices && (
                       <ChatChoices
                         choices={message.choices}
+                        choiceAction={message.choiceAction}
                         lng={lng}
-                        disabled={chatDisabled}
-                        answered={messageIndex < messages.length - 1}
+                        disabled={chatDisabled || !message.questionMessageId}
+                        answered={messages
+                          .slice(messageIndex + 1)
+                          .some((later) => !later.unsent)}
+                        draft={
+                          inlineDrafts[
+                            message.questionMessageId ?? message.id
+                          ] ?? ""
+                        }
+                        onDraftChange={(value) =>
+                          setChoiceDraft(
+                            message.questionMessageId ?? message.id,
+                            value,
+                          )
+                        }
+                        selectedAnswer={
+                          messages[messageIndex + 1]?.role === "user" &&
+                          !messages[messageIndex + 1].unsent
+                            ? messages[messageIndex + 1].text
+                            : undefined
+                        }
                         onReply={async (answer) => {
-                          if (chatDisabled) return;
+                          if (chatDisabled || !message.questionMessageId)
+                            return false;
                           followLatestRef.current = true;
-                          await sendChatMessage(answer);
+                          // Picking an option keeps text typed in the card's own
+                          // field: it moves to the message box.
+                          const questionKey = message.questionMessageId;
+                          const cardDraft = (
+                            inlineDrafts[questionKey] ?? ""
+                          ).trim();
+                          if (cardDraft && cardDraft !== answer.trim()) {
+                            setInput((current) =>
+                              current.trim()
+                                ? `${current}\n\n${cardDraft}`
+                                : cardDraft,
+                            );
+                            setChoiceDraft(questionKey, "");
+                          }
+                          // The answer controls lock or unmount while Clima replies,
+                          // so keep keyboard focus in the composer from the start.
+                          const active = document.activeElement;
+                          if (
+                            active === document.body ||
+                            active?.closest(
+                              '[data-testid="concept-note-chat-choices"]',
+                            )
+                          ) {
+                            inputRef.current?.focus({ preventScroll: true });
+                          }
+                          return (
+                            (await sendChatMessage(
+                              answer,
+                              undefined,
+                              message.questionMessageId,
+                            )) === "replied"
+                          );
                         }}
                       />
                     )}
@@ -702,6 +898,11 @@ export function ConceptNoteChatPanel({
             )}
           </>
         )}
+        {replyStatus && (
+          <Text role="status" fontSize="label.sm" color="content.secondary">
+            {replyStatus}
+          </Text>
+        )}
       </VStack>
 
       {/* The gap form has its own submit, so the chat box would be a second one. */}
@@ -714,6 +915,51 @@ export function ConceptNoteChatPanel({
           flexShrink={0}
           onSubmit={submitMessage}
         >
+          {recoverableDrafts.length > 0 && (
+            <Box maxH="30vh" overflowY="auto" mb={3}>
+              {recoverableDrafts.map(([questionId, draft]) => (
+                <Box
+                  key={questionId}
+                  data-testid="concept-note-saved-answer-draft"
+                  mb={3}
+                  p={3}
+                  borderWidth="1px"
+                  borderColor="border.neutral"
+                  borderRadius="rounded"
+                >
+                  <Text fontSize="label.sm" fontWeight="semibold">
+                    {t("chat-choices-saved-draft")}
+                  </Text>
+                  <Text
+                    fontSize="body.sm"
+                    whiteSpace="pre-wrap"
+                    overflowWrap="anywhere"
+                    maxH="80px"
+                    overflowY="auto"
+                    tabIndex={0}
+                  >
+                    {draft}
+                  </Text>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="outline"
+                    mt={2}
+                    disabled={chatDisabled}
+                    onClick={() => {
+                      setInput((current) =>
+                        current ? `${current}\n\n${draft}` : draft,
+                      );
+                      setChoiceDraft(questionId, "");
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    {t("chat-choices-use-draft")}
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+          )}
           <Flex align="flex-end" gap={3}>
             <Textarea
               data-testid="concept-note-chat-input"
@@ -724,7 +970,12 @@ export function ConceptNoteChatPanel({
               resize="none"
               disabled={composerDisabled}
               aria-describedby={
-                contextBlocked ? "concept-note-chat-blocked" : undefined
+                [
+                  contextBlocked && "concept-note-chat-blocked",
+                  composerOverLimit > 0 && "concept-note-chat-too-long",
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
               }
               placeholder={
                 threadId ? t("chat-input-placeholder") : t("chat-unavailable")
@@ -765,7 +1016,12 @@ export function ConceptNoteChatPanel({
                 },
               }}
               p={0}
-              disabled={chatDisabled || !input.trim()}
+              disabled={
+                chatDisabled ||
+                composerDisabled ||
+                !input.trim() ||
+                composerOverLimit > 0
+              }
               loading={isGenerating}
               size="xs"
               variant="solid"
@@ -774,6 +1030,17 @@ export function ConceptNoteChatPanel({
               <Icon as={LuArrowUp} boxSize={5} />
             </Button>
           </Flex>
+          {composerOverLimit > 0 && (
+            <Text
+              id="concept-note-chat-too-long"
+              role="alert"
+              mt={2}
+              fontSize="label.sm"
+              color="sentiment.negativeDefault"
+            >
+              {t("chat-message-too-long", { count: composerOverLimit })}
+            </Text>
+          )}
           {contextBlocked && (
             <Text
               id="concept-note-chat-blocked"

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, List, Optional, Union
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,14 +22,18 @@ class MessageService:
         text: str,
         role: MessageRole,
         tools_used: Optional[Any] = None,
+        message_id: UUID | None = None,
+        created_at: datetime | None = None,
     ) -> Message:
+        """Save a message, accepting server-owned identity/time for CNB appends."""
         message = Message(
-            message_id=uuid4(),
+            message_id=message_id or uuid4(),
             thread_id=thread_id if isinstance(thread_id, UUID) else UUID(str(thread_id)),
             user_id=user_id,
             role=role,
             text=text,
             tools_used=tools_used,
+            created_at=created_at,
         )
         self.session.add(message)
         await self.session.flush()
@@ -41,6 +46,7 @@ class MessageService:
         user_id: str,
         text: str,
         tools_used: Optional[Any] = None,
+        created_at: datetime | None = None,
     ) -> Message:
         """Persist user text unchanged, including whitespace and newlines."""
         return await self.create_message(
@@ -49,6 +55,7 @@ class MessageService:
             text=text,
             role=MessageRole.USER,
             tools_used=tools_used,
+            created_at=created_at,
         )
 
     async def create_assistant_message(
@@ -58,6 +65,8 @@ class MessageService:
         user_id: str,
         text: str,
         tools_used: Optional[Any] = None,
+        message_id: UUID | None = None,
+        created_at: datetime | None = None,
     ) -> Message:
         return await self.create_message(
             thread_id=thread_id,
@@ -65,6 +74,8 @@ class MessageService:
             text=text,
             role=MessageRole.ASSISTANT,
             tools_used=tools_used,
+            message_id=message_id,
+            created_at=created_at,
         )
 
     async def latest_message_is_user_text(

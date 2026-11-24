@@ -10,7 +10,9 @@
  * With --pipeline precomputed the rows come from an external pipeline's
  * envelope folder (manifest.json + one file per case and attempt) instead of
  * OCR and extraction; a case with no envelope fails as setup_error, which
- * marks the run incomplete and gives the case the verdict error (exit 1).
+ * marks the run incomplete and gives the case the verdict error (exit 1). An
+ * entry's source_pdf_sha256 must match the local PDF or the attempt fails
+ * before upload; an entry without one is scored but reported as unverified.
  *
  * Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error,
  * 3 incomplete (an --all run with missing or unfinished cases; no regression

@@ -1,9 +1,11 @@
 /**
  * Runs one attempt of one PDF case with rows from an external pipeline's
- * precomputed envelope (CC-1295): uploads the PDF (no OCR, no extraction),
+ * precomputed envelope (CC-1295): checks that the envelope was made from the
+ * local PDF, uploads the PDF (no OCR, no extraction),
  * stores the mapped rows on the imported file the way the extraction worker
  * does, then approves, reads back and scores with the helpers of run-case.ts.
  */
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
@@ -12,6 +14,7 @@ import {
   type MappedEnvelope,
 } from "@/backend/ingestion-benchmark/pipelines/map-envelope";
 import {
+  checkSourcePdf,
   RowsDirError,
   type ReadEnvelope,
   type RowsDir,
@@ -164,6 +167,7 @@ function pipelineAttempt(
   mapped: MappedEnvelope,
   lostRows: Record<string, number>,
   prices: Prices,
+  sourcePdf: "verified" | "unverified",
 ): PipelineAttempt {
   const { data } = envelope;
   const counts =
@@ -191,6 +195,7 @@ function pipelineAttempt(
     ...pipelineCostUsd(envelope, prices),
     usage: envelope.usage,
     lostRows,
+    sourcePdf,
   };
 }
 
@@ -232,6 +237,22 @@ export async function runPrecomputedAttempt(
     });
   }
   const buffer = readFileSync(pdfPath);
+  // Hashes the bytes about to be uploaded, so the check covers exactly what is scored.
+  let sourcePdf: "verified" | "unverified";
+  try {
+    sourcePdf = checkSourcePdf(
+      envelope,
+      createHash("sha256").update(buffer).digest("hex"),
+      entry.id,
+      attempt,
+    );
+  } catch (error) {
+    // Rows from another edition of the document are the setup's failure, not the pipeline's.
+    return finish({
+      failureMode: "setup_error",
+      message: (error as Error).message,
+    });
+  }
   const mapped = mapEnvelope(envelope);
 
   let stage: "setup" | "approve" | "readback" = "setup";
@@ -243,7 +264,7 @@ export async function runPrecomputedAttempt(
     warnings,
     extractedRows,
     heldRowsIncluded,
-    pipeline: pipelineAttempt(envelope, mapped, lostRows, prices),
+    pipeline: pipelineAttempt(envelope, mapped, lostRows, prices, sourcePdf),
   });
   try {
     const { ids, importedFileId } = await setUpImport(ctx, entry, attempt, {

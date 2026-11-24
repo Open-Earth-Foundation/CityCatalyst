@@ -678,8 +678,8 @@
         ]
       },
       {
-        "id": "edit-switch-to-option-b",
-        "instruction": "Actually, go with option B instead",
+        "id": "edit-click-option-b",
+        "instruction": "Planned measures include 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres.",
         "expected_outcome": "edit",
         "focused_chapter": "project_summary",
         "allowed_chapters": [
@@ -695,14 +695,13 @@
               "The project combines planned tree planting, green stormwater infrastructure and community cooling: 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres."
             ]
           },
-          "previous_index": 0,
           "expected_index": 1,
           "before": "The project will deliver 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres."
         },
         "expected_changes": [
           {
             "id": "exact-option-b",
-            "statement": "Replace only the paragraph named by the card with the newly selected option B, verbatim. Keep the title, dates, markers and all other chapters as they were."
+            "statement": "Replace only the paragraph named by the card with the clicked option B, verbatim. Keep the title, dates, markers and all other chapters as they were."
           }
         ]
       }
@@ -714,6 +713,6 @@
     "reviewed_at": null,
     "source_sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
     "template_sha256": "096b99db207606ba322afefa2ad3ad97bb117b8c2d3e4b7bf16217cc9cb2bc02",
-    "requirements_sha256": "0405d8c564ae924fd518dad2904de4eb2f1414c8c114087e588f878c2eecc1ae"
+    "requirements_sha256": "fa196b70a304433501beeaad8df091192ab28286b4dbef9b7a8839bb2321306d"
   }
 }

@@ -19,12 +19,10 @@ from app.services.cnb.draft_overview import (
 )
 from app.services.cnb.question_reply import (
     card_selection_message,
-    clarification_card,
     current_selected_card,
     followup_card,
     option_source,
     recent_question_cards,
-    resolve_letter_options,
 )
 from app.utils.mlflow_logging import (
     log_json_artifact,
@@ -48,7 +46,7 @@ async def prepare_stream_agent(
     settings: Settings,
     payload: MessageCreateRequest,
     req_id: str,
-) -> tuple[Agent | None, list[dict[str, str]]]:
+) -> tuple[Agent, list[dict[str, str]]]:
     """Load scoped history and configure the agent; retain it on the handler for cleanup."""
     draft_run_id = handler.workflow_context.stationary_energy_draft_run_id
     concept_note_run_id = handler.workflow_context.concept_note_run_id
@@ -122,23 +120,11 @@ async def prepare_stream_agent(
                 if option["label"] == selected["selected_label"]
             )
             source = option_source(selected, option)
-            linked = bool(selected.get("choice_sources"))
-            if source["document_topic"] or (
-                linked and source["on_answer"] == "propose_edit"
-            ):
+            if source["document_topic"]:
                 handler.card_presentation = followup_card(
                     source, concept_note_ui_locale
                 )
-            if linked or handler.card_presentation is not None:
                 selection_source = source
-        elif selected is None and question_cards:
-            _, ambiguous = resolve_letter_options(question_cards, payload.content)
-            if ambiguous:
-                handler.concept_note_edit_request = None
-                handler.card_presentation = clarification_card(
-                    ambiguous, concept_note_ui_locale
-                )
-                return None, []
     handler.concept_note_edit_request = edit_request
 
     # Load the effective chat input before tool registration so the edit

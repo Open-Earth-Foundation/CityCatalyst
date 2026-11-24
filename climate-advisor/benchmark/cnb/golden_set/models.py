@@ -287,23 +287,17 @@ class EditMessage(GoldenContract):
 
 
 class EditOptionSelection(GoldenContract):
-    """Frozen card and exact edit expected after a typed option switch."""
+    """Frozen card and exact edit expected after the user clicks one option."""
 
     card: ConceptNoteQuestion
-    previous_index: int = Field(ge=0)
     expected_index: int = Field(ge=0)
     before: str = Field(min_length=1)
 
     @model_validator(mode="after")
-    def check_indices(self) -> EditOptionSelection:
-        """Require two different options that appear on the card."""
-        count = len(self.card.options)
-        if (
-            self.previous_index >= count
-            or self.expected_index >= count
-            or self.previous_index == self.expected_index
-        ):
-            raise ValueError("Option switch needs two different displayed options")
+    def check_index(self) -> EditOptionSelection:
+        """Require the clicked option to appear on the card."""
+        if self.expected_index >= len(self.card.options):
+            raise ValueError("The clicked option is not on the card")
         return self
 
 
@@ -347,12 +341,16 @@ class EditCase(GoldenContract):
                 raise ValueError("A card case needs answer expectations and allows no edits")
         elif self.pick_first_option:
             raise ValueError("Only a question card case can pick an option")
-        if self.option_selection is not None and (
+        selection = self.option_selection
+        if selection is not None and (
             self.expected_outcome != "edit"
             or self.focused_chapter is None
             or self.allowed_chapters != [self.focused_chapter]
+            or self.instruction != selection.card.options[selection.expected_index]
         ):
-            raise ValueError("An option switch must edit exactly its focused chapter")
+            raise ValueError(
+                "An option click sends the option text and edits exactly its focused chapter"
+            )
         return self
 
 

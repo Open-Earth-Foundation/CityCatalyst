@@ -12,7 +12,7 @@ branch protection. Failures remain visible and are not hidden with
 `continue-on-error`.
 
 Harbor Point's Editing pass includes four suggested-answer cases (up to five chat
-turns) and a typed Option B planner case. The same Editing judge call scores them
+turns) and a clicked Option B planner case. The same Editing judge call scores them
 with the other edit cases.
 
 The frozen-Markdown and fresh-PDF-conversion paths run as parallel jobs, each

@@ -20,14 +20,10 @@ from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSn
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
 from app.services.cnb.question_reply import (
     QUESTION_CHOICE_SOURCES,
-    clarification_card,
     followup_card,
-    is_clarification_card,
-    letter_labels,
     planner_question_cards,
     recent_question_cards,
     referenced_options,
-    resolve_letter_options,
 )
 from app.tools.concept_note_question import saved_question
 from app.utils.chat_workflow_context import ChatWorkflowContext
@@ -195,24 +191,22 @@ async def plan_opening(instruction, cards, chosen):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("picked", [False, True])
-async def test_only_an_explicitly_picked_option_can_ground_an_edit(store, picked):
+@pytest.mark.parametrize("clicked", [False, True])
+async def test_only_a_clicked_option_can_ground_an_edit(store, clicked):
+    # A typed "option B" reaches the planner but is not human input for B's words.
+    instruction = OPENINGS[1] if clicked else "Actually, go with option B instead."
     thread_id = await seed(
         store,
         [
             OPENING_CARD,
-            (MessageRole.USER, OPENINGS[0], None),
+            (MessageRole.USER, OPENINGS[1] if clicked else OPENINGS[0], None),
         ],
     )
     cards = await recent_question_cards(store, thread_id=thread_id, user_id="owner")
-    instruction = (
-        "Actually, go with option B instead and put it in the summary."
-        if picked
-        else "Improve the opening."
-    )
-    chosen = referenced_options(cards, instruction)
+    chosen = referenced_options(cards)
+    assert chosen == [OPENINGS[1] if clicked else OPENINGS[0]]
     plan = await plan_opening(instruction, cards, chosen)
-    if picked:
+    if clicked:
         assert plan.changes[0].after == OPENINGS[1].removesuffix(".")
         assert plan.changes[0].user_input_quote == OPENINGS[1]
     else:
@@ -221,71 +215,29 @@ async def test_only_an_explicitly_picked_option_can_ground_an_edit(store, picked
         assert plan.changes == []
 
 
-@pytest.mark.asyncio
-async def test_letter_resolution_checks_three_cards(store):
-    histories = {
-        "pair": [TIMELINE_CARD, OPENING_CARD],
-        "repeat": [TIMELINE_CARD, TIMELINE_CARD],
-        "different": [
-            card(["No", "Yes"], question="Budget?", topic="the budget line"),
-            card(["Maybe", "Yes"], question=TIMELINE_QUESTION, topic=TIMELINE_TOPIC),
-        ],
-        "window": [
-            TIMELINE_CARD,
-            *(card([f"Edit {i}"], mode="propose_edit") for i in range(3)),
-        ],
-        "selected": [TIMELINE_CARD, (MessageRole.USER, TIMELINE[0], None)],
-    }
-    cards_by_history = {}
-    for name, rows in histories.items():
-        thread_id = await seed(store, rows)
-        cards_by_history[name] = await recent_question_cards(
-            store, thread_id=thread_id, user_id="owner"
-        )
+def test_chosen_options_are_clicks_on_the_three_recent_cards():
+    def saved(texts, selected):
+        return {
+            "question": "Which one?",
+            "document_topic": None,
+            "options": [
+                {"label": label, "text": text}
+                for label, text in zip("ABC", texts, strict=False)
+            ],
+            "on_answer": "reply",
+            "selected_label": selected,
+            "choice_sources": [],
+        }
 
-    for setup, instruction, expected_choice, expected_ambiguity in [
-        ("pair", "Go with B instead.", [], [OPENINGS[1], TIMELINE[1]]),
-        ("pair", "Option B on the timeline.", [TIMELINE[1]], []),
-        ("pair", "Use option B for the opening.", [OPENINGS[1]], []),
-        ("pair", "Use option C.", [TIMELINE[2]], []),
-        ("pair", "That one.", [], []),
-        ("pair", "Use A table instead of text.", [], []),
-        ("repeat", "Option B", [TIMELINE[1]], []),
-        ("different", "Option B", [], ["Yes", "Yes"]),
-        ("window", "Option B", [], []),
-    ]:
-        resolved, ambiguous = resolve_letter_options(
-            cards_by_history[setup], instruction
-        )
-        assert [source["text"] for source in resolved] == expected_choice, instruction
-        assert [source["text"] for source in ambiguous] == expected_ambiguity, (
-            instruction
-        )
-        if setup == "different":
-            assert {source["document_topic"] for source in ambiguous} == {
-                "the budget line",
-                TIMELINE_TOPIC,
-            }
-
-    selected = cards_by_history["selected"]
-    assert referenced_options(selected, "Go with B instead.") == TIMELINE[:2]
-    assert referenced_options(selected, "I want to answer a few things") == TIMELINE[:1]
-    assert referenced_options([], "option B") == []
-
-
-async def add_message(factory, thread_id, role, text, *, seconds=1):
-    """Persist a later row, as the route does for the user's clicked answer."""
-    async with factory() as session, session.begin():
-        session.add(
-            Message(
-                message_id=uuid4(),
-                thread_id=thread_id,
-                user_id="owner",
-                text=text,
-                role=role,
-                created_at=datetime.now(UTC) + timedelta(seconds=seconds),
-            )
-        )
+    cards = [
+        saved(OPENINGS, "B"),
+        saved(TIMELINE, "A"),
+        saved(TIMELINE, "A"),
+        saved(["Grant only", "Loan only"], None),
+    ]
+    assert referenced_options(cards) == [TIMELINE[0]]
+    assert referenced_options(cards[:1]) == [OPENINGS[1]]
+    assert referenced_options([]) == []
 
 
 async def saved_message(factory, message_id):
@@ -462,37 +414,8 @@ async def test_confirmation_click_supplies_original_answer_as_user_input(
     result = await stream_turn(thread_id, edit_payload(action), claim=second)
     assert result.kwargs["concept_note_edit_request"] is not None
     cards = result.kwargs["concept_note_question_cards"]
-    plan = await plan_opening(action, cards, referenced_options(cards, action))
+    plan = await plan_opening(action, cards, referenced_options(cards))
     assert plan.changes[0].user_input_quote == OPENINGS[1]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("edit", [True, False])
-async def test_ambiguous_reference_saves_clarification_without_running_model(
-    store, stream_turn, edit
-):
-    instruction = "Go with B instead."
-    thread_id = await seed(
-        store, [TIMELINE_CARD, OPENING_CARD, (MessageRole.USER, instruction, None)]
-    )
-    result = await stream_turn(thread_id, edit_payload(instruction, edit=edit))
-    assert result.kwargs is None
-    question, _, _ = await saved_card(store, result)
-    assert question.on_answer == "reply"
-    assert question.options == [
-        f"B · {OPENING_QUESTION} · “{OPENINGS[1]}”",
-        f"B · {TIMELINE_TOPIC} · “{TIMELINE[1]}”",
-    ]
-
-    choice = question.options[1]
-    await add_message(store, thread_id, MessageRole.USER, choice)
-    result = await stream_turn(thread_id, edit_payload(choice, edit=edit))
-    assert result.kwargs["concept_note_edit_request"] is None
-    (confirmation,) = option_cards(result.events)
-    assert confirmation["on_answer"] == "propose_edit"
-    assert confirmation["options"] == [
-        f"Update {TIMELINE_TOPIC} to reflect “{TIMELINE[1]}”"
-    ]
 
 
 def test_card_locale_resolves_regional_tags_and_falls_back_to_english():
@@ -511,53 +434,14 @@ def test_card_locale_resolves_regional_tags_and_falls_back_to_english():
     assert followup_card(source, "ja").question == english
 
 
-def test_long_clarification_labels_keep_distinct_options():
-    prefix = "Long shared answer. " * 100  # exactly 2,000 characters
-    first = {
-        "question": OPENING_QUESTION,
-        "document_topic": None,
-        "label": "A",
-        "text": prefix + "First ending.",
-        "on_answer": "reply",
-    }
-    second = {**first, "label": "B", "text": prefix + "Second ending."}
-    presentation = clarification_card([first, second], "en")
-    options = presentation.question.options
-    assert len(set(options)) == 2
-    for option in options:
-        EditProposalRequest(instruction=option, idempotency_key=uuid4())
-    assert [source["text"] for source in presentation.sources] == [
-        first["text"],
-        second["text"],
-    ]
-
-
-@pytest.mark.parametrize(
-    ("instruction", "labels"),
-    [
-        ("option b", ["B"]),
-        ("choice (c)", ["C"]),
-        ("Go with B instead", ["B"]),
-        ("Option B on the timeline.", ["B"]),
-        ("Use option c, please.", ["C"]),
-        ("Pick (a) and then option D", ["A", "D"]),
-        ("Could you give me an option a bit more formal?", []),
-        ("Is there a choice a reader would trust?", []),
-        ("Add an option c for the budget.", []),
-        ("Use A table instead of text.", []),
-        ("Go with a shorter opening.", []),
-        ("Option A's wording is fine.", []),
-    ],
-)
-def test_only_choice_commands_name_answer_letters(instruction, labels):
-    assert letter_labels(instruction) == labels
-
-
 @pytest.mark.asyncio
-async def test_plain_request_mentioning_an_option_reaches_the_model(
-    store, stream_turn
+@pytest.mark.parametrize(
+    "instruction",
+    ["Could you give me an option a bit more formal?", "Go with B instead."],
+)
+async def test_typed_text_mentioning_an_option_reaches_the_model(
+    store, stream_turn, instruction
 ):
-    instruction = "Could you give me an option a bit more formal?"
     thread_id = await seed(
         store, [TIMELINE_CARD, OPENING_CARD, (MessageRole.USER, instruction, None)]
     )
@@ -566,68 +450,3 @@ async def test_plain_request_mentioning_an_option_reaches_the_model(
     )
     assert result.kwargs is not None
     assert not option_cards(result.events)
-
-
-@pytest.mark.asyncio
-async def test_typed_letters_skip_clarification_cards_but_clicks_still_resolve(
-    store, stream_turn
-):
-    budget = card(
-        ["Grant only", "Loan only"], question="Which funding?", topic="the budget line"
-    )
-    instruction = "Go with B instead."
-    thread_id = await seed(
-        store,
-        [TIMELINE_CARD, OPENING_CARD, budget, (MessageRole.USER, instruction, None)],
-    )
-    result = await stream_turn(thread_id, edit_payload(instruction))
-    question, _, _ = await saved_card(store, result)
-    assert len(question.options) == 3
-
-    # The clarification is the newest card, yet typed letters still reach all
-    # three source cards and never the clarification's own entries.
-    cards = await recent_question_cards(store, thread_id=thread_id, user_id="owner")
-    assert is_clarification_card(cards[-1])
-    assert not any(is_clarification_card(item) for item in cards[:-1])
-    resolved, ambiguous = resolve_letter_options(cards, "Option C")
-    assert [source["text"] for source in resolved] == [TIMELINE[2]] and not ambiguous
-    _, ambiguous = resolve_letter_options(cards, "option a")
-    assert {source["text"] for source in ambiguous} == {
-        TIMELINE[0],
-        OPENINGS[0],
-        "Grant only",
-    }
-
-    # Clicking a clarification option still follows it to the saved source.
-    choice = next(option for option in question.options if TIMELINE[1] in option)
-    await add_message(store, thread_id, MessageRole.USER, choice)
-    result = await stream_turn(thread_id, edit_payload(choice))
-    (confirmation,) = option_cards(result.events)
-    assert confirmation["options"] == [
-        f"Update {TIMELINE_TOPIC} to reflect “{TIMELINE[1]}”"
-    ]
-
-
-def test_clarification_labels_are_plain_text_and_sources_keep_full_answers():
-    overview = {
-        "question": "**3 of 3 chapters drafted.** See [the guide](https://example.org/guide).",
-        "document_topic": None,
-        "label": "A",
-        "text": "Use **quarters**, see https://example.org/x and [the table](https://e.org/t)."
-        + " More detail." * 100,
-        "on_answer": "reply",
-    }
-    topical = {**overview, "document_topic": "the budget line", "text": "Grant only"}
-    presentation = clarification_card([overview, topical], "en")
-    first, second = presentation.question.options
-    assert first.startswith(
-        "A · 3 of 3 chapters drafted. See the guide. · “Use quarters, see and the table. More"
-    )
-    assert len(first) < 320
-    assert second == "A · the budget line · “Grant only”"
-    for label in (first, second):
-        assert not any(mark in label for mark in ("**", "](", "http"))
-    assert [source["text"] for source in presentation.sources] == [
-        overview["text"],
-        "Grant only",
-    ]

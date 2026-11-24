@@ -88,7 +88,7 @@ Pages:
 
 Harbor Point's Editing stage covers street-tree wording, project summary openings,
 monitoring indicators, and a timeline format choice with a follow-up confirmation.
-The typed Option B case exercises the production edit planner and validation.
+The clicked Option B case exercises the production edit planner and validation.
 Both paths use the checked-in source and reference draft. Python checks the card
 actions, edit attempts, and exact option replacement and quote. The Editing judge
 checks the grounding of every answer, the timeline follow-up, and edit fidelity.

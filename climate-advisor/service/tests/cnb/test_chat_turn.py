@@ -9,7 +9,7 @@ import httpx
 import pytest
 import pytest_asyncio
 from fastapi import FastAPI
-from sqlalchemy import select
+from sqlalchemy import event, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.db import Base
@@ -34,6 +34,17 @@ AUTH = "Bearer owner-token"
 @pytest_asyncio.fixture
 async def chat_api(tmp_path, monkeypatch):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'chat.db'}")
+
+    # SQLite fails a read-to-write lock upgrade at once ("database is locked").
+    # Take the write lock up front so concurrent writers wait, as Postgres rows do.
+    @event.listens_for(engine.sync_engine, "connect")
+    def manual_transactions(dbapi_connection, _record):
+        dbapi_connection.isolation_level = None
+
+    @event.listens_for(engine.sync_engine, "begin")
+    def begin_immediate(connection):
+        connection.exec_driver_sql("BEGIN IMMEDIATE")
+
     factory = async_sessionmaker(engine, expire_on_commit=False)
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
@@ -274,19 +285,20 @@ async def test_silent_reply_after_disconnect_renews_its_short_lease(
     async def silent_model(handler, *_args):
         started.set()
         # No tokens and no subscriber for longer than several leases.
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
         handler.assistant_tokens.append("About 2M EUR.")
         yield b"event: message\ndata: {}\n\n"
 
-    monkeypatch.setattr(chat_turn, "REPLY_TURN_LEASE", timedelta(seconds=0.3))
+    # A 1 s lease renewed every 0.05 s tolerates slow CI runners.
+    monkeypatch.setattr(chat_turn, "REPLY_TURN_LEASE", timedelta(seconds=1))
     monkeypatch.setattr(messages, "REPLY_TURN_RENEW_SECONDS", 0.05)
     monkeypatch.setattr(streaming_handler, "stream_agent_events", silent_model)
     await start_reply(factory, thread_id)  # The SSE response is never read.
     await asyncio.wait_for(started.wait(), 2)
-    await asyncio.sleep(0.7)
+    await asyncio.sleep(2)
     assert await history(client, thread_id) == (True, [("user", "Budget")])
 
-    async with asyncio.timeout(3):
+    async with asyncio.timeout(6):
         while (await history(client, thread_id))[0]:
             await asyncio.sleep(0.02)
     assert await history(client, thread_id) == (

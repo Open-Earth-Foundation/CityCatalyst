@@ -475,9 +475,21 @@ export function ConceptNoteChatPanel({
     if (chatDisabled || !content || composerOverLimit > 0) {
       return;
     }
+    // Restore into the chat it was written for, even if the user moved on.
+    const sentFromKey = draftThreadKey;
     setInput("");
     followLatestRef.current = true;
-    await sendChatMessage(content);
+    if ((await sendChatMessage(content)) !== "not_saved") return;
+    // Nothing was saved, so nothing is resent: the text returns to the composer
+    // and stays apart from anything typed since.
+    setComposerDrafts((current) => {
+      const typed = (current[sentFromKey] ?? "").trim();
+      return {
+        ...current,
+        [sentFromKey]:
+          typed && typed !== content ? `${content}\n\n${typed}` : content,
+      };
+    });
   }
 
   /** Returns false, keeping the gap open, when the request exceeds the edit limit. */
@@ -804,10 +816,12 @@ export function ConceptNoteChatPanel({
                           ) {
                             inputRef.current?.focus({ preventScroll: true });
                           }
-                          return sendChatMessage(
-                            answer,
-                            undefined,
-                            message.questionMessageId,
+                          return (
+                            (await sendChatMessage(
+                              answer,
+                              undefined,
+                              message.questionMessageId,
+                            )) === "replied"
                           );
                         }}
                       />

@@ -44,12 +44,21 @@ const REPLY_POLL_LIMIT_MS = 15 * 60_000 + 15_000;
 export type ChatConnectionState =
   "connecting" | "connected" | "retrying" | "error";
 
+/**
+ * `replied`: Clima answered. `not_saved`: the service rejected the request
+ * before saving it, or it was never sent, so the caller may restore the text.
+ * `failed`: the message may be saved; history or Retry recovers it.
+ */
+export type ChatSendResult = "replied" | "not_saved" | "failed";
+
 interface ChatTurn {
   content: string;
   context: Record<string, unknown>;
   options?: Record<string, unknown>;
   overview: boolean;
   completed?: boolean;
+  /** The service answered with a 4xx before saving anything. */
+  rejected?: boolean;
   /** A saved message whose reply never arrived, found when history loaded. */
   resumed?: boolean;
 }
@@ -100,7 +109,7 @@ interface ConceptNoteChatController {
     content: string,
     scope?: EditScope,
     questionMessageId?: string,
-  ) => Promise<boolean>;
+  ) => Promise<ChatSendResult>;
   requestDraftOverview: () => Promise<void>;
   retry: () => Promise<void>;
 }
@@ -292,6 +301,7 @@ export function useConceptNoteChat({
         status < 500 &&
         status !== 408 &&
         status !== 429;
+      if (turn && requestRejected) turn.rejected = true;
       const rejectedUserMessageId =
         code === CONTEXT_NOT_READY || requestRejected
           ? pendingUserMessageIdRef.current
@@ -513,7 +523,7 @@ export function useConceptNoteChat({
     content: string,
     scope = editScope,
     questionMessageId?: string,
-  ): Promise<boolean> {
+  ): Promise<ChatSendResult> {
     const normalizedContent = content.trim();
     if (
       !normalizedContent ||
@@ -522,7 +532,7 @@ export function useConceptNoteChat({
       isGenerating ||
       currentTurnRef.current
     ) {
-      return false;
+      return "not_saved";
     }
 
     const userMessageId = crypto.randomUUID();
@@ -609,7 +619,7 @@ export function useConceptNoteChat({
   async function streamReply(
     turn: ChatTurn,
     userMessage?: ConceptNoteChatMessage,
-  ): Promise<boolean> {
+  ): Promise<ChatSendResult> {
     const { content, context, options } = turn;
     currentTurnRef.current = turn;
     turn.completed = false;
@@ -674,7 +684,8 @@ export function useConceptNoteChat({
         setReasoning([]);
       }
     }
-    return Boolean(turn.completed);
+    if (turn.completed) return "replied";
+    return turn.rejected ? "not_saved" : "failed";
   }
 
   const historyLoading = Boolean(threadId) && messagesThreadId !== threadId;

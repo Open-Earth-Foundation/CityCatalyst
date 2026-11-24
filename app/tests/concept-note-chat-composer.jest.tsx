@@ -20,6 +20,7 @@ import type { EditController } from "@/components/ConceptNoteWorkspace/document-
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteChatMessage } from "@/components/ConceptNoteWorkspace/chat-utils";
+import type { ChatSendResult } from "@/components/ConceptNoteWorkspace/use-concept-note-chat";
 
 const sendMessage =
   jest.fn<
@@ -27,7 +28,7 @@ const sendMessage =
       content: string,
       scope?: EditScope,
       questionMessageId?: string,
-    ) => Promise<void | boolean>
+    ) => Promise<void | ChatSendResult>
   >();
 const closeGap = jest.fn();
 let isGenerating = false;
@@ -759,10 +760,10 @@ it("keeps an over-limit composer message, blocks sending and explains the limit"
 });
 
 it("moves keyboard focus to the composer as soon as a suggested answer is sent", async () => {
-  let finish!: (value: boolean) => void;
+  let finish!: (value: ChatSendResult) => void;
   sendMessage.mockImplementation(
     () =>
-      new Promise<boolean>((resolve) => {
+      new Promise<ChatSendResult>((resolve) => {
         finish = resolve;
       }),
   );
@@ -778,7 +779,7 @@ it("moves keyboard focus to the composer as soon as a suggested answer is sent",
 
   // Still streaming: focus must not wait for the reply to finish.
   expect(document.activeElement).toBe(composer());
-  await act(async () => finish(true));
+  await act(async () => finish("replied"));
 });
 
 it("announces a finished suggested-answer question politely", async () => {
@@ -815,4 +816,64 @@ it("keeps a card open when its answer was not sent and labels the answer", async
       '[data-testid="concept-note-chat-choices"] textarea',
     ),
   ).not.toBeNull();
+});
+
+function pendingSend(): (result: ChatSendResult) => Promise<void> {
+  let finish!: (result: ChatSendResult) => void;
+  sendMessage.mockImplementation(
+    () =>
+      new Promise<ChatSendResult>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  return (result) => act(async () => finish(result));
+}
+
+it("puts a message the service rejected unsaved back in the composer", async () => {
+  sendMessage.mockResolvedValue("not_saved");
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(composer().value).toBe("Could the budget be shorter?");
+});
+
+it("keeps text typed while the rejected send was pending as a separate paragraph", async () => {
+  const finish = pendingSend();
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+  expect(composer().value).toBe("");
+  await type("Also mention the grant.");
+
+  await finish("not_saved");
+  expect(composer().value).toBe(
+    "Could the budget be shorter?\n\nAlso mention the grant.",
+  );
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+});
+
+it.each(["failed", "replied"] as const)(
+  "leaves the composer empty when the message may be saved (%s)",
+  async (result) => {
+    sendMessage.mockResolvedValue(result);
+    await renderPanel();
+    await type("Could the budget be shorter?");
+    await pressEnter();
+    expect(composer().value).toBe("");
+  },
+);
+
+it("restores a rejected message to the chat it was written in", async () => {
+  const finish = pendingSend();
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+  await renderPanel(contextStatus, "other-thread");
+
+  await finish("not_saved");
+  expect(composer().value).toBe("");
+  await renderPanel();
+  expect(composer().value).toBe("Could the budget be shorter?");
 });

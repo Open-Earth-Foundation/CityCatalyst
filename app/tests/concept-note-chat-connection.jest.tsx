@@ -580,12 +580,13 @@ it("explains an inactive chat, removes the unsent answer and refreshes the chat 
       streamStarted: false,
     }),
   );
-  let completed: boolean | undefined;
+  let result: string | undefined;
   await act(async () => {
-    completed = await chat.sendMessage("Use quarters", undefined, "question");
+    result = await chat.sendMessage("Use quarters", undefined, "question");
   });
 
-  expect(completed).toBe(false);
+  // Nothing was saved, so the caller may restore the text.
+  expect(result).toBe("not_saved");
   expect(chat.error).toBe("chat-thread-inactive");
   expect(chat.canRetry).toBe(false);
   expect(chat.connection).toBe("connected");
@@ -788,4 +789,57 @@ it("reconciles a disconnected stream with its completed reply without resending"
   expect(chat.messages.map(({ id }) => id)).toEqual(["q", "a"]);
   expect(chat.canRetry).toBe(false);
   expect(startStream).toHaveBeenCalledTimes(1);
+});
+
+it.each([
+  [
+    "a 409 rejection before anything was saved",
+    { status: 409, streamStarted: false },
+    "concept_note_reply_in_progress",
+    "not_saved",
+  ],
+  [
+    "a request that never reached Clima (kept as Not sent)",
+    { streamStarted: false },
+    undefined,
+    "failed",
+  ],
+  [
+    "a connection lost after Clima accepted the message",
+    { streamStarted: true, interrupted: true },
+    undefined,
+    "failed",
+  ],
+  [
+    "a server error that may have saved the message",
+    { status: 502, streamStarted: false },
+    undefined,
+    "failed",
+  ],
+])(
+  "reports whether the composer may restore the text after %s",
+  async (_case, details, code, expected) => {
+    startStream.mockImplementationOnce(async () => {
+      streamOptions.onError?.("failed", code, details);
+    });
+    let result: string | undefined;
+    await act(async () => {
+      result = await chat.sendMessage("Budget");
+    });
+    expect(result).toBe(expected);
+    // Only a rejection that saved nothing may be typed again; the others are
+    // recovered from history or by Retry, never resent automatically.
+    expect(startStream).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("reports a completed reply as replied", async () => {
+  startStream.mockImplementationOnce(async () => {
+    streamOptions.onComplete?.();
+  });
+  let result: string | undefined;
+  await act(async () => {
+    result = await chat.sendMessage("Budget");
+  });
+  expect(result).toBe("replied");
 });

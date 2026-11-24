@@ -19,7 +19,10 @@ A card that prepares a change says so above its options. If an answer never
 reached Clima, it is marked **Not sent**, Retry stays available and the card can
 be answered again. Reopening a chat during a reply shows **Clima is still
 replying…** and loads the saved answer when ready. An overlapping send is
-declined and shows the same status. **Retry** is available when Clima is idle
+declined and shows the same status; when the service saved nothing, the typed
+message returns to that chat's composer (before anything typed since) and is
+not resent automatically. A connection lost after Clima accepted a message
+reloads history instead. **Retry** is available when Clima is idle
 and the latest saved message has no reply.
 A tall card opens at its question and first options rather than at its top.
 Chat messages and custom answers are limited to the 8,000-character edit-request

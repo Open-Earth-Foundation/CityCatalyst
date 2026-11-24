@@ -574,7 +574,7 @@
   "gap-preview-change": "Preview chapter change",
   "gap-save-answers": "Save answers so far",
   "gap-acceptance-hint": "Accept the preview to add your answers to the draft. Anything still missing stays marked.",
-  "gap-saved-hint": "Saves your answers for everyone working on this note.",
+  "gap-saved-hint": "Saves your answers so you can continue later. People with access to this city's Concept Note Builder can view them, but only you can change them.",
   "gap-save-failed": "Your answers could not be saved. Try again.",
   "gap-save-conflict": "The gap or its saved answers changed. Copy your unsent answers if needed, then reopen this gap to load the latest version.",
   "gap-answers-saved-note": "Answers saved for {{chapter}}. Preview a change when you’re ready to add them to the draft.",
@@ -990,5 +990,12 @@
   "plan-upload-partial-help": "The ready plan documents are included in this run. Some other plan files failed; review them below and retry if available, or upload corrected documents.",
   "plan-upload-processing-help": "The plan is included once document processing and run context preparation finish.",
   "plan-upload-in-progress": "Wait for the current upload to finish.",
-  "gap-selected-category": "Selected category: {{value}}"
+  "gap-selected-category": "Selected category: {{value}}",
+  "preview-read-only": "Read-only preview. Only the author can edit this note, save answers or accept proposed changes.",
+  "preview-saved-answers": "Saved answers, not in the draft yet:",
+  "preview-proposals-heading": "Proposed changes",
+  "preview-no-proposals": "No proposed changes yet.",
+  "preview-change-applied": "Applied",
+  "preview-change-pending": "Waiting for the author's review",
+  "preview-change-not-applied": "Not applied"
 }

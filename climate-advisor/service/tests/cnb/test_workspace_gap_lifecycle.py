@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
@@ -8,7 +9,8 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from httpx import ASGITransport, AsyncClient
 from app.db.session import get_session
-from app.routes import concept_note_runs
+from app.models.db.concept_note import ConceptNoteRun
+from app.routes import concept_note_edits, concept_note_runs
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftGapOutput,
@@ -33,6 +35,11 @@ from app.persistence.concept_notes.edits import (
 )
 from app.persistence.concept_notes.gaps import save_partial_answer
 from app.persistence.concept_notes.workspace import WorkspaceConflictError
+from app.services.cnb.chapter_drafting import (
+    ConceptNoteChapterDraftService,
+    get_chapter_draft_service,
+)
+from app.services.concept_note_runs import ConceptNoteRunService
 from app.utils.cnb_gap_edit import gap_answer_digest
 from sqlalchemy import delete, select, update
 from tests.test_concept_note_lifecycle import _workspace_repository
@@ -847,6 +854,64 @@ async def test_gap_answers_endpoint_saves_for_teammates_and_rejects_stale_forms(
         assert (await post("Grant", " Loan ")).status_code == 204
         assert (await post("", "Grant")).status_code == 204
         assert (await fixture_chapter(workspace)).gaps[0].answered_so_far is None
+
+
+async def test_collaborator_preview_shows_saved_answers_and_applied_proposals(
+    workspace, monkeypatch
+):
+    """A city collaborator reads the owner's note without any write happening."""
+    app = FastAPI()
+    app.include_router(concept_note_edits.router, prefix="/v1")
+    app.dependency_overrides[get_session] = lambda: None
+    run = ConceptNoteRun(
+        run_id=RUN_ID, user_id="owner", name="Lincoln Park", city_id=str(uuid4())
+    )
+    viewable = AsyncMock(return_value=run)
+    monkeypatch.setattr(ConceptNoteRunService, "get_city_viewable_run", viewable)
+    sessions = workspace._session_factory
+    app.dependency_overrides[get_chapter_draft_service] = (
+        lambda: ConceptNoteChapterDraftService(sessions, cnb_session_factory=sessions)
+    )
+    app.dependency_overrides[concept_note_edits.edit_service] = lambda: (
+        SimpleNamespace(repository=ConceptNoteEditRepository(sessions))
+    )
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+
+        async def preview():
+            response = await client.get(
+                f"/v1/concept-notes/{RUN_ID}/preview",
+                params={"user_id": "teammate", "city_id": run.city_id},
+                headers={"Authorization": "Bearer test"},
+            )
+            assert response.status_code == 200
+            return response.json()
+
+        assert await save_answers(workspace, "Loan")
+        before = await preview()
+        assert before["draft"]["chapters"][0]["gaps"][0]["answered_so_far"] == "Loan"
+        assert before["proposals"] == []
+        change = gap_change(
+            (await fixture_chapter(workspace)).body_markdown,
+            LEAD_MARKER,
+            LEAD_ANSWER,
+            bindings=[gap_binding(version=1, saved="Loan")],
+        )
+        await apply_changes(workspace, change)
+        [proposal] = (await preview())["proposals"]
+    assert viewable.await_args.kwargs == {
+        "run_id": RUN_ID,
+        "city_id": UUID(run.city_id),
+        "requested_user_id": "teammate",
+        "authorization": "Bearer test",
+    }
+    assert proposal["status"] == "applied"
+    assert proposal["result"]["accepted_change_ids"] == [str(change.change_id)]
+    assert (proposal["changes"][0]["before"], proposal["changes"][0]["after"]) == (
+        LEAD_MARKER,
+        LEAD_ANSWER,
+    )
 
 
 async def test_estimate_stays_visible_until_its_saved_confirmation_is_accepted(

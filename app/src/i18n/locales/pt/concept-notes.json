@@ -753,7 +753,7 @@
   "gap-source-suggestion-added": "Adicionado",
   "gap-where-to-find": "Onde encontrar: {{hint}}",
   "gap-save-answers": "Salvar respostas até agora",
-  "gap-saved-hint": "Salva suas respostas para todos que trabalham nesta nota.",
+  "gap-saved-hint": "Salva suas respostas para que você possa continuar depois. Pessoas com acesso ao Concept Note Builder desta cidade podem vê-las, mas só você pode alterá-las.",
   "gap-save-failed": "Não foi possível salvar suas respostas. Tente novamente.",
   "gap-save-conflict": "A lacuna ou suas respostas salvas foram alteradas. Copie suas respostas não enviadas, se necessário, e depois reabra esta lacuna para carregar a versão mais recente.",
   "gap-answers-saved-note": "Respostas salvas para {{chapter}}. Visualize uma alteração quando quiser adicioná-las ao rascunho.",
@@ -950,5 +950,12 @@
   "template-by-hand": "Definido manualmente",
   "template-edit": "Editar modelo",
   "template-replace": "Use um modelo diferente",
-  "template-error-import-changed": "O documento de modelo foi alterado. Reveja o modelo novamente antes de salvar."
+  "template-error-import-changed": "O documento de modelo foi alterado. Reveja o modelo novamente antes de salvar.",
+  "preview-read-only": "Pré-visualização somente leitura. Só a pessoa autora pode editar esta nota, salvar respostas ou aceitar alterações propostas.",
+  "preview-saved-answers": "Respostas salvas, ainda fora do rascunho:",
+  "preview-proposals-heading": "Alterações propostas",
+  "preview-no-proposals": "Ainda não há alterações propostas.",
+  "preview-change-applied": "Aplicada",
+  "preview-change-pending": "Aguardando revisão da pessoa autora",
+  "preview-change-not-applied": "Não aplicada"
 }

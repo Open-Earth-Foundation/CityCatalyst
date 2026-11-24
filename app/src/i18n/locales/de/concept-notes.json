@@ -753,7 +753,7 @@
   "gap-source-suggestion-added": "Hinzugefügt",
   "gap-where-to-find": "Wo Sie es finden: {{hint}}",
   "gap-save-answers": "Bisherige Antworten speichern",
-  "gap-saved-hint": "Speichert Ihre Antworten für alle, die an dieser Notiz arbeiten.",
+  "gap-saved-hint": "Speichert Ihre Antworten, damit Sie später weitermachen können. Personen mit Zugriff auf den Concept Note Builder dieser Stadt können sie ansehen, aber nur Sie können sie ändern.",
   "gap-save-failed": "Ihre Antworten konnten nicht gespeichert werden. Versuchen Sie es erneut.",
   "gap-save-conflict": "Die Lücke oder ihre gespeicherten Antworten haben sich geändert. Kopieren Sie bei Bedarf Ihre nicht gesendeten Antworten und öffnen Sie diese Lücke dann erneut, um die neueste Version zu laden.",
   "gap-answers-saved-note": "Antworten für {{chapter}} gespeichert. Sehen Sie sich eine Änderung in der Vorschau an, wenn Sie sie in den Entwurf übernehmen möchten.",
@@ -950,5 +950,12 @@
   "template-by-hand": "Durch Hand definiert",
   "template-edit": "Vorlage bearbeiten",
   "template-replace": "Verwenden Sie eine andere Vorlage",
-  "template-error-import-changed": "Das Vorlagendokument hat sich geändert. Überprüfen Sie die Vorlage erneut, bevor Sie speichern."
+  "template-error-import-changed": "Das Vorlagendokument hat sich geändert. Überprüfen Sie die Vorlage erneut, bevor Sie speichern.",
+  "preview-read-only": "Schreibgeschützte Vorschau. Nur die Autorin oder der Autor kann diese Notiz bearbeiten, Antworten speichern oder vorgeschlagene Änderungen übernehmen.",
+  "preview-saved-answers": "Gespeicherte Antworten, noch nicht im Entwurf:",
+  "preview-proposals-heading": "Vorgeschlagene Änderungen",
+  "preview-no-proposals": "Noch keine vorgeschlagenen Änderungen.",
+  "preview-change-applied": "Übernommen",
+  "preview-change-pending": "Wartet auf Prüfung durch die Autorin oder den Autor",
+  "preview-change-not-applied": "Nicht übernommen"
 }

@@ -753,7 +753,7 @@
   "gap-source-suggestion-added": "Añadido",
   "gap-where-to-find": "Dónde encontrarlo: {{hint}}",
   "gap-save-answers": "Guardar respuestas hasta ahora",
-  "gap-saved-hint": "Guarda sus respuestas para todas las personas que trabajan en esta nota.",
+  "gap-saved-hint": "Guarda sus respuestas para que pueda continuar más tarde. Las personas con acceso al Concept Note Builder de esta ciudad pueden verlas, pero solo usted puede cambiarlas.",
   "gap-save-failed": "No se pudieron guardar sus respuestas. Inténtelo de nuevo.",
   "gap-save-conflict": "La brecha o sus respuestas guardadas cambiaron. Copie sus respuestas no enviadas si lo necesita y luego vuelva a abrir esta brecha para cargar la versión más reciente.",
   "gap-answers-saved-note": "Respuestas guardadas para {{chapter}}. Previsualice un cambio cuando quiera añadirlas al borrador.",
@@ -950,5 +950,12 @@
   "template-by-hand": "Definido a mano",
   "template-edit": "Editar plantilla",
   "template-replace": "Usa una plantilla diferente",
-  "template-error-import-changed": "El documento de plantilla cambió. Revise la plantilla nuevamente antes de guardar."
+  "template-error-import-changed": "El documento de plantilla cambió. Revise la plantilla nuevamente antes de guardar.",
+  "preview-read-only": "Vista previa de solo lectura. Solo la persona autora puede editar esta nota, guardar respuestas o aceptar cambios propuestos.",
+  "preview-saved-answers": "Respuestas guardadas, aún no incluidas en el borrador:",
+  "preview-proposals-heading": "Cambios propuestos",
+  "preview-no-proposals": "Aún no hay cambios propuestos.",
+  "preview-change-applied": "Aplicado",
+  "preview-change-pending": "Pendiente de revisión por la persona autora",
+  "preview-change-not-applied": "No aplicado"
 }

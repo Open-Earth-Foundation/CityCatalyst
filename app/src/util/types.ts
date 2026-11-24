@@ -1585,6 +1585,15 @@ export interface ConceptNoteDraftState {
   chapters: ConceptNoteDraftChapter[];
 }
 
+/** Read-only view of a note for a collaborator with access to its city. */
+export interface ConceptNotePreview {
+  run_id: string;
+  name: string;
+  city_id: string;
+  draft: ConceptNoteDraftState;
+  proposals: EditProposal[];
+}
+
 export interface ConfirmConceptNoteChapterRequest {
   runId: string;
   chapterId: string;

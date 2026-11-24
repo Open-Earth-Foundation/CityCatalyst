@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
+from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.cnb.concept_note_structure import StructureProposal
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 
@@ -305,3 +306,14 @@ class EditProposalResponse(BaseModel):
     result: EditApplicationResult | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class ConceptNotePreviewResponse(BaseModel):
+    """Read-only view of one note for anyone who can currently open its city."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    run_id: UUID
+    name: str
+    city_id: str
+    draft: ConceptNoteDraftResponse
+    proposals: list[EditProposalResponse] = Field(default_factory=list)

@@ -63,6 +63,7 @@ import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
 } from "@/components/ConceptNoteWorkspace/workspace-states";
+import { ConceptNoteCollaboratorPreview } from "@/components/ConceptNoteWorkspace/collaborator-preview";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -174,6 +175,7 @@ export function ConceptNoteWorkspace({
     run,
     runFailed,
     runLoading,
+    runNotOwned,
     saveManualPopulation,
     selectInventory,
     startDrafting,
@@ -434,6 +436,12 @@ export function ConceptNoteWorkspace({
 
   if (runLoading) {
     return <WorkspaceLoadingState />;
+  }
+
+  if (!run && runNotOwned) {
+    return (
+      <ConceptNoteCollaboratorPreview cityId={cityId} lng={lng} runId={runId} />
+    );
   }
 
   if (!run || run.city_id !== cityId) {

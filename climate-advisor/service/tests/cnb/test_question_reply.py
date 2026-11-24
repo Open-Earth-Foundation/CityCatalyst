@@ -394,3 +394,89 @@ async def test_postgres_simultaneous_turn_claims_accept_one(postgres_store):
     assert rejections[0].detail["code"] == "concept_note_reply_in_progress"
     async with postgres_store() as session:
         assert (await session.get(Thread, thread_id)).reply_turn_id == accepted[0]
+
+
+@pytest.mark.asyncio
+async def test_card_retry_after_crash_respects_the_new_turn_owner(store):
+    from app.services.cnb.chat_turn import claim_reply_turn
+
+    thread_id, question_id = await seed_card(store)
+
+    async def send(retry):
+        """Claim the thread turn and save the card reply, as the route does."""
+        async with store() as session, session.begin():
+            thread = await ThreadService(session).get_thread(thread_id, for_update=True)
+            turn = await claim_reply_turn(session, thread)
+            claim = await save_question_reply(
+                session,
+                thread=thread,
+                question_id=question_id,
+                content="Quarters",
+                retry=retry,
+            )
+            return turn, claim
+
+    old_turn, old_claim = await send(False)
+    # The worker crashed without renewing or releasing. Its lease still blocks.
+    with pytest.raises(HTTPException) as error:
+        await send(True)
+    assert error.value.detail["code"] == "concept_note_reply_in_progress"
+    past = datetime.now(UTC) - timedelta(seconds=1)
+    async with store() as session, session.begin():
+        thread = await session.get(Thread, thread_id)
+        reply = await session.get(Message, old_claim[0])
+        marker = reply.tools_used[0]
+        limit = datetime.now(UTC) + timedelta(seconds=60)
+        assert thread.reply_turn_expires_at.replace(tzinfo=UTC) <= limit
+        assert datetime.fromisoformat(marker["expires_at"]) <= limit
+        thread.reply_turn_expires_at = past
+        reply.tools_used = [{**marker, "expires_at": past.isoformat()}]
+
+    new_turn, new_claim = await send(True)
+    assert new_claim[0] == old_claim[0] and new_turn != old_turn
+    late = StreamingHandler(
+        thread_id, "owner", store, question_reply_claim=old_claim, reply_turn_id=old_turn
+    )
+    late.assistant_tokens = ["Late answer"]
+    assert not await late.persist_message()
+    current = StreamingHandler(
+        thread_id, "owner", store, question_reply_claim=new_claim, reply_turn_id=new_turn
+    )
+    current.assistant_tokens = ["Current answer"]
+    assert await current.persist_message()
+    async with store() as session:
+        texts = [row.text for row in await session.scalars(select(Message))]
+    assert texts.count("Late answer") == 0 and texts.count("Current answer") == 1
+
+
+@pytest.mark.asyncio
+async def test_postgres_renewal_and_takeover_keep_one_owner(postgres_store):
+    from app.services.cnb.chat_turn import claim_reply_turn, renew_reply_turn
+
+    thread_id, _ = await seed_card(postgres_store)
+
+    async def claim():
+        async with postgres_store() as session, session.begin():
+            thread = await ThreadService(session).get_thread(thread_id, for_update=True)
+            return await claim_reply_turn(session, thread)
+
+    first = await claim()
+    renewed, rejected = await asyncio.gather(
+        renew_reply_turn(postgres_store, thread_id, first),
+        claim(),
+        return_exceptions=True,
+    )
+    assert renewed is True and isinstance(rejected, HTTPException)
+
+    # A stalled worker races the next send after its lease lapsed.
+    async with postgres_store() as session, session.begin():
+        thread = await session.get(Thread, thread_id)
+        thread.reply_turn_expires_at = datetime.now(UTC) - timedelta(seconds=1)
+    renewed, takeover = await asyncio.gather(
+        renew_reply_turn(postgres_store, thread_id, first),
+        claim(),
+        return_exceptions=True,
+    )
+    assert renewed is False and takeover != first
+    async with postgres_store() as session:
+        assert (await session.get(Thread, thread_id)).reply_turn_id == takeover

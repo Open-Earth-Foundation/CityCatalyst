@@ -22,6 +22,8 @@ from app.services.cnb.question_reply import (
     QUESTION_CHOICE_SOURCES,
     clarification_card,
     followup_card,
+    is_clarification_card,
+    letter_labels,
     planner_question_cards,
     recent_question_cards,
     referenced_options,
@@ -527,4 +529,105 @@ def test_long_clarification_labels_keep_distinct_options():
     assert [source["text"] for source in presentation.sources] == [
         first["text"],
         second["text"],
+    ]
+
+
+@pytest.mark.parametrize(
+    ("instruction", "labels"),
+    [
+        ("option b", ["B"]),
+        ("choice (c)", ["C"]),
+        ("Go with B instead", ["B"]),
+        ("Option B on the timeline.", ["B"]),
+        ("Use option c, please.", ["C"]),
+        ("Pick (a) and then option D", ["A", "D"]),
+        ("Could you give me an option a bit more formal?", []),
+        ("Is there a choice a reader would trust?", []),
+        ("Add an option c for the budget.", []),
+        ("Use A table instead of text.", []),
+        ("Go with a shorter opening.", []),
+        ("Option A's wording is fine.", []),
+    ],
+)
+def test_only_choice_commands_name_answer_letters(instruction, labels):
+    assert letter_labels(instruction) == labels
+
+
+@pytest.mark.asyncio
+async def test_plain_request_mentioning_an_option_reaches_the_model(
+    store, stream_turn
+):
+    instruction = "Could you give me an option a bit more formal?"
+    thread_id = await seed(
+        store, [TIMELINE_CARD, OPENING_CARD, (MessageRole.USER, instruction, None)]
+    )
+    result = await stream_turn(
+        thread_id, edit_payload(instruction, edit=False), text="Here is one."
+    )
+    assert result.kwargs is not None
+    assert not option_cards(result.events)
+
+
+@pytest.mark.asyncio
+async def test_typed_letters_skip_clarification_cards_but_clicks_still_resolve(
+    store, stream_turn
+):
+    budget = card(
+        ["Grant only", "Loan only"], question="Which funding?", topic="the budget line"
+    )
+    instruction = "Go with B instead."
+    thread_id = await seed(
+        store,
+        [TIMELINE_CARD, OPENING_CARD, budget, (MessageRole.USER, instruction, None)],
+    )
+    result = await stream_turn(thread_id, edit_payload(instruction))
+    question, _, _ = await saved_card(store, result)
+    assert len(question.options) == 3
+
+    # The clarification is the newest card, yet typed letters still reach all
+    # three source cards and never the clarification's own entries.
+    cards = await recent_question_cards(store, thread_id=thread_id, user_id="owner")
+    assert is_clarification_card(cards[-1])
+    assert not any(is_clarification_card(item) for item in cards[:-1])
+    resolved, ambiguous = resolve_letter_options(cards, "Option C")
+    assert [source["text"] for source in resolved] == [TIMELINE[2]] and not ambiguous
+    _, ambiguous = resolve_letter_options(cards, "option a")
+    assert {source["text"] for source in ambiguous} == {
+        TIMELINE[0],
+        OPENINGS[0],
+        "Grant only",
+    }
+
+    # Clicking a clarification option still follows it to the saved source.
+    choice = next(option for option in question.options if TIMELINE[1] in option)
+    await add_message(store, thread_id, MessageRole.USER, choice)
+    result = await stream_turn(thread_id, edit_payload(choice))
+    (confirmation,) = option_cards(result.events)
+    assert confirmation["options"] == [
+        f"Update {TIMELINE_TOPIC} to reflect “{TIMELINE[1]}”"
+    ]
+
+
+def test_clarification_labels_are_plain_text_and_sources_keep_full_answers():
+    overview = {
+        "question": "**3 of 3 chapters drafted.** See [the guide](https://example.org/guide).",
+        "document_topic": None,
+        "label": "A",
+        "text": "Use **quarters**, see https://example.org/x and [the table](https://e.org/t)."
+        + " More detail." * 100,
+        "on_answer": "reply",
+    }
+    topical = {**overview, "document_topic": "the budget line", "text": "Grant only"}
+    presentation = clarification_card([overview, topical], "en")
+    first, second = presentation.question.options
+    assert first.startswith(
+        "A · 3 of 3 chapters drafted. See the guide. · “Use quarters, see and the table. More"
+    )
+    assert len(first) < 320
+    assert second == "A · the budget line · “Grant only”"
+    for label in (first, second):
+        assert not any(mark in label for mark in ("**", "](", "http"))
+    assert [source["text"] for source in presentation.sources] == [
+        overview["text"],
+        "Grant only",
     ]

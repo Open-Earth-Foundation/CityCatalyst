@@ -20,9 +20,11 @@ from app.services.cnb.chat_readiness import (
 )
 from app.services.cnb.chat_retry import is_retry_turn
 from app.services.cnb.chat_turn import (
+    REPLY_TURN_RENEW_SECONDS,
     REPLY_TURN_TIMEOUT_SECONDS,
     claim_reply_turn,
     release_reply_turn,
+    renew_reply_turn,
 )
 from app.services.cnb.draft_overview import (
     DRAFT_OVERVIEW_REQUEST,
@@ -320,6 +322,8 @@ async def post_message(
             stream = start_detached_cnb_stream(
                 source,
                 deadline=reply_deadline,
+                renew=lambda: renew_reply_turn(session_factory, reply_thread_id, reply_turn_id),
+                renew_seconds=REPLY_TURN_RENEW_SECONDS,
                 release=lambda: release_reply_turn(session_factory, reply_thread_id, reply_turn_id),
             )
         else:

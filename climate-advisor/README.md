@@ -1496,10 +1496,13 @@ be saved. A concurrent send or retry receives 409
 (`concept_note_reply_in_progress`). Thread history returns `reply_in_progress`,
 which the workspace polls while a reply is active.
 
-A turn can run for up to 12 minutes. If the worker stops unexpectedly, its
-15-minute database lease expires and a saved unanswered message can be retried.
-The lease also prevents a delayed worker from saving an assistant message after
-another turn has claimed the thread. Apply CA Alembic revision `20261122_120000`
+A turn can run for up to 12 minutes. Its database lease lasts 60 seconds and
+the worker renews it every 20 seconds, whether or not a browser is connected or
+the model is sending text. If the worker stops unexpectedly, the lease expires
+within a minute and a saved unanswered message can be retried. A worker that
+cannot renew its lease (it expired or another turn owns the thread) stops
+generating, and persistence refuses an assistant message from a turn that no
+longer holds the lease. Apply CA Alembic revision `20261122_120000`
 before rolling out the updated Climate Advisor workers.
 
 Offline regression checks (from `climate-advisor/`):
@@ -2245,10 +2248,17 @@ prepares a proposed edit for review. CA supplies this action if the model omits
 it. Informational and older unmarked cards continue as ordinary replies.
 A custom answer, or a pick on a `propose_edit` card, keeps the normal edit path.
 The planner and reviewer receive up to three recent saved cards (`question_cards`:
-question, lettered options, the user's answer and the matching label). A letter
-identifies an option if only one meaning matches or the user identifies its
-topic. CA asks the user to choose between the competing answers when a letter
-still has several meanings.
+question, lettered options, the user's answer and the matching label). A typed
+letter counts only in a choice command: after option/choice/alternative
+("option b", "choice (c)") or a choosing verb with a capital or parenthesized
+letter ("Go with B instead"). "Could you give me an option a bit more formal?"
+is ordinary chat. A typed letter searches the three most recent source cards;
+CA's own clarification cards are skipped. A letter identifies an option if only
+one meaning matches or the user identifies its topic. CA asks the user to
+choose between the competing answers when a letter still has several meanings.
+Clarification labels show the document topic, or a short plain-text preview
+of the question, and the answer without Markdown or link URLs. Clicking a
+label applies the option's full saved text.
 `chosen_options` lists option texts the user picked, by click or by a letter
 reference such as "go with option B"; their exact words count as user input
 for `user_input_quote`. A confirmation pick carries the original answer into
@@ -2267,7 +2277,8 @@ than 8,000 characters) returns 422 (`concept_note_edit_request_invalid`) before
 any thread or message is written.
 Document edits require review. A failed turn can retry the exact saved answer
 without duplicating its user message. The card claim is released when the turn
-finishes and expires after 15 minutes if the worker stops unexpectedly. The
+finishes and expires with the 60-second turn lease if the worker stops
+unexpectedly; a retry then takes over and the old worker cannot save its reply. The
 thread lease covers both ordinary CNB messages and answers submitted from cards.
 Older clients that omit the card binding continue using ordinary chat. Older
 threads with a context-only CNB binding are supported.

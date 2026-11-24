@@ -16,10 +16,19 @@ def start_detached_cnb_stream(
     source: AsyncGenerator[bytes, None],
     *,
     deadline: float,
+    renew: Callable[[], Awaitable[bool]],
+    renew_seconds: float,
     release: Callable[[], Awaitable[None]],
 ) -> AsyncGenerator[bytes, None]:
+    """Run ``source`` until done, ``deadline`` or a lost lease, then ``release``.
+
+    ``renew`` runs every ``renew_seconds`` regardless of subscriber or model
+    pace. When it reports that the lease is gone, generation stops; persistence
+    separately refuses writes from a turn that no longer owns the thread.
+    """
     queue: asyncio.Queue[bytes | None] = asyncio.Queue(maxsize=256)
     subscribed = True
+    lease_lost = False
 
     def unsubscribe() -> None:
         nonlocal subscribed
@@ -37,20 +46,42 @@ def start_detached_cnb_stream(
         else:
             queue.put_nowait(chunk)
 
+    async def keep_lease(limit: asyncio.Timeout) -> None:
+        nonlocal lease_lost
+        while True:
+            await asyncio.sleep(renew_seconds)
+            try:
+                if await renew():
+                    continue
+            except Exception:
+                # A failed renewal retries; an expired lease then reports False.
+                logger.exception("Failed to renew Concept Note reply turn")
+                continue
+            lease_lost = True
+            limit.reschedule(asyncio.get_running_loop().time())
+            return
+
     async def produce() -> None:
         terminal = []
         try:
-            async with asyncio.timeout_at(deadline), aclosing(source):
-                async for chunk in source:
-                    if chunk.startswith((b"event: done\n", b"event: error\n")):
-                        terminal.append(chunk)
-                    else:
-                        publish(chunk)
+            async with asyncio.timeout_at(deadline) as limit, aclosing(source):
+                renewer = asyncio.create_task(keep_lease(limit))
+                try:
+                    async for chunk in source:
+                        if chunk.startswith((b"event: done\n", b"event: error\n")):
+                            terminal.append(chunk)
+                        else:
+                            publish(chunk)
+                finally:
+                    renewer.cancel()
         except TimeoutError:
-            logger.warning("Concept Note reply exceeded its turn deadline")
-            terminal = [
-                format_sse({"message": "The reply timed out."}, event="error").encode()
-            ]
+            if lease_lost:
+                logger.warning("Concept Note reply lost its turn lease")
+                message = "This reply was interrupted. Please try again."
+            else:
+                logger.warning("Concept Note reply exceeded its turn deadline")
+                message = "The reply timed out."
+            terminal = [format_sse({"message": message}, event="error").encode()]
         except Exception:
             logger.exception("Detached Concept Note reply failed")
             terminal = [

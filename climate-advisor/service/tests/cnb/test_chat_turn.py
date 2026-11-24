@@ -18,7 +18,12 @@ from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
 from app.models.requests import MessageCreateRequest
 from app.routes import messages, threads
-from app.services.cnb.chat_turn import claim_reply_turn, release_reply_turn
+from app.services.cnb import chat_turn
+from app.services.cnb.chat_turn import (
+    claim_reply_turn,
+    release_reply_turn,
+    renew_reply_turn,
+)
 from app.services.thread_service import ThreadService
 from app.utils import streaming_handler
 from app.utils.tool_handler import persist_assistant_message
@@ -225,3 +230,102 @@ async def test_expired_turn_cannot_write_or_release_replacement(chat_api):
     )
     await release_reply_turn(factory, thread_id, old_id)
     assert await history(client, thread_id) == (True, [])
+
+
+async def claimed_turn(factory, thread_id):
+    async with factory() as session, session.begin():
+        thread = await ThreadService(session).get_thread(thread_id, for_update=True)
+        return await claim_reply_turn(session, thread)
+
+
+async def lease_expiry(factory, thread_id):
+    async with factory() as session:
+        thread = await session.get(Thread, thread_id)
+        return thread.reply_turn_id, thread.reply_turn_expires_at
+
+
+@pytest.mark.asyncio
+async def test_renewal_extends_only_a_live_lease_held_by_the_same_turn(chat_api):
+    _, factory, thread_id = chat_api
+    turn = await claimed_turn(factory, thread_id)
+    _, claimed_until = await lease_expiry(factory, thread_id)
+    assert claimed_until.replace(tzinfo=UTC) <= datetime.now(UTC) + timedelta(
+        seconds=60
+    )
+
+    assert await renew_reply_turn(factory, thread_id, turn)
+    assert (await lease_expiry(factory, thread_id))[1] > claimed_until
+    assert not await renew_reply_turn(factory, thread_id, uuid4())
+
+    # A worker that stalled past its lease cannot revive it.
+    async with factory() as session, session.begin():
+        thread = await session.get(Thread, thread_id)
+        thread.reply_turn_expires_at = datetime.now(UTC) - timedelta(seconds=1)
+    assert not await renew_reply_turn(factory, thread_id, turn)
+
+
+@pytest.mark.asyncio
+async def test_silent_reply_after_disconnect_renews_its_short_lease(
+    chat_api, monkeypatch
+):
+    client, factory, thread_id = chat_api
+    started = asyncio.Event()
+
+    async def silent_model(handler, *_args):
+        started.set()
+        # No tokens and no subscriber for longer than several leases.
+        await asyncio.sleep(1)
+        handler.assistant_tokens.append("About 2M EUR.")
+        yield b"event: message\ndata: {}\n\n"
+
+    monkeypatch.setattr(chat_turn, "REPLY_TURN_LEASE", timedelta(seconds=0.3))
+    monkeypatch.setattr(messages, "REPLY_TURN_RENEW_SECONDS", 0.05)
+    monkeypatch.setattr(streaming_handler, "stream_agent_events", silent_model)
+    await start_reply(factory, thread_id)  # The SSE response is never read.
+    await asyncio.wait_for(started.wait(), 2)
+    await asyncio.sleep(0.7)
+    assert await history(client, thread_id) == (True, [("user", "Budget")])
+
+    async with asyncio.timeout(3):
+        while (await history(client, thread_id))[0]:
+            await asyncio.sleep(0.02)
+    assert await history(client, thread_id) == (
+        False,
+        [("user", "Budget"), ("assistant", "About 2M EUR.")],
+    )
+
+
+@pytest.mark.asyncio
+async def test_lost_lease_stops_generation_and_drops_the_late_reply(
+    chat_api, monkeypatch
+):
+    client, factory, thread_id = chat_api
+    started, cancelled = asyncio.Event(), asyncio.Event()
+
+    async def stalled_model(handler, *_args):
+        try:
+            handler.assistant_tokens.append("Late answer")
+            started.set()
+            await asyncio.Future()
+            yield b"event: message\ndata: {}\n\n"
+        finally:
+            cancelled.set()
+
+    monkeypatch.setattr(messages, "REPLY_TURN_RENEW_SECONDS", 0.05)
+    monkeypatch.setattr(streaming_handler, "stream_agent_events", stalled_model)
+    response = await start_reply(factory, thread_id)
+    await asyncio.wait_for(started.wait(), 2)
+
+    # Another worker took the thread after this one missed its renewals.
+    takeover = uuid4()
+    async with factory() as session, session.begin():
+        thread = await session.get(Thread, thread_id)
+        thread.reply_turn_id = takeover
+        thread.reply_turn_expires_at = datetime.now(UTC) + timedelta(minutes=1)
+
+    async with asyncio.timeout(2):
+        body = b"".join([chunk async for chunk in response.body_iterator])
+    assert b"This reply was interrupted" in body
+    assert cancelled.is_set()
+    assert (await lease_expiry(factory, thread_id))[0] == takeover
+    assert await history(client, thread_id) == (True, [("user", "Budget")])

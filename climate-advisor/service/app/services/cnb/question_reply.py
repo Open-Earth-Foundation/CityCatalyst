@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.message import Message, MessageRole
 from app.models.db.thread import Thread
+from app.services.cnb.chat_turn import REPLY_TURN_LEASE
 from app.services.message_service import MessageService
 from app.tools.concept_note_question import (
     ConceptNoteQuestion,
@@ -32,8 +33,6 @@ QUESTION_MESSAGE_ID = "concept_note_question_message_id"
 REPLY_MARKER = "concept_note_question_reply"
 QUESTION_CHOICE_SOURCES = "question_choice_sources"
 CARD_SELECTION_HEADER = "CONCEPT_NOTE_CARD_SELECTION_JSON"
-# Recover crashed workers; the claim ID fences late persistence after takeover.
-CLAIM_LIFETIME = timedelta(minutes=15)
 
 
 def thread_run_id(thread: Thread) -> str | None:
@@ -190,7 +189,9 @@ async def save_question_reply(
             "question_message_id": str(question_id),
             "claim_id": claim_id,
             "active": True,
-            "expires_at": (now + CLAIM_LIFETIME).isoformat(),
+            # The route's renewed turn lease guards a live reply; this expiry
+            # only lets a retry take over from a crashed worker.
+            "expires_at": (now + REPLY_TURN_LEASE).isoformat(),
         }
     ]
     await session.flush()
@@ -221,16 +222,13 @@ async def release_question_reply(
 # Cards the chat planner may need to resolve "option B" or "that one".
 RECENT_CARD_LIMIT = 3
 RECENT_CARD_SCAN = 24
-# "option B", "choice (c)" or a bare capital after a verb: "go with B instead".
-LETTER_REFERENCES = (
-    re.compile(
-        r"\b(?:option|choice|alternative)\s*\(?([a-l])\)?(?![\w'])", re.IGNORECASE
-    ),
-    re.compile(
-        r"\b(?:[Gg]o with|[Uu]se|[Pp]ick|[Cc]hoose|[Tt]ake)\s+([A-L])"
-        r"(?=\s*(?:$|[.,;:!?)]|instead\b|please\b))"
-    ),
-)
+# Choice commands: a parenthesized letter, a word, or clause punctuation.
+CHOICE_TOKEN = re.compile(r"\(\s*([A-La-l])\s*\)|[^\W_]+(?:['’][^\W_]+)*|[.,;:!?)]")
+CHOICE_NOUNS = frozenset({"option", "choice", "alternative"})
+CHOICE_VERBS = frozenset({"use", "pick", "choose", "take"})
+# Words that may follow a letter that still ends the choice: "option b instead".
+CHOICE_CLAUSE_WORDS = frozenset({"instead", "please"})
+ANSWER_LETTERS = frozenset("ABCDEFGHIJKL")
 
 
 def normalized(value: str) -> str:
@@ -256,7 +254,10 @@ async def recent_question_cards(
     thread_id: UUID | str,
     user_id: str,
 ) -> list[dict[str, Any]]:
-    """Load the latest saved cards, oldest first, with the user's answer to each.
+    """Load saved cards from the recent history window, oldest first, with answers.
+
+    Consumers keep the last RECENT_CARD_LIMIT cards they need; letter resolution
+    first drops clarification cards, so it may reach further back.
 
     Each card has message_id, question, labelled options, on_answer, answer
     (the user's next message or None), answer_message_id, selected_label (when
@@ -306,7 +307,7 @@ async def recent_question_cards(
         }
         card["selected_label"] = chosen_label(card, answer) if answer else None
         cards.append(card)
-    return cards[-RECENT_CARD_LIMIT:]
+    return cards
 
 
 def _answers_other_question(tools: object, question_id: UUID) -> bool:
@@ -357,13 +358,43 @@ TOPIC_STOP_WORDS = frozenset(
 
 
 def letter_labels(instruction: str) -> list[str]:
-    """Return distinct explicit answer letters in the order they were mentioned."""
-    matches = sorted(
-        (match.start(), match[1].upper())
-        for pattern in LETTER_REFERENCES
-        for match in pattern.finditer(instruction)
-    )
-    return list(dict.fromkeys(label for _, label in matches))
+    """Return distinct answer letters named by choice commands, in order.
+
+    After option/choice/alternative, a letter counts when parenthesized, a
+    capital, or a lowercase letter that ends its clause: "option b", "choice (c)".
+    After go with/use/pick/choose/take, a parenthesized letter or a capital that
+    ends its clause counts: "Go with B instead". Articles do not count, so
+    "an option a bit more formal" names no option.
+    """
+    tokens = [(match[0], match[1]) for match in CHOICE_TOKEN.finditer(instruction)]
+    words = [text.casefold() for text, _ in tokens]
+    labels: list[str] = []
+    for index, word in enumerate(words):
+        # Step 1: find the command word and the token that should be a letter
+        letter_at = index + 1
+        if word in CHOICE_NOUNS:
+            after_noun = True
+        elif word in CHOICE_VERBS:
+            after_noun = False
+        elif word == "go" and words[letter_at : letter_at + 1] == ["with"]:
+            after_noun, letter_at = False, letter_at + 1
+        else:
+            continue
+        if letter_at >= len(tokens):
+            continue
+        text, parenthesized = tokens[letter_at]
+        following = words[letter_at + 1] if letter_at + 1 < len(words) else None
+        ends_clause = following is None or following in CHOICE_CLAUSE_WORDS or (
+            not following[0].isalnum()
+        )
+        # Step 2: accept only forms that cannot be an article or a word
+        if parenthesized:
+            labels.append(parenthesized.upper())
+        elif text in ANSWER_LETTERS and (after_noun or ends_clause):
+            labels.append(text)
+        elif after_noun and text.upper() in ANSWER_LETTERS and ends_clause:
+            labels.append(text.upper())
+    return list(dict.fromkeys(labels))
 
 
 def topic_tokens(text: str) -> set[str]:
@@ -391,6 +422,15 @@ def option_source(card: dict[str, Any], option: dict[str, str]) -> dict[str, Any
 
 def _topic_text(source: dict[str, Any]) -> str:
     return source["document_topic"] or source["question"]
+
+
+def is_clarification_card(card: dict[str, Any]) -> bool:
+    """True for a server-authored "which answer did you mean?" card.
+
+    Only server presentations store choice sources: a confirmation prepares an
+    edit, a clarification only replies.
+    """
+    return bool(card.get("choice_sources")) and card["on_answer"] == "reply"
 
 
 def current_selected_card(
@@ -423,11 +463,19 @@ def current_selected_card(
 def resolve_letter_options(
     cards: list[dict[str, Any]], instruction: str
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Resolve explicit letters to option sources, or return the competing meanings."""
+    """Resolve typed letters to option sources, or return the competing meanings.
+
+    A typed letter names an option on one of the last RECENT_CARD_LIMIT source
+    cards; clarification cards are skipped so "option B" never means a
+    clarification's own entry. Clicking a clarification option is handled by
+    current_selected_card, which follows that option to its saved source.
+    """
+    source_cards = [card for card in cards if not is_clarification_card(card)]
+    source_cards = source_cards[-RECENT_CARD_LIMIT:]
     resolved: list[dict[str, Any]] = []
     for label in letter_labels(instruction):
         groups: dict[tuple[str, str], dict[str, Any]] = {}
-        for card in reversed(cards):
+        for card in reversed(source_cards):
             for option in card["options"]:
                 if option["label"] != label:
                     continue
@@ -458,7 +506,7 @@ def referenced_options(cards: list[dict[str, Any]], instruction: str) -> list[st
         return []
     chosen = [
         option_source(card, option)["text"]
-        for card in cards
+        for card in cards[-RECENT_CARD_LIMIT:]
         for option in card["options"]
         if option["label"] == card["selected_label"]
     ]
@@ -473,7 +521,7 @@ def referenced_options(cards: list[dict[str, Any]], instruction: str) -> list[st
 def planner_question_cards(cards: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Project cards for the edit planner without storage identifiers."""
     projected = []
-    for card in cards:
+    for card in cards[-RECENT_CARD_LIMIT:]:
         item: dict[str, Any] = {
             "question": card["question"],
             "options": card["options"],
@@ -543,6 +591,18 @@ _CARD_COPY: dict[str, _CardCopy] = {
 }
 
 
+MARKDOWN_IMAGE_OR_LINK = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
+BARE_URL = re.compile(r"<?https?://\S+>?")
+MARKDOWN_MARKS = re.compile(r"(?m)^\s{0,3}(?:#{1,6}|>|[-*+]|\d+[.)])\s+|[*_`~]+")
+
+
+def plain_preview(text: str, limit: int) -> str:
+    """Return a short plain-text label: Markdown marks and link URLs removed."""
+    text = MARKDOWN_IMAGE_OR_LINK.sub(r"\1", text)
+    text = MARKDOWN_MARKS.sub("", BARE_URL.sub("", text))
+    return preview(text, limit)
+
+
 def preview(text: str, limit: int) -> str:
     """Return one line of text, shortened with an ellipsis when it exceeds the limit."""
     compact = " ".join(text.split())
@@ -565,10 +625,15 @@ def followup_card(source: dict[str, Any], ui_locale: object) -> CardPresentation
 def clarification_card(
     sources: list[dict[str, Any]], ui_locale: object
 ) -> CardPresentation:
-    """Ask which of several meanings a letter reference identifies."""
+    """Ask which of several meanings a letter reference identifies.
+
+    Only the visible labels are cleaned and shortened; ``sources`` keep each
+    option's full text, which a click on the label applies.
+    """
     copy = _CARD_COPY[normalize_ui_locale(ui_locale)]
     labels = [
-        f"{source['label']} · {preview(_topic_text(source), 160)} · “{preview(source['text'], 2_000)}”"
+        f"{source['label']} · {plain_preview(_topic_text(source), 80)}"
+        f" · “{plain_preview(source['text'], 200)}”"
         for source in sources
     ]
     counts = Counter(normalized(label) for label in labels)

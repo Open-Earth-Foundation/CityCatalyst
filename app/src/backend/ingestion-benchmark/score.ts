@@ -6,7 +6,8 @@
  * equal within the file tolerance and the GPC ref and scope are equal; rows the
  * source does not split are compared as sums; several key rows with the same
  * ref and scope are compared as one sum; "not in total" values must be stored
- * but stay out of the total; notation keys are scored only when marked.
+ * but stay out of the total; notation keys are scored only when marked, and
+ * a scope given in the key is compared for them as for value rows.
  * Since scorer 3 (PDF profile), a key wildcard such as `I.3.x` with no tail
  * also matches a stored subsector-level row `I.3`; scope is still compared.
  *
@@ -362,7 +363,8 @@ export function scoreFile(
   const adjustedDiff =
     file.expectedTotal !== null ? adjustedTotal - file.expectedTotal : null;
 
-  // Notation keys: scored keys only; the wildcard and multi-ref patterns apply.
+  // Notation keys: scored keys only; the wildcard and multi-ref patterns apply,
+  // and a scope given in the key is kept, as for the value rows.
   const notationRows = file.rows.filter(
     (row) =>
       row.rowType === "Notation key" &&
@@ -374,11 +376,13 @@ export function scoreFile(
     const canonical = toCanonical(row.notation);
     const patterns = parseRefs(row.gpc);
     const all = [...patterns.refs, ...patterns.alternates];
+    const rowScope = normalizeScope(row.scope);
     const hit = stored.some(
       (item) =>
         !!item.notation &&
         item.notation === canonical &&
-        all.some((pattern) => matchesRef(pattern, item.gpc)),
+        all.some((pattern) => matchesRef(pattern, item.gpc)) &&
+        (rowScope === "" || normalizeScope(item.scope) === rowScope),
     );
     if (hit) notationRecovered += 1;
   }

@@ -484,6 +484,43 @@ describe("scoreFile subsector-level stored rows (scorer 3)", () => {
     expect(score.notationRecovered).toBe(1);
   });
 
+  describe("notation key scope", () => {
+    const notationKey = (scope: string) =>
+      key([
+        row({
+          gpc: "I.3.x",
+          scope,
+          rowType: "Notation key",
+          notation: "NE",
+          value: null,
+        }),
+      ]);
+    const ne = { notation: toCanonical("NE") };
+    const recovered = (scope: string, storedRows: StoredValue[]) =>
+      scoreFile(notationKey(scope), storedRows).notationRecovered;
+
+    it("does not recover a scoped key from an unscoped subsector row", () => {
+      expect(recovered("1", [unscoped("I.3", 0, ne)])).toBe(0);
+    });
+
+    it("recovers an unscoped key from an unscoped subsector row", () => {
+      expect(recovered("", [unscoped("I.3", 0, ne)])).toBe(1);
+    });
+
+    it("recovers a scoped key from a child row with the same scope", () => {
+      expect(recovered("1", [stored("I.3.1", "1", 0, ne)])).toBe(1);
+    });
+
+    it("does not recover a scoped key from a child row with another scope", () => {
+      expect(recovered("1", [stored("I.3.1", "2", 0, ne)])).toBe(0);
+    });
+
+    it("compares normalized scopes", () => {
+      expect(recovered("1", [stored("I.3.1", "1.0", 0, ne)])).toBe(1);
+      expect(recovered("1.0", [stored("I.3.1", " 1 ", 0, ne)])).toBe(1);
+    });
+  });
+
   it("keeps the structured profile strict", () => {
     const score = scoreFile(
       key([wildcard()]),

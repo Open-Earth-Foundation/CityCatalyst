@@ -8,10 +8,12 @@ from typing import Any
 from agents import function_tool
 from app.utils.concept_note_context import VISUAL_RENDER_ACTION
 from app.utils.visual_html import (
+    MAX_USE_REFERENCES,
     has_visible_content,
     needs_svg,
     svg_animation_elements,
     unsupported_html_features,
+    use_reference_problem,
 )
 
 logger = logging.getLogger(__name__)
@@ -53,6 +55,15 @@ SVG_ANIMATION_HINT = {
     f"animate only with CSS @keyframes, then retry once. {_ANSWER_IN_TEXT}",
 }
 
+UNSAFE_USE_HINT = {
+    "reason": "Each SVG <use> must point with href=\"#id\" at one plain SVG "
+    "element (a path, shape, <g> or <symbol>) that holds no <use>, at most "
+    f"{MAX_USE_REFERENCES} per visual. A <use> of a <use> multiplies and can "
+    "freeze the chat.",
+    "next_step": "Draw a simpler version: point every <use> straight at its "
+    f"icon, or write the shapes out, then retry once. {_ANSWER_IN_TEXT}",
+}
+
 
 def _blank(html: str) -> dict[str, Any] | None:
     return None if has_visible_content(html) else {}
@@ -72,6 +83,11 @@ def _svg_animation(html: str) -> dict[str, Any] | None:
     return {"elements": elements} if elements else None
 
 
+def _unsafe_use(html: str) -> dict[str, Any] | None:
+    problem = use_reference_problem(html)
+    return {"problem": problem} if problem else None
+
+
 # Static HTML checks in the order they run: (error code, check, hint). A check
 # returns None when the HTML passes, else the details to report.
 VISUAL_HTML_CHECKS: tuple[
@@ -83,6 +99,8 @@ VISUAL_HTML_CHECKS: tuple[
     # Scripts, dead controls and network resources show but never work.
     ("visual_unsupported_html", _unsupported, UNSUPPORTED_HTML_HINT),
     ("visual_uses_svg_animation", _svg_animation, SVG_ANIMATION_HINT),
+    # Nested <use> copies multiply until the browser freezes.
+    ("visual_unsafe_svg_use", _unsafe_use, UNSAFE_USE_HINT),
 )
 
 
@@ -124,8 +142,9 @@ async def concept_note_render_visual(title: str, html: str) -> str:
     Mermaid source without SVG returns visual_needs_svg; scripts, buttons,
     sliders, text inputs, :target tabs, foreignObject and external files
     visual_unsupported_html with the `features` to replace; and SVG animation
-    elements visual_uses_svg_animation: follow `next_step`, retry once, then
-    answer in text.
+    elements visual_uses_svg_animation; a <use> that is not a direct
+    href="#id" to one plain SVG element, or over 300 of them,
+    visual_unsafe_svg_use: follow `next_step`, retry once, then answer in text.
     """
     # Validate the model-supplied payload before the chat renders it.
     title = title.strip()

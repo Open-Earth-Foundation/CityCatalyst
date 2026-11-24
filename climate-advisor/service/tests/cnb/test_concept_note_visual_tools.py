@@ -168,3 +168,107 @@ async def test_tool_rejects_parts_that_cannot_work_in_the_chat() -> None:
     assert result["error_code"] == "visual_unsupported_html"
     assert result["data"]["features"] == ["button", "script"]
     assert ":checked" in result["data"]["next_step"]
+
+
+ICON = '<symbol id="leaf" viewBox="0 0 9 9"><path d="M0 9L9 0"/></symbol>'
+
+
+def icons(*uses: str, defs: str = ICON) -> str:
+    return f'<svg viewBox="0 0 320 40"><defs>{defs}</defs>{"".join(uses)}</svg>'
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        # Plain icons, each <use> straight at a shape or a symbol of shapes.
+        icons('<use href="#leaf" x="0"/>', '<use href="#leaf" x="20"/>'),
+        icons('<use xlink:href="#leaf"/>', '<use href=" #leaf "/>'),
+        icons('<use href="#dot"/>', defs='<circle id="dot" r="4"/>'),
+        # The limit itself is allowed.
+        icons(*['<use href="#leaf"/>'] * 300),
+    ],
+)
+async def test_tool_accepts_simple_icon_references(html: str) -> None:
+    assert (await invoke("Icons", html))["success"] is True
+
+
+@pytest.mark.parametrize(
+    ("html", "problem"),
+    [
+        (icons(*['<use href="#leaf"/>'] * 301), "more than 300"),
+        # Two levels only: enough to show the rule, far from a freeze.
+        (
+            icons(
+                '<use href="#pair"/>',
+                defs=ICON + '<g id="pair"><use href="#leaf"/></g>',
+            ),
+            "#pair is or contains a <use>",
+        ),
+        (
+            icons('<use id="a" href="#leaf"/>', '<use xlink:href="#a"/>'),
+            "#a is or contains a <use>",
+        ),
+        (icons('<use href="#missing"/>'), "#missing is missing"),
+        (icons('<use href="#leaf"/>', defs=ICON + ICON), "#leaf is missing, repeated"),
+        (icons('<use href="#box"/>', defs="") + '<p id="box">x</p>', "not SVG"),
+        (icons('<use href="https://e.org/i.svg#leaf"/>'), "without a local href"),
+        (icons("<use/>"), "without a local href"),
+        # An unclosed <g> still holds the <use> in the browser's tree.
+        (
+            '<svg viewBox="0 0 9 9"><g id="row"><use href="#leaf"/>'
+            + ICON
+            + '</svg><svg><use href="#row"/></svg>',
+            "#row is or contains a <use>",
+        ),
+    ],
+)
+async def test_tool_rejects_unsafe_use_references(html: str, problem: str) -> None:
+    result = await invoke("Icons", html)
+
+    assert result["success"] is False
+    assert result["error_code"] == "visual_unsafe_svg_use"
+    assert problem in result["data"]["problem"]
+    assert "retry once" in result["data"]["next_step"]
+
+
+async def test_rejected_attempt_html_is_not_kept_but_the_retry_is() -> None:
+    from types import SimpleNamespace
+    from unittest.mock import MagicMock
+
+    from app.utils.concept_note_context import rendered_visuals
+    from app.utils.streaming_events import handle_tool_called, handle_tool_output
+    from app.utils.streaming_handler import StreamingHandler
+
+    handler = StreamingHandler(
+        thread_id="thread-1", user_id="user-1", session_factory=MagicMock()
+    )
+    nested = icons(
+        '<use href="#pair"/>', defs=ICON + '<g id="pair"><use href="#leaf"/></g>'
+    )
+    simple = icons('<use href="#leaf"/>')
+    for call_id, html in (("call-1", nested), ("call-2", simple)):
+        arguments = json.dumps({"title": "Icons", "html": html})
+        raw = SimpleNamespace(
+            name=concept_note_render_visual.name, call_id=call_id, arguments=arguments
+        )
+        output = await concept_note_render_visual.on_invoke_tool(
+            ToolContext(
+                context=None,
+                tool_call_id=call_id,
+                tool_name=concept_note_render_visual.name,
+                tool_arguments=arguments,
+            ),
+            arguments,
+        )
+        run_item = SimpleNamespace(raw_item=raw, output=output)
+        [_ async for _ in handle_tool_called(handler, run_item)]
+        [_ async for _ in handle_tool_output(handler, run_item)]
+
+    rejected, retry = handler._tool_invocations_for_persistence()
+    assert rejected["result_json"]["error_code"] == "visual_unsafe_svg_use"
+    assert 'id="pair"' not in json.dumps(rejected)
+    assert rejected["arguments"]["html"] == f"[{len(nested)} chars omitted]"
+    assert retry["arguments"]["html"] == simple
+    assert rendered_visuals(handler.tool_invocations) == [
+        {"title": "Icons", "html": simple}
+    ]

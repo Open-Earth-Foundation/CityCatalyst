@@ -12,7 +12,10 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.utils.cnb_progress import emit_cnb_reasoning
-from app.utils.concept_note_context import omit_visual_html
+from app.utils.concept_note_context import (
+    RENDER_VISUAL_TOOL_NAME,
+    omit_visual_html,
+)
 from app.utils.mlflow_logging import finish_tool_observation, start_tool_observation
 from app.utils.sse import format_sse
 from app.tools.concept_note_question import ConceptNoteQuestion
@@ -247,6 +250,12 @@ async def handle_tool_output(
     invocation["result"] = str(output_value) if output_value is not None else ""
     if parsed_output is not None:
         invocation["result_json"] = parsed_output
+    # A rejected visual keeps its error but never its HTML: the saved row and
+    # the done event must not carry markup that failed the checks.
+    if invocation.get("name") == RENDER_VISUAL_TOOL_NAME and not (
+        parsed_output and parsed_output.get("success") is True
+    ):
+        invocation["arguments"] = omit_visual_html(invocation).get("arguments")
 
     # Close the request-local TOOL observation after the model-facing result is stored.
     try:

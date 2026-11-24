@@ -10,6 +10,9 @@ cases; the chat re-checks the sanitized document.
 import re
 from collections.abc import Iterator
 from html.parser import HTMLParser
+from typing import Any
+
+import html5lib
 
 # Elements whose content is never shown: dropped by the sanitizer or not
 # rendered. noscript, canvas and object keep fallback text in the chat, but
@@ -292,6 +295,49 @@ def svg_animation_elements(html: str) -> list[str]:
         if node.tag in _SVG_ANIMATION_TAGS
     }
     return sorted(found)
+
+
+_SVG_NS = "{http://www.w3.org/2000/svg}"
+_XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
+# Same rule as the chat (chat-visual-frame.tsx): at most this many <use>, and
+# each one points at a single plain SVG element in the same document.
+MAX_USE_REFERENCES = 300
+_LOCAL_REFERENCE = re.compile(r"#[A-Za-z_][\w.:-]*")
+
+
+def use_reference_problem(html: str) -> str | None:
+    """Return why the SVG <use> references are unsafe to render, else None.
+
+    A <use> that points at another <use>, or at a group holding one, copies
+    it again; nested a few levels deep that freezes the browser. html5lib
+    builds the same tree the browser will, so unclosed tags cannot hide a
+    <use> from this check.
+    """
+    root = html5lib.parse(html, namespaceHTMLElements=False)
+    uses = list(root.iter(f"{_SVG_NS}use"))
+    if len(uses) > MAX_USE_REFERENCES:
+        return f"more than {MAX_USE_REFERENCES} <use> elements"
+    ids: dict[str, list[Any]] = {}
+    for node in root.iter():
+        if isinstance(node.get("id"), str):
+            ids.setdefault(node.get("id"), []).append(node)
+    checked: set[str] = set()
+    for use in uses:
+        refs = [
+            (use.get(name) or "").strip()
+            for name in ("href", _XLINK_HREF)
+            if use.get(name) is not None
+        ]
+        if not refs or not all(_LOCAL_REFERENCE.fullmatch(ref) for ref in refs):
+            return '<use> without a local href="#id"'
+        for ref in set(refs) - checked:
+            checked.add(ref)
+            targets = ids.get(ref[1:], [])
+            if len(targets) != 1 or not str(targets[0].tag).startswith(_SVG_NS):
+                return f"<use> target {ref} is missing, repeated or not SVG"
+            if any(node.tag == f"{_SVG_NS}use" for node in targets[0].iter()):
+                return f"<use> target {ref} is or contains a <use>"
+    return None
 
 
 _EMBEDDED_FRAMES = frozenset({"iframe", "frame", "object", "embed"})

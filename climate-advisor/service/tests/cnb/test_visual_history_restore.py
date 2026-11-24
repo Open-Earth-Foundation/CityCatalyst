@@ -55,13 +55,13 @@ async def factory():
     await engine.dispose()
 
 
-async def thread_with_visual(factory, later_turns: int):
+async def thread_with_visual(factory, later_turns: int, call=VISUAL_CALL):
     """Store a visual-only turn, then `later_turns` text turns, oldest first."""
     start = datetime.now(timezone.utc)
     rows = [
         (MessageRole.USER, QUESTION, None),
         # A visual-only reply is saved with empty text.
-        (MessageRole.ASSISTANT, "", [VISUAL_CALL]),
+        (MessageRole.ASSISTANT, "", [call]),
     ]
     for i in range(later_turns):
         rows += [
@@ -185,3 +185,40 @@ async def test_streaming_handler_requests_notice_only_for_cnb(cnb: bool) -> None
         )
 
     assert loader.call_args.kwargs["note_omitted_messages"] is cnb
+
+
+# Two levels of nested <use>: enough to trip the chat's check, never a freeze.
+NESTED_USE = (
+    '<svg><symbol id="a"><path d="M0 0"/></symbol><g id="b"><use href="#a"/></g>'
+    '<use href="#b"/></svg>'
+)
+NEW_FORMAT = {
+    **VISUAL_CALL,
+    "arguments": {"title": "Icons", "html": NESTED_USE},
+    "result_json": {**VISUAL_CALL["result_json"], "data": {"title": "Icons"}},
+}
+# Rows saved before the result dropped the HTML kept it only in data.html.
+OLD_FORMAT = {
+    **VISUAL_CALL,
+    "arguments": "{...}",
+    "result_json": {
+        **VISUAL_CALL["result_json"],
+        "data": {"title": "Icons", "html": NESTED_USE},
+    },
+}
+
+
+@pytest.mark.parametrize("call", [NEW_FORMAT, OLD_FORMAT])
+async def test_saved_visual_in_either_format_reaches_the_chat_check(
+    factory, call
+) -> None:
+    """Visuals saved before the <use> check reopen as-is for the chat to refuse.
+
+    app/tests/concept-note-chat-visual-use.jest.tsx feeds this restored shape
+    to the chat frame, which shows a note instead of rendering it.
+    """
+    thread_id = await thread_with_visual(factory, later_turns=1, call=call)
+
+    visuals, _history = await both_views(factory, thread_id)
+
+    assert visuals == [{"title": "Icons", "html": NESTED_USE}]

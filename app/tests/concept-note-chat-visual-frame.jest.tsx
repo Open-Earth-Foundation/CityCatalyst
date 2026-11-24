@@ -188,8 +188,11 @@ describe("local SVG references", () => {
         '<linearGradient id="base"></linearGradient><linearGradient id="g2" href="#base"></linearGradient>',
         '<path id="arc" d="M0 30A50 50 0 0 1 100 30"></path></defs>',
         '<use href="#h" x="0"></use><use xlink:href="#h" x="10"></use>',
-        '<use href="https://evil.test/i.svg#h"></use><use href="data:image/svg+xml,x#h"></use>',
-        '<use href="javascript:alert(1)//#h"></use>',
+        // A <use> with any other href refuses the whole visual
+        // (concept-note-chat-visual-use.jest.tsx), so these go on other tags.
+        '<linearGradient id="g3" href="https://evil.test/i.svg#h"></linearGradient>',
+        '<pattern id="p" xlink:href="data:image/svg+xml,x#h"></pattern>',
+        '<text><textPath href="javascript:alert(1)//#h">x</textPath></text>',
         '<text><textPath href="#arc">Recycling 47%</textPath></text>',
         '<image href="#h"></image><a href="#h"><text>Link</text></a>',
         '<rect width="5" height="5"><animateTransform attributeName="transform" type="scale" from="0" to="1"></animateTransform>',

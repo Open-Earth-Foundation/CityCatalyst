@@ -92,11 +92,49 @@ function purifier() {
   return visualPurifier;
 }
 
+// Same rule as the Climate Advisor tool (visual_html.py), which also covers
+// visuals saved before it: a <use> of a <use> copies it again, and a few
+// nested levels freeze the tab, on every reopen of the note.
+const MAX_USE_REFERENCES = 300;
+
+/**
+ * Whether the document has at most 300 SVG <use> elements, each pointing only
+ * at exactly one SVG element that neither is nor contains a <use>.
+ */
+function hasSafeUseReferences(doc: Document): boolean {
+  const uses = doc.getElementsByTagNameNS(SVG_NAMESPACE, "use");
+  if (uses.length > MAX_USE_REFERENCES) return false;
+  const ids = new Map<string, Element[]>();
+  for (const element of doc.querySelectorAll("[id]")) {
+    const id = element.getAttribute("id") ?? "";
+    ids.set(id, [...(ids.get(id) ?? []), element]);
+  }
+  return Array.from(uses).every((use) => {
+    const refs = ["href", "xlink:href"].flatMap(
+      (name) => use.getAttribute(name)?.trim() ?? [],
+    );
+    return (
+      refs.length > 0 &&
+      refs.every((ref) => {
+        const targets = LOCAL_REFERENCE.test(ref) ? ids.get(ref.slice(1)) : [];
+        const target = targets?.length === 1 ? targets[0] : null;
+        return (
+          target?.namespaceURI === SVG_NAMESPACE &&
+          target.localName !== "use" &&
+          target.getElementsByTagNameNS(SVG_NAMESPACE, "use").length === 0
+        );
+      })
+    );
+  });
+}
+
 export interface SandboxedVisual {
   /** The iframe `srcDoc`, or "" where it cannot be built safely. */
   srcDoc: string;
   /** Whether the sanitized document has any text or drawing to show. */
   hasContent: boolean;
+  /** Set when the whole visual is refused (unsafe <use>); nothing is shown. */
+  rejected?: boolean;
 }
 
 /**
@@ -114,6 +152,9 @@ export function prepareVisualDocument(html: string): SandboxedVisual {
   }) as Element | null;
   if (root?.tagName !== "HTML") return failed;
   const doc = root.ownerDocument;
+  // Judged on the tree the frame renders. The whole visual is refused:
+  // dropping single elements could change what the chart says.
+  if (!hasSafeUseReferences(doc)) return { ...failed, rejected: true };
   // Host markup added after sanitizing is ours: plain text and fixed CSS only.
   addHostStyles(doc);
   const clean = root.outerHTML;
@@ -172,14 +213,29 @@ function VisualIframe({
   );
 }
 
-/** Shown instead of a frame whose visual would be blank (e.g. script-only). */
-function VisualEmptyNote({ lng }: { lng: string }) {
+/** Shown instead of a frame whose visual would be blank (e.g. script-only) or was refused. */
+function VisualEmptyNote({
+  lng,
+  rejected,
+}: {
+  lng: string;
+  rejected?: boolean;
+}) {
   const { t } = useTranslation(lng, "concept-notes");
   return (
-    <HStack gap={2} px={3} py={4} data-testid="concept-note-chat-visual-empty">
+    <HStack
+      gap={2}
+      px={3}
+      py={4}
+      data-testid={
+        rejected
+          ? "concept-note-chat-visual-rejected"
+          : "concept-note-chat-visual-empty"
+      }
+    >
       <Icon as={LuImageOff} boxSize={4} color="content.tertiary" aria-hidden />
       <Text fontSize="body.sm" color="content.secondary">
-        {t("chat-visual-empty")}
+        {t(rejected ? "chat-visual-rejected" : "chat-visual-empty")}
       </Text>
     </HStack>
   );
@@ -280,6 +336,8 @@ export function ChatVisualFrame({
   // unavailable, so nothing is judged blank there.
   const visual = useMemo(() => prepareVisualDocument(html), [html]);
   const blank = DOMPurify.isSupported && !visual.hasContent;
+  // A refused visual never reaches an iframe, here or in the Expand dialog.
+  const rejected = visual.rejected === true;
 
   return (
     <Box
@@ -315,8 +373,8 @@ export function ChatVisualFrame({
         <VisualExpandDialog
           lng={lng}
           title={title}
-          // Nothing to enlarge when the visual is blank.
-          hidden={blank}
+          // Nothing to enlarge when the visual is blank or refused.
+          hidden={blank || rejected}
         >
           <VisualIframe
             srcDoc={visual.srcDoc}
@@ -330,8 +388,8 @@ export function ChatVisualFrame({
           />
         </VisualExpandDialog>
       </HStack>
-      {blank ? (
-        <VisualEmptyNote lng={lng} />
+      {blank || rejected ? (
+        <VisualEmptyNote lng={lng} rejected={rejected} />
       ) : (
         <VisualIframe
           ref={frameRef}

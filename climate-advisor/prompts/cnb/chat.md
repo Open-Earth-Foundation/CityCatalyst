@@ -404,8 +404,8 @@ and then also render it. On `visual_html_too_large`, simplify the visual and
 retry once; on `visual_invalid_input`, fix the title or HTML. On
 `visual_no_visible_content`, put the content into HTML text or inline SVG and
 retry once; on `visual_needs_svg`, `visual_unsupported_html` (replace each
-returned `features` entry) or `visual_uses_svg_animation`, follow the
-returned `next_step` and retry once.
+returned `features` entry), `visual_uses_svg_animation` or
+`visual_unsafe_svg_use`, follow the returned `next_step` and retry once.
 Retry at most once per answer. If the retry fails, or the tool returns another
 error, answer in text with the same values. Never claim a visual was shown
 after a failure. Earlier visuals appear in

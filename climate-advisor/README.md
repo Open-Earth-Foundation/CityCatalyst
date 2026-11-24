@@ -105,8 +105,12 @@ prompt uses them for tabs, sliders, filters and series toggles with every state
 precomputed. The tool rejects, each with a one-retry hint, visuals that would
 show nothing (`visual_no_visible_content`), Mermaid source or a canvas
 (`visual_needs_svg`), scripts, dead controls, `:target` tabs,
-`<foreignObject>` and external files (`visual_unsupported_html`), and SVG
-animation elements (`visual_uses_svg_animation`).
+`<foreignObject>` and external files (`visual_unsupported_html`), SVG
+animation elements (`visual_uses_svg_animation`), and more than 300 SVG `<use>`
+elements or any `<use>` that is not a direct `href="#id"` to one SVG element
+without a `<use>` inside (`visual_unsafe_svg_use`; nested copies can freeze the
+browser). A rejected attempt's HTML is not stored; the chat runs the same `<use>`
+check on saved visuals and shows a note instead of an unsafe one.
 
 CNB chat calls send `prompt_cache_key="cnb_chat"`, so the long shared system
 prompt is served from the provider cache; each run logs `cached_tokens`.

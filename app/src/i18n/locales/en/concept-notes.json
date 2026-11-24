@@ -281,6 +281,8 @@
   "chat-visual-label": "AI-generated visual",
   "chat-visual-expand": "Expand",
   "chat-visual-expand-label": "Expand visual: {{title}}",
+  "chat-visual-empty": "This visualization couldn't be displayed. Ask Clima to show it again.",
+  "chat-visual-rejected": "This visualization was not shown because it repeats too many shapes to display safely. Ask Clima for a simpler version.",
   "chat-generating": "Generating response",
   "chat-progress-title": "Working on your request",
   "chat-progress-searching": "Searching the draft for the requested changes",

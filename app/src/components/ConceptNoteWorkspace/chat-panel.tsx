@@ -230,6 +230,32 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
+/**
+ * Scroll offset for the chat column that keeps the newest reply in view.
+ * Follows the bottom while the reply fits. When the reply is taller than the
+ * chat area, stops at the reply's first element so its start is visible.
+ */
+function latestScrollTop(
+  chatScroll: HTMLElement,
+  replyId: string | null,
+): number {
+  const bottom = chatScroll.scrollHeight - chatScroll.clientHeight;
+  const reply = replyId
+    ? chatScroll.querySelector<HTMLElement>(
+        `[data-chat-message="${CSS.escape(replyId)}"]`,
+      )
+    : null;
+  if (!reply) return bottom;
+
+  // Offset of the reply inside the scrollable content, independent of the current scroll.
+  const startOffset =
+    reply.getBoundingClientRect().top -
+    chatScroll.getBoundingClientRect().top +
+    chatScroll.scrollTop;
+  // 16px matches the container padding (p={4}), so the reply's top edge is not clipped.
+  return Math.max(0, Math.min(bottom, startOffset - 16));
+}
+
 export function ConceptNoteChatPanel({
   cityId,
   contextStatus,
@@ -322,6 +348,8 @@ export function ConceptNoteChatPanel({
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const latestQuestionRef = useRef<HTMLDivElement | null>(null);
   const followLatestRef = useRef(true);
+  // Clima's newest reply, where a tall reply's scroll stops (see latestScrollTop).
+  const latestReplyIdRef = useRef<string | null>(null);
   const initiallyScrolledThreadRef = useRef<string | null>(null);
   const contextState = contextStatus.state;
   const hasUploadedEvidence = contextState === "ready";
@@ -368,7 +396,7 @@ export function ConceptNoteChatPanel({
           anchor.getBoundingClientRect().top -
           scroll.getBoundingClientRect().top -
           12
-        : scroll.scrollHeight;
+        : latestScrollTop(scroll, latestReplyIdRef.current);
     scroll.scrollTo({ behavior: "auto", top: Math.max(0, top) });
   }, []);
 
@@ -384,6 +412,13 @@ export function ConceptNoteChatPanel({
     requestedOverviewThreadRef.current = threadId;
     void requestDraftOverview();
   }, [chatDisabled, draftOverviewPending, requestDraftOverview, threadId]);
+
+  const newestMessage = messages.at(-1);
+  const latestReplyId =
+    newestMessage?.role === "assistant" ? newestMessage.id : null;
+  useEffect(() => {
+    latestReplyIdRef.current = latestReplyId;
+  }, [latestReplyId]);
 
   useEffect(() => {
     if (
@@ -402,6 +437,9 @@ export function ConceptNoteChatPanel({
       if (!chatScroll) {
         return;
       }
+      // Stopping at a tall reply's start also clears followLatestRef through onScroll,
+      // because the view ends more than 48px above the bottom. Later growth of that reply
+      // then no longer pulls the view down; sending a new message sets followLatestRef again.
       scrollToLatest();
       initiallyScrolledThreadRef.current = threadId;
     });
@@ -415,7 +453,7 @@ export function ConceptNoteChatPanel({
     scrollToLatest,
   ]);
 
-  // Visuals resize after they load; keep the latest message in view if the user follows it.
+  // Visuals resize after they load; keep the newest reply in view if the user follows it.
   const keepLatestInView = useCallback(() => {
     const chatScroll = chatScrollRef.current;
     if (chatScroll && followLatestRef.current) {
@@ -707,6 +745,7 @@ export function ConceptNoteChatPanel({
                   message.choices ||
                   message.role === "user") && (
                   <Box
+                    data-chat-message={message.id}
                     ref={
                       message.choices && message.id === latestMessage?.id
                         ? latestQuestionRef
@@ -828,14 +867,20 @@ export function ConceptNoteChatPanel({
                     )}
                   </Box>
                 )}
+                {/* Each visual wrapper carries the reply's start marker; flexShrink={0} keeps the flex column from collapsing it. */}
                 {message.visuals?.map((visual, index) => (
-                  <ChatVisualFrame
+                  <Box
                     key={index}
-                    html={visual.html}
-                    lng={lng}
-                    onHeightChange={keepLatestInView}
-                    title={visual.title}
-                  />
+                    data-chat-message={message.id}
+                    flexShrink={0}
+                  >
+                    <ChatVisualFrame
+                      html={visual.html}
+                      lng={lng}
+                      onHeightChange={keepLatestInView}
+                      title={visual.title}
+                    />
+                  </Box>
                 ))}
               </Fragment>
             ))}

@@ -642,7 +642,8 @@ class ThreadMessagesRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(by_role["user"].visuals, [])
         self.assertEqual(by_role["assistant"].text, "")
         self.assertEqual(
-            by_role["assistant"].model_dump()["visuals"], [visual, legacy]
+            by_role["assistant"].model_dump(exclude_none=True)["visuals"],
+            [visual, legacy],
         )
 
 

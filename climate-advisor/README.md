@@ -71,16 +71,15 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      chapter, question, reason, severity, and state, filtered by
      `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
      handle numbered in creation order, so handles stay stable across filters.
-   - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
-     chart, diagram, or table (title at most 200 characters, HTML at most
-     200,000) and returns `concept_note.visual.render` with the title and size;
-     the HTML stays only in the call arguments. CityCatalyst strips scripts,
-     links, forms and external resources with DOMPurify and renders the rest in
-     a script-free sandboxed iframe, so a visual cannot send note context out.
-     The SSE `done` event and the stored message keep one copy of the HTML,
-     `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
+   - `concept_note_render_visual(title, html)` validates one static HTML/SVG
+     chart, diagram, table, expandable sections or CSS radio tabs (title at
+     most 200 characters, HTML at most 200,000) and returns
+     `concept_note.visual.render` with the title and size; the HTML stays only
+     in the call arguments. The SSE `done` event and the stored message keep one
+     copy, `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
      replayed history replaces it with a short placeholder. A visual-only turn
-     is saved with empty text.
+     is saved with empty text. See the
+     [chat visual rendering policy](#concept-note-chat-visual-rendering-cc-1241).
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list
@@ -91,6 +90,30 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chat visual rendering (CC-1241)
+
+CityCatalyst strips scripts, links, forms and external resources with DOMPurify
+and shows the rest in a sandboxed iframe with a restrictive content security
+policy. The sandbox uses `allow-same-origin` so the chat can measure the frame
+height, so it must stay script-free: a script in that frame could reach the
+parent document in the user's session. See the
+[chat frame implementation](../app/src/components/ConceptNoteWorkspace/chat-visual-frame.tsx).
+
+Native radio, checkbox, select and details controls work without scripts; the
+prompt uses them for tabs, sliders, filters and series toggles with every state
+precomputed. The tool rejects, each with a one-retry hint, visuals that would
+show nothing (`visual_no_visible_content`), Mermaid source or a canvas
+(`visual_needs_svg`), scripts, dead controls, `:target` tabs,
+`<foreignObject>` and external files (`visual_unsupported_html`), SVG
+animation elements (`visual_uses_svg_animation`), and more than 300 SVG `<use>`
+elements or any `<use>` that is not a direct `href="#id"` to one SVG element
+without a `<use>` inside (`visual_unsafe_svg_use`; nested copies can freeze the
+browser). A rejected attempt's HTML is not stored; the chat runs the same `<use>`
+check on saved visuals and shows a note instead of an unsafe one.
+
+CNB chat calls send `prompt_cache_key="cnb_chat"`, so the long shared system
+prompt is served from the provider cache; each run logs `cached_tokens`.
 
 ### Concept Note chapter structure
 

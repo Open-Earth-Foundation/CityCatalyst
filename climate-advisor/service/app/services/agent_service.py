@@ -576,7 +576,12 @@ class AgentService:
                 openai_client=self.client,
             ),
             model_settings=(
-                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                cnb_model_settings(
+                    reasoning_effort,
+                    temperature=agent_temperature,
+                    # Every CNB chat call starts with the same long system prompt.
+                    prompt_cache_key="cnb_chat",
+                )
                 if self._has_concept_note_context
                 else ModelSettings(
                     temperature=agent_temperature,

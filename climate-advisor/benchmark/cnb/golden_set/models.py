@@ -14,6 +14,7 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationFindingCategory,
 )
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.tools.concept_note_question import ConceptNoteQuestion
 from pydantic import BaseModel, ConfigDict, Field, SerializeAsAny, model_validator
 
 from benchmark.utils.models import StageUsage
@@ -272,7 +273,7 @@ class VerificationGolden(GoldenContract):
 
 
 class EditExpectation(GoldenContract):
-    """A semantic statement about the document after an edit."""
+    """A semantic requirement for an edited document or a chat answer."""
 
     id: str = Field(min_length=1)
     statement: str = Field(min_length=1)
@@ -285,25 +286,54 @@ class EditMessage(GoldenContract):
     content: str = Field(min_length=1)
 
 
+class EditOptionSelection(GoldenContract):
+    """Frozen card and exact edit expected after a typed option switch."""
+
+    card: ConceptNoteQuestion
+    previous_index: int = Field(ge=0)
+    expected_index: int = Field(ge=0)
+    before: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def check_indices(self) -> EditOptionSelection:
+        """Require two different options that appear on the card."""
+        count = len(self.card.options)
+        if (
+            self.previous_index >= count
+            or self.expected_index >= count
+            or self.previous_index == self.expected_index
+        ):
+            raise ValueError("Option switch needs two different displayed options")
+        return self
+
+
+EditOutcome = Literal["edit", "clarification", "question_card"]
+
+
 class EditCase(GoldenContract):
-    """One chat edit request against the reference draft.
+    """One user request against the reference draft.
 
     ``allowed_chapters`` lists every chapter the edit may change; any other
-    changed chapter is a collateral edit. A clarification case allows none.
+    changed chapter is a collateral edit. Clarification and card cases allow none.
     """
 
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]*$")
     instruction: str = Field(min_length=1)
     focused_chapter: str | None = None
     recent_messages: list[EditMessage] = Field(default_factory=list)
-    expected_outcome: Literal["edit", "clarification"]
+    expected_outcome: EditOutcome
     allowed_chapters: list[str] = Field(default_factory=list)
     expected_changes: list[EditExpectation] = Field(default_factory=list)
     must_preserve: list[EditExpectation] = Field(default_factory=list)
+    # Keep the serialized requirements for existing cases stable.
+    pick_first_option: bool = Field(default=False, exclude_if=lambda value: not value)
+    option_selection: EditOptionSelection | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def check_outcome(self) -> EditCase:
-        """Clarifications change nothing; edits name what must change."""
+        """Require the expectations and scope appropriate to the outcome."""
         if self.expected_outcome == "clarification" and (
             self.allowed_chapters or self.expected_changes
         ):
@@ -312,11 +342,22 @@ class EditCase(GoldenContract):
             self.allowed_chapters and self.expected_changes
         ):
             raise ValueError("An edit case needs allowed chapters and expected changes")
+        if self.expected_outcome == "question_card":
+            if self.allowed_chapters or self.must_preserve or not self.expected_changes:
+                raise ValueError("A card case needs answer expectations and allows no edits")
+        elif self.pick_first_option:
+            raise ValueError("Only a question card case can pick an option")
+        if self.option_selection is not None and (
+            self.expected_outcome != "edit"
+            or self.focused_chapter is None
+            or self.allowed_chapters != [self.focused_chapter]
+        ):
+            raise ValueError("An option switch must edit exactly its focused chapter")
         return self
 
 
 class EditingGolden(GoldenContract):
-    """Stage-4 edit requests applied to the reference draft."""
+    """Stage-4 edit requests and chat turns against the reference draft."""
 
     reference_draft: str = Field(default="reference_draft.json", min_length=1)
     cases: list[EditCase] = Field(min_length=1)
@@ -468,7 +509,7 @@ class EditCaseInput(GoldenContract):
 
     id: str
     instruction: str
-    expected_outcome: Literal["edit", "clarification"]
+    expected_outcome: EditOutcome
     observed_outcome: str
     clarification: str | None = None
     expected_changes: list[EditExpectation]

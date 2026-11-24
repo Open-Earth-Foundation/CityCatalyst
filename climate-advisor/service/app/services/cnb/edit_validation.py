@@ -84,8 +84,13 @@ def validate_edit_plan(
     *,
     prior_proposal: EditProposalResponse | None = None,
     recent_messages: list[dict[str, str]] | None = None,
+    chosen_options: list[str] | None = None,
 ) -> list[EditChange]:
-    """Check identities and document integrity without reinterpreting LLM edits."""
+    """Check identities and document integrity without reinterpreting LLM edits.
+
+    chosen_options are suggested answers the user picked; their exact text is
+    human input, like a message the user typed.
+    """
     if plan.intent != "edit":
         raise EditOperationError(
             "not_edit_request",
@@ -105,6 +110,7 @@ def validate_edit_plan(
     prior_inputs = [
         *recent_user_inputs(recent_messages),
         *prior_user_inputs(prior_proposal),
+        *(chosen_options or []),
     ]
     affected = {change.chapter_id for change in plan.changes}
     if affected - set(current):

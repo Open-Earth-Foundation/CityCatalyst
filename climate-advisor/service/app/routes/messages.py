@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Annotated, Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from fastapi.responses import StreamingResponse
@@ -12,13 +14,31 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import get_settings
 from app.db.session import get_session_factory, get_session_optional
 from app.models.requests import MessageCreateRequest
-from app.services.cnb.chat_readiness import require_chat_context_ready
+from app.services.cnb.chat_readiness import (
+    require_chat_context_ready,
+    require_valid_edit_request,
+)
 from app.services.cnb.chat_retry import is_retry_turn
+from app.services.cnb.chat_turn import (
+    REPLY_TURN_RENEW_SECONDS,
+    REPLY_TURN_TIMEOUT_SECONDS,
+    claim_reply_turn,
+    release_reply_turn,
+    renew_reply_turn,
+)
 from app.services.cnb.draft_overview import (
     DRAFT_OVERVIEW_REQUEST,
     claim_draft_overview,
     is_draft_overview_turn,
     release_draft_overview,
+)
+from app.services.cnb.question_reply import (
+    cnb_message_time,
+    question_message_id,
+    release_question_reply,
+    save_question_reply,
+    stale_question,
+    thread_run_id,
 )
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
@@ -28,6 +48,7 @@ from app.utils.citycatalyst_auth import (
     authenticate_write_request,
     normalize_write_context,
 )
+from app.utils.cnb_detached_stream import start_detached_cnb_stream
 from app.utils.request_token_refresh import RequestTokenRefreshContext
 from app.utils.sse_heartbeat import with_sse_heartbeats
 from app.utils.stationary_energy_context import (
@@ -62,6 +83,7 @@ async def post_message(
 
     This endpoint handles:
     - Request-bearer authentication against Core before any write
+    - Edit-request validation (422 concept_note_edit_request_invalid before any write)
     - Thread resolution/creation for the canonical subject
     - CNB readiness validation (409 concept_note_context_not_ready before saving a turn)
     - Hidden drafting-overview claim (after auth, once per drafting build)
@@ -88,6 +110,14 @@ async def post_message(
         token=identity.token,
     )
     normalized_context = normalize_write_context(payload.context, identity.token)
+    # Reject an unusable edit request before any thread or message is written.
+    require_valid_edit_request(normalized_context, payload.content)
+    question_id = question_message_id(normalized_context)
+    question_reply_claim = None
+    if question_id is not None and session_factory is None:
+        raise HTTPException(503, detail={"code": "cnb_storage_unavailable"})
+    if question_id is not None and not payload.thread_id:
+        raise stale_question()
     authenticated_payload = payload.model_copy(
         update={
             "user_id": identity.user_id,
@@ -111,6 +141,11 @@ async def post_message(
             "but your messages will not be saved."
         )
 
+    draft_overview_claim = None
+    reply_thread_id: UUID | None = None
+    reply_turn_id: UUID | None = None
+    reply_deadline: float | None = None
+    handed_off = False
     try:
         # 1. Resolve or create thread for the canonical subject only.
         resolved_thread_id = await ThreadResolver.resolve_thread(
@@ -123,7 +158,7 @@ async def post_message(
         logger.info("Thread resolved: thread_id=%s", resolved_thread_id)
 
         # Reject unready CNB turns before saving a message or starting SSE.
-        await require_chat_context_ready(
+        cnb_run_id = await require_chat_context_ready(
             session_factory=session_factory,
             thread_id=resolved_thread_id,
             user_id=identity.user_id,
@@ -135,17 +170,40 @@ async def post_message(
         # is claimed after authentication so a rejected request cannot use up
         # the build's single overview.
         overview_turn = is_draft_overview_turn(authenticated_payload.options)
+        if question_id is not None and (
+            overview_turn or is_stationary_energy_resume_turn(authenticated_payload.options)
+        ):
+            raise stale_question()
         if overview_turn:
             authenticated_payload = authenticated_payload.model_copy(
                 update={"content": DRAFT_OVERVIEW_REQUEST}
             )
 
         # 2. Persist user message and the validated request bearer.
+        is_cnb_turn = cnb_run_id is not None
         if session_factory:
             try:
                 async with session_factory() as db_session:
                     thread_service = ThreadService(db_session)
                     thread = await thread_service.get_thread(resolved_thread_id)
+                    is_cnb_turn = is_cnb_turn or bool(thread and thread_run_id(thread))
+                    if is_cnb_turn or question_id is not None:
+                        thread = await thread_service.get_thread(
+                            resolved_thread_id, for_update=True
+                        )
+                    if question_id is not None and (
+                        thread is None or thread.user_id != identity.user_id
+                    ):
+                        raise stale_question()
+
+                    if is_cnb_turn:
+                        if thread is None:
+                            raise HTTPException(503, detail={"code": "cnb_storage_unavailable"})
+                        if thread.user_id != identity.user_id:
+                            raise HTTPException(403, detail="Thread belongs to another user")
+                        reply_thread_id = thread.thread_id
+                        reply_turn_id = await claim_reply_turn(db_session, thread)
+                        reply_deadline = asyncio.get_running_loop().time() + REPLY_TURN_TIMEOUT_SECONDS
 
                     if thread:
                         # Replace credentials so a stored cc_access_token cannot
@@ -181,23 +239,41 @@ async def post_message(
                             message_service = MessageService(db_session)
                             # A retry after a failed reply repeats a question
                             # that was saved before streaming began.
-                            already_saved = is_retry_turn(
-                                authenticated_payload.options
-                            ) and await message_service.latest_message_is_user_text(
-                                thread_id=resolved_thread_id,
-                                text=authenticated_payload.content,
-                            )
+                            if question_id is not None:
+                                question_reply_claim = await save_question_reply(
+                                    db_session,
+                                    thread=thread,
+                                    question_id=question_id,
+                                    content=authenticated_payload.content,
+                                    retry=is_retry_turn(authenticated_payload.options),
+                                )
+                                already_saved = True
+                            else:
+                                already_saved = is_retry_turn(
+                                    authenticated_payload.options
+                                ) and await message_service.latest_message_is_user_text(
+                                    thread_id=resolved_thread_id,
+                                    text=authenticated_payload.content,
+                                )
                             if not already_saved:
                                 await message_service.create_user_message(
                                     thread_id=resolved_thread_id,
                                     user_id=identity.user_id,
                                     text=authenticated_payload.content,
+                                    created_at=(
+                                        await cnb_message_time(db_session, thread.thread_id)
+                                        if thread_run_id(thread) else None
+                                    ),
                                 )
                         await thread_service.touch_thread(thread)
                         await db_session.commit()
 
                     logger.info("User message persisted to thread_id=%s", resolved_thread_id)
+            except HTTPException:
+                raise
             except Exception as e:
+                if is_cnb_turn or question_id is not None:
+                    raise HTTPException(503, detail={"code": "cnb_storage_unavailable"}) from e
                 logger.warning("Failed to persist user message: %s", e)
                 history_warning = (
                     "Chat history is temporarily unavailable. The conversation will continue, "
@@ -205,7 +281,6 @@ async def post_message(
                 )
 
         # 3. Claim the overview once per drafting build, right before streaming.
-        draft_overview_claim = None
         if overview_turn:
             draft_overview_claim = await claim_draft_overview(
                 session_factory=session_factory,
@@ -213,32 +288,23 @@ async def post_message(
                 user_id=identity.user_id,
             )
 
-        # 4. Stream with the canonical subject and validated request bearer.
-        # Once the handler exists its own cleanup releases the claim; before
-        # that, release here.
-        try:
-            handler = StreamingHandler(
-                thread_id=resolved_thread_id,
-                user_id=identity.user_id,
-                session_factory=session_factory,
-                cc_access_token=identity.token,
-                request_token_refresh_context=token_refresh_context,
-                catalog_user_id=identity.user_id,
-                inventory_id=authenticated_payload.inventory_id,
-                request_context=normalized_context,
-                request_options=authenticated_payload.options,
-                draft_overview_claim=draft_overview_claim,
-            )
-        except BaseException:
-            if draft_overview_claim is not None:
-                run_id, build_id = draft_overview_claim
-                await release_draft_overview(
-                    session_factory=session_factory,
-                    run_id=run_id,
-                    user_id=identity.user_id,
-                    build_id=build_id,
-                )
-            raise
+        # CNB generation owns its database claim independently of this SSE response.
+        if reply_deadline is not None and asyncio.get_running_loop().time() >= reply_deadline:
+            raise HTTPException(503, detail={"code": "cnb_storage_unavailable"})
+        handler = StreamingHandler(
+            thread_id=resolved_thread_id,
+            user_id=identity.user_id,
+            session_factory=session_factory,
+            cc_access_token=identity.token,
+            request_token_refresh_context=token_refresh_context,
+            catalog_user_id=identity.user_id,
+            inventory_id=authenticated_payload.inventory_id,
+            request_context=normalized_context,
+            request_options=authenticated_payload.options,
+            draft_overview_claim=draft_overview_claim,
+            question_reply_claim=question_reply_claim,
+            reply_turn_id=reply_turn_id,
+        )
 
         headers = {
             "Cache-Control": "no-cache",
@@ -246,13 +312,25 @@ async def post_message(
             "X-Accel-Buffering": "no",
         }
 
-        return StreamingResponse(
-            with_sse_heartbeats(
-                handler.stream_response(authenticated_payload, history_warning)
-            ),
-            media_type="text/event-stream",
-            headers=headers,
-        )
+        source = handler.stream_response(authenticated_payload, history_warning)
+        if (
+            session_factory is not None
+            and reply_thread_id is not None
+            and reply_turn_id is not None
+            and reply_deadline is not None
+        ):
+            stream = start_detached_cnb_stream(
+                source,
+                deadline=reply_deadline,
+                renew=lambda: renew_reply_turn(session_factory, reply_thread_id, reply_turn_id),
+                renew_seconds=REPLY_TURN_RENEW_SECONDS,
+                release=lambda: release_reply_turn(session_factory, reply_thread_id, reply_turn_id),
+            )
+        else:
+            stream = with_sse_heartbeats(source)
+        response = StreamingResponse(stream, media_type="text/event-stream", headers=headers)
+        handed_off = True
+        return response
 
     except HTTPException:
         raise
@@ -262,3 +340,18 @@ async def post_message(
             status_code=500,
             detail={"message": "An internal error occurred", "error": str(e)},
         )
+    finally:
+        if not handed_off:
+            try:
+                await release_question_reply(session_factory, question_reply_claim)
+                if draft_overview_claim is not None:
+                    run_id, build_id = draft_overview_claim
+                    await release_draft_overview(
+                        session_factory=session_factory,
+                        run_id=run_id,
+                        user_id=identity.user_id,
+                        build_id=build_id,
+                    )
+            finally:
+                if session_factory and reply_thread_id and reply_turn_id:
+                    await release_reply_turn(session_factory, reply_thread_id, reply_turn_id)

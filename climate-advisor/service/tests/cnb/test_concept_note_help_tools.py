@@ -119,6 +119,14 @@ async def test_english_and_unsupported_locales_keep_english_labels(ui_locale):
     assert '"Export PDF" / "Export DOCX"' in result["guide"]
 
 
+async def test_guide_describes_static_chat_visuals():
+    """Help must not promise live sliders or filters that the sandbox removes."""
+    guide = (await invoke_ready("en"))["guide"]
+    assert "switchable cards or tabs, and expandable sections" in guide
+    assert "buttons, search boxes, and links do not work" in guide
+    assert "never change the concept note" in guide
+
+
 def test_locale_tags_normalize_to_supported_languages():
     assert normalize_ui_locale("pt-BR") == "pt"
     assert normalize_ui_locale(" PT_br ") == "pt"

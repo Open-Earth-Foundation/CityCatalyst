@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, List, Optional
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -23,6 +24,9 @@ async def persist_assistant_message(
     user_id: str,
     assistant_content: str,
     tool_invocations: Optional[List[dict]],
+    message_id: UUID | None = None,
+    question_reply_claim: tuple[UUID, str] | None = None,
+    reply_turn_id: UUID | None = None,
 ) -> bool:
     """Persist the assistant message to the database with full tool metadata.
 
@@ -44,13 +48,44 @@ async def persist_assistant_message(
 
     try:
         # Import lazily to avoid circular dependencies.
+        from app.models.db.message import Message
+        from app.services.cnb.chat_turn import reply_clock, reply_in_progress
+        from app.services.cnb.question_reply import REPLY_MARKER, cnb_message_time, thread_run_id
         from app.services.message_service import MessageService
         from app.services.thread_service import ThreadService
 
         async with session_factory() as session:
             message_service = MessageService(session)
             thread_service = ThreadService(session)
-            thread = await thread_service.get_thread_for_user(thread_id, user_id)
+            thread = await thread_service.get_thread(thread_id)
+            if thread is None or thread.user_id != user_id:
+                return False
+            is_cnb = bool(thread_run_id(thread))
+            if is_cnb or reply_turn_id is not None:
+                thread = await thread_service.get_thread(thread_id, for_update=True)
+                if thread is None or thread.user_id != user_id:
+                    return False
+            if reply_turn_id is not None and (
+                thread.reply_turn_id != reply_turn_id
+                or not reply_in_progress(thread, await reply_clock(session))
+            ):
+                return False
+            if question_reply_claim is not None:
+                reply = await session.get(Message, question_reply_claim[0])
+                marker = (
+                    reply.tools_used[0]
+                    if reply and isinstance(reply.tools_used, list) and reply.tools_used
+                    else None
+                )
+                # The thread lock fences an expired request against a newer retry.
+                if not isinstance(marker, dict) or (
+                    marker.get("claim_id") != question_reply_claim[1]
+                    or marker.get("name") != REPLY_MARKER
+                    or not marker.get("active")
+                    or reply.thread_id != thread.thread_id
+                    or reply.user_id != user_id
+                ):
+                    return False
             try:
                 # Always persist full tool metadata to database
                 await message_service.create_assistant_message(
@@ -58,6 +93,10 @@ async def persist_assistant_message(
                     user_id=user_id,
                     text=assistant_content,
                     tools_used=tool_invocations or None,
+                    message_id=message_id,
+                    created_at=(
+                        await cnb_message_time(session, thread.thread_id) if is_cnb else None
+                    ),
                 )
                 await thread_service.touch_thread(thread)
                 await session.commit()

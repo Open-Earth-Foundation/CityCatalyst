@@ -36,6 +36,10 @@ from app.tools.concept_note_source_tools import (
     error_payload,
     query_concept_note_source,
 )
+from app.services.cnb.question_reply import (
+    planner_question_cards,
+    referenced_options,
+)
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.concept_note_context import manual_population_context
@@ -119,6 +123,7 @@ class ConceptNoteEditService:
         *,
         token: str,
         recent_messages: list[dict[str, str]] | None = None,
+        question_cards: list[dict[str, Any]] | None = None,
     ) -> EditProposalResponse:
         """Trace proposal inputs, model calls and the resulting proposed changes.
 
@@ -127,7 +132,11 @@ class ConceptNoteEditService:
         """
         async with async_workflow_trace(
             name="cnb_chat_edit",
-            inputs={"request": request, "recent_messages": recent_messages},
+            inputs={
+                "request": request,
+                "recent_messages": recent_messages,
+                "question_cards": question_cards,
+            },
             session_id=getattr(run, "thread_id", None) or run.run_id,
             user_id=run.user_id,
             attributes={
@@ -143,6 +152,7 @@ class ConceptNoteEditService:
                     request,
                     token=token,
                     recent_messages=recent_messages,
+                    question_cards=question_cards,
                 )
             except EditOperationError as error:
                 await run_mlflow_io(
@@ -173,6 +183,7 @@ class ConceptNoteEditService:
         *,
         token: str,
         recent_messages: list[dict[str, str]] | None,
+        question_cards: list[dict[str, Any]] | None = None,
     ) -> EditProposalResponse:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
@@ -204,6 +215,9 @@ class ConceptNoteEditService:
         # Preserve the real base vector; proposals remain separate from the draft.
         base_revisions = {}
         prior = None
+        # Picked suggested answers are human input; the cards resolve references.
+        chosen_options = referenced_options(question_cards or [], request.instruction)
+        planner_cards = planner_question_cards(question_cards or [])
         try:
             if request.refines_proposal_id:
                 prior = await self.repository.get(
@@ -232,6 +246,8 @@ class ConceptNoteEditService:
                 prior_proposal=prior,
                 recent_messages=recent_messages,
                 source_lookup=source_lookup,
+                question_cards=planner_cards,
+                chosen_options=chosen_options,
             )
             if plan.intent == "question":
                 return await self.repository.reject(**identity)
@@ -258,6 +274,7 @@ class ConceptNoteEditService:
                     run_context,
                     prior_proposal=prior,
                     recent_messages=recent_messages,
+                    chosen_options=chosen_options,
                 )
                 # Automatic edits rely on the whole document remaining the reviewed base.
                 base_revisions = {

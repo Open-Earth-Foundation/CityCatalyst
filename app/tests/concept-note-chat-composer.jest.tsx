@@ -20,9 +20,16 @@ import type { EditController } from "@/components/ConceptNoteWorkspace/document-
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
 import type { EditScope } from "@/util/concept-note-edit-types";
 import type { ConceptNoteChatMessage } from "@/components/ConceptNoteWorkspace/chat-utils";
+import type { ChatSendResult } from "@/components/ConceptNoteWorkspace/use-concept-note-chat";
 
 const sendMessage =
-  jest.fn<(content: string, scope?: EditScope) => Promise<void>>();
+  jest.fn<
+    (
+      content: string,
+      scope?: EditScope,
+      questionMessageId?: string,
+    ) => Promise<void | ChatSendResult>
+  >();
 const closeGap = jest.fn();
 let isGenerating = false;
 let messages: ConceptNoteChatMessage[] = [];
@@ -79,6 +86,7 @@ let container: HTMLDivElement;
 const originalResizeObserver = globalThis.ResizeObserver;
 const originalStructuredClone = globalThis.structuredClone;
 const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+const originalScrollTo = HTMLElement.prototype.scrollTo;
 const originalCSS = globalThis.CSS;
 const originalFetch = globalThis.fetch;
 const fetchQuestion = jest.fn<typeof fetch>();
@@ -107,6 +115,7 @@ beforeAll(async () => {
   });
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   HTMLElement.prototype.scrollIntoView = jest.fn();
+  HTMLElement.prototype.scrollTo = jest.fn();
   globalThis.CSS = { ...originalCSS, escape: (value: string) => value };
   globalThis.structuredClone = (value) =>
     value === undefined ? value : JSON.parse(JSON.stringify(value));
@@ -120,6 +129,7 @@ beforeAll(async () => {
 });
 afterAll(() => {
   HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  HTMLElement.prototype.scrollTo = originalScrollTo;
   globalThis.CSS = originalCSS;
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
   globalThis.ResizeObserver = originalResizeObserver;
@@ -127,6 +137,7 @@ afterAll(() => {
 });
 beforeEach(() => {
   isGenerating = false;
+  messages = [];
   sendMessage.mockReset();
   closeGap.mockClear();
   sendMessage.mockResolvedValue(undefined);
@@ -144,6 +155,7 @@ async function renderPanel(
   status = contextStatus,
   threadId: string | null = "thread",
   gapAnswer: GapAnswerRequest | null = null,
+  composerRequest: { id: string; content: string } | null = null,
 ): Promise<void> {
   await act(async () => {
     root.render(
@@ -151,7 +163,7 @@ async function renderPanel(
         <ConceptNoteChatPanel
           cityId="city"
           contextStatus={status}
-          composerRequest={null}
+          composerRequest={composerRequest}
           gapAnswer={gapAnswer}
           onCloseGap={closeGap}
           onAddGapSource={() => {}}
@@ -625,6 +637,7 @@ describe("scrolling to Clima's newest reply", () => {
   let replyTop = 0;
   let scrollTo: jest.Mock<(options: ScrollToOptions) => void>;
   let originalRect: typeof HTMLElement.prototype.getBoundingClientRect;
+  let suiteScrollTo: typeof HTMLElement.prototype.scrollTo;
   let requestFrame: jest.SpiedFunction<typeof window.requestAnimationFrame>;
 
   const rect = (top: number) =>
@@ -669,6 +682,7 @@ describe("scrolling to Clima's newest reply", () => {
           : 0;
       },
     });
+    suiteScrollTo = HTMLElement.prototype.scrollTo;
     scrollTo = jest.fn<(options: ScrollToOptions) => void>();
     HTMLElement.prototype.scrollTo = scrollTo;
     // Run frames synchronously so the scroll happens inside the render's act().
@@ -685,7 +699,7 @@ describe("scrolling to Clima's newest reply", () => {
     HTMLElement.prototype.getBoundingClientRect = originalRect;
     Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
     Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
-    Reflect.deleteProperty(HTMLElement.prototype, "scrollTo");
+    HTMLElement.prototype.scrollTo = suiteScrollTo;
     requestFrame.mockRestore();
   });
 
@@ -706,4 +720,253 @@ describe("scrolling to Clima's newest reply", () => {
     // Bottom is scrollHeight minus clientHeight: 1000 - 324.
     expect(scrollTo).toHaveBeenLastCalledWith({ behavior: "auto", top: 676 });
   });
+});
+
+function choiceQuestion(id = "question"): ConceptNoteChatMessage {
+  return {
+    id,
+    questionMessageId: id,
+    role: "assistant",
+    text: "Which part should we clarify?",
+    choices: ["Budget", "Partners"],
+  };
+}
+async function typeInline(value: string) {
+  const element = container.querySelector<HTMLTextAreaElement>(
+    '[data-testid="concept-note-chat-choices"] textarea',
+  )!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(
+      HTMLTextAreaElement.prototype,
+      "value",
+    )!.set!.call(element, value);
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+function finishChoiceHistory() {
+  messages = [
+    choiceQuestion(),
+    { id: "answer", role: "user", text: "Budget" },
+    choiceQuestion("next-question"),
+  ];
+}
+it("moves an inline draft into the composer when an option is picked instead", async () => {
+  messages = [choiceQuestion()];
+  await renderPanel();
+  await typeInline("  Draft paragraph\nSecond paragraph  ");
+  await type("Existing composer draft");
+  await act(async () =>
+    container.querySelector<HTMLButtonElement>("button[aria-pressed]")!.click(),
+  );
+  expect(sendMessage).toHaveBeenCalledWith("Budget", undefined, "question");
+  // Nothing typed is lost, and nothing extra is sent.
+  expect(composer().value).toBe(
+    "Existing composer draft\n\nDraft paragraph\nSecond paragraph",
+  );
+  finishChoiceHistory();
+  await renderPanel();
+  expect(composer().value).toBe(
+    "Existing composer draft\n\nDraft paragraph\nSecond paragraph",
+  );
+  expect(
+    container.querySelector('[data-testid="concept-note-saved-answer-draft"]'),
+  ).toBeNull();
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+});
+it("keeps the unsent inline draft when the main composer sends another message", async () => {
+  messages = [choiceQuestion()];
+  await renderPanel();
+  await typeInline("Unsent custom answer");
+  await type("A different question");
+  await pressEnter();
+  finishChoiceHistory();
+  await renderPanel();
+  expect(composer().value).toBe("");
+  expect(
+    container.querySelector('[data-testid="concept-note-saved-answer-draft"]')
+      ?.textContent,
+  ).toContain("Unsent custom answer");
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+});
+it("isolates inline and composer drafts between threads and restores them on return", async () => {
+  messages = [choiceQuestion()];
+  await renderPanel();
+  await typeInline("Thread one inline");
+  await type("Thread one composer");
+  await renderPanel(contextStatus, "other-thread");
+  expect(composer().value).toBe("");
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-chat-choices"] textarea',
+    )!.value,
+  ).toBe("");
+  await typeInline("Thread two inline");
+  await type("Thread two composer");
+  await renderPanel(contextStatus, "thread");
+  expect(composer().value).toBe("Thread one composer");
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      '[data-testid="concept-note-chat-choices"] textarea',
+    )!.value,
+  ).toBe("Thread one inline");
+  expect(sendMessage).not.toHaveBeenCalled();
+});
+it("does not reapply an already used composer request when switching threads", async () => {
+  const request = { id: "prefill-once", content: "Requested draft" };
+  await renderPanel(contextStatus, "thread", null, request);
+  await act(async () => {
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
+  });
+  expect(composer().value).toBe("Requested draft");
+  await type("Edited thread one draft");
+  await renderPanel(contextStatus, "other-thread", null, request);
+  await act(async () => {
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
+  });
+  expect(composer().value).toBe("");
+  await renderPanel(contextStatus, "thread", null, request);
+  expect(composer().value).toBe("Edited thread one draft");
+  expect(sendMessage).not.toHaveBeenCalled();
+});
+
+it("keeps an over-limit composer message, blocks sending and explains the limit", async () => {
+  await renderPanel();
+  await type("y".repeat(8_010));
+  const send = container.querySelector<HTMLButtonElement>(
+    '[data-testid="concept-note-chat-send"]',
+  )!;
+
+  expect(send.disabled).toBe(true);
+  expect(
+    container.querySelector("#concept-note-chat-too-long")?.textContent,
+  ).toBe("chat-message-too-long");
+  expect(composer().getAttribute("aria-describedby")).toBe(
+    "concept-note-chat-too-long",
+  );
+  await act(async () => composer().form!.requestSubmit());
+  expect(sendMessage).not.toHaveBeenCalled();
+  expect(composer().value).toHaveLength(8_010);
+});
+
+it("moves keyboard focus to the composer as soon as a suggested answer is sent", async () => {
+  let finish!: (value: ChatSendResult) => void;
+  sendMessage.mockImplementation(
+    () =>
+      new Promise<ChatSendResult>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  messages = [choiceQuestion()];
+  await renderPanel();
+  const option = container.querySelector<HTMLButtonElement>(
+    "button[aria-pressed]",
+  )!;
+  await act(async () => {
+    option.focus();
+    option.click();
+  });
+
+  // Still streaming: focus must not wait for the reply to finish.
+  expect(document.activeElement).toBe(composer());
+  await act(async () => finish("replied"));
+});
+
+it("announces a finished suggested-answer question politely", async () => {
+  messages = [choiceQuestion()];
+  await renderPanel();
+  const status = container.querySelector(
+    '[data-testid="concept-note-chat-question-announcement"]',
+  )!;
+  expect(status.getAttribute("aria-live")).toBe("polite");
+  expect(status.textContent).not.toBe("");
+
+  isGenerating = true;
+  await renderPanel();
+  expect(status.textContent).toBe("");
+});
+it("keeps a card open when its answer was not sent and labels the answer", async () => {
+  messages = [
+    choiceQuestion(),
+    { id: "answer", role: "user", text: "Budget", unsent: true },
+  ];
+  await renderPanel();
+  expect(
+    container.querySelector('[data-testid="concept-note-chat-unsent"]')
+      ?.textContent,
+  ).toBe("chat-message-unsent");
+  const options = container.querySelectorAll<HTMLButtonElement>(
+    "button[aria-pressed]",
+  );
+  // Not selected and still answerable, so the user can choose again.
+  expect([...options].map((option) => option.disabled)).toEqual([false, false]);
+  expect(options[0].getAttribute("aria-pressed")).toBe("false");
+  expect(
+    container.querySelector(
+      '[data-testid="concept-note-chat-choices"] textarea',
+    ),
+  ).not.toBeNull();
+});
+
+function pendingSend(): (result: ChatSendResult) => Promise<void> {
+  let finish!: (result: ChatSendResult) => void;
+  sendMessage.mockImplementation(
+    () =>
+      new Promise<ChatSendResult>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  return (result) => act(async () => finish(result));
+}
+
+it("puts a message the service rejected unsaved back in the composer", async () => {
+  sendMessage.mockResolvedValue("not_saved");
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  expect(composer().value).toBe("Could the budget be shorter?");
+});
+
+it("keeps text typed while the rejected send was pending as a separate paragraph", async () => {
+  const finish = pendingSend();
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+  expect(composer().value).toBe("");
+  await type("Also mention the grant.");
+
+  await finish("not_saved");
+  expect(composer().value).toBe(
+    "Could the budget be shorter?\n\nAlso mention the grant.",
+  );
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+});
+
+it.each(["failed", "replied"] as const)(
+  "leaves the composer empty when the message may be saved (%s)",
+  async (result) => {
+    sendMessage.mockResolvedValue(result);
+    await renderPanel();
+    await type("Could the budget be shorter?");
+    await pressEnter();
+    expect(composer().value).toBe("");
+  },
+);
+
+it("restores a rejected message to the chat it was written in", async () => {
+  const finish = pendingSend();
+  await renderPanel();
+  await type("Could the budget be shorter?");
+  await pressEnter();
+  await renderPanel(contextStatus, "other-thread");
+
+  await finish("not_saved");
+  expect(composer().value).toBe("");
+  await renderPanel();
+  expect(composer().value).toBe("Could the budget be shorter?");
 });

@@ -305,11 +305,11 @@ import {
   OAuthClientAuthzOptionalAttributes,
 } from "./OAuthClientAuthz";
 import {
-  UsedAuthorizationCode as _UsedAuthorizationCode,
-  UsedAuthorizationCodeAttributes,
-  UsedAuthorizationCodeCreationAttributes,
-  UsedAuthorizationCodeOptionalAttributes,
-} from "./UsedAuthorizationCode";
+  AuthorizationCode as _AuthorizationCode,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
+} from "./AuthorizationCode";
 import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
@@ -395,7 +395,7 @@ export {
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
-  _UsedAuthorizationCode as UsedAuthorizationCode,
+  _AuthorizationCode as AuthorizationCode,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -535,9 +535,9 @@ export type {
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
-  UsedAuthorizationCodeAttributes,
-  UsedAuthorizationCodeCreationAttributes,
-  UsedAuthorizationCodeOptionalAttributes,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -620,7 +620,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
-  const UsedAuthorizationCode = _UsedAuthorizationCode.initModel(sequelize);
+  const AuthorizationCode = _AuthorizationCode.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -967,8 +967,18 @@ export function initModels(sequelize: Sequelize) {
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
-  Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
-  User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
+  Version.belongsTo(User, {
+    as: "author",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(Version, {
+    as: "versions",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   Version.belongsTo(Version, {
     as: "previousVersion",
     foreignKey: "previousVersionId",
@@ -1080,8 +1090,18 @@ export function initModels(sequelize: Sequelize) {
     as: "subSectorReportingLevels",
     foreignKey: "subsectorId",
   });
-  User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
-  UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
+  User.hasMany(UserFile, {
+    foreignKey: "userId",
+    as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  UserFile.belongsTo(User, {
+    as: "userFiles",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   UserFile.belongsTo(City, {
     foreignKey: "cityId",
     as: "city",
@@ -1211,6 +1231,8 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
@@ -1227,6 +1249,8 @@ export function initModels(sequelize: Sequelize) {
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",
     as: "projectInvites",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectModules.belongsTo(Project, {
     as: "project",
@@ -1379,13 +1403,13 @@ export function initModels(sequelize: Sequelize) {
   ImportedInventoryFile.belongsTo(User, {
     as: "user",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
   User.hasMany(ImportedInventoryFile, {
     as: "importedInventoryFiles",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
 
@@ -1658,7 +1682,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
-    UsedAuthorizationCode: UsedAuthorizationCode,
+    AuthorizationCode: AuthorizationCode,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

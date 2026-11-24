@@ -1179,7 +1179,8 @@ export interface ImportStatusResponse {
 }
 
 export type VersionChange = VersionAttributes & {
-  author: { name: string; userId: string };
+  /** Null once the author's account has been deleted. */
+  author: { name: string; userId: string } | null;
   previousVersion: VersionAttributes | null;
 };
 

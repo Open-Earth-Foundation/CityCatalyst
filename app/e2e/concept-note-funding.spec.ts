@@ -306,6 +306,8 @@ test("browse, inspect, select, reload, switch and clear funding", async ({
     dialog.getByText("Budget and financing", { exact: true }),
   ).not.toBeVisible();
   await clickDialogButton("Save selection");
+  // The dialog closes only after the save request resolves.
+  await expect(dialog).not.toBeVisible();
   expect(saved[1]).toMatchObject({
     funder_id: otherFunderId,
     selected_funding_opportunity_id: null,

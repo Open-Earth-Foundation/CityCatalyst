@@ -21,6 +21,11 @@ from app.services.cnb.draft_overview import (
     load_draft_overview_message,
     release_draft_overview,
 )
+from app.services.cnb.question_reply import (
+    QUESTION_CHOICE_SOURCES,
+    CardPresentation,
+    release_question_reply,
+)
 from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.cnb_progress import emit_cnb_progress, stream_cnb_events
 from app.utils.concept_note_context import (
@@ -51,6 +56,7 @@ from app.utils.streaming_context import (
 from app.utils.streaming_prompt import (
     stationary_energy_system_context_message,
 )
+from app.utils.streaming_events import finalize_card_presentation
 from app.utils.streaming_runner import stream_agent_events
 from app.utils.streaming_telemetry import (
     log_mlflow_stream_summary,
@@ -79,9 +85,14 @@ class StreamingHandler:
         request_options: Optional[dict] = None,
         draft_overview_claim: Optional[tuple[UUID, str]] = None,
         request_token_refresh_context: Optional[RequestTokenRefreshContext] = None,
+        question_reply_claim: tuple[UUID, str] | None = None,
+        reply_turn_id: UUID | None = None,
     ) -> None:
         """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
+        self.assistant_message_id = uuid4()
+        self.question_reply_claim = question_reply_claim
+        self.reply_turn_id = reply_turn_id
         self.reasoning_stream_id = str(uuid4())
         self.user_id = user_id
         self.session_factory = session_factory
@@ -113,6 +124,8 @@ class StreamingHandler:
         self.agent_service: Optional[AgentService] = None
         self.token_handler: Optional[TokenHandler] = None
         self.concept_note_edit_request: EditProposalRequest | None = None
+        # Server-selected card that replaces the model's question for this turn.
+        self.card_presentation: CardPresentation | None = None
 
     async def stream_response(
         self,
@@ -121,9 +134,15 @@ class StreamingHandler:
     ) -> AsyncGenerator[bytes, None]:
         """Forward answer and request-local worker events on the existing stream."""
         events = stream_cnb_events(self._stream_response(payload, history_warning))
-        async with aclosing(events) as stream:
-            async for chunk in stream:
-                yield chunk
+        try:
+            async with aclosing(events) as stream:
+                async for chunk in stream:
+                    yield chunk
+        finally:
+            try:
+                await self._release_question_reply()
+            finally:
+                await self._release_failed_overview()
 
     async def _stream_response(
         self,
@@ -162,14 +181,15 @@ class StreamingHandler:
                     payload.model_dump(mode="json"),
                 )
 
-                async for event_bytes in self._stream_response_with_mlflow(
+                async with aclosing(self._stream_response_with_mlflow(
                     payload=payload,
                     history_warning=history_warning,
                     req_id=req_id,
                     settings=settings,
                     started_at=started_at,
-                ):
-                    yield event_bytes
+                )) as stream:
+                    async for event_bytes in stream:
+                        yield event_bytes
 
     async def _stream_response_with_mlflow(
         self,
@@ -203,13 +223,18 @@ class StreamingHandler:
                 self, settings, payload, req_id
             )
 
-            # Stream responses from the agent
-            async for event_bytes in stream_agent_events(
-                self,
-                agent,
-                payload,
-                conversation_history,
-            ):
+            # Stream responses from the agent; a clarification turn has no agent.
+            if agent is not None:
+                async with aclosing(stream_agent_events(
+                    self,
+                    agent,
+                    payload,
+                    conversation_history,
+                )) as stream:
+                    async for event_bytes in stream:
+                        yield event_bytes
+
+            for event_bytes in finalize_card_presentation(self):
                 yield event_bytes
 
             await self._persist_refreshed_token_from_agent()
@@ -224,6 +249,7 @@ class StreamingHandler:
                 ok=not self.streaming_error,
                 started_at=started_at,
             )
+            await self._release_question_reply()
             yield self._format_completion_event(req_id)
 
         except asyncio.CancelledError:
@@ -283,24 +309,32 @@ class StreamingHandler:
                 started_at=started_at,
                 status="error",
             )
+            await self._release_question_reply()
             yield format_sse(
                 {"message": "An internal error has occurred."}, event="error"
             ).encode("utf-8")
             yield self._format_completion_event(req_id, ok=False)
 
         finally:
-            # A failed overview turn stays retryable for the same drafting build.
-            if self.draft_overview_claim and not self.history_saved:
-                run_id, build_id = self.draft_overview_claim
-                await release_draft_overview(
-                    session_factory=self.session_factory,
-                    run_id=run_id,
-                    user_id=self.user_id,
-                    build_id=build_id,
-                )
-            # Clean up agent service
-            if self.agent_service:
-                await self.agent_service.close()
+            try:
+                await self._release_failed_overview()
+            finally:
+                if self.agent_service:
+                    await self.agent_service.close()
+
+    async def _release_failed_overview(self) -> None:
+        """Allow retry of an overview that did not save an assistant message."""
+        claim = self.draft_overview_claim
+        if claim is None or self.history_saved:
+            return
+        self.draft_overview_claim = None
+        run_id, build_id = claim
+        await release_draft_overview(
+            session_factory=self.session_factory,
+            run_id=run_id,
+            user_id=self.user_id,
+            build_id=build_id,
+        )
 
     async def _load_conversation_history(
         self,
@@ -415,8 +449,20 @@ class StreamingHandler:
             "ok": ok,
             "request_id": req_id,
             "history_saved": self.history_saved,
+            "assistant_message_id": (
+                str(self.assistant_message_id) if self.history_saved else None
+            ),
             "thread_id": self.thread_identifier,
-            "tools_used": self.tool_invocations or None,
+            # Choice provenance is server-side audit data; the client never needs it.
+            "tools_used": [
+                {
+                    key: value
+                    for key, value in invocation.items()
+                    if key != QUESTION_CHOICE_SOURCES
+                }
+                for invocation in self.tool_invocations
+            ]
+            or None,
         }
 
         if not ok:
@@ -442,8 +488,18 @@ class StreamingHandler:
             user_id=self.user_id,
             assistant_content=assistant_content,
             tool_invocations=self._tool_invocations_for_persistence(),
+            message_id=self.assistant_message_id,
+            question_reply_claim=getattr(self, "question_reply_claim", None),
+            reply_turn_id=getattr(self, "reply_turn_id", None),
         )
         return self.history_saved
+
+    async def _release_question_reply(self) -> None:
+        """Make a failed explicit answer retryable before emitting terminal SSE."""
+        claim = getattr(self, "question_reply_claim", None)
+        if claim is not None:
+            await release_question_reply(self.session_factory, claim)
+            self.question_reply_claim = None
 
     def _tool_invocations_for_persistence(self) -> list[dict] | None:
         """Add server-bound CNB edit arguments to the database audit record."""

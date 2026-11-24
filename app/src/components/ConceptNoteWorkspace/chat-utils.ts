@@ -5,20 +5,38 @@ export interface ConceptNoteChatVisual {
 
 export interface ConceptNoteChatMessage {
   id: string;
+  /** Durable server id required when replying to a suggested-answer card. */
+  questionMessageId?: string;
   role: "assistant" | "user";
   text: string;
   visuals?: ConceptNoteChatVisual[];
   choices?: string[];
+  /** What choosing an option does: answer only, or prepare a proposed change. */
+  choiceAction?: ConceptNoteChoiceAction;
+  /** The request never reached Clima; the message is shown but not saved. */
+  unsent?: boolean;
+}
+
+export type ConceptNoteChoiceAction = "reply" | "propose_edit";
+
+/** Cards saved before the action existed only answered the question. */
+export function readConceptNoteChoiceAction(
+  value: unknown,
+): ConceptNoteChoiceAction {
+  return value === "propose_edit" ? "propose_edit" : "reply";
 }
 
 /** The same bounded tool contract is used by the stream and saved history. */
 export function readConceptNoteChoices(value: unknown): string[] | undefined {
   if (!isRecord(value) || value.name !== "concept_note_ask_question") return;
   const options = value.options;
+  // A confirmation for one document change has a single option.
+  const minimum =
+    readConceptNoteChoiceAction(value.on_answer) === "propose_edit" ? 1 : 2;
   if (
     !Array.isArray(options) ||
-    options.length < 2 ||
-    options.length > 6 ||
+    options.length < minimum ||
+    options.length > 12 ||
     !options.every(
       (option): option is string =>
         typeof option === "string" && option.trim().length > 0,
@@ -27,7 +45,8 @@ export function readConceptNoteChoices(value: unknown): string[] | undefined {
       options.length
   )
     return;
-  return options;
+  // Sent answers are trimmed, so labels must match them for the selected state.
+  return options.map((option) => option.trim());
 }
 
 export interface ConceptNoteReasoning {
@@ -111,6 +130,10 @@ export function readConceptNoteToolVisual(
   });
 }
 
+export function readConceptNoteReplyInProgress(payload: unknown): boolean {
+  return isRecord(payload) && payload.reply_in_progress === true;
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -141,10 +164,16 @@ export function readConceptNoteThreadMessages(
         ...(visuals.length > 0 ? { visuals } : {}),
         ...(role === "assistant" && message.choices
           ? {
+              questionMessageId:
+                typeof message.message_id === "string"
+                  ? message.message_id
+                  : undefined,
               choices: readConceptNoteChoices({
                 name: "concept_note_ask_question",
                 options: message.choices,
+                on_answer: message.choice_action,
               }),
+              choiceAction: readConceptNoteChoiceAction(message.choice_action),
             }
           : {}),
       },

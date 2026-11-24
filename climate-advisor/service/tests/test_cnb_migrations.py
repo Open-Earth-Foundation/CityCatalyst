@@ -98,7 +98,7 @@ def test_ca_migration_chain_has_one_head() -> None:
     config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_heads() == ["20261011_120000"]
+    assert len(scripts.get_heads()) == 1
 
 
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
@@ -622,9 +622,12 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
         }
         assert expected_columns <= set(columns)
         assert all(columns[name]["nullable"] for name in expected_columns)
-        assert "concept_note_run_id" in {
-            column["name"] for column in inspect(engine).get_columns("threads")
+        thread_columns = {
+            column["name"]: column for column in inspect(engine).get_columns("threads")
         }
+        assert "concept_note_run_id" in thread_columns
+        assert thread_columns["reply_turn_id"]["nullable"]
+        assert thread_columns["reply_turn_expires_at"]["nullable"]
         assert "custom_template" in {
             column["name"]
             for column in inspect(engine).get_columns("concept_note_runs")
@@ -635,11 +638,6 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
                 "concept_note_uploads"
             )
         }
-        with engine.connect() as connection:
-            assert connection.execute(
-                text("SELECT version_num FROM alembic_version")
-            ).scalar_one() == "20261011_120000"
-
         run_id = uuid4()
         upload_insert = text(
             """

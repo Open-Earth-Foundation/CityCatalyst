@@ -4,7 +4,10 @@ import {
   isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
 import { hasLossOrConsumptionLabel } from "@/util/GHGI/activity-class-rules";
-import type { ECRFImportResult } from "@/backend/ECRFImportService";
+import {
+  mixedTotalInclusionRows,
+  type ECRFImportResult,
+} from "@/backend/ECRFImportService";
 import {
   importRowSkipReason,
   resolveImportedTotalCO2e,
@@ -136,6 +139,7 @@ export function reviewIssue(row: ImportRow): ImportRowIssue | null {
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
   if (isSubsectorScopeCombined(row)) return "gpc-subsector-scope-combined";
+  if (row.review?.mixedTotalInclusion) return "merge-total-inclusion-mixed";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))
     return "excluded-reference-unconfirmed";
@@ -259,7 +263,12 @@ export function findReviewRows(
 export function findPendingRows(
   importResult: ECRFImportResult,
 ): ImportRowReview[] {
+  // Rows that would merge with a different omitFromTotal wait, whatever was decided.
+  const mixed = new Set(
+    mixedTotalInclusionRows(importResult.rows).map((row) => row.rowIndex),
+  );
   return findReviewRows(importResult).filter((row) => {
+    if (mixed.has(row.rowIndex)) return true;
     if (!row.decision) return true;
     if (row.decision === "skip") return false;
     const finalScope = scopeFromLabel(row.finalScope);
@@ -343,8 +352,7 @@ export async function previewImportRows(
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"
-          : (unsplitIssue(row) ??
-            (row.storedParent ? "gpc-subsector-already-stored" : null));
+          : unsplitIssue(row);
     if (issue) {
       const leftOutOfTotal =
         issue === "omitted-from-total" || issue === "reported-apart-from-total";
@@ -360,15 +368,11 @@ export async function previewImportRows(
         // An unsplit subsector row counts in the total; it is listed so the user sees it.
         status:
           issue === "subsector-not-split-by-scope" ||
-          issue === "gpc-subsector-total-at-risk" ||
-          issue === "gpc-subsector-already-stored"
+          issue === "gpc-subsector-total-at-risk"
             ? "imported"
             : "not-counted",
         issue,
         tonnes,
-        ...(issue === "gpc-subsector-already-stored" && {
-          storedParent: row.storedParent,
-        }),
       });
     }
   }

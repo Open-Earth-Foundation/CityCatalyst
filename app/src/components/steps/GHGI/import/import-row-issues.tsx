@@ -220,10 +220,6 @@ export default function ImportRowIssues({
                         childrenCount: row.parentSuperseded.childrenCount,
                         gap: row.parentSuperseded.gap?.toLocaleString(),
                       }),
-                      ...(row.storedParent && {
-                        parentRef: row.storedParent.gpcRefNo,
-                        parentValue: row.storedParent.tonnes.toLocaleString(),
-                      }),
                     })}
                   </Text>
                 </Table.Cell>

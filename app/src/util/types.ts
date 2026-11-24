@@ -1051,7 +1051,7 @@ export type ImportRowIssue =
   | "subsector-not-split-by-scope"
   | "gpc-subsector-total-at-risk"
   | "gpc-subsector-scope-combined"
-  | "gpc-subsector-already-stored";
+  | "merge-total-inclusion-mixed";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1067,14 +1067,6 @@ export interface ImportRowOutcome {
   tonnes?: number | null;
   /** Subsector total replaced by its child rows (CC-1311). */
   parentSuperseded?: ParentSupersededDetail;
-  /** Subsector value with no scope split already on the inventory (CC-1311). */
-  storedParent?: StoredParentDetail;
-}
-
-/** A stored subsector value the imported child rows may count again. */
-export interface StoredParentDetail {
-  gpcRefNo: string;
-  tonnes: number;
 }
 
 /** A subsector-level value dropped because its child rows came in the same import. */

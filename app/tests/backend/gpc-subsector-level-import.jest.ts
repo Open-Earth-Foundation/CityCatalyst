@@ -7,11 +7,19 @@ import { randomUUID } from "node:crypto";
 import env from "@next/env";
 import ECRFImportService, {
   supersedeParentsWithChildren,
+  type ECRFImportResult,
 } from "@/backend/ECRFImportService";
 import type { ParsedFileData } from "@/backend/FileParserService";
 import InventoryImportService from "@/backend/InventoryImportService";
-import { supersedeParentsWithStoredValues } from "@/backend/ImportResultBuilder";
-import { previewImportRows } from "@/backend/ImportRowPreviewService";
+import {
+  applyReviewedRows,
+  buildImportResult,
+} from "@/backend/ImportResultBuilder";
+import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
+import {
+  findPendingRows,
+  previewImportRows,
+} from "@/backend/ImportRowPreviewService";
 import {
   getEmissionResults,
   getEmissionsBreakdown,
@@ -21,8 +29,16 @@ import type { City } from "@/models/City";
 import type { User } from "@/models/User";
 import {
   GlobalWarmingPotentialTypeEnum,
+  ImportStatusEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  teardownTests,
+  testUserID,
+} from "../helpers";
 
 const PREFIX = "XX_CC1311_";
 
@@ -79,6 +95,13 @@ describe("subsector-level GPC references", () => {
   });
 
   afterAll(async () => {
+    teardownTests();
+    await db.models.NativeInputCatalog.destroy({
+      where: { sourceId: inventoryIds },
+    });
+    await db.models.ImportedInventoryFile.destroy({
+      where: { inventoryId: inventoryIds },
+    });
     await db.models.Version.destroy({ where: { inventoryId: inventoryIds } });
     await db.models.InventoryValue.destroy({
       where: { inventoryId: inventoryIds },
@@ -259,81 +282,229 @@ describe("subsector-level GPC references", () => {
     ).toHaveLength(1);
   });
 
-  describe("values already stored on the inventory", () => {
-    it("drops an imported subsector row when its children are stored", async () => {
-      const { inventoryId } = await importRows([
-        row("I.3.1", 300),
-        row("I.3.2", 200),
+  describe("rows that merge into one value", () => {
+    // Several rows of one reference become one InventoryValue (unique per
+    // inventory and reference) with one omitFromTotal flag.
+    const counted = row("I.3.1", 100);
+    const excluded = row("I.3.1", 20, true);
+
+    async function reviewed(rows: ReturnType<typeof row>[]) {
+      const result = await ECRFImportService.fromExtractedRows(rows);
+      result.requiresReferenceReview = true;
+      for (const r of result.rows) r.review!.decisionToken = `t${r.rowIndex}`;
+      return result;
+    }
+    const decide = (rowIndex: number, reviewDecision: string) => ({
+      [String(rowIndex)]: {
+        decisionFileId: "file",
+        decisionToken: `t${rowIndex}`,
+        decisionRef: "I.3.1",
+        decisionScope: null,
+        decisionValue: rowIndex === 0 ? 100 : 20,
+        reviewDecision,
+      },
+    });
+
+    it("merges rows that all count into one counted value", async () => {
+      const { inventoryId, summary } = await importRows([
+        counted,
+        row("I.3.1", 20),
       ]);
-      const extracted = await ECRFImportService.fromExtractedRows([
-        row("I.3", 500),
-        row("I.1.1", 10),
+      expect(summary.errors).toEqual([]);
+      const values = await stored(inventoryId);
+      expect(values).toHaveLength(1);
+      expect(BigInt(values[0].co2eq as unknown as string)).toBe(120_000n);
+      expect(values[0].omitFromTotal).toBe(false);
+      const results = await getEmissionResults(inventoryId);
+      expect(results.totalEmissions.toNumber()).toBe(120_000);
+    });
+
+    it("holds the rows when one of them is left out of the total", async () => {
+      const result = await reviewed([counted, excluded]);
+      const pending = findPendingRows(result);
+      expect(pending.map((r) => [r.rowIndex, r.issue])).toEqual([
+        [0, "merge-total-inclusion-mixed"],
+        [1, "merge-total-inclusion-mixed"],
       ]);
-      await supersedeParentsWithStoredValues(extracted, inventoryId);
-      const parent = extracted.rows.find((r) => r.gpcRefNo === "I.3")!;
-      expect(parent.issue).toBe("gpc-parent-superseded");
-      expect(parent.errors).toHaveLength(1);
-      expect(parent.parentSuperseded).toEqual({
-        parentValue: 500,
-        childrenSum: 500,
-        childrenCount: 2,
-        gap: 0,
-      });
-      await InventoryImportService.importECRFData(
-        inventoryId,
-        extracted,
-        user.userId,
+      const preview = await previewImportRows(
+        result,
+        InventoryTypeEnum.GPC_BASIC_PLUS,
       );
+      expect(preview.pendingRows).toBe(2);
+    });
+
+    it("never stores a counted merge of mixed rows", async () => {
+      const { inventoryId, summary } = await importRows([counted, excluded]);
+      expect(summary.errors).toHaveLength(1);
+      const values = await stored(inventoryId);
+      expect(
+        values.filter((v) => !v.omitFromTotal).map((v) => String(v.co2eq)),
+      ).not.toContain("120000");
+    });
+
+    it("stays held while the decisions still disagree", async () => {
+      const result = await reviewed([counted, excluded]);
+      await applyReviewedRows(
+        result,
+        { ...decide(0, "keep"), ...decide(1, "omit") },
+        "file",
+      );
+      expect(findPendingRows(result)).toHaveLength(2);
+    });
+
+    async function importReviewed(result: ECRFImportResult) {
+      const inventory = await db.models.Inventory.create({
+        inventoryId: randomUUID(),
+        cityId: city.cityId,
+        inventoryName: `${PREFIX}inventory`,
+        year: 2022,
+        inventoryType: InventoryTypeEnum.GPC_BASIC_PLUS,
+        globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      });
+      inventoryIds.push(inventory.inventoryId);
+      const summary = await InventoryImportService.importECRFData(
+        inventory.inventoryId,
+        result,
+      );
+      expect(summary.errors).toEqual([]);
+      return stored(inventory.inventoryId);
+    }
+
+    it.each([
+      ["keep", false],
+      ["omit", true],
+    ] as const)(
+      "imports one value once both rows say %s",
+      async (decision, omit) => {
+        const result = await reviewed([counted, excluded]);
+        await applyReviewedRows(
+          result,
+          { ...decide(0, decision), ...decide(1, decision) },
+          "file",
+        );
+        expect(findPendingRows(result)).toEqual([]);
+        const values = await importReviewed(result);
+        expect(values).toHaveLength(1);
+        expect(BigInt(values[0].co2eq as unknown as string)).toBe(120_000n);
+        expect(values[0].omitFromTotal).toBe(omit);
+      },
+    );
+
+    it("keeps the counted part when the excluded row is skipped", async () => {
+      const result = await reviewed([counted, excluded]);
+      await applyReviewedRows(
+        result,
+        { ...decide(0, "keep"), ...decide(1, "skip") },
+        "file",
+      );
+      expect(findPendingRows(result)).toEqual([]);
+      const values = await importReviewed(result);
+      expect(values).toHaveLength(1);
+      expect(BigInt(values[0].co2eq as unknown as string)).toBe(100_000n);
+      expect(values[0].omitFromTotal).toBe(false);
+    });
+  });
+
+  describe("replacing the inventory", () => {
+    // Mirco's example: the old inventory has I.3.1 = 100 t, the new file has
+    // I.3 = 100 t (no scope split) and II.1.1 = 25 t.
+    async function pdfWaitingForApproval(inventoryId: string) {
+      return db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId,
+        fileName: "replace.pdf",
+        originalFileName: "replace.pdf",
+        fileType: "pdf",
+        fileSize: 1,
+        data: Buffer.from("x"),
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        mappingConfiguration: {
+          rows: [row("I.3", 100), row("II.1.1", 25)],
+        },
+        rowCount: 2,
+        validationResults: { errors: [], warnings: [] },
+      });
+    }
+
+    beforeAll(async () => {
+      setupTests();
+      await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
+      await city.addUser(testUserID);
+    });
+
+    it("the preview checks the file only against itself", async () => {
+      const { inventoryId } = await importRows([row("I.3.1", 100)]);
+      const file = await pdfWaitingForApproval(inventoryId);
+      const { importResult } = await buildImportResult(file);
+      expect(importResult.rows.map((r) => r.errors ?? [])).toEqual([[], []]);
+      expect(importResult.rows.every((r) => !r.issue)).toBe(true);
+      const preview = await previewImportRows(
+        importResult,
+        InventoryTypeEnum.GPC_BASIC_PLUS,
+      );
+      expect(preview.importedRows).toBe(2);
+      expect(preview.pendingRows).toBe(0);
+      expect(preview.rows.map((r) => r.issue)).not.toContain(
+        "gpc-parent-superseded",
+      );
+    });
+
+    it("does not flag a child of a stored subsector value", async () => {
+      const { inventoryId } = await importRows([row("I.3", 500)]);
+      const file = await db.models.ImportedInventoryFile.create({
+        ...(await pdfWaitingForApproval(inventoryId)).toJSON(),
+        id: randomUUID(),
+        mappingConfiguration: { rows: [row("I.3.1", 300)] },
+      });
+      const { importResult } = await buildImportResult(file);
+      expect(importResult.rows[0]).not.toHaveProperty("storedParent");
+      const preview = await previewImportRows(
+        importResult,
+        InventoryTypeEnum.GPC_BASIC_PLUS,
+      );
+      expect(preview.rows).toEqual([]);
+    });
+
+    it("approve with replaceExisting saves both incoming rows", async () => {
+      const { inventoryId } = await importRows([row("I.3.1", 100)]);
+      const file = await pdfWaitingForApproval(inventoryId);
+      const response = await approveImport(
+        mockRequest({ importedFileId: file.id, replaceExisting: true }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventoryId,
+          }),
+        },
+      );
+      await expectStatusCode(response, 202);
+      for (let attempt = 0; attempt < 100; attempt++) {
+        await file.reload();
+        if (
+          file.importStatus === ImportStatusEnum.COMPLETED ||
+          file.importStatus === ImportStatusEnum.FAILED
+        )
+          break;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      expect(file.errorLog ?? null).toBeNull();
+      expect(file.importStatus).toBe(ImportStatusEnum.COMPLETED);
       const refs = (await stored(inventoryId))
         .map((v) => v.gpcReferenceNumber)
         .sort();
-      expect(refs).toEqual(["I.1.1", "I.3.1", "I.3.2"]);
-    });
-
-    it("flags a gap against the stored children once", async () => {
-      const { inventoryId } = await importRows([row("I.3.1", 500)]);
-      const extracted = await ECRFImportService.fromExtractedRows([
-        row("I.3", 1000),
-      ]);
-      await supersedeParentsWithStoredValues(extracted, inventoryId);
-      const parent = extracted.rows[0];
-      expect(parent.issue).toBe("gpc-parent-gap");
-      expect(parent.parentSuperseded?.gap).toBe(500);
-      expect(extracted.warnings.filter((w) => w.includes("gap 500"))).toHaveLength(1);
-    });
-
-    it("keeps the subsector row when the stored children are left out of the total", async () => {
-      const { inventoryId } = await importRows([row("I.3.1", 300, true)]);
-      const extracted = await ECRFImportService.fromExtractedRows([
-        row("I.3", 500),
-      ]);
-      await supersedeParentsWithStoredValues(extracted, inventoryId);
-      expect(extracted.rows[0].errors).toBeUndefined();
-      expect(extracted.rows[0].issue).toBeUndefined();
-    });
-
-    it("warns, without deleting, when a stored subsector value gets children", async () => {
-      const { inventoryId } = await importRows([row("I.3", 500)]);
-      const extracted = await ECRFImportService.fromExtractedRows([
-        row("I.3.1", 300),
-        row("I.3.2", 200),
-      ]);
-      await supersedeParentsWithStoredValues(extracted, inventoryId);
-      expect(extracted.rows.every((r) => !r.errors)).toBe(true);
-      const preview = await previewImportRows(
-        extracted,
-        InventoryTypeEnum.GPC_BASIC_PLUS,
-      );
-      const flagged = preview.rows.filter(
-        (r) => r.issue === "gpc-subsector-already-stored",
-      );
-      expect(flagged).toHaveLength(1);
-      expect(flagged[0]).toMatchObject({
-        gpcRefNo: "I.3.1",
-        status: "imported",
-        storedParent: { gpcRefNo: "I.3", tonnes: 500 },
-      });
-      expect(preview.importedRows).toBe(2);
+      expect(refs).toEqual(["I.3", "II.1.1"]);
+      const results = await getEmissionResults(inventoryId);
+      expect(results.totalEmissions.toNumber()).toBe(125_000);
+      // Let the background catalogue sync finish before the suite closes.
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const entry = await db.models.NativeInputCatalog.findOne({
+          where: { kind: "inventory_import", sourceId: inventoryId },
+        });
+        if (entry?.labels?.importedFileId === file.id) break;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
     });
   });
 });

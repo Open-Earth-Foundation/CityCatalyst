@@ -197,6 +197,75 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     expect(sheet2.getRow(4).getCell(5).value).toBe("");
   });
 
+  describe("the shared fugitive row (I.7.1 and I.8.1)", () => {
+    const value = (
+      gpcReferenceNumber: string,
+      co2eq: bigint | null,
+      unavailableReason: string | null = null,
+    ) => ({
+      id: `iv-${gpcReferenceNumber}`,
+      gpcReferenceNumber,
+      co2eq,
+      inputMethodology: "direct-measure",
+      dataSource: null,
+      unavailableReason,
+      unavailableExplanation: unavailableReason ? "Does not occur" : null,
+      activityValues: [],
+    });
+    async function fugitiveRow(values: ReturnType<typeof value>[]) {
+      const buffer = await ECRFDownloadService.downloadECRF({
+        ...baseInventory([]),
+        inventoryValues: values,
+      } as unknown as InventoryWithInventoryValuesAndActivityValues);
+      const workbook = new Excel.Workbook();
+      await workbook.xlsx.load(
+        buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+      );
+      const sheet2 = workbook.getWorksheet(2)!;
+      // Template row 9: fugitive_total, fugitive_notation, fugitive_explanation.
+      const row = sheet2.getRow(9);
+      return {
+        total: row.getCell(2).value,
+        notation: row.getCell(3).value,
+        explanation: row.getCell(8).value,
+        // Row 10: stationary energy scope 1 total.
+        scope1Total: sheet2.getRow(10).getCell(2).value,
+      };
+    }
+
+    it("writes IE and a note for an unsplit I.7 value (Mirco, CC-1311)", async () => {
+      const row = await fugitiveRow([value("I.7", 50000n)]);
+      expect(row.total).toBe("");
+      expect(row.notation).toBe("IE");
+      expect(row.explanation).toBe(
+        "Included in I.7: 50 t CO2e, not split by scope in the source",
+      );
+      expect(row.scope1Total).toBe(0);
+    });
+
+    it("keeps a value of its own and adds the note of an unsplit I.8", async () => {
+      const row = await fugitiveRow([
+        value("I.7.1", 10000n),
+        value("I.8", 30000n),
+      ]);
+      expect(row.total).toBe(10);
+      expect(row.notation).toBe("");
+      expect(row.explanation).toBe(
+        "Included in I.8: 30 t CO2e, not split by scope in the source",
+      );
+      expect(row.scope1Total).toBe(10);
+    });
+
+    it("writes the notation keys of I.7.1 and I.8.1", async () => {
+      const row = await fugitiveRow([
+        value("I.7.1", null, "no-occurrance"),
+        value("I.8.1", null, "no-occurrance"),
+      ]);
+      expect(row.total).toBe("");
+      expect(row.notation).toBe("NO / NO");
+    });
+  });
+
   it("does not invent NE for GPC refs the inventory never reported (CC-1153)", async () => {
     const buffer = await ECRFDownloadService.downloadECRF(baseInventory([]));
     const workbook = new Excel.Workbook();

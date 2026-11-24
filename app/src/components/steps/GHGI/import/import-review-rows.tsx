@@ -212,9 +212,33 @@ export default function ImportReviewRows({
                 : t("import-row-issue-gpc-subsector-total-unstated")}
             </Text>
           )}
+          {row.issue === "merge-total-inclusion-mixed" && (
+            <Text fontSize="body.sm" color="sentiment.warningDefault">
+              {t("import-row-issue-merge-total-inclusion-mixed", {
+                reference: row.suggestedRefNo,
+              })}
+            </Text>
+          )}
           <SourceContext t={t} row={row} />
           <HStack gap="8px" mt={3} flexWrap="wrap">
-            {row.issue === "gpc-subsector-scope-combined" ? (
+            {row.issue === "merge-total-inclusion-mixed" ? (
+              // One stored value has one total flag: the rows must agree.
+              (["keep", "omit"] as const).map((choice) => (
+                <Button
+                  key={choice}
+                  size="sm"
+                  variant={row.decision === choice ? "solid" : "outline"}
+                  onClick={() =>
+                    onDecide(row.rowIndex, {
+                      ...seen(row, fileId),
+                      reviewDecision: choice,
+                    })
+                  }
+                >
+                  {t(`import-review-merge-${choice}`)}
+                </Button>
+              ))
+            ) : row.issue === "gpc-subsector-scope-combined" ? (
               // GPC Box 4.1: does all of the value belong in the totals?
               (["keep", "omit", "unsure"] as const).map((choice) => (
                 <Button

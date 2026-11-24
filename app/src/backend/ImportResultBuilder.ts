@@ -1,11 +1,8 @@
 import ECRFImportService, {
-  markParentSuperseded,
+  markMixedTotalInclusion,
   supersedeParentsWithChildren,
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
-import { supersedeParentRows } from "@/backend/import/parent-child-rows";
-import { isUnsplitSubsectorRef } from "@/util/GHGI/reported-totals";
-import { resolveImportedTotalCO2e } from "@/backend/InventoryImportService";
 import FileParserService from "@/backend/FileParserService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
@@ -70,15 +67,18 @@ export async function applyReviewedRows(
       continue;
     }
     const askedTotal = reviewIssue(row) === "gpc-subsector-scope-combined";
+    const mixedTotal = reviewIssue(row) === "merge-total-inclusion-mixed";
     if (
       !["keep", "reclassify", "correct-scope"].includes(
         String(decision.reviewDecision),
       ) &&
-      // Only the total-at-risk question offers "leave out" and "not sure".
+      // Only the total-at-risk question offers "leave out" and "not sure";
+      // rows that disagree on the total offer "leave out".
       !(
         askedTotal &&
         ["omit", "unsure"].includes(String(decision.reviewDecision))
-      )
+      ) &&
+      !(mixedTotal && decision.reviewDecision === "omit")
     )
       continue;
     const chosenRef =
@@ -152,78 +152,16 @@ export async function applyReviewedRows(
     review.decision = decision.reviewDecision as
       "keep" | "reclassify" | "correct-scope" | "omit" | "unsure";
     // "Leave out" stores the value apart from the totals (GPC Box 4.1).
-    if (askedTotal) row.omitFromTotal = decision.reviewDecision === "omit";
+    if (
+      askedTotal ||
+      (mixedTotal && ["keep", "omit"].includes(review.decision ?? ""))
+    )
+      row.omitFromTotal = decision.reviewDecision === "omit";
   }
-  // A reclassify can move a child into or out of a subsector (CC-1311).
+  // A reclassify can move a child into or out of a subsector (CC-1311), or
+  // next to a row of its new reference that disagrees on the total.
   supersedeParentsWithChildren(result.rows, result.warnings);
-}
-
-/**
- * CC-1311: the parent/child rule of one import, applied against values already
- * on the inventory (manual entry, connected sources, earlier imports). An
- * imported subsector row (`I.3`) is dropped when the inventory has its
- * children. An imported child of a stored `I.3` is only flagged: approve never
- * deletes stored data. Runs after review decisions, which reset earlier marks.
- */
-export async function supersedeParentsWithStoredValues(
-  result: ECRFImportResult,
-  inventoryId: string | null | undefined,
-): Promise<void> {
-  const live = result.rows.filter(
-    (row) => !row.errors?.length && row.subsectorId,
-  );
-  if (!inventoryId || live.length === 0) return;
-  const stored = await db.models.InventoryValue.findAll({
-    where: {
-      inventoryId,
-      subSectorId: [...new Set(live.map((row) => row.subsectorId))],
-    },
-  });
-  // A notation key or a value left out of the total cannot replace a counted value.
-  const counted = stored.flatMap((value) =>
-    value.co2eq == null || value.unavailableReason || value.omitFromTotal
-      ? []
-      : [{ value, tonnes: Number(value.co2eq) / 1000 }],
-  );
-
-  const parents = live.filter(
-    (row) => row.subcategoryId == null && isUnsplitSubsectorRef(row.gpcRefNo),
-  );
-  const storedChildren = counted.filter(({ value }) => value.subCategoryId);
-  for (const { index, ...detail } of supersedeParentRows([
-    ...parents.map((row) => ({
-      index: result.rows.indexOf(row),
-      subsectorId: row.subsectorId,
-      subcategoryId: null,
-      co2eq: resolveImportedTotalCO2e(row) ?? null,
-      notationKey: row.notationKey ?? null,
-    })),
-    ...storedChildren.map(({ value, tonnes }) => ({
-      index: -1,
-      subsectorId: value.subSectorId!,
-      subcategoryId: value.subCategoryId!,
-      co2eq: tonnes,
-      notationKey: null,
-    })),
-  ]))
-    markParentSuperseded(result.rows[index], detail, result.warnings);
-
-  const flagged = new Set<string>();
-  for (const row of live) {
-    if (row.subcategoryId == null || flagged.has(row.subsectorId)) continue;
-    const parent = counted.find(
-      ({ value }) =>
-        value.subSectorId === row.subsectorId &&
-        !value.subCategoryId &&
-        isUnsplitSubsectorRef(value.gpcReferenceNumber),
-    );
-    if (!parent) continue;
-    flagged.add(row.subsectorId);
-    row.storedParent = {
-      gpcRefNo: parent.value.gpcReferenceNumber!,
-      tonnes: parent.tonnes,
-    };
-  }
+  markMixedTotalInclusion(result.rows);
 }
 
 // Fields a user may correct per row on PDF/AI-extracted imports.
@@ -440,10 +378,6 @@ export async function buildImportResult(
         );
     }
     await applyReviewedRows(importResult, rowDecisions, importedFile.id);
-    await supersedeParentsWithStoredValues(
-      importResult,
-      importedFile.inventoryId,
-    );
     return { importResult, extractedRows: storedRows };
   }
 
@@ -499,6 +433,5 @@ export async function buildImportResult(
       );
   }
   await applyReviewedRows(importResult, rowDecisions, importedFile.id);
-  await supersedeParentsWithStoredValues(importResult, importedFile.inventoryId);
   return { importResult, extractedRows: null };
 }

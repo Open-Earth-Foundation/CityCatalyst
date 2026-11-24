@@ -426,7 +426,7 @@ class ConceptNoteWorkspaceRepository:
                     ) from exc
 
             # Reconcile evidence-filled and newly reopened gaps before status choice.
-            gaps_changed = _reconcile_evidence_gaps(
+            gaps_changed = await _reconcile_evidence_gaps(
                 session,
                 chapter,
                 existing,

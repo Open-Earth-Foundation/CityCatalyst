@@ -430,7 +430,7 @@ def _restore_dropped_gaps(
     )
 
 
-def _reconcile_evidence_gaps(
+async def _reconcile_evidence_gaps(
     session: AsyncSession,
     chapter: ConceptNoteChapter,
     existing: list[ConceptNoteGap],
@@ -442,6 +442,8 @@ def _reconcile_evidence_gaps(
 
     Only gaps in ``answered_gap_ids`` (backed by a successful new-source query)
     can close. Caveat gaps are user decisions and are never closed here.
+    A refresh that keeps the normalized question still moves the gap to a new
+    version, so stale forms are refused, but its saved answers move with it.
     """
     by_key = {gap.field_key: gap for gap in existing}
     output_by_key = {output.field_key: output for output in outputs}
@@ -478,6 +480,10 @@ def _reconcile_evidence_gaps(
             continue
         if gap.status == "dismissed":
             continue
+        previous_version = gap.version
+        same_question = information_marker_key(gap.question) == information_marker_key(
+            output.question
+        )
         presentation_changed = _update_gap_from_output(gap, output)
         reopened = gap.status == "resolved"
         if reopened:
@@ -498,6 +504,10 @@ def _reconcile_evidence_gaps(
             gap.version += 1
             gap.updated_at = datetime.now(UTC)
             changed = True
+            if same_question and not reopened:
+                await carry_forward_saved_answer(
+                    session, gap=gap, previous_version=previous_version
+                )
     return changed
 
 

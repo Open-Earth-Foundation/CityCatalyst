@@ -1093,6 +1093,79 @@ async def test_revalidation_keeps_progress_only_for_the_same_open_question(
     assert gap.original_question == (LEAD_QUESTION if expected_passages else None)
 
 
+@pytest.mark.parametrize(
+    ("saves", "state", "question", "carried"),
+    [
+        # A new cited suggestion for the same question keeps the saved answers.
+        (["Loan"], "open", "confirm the lead partner", "Loan"),
+        (["Loan"], "open", BUDGET_QUESTION, None),
+        (["Loan"], "resolved", LEAD_QUESTION, None),
+        (["Loan", ""], "open", LEAD_QUESTION, None),
+    ],
+)
+async def test_revalidation_carries_saved_answers_only_for_the_same_open_question(
+    workspace, saves, state, question, carried
+) -> None:
+    previous = None
+    for answer in saves:
+        assert await save_answers(workspace, answer, previous)
+        previous = answer
+    await update_fixture_gap(workspace, status=state)
+    await workspace.save_revalidated_chapter(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=f"Implementation. [Information needed: {question}]",
+            missing_information=[
+                ConceptNoteDraftGapOutput(
+                    field_key="lead_partner",
+                    question=question,
+                    why_asking="The funder needs confirmation.",
+                    severity="critical",
+                    suggestions=[{"value": "Loan", "source_refs": ["memo.pdf"]}],
+                )
+            ],
+        ),
+        source_refs=["memo.pdf"],
+        answered_gap_ids=set(),
+    )
+    [gap] = (await fixture_chapter(workspace)).gaps
+    assert (gap.version, gap.answered_so_far) == (2, carried)
+    # The open card from before the refresh still cannot overwrite the answers.
+    assert not await save_answers(workspace, "Grant", previous, version=1)
+    if carried:
+        assert await save_answers(workspace, "Loan, Grant", carried, version=2)
+        [gap] = (await fixture_chapter(workspace)).gaps
+        assert gap.answered_so_far == "Loan, Grant"
+
+
+async def test_working_copy_keeps_each_saved_answer_version(workspace) -> None:
+    """A copy reads its own saved answers, and changing them leaves the source."""
+    assert await save_answers(workspace, "Loan")
+    destination_id = uuid4()
+    await workspace.copy_working_copy(
+        source_run_id=RUN_ID, destination_run_id=destination_id
+    )
+    [copied] = (await workspace.list_chapters(run_id=destination_id))[0].gaps
+    assert copied.answered_so_far == "Loan"
+
+    for answer, previous in (("Grant", "Loan"), ("", "Grant")):
+        async with workspace._session_factory() as session, session.begin():
+            assert await save_partial_answer(
+                session,
+                run_id=destination_id,
+                gap_id=copied.gap_id,
+                gap_version=copied.version,
+                answer=answer,
+                expected_previous=previous,
+                user_id="owner",
+            )
+        [source] = (await fixture_chapter(workspace)).gaps
+        assert source.answered_so_far == "Loan"
+    [copied] = (await workspace.list_chapters(run_id=destination_id))[0].gaps
+    assert copied.answered_so_far is None
+
+
 async def test_working_copy_keeps_gap_answer_progress_with_independent_identity(
     workspace,
 ) -> None:

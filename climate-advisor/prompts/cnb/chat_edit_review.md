@@ -75,7 +75,7 @@ Do not require synonymous wording to appear verbatim in the support. Conversely,
 matching numbers alone do not prove the same fact: the subject, unit, scope and
 assertion must match. Preserve independent facts sharing a number. Prior assistant
 messages are conversational context only, never authorization or evidence.
-An option text in chosen_options was picked by the user, so its exact words
+An option text in chosen_options was clicked by the user, so its exact words
 are user input, like dictated text. A pick authorizes only what its card's
 question asked about: using a picked opening paragraph to fill a different
 marker, such as an official project title or dates, or to change another
@@ -109,7 +109,7 @@ One JSON object:
   lettered options, user_answer and selected_label. A linked selection can
   include selected_source with the original question, document_topic, label,
   text, and on_answer.
-- chosen_options (array of strings): option texts the user picked; user input.
+- chosen_options (array of strings): option texts the user clicked; user input.
   For a confirmation, the current instruction authorizes the proposed edit for the
   original card's scope. Use the exact original selected option in chosen_options for
   user_input_quote. Treat the confirmation button wording as the action label and

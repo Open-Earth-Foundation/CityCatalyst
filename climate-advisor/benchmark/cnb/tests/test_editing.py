@@ -467,9 +467,9 @@ async def test_timeline_chat_runner_publishes_confirmation_without_edit_tool(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("minimal_diff", [False, True])
-async def test_option_switch_checks_verbatim_text_and_quote(workspace_case, minimal_diff):
+async def test_option_click_checks_verbatim_text_and_quote(workspace_case, minimal_diff):
     loaded, snapshots, run_context = workspace_case
-    switch = next(c for c in loaded.fixture.editing.cases if c.id == "edit-switch-to-option-b")
+    switch = next(c for c in loaded.fixture.editing.cases if c.id == "edit-click-option-b")
     selection = switch.option_selection
     assert selection is not None
     a, b, _ = selection.card.options
@@ -481,8 +481,8 @@ async def test_option_switch_checks_verbatim_text_and_quote(workspace_case, mini
         switch, loaded, get_settings(), snapshots, run_context, planner=planner
     )
     kwargs = planner.plan.await_args.kwargs
-    assert kwargs["chosen_options"] == [a, b]
-    assert kwargs["question_cards"][0]["selected_label"] == "A"
+    assert kwargs["chosen_options"] == [b]
+    assert kwargs["question_cards"][0]["selected_label"] == "B"
     assert case_checks(switch, record, snapshots)["contract_failures"] == []
-    record["changes"][0]["user_input_quote"] = switch.instruction
+    record["changes"][0]["user_input_quote"] = a
     assert case_checks(switch, record, snapshots)["contract_failures"]

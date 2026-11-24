@@ -311,7 +311,7 @@ async def handle_tool_output(
 def question_events(
     handler: StreamingHandler, question: ConceptNoteQuestion
 ) -> Iterator[bytes]:
-    """Publish one clarification card as its prose message and public card event."""
+    """Publish one question card as its prose message and public card event."""
     content = ("\n\n" if handler.assistant_tokens else "") + question.message
     handler.assistant_tokens.append(content)
     yield format_sse(

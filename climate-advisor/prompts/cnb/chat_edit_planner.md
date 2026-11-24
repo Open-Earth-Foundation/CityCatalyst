@@ -18,7 +18,11 @@ the user's answer. Resolve "option B", "that one", "the second version" or a
 reply that repeats an option against these cards; the latest card wins, and a
 later instruction replaces an earlier pick. Never ask the user what an option
 means when a card answers it. `chosen_options` lists the exact option texts the
-user picked; their words are human input, quotable as user_input_quote.
+user clicked; only these words are human input, quotable as user_input_quote.
+A typed reference such as "option B" identifies an option but does not make its
+text human input: support its facts from sources like any other wording, or,
+if they have no other support, return clarification asking the user to click
+that option on the card.
 A card's question defines the target of its options. When the instruction picks
 or repeats an option, change only what that card's question was about, for
 example the opening paragraph of the project summary. Do not use the option's
@@ -182,8 +186,8 @@ Input is a JSON object containing:
   message) and selected_label (string or null: the option that answer repeats).
   A linked selection can include selected_source with the original question,
   document_topic, label, text, and on_answer.
-- chosen_options (array of strings): exact option texts the user picked, by
-  clicking or by naming a letter such as "option B". Human input.
+- chosen_options (array of strings): exact option texts the user clicked.
+  Human input.
   For a confirmation, the current instruction authorizes the proposed edit for the
   original card's scope. Use the exact original selected option in chosen_options for
   user_input_quote. Treat the confirmation button wording as the action label and

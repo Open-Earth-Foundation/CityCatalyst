@@ -84,10 +84,10 @@ async def run_edit_case(
             saved_card(
                 selection.card,
                 str(golden_id(fid, f"card/{case.id}")),
-                selection.card.options[selection.previous_index],
+                case.instruction,
             )
         )
-    chosen = referenced_options(cards, case.instruction)
+    chosen = referenced_options(cards)
     record: dict[str, Any] = {
         "case_id": case.id,
         "outcome": None,

@@ -223,16 +223,15 @@ class StreamingHandler:
                 self, settings, payload, req_id
             )
 
-            # Stream responses from the agent; a clarification turn has no agent.
-            if agent is not None:
-                async with aclosing(stream_agent_events(
-                    self,
-                    agent,
-                    payload,
-                    conversation_history,
-                )) as stream:
-                    async for event_bytes in stream:
-                        yield event_bytes
+            # Stream responses from the agent.
+            async with aclosing(stream_agent_events(
+                self,
+                agent,
+                payload,
+                conversation_history,
+            )) as stream:
+                async for event_bytes in stream:
+                    yield event_bytes
 
             for event_bytes in finalize_card_presentation(self):
                 yield event_bytes

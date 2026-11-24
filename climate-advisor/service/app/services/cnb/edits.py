@@ -215,8 +215,8 @@ class ConceptNoteEditService:
         # Preserve the real base vector; proposals remain separate from the draft.
         base_revisions = {}
         prior = None
-        # Picked suggested answers are human input; the cards resolve references.
-        chosen_options = referenced_options(question_cards or [], request.instruction)
+        # Clicked suggested answers are human input; the cards resolve references.
+        chosen_options = referenced_options(question_cards or [])
         planner_cards = planner_question_cards(question_cards or [])
         try:
             if request.refines_proposal_id:

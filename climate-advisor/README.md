@@ -2288,22 +2288,13 @@ prepares a proposed edit for review. CA supplies this action if the model omits
 it. Informational and older unmarked cards continue as ordinary replies.
 A custom answer, or a pick on a `propose_edit` card, keeps the normal edit path.
 The planner and reviewer receive up to three recent saved cards (`question_cards`:
-question, lettered options, the user's answer and the matching label). A typed
-letter counts only in a choice command: after option/choice/alternative
-("option b", "choice (c)") or a choosing verb with a capital or parenthesized
-letter ("Go with B instead"). "Could you give me an option a bit more formal?"
-is ordinary chat. A typed letter searches the three most recent source cards;
-CA's own clarification cards are skipped. A letter identifies an option if only
-one meaning matches or the user identifies its topic. CA asks the user to
-choose between the competing answers when a letter still has several meanings.
-Clarification labels show the document topic, or a short plain-text preview
-of the question, and the answer without Markdown or link URLs. Clicking a
-label applies the option's full saved text.
-`chosen_options` lists option texts the user picked, by click or by a letter
-reference such as "go with option B"; their exact words count as user input
-for `user_input_quote`. A confirmation pick carries the original answer into
-`chosen_options`. A pick authorizes only what its card asked about; it
-must not fill unrelated markers such as a project title or dates.
+question, lettered options, the user's answer and the matching label).
+`chosen_options` lists the option texts the user clicked; their exact words
+count as user input for `user_input_quote`. Only a click is a pick: a typed
+"go with option B" stays ordinary chat, which the planner resolves against the
+cards, but the option's text is not user input. A confirmation pick carries
+the original answer into `chosen_options`. A pick authorizes only what its card
+asked about; it must not fill unrelated markers such as a project title or dates.
 If the model sends invalid card arguments, the error goes back to the model,
 which can correct them or answer in text; only a valid card ends the turn.
 History returns the choices as `choices` and the mode as `choice_action`.

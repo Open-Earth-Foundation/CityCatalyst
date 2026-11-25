@@ -1,8 +1,8 @@
 /**
- * CC-950 v1: run Path A (exact eCRF + near-eCRF) files through GhgiIngestPlugin
- * and score stored InventoryValues against the product answer-key workbook.
- *
- * Does not use the Excel/CSV export. CIRIS is out of scope until CC-1217.
+ * CC-950 / CC-1217 / CC-1330: run Path A files (exact eCRF, near-eCRF, CIRIS
+ * with eCRF_3) through GhgiIngestPlugin, score stored InventoryValues against
+ * the answer key or source file, then generate CityCatalyst's eCRF export and
+ * score that workbook against the ingested (stored) GPC values.
  *
  *   npx tsx scripts/ghgi-path-a-backtest.ts --files ./ingestion-script-files
  */
@@ -22,6 +22,8 @@ import {
 import { createIngestRuntime } from "@/backend/ingest/http";
 import { ingestGhgiBuffer } from "@/backend/ingest/ghgi-run";
 import { getEmissionResults } from "@/backend/ResultsService";
+import ECRFDownloadService from "@/backend/ECRFDownloadService";
+import type { InventoryWithInventoryValuesAndActivityValues } from "@/util/types";
 import InventoryReplaceService from "@/backend/InventoryReplaceService";
 import FileValidatorService from "@/backend/FileValidatorService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
@@ -44,7 +46,7 @@ const RECALL_BAR = 0.99;
 const PRECISION_BAR = 0.99;
 const CLASS_BAR = 0.98;
 
-type Family = "exact-ecrf" | "near-ecrf";
+type Family = "exact-ecrf" | "near-ecrf" | "ciris";
 
 interface AnswerKeyRow {
   city: string;
@@ -80,6 +82,11 @@ interface CaseResult {
   expectedFileTotalT: number | null;
   totalsMatchExclEnergy: boolean | null;
   totalsMatchFile: boolean | null;
+  exportRecall: number | null;
+  exportPrecision: number | null;
+  exportValueAccuracy: number | null;
+  exportTotalT: number | null;
+  exportPass: boolean;
   flags: string[];
   pass: boolean;
 }
@@ -122,12 +129,14 @@ function withinTol(actual: number, expected: number): boolean {
 }
 
 function familyOf(fileName: string): Family {
+  if (/ciris/i.test(fileName)) return "ciris";
   return /^ecrf-inventory/i.test(fileName) ? "exact-ecrf" : "near-ecrf";
 }
 
 function isInventoryXlsx(file: string): boolean {
   const s = slug(file);
-  return s.endsWith("xlsx") && !s.startsWith("answer_keys");
+  if (s.startsWith("answer_keys") || file.startsWith("~$")) return false;
+  return s.endsWith("xlsx") || s.endsWith("xlsm");
 }
 
 /** e.g. Banana_CRFFormat_2022_20261106.xlsx → { city, year } */
@@ -137,6 +146,43 @@ function parseCrfFormatName(
   const match = file.match(/^(.*)_CRFFormat_(\d{4})_/i);
   if (!match) return null;
   return { city: match[1].trim(), year: Number(match[2]) };
+}
+
+function splitCamelCity(value: string): string {
+  return value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
+    .trim();
+}
+
+/**
+ * CIRIS filenames, e.g. A3-04_Boston_2023_CIRIS_slim.xlsx,
+ * CIRIS_BuenosAires_GEI_2020_CDP.xlsx, Boston, USA 2023 Final CIRIS (2025).xlsm.
+ */
+function parseCirisName(
+  file: string,
+): { city: string; year: number } | null {
+  if (!/ciris/i.test(file)) return null;
+  const a3 = file.match(/^A\d+-\d+_([^_]+)_(\d{4})_CIRIS/i);
+  if (a3) return { city: splitCamelCity(a3[1]), year: Number(a3[2]) };
+  const prefixed = file.match(/^CIRIS_([^_]+).*?(\d{4})/i);
+  if (prefixed) {
+    return { city: splitCamelCity(prefixed[1]), year: Number(prefixed[2]) };
+  }
+  const yearMatch = file.match(/\b((?:19|20)\d{2})\b/);
+  if (!yearMatch) return null;
+  const city = file
+    .replace(/\.(xlsx|xlsm)$/i, "")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/,?\s*(USA|US)\b/gi, "")
+    .replace(/\bFinal\s+CIRIS\b.*$/i, "")
+    .replace(/\bCIRIS\b/gi, "")
+    .replace(/\b((?:19|20)\d{2})\b/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!city) return null;
+  return { city, year: Number(yearMatch[1]) };
 }
 
 function keyFromSource(
@@ -167,6 +213,11 @@ function keyFromSource(
 
 async function loadAnswerKeys(dir: string): Promise<AnswerKeyRow[]> {
   const keyPath = path.join(dir, "Answer_Keys_and_Results_eCRF_DP4C.xlsx");
+  try {
+    await access(keyPath, fsConstants.R_OK);
+  } catch {
+    return [];
+  }
   const wb = new Excel.Workbook();
   await wb.xlsx.readFile(keyPath);
   const sheet = wb.getWorksheet("Answer key");
@@ -328,6 +379,169 @@ async function expectedByGpc(
   return { values, notations };
 }
 
+function mapsFromInventoryValues(rows: {
+  gpcReferenceNumber?: string | null;
+  co2eq?: unknown;
+  unavailableReason?: string | null;
+}[]): { values: Map<string, number>; notations: Map<string, string> } {
+  const values = new Map<string, number>();
+  const notations = new Map<string, string>();
+  for (const row of rows) {
+    const gpc = row.gpcReferenceNumber?.trim();
+    if (!gpc) continue;
+    if (row.co2eq != null) {
+      values.set(gpc, Number(row.co2eq) / 1000);
+    }
+    const note = toCanonical(row.unavailableReason);
+    if (note) notations.set(gpc, note);
+  }
+  return { values, notations };
+}
+
+function scoreMaps(
+  expected: { values: Map<string, number>; notations: Map<string, string> },
+  actual: { values: Map<string, number>; notations: Map<string, string> },
+): {
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+  totalExclEnergyT: number;
+} {
+  const expectedIds = new Set([
+    ...expected.values.keys(),
+    ...expected.notations.keys(),
+  ]);
+  const actualIds = new Set([...actual.values.keys(), ...actual.notations.keys()]);
+  let intersection = 0;
+  for (const id of expectedIds) {
+    if (actualIds.has(id)) intersection += 1;
+  }
+  let valuePairs = 0;
+  let valueHits = 0;
+  for (const [gpc, tonnes] of expected.values) {
+    const got = actual.values.get(gpc);
+    if (got == null) continue;
+    valuePairs += 1;
+    if (withinTol(got, tonnes)) valueHits += 1;
+  }
+  let totalExclEnergyT = 0;
+  for (const [gpc, tonnes] of actual.values) {
+    if (!isOmittedGPCReference(gpc)) totalExclEnergyT += tonnes;
+  }
+  return {
+    recall: expectedIds.size > 0 ? intersection / expectedIds.size : null,
+    precision: actualIds.size > 0 ? intersection / actualIds.size : null,
+    valueAccuracy: valuePairs > 0 ? valueHits / valuePairs : null,
+    totalExclEnergyT,
+  };
+}
+
+function meetsScoreBars(score: {
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+}): boolean {
+  return (
+    (score.recall ?? 0) >= RECALL_BAR &&
+    (score.precision ?? 0) >= PRECISION_BAR &&
+    (score.valueAccuracy ?? 0) >= 1
+  );
+}
+
+async function loadInventoryForEcrfExport(
+  inventoryId: string,
+): Promise<InventoryWithInventoryValuesAndActivityValues> {
+  const inventory = await db.models.Inventory.findByPk(inventoryId, {
+    include: [
+      { model: db.models.City, as: "city" },
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValues",
+        include: [
+          {
+            model: db.models.ActivityValue,
+            as: "activityValues",
+            include: [
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                separate: true,
+                include: [
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.models.DataSource,
+            attributes: [
+              "datasourceId",
+              "sourceType",
+              "datasetName",
+              "datasourceName",
+              "dataQuality",
+            ],
+            as: "dataSource",
+          },
+          {
+            model: db.models.SubSector,
+            as: "subSector",
+            attributes: ["subsectorId", "subsectorName"],
+          },
+        ],
+      },
+    ],
+  });
+  if (!inventory) {
+    throw new Error(`Inventory ${inventoryId} not found for eCRF export`);
+  }
+  return inventory.toJSON() as InventoryWithInventoryValuesAndActivityValues;
+}
+
+/** CityCatalyst eCRF download of ingested values, scored against stored GPC maps. */
+async function scoreEcrfExport(
+  inventoryId: string,
+  year: number,
+  stored: { values: Map<string, number>; notations: Map<string, string> },
+): Promise<{
+  recall: number | null;
+  precision: number | null;
+  valueAccuracy: number | null;
+  totalT: number | null;
+  pass: boolean;
+  error?: string;
+}> {
+  try {
+    const output = await loadInventoryForEcrfExport(inventoryId);
+    const buffer = await ECRFDownloadService.downloadECRF(output);
+    const exported = await expectedByGpc(
+      buffer,
+      "eCRF-inventory-export.xlsx",
+      year,
+    );
+    const scored = scoreMaps(stored, exported);
+    return {
+      recall: scored.recall,
+      precision: scored.precision,
+      valueAccuracy: scored.valueAccuracy,
+      totalT: scored.totalExclEnergyT,
+      pass: meetsScoreBars(scored),
+    };
+  } catch (err) {
+    return {
+      recall: null,
+      precision: null,
+      valueAccuracy: null,
+      totalT: null,
+      pass: false,
+      error: `ecrf export: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+}
+
 async function wipeInventory(inventoryId: string, userId: string) {
   const count = await db.models.InventoryValue.count({
     where: { inventoryId },
@@ -355,46 +569,23 @@ async function scoreStored(
   const rows = await db.models.InventoryValue.findAll({
     where: { inventoryId },
   });
-  const storedValues = new Map<string, number>();
-  const storedNotes = new Map<string, string>();
-  for (const row of rows) {
-    const gpc = row.gpcReferenceNumber?.trim();
-    if (!gpc) continue;
-    if (row.co2eq != null) {
-      storedValues.set(gpc, Number(row.co2eq) / 1000);
-    }
-    const note = toCanonical(row.unavailableReason);
-    if (note) storedNotes.set(gpc, note);
-  }
-
+  const stored = mapsFromInventoryValues(rows);
+  const vsSource = scoreMaps(expected, stored);
   const expectedIds = new Set([
     ...expected.values.keys(),
     ...expected.notations.keys(),
   ]);
-  const storedIds = new Set([...storedValues.keys(), ...storedNotes.keys()]);
+  const storedIds = new Set([
+    ...stored.values.keys(),
+    ...stored.notations.keys(),
+  ]);
   let intersection = 0;
   for (const id of expectedIds) {
     if (storedIds.has(id)) intersection += 1;
   }
 
-  const storedValueRows = storedValues.size;
-  const storedNotationRows = storedNotes.size;
-  const rowRecall =
-    expectedIds.size > 0 ? intersection / expectedIds.size : null;
-  const rowPrecision =
-    storedIds.size > 0 ? intersection / storedIds.size : null;
   const classified = rows.filter((row) => row.gpcReferenceNumber).length;
   const classification = rows.length > 0 ? classified / rows.length : null;
-
-  let valuePairs = 0;
-  let valueHits = 0;
-  for (const [gpc, tonnes] of expected.values) {
-    const stored = storedValues.get(gpc);
-    if (stored == null) continue;
-    valuePairs += 1;
-    if (withinTol(stored, tonnes)) valueHits += 1;
-  }
-  const valueAccuracy = valuePairs > 0 ? valueHits / valuePairs : null;
 
   const results = await getEmissionResults(inventoryId);
   // InventoryValue.co2eq is kilograms; the answer key is metric tonnes.
@@ -406,14 +597,28 @@ async function scoreStored(
   const totalsMatchFile =
     key.fileTotalT == null ? null : withinTol(storedTotalT, key.fileTotalT);
 
+  const exportScore =
+    ingestStatus === "completed"
+      ? await scoreEcrfExport(inventoryId, key.year, stored)
+      : {
+          recall: null,
+          precision: null,
+          valueAccuracy: null,
+          totalT: null,
+          pass: false,
+          error: "ecrf export skipped (ingest did not complete)",
+        };
+
   const flags: string[] = [];
   if (family === "exact-ecrf") {
-    flags.push(
-      "exact-ecrf uses DPC Mexico totals as control; export file may differ",
-    );
+    flags.push("exact-ecrf uses DPC Mexico totals as ingest control");
   }
   if (!key.fromWorkbook) {
-    flags.push("no workbook key row; scored against the source file");
+    flags.push(
+      family === "ciris"
+        ? "CIRIS; scored against eCRF_3 (no workbook key row)"
+        : "no workbook key row; scored against the source file",
+    );
   }
   if (totalsMatchExclEnergy === false && totalsMatchFile === true) {
     flags.push("key?: dashboard total matches file total, not excl. I.4.4");
@@ -425,10 +630,8 @@ async function scoreStored(
 
   const pass =
     ingestStatus === "completed" &&
-    (rowRecall ?? 0) >= RECALL_BAR &&
-    (rowPrecision ?? 0) >= PRECISION_BAR &&
     (classification ?? 0) >= CLASS_BAR &&
-    (valueAccuracy ?? 0) >= 1 &&
+    meetsScoreBars(vsSource) &&
     totalsMatchExclEnergy === true;
 
   return {
@@ -440,18 +643,23 @@ async function scoreStored(
     ingestStatus,
     error,
     expectedValueRows: expected.values.size,
-    storedValueRows,
-    storedNotationRows,
+    storedValueRows: stored.values.size,
+    storedNotationRows: stored.notations.size,
     matchedRows: intersection,
-    rowRecall,
-    rowPrecision,
-    valueAccuracy,
+    rowRecall: vsSource.recall,
+    rowPrecision: vsSource.precision,
+    valueAccuracy: vsSource.valueAccuracy,
     classification,
     storedTotalT,
     expectedTotalExclEnergyT: key.totalExclEnergyT,
     expectedFileTotalT: key.fileTotalT,
     totalsMatchExclEnergy,
     totalsMatchFile,
+    exportRecall: exportScore.recall,
+    exportPrecision: exportScore.precision,
+    exportValueAccuracy: exportScore.valueAccuracy,
+    exportTotalT: exportScore.totalT,
+    exportPass: exportScore.pass,
     flags,
     pass,
   };
@@ -464,10 +672,10 @@ function pct(n: number | null): string {
 
 function renderReport(results: CaseResult[], missing: string[]): string {
   const lines = [
-    "# GHGI Path A backtest (CC-950 v1)",
+    "# GHGI Path A backtest (eCRF, near-eCRF, CIRIS)",
     "",
     `Ran ${results.length} file(s). Rows are scored as stored GPC refs (import sums eCRF_3 lines that share a ref).`,
-    "CIRIS is not in this folder and is skipped until CC-1217.",
+    "CIRIS with eCRF_3 is Path A (CC-1217). Packs without eCRF_3 are not scored.",
     "",
     "| City | Family | Path | Status | Recall | Precision | Value acc | Class | Stored t | Excl. energy t | Pass | Flags |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -584,8 +792,8 @@ async function main() {
 
   for (const file of names) {
     if (!isInventoryXlsx(file) || used.has(file)) continue;
-    const parsed = parseCrfFormatName(file);
-    const city = parsed?.city ?? file.replace(/\.xlsx$/i, "");
+    const parsed = parseCirisName(file) ?? parseCrfFormatName(file);
+    const city = parsed?.city ?? file.replace(/\.(xlsx|xlsm)$/i, "");
     const year = parsed?.year ?? new Date().getFullYear();
     results.push(
       await runCase({

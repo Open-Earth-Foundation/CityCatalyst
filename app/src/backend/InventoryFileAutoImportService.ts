@@ -74,6 +74,9 @@ export function classifyBulkInventoryFile(validation: ValidationResult): {
   if (validation.cirisWithoutEcrf) {
     return { kind: "not_ecrf", detectedType: "ciris_without_ecrf" };
   }
+  if (validation.isCIRIS === true) {
+    return { kind: "ecrf", detectedType: "ciris" };
+  }
   if (validation.isBIOMATEC) {
     return { kind: "not_ecrf", detectedType: "biomatec" };
   }

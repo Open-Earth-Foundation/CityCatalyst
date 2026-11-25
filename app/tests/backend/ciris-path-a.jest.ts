@@ -53,7 +53,7 @@ describe("CC-1217 CIRIS Path A helpers", () => {
       isCIRIS: true,
       detectedColumns: { gpcRefNo: 0, sector: 1, subsector: 2, scope: 3 },
     });
-    expect(classified).toEqual({ kind: "ecrf", detectedType: "ecrf" });
+    expect(classified).toEqual({ kind: "ecrf", detectedType: "ciris" });
     expect(
       shouldCommitViaGhgiRunner({
         fileType: "xlsx",

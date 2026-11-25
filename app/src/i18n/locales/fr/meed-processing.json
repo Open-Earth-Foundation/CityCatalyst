@@ -1,7 +1,7 @@
 {
   "header-running": "Génération de recommandations d'action",
   "header-done": "Recommandations prêtes",
-  "header-sub": "Commencé à l'instant · temps d'attente prévu environ 30 secondes",
+  "header-sub": "Commencé à l'instant · temps d'attente prévu environ une minute",
   "percent-complete": "{{pct}}% terminé",
   "stage-in-progress": "{{stage}} en cours",
   "all-complete": "Toutes les analyses sont terminées",

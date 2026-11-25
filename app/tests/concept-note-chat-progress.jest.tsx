@@ -16,6 +16,7 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
 jest.unstable_mockModule("@/hooks/useSSEStream", () => ({
+  STREAM_STALLED_CODE: "stream_stalled",
   useSSEStream: (options: SSEStreamOptions) => {
     streamOptions = options;
     return { startStream, stopStream };
@@ -133,6 +134,18 @@ it("keeps operational progress separate from the answer and resets for the next 
   expect(chat.isGenerating).toBe(false);
   expect(chat.error).toBe("chat-send-error");
   expect(chat.messages.at(-1)?.role).toBe("user");
+});
+
+it("sends a guided answer with its gap chapter scope", async () => {
+  const scope = { kind: "auto" as const, focused_chapter_id: "gap-chapter" };
+  await act(async () => chat.sendMessage("My answer: loan", scope));
+  const [, request] = startStream.mock.calls.at(-1) as unknown as [
+    string,
+    { body: string },
+  ];
+  const body = JSON.parse(request.body);
+  expect(body.context.concept_note_edit.scope).toEqual(scope);
+  expect(body.content).toBe("My answer: loan");
 });
 
 it("groups live summaries and clears them on completion and failure", async () => {

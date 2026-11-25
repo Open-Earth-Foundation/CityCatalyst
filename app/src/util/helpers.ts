@@ -401,6 +401,34 @@ export function toDecimal(
 }
 
 /**
+ * Sector header share of city-wide gross emissions.
+ * Integer rounding in ResultsService makes sub-1% shares `0`; `||` would then
+ * print N/A (CC-1144). Keep 0% only when the sector really has no gross mass.
+ */
+export function formatShareOfTotalEmissions({
+  percentage,
+  grossCo2eqKg,
+  notAvailableLabel,
+  lessThanOnePercentLabel,
+  ofTotalEmissionsLabel,
+}: {
+  percentage: number | null | undefined;
+  grossCo2eqKg?: bigint;
+  notAvailableLabel: string;
+  lessThanOnePercentLabel: string;
+  ofTotalEmissionsLabel: string;
+}): string {
+  const suffix = `% ${ofTotalEmissionsLabel}`;
+  if (percentage == null) {
+    return `${notAvailableLabel} ${suffix}`;
+  }
+  if (percentage === 0 && (grossCo2eqKg ?? 0n) > 0n) {
+    return `${lessThanOnePercentLabel}${suffix}`;
+  }
+  return `${percentage}${suffix}`;
+}
+
+/**
  * Format kg emissions/removals, showing negative (removal) values as a positive
  * magnitude with `removedLabel` instead of a negative number - see CC-749.
  */

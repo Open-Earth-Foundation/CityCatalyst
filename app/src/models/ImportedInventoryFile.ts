@@ -1,13 +1,29 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Op, Optional } from "sequelize";
 import type { User, UserId } from "./User";
 import type { City, CityId } from "./City";
 import type { Inventory, InventoryId } from "./Inventory";
 import { ImportStatusEnum } from "@/util/enums";
 
+export interface ImportReviewHistory {
+  version: 1;
+  fileId: string;
+  completedAt: string;
+  rows: Array<{
+    rowIndex: number;
+    originalReference: string | null;
+    originalScope: string | null;
+    finalReference: string | null;
+    finalScope: string | null;
+    decision: string;
+    provenance: string | null;
+  }>;
+}
+
 export interface ImportedInventoryFileAttributes {
   id: string;
-  userId: string;
+  /** Null once the user who uploaded the file has been deleted. */
+  userId: string | null;
   cityId: string;
   inventoryId: string;
   fileName: string;
@@ -21,6 +37,7 @@ export interface ImportedInventoryFileAttributes {
   originalFileName: string;
   importStatus: ImportStatusEnum;
   mappingConfiguration?: Record<string, unknown> | null;
+  reviewHistory?: ImportReviewHistory | null;
   validationResults?: Record<string, unknown> | null;
   errorLog?: string | null;
   rowCount?: number | null;
@@ -28,6 +45,15 @@ export interface ImportedInventoryFileAttributes {
   created?: Date;
   lastUpdated?: Date;
   completedAt?: Date | null;
+}
+
+/**
+ * Filter for finding an import the signed-in user may open: one they uploaded,
+ * or one whose uploader has been deleted (user_id is null). Without the null
+ * case a kept file could never be found again, because no one's id matches.
+ */
+export function uploadedByOrOrphaned(userId: string) {
+  return { [Op.or]: [userId, null] };
 }
 
 export type ImportedInventoryFilePk = "id";
@@ -38,6 +64,7 @@ export type ImportedInventoryFileOptionalAttributes =
   | "contentDigest"
   | "s3Key"
   | "mappingConfiguration"
+  | "reviewHistory"
   | "validationResults"
   | "errorLog"
   | "rowCount"
@@ -58,7 +85,7 @@ export class ImportedInventoryFile
   implements Partial<ImportedInventoryFileAttributes>
 {
   declare id: string;
-  declare userId: string;
+  declare userId: string | null;
   declare cityId: string;
   declare inventoryId: string;
   declare fileName: string;
@@ -70,6 +97,7 @@ export class ImportedInventoryFile
   declare originalFileName: string;
   declare importStatus: ImportStatusEnum;
   declare mappingConfiguration?: Record<string, unknown> | null;
+  declare reviewHistory?: ImportReviewHistory | null;
   declare validationResults?: Record<string, unknown> | null;
   declare errorLog?: string | null;
   declare rowCount?: number | null;
@@ -78,8 +106,8 @@ export class ImportedInventoryFile
   declare lastUpdated?: Date;
   declare completedAt?: Date | null;
 
-  // ImportedInventoryFile belongsTo User via userId
-  declare user: User;
+  // ImportedInventoryFile belongsTo User via userId. Null once the user is deleted.
+  declare user: User | null;
   declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
@@ -112,11 +140,13 @@ export class ImportedInventoryFile
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           references: {
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "user_id",
         },
         cityId: {
@@ -181,6 +211,11 @@ export class ImportedInventoryFile
           type: DataTypes.JSONB,
           allowNull: true,
           field: "mapping_configuration",
+        },
+        reviewHistory: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "review_history",
         },
         validationResults: {
           type: DataTypes.JSONB,

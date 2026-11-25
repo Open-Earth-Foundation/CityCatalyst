@@ -7,12 +7,14 @@ import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 export default function PrivateHome(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
   const router = useRouter();
+  const { organization } = useOrganizationContext();
 
   // Get user info to check if they have default city/inventory
   const {
@@ -39,9 +41,12 @@ export default function PrivateHome(props: {
     if (isError) return;
 
     if (projects.length > 1) {
-      const organizationId = projects.find(
-        (project) => project.organizationId,
-      )?.organizationId;
+      // Match whichever organization is active in the sidebar org switcher
+      // (same source of truth as JNDrawer), falling back to the first
+      // project's organization if none is set yet.
+      const organizationId =
+        organization?.organizationId ??
+        projects.find((project) => project.organizationId)?.organizationId;
       if (organizationId) {
         router.replace(`/${lng}/organization/${organizationId}/project`);
         return;
@@ -49,7 +54,16 @@ export default function PrivateHome(props: {
     }
 
     router.replace(`/${lng}/cities/`);
-  }, [lng, router, userInfo, userInfoLoading, isError, projects, projectsLoading]);
+  }, [
+    lng,
+    router,
+    userInfo,
+    userInfoLoading,
+    isError,
+    projects,
+    projectsLoading,
+    organization,
+  ]);
 
   // Only render the (deprecated) fallback home page when there was an error
   // fetching user info, so the user has something to retry from. In every

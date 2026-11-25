@@ -35,6 +35,7 @@ ConceptNoteGapResolutionAction = Literal[
     "not_a_gap",
     "defer_as_caveat",
     "evidence_update",
+    "partial_answer",
 ]
 
 
@@ -74,6 +75,28 @@ class ConceptNoteChapterDraftOutput(BaseModel):
     )
 
 
+class ChapterSupportRevision(BaseModel):
+    """One draft passage the inputs do not fully support, and its replacement.
+
+    Whitespace is kept as returned because ``before`` must match the draft exactly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    before: str = Field(min_length=1, max_length=8_000)
+    after: str = Field(max_length=8_000)
+    reason: str = Field(min_length=1, max_length=1_000)
+
+
+class ChapterSupportReview(BaseModel):
+    """Claim-support corrections for one drafted chapter, with any new gaps."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    revisions: list[ChapterSupportRevision] = Field(default_factory=list, max_length=30)
+    gaps: list[ConceptNoteDraftGapOutput] = Field(default_factory=list, max_length=30)
+
+
 class ConceptNoteGapResolutionResponse(BaseModel):
     """Latest append-only resolution event for one gap."""
 
@@ -98,6 +121,10 @@ class ConceptNoteGapResponse(BaseModel):
     source_refs: list[str] = Field(default_factory=list)
     version: int = Field(ge=1)
     resolution: ConceptNoteGapResolutionResponse | None = None
+    # Partial answers saved for this open gap version, not in the draft yet.
+    answered_so_far: str | None = None
+    # Internal progress flag: the question is a narrowed remainder, not the marker.
+    has_accepted_narrowing: bool = False
     created_at: datetime
     updated_at: datetime
 

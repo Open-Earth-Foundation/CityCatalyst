@@ -2,7 +2,7 @@ import { Box, HStack, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Control, FieldValues } from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
-import { Field } from "@/components/ui/field";
+import { ModalField as Field } from "./ModalField";
 import { MdWarning } from "react-icons/md";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import LabelLarge from "@/components/package/Texts/Label";
@@ -51,25 +51,25 @@ export const EmissionFactorsSection = ({
         </LabelLarge>
       </Heading>
       <HStack alignItems="flex-start" gap={4} mb={5}>
-       
-          <Field label={t("co2-emission-factor")}>
-            <FormattedNumberInput
-              miniAddon
-              t={t}
-              control={control}
-              name="activity.CO2EmissionFactor"
-              defaultValue="0"
-              isDisabled={isEmissionFactorInputDisabled}
-            >
-              {areEmissionFactorsLoading ? (
-                <Spinner size="sm" color="border.neutral" />
-              ) : (
-                <Text truncate lineClamp={1} w="full" textAlign="center">
-                  {emissionFactorUnits}
-                </Text>
-              )}
-            </FormattedNumberInput>
-            {getFieldError("CO2EmissionFactor") ? (
+        <Field label={t("co2-emission-factor")}>
+          <FormattedNumberInput
+            inputHeight="48px"
+            miniAddon
+            t={t}
+            control={control}
+            name="activity.CO2EmissionFactor"
+            defaultValue="0"
+            isDisabled={isEmissionFactorInputDisabled}
+          >
+            {areEmissionFactorsLoading ? (
+              <Spinner size="sm" color="border.neutral" />
+            ) : (
+              <Text truncate lineClamp={1} w="full" textAlign="center">
+                {emissionFactorUnits}
+              </Text>
+            )}
+          </FormattedNumberInput>
+          {getFieldError("CO2EmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
@@ -85,9 +85,10 @@ export const EmissionFactorsSection = ({
               h="16px"
             />
           )}
-          </Field>
+        </Field>
         <Field label={t("n2o-emission-factor")}>
           <FormattedNumberInput
+            inputHeight="48px"
             miniAddon
             t={t}
             control={control}
@@ -122,6 +123,7 @@ export const EmissionFactorsSection = ({
         </Field>
         <Field label={t("ch4-emission-factor")}>
           <FormattedNumberInput
+            inputHeight="48px"
             control={control}
             miniAddon
             t={t}

@@ -6,9 +6,9 @@ from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
-from app.db.session import get_session
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_edits import (
+    ConceptNotePreviewResponse,
     EditApplyRequest,
     EditProposalRequest,
     EditProposalResponse,
@@ -18,34 +18,22 @@ from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.structure import structure_snapshot
 from app.persistence.concept_notes.workspace import normalize_template_chapters
+from app.routes.dependencies import AuthorizedRun, CityViewableRun
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
+from app.services.cnb.chapter_drafting import (
+    ConceptNoteChapterDraftService,
+    get_chapter_draft_service,
+)
 from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
 )
-from app.services.concept_note_runs import ConceptNoteRunService
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from app.utils.citycatalyst_auth import extract_bearer_token
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
-
-
-async def authorized_edit_run(
-    run_id: UUID,
-    user_id: str = Query(..., min_length=1),
-    authorization: str | None = Header(default=None),
-    session: AsyncSession = Depends(get_session),
-) -> ConceptNoteRun:
-    """Recheck canonical user, run ownership and current city access on every call."""
-    service = ConceptNoteRunService(session)
-    try:
-        return await service.get_authorized_run(
-            run_id=run_id, requested_user_id=user_id, authorization=authorization
-        )
-    finally:
-        await service.cc_client.close()
 
 
 async def edit_service() -> AsyncIterator[ConceptNoteEditService]:
@@ -92,11 +80,38 @@ def require_active_run(run: ConceptNoteRun) -> None:
     "/concept-notes/{run_id}/edit-proposals", response_model=list[EditProposalResponse]
 )
 async def list_edit_proposals(
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> list[EditProposalResponse]:
     """Restore durable pending and completed proposals for the authorized run."""
     return await service.repository.list(run_id=run.run_id, user_id=run.user_id)
+
+
+@router.get(
+    "/concept-notes/{run_id}/preview", response_model=ConceptNotePreviewResponse
+)
+async def get_note_preview(
+    run: CityViewableRun,
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
+    ],
+) -> ConceptNotePreviewResponse:
+    """Show a note, its saved answers and its author's proposals, without edit rights.
+
+    Every write route still requires the run owner, so a collaborator can only read.
+    """
+    if draft_service is None:
+        raise HTTPException(
+            status_code=503, detail="Concept Note chapter drafting is unavailable"
+        )
+    return ConceptNotePreviewResponse(
+        run_id=run.run_id,
+        name=run.name,
+        city_id=run.city_id,
+        draft=await draft_service.load_state(run),
+        proposals=await service.repository.list(run_id=run.run_id, user_id=run.user_id),
+    )
 
 
 @router.post(
@@ -106,12 +121,13 @@ async def list_edit_proposals(
 )
 async def propose_edit(
     payload: EditProposalRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    authorization: str | None = Header(default=None),
 ) -> EditProposalResponse:
     """Create or replay a proposal without mutating the current draft."""
     require_active_run(run)
-    return await service.propose(run, payload)
+    return await service.propose(run, payload, token=extract_bearer_token(authorization))
 
 
 @router.get(
@@ -120,7 +136,7 @@ async def propose_edit(
 )
 async def get_edit_proposal(
     proposal_id: UUID,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Read a complete diff only after verifying its run and owner binding."""
@@ -136,7 +152,7 @@ async def get_edit_proposal(
 async def apply_edit_proposal(
     proposal_id: UUID,
     payload: EditApplyRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Apply only explicit user acceptance of a complete expected revision vector."""
@@ -150,7 +166,7 @@ async def apply_edit_proposal(
 )
 async def reject_edit_proposal(
     proposal_id: UUID,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> EditProposalResponse:
     """Idempotently reject or cancel a proposal; no chapter revision is written."""
@@ -166,8 +182,9 @@ async def reject_edit_proposal(
 async def refine_edit_proposal(
     proposal_id: UUID,
     payload: EditProposalRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    authorization: str | None = Header(default=None),
 ) -> EditProposalResponse:
     """Create a separately reviewable replacement for an owned prior proposal."""
     require_active_run(run)
@@ -181,12 +198,12 @@ async def refine_edit_proposal(
         run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
     )
     bound = payload.model_copy(update={"refines_proposal_id": proposal_id})
-    return await service.propose(run, bound)
+    return await service.propose(run, bound, token=extract_bearer_token(authorization))
 
 
 @router.get("/concept-notes/{run_id}/structure", response_model=StructureState)
 async def get_structure(
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> StructureState:
     """Initialize run-owned template chapters once and restore the saved structure."""
@@ -206,7 +223,7 @@ async def get_structure(
 @router.put("/concept-notes/{run_id}/structure", response_model=StructureState)
 async def put_structure(
     payload: StructureSaveRequest,
-    run: Annotated[ConceptNoteRun, Depends(authorized_edit_run)],
+    run: AuthorizedRun,
     service: Annotated[ConceptNoteEditService, Depends(edit_service)],
 ) -> StructureState:
     """Save explicit direct edits after ownership and optimistic concurrency checks."""

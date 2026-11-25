@@ -1,0 +1,2 @@
+# Approved snapshots are byte-addressed; never rewrite them during checkout.
+results/** -text

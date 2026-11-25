@@ -19,10 +19,14 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { TitleLarge } from "@/components/package";
 import { toaster } from "@/components/ui/toaster";
 
+// Beyond this many failed emails the toast shows a count instead of a list.
+const MAX_LISTED_EMAILS = 3;
+
 const AddCollaboratorsDialog = ({
   lng,
   isOpen,
   onClose,
+  organizationId,
 }: {
   lng: string;
   isOpen: boolean;
@@ -42,13 +46,34 @@ const AddCollaboratorsDialog = ({
 
   const handleSend = async () => {
     try {
-      await stepRef.current?.sendInvites();
-      toaster.create({
-        title: t("invite-success-toast-title"),
-        description: t("invite-link-copied-to-clipboard"),
-        type: "success",
-        duration: 3000,
-      });
+      const result = await stepRef.current?.sendInvites();
+      const emailFailures = result?.emailFailures ?? [];
+      if (emailFailures.length) {
+        const failureDescription =
+          emailFailures.length <= MAX_LISTED_EMAILS
+            ? t("invite-email-failed-toast-description", {
+                emails: emailFailures.join(", "),
+                interpolation: { escapeValue: false },
+              })
+            : t("invite-email-failed-toast-description-many", {
+                count: emailFailures.length,
+              });
+        toaster.create({
+          title: t("invite-email-failed-toast-title"),
+          description: result?.copied
+            ? `${failureDescription} ${t("invite-link-in-clipboard")}`
+            : failureDescription,
+          type: "warning",
+          duration: 8000,
+        });
+      } else {
+        toaster.create({
+          title: t("invite-success-toast-title"),
+          description: t("invite-link-copied-to-clipboard"),
+          type: "success",
+          duration: 3000,
+        });
+      }
       onClose();
     } catch {
       showErrorToast();
@@ -99,6 +124,7 @@ const AddCollaboratorsDialog = ({
             ref={stepRef}
             lng={lng}
             onValidityChange={setCanSubmit}
+            organizationId={organizationId}
             variant="modal"
           />
         </DialogBody>

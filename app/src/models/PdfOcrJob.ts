@@ -15,6 +15,9 @@ export const PDF_OCR_STATUSES = [
 ] as const;
 export type PdfOcrStatus = (typeof PDF_OCR_STATUSES)[number];
 
+export const PDF_OCR_ANNOTATION_MODES = ["none", "visual_context"] as const;
+export type PdfOcrAnnotationMode = (typeof PDF_OCR_ANNOTATION_MODES)[number];
+
 export const PDF_OCR_DELIVERY_STATUSES = [
   "pending",
   "delivering",
@@ -32,9 +35,14 @@ export interface PdfOcrJobAttributes {
   runAfter?: Date | null;
   model?: string | null;
   pageCount?: number | null;
+  annotationMode: PdfOcrAnnotationMode;
   resultS3Key?: string | null;
   resultSizeBytes?: number | null;
   resultSha256?: string | null;
+  structuredS3Key?: string | null;
+  structuredSizeBytes?: number | null;
+  structuredSha256?: string | null;
+  structuredSchemaVersion?: string | null;
   leaseOwner?: string | null;
   leaseExpiresAt?: Date | null;
   heartbeatAt?: Date | null;
@@ -61,9 +69,14 @@ export type PdfOcrJobCreationAttributes = Optional<
   | "runAfter"
   | "model"
   | "pageCount"
+  | "annotationMode"
   | "resultS3Key"
   | "resultSizeBytes"
   | "resultSha256"
+  | "structuredS3Key"
+  | "structuredSizeBytes"
+  | "structuredSha256"
+  | "structuredSchemaVersion"
   | "leaseOwner"
   | "leaseExpiresAt"
   | "heartbeatAt"
@@ -94,9 +107,14 @@ export class PdfOcrJob
   declare runAfter?: Date | null;
   declare model?: string | null;
   declare pageCount?: number | null;
+  declare annotationMode: PdfOcrAnnotationMode;
   declare resultS3Key?: string | null;
   declare resultSizeBytes?: number | null;
   declare resultSha256?: string | null;
+  declare structuredS3Key?: string | null;
+  declare structuredSizeBytes?: number | null;
+  declare structuredSha256?: string | null;
+  declare structuredSchemaVersion?: string | null;
   declare leaseOwner?: string | null;
   declare leaseExpiresAt?: Date | null;
   declare heartbeatAt?: Date | null;
@@ -157,6 +175,13 @@ export class PdfOcrJob
           allowNull: true,
           field: "page_count",
         },
+        annotationMode: {
+          type: DataTypes.STRING(32),
+          allowNull: false,
+          defaultValue: "none",
+          field: "annotation_mode",
+          validate: { isIn: [PDF_OCR_ANNOTATION_MODES] },
+        },
         resultS3Key: {
           type: DataTypes.STRING(1024),
           allowNull: true,
@@ -171,6 +196,26 @@ export class PdfOcrJob
           type: DataTypes.STRING(64),
           allowNull: true,
           field: "result_sha256",
+        },
+        structuredS3Key: {
+          type: DataTypes.STRING(1024),
+          allowNull: true,
+          field: "structured_s3_key",
+        },
+        structuredSizeBytes: {
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: "structured_size_bytes",
+        },
+        structuredSha256: {
+          type: DataTypes.STRING(64),
+          allowNull: true,
+          field: "structured_sha256",
+        },
+        structuredSchemaVersion: {
+          type: DataTypes.STRING(64),
+          allowNull: true,
+          field: "structured_schema_version",
         },
         leaseOwner: {
           type: DataTypes.STRING(255),

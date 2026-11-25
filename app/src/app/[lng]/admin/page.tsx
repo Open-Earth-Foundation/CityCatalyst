@@ -35,7 +35,6 @@ import {
   MdPlayCircleOutline,
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
 import BulkInventoryFileImportTabContent from "./bulk-inventory-actions/BulkInventoryFileImportTabContent";
 import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
@@ -601,7 +600,6 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
         t={t}
         onOpenChange={setIsModalOpen}
       />
-      <Toaster />
     </Box>
   );
 };

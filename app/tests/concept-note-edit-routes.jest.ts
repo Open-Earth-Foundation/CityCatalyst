@@ -76,8 +76,15 @@ const refine =
   await import("@/app/api/v1/concept-notes/[runId]/edit-proposals/[proposalId]/refine/route");
 const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
-const reset =
-  await import("@/app/api/v1/concept-notes/[runId]/chat/reset/route");
+const startChat =
+  await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
+const gapAnswers =
+  await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
+const gapAnswersBody = {
+  gap_version: 2,
+  answers: "1. Amount?\nEUR 2 million",
+  expected_previous: null,
+};
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -118,7 +125,16 @@ const routes = [
     handler: collection.POST,
     method: "POST",
     suffix: "/edit-proposals",
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: targetId,
+        gap_id: key,
+        gap_version: 2,
+        answer_complete: true,
+      },
+    },
   },
   {
     name: "read",
@@ -146,7 +162,16 @@ const routes = [
     handler: refine.POST,
     method: "POST",
     suffix: `/edit-proposals/${targetId}/refine`,
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: null,
+        gap_id: null,
+        gap_version: null,
+        answer_complete: false,
+      },
+    },
   },
   {
     name: "confirm",
@@ -156,10 +181,17 @@ const routes = [
     body: confirmBody,
   },
   {
-    name: "reset",
-    handler: reset.POST,
+    name: "gap-answers",
+    handler: gapAnswers.POST,
     method: "POST",
-    suffix: "/chat/reset",
+    suffix: `/gaps/${targetId}/answers`,
+    body: gapAnswersBody,
+  },
+  {
+    name: "start-chat",
+    handler: startChat.POST,
+    method: "POST",
+    suffix: "/chat/threads",
     body: undefined,
   },
 ];
@@ -200,6 +232,7 @@ function request(
         runId,
         proposalId: targetId,
         chapterId: targetId,
+        gapId: targetId,
         ...options.params,
       }),
     },
@@ -243,7 +276,7 @@ describe.each(routes)("$name route boundary", (route) => {
         ([args]) => args.path === `/v1/concept-notes/${runId}` && !args.method,
       ),
     ).toBe(true);
-    if (route.name === "reset") expect(upstream).not.toHaveBeenCalled();
+    if (route.name === "start-chat") expect(upstream).not.toHaveBeenCalled();
   });
   test("forwards validated input using the authenticated user and request ID", async () => {
     const response = await request(route, {
@@ -269,12 +302,17 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    ["read", "apply", "reject", "refine", "confirm"].includes(route.name),
+    ["read", "apply", "reject", "refine", "confirm", "gap-answers"].includes(
+      route.name,
+    ),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(
-    (await request(route, { params: { proposalId: "bad", chapterId: "bad" } }))
-      .status,
+    (
+      await request(route, {
+        params: { proposalId: "bad", chapterId: "bad", gapId: "bad" },
+      })
+    ).status,
   ).toBe(400);
   expect(upstream).not.toHaveBeenCalled();
 });
@@ -296,6 +334,9 @@ test.each([
   ["confirm", { ...confirmBody, expected_revision: 0 }],
   ["confirm", { ...confirmBody, expected_revision: 1.5 }],
   ["confirm", { ...confirmBody, idempotency_key: "bad" }],
+  ["gap-answers", { answers: "x" }],
+  ["gap-answers", { ...gapAnswersBody, gap_version: 0 }],
+  ["gap-answers", { ...gapAnswersBody, user_id: "attacker" }],
 ] as const)("%s rejects invalid body %j", async (name, body) => {
   expect(
     (
@@ -350,7 +391,7 @@ test.each(["apply", "refine", "confirm"])(
   },
 );
 
-test.each(["apply", "refine", "confirm", "reset"])(
+test.each(["apply", "refine", "confirm", "start-chat"])(
   "%s preserves upstream error status, code and detail for the client",
   async (name) => {
     const payload = { code: "stale_base", detail: "The draft has changed" };
@@ -372,14 +413,14 @@ test.each(["apply", "refine", "confirm", "reset"])(
 );
 
 test.each(["", "city_id=bad"])(
-  "chat reset rejects missing/invalid city query %s",
+  "starting a chat rejects missing/invalid city query %s",
   async (query) => {
     expect((await request(routes.at(-1)!, { query })).status).toBe(400);
     expect(upstream).not.toHaveBeenCalled();
   },
 );
 
-test("chat reset rejects a successful response for a different city", async () => {
+test("starting a chat rejects a successful response for a different city", async () => {
   upstream.mockResolvedValueOnce(Response.json({ city_id: otherCity }));
   const response = await request(routes.at(-1)!);
   // The API wrapper masks non-public upstream failures as 500.

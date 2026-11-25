@@ -1,9 +1,22 @@
 export const MISSING_INFORMATION_LINK = "#cnb-missing-information";
 
-const MISSING_INFORMATION_PATTERN_SOURCE = String.raw`\[(Information needed:\s*[^\]\r\n]+)\]`;
+// Mirrors INFORMATION_NEEDED_PATTERN and information_marker_key in Climate
+// Advisor (service/app/utils/cnb_information_markers.py): both sides must pair
+// the same marker with the same gap record. A marker may wrap over lines.
+const MISSING_INFORMATION_PATTERN_SOURCE = String.raw`\[(Information needed:\s*[^\]]+)\]`;
 
 function missingInformationPattern(): RegExp {
   return new RegExp(MISSING_INFORMATION_PATTERN_SOURCE, "gi");
+}
+
+/**
+ * Pairing key for a marker, its message or a gap question: the lowercased runs
+ * of letters and digits after any "Information needed:" prefix, so Markdown
+ * emphasis, quotes, punctuation, spacing and line breaks never split a pair.
+ */
+export function informationMarkerKey(value: string): string {
+  const question = value.replace(/^\s*\[?\s*information needed:/i, "");
+  return (question.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).join(" ");
 }
 
 export function missingInformationRanges(markdown: string) {
@@ -15,32 +28,6 @@ export function missingInformationRanges(markdown: string) {
       message: match[1].trim(),
     }),
   );
-}
-
-/** Lines that hold nothing but markers (optionally as list items). The
- * messages are returned so a chapter panel can list them instead. */
-export function splitStandaloneMarkers(markdown: string): {
-  markdown: string;
-  messages: string[];
-} {
-  const messages: string[] = [];
-  const kept: string[] = [];
-  for (const line of markdown.split(/\r?\n/)) {
-    const stripped = line.replace(/^\s*(?:[-*+]|\d+[.)])\s+/, "").trim();
-    const ranges = missingInformationRanges(stripped);
-    const onlyMarkers =
-      ranges.length > 0 &&
-      stripped.replace(missingInformationPattern(), "").trim() === "";
-    if (onlyMarkers) {
-      messages.push(...ranges.map((range) => range.message));
-      continue;
-    }
-    kept.push(line);
-  }
-  return {
-    markdown: kept.join("\n").replace(/\n{3,}/g, "\n\n"),
-    messages,
-  };
 }
 
 interface MarkerMarkdownNode {
@@ -199,6 +186,39 @@ export function remarkMissingInformation() {
           ? [...result, { type: "text", value: text.slice(cursor) }]
           : [child];
       });
+    };
+    visit(tree);
+  };
+}
+
+/** Keep standalone gap controls beside the preceding passage, in the preview only. */
+export function remarkGapPassages() {
+  return (tree: MarkerMarkdownNode) => {
+    const visit = (node: MarkerMarkdownNode) => {
+      if (!node.children) return;
+      for (let index = node.children.length - 1; index >= 0; index--) {
+        const child = node.children[index];
+        const previous = node.children[index - 1];
+        const onlyMarkers =
+          child.type === "paragraph" &&
+          child.children?.some(
+            (part) => part.url === MISSING_INFORMATION_LINK,
+          ) &&
+          child.children.every(
+            (part) =>
+              part.url === MISSING_INFORMATION_LINK ||
+              (part.type === "text" && !part.value?.trim()),
+          );
+        if (onlyMarkers && previous?.type === "paragraph") {
+          // Markers lead a plain passage, or follow ones it already holds.
+          const parts = previous.children!;
+          const at = parts.some((part) => part.url === MISSING_INFORMATION_LINK)
+            ? parts.length
+            : 0;
+          parts.splice(at, 0, ...child.children!);
+          node.children.splice(index, 1);
+        } else visit(child);
+      }
     };
     visit(tree);
   };

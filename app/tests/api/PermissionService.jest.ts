@@ -443,6 +443,43 @@ describe("PermissionService", () => {
       expect(result.hasAccess).toBe(true);
       expect(result.userRole).toBe(UserRole.COLLABORATOR);
     });
+
+    it("requires membership when a caller disables public reads", async () => {
+      const inventory = await db.models.Inventory.create({
+        inventoryId: randomUUID(),
+        inventoryName: "Public test inventory",
+        year: 2024,
+        cityId: testData.cityId,
+        isPublic: true,
+      });
+      const outsider = createSession(otherOrgAdminUserId);
+
+      await expect(
+        PermissionService.canAccessInventory(null, inventory.inventoryId),
+      ).resolves.toMatchObject({ userRole: UserRole.PUBLIC_READER });
+      await expect(
+        PermissionService.canAccessInventory(outsider, inventory.inventoryId),
+      ).resolves.toMatchObject({ userRole: UserRole.PUBLIC_READER });
+      await expect(
+        PermissionService.canAccessInventory(outsider, inventory.inventoryId, {
+          allowPublicRead: false,
+        }),
+      ).rejects.toMatchObject({ status: 403 });
+      await expect(
+        PermissionService.canAccessInventory(
+          createSession(collaboratorUserId),
+          inventory.inventoryId,
+          { allowPublicRead: false },
+        ),
+      ).resolves.toMatchObject({ userRole: UserRole.COLLABORATOR });
+      await expect(
+        PermissionService.canAccessInventory(
+          createSession(orgAdminUserId),
+          inventory.inventoryId,
+          { allowPublicRead: false },
+        ),
+      ).resolves.toMatchObject({ userRole: UserRole.ORG_ADMIN });
+    });
   });
 
   describe("canDeleteInventory", () => {

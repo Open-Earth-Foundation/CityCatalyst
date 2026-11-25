@@ -93,7 +93,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
     case "ecrf":
       body = await ECRFDownloadService.downloadECRF(
         output as InventoryWithInventoryValuesAndActivityValues,
-        lng,
       );
       headers = {
         "Content-Type": "application/vnd.ms-excel",

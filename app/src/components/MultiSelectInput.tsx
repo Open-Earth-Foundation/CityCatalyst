@@ -5,13 +5,16 @@ import {
   GroupBase,
   StylesConfig,
 } from "chakra-react-select";
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
 import { Control, Controller, FieldValues } from "react-hook-form";
 import { CloseButton } from "./ui/close-button";
 import { Checkbox } from "./ui/checkbox";
-import { MdWarning } from "react-icons/md";
+import {
+  ModalFieldError,
+  ModalLabel,
+} from "./Modals/activity-modal/sections/ModalField";
 
 interface MultiSelectOption {
   label: string;
@@ -87,11 +90,7 @@ const customStyles = (
   control: (provided, state) => ({
     ...provided,
     borderRadius: "4px",
-    borderColor: state.isFocused
-      ? "#2351DC"
-      : error
-        ? "#F23D33"
-        : "#D7D8FB",
+    borderColor: state.isFocused ? "#2351DC" : error ? "#F23D33" : "#D7D8FB",
     background: error ? "#FFEAEE" : "#fff",
     boxShadow: "0px 1px 2px -1px #0000001A, 0px 1px 3px 0px #00001F1A",
     minHeight: "48px",
@@ -118,10 +117,12 @@ const MultiSelectWithCheckbox = ({
   control,
   selectedActivity,
 }: MultiSelectInputProps) => {
-  const error = activity.split(".").reduce<unknown>(
-    (acc, key) => (acc as Record<string, unknown> | undefined)?.[key],
-    errors,
-  ) as { message?: string } | undefined;
+  const error = activity
+    .split(".")
+    .reduce<unknown>(
+      (acc, key) => (acc as Record<string, unknown> | undefined)?.[key],
+      errors,
+    ) as { message?: string } | undefined;
   let preselectedValue = selectedActivity
     ? {
         label: t(selectedActivity),
@@ -131,15 +132,7 @@ const MultiSelectWithCheckbox = ({
 
   return (
     <Box display="flex" flexDirection="column" gap="8px">
-      <Text
-        fontSize="label.lg"
-        fontStyle="normal"
-        fontWeight="medium"
-        letterSpacing="wide"
-        fontFamily="heading"
-      >
-        {t(title)}
-      </Text>
+      <ModalLabel required={required !== false}>{t(title)}</ModalLabel>
       <Controller
         name={activity}
         control={control}
@@ -184,12 +177,7 @@ const MultiSelectWithCheckbox = ({
           );
         }}
       />
-      {error ? (
-        <Box display="flex" gap="6px" alignItems="center">
-          <Icon as={MdWarning} color="sentiment.negativeDefault" />
-          <Text fontSize="body.md">{error?.message}</Text>
-        </Box>
-      ) : null}
+      {error ? <ModalFieldError message={error.message} /> : null}
     </Box>
   );
 };

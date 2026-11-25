@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { createCityThroughOnboarding } from "./helpers";
+import {
+  createCityThroughOnboarding,
+  selectAvailableInventoryYear,
+} from "./helpers";
 
 test.skip("Inventory Onboarding", async ({ page }) => {
   const cityId = await createCityThroughOnboarding(page);
@@ -11,7 +14,10 @@ test.skip("Inventory Onboarding", async ({ page }) => {
 
     //   Check that the main heading is present and has the correct text
     const mainHeading = page.getByTestId(/start-page-heading/i);
-    await expect(mainHeading).toHaveText(/Select how to create a GHG emission inventory/i);
+    await expect(mainHeading).toHaveText(
+      /Select how to create a GHG emission inventory/i,
+      { timeout: 30000 },
+    );
 
     //   Select "Create a new inventory" and continue
     const createOption = page.getByTestId("create-inventory-option");
@@ -49,12 +55,8 @@ test.skip("Inventory Onboarding", async ({ page }) => {
     // Verify that the select element is visible
     await expect(year).toBeVisible();
 
-    // Select a year that will always be available (current year - 1)
-    // The years array contains current year and previous 19 years
-    const currentYear = new Date().getFullYear();
-    const testYear = (currentYear - 1).toString();
-
-    await year.selectOption(testYear);
+    // Skip a year that already has activity data. Continue stays disabled for it.
+    const testYear = await selectAvailableInventoryYear(page);
 
     // Verify that the selection was successful
     await expect(year).toHaveValue(testYear);

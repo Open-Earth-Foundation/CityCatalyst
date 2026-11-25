@@ -21,8 +21,9 @@ export interface MeedGate {
 
 /**
  * Emissions is the only hard requirement — it drives the impact score. It is
- * "ready" once retrieved from CityCatalyst (see `meedEmissions.ts`), which
- * writes the step as complete in one go; there is no partial state to accept.
+ * "ready" once the inventory's emissions have been read from CityCatalyst (see
+ * `meedEmissions.ts`), which writes the step as complete in one go; there is
+ * no partial state to accept. The only way to fail it is an empty inventory.
  */
 const REQUIRED_STEP = "emissions";
 

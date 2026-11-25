@@ -23,13 +23,31 @@ from app.persistence.concept_notes.edits import (
     ConceptNoteEditRepository,
     EditOperationError,
 )
+from app.persistence.concept_notes.source_revalidation import SOURCE_REVALIDATION_KEY
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.edit_planner import ConceptNoteEditPlanner
-from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
+from app.services.cnb.edit_validation import (
+    bind_answer_gap,
+    context_snapshot,
+    validate_edit_plan,
+)
+from app.tools.concept_note_draft_tools import SourceLookup
+from app.tools.concept_note_source_tools import (
+    error_payload,
+    query_concept_note_source,
+)
+from app.services.cnb.question_reply import (
+    planner_question_cards,
+    referenced_options,
+)
 from app.utils.cnb_observability import record_edit_outcome
 from app.utils.cnb_progress import emit_cnb_progress
 from app.utils.concept_note_context import manual_population_context
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
+from app.utils.mlflow_logging import run_mlflow_io
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -103,12 +121,22 @@ class ConceptNoteEditService:
         run: ConceptNoteRun,
         request: EditProposalRequest,
         *,
+        token: str,
         recent_messages: list[dict[str, str]] | None = None,
+        question_cards: list[dict[str, Any]] | None = None,
     ) -> EditProposalResponse:
-        """Trace proposal inputs, model calls and the resulting proposed changes."""
-        with workflow_trace(
+        """Trace proposal inputs, model calls and the resulting proposed changes.
+
+        ``token`` is the caller's CityCatalyst bearer token; planning and review
+        use it only to re-read the run's selected sources.
+        """
+        async with async_workflow_trace(
             name="cnb_chat_edit",
-            inputs={"request": request, "recent_messages": recent_messages},
+            inputs={
+                "request": request,
+                "recent_messages": recent_messages,
+                "question_cards": question_cards,
+            },
             session_id=getattr(run, "thread_id", None) or run.run_id,
             user_id=run.user_id,
             attributes={
@@ -122,10 +150,13 @@ class ConceptNoteEditService:
                 result = await self._propose(
                     run,
                     request,
+                    token=token,
                     recent_messages=recent_messages,
+                    question_cards=question_cards,
                 )
             except EditOperationError as error:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     operation="propose",
                     outcome="failed",
@@ -133,7 +164,8 @@ class ConceptNoteEditService:
                 )
                 raise
             if result.status != "rejected" or result.changes:
-                record_edit_outcome(
+                await run_mlflow_io(
+                    record_edit_outcome,
                     run_id=run.run_id,
                     proposal_id=result.proposal_id,
                     operation="propose",
@@ -149,16 +181,32 @@ class ConceptNoteEditService:
         run: ConceptNoteRun,
         request: EditProposalRequest,
         *,
+        token: str,
         recent_messages: list[dict[str, str]] | None,
+        question_cards: list[dict[str, Any]] | None = None,
     ) -> EditProposalResponse:
         """Persist progress before planning and recover safely from provider/cancellation failures."""
         # Register processing and snapshot authoritative context under one lock.
-        async with self.locked_context(run) as (_, run_context):
+        async with self.locked_context(run) as (current, run_context):
+            # A new source still rewriting chapters would make a new proposal stale;
+            # a replayed request still returns the proposal it already stored.
+            job = (current.context_summary or {}).get(SOURCE_REVALIDATION_KEY) or {}
+            if job.get("status") in {"pending", "running"}:
+                stored = await self.repository.replay(
+                    run_id=run.run_id, user_id=run.user_id, request=request
+                )
+                if stored is not None:
+                    return stored
+                raise EditOperationError(
+                    "sources_updating",
+                    "New sources are still updating the draft. Ask again in a moment.",
+                )
             proposal, created = await self.repository.start(
                 run_id=run.run_id, user_id=run.user_id, request=request
             )
         if not created:
             return proposal
+        source_lookup = self._snapshot_source_lookup(run, run_context, token)
         identity = {
             "run_id": run.run_id,
             "user_id": run.user_id,
@@ -167,6 +215,9 @@ class ConceptNoteEditService:
         # Preserve the real base vector; proposals remain separate from the draft.
         base_revisions = {}
         prior = None
+        # Clicked suggested answers are human input; the cards resolve references.
+        chosen_options = referenced_options(question_cards or [])
+        planner_cards = planner_question_cards(question_cards or [])
         try:
             if request.refines_proposal_id:
                 prior = await self.repository.get(
@@ -187,12 +238,16 @@ class ConceptNoteEditService:
                     "This draft exceeds the automatic edit revision-vector limit.",
                     status_code=422,
                 )
+            chapters = bind_answer_gap(request, chapters)
             plan = await self.planner.plan(
                 request,
                 chapters,
                 run_context or {},
                 prior_proposal=prior,
                 recent_messages=recent_messages,
+                source_lookup=source_lookup,
+                question_cards=planner_cards,
+                chosen_options=chosen_options,
             )
             if plan.intent == "question":
                 return await self.repository.reject(**identity)
@@ -219,6 +274,7 @@ class ConceptNoteEditService:
                     run_context,
                     prior_proposal=prior,
                     recent_messages=recent_messages,
+                    chosen_options=chosen_options,
                 )
                 # Automatic edits rely on the whole document remaining the reviewed base.
                 base_revisions = {
@@ -267,7 +323,8 @@ class ConceptNoteEditService:
                     error_code="planning_interrupted",
                 )
             )
-            record_edit_outcome(
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal.proposal_id,
                 operation="propose",
@@ -296,6 +353,7 @@ class ConceptNoteEditService:
                 base_revisions=base_revisions,
                 changes=[],
                 error_code=error.code,
+                review_objections=error.objections,
             )
         except Exception:
             # Exception text may contain model/document payloads: emit only identifiers.
@@ -310,6 +368,41 @@ class ConceptNoteEditService:
                 changes=[],
                 error_code="planner_unavailable",
             )
+
+    def _snapshot_source_lookup(
+        self, run: ConceptNoteRun, run_context: dict[str, Any], token: str
+    ) -> SourceLookup:
+        """Bind source reads to the sources this proposal's context snapshot holds.
+
+        A source index outside the snapshot, or one now holding a different
+        document, fails instead of answering from evidence the edit never cited.
+        """
+        expected = {
+            index: (str(source.get("upload_id")), source.get("sha256"))
+            for index, source in enumerate(
+                run_context.get("selected_sources", []), start=1
+            )
+        }
+
+        async def lookup(source_index: int, question: str) -> str:
+            """Query one snapshot source without unverified image annotations."""
+            if source_index not in expected:
+                return error_payload(
+                    "concept_note_source_not_selected",
+                    "Use a source_index from run_context.selected_sources",
+                )
+            return await query_concept_note_source(
+                session_factory=self._workflow_sessions,
+                run_id=run.run_id,
+                user_id=run.user_id,
+                token=token,
+                source_index=source_index,
+                question=question,
+                expected_source=expected[source_index],
+                include_visual_context=False,
+            )
+
+        return lookup
 
     async def apply(
         self,
@@ -362,7 +455,8 @@ class ConceptNoteEditService:
                     proposal_id=proposal_id,
                     error_code="stale_structure",
                 )
-            record_edit_outcome(
+            await run_mlflow_io(
+                record_edit_outcome,
                 run_id=run.run_id,
                 proposal_id=proposal_id,
                 operation="apply",
@@ -370,7 +464,8 @@ class ConceptNoteEditService:
                 error_code=error.code,
             )
             raise
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             revision_id=result.result.application_id if result.result else None,
@@ -387,7 +482,8 @@ class ConceptNoteEditService:
         result = await self.repository.reject(
             run_id=run.run_id, user_id=run.user_id, proposal_id=proposal_id
         )
-        record_edit_outcome(
+        await run_mlflow_io(
+            record_edit_outcome,
             run_id=run.run_id,
             proposal_id=proposal_id,
             operation="reject",

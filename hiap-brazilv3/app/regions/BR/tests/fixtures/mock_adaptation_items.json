@@ -1,0 +1,5 @@
+[
+  {"id": "mock-ada-001", "name": "Mock adaptation item 1 (fictitious)", "mockScores": {"impact": 0.7, "alignment": 0.4, "feasibility": 0.6}},
+  {"id": "mock-ada-002", "name": "Mock adaptation item 2 (fictitious)", "mockScores": {"impact": 0.3, "alignment": 0.8, "feasibility": 0.7}},
+  {"id": "mock-ada-003", "name": "Mock adaptation item 3 (fictitious)", "mockScores": {"impact": 0.6, "alignment": 0.6, "feasibility": 0.2}}
+]

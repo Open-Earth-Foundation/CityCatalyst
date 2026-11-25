@@ -8,6 +8,7 @@ import {
   getScopesForInventoryAndSector,
   InventoryType,
 } from "@/util/constants";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
@@ -441,7 +442,10 @@ export default class DataSourceConnectService {
       }
     }
 
-    return combinations;
+    // III.x.3 is optional: no required row, so no "not available" row either.
+    return combinations.filter(
+      ({ gpcReferenceNumber }) => !isImportedWasteRef(gpcReferenceNumber),
+    );
   }
 
   private static async createUnavailableInventoryValue(

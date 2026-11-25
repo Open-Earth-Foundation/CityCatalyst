@@ -1,0 +1,120 @@
+{
+  "run_name": "Kraków – adaptacja systemu odwodnienia do zmian klimatu",
+  "funder": "Narodowy Fundusz Ochrony Środowiska i Gospodarki Wodnej (NFOŚiGW)",
+  "opportunity": "FEnIKS 2021–2027, działanie FENX.01.02 Adaptacja terenów zurbanizowanych do zmian klimatu (nabór FENX.01.02-IW.01-001/24)",
+  "template_name": "Wniosek o dofinansowanie w systemie WOD2021 (struktura sekcji uproszczona na potrzeby zestawu wzorcowego)",
+  "chapter_schema": [
+    {
+      "chapter_ref": "informacje_o_projekcie",
+      "title": "Informacje o projekcie",
+      "required": true,
+      "description": "Tytuł projektu, okres realizacji, cel projektu i zwięzły opis zakresu.",
+      "required_fields": [
+        "tytuł projektu",
+        "okres realizacji projektu",
+        "cel projektu",
+        "zakres projektu"
+      ]
+    },
+    {
+      "chapter_ref": "wnioskodawca",
+      "title": "Wnioskodawca i realizatorzy",
+      "required": true,
+      "description": "Wnioskodawca, jednostki realizujące i partnerzy oraz osoba do kontaktu.",
+      "required_fields": [
+        "wnioskodawca",
+        "jednostki realizujące",
+        "osoba do kontaktu"
+      ]
+    },
+    {
+      "chapter_ref": "uzasadnienie",
+      "title": "Uzasadnienie i diagnoza potrzeb",
+      "required": true,
+      "description": "Problem, który rozwiązuje projekt, zagrożenie powodziowe i podtopieniowe oraz zgodność z dokumentami strategicznymi miasta.",
+      "required_fields": [
+        "diagnoza problemu",
+        "zgodność z dokumentami strategicznymi"
+      ]
+    },
+    {
+      "chapter_ref": "zadania",
+      "title": "Zadania i harmonogram",
+      "required": true,
+      "description": "Zadania w projekcie, ich zakres, jednostki realizujące i terminy realizacji.",
+      "required_fields": [
+        "zadania projektu",
+        "harmonogram realizacji"
+      ]
+    },
+    {
+      "chapter_ref": "wskazniki",
+      "title": "Wskaźniki",
+      "required": true,
+      "description": "Wskaźniki produktu i rezultatu z wartościami bazowymi i docelowymi.",
+      "required_fields": [
+        "wskaźniki produktu",
+        "wskaźniki rezultatu"
+      ]
+    },
+    {
+      "chapter_ref": "budzet",
+      "title": "Budżet i źródła finansowania",
+      "required": true,
+      "description": "Koszt całkowity i kwalifikowalny, wnioskowane dofinansowanie, wkład własny i inne źródła finansowania.",
+      "required_fields": [
+        "koszt całkowity projektu",
+        "wnioskowane dofinansowanie",
+        "wkład własny"
+      ]
+    },
+    {
+      "chapter_ref": "ryzyka",
+      "title": "Analiza ryzyka i trwałość",
+      "required": true,
+      "description": "Ryzyka realizacji, planowana reakcja na ryzyka oraz zapewnienie trwałości rezultatów.",
+      "required_fields": [
+        "ryzyka projektu",
+        "trwałość projektu"
+      ]
+    }
+  ],
+  "required_fields": [
+    "tytuł projektu",
+    "okres realizacji projektu",
+    "cel projektu",
+    "zakres projektu",
+    "wnioskodawca",
+    "jednostki realizujące",
+    "osoba do kontaktu",
+    "diagnoza problemu",
+    "zgodność z dokumentami strategicznymi",
+    "zadania projektu",
+    "harmonogram realizacji",
+    "wskaźniki produktu",
+    "wskaźniki rezultatu",
+    "koszt całkowity projektu",
+    "wnioskowane dofinansowanie",
+    "wkład własny",
+    "ryzyka projektu",
+    "trwałość projektu"
+  ],
+  "cc_context": {
+    "city": {
+      "name": "Kraków",
+      "locode": "PL KRK",
+      "country": "Poland",
+      "country_locode": "PL",
+      "region": "Małopolskie",
+      "region_locode": "PL-12",
+      "area_km2": null,
+      "population": null,
+      "population_year": null,
+      "source": "citycatalyst"
+    },
+    "project": null,
+    "ghgi": null,
+    "ccra": null,
+    "hiap": null
+  }
+}

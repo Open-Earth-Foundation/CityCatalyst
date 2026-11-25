@@ -111,6 +111,21 @@ import type {
 } from "./BulkInventoryImportItem";
 import { BulkInventoryImportItem as _BulkInventoryImportItem } from "./BulkInventoryImportItem";
 import type {
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+} from "./IngestJob";
+import { IngestJob as _IngestJob } from "./IngestJob";
+import type {
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
+} from "./IngestItem";
+import { IngestItem as _IngestItem } from "./IngestItem";
+import type {
+  IngestDocumentAttributes,
+  IngestDocumentCreationAttributes,
+} from "./IngestDocument";
+import { IngestDocument as _IngestDocument } from "./IngestDocument";
+import type {
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
 } from "./PdfOcrJob";
@@ -290,6 +305,12 @@ import {
   OAuthClientAuthzOptionalAttributes,
 } from "./OAuthClientAuthz";
 import {
+  AuthorizationCode as _AuthorizationCode,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
+} from "./AuthorizationCode";
+import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
@@ -331,6 +352,9 @@ export {
   _ImportedInventoryFile as ImportedInventoryFile,
   _BulkInventoryImportJob as BulkInventoryImportJob,
   _BulkInventoryImportItem as BulkInventoryImportItem,
+  _IngestJob as IngestJob,
+  _IngestItem as IngestItem,
+  _IngestDocument as IngestDocument,
   _PdfOcrJob as PdfOcrJob,
   _WebhookSubscription as WebhookSubscription,
   _WebhookDelivery as WebhookDelivery,
@@ -371,6 +395,7 @@ export {
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
+  _AuthorizationCode as AuthorizationCode,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -423,6 +448,12 @@ export type {
   BulkInventoryImportJobCreationAttributes,
   BulkInventoryImportItemAttributes,
   BulkInventoryImportItemCreationAttributes,
+  IngestJobAttributes,
+  IngestJobCreationAttributes,
+  IngestItemAttributes,
+  IngestItemCreationAttributes,
+  IngestDocumentAttributes,
+  IngestDocumentCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
   WebhookSubscriptionAttributes,
@@ -504,6 +535,9 @@ export type {
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
+  AuthorizationCodeAttributes,
+  AuthorizationCodeCreationAttributes,
+  AuthorizationCodeOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -540,6 +574,9 @@ export function initModels(sequelize: Sequelize) {
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const BulkInventoryImportJob = _BulkInventoryImportJob.initModel(sequelize);
   const BulkInventoryImportItem = _BulkInventoryImportItem.initModel(sequelize);
+  const IngestJob = _IngestJob.initModel(sequelize);
+  const IngestItem = _IngestItem.initModel(sequelize);
+  const IngestDocument = _IngestDocument.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
   const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
@@ -583,6 +620,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
+  const AuthorizationCode = _AuthorizationCode.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -929,9 +967,19 @@ export function initModels(sequelize: Sequelize) {
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
-  Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
-  User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
-  Version.hasOne(Version, {
+  Version.belongsTo(User, {
+    as: "author",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(Version, {
+    as: "versions",
+    foreignKey: "authorId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  Version.belongsTo(Version, {
     as: "previousVersion",
     foreignKey: "previousVersionId",
   });
@@ -1042,8 +1090,18 @@ export function initModels(sequelize: Sequelize) {
     as: "subSectorReportingLevels",
     foreignKey: "subsectorId",
   });
-  User.hasMany(UserFile, { foreignKey: "userId", as: "user" });
-  UserFile.belongsTo(User, { as: "userFiles", foreignKey: "userId" });
+  User.hasMany(UserFile, {
+    foreignKey: "userId",
+    as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  UserFile.belongsTo(User, {
+    as: "userFiles",
+    foreignKey: "userId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   UserFile.belongsTo(City, {
     foreignKey: "cityId",
     as: "city",
@@ -1173,6 +1231,8 @@ export function initModels(sequelize: Sequelize) {
   ProjectInvite.belongsTo(User, {
     foreignKey: "userId",
     as: "user",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectInvite.belongsTo(Project, {
     foreignKey: "projectId",
@@ -1189,6 +1249,8 @@ export function initModels(sequelize: Sequelize) {
   User.hasMany(ProjectInvite, {
     foreignKey: "userId",
     as: "projectInvites",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
   });
   ProjectModules.belongsTo(Project, {
     as: "project",
@@ -1341,13 +1403,13 @@ export function initModels(sequelize: Sequelize) {
   ImportedInventoryFile.belongsTo(User, {
     as: "user",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
   User.hasMany(ImportedInventoryFile, {
     as: "importedInventoryFiles",
     foreignKey: "userId",
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
 
@@ -1411,6 +1473,102 @@ export function initModels(sequelize: Sequelize) {
     as: "items",
     foreignKey: "jobId",
     onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.belongsTo(User, {
+    as: "uploadedBy",
+    foreignKey: "uploadedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(IngestJob, {
+    as: "job",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestJob.hasMany(IngestItem, {
+    as: "items",
+    foreignKey: "jobId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(City, {
+    as: "targetCity",
+    foreignKey: "targetCityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(Inventory, {
+    as: "targetInventory",
+    foreignKey: "targetInventoryId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(User, {
+    as: "reviewLockedBy",
+    foreignKey: "reviewLockedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(Project, {
+    as: "project",
+    foreignKey: "projectId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(User, {
+    as: "uploadedBy",
+    foreignKey: "uploadedByUserId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.belongsTo(NativeInputCatalog, {
+    as: "catalog",
+    foreignKey: "catalogId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestItem.belongsTo(IngestDocument, {
+    as: "document",
+    foreignKey: "documentId",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  IngestDocument.hasMany(IngestItem, {
+    as: "items",
+    foreignKey: "documentId",
+    onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
   BulkInventoryImportItem.belongsTo(City, {
@@ -1480,6 +1638,9 @@ export function initModels(sequelize: Sequelize) {
     ImportedInventoryFile: ImportedInventoryFile,
     BulkInventoryImportJob: BulkInventoryImportJob,
     BulkInventoryImportItem: BulkInventoryImportItem,
+    IngestJob: IngestJob,
+    IngestItem: IngestItem,
+    IngestDocument: IngestDocument,
     PdfOcrJob: PdfOcrJob,
     WebhookSubscription: WebhookSubscription,
     WebhookDelivery: WebhookDelivery,
@@ -1521,6 +1682,7 @@ export function initModels(sequelize: Sequelize) {
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
+    AuthorizationCode: AuthorizationCode,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

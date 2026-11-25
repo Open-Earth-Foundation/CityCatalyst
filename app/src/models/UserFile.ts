@@ -5,7 +5,8 @@ import { City, CityId } from "./City";
 
 export interface UserFileAttributes {
   id: string;
-  userId: string;
+  /** Null once the user who uploaded the file has been deleted. */
+  userId: string | null;
   cityId: string;
   fileReference?: string;
   data?: Buffer;
@@ -46,7 +47,7 @@ export class UserFile
   implements Partial<UserFileAttributes>
 {
   declare id: string;
-  declare userId: string;
+  declare userId: string | null;
   declare cityId: string;
   declare fileReference?: string;
   declare data?: Buffer;
@@ -61,8 +62,8 @@ export class UserFile
   declare created?: Date;
   declare lastUpdated?: Date;
 
-  //UserFile belongs to User via id
-  declare user: User;
+  //UserFile belongs to User via userId. Null once the user is deleted.
+  declare user: User | null;
   declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
@@ -84,11 +85,13 @@ export class UserFile
         },
         userId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           references: {
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "user_id",
         },
         cityId: {

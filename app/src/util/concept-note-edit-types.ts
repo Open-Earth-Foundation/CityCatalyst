@@ -5,15 +5,24 @@ export const editScopeSchema = z
   .object({
     kind: z.literal("auto").default("auto"),
     focused_chapter_id: z.string().uuid().nullable().optional(),
+    // A partial gap-form answer closes nothing; a complete one closes this gap
+    // version and any duplicate gap it also fills.
+    // Climate Advisor returns null for proposals that answer no gap.
+    gap_id: z.string().uuid().nullable().optional(),
+    gap_version: z.number().int().positive().nullable().optional(),
+    answer_complete: z.boolean().optional(),
   })
   .strict();
+
+/** Climate Advisor rejects longer edit instructions; chat messages are instructions. */
+export const EDIT_INSTRUCTION_MAX_CHARS = 8_000;
 
 export const editProposalRequestSchema = z
   .object({
     instruction: z
       .string()
       .min(1)
-      .max(8_000)
+      .max(EDIT_INSTRUCTION_MAX_CHARS)
       .refine((value) => value.trim().length > 0),
     scope: editScopeSchema,
     idempotency_key: z.string().uuid(),
@@ -99,6 +108,8 @@ export interface EditProposal {
   }>;
   clarification: string | null;
   error_code: string | null;
+  /** Why independent review rejected the final candidate, one entry per unsupported review decision. */
+  review_objections?: Array<{ chapter_title: string; explanation: string }>;
   result: EditApplicationResult | null;
   created_at: string;
   updated_at: string;

@@ -96,3 +96,60 @@ export const LEVEL_LABEL: Record<
   shared: l("Shared", "Compartilhado"),
   national: l("State / Union", "Estado / União"),
 };
+
+/** The grades in order, best first, for the "what the grades mean" legend. */
+export const LEGAL_GRADES: LegalGrade[] = [
+  "highly_feasible",
+  "feasible",
+  "feasible_with_adjustments",
+  "feasible_with_heavy_adjustments",
+  "least_feasible",
+  "not_feasible",
+];
+
+export type AuthorityReading = "all" | "some" | "partial" | "none";
+export type CompetenceReading = "all" | "some" | "supplementary" | "concurrent";
+
+export interface GradeReading {
+  /** Norms recorded for the action. */
+  total: number;
+  authority: AuthorityReading;
+  /** Norms giving the municipality full authority to act. */
+  fullAuthority: number;
+  competence: CompetenceReading;
+  /** Norms giving it exclusive competence to legislate. */
+  exclusive: number;
+}
+
+/**
+ * What the norms behind a grade say, so the grade can be explained in one
+ * plain sentence (review round 2, BR-N7). Read from the norms only: how many
+ * give the municipality full authority, how many exclusive competence.
+ */
+export function gradeReading(assessment: LegalAssessment): GradeReading {
+  const { norms } = assessment;
+  const total = norms.length;
+  const fullAuthority = norms.filter((n) => n.authority === "total").length;
+  const partial = norms.filter((n) => n.authority === "partial").length;
+  const exclusive = norms.filter((n) => n.competence === "exclusive").length;
+  const supplementary = norms.filter(
+    (n) => n.competence === "supplementary",
+  ).length;
+  const authority: AuthorityReading =
+    fullAuthority === total
+      ? "all"
+      : fullAuthority > 0
+        ? "some"
+        : partial > 0
+          ? "partial"
+          : "none";
+  const competence: CompetenceReading =
+    exclusive === total
+      ? "all"
+      : exclusive > 0
+        ? "some"
+        : supplementary > 0
+          ? "supplementary"
+          : "concurrent";
+  return { total, authority, fullAuthority, competence, exclusive };
+}

@@ -19,6 +19,8 @@ export interface FeasibilityRow {
   action_id: string;
   action_name?: string;
   sector?: string | null;
+  /** Sector label in the page language, set by the page from the catalog's sector keys. */
+  sector_label?: string;
   financial_feasibility: number;
   route?: string | null;
   reason?: string | null;
@@ -36,6 +38,8 @@ export type FundingSource = Partial<
 
 export type Project = Partial<MeedReferenceFinanceProject> & {
   project_name_i18n?: { en?: string; es?: string } | null;
+  /** Localized sector from the feed; present once the Global API exposes it. */
+  sector_i18n?: { en?: string; es?: string } | null;
 };
 
 export function extractFeasibilityRows(data: unknown): FeasibilityRow[] {

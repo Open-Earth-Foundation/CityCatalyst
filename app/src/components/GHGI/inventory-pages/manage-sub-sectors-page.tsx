@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import Heading from "@/app/[lng]/cities/[cityId]/GHGI/[inventory]/manage-sectors/Heading";
 import { useTranslation } from "@/i18n/client";
 import SectorTabs from "@/app/[lng]/cities/[cityId]/GHGI/[inventory]/manage-sectors/SectorTabs";
-import { Toaster } from "@/components/ui/toaster";
 import { getParamValueRequired } from "@/util/helpers";
 import Footer from "@/components/Sections/Footer";
 
@@ -32,7 +31,6 @@ const ManageSubSectors = () => {
         <SectorTabs t={t} inventoryId={inventory} />
       </Box>
       <Footer lng={lng} />
-      <Toaster />
     </Box>
   );
 };

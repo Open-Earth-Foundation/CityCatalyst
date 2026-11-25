@@ -11,6 +11,7 @@ export interface CityInviteAttributes {
   email?: string;
   invitingUserId?: string;
   status?: InviteStatus;
+  inviteId?: string; // unique identifier for grouped city invites
   created?: Date;
   lastUpdated?: Date;
 }
@@ -26,6 +27,7 @@ export type CityInviteOptionalAttributes =
   | "email"
   | "invitingUserId"
   | "status"
+  | "inviteId"
   | "created"
   | "lastUpdated";
 
@@ -39,6 +41,7 @@ export class CityInvite
   declare email?: string | undefined;
   declare invitingUserId?: string | undefined;
   declare status?: InviteStatus | undefined;
+  declare inviteId?: string;
   declare created?: Date | undefined;
   declare lastUpdated?: Date | undefined;
 
@@ -101,6 +104,10 @@ export class CityInvite
         status: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        inviteId: {
+          type: DataTypes.UUID,
+          field: "invite_id",
         },
         lastUpdated: {
           type: DataTypes.DATE,

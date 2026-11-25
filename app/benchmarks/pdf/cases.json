@@ -1,0 +1,274 @@
+[
+  {
+    "id": "C-004",
+    "city": "Philadelphia",
+    "country": "USA",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Philladelpia - 2022.pdf"
+  },
+  {
+    "id": "C-005",
+    "city": "New York City",
+    "country": "USA",
+    "year": 2015,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "NYC - 2015.pdf"
+  },
+  {
+    "id": "C-006",
+    "city": "Seattle",
+    "country": "USA",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": true,
+    "textTables": null,
+    "fileName": "Seattle - 2022.pdf"
+  },
+  {
+    "id": "C-007a",
+    "city": "Miami",
+    "country": "USA",
+    "year": 2021,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Miami - 2019 & 2021.pdf"
+  },
+  {
+    "id": "C-007b",
+    "city": "Miami",
+    "country": "USA",
+    "year": 2019,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Miami - 2019 & 2021.pdf"
+  },
+  {
+    "id": "C-007s",
+    "city": "Miami",
+    "country": "USA",
+    "year": 2021,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Miami_2019_2021_SCANNED_synthetic.pdf"
+  },
+  {
+    "id": "C-008",
+    "city": "Auckland",
+    "country": "New Zealand",
+    "year": 2021,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Auckland - 2021.pdf"
+  },
+  {
+    "id": "C-009",
+    "city": "Toronto",
+    "country": "Canada",
+    "year": 2019,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Toronto - 2019.pdf"
+  },
+  {
+    "id": "C-010",
+    "city": "Toronto",
+    "country": "Canada",
+    "year": 2020,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Toronto - 2020.pdf"
+  },
+  {
+    "id": "C-013",
+    "city": "Buenos Aires",
+    "country": "Argentina",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Buenos Aires - 2022.pdf"
+  },
+  {
+    "id": "C-014",
+    "city": "São Paulo",
+    "country": "Brazil",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Sao Paulo - 2022.pdf"
+  },
+  {
+    "id": "C-015",
+    "city": "Rosario",
+    "country": "Argentina",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Rosario, Argentina 2022.pdf"
+  },
+  {
+    "id": "C-016",
+    "city": "Mersin",
+    "country": "Türkiye",
+    "year": 2023,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Mersin, Türkiye 2023.pdf"
+  },
+  {
+    "id": "C-017",
+    "city": "Phoenix",
+    "country": "USA",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Phoenix, USA 2022.pdf"
+  },
+  {
+    "id": "C-018",
+    "city": "Santiago",
+    "country": "Chile",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Santiago, Chile 2022.pdf"
+  },
+  {
+    "id": "C-019",
+    "city": "Peñalolén",
+    "country": "Chile",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Peñalolén, Chile 2022.pdf"
+  },
+  {
+    "id": "C-020",
+    "city": "Guadalajara",
+    "country": "Mexico",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Guadalajara, México 2022.pdf"
+  },
+  {
+    "id": "C-021",
+    "city": "Curitiba",
+    "country": "Brazil",
+    "year": 2020,
+    "block": "validated",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Curitiba, Brazil 2020.pdf"
+  },
+  {
+    "id": "C-022",
+    "city": "Madrid",
+    "country": "Spain",
+    "year": 2023,
+    "block": "validated",
+    "totalOnly": true,
+    "textTables": null,
+    "fileName": "Madrid, Spain 2023 (IPCC con CIRIS).pdf"
+  },
+  {
+    "id": "C-023",
+    "city": "Kyoto",
+    "country": "Japan",
+    "year": 2023,
+    "block": "validated",
+    "totalOnly": true,
+    "textTables": null,
+    "fileName": "Kyoto, Japan (IPCC) 2023.pdf"
+  },
+  {
+    "id": "C-024",
+    "city": "Coimbatore",
+    "country": "India",
+    "year": 2019,
+    "block": "validated",
+    "totalOnly": true,
+    "textTables": null,
+    "fileName": "Coimbatore, India 2019-20.pdf"
+  },
+  {
+    "id": "C-025",
+    "city": "Münster",
+    "country": "Germany",
+    "year": 2022,
+    "block": "validated",
+    "totalOnly": true,
+    "textTables": null,
+    "fileName": "Münster, Germany 2022.pdf"
+  },
+  {
+    "id": "C-027",
+    "city": "Chicago",
+    "country": "USA",
+    "year": 2019,
+    "block": "held-out",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Chicago 2022 (City of Chicago column of the CMAP regional inventory).pdf"
+  },
+  {
+    "id": "C-028",
+    "city": "Long Beach",
+    "country": "USA",
+    "year": 2021,
+    "block": "held-out",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Long Beach, USA 2021.pdf",
+    "notes": "not fully held out"
+  },
+  {
+    "id": "C-029",
+    "city": "Chicago",
+    "country": "USA",
+    "year": 2017,
+    "block": "held-out",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Chicago, USA 2017.pdf"
+  },
+  {
+    "id": "C-030",
+    "city": "Porto Alegre",
+    "country": "Brazil",
+    "year": 2019,
+    "block": "held-out",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Porto Alegre, Brazil 2019.pdf"
+  },
+  {
+    "id": "C-031",
+    "city": "Dunedin",
+    "country": "New Zealand",
+    "year": 2021,
+    "block": "held-out",
+    "totalOnly": false,
+    "textTables": null,
+    "fileName": "Dunedin 2022.pdf",
+    "notes": "not fully held out"
+  }
+]

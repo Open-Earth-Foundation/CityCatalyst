@@ -50,6 +50,7 @@ interface SubCategoryEntry {
 interface SubSectorEntry {
   referenceNumber: string | null;
   subsectorName?: string | null;
+  scope?: { scopeName?: string | null } | null;
   subCategories: SubCategoryEntry[];
 }
 
@@ -135,7 +136,7 @@ function main(): void {
     { scope?: number; methodologies?: unknown[]; directMeasure?: unknown }
   > = JSON.parse(fs.readFileSync(MANUAL_HIERARCHY_PATH, "utf-8"));
 
-  const validSectorRefs = ["I", "II", "III", "IV", "V"];
+  const validSectorRefs = ["I", "II", "III", "IV", "V", "VI"];
   const rows: GPCReferenceRow[] = [];
 
   for (const sector of inventoryStructure) {
@@ -173,7 +174,12 @@ function main(): void {
           manualHierarchy,
           gpcRefNo,
         );
-        const scope = manualHierarchy[gpcRefNo]?.scope;
+        // VI.1 has no manual form, so its scope comes from the catalogue.
+        const scope =
+          manualHierarchy[gpcRefNo]?.scope ??
+          (subSector.scope?.scopeName
+            ? Number(subSector.scope.scopeName)
+            : undefined);
         rows.push({
           gpcRefNo,
           sector: sectorName,

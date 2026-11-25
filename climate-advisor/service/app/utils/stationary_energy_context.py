@@ -10,6 +10,19 @@ _SCOPE_KEY_GROUPS: tuple[tuple[str, ...], ...] = (
     ("scope_id",),
 )
 
+# Request option the Stationary Energy page sets when it re-sends the user's
+# pre-run request after a chat-started run finishes generating.
+STATIONARY_ENERGY_RESUME_AFTER_DRAFT_START_OPTION = (
+    "stationary_energy_resume_after_draft_start"
+)
+
+
+def is_stationary_energy_resume_turn(options: Any) -> bool:
+    """Return whether the request re-sends a pre-run request once its run is ready."""
+    return isinstance(options, dict) and bool(
+        options.get(STATIONARY_ENERGY_RESUME_AFTER_DRAFT_START_OPTION)
+    )
+
 
 def extract_stationary_energy_draft_run_id(*containers: Any) -> str | None:
     """Find a Stationary Energy draft run id across several loose context objects."""

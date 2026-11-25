@@ -127,6 +127,7 @@ export function ChatMessageList({
                     py={4}
                     bg={isUser ? "interactive.tertiary" : "base.light"}
                     whiteSpace={isUser ? "pre-wrap" : undefined}
+                    minW={0}
                     color={isUser ? "base.light" : "content.tertiary"}
                     letterSpacing="0.5px"
                     lineHeight="24px"

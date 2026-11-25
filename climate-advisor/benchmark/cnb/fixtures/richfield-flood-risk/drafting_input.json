@@ -1,0 +1,140 @@
+{
+  "run_name": "Richfield flood-risk mitigation concept note",
+  "funder": "Minnesota Department of Natural Resources",
+  "opportunity": "Flood Hazard Mitigation Grant Assistance Program",
+  "template_name": "Official Minnesota DNR FHM Grant Assistance Program Application (updated July 2024)",
+  "chapter_schema": [
+    {
+      "chapter_ref": "applicant_project_information",
+      "title": "Applicant and project information",
+      "required": true,
+      "description": "Submission date, applicant, project, contact and authorized agent.",
+      "required_fields": [
+        "application submittal date",
+        "local unit of government applicant",
+        "project name",
+        "local government contact",
+        "address, phone and email"
+      ]
+    },
+    {
+      "chapter_ref": "funding_breakout",
+      "title": "Funding breakdown",
+      "required": true,
+      "description": "Current-phase cost and requested DNR, state, federal, local and prior FHM funding.",
+      "required_fields": [
+        "total current-phase cost",
+        "DNR request",
+        "other state, federal and local funding",
+        "prior FHM funding"
+      ]
+    },
+    {
+      "chapter_ref": "project_activities",
+      "title": "Project activities",
+      "required": true,
+      "description": "Selected activity types, approximate costs and quantifiable outputs.",
+      "required_fields": [
+        "selected project activities and quantities"
+      ]
+    },
+    {
+      "chapter_ref": "flood_damages",
+      "title": "Summary of flood damages",
+      "required": true,
+      "description": "Nature, extent and severity of flooding, maps, photographs and presidential disaster declarations.",
+      "required_fields": [
+        "flood damages and inundation evidence",
+        "county presidential disaster declarations"
+      ]
+    },
+    {
+      "chapter_ref": "existing_mitigation_regulation",
+      "title": "Existing mitigation and regulatory measures",
+      "required": true,
+      "description": "Prior mitigation, floodplain ordinance standards, enforcement and violations.",
+      "required_fields": [
+        "prior mitigation",
+        "floodplain ordinance compliance and enforcement"
+      ]
+    },
+    {
+      "chapter_ref": "project_description",
+      "title": "Project description",
+      "required": true,
+      "description": "Immediate-phase objective, later phases, partners and roles.",
+      "required_fields": [
+        "project and phase description",
+        "partners and roles"
+      ]
+    },
+    {
+      "chapter_ref": "project_analysis",
+      "title": "Project analysis",
+      "required": true,
+      "description": "Alternatives, feasibility, environmental, social and economic effects, public input, environmental review, water-plan alignment and wetland-credit intent.",
+      "required_fields": [
+        "alternatives and effectiveness",
+        "environmental effects",
+        "social and economic effects including underserved communities",
+        "public input",
+        "environmental review status",
+        "local water-plan reference",
+        "wetland-replacement-credit intent"
+      ]
+    },
+    {
+      "chapter_ref": "project_financing",
+      "title": "Project financing",
+      "required": true,
+      "description": "Budget, finance method, local or other assistance, financial capability and Red River funding where applicable.",
+      "required_fields": [
+        "financing plan and local financial capability"
+      ]
+    }
+  ],
+  "required_fields": [
+    "application submittal date",
+    "local unit of government applicant",
+    "project name",
+    "local government contact",
+    "address, phone and email",
+    "total current-phase cost",
+    "DNR request",
+    "other state, federal and local funding",
+    "prior FHM funding",
+    "selected project activities and quantities",
+    "flood damages and inundation evidence",
+    "county presidential disaster declarations",
+    "prior mitigation",
+    "floodplain ordinance compliance and enforcement",
+    "project and phase description",
+    "partners and roles",
+    "alternatives and effectiveness",
+    "environmental effects",
+    "social and economic effects including underserved communities",
+    "public input",
+    "environmental review status",
+    "local water-plan reference",
+    "wetland-replacement-credit intent",
+    "financing plan and local financial capability"
+  ],
+  "cc_context": {
+    "city": {
+      "name": "Richfield",
+      "locode": null,
+      "country": "United States",
+      "country_locode": "US",
+      "region": "Minnesota",
+      "region_locode": "US-MN",
+      "area_km2": null,
+      "population": 36994,
+      "population_year": 2020,
+      "source": "citycatalyst"
+    },
+    "project": null,
+    "ghgi": null,
+    "ccra": null,
+    "hiap": null
+  }
+}

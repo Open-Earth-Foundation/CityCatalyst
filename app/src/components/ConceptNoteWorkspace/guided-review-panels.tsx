@@ -480,6 +480,17 @@ export function GuidedReviewExportPanel({
           {t("draft-preflight-critical-gap-description")}
         </Text>
       )}
+      {controller.estimateCount > 0 && (
+        <Text
+          role="status"
+          color="sentiment.warningDefault"
+          data-testid="concept-note-export-estimates"
+        >
+          {t("draft-preflight-estimates", {
+            count: controller.estimateCount,
+          })}
+        </Text>
+      )}
       {requiresExportAcknowledgement && (
         <Checkbox
           alignItems="start"

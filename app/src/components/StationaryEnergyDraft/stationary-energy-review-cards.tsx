@@ -22,6 +22,7 @@ import type {
   DraftDecisionState,
   DraftProposal,
 } from "@/components/StationaryEnergyDraft/types";
+import { proposalRationaleLabel } from "@/components/StationaryEnergyDraft/utils";
 import { getParamValueRequired } from "@/util/helpers";
 
 function useStationaryEnergyAgenticTranslation() {
@@ -118,7 +119,7 @@ function DecisionReviewBaseCard(props: {
   onViewSource?: (datasourceId: string) => void;
 }) {
   const { t } = useStationaryEnergyAgenticTranslation();
-  const rationale = props.proposal.rationale?.trim();
+  const rationale = proposalRationaleLabel(props.proposal, t);
 
   return (
     <Box

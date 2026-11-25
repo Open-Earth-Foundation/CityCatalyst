@@ -6,3 +6,6 @@ export const CHAT_WIDGET_TRANSFORM = {
   base: "none",
   xl: "none",
 } as const;
+
+// The composer grows up to this height before scrolling.
+export const COMPOSER_MAX_HEIGHT = 160;

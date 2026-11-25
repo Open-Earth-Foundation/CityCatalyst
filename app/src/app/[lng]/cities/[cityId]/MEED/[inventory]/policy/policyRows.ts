@@ -5,7 +5,7 @@
  * tone/label maps are declared once instead of once per component.
  */
 
-import type { MeedTone } from "../../components/MeedStatusTag";
+import { MEED_TONE_FG, type MeedTone } from "../../components/meedTones";
 import {
   docScope,
   SIGNAL_STRENGTH_NUM,
@@ -143,14 +143,7 @@ export function sortPolicyRows(
 // ─── Display maps ─────────────────────────────────────────────────────────────
 
 /** Text colour matching a `MeedTone`, for numbers and labels next to a meter. */
-export const TONE_TEXT_COLOR: Record<MeedTone, string> = {
-  neutral: "content.tertiary",
-  info: "content.link",
-  positive: "sentiment.positiveDefault",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
-  negative: "sentiment.negativeDefault",
-};
+export const TONE_TEXT_COLOR: Record<MeedTone, string> = MEED_TONE_FG;
 
 export function scoreTone(score: number | null): MeedTone {
   if (score === null) return "neutral";

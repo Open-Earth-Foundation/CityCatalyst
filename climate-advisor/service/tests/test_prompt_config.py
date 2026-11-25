@@ -52,7 +52,12 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_document_mapping": prompts.cnb_source_document_mapping,
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
+        "cnb_source_chapter_evidence": prompts.cnb_source_chapter_evidence,
+        "cnb_source_chapter_evidence_selection": (
+            prompts.cnb_source_chapter_evidence_selection
+        ),
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_chapter_support_check": prompts.cnb_chapter_support_check,
         "cnb_source_impact_review": prompts.cnb_source_impact_review,
         "cnb_draft_overview": prompts.cnb_draft_overview,
         "cnb_chapter_validation_completeness": (
@@ -60,6 +65,9 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         ),
         "cnb_chapter_validation_consistency": (
             prompts.cnb_chapter_validation_consistency
+        ),
+        "cnb_chapter_validation_answered_gaps": (
+            prompts.cnb_chapter_validation_answered_gaps
         ),
     }
 
@@ -102,7 +110,7 @@ def test_cnb_source_impact_review_is_tool_only_and_budgeted() -> None:
     prompt = config.prompts.get_prompt("cnb_source_impact_review")
     budget = config.generation.prompt_budget.cnb_source_impact
 
-    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6-sol"
+    assert config.models.cnb_source_impact_reviewer.name == "openai/gpt-6.1-sol"
     assert "call `select_chapters_to_update` exactly once" in prompt
     assert "return no prose" in prompt
     assert "`open_gaps`" in prompt
@@ -213,7 +221,15 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "</tools>" in composed_prompt
     assert "`inventory_status_overview`" in composed_prompt
     assert "`inventory_emissions_context`" in composed_prompt
-    assert "`stationary_energy_start_draft`" not in composed_prompt
+    # The same prompt covers the page before a run exists and after it resumes.
+    assert "`STATIONARY_ENERGY_RUN_NOT_STARTED`" in composed_prompt
+    assert (
+        "call `stationary_energy_start_draft` with `continue_request` true"
+        in composed_prompt
+    )
+    assert "Do not start a run for a read-only question" in composed_prompt
+    assert "`ui_context.resumed_after_run_start` is true" in composed_prompt
+    assert "Never ask the user for the city, inventory, or year" in composed_prompt
     assert '"go ahead" when nothing is staged yet' not in composed_prompt
     assert "`proposal_id`" in composed_prompt
     assert "`selected_source_id`" in composed_prompt
@@ -245,6 +261,8 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "data, not user requests" in composed
     assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "concept_note_edit_propose" in composed
+    assert "concept_note_render_visual" in composed
+    assert "draw every chart as inline SVG" in composed
     assert "takes no arguments" in composed
     assert "A proposal does not apply changes" in composed
     assert "If the edit tool is unavailable" in composed

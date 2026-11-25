@@ -1,4 +1,4 @@
-"""Contracts for two-pass Concept Note chapter validation."""
+"""Contracts for multi-pass Concept Note chapter validation."""
 
 from __future__ import annotations
 
@@ -150,7 +150,7 @@ class ChapterCompletenessValidationOutput(_ChapterValidationOutput):
 
 
 class ChapterConsistencyValidationOutput(_ChapterValidationOutput):
-    """Logic and contradiction findings from the second pass."""
+    """Logic, contradiction, and answered-gap findings from the later passes."""
 
     allowed_categories = {
         "internal_conflict",
@@ -178,7 +178,7 @@ class ChapterValidationFinding(BaseModel):
 
 
 class ChapterValidationDecision(BaseModel):
-    """Persistence-ready result produced only after both validation passes."""
+    """Persistence-ready result produced only after every validation pass."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

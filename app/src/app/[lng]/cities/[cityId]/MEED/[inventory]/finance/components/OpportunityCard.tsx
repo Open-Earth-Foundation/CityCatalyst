@@ -5,7 +5,14 @@ import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
-import { FOCUS_RING, humanizeEnum, STATUS_KEYS, STATUS_TONE } from "../labels";
+import {
+  enumLabel,
+  FOCUS_RING,
+  humanizeEnum,
+  INSTRUMENT_KEYS,
+  STATUS_KEYS,
+  STATUS_TONE,
+} from "../labels";
 import type { Opportunity } from "../types";
 
 export interface OpportunityCardProps {
@@ -39,7 +46,7 @@ export function OpportunityCard({ opp, t }: OpportunityCardProps) {
               )}
               {opp.instrument && (
                 <MeedStatusTag tone="neutral">
-                  {humanizeEnum(opp.instrument)}
+                  {enumLabel(INSTRUMENT_KEYS, opp.instrument, t)}
                 </MeedStatusTag>
               )}
             </HStack>

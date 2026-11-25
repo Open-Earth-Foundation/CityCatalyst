@@ -26,6 +26,7 @@ import { ActivityDataSection } from "./sections/ActivityDataSection";
 import { DirectMeasureSection } from "./sections/DirectMeasureSection";
 import { EmissionFactorsSection } from "./sections/EmissionFactorsSection";
 import { DataQualitySection } from "./sections/DataQualitySection";
+import { ModalSectionTitle } from "./sections/ModalField";
 import { api } from "@/services/api";
 
 interface AddActivityModalBodyProps {
@@ -63,6 +64,10 @@ export type Inputs = {
     CH4EmissionFactor: number;
     dataQuality: string;
     dataComments: string;
+    dataYear: string;
+    sourceDocument?: string;
+    sourcePage?: string;
+    sourceUrl?: string;
     activityType: string;
     fuelType: string;
     co2EmissionFactorUnit: string;
@@ -234,7 +239,8 @@ const ActivityModalBody = ({
   useEffect(() => {
     const validateEmissionFactor = (
       value: number,
-      fieldName: "CO2EmissionFactor" | "N2OEmissionFactor" | "CH4EmissionFactor",
+      fieldName:
+        "CO2EmissionFactor" | "N2OEmissionFactor" | "CH4EmissionFactor",
     ) => {
       // Only validate if custom emission factor type is selected
       if (emissionsFactorTypeValue !== "custom") {
@@ -243,7 +249,7 @@ const ActivityModalBody = ({
       }
 
       // Check if value is empty, null, undefined
-      if (value === null || value === undefined) {
+      if (value === null || value === undefined || (value as unknown) === "") {
         setError(`activity.${fieldName}`, {
           type: "required",
           message: t("emission-factor-required"),
@@ -276,8 +282,15 @@ const ActivityModalBody = ({
   const isDirectMeasure = methodology?.id.includes("direct-measure");
 
   return (
-    <DialogBody p={6} px={12}>
-      <form onSubmit={submit}>
+    <DialogBody p={6} px={12} flex="1" minH={0} overflowY="auto">
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+      >
+        <ModalSectionTitle>{t("fuel-type-and-emissions")}</ModalSectionTitle>
         <ActivitySelectionSection
           t={t}
           control={control}
@@ -332,6 +345,9 @@ const ActivityModalBody = ({
           areEmissionFactorsLoading={areEmissionFactorsLoading}
         />
 
+        <ModalSectionTitle mt={8}>
+          {t("data-quality-section-title")}
+        </ModalSectionTitle>
         <DataQualitySection
           t={t}
           register={register}

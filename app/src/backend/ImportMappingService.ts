@@ -1,5 +1,6 @@
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import ECRFImportService from "@/backend/ECRFImportService";
+import { isImportedWasteRef } from "@/util/GHGI/reported-totals";
 import type { Inventory } from "@/models/Inventory";
 import {
   getScopesForInventoryAndSector,
@@ -179,8 +180,7 @@ export default class ImportMappingService {
           // For sectors IV and V, check if they're allowed for this inventory type
           if (
             inventoryType === "gpc_basic_plus" &&
-            (sector.referenceNumber === "IV" ||
-              sector.referenceNumber === "V")
+            (sector.referenceNumber === "IV" || sector.referenceNumber === "V")
           ) {
             // Include subsector for GPC_BASIC_PLUS
             requiredRows.push({
@@ -215,7 +215,10 @@ export default class ImportMappingService {
       }
     }
 
-    return requiredRows;
+    // III.x.3 is optional: it is never missing from a file.
+    return requiredRows.filter(
+      (row) => !isImportedWasteRef(row.gpcReferenceNumber),
+    );
   }
 
   /**
@@ -356,6 +359,7 @@ export default class ImportMappingService {
     for (const ecrfRow of ecrfRows) {
       if (!gpcRowMap.has(ecrfRow.gpcRefNo)) {
         // This eCRF row doesn't match any required GPC row
+        const isOptional = isImportedWasteRef(ecrfRow.gpcRefNo);
         comparisons.push({
           ecrfRow,
           gpcRequiredRow: {
@@ -369,10 +373,12 @@ export default class ImportMappingService {
             scopeId: ecrfRow.scopeId || null,
             scopeName: null,
           },
-          status: "unmapped",
-          mappingIssues: [
-            "This GPC reference number is not required for this inventory type",
-          ],
+          status: isOptional ? "mapped" : "unmapped",
+          mappingIssues: isOptional
+            ? undefined
+            : [
+                "This GPC reference number is not required for this inventory type",
+              ],
         });
       }
     }

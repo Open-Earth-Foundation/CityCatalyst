@@ -1,5 +1,5 @@
 # HIAP-MEED LLM Configuration
-# Shared non-secret configuration for OpenAI-backed features.
+# Shared non-secret configuration for OpenAI-backed features and release-time Jev.
 
 models:
   alignment_other_preference:
@@ -25,3 +25,12 @@ features:
 openai:
   timeout_seconds: 30
   max_retries: 3
+
+# Release-time authority-scope classifier (OpenRouter Decisions / Jev).
+# Report requests never call this model; only the legal-release command does.
+jev:
+  model_id: "typesafe/jev-1.13"
+  confidence_threshold: 0.55
+  timeout_seconds: 60
+  max_retries: 2
+  retention_keep_newest: 5

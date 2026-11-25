@@ -10,7 +10,7 @@ import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedButton } from "../../../components/MeedButton";
 import { FinanceMatches } from "../../finance/components/FinanceMatches";
 import { RouteTag } from "../../finance/components/RouteTag";
-import { routeKeyOf } from "../../finance/labels";
+import { financeReason, routeKeyOf } from "../../finance/labels";
 import { extractFeasibilityRows } from "../../finance/types";
 
 export interface ActionFinanceSectionProps {
@@ -40,6 +40,7 @@ export function ActionFinanceSection({
   );
 
   if (!row) return null;
+  const reason = financeReason(row, t);
 
   return (
     <VStack alignItems="stretch" gap="m">
@@ -49,10 +50,8 @@ export function ActionFinanceSection({
         </LabelLarge>
         <RouteTag routeKey={routeKeyOf(row.route)} route={row.route} t={t} />
       </HStack>
-      {row.reason && (
-        <BodyMedium color="content.secondary">{row.reason}</BodyMedium>
-      )}
-      <FinanceMatches row={row} cityId={cityId} t={t} />
+      {reason && <BodyMedium color="content.secondary">{reason}</BodyMedium>}
+      <FinanceMatches row={row} cityId={cityId} t={t} lng={lng} />
       <MeedButton
         asChild
         variant="text"

@@ -6,7 +6,7 @@
  *       - cron
  *     operationId: enforceRetention
  *     summary: Apply configured personal-data retention policies
- *     description: Authenticated scheduler endpoint. Does nothing unless GDPR_RETENTION_ENABLED=true. Anonymizes long-inactive accounts, deletes stale pending invites, and revokes unused personal access tokens. Every action is written to RetentionActionLog. Ingress blocks /api/v1/cron/ from outside the cluster (k8s/cc-ingress.yml).
+ *     description: Authenticated scheduler endpoint. Does nothing unless GDPR_RETENTION_ENABLED=true. Anonymizes long-inactive accounts, deletes stale pending invites, revokes unused personal access tokens, and drops bytes of ingest documents withdrawn longer than INGEST_WITHDRAWN_DOCUMENT_DAYS (default 365). Catalog rows stay. Every action is written to RetentionActionLog. Ingress blocks /api/v1/cron/ from outside the cluster (k8s/cc-ingress.yml).
  *     parameters:
  *       - in: header
  *         name: Authorization
@@ -25,6 +25,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { enforceRetentionPolicies } from "@/backend/gdpr/RetentionService";
+import { purgeWithdrawnDocumentBytes } from "@/backend/ingest/document-retention";
 import { apiHandler } from "@/util/api";
 
 export const maxDuration = 600;
@@ -44,7 +45,8 @@ function authenticateRetentionCronRequest(req: NextRequest): null {
 export const POST = apiHandler(
   async () => {
     const result = await enforceRetentionPolicies();
-    return NextResponse.json(result);
+    const withdrawnDocumentBytes = await purgeWithdrawnDocumentBytes();
+    return NextResponse.json({ ...result, withdrawnDocumentBytes });
   },
   { authenticateRequest: authenticateRetentionCronRequest },
 );

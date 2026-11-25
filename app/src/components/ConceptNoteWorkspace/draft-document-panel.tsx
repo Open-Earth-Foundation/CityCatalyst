@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import type { EditChange } from "@/util/concept-note-edit-types";
 import type { InlineReviewDecision } from "./inline-review";
 import { InlineDocumentDiff } from "./edit-diff";
@@ -38,13 +38,17 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
+  missingInformationRanges,
+  remarkGapPassages,
   remarkMissingInformation,
-  splitStandaloneMarkers,
 } from "./draft-markdown";
 import { markerLabel } from "./missing-information";
 import {
   ChapterGapsPanel,
+  ChapterGapMarker,
   chapterGapRows,
+  gapRowForMessage,
+  isEstimate,
   type ChapterGapRow,
 } from "./chapter-gaps-panel";
 import {
@@ -198,6 +202,40 @@ const markdownComponents = {
   },
 };
 
+const ChapterGapContext = createContext<{
+  chapter: ConceptNoteDraftChapter;
+  lng: string;
+  rows: ChapterGapRow[];
+  onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
+} | null>(null);
+
+// Module-level component types keep open gap popovers mounted across renders.
+const previewMarkdownComponents = {
+  ...markdownComponents,
+  a: function PreviewLink(props: React.ComponentPropsWithoutRef<"a">) {
+    const gaps = useContext(ChapterGapContext)!;
+    const message =
+      props.href === MISSING_INFORMATION_LINK
+        ? decodeMissingInformationMessage(props.title)
+        : null;
+    if (!message) return <markdownComponents.a {...props} />;
+    const row = gapRowForMessage(gaps.rows, message);
+    return row ? (
+      <ChapterGapMarker
+        chapter={gaps.chapter}
+        lng={gaps.lng}
+        row={row}
+        number={gaps.rows.indexOf(row) + 1}
+        onAnswerGap={gaps.onAnswerGap}
+      />
+    ) : null;
+  },
+};
+
+// Floor for the document area so the Sections column is never squeezed
+// shorter than the preview while the drafting progress card is showing.
+const DOCUMENT_MIN_HEIGHT = "360px";
+
 export function chapterTone(status: ChapterDisplayStatus): string {
   switch (status) {
     case "ready":
@@ -276,6 +314,16 @@ export function DraftDocumentPanel({
     previewElement,
     selectChapter,
   } = focus;
+  const gapRows = useMemo(
+    () =>
+      new Map(
+        chapters.map((chapter) => [
+          chapter.chapter_id,
+          chapterGapRows(chapter),
+        ]),
+      ),
+    [chapters],
+  );
 
   useEffect(() => {
     if (!editFocus) return;
@@ -311,7 +359,12 @@ export function DraftDocumentPanel({
   }, [editFocus, chapterElements, previewElement, selectChapter]);
 
   return (
-    <VStack align="stretch" flex={1} minH={0} gap={2}>
+    <VStack
+      align="stretch"
+      flex={1}
+      minH={{ base: 0, lg: DOCUMENT_MIN_HEIGHT }}
+      gap={2}
+    >
       <Flex
         direction={{ base: "column", lg: "row" }}
         flex={1}
@@ -423,13 +476,20 @@ export function DraftDocumentPanel({
           >
             {chapters.map((chapter) => {
               const isSelected = focus.selectedChapterId === chapter.chapter_id;
+              // Estimates stay listed in the chapter, but they are not open gaps.
+              const gapCount = gapRows
+                .get(chapter.chapter_id)!
+                .filter((row) => !isEstimate(row)).length;
               return (
                 <Button
                   key={chapter.chapter_id}
                   type="button"
                   variant="ghost"
                   aria-current={isSelected ? "location" : undefined}
-                  aria-label={t("jump-to-chapter", { chapter: chapter.title })}
+                  aria-label={t("jump-to-chapter", {
+                    chapter: chapter.title,
+                    interpolation: { escapeValue: false },
+                  })}
                   title={`${chapter.position + 1} ${chapter.title}`}
                   display="flex"
                   alignItems="center"
@@ -463,6 +523,7 @@ export function DraftDocumentPanel({
                     bg={chapterTone(getChapterDisplayStatus(chapter))}
                   />
                   <Text
+                    flex={1}
                     minW={0}
                     overflow="hidden"
                     fontSize="11px"
@@ -475,6 +536,18 @@ export function DraftDocumentPanel({
                   >
                     {chapter.position + 1} {chapter.title}
                   </Text>
+                  {gapCount > 0 && (
+                    <Text
+                      as="span"
+                      flexShrink={0}
+                      fontSize="10px"
+                      color="content.tertiary"
+                      aria-label={t("chapter-open-gaps", { count: gapCount })}
+                      data-testid="concept-note-section-gap-count"
+                    >
+                      {gapCount}
+                    </Text>
+                  )}
                   {reviewChanges.some(
                     (change) => change.chapter_id === chapter.chapter_id,
                   ) && (
@@ -500,7 +573,7 @@ export function DraftDocumentPanel({
           tabIndex={-1}
           flex={1}
           minW={0}
-          minH="360px"
+          minH={DOCUMENT_MIN_HEIGHT}
           overflowY="auto"
           scrollBehavior="smooth"
           border="1px solid"
@@ -524,7 +597,11 @@ export function DraftDocumentPanel({
               fontWeight="semibold"
               color="content.primary"
             >
-              {t("draft-preview-document-title", { name: noteName })}
+              {/* React escapes text; i18next escaping would show &#39; for "Lima's plan". */}
+              {t("draft-preview-document-title", {
+                name: noteName,
+                interpolation: { escapeValue: false },
+              })}
             </Text>
           </Box>
 
@@ -573,13 +650,6 @@ export function DraftDocumentPanel({
                                     : "chapter-status-draft",
                         )}
                       </Text>
-                      {chapter.open_gap_count > 0 && (
-                        <Text fontSize="10px" color="sentiment.warningDefault">
-                          {t("chapter-open-gaps", {
-                            count: chapter.open_gap_count,
-                          })}
-                        </Text>
-                      )}
                       {chapter.caveat_count > 0 && (
                         <Text fontSize="10px" color="content.tertiary">
                           {t("chapter-caveats", {
@@ -589,8 +659,16 @@ export function DraftDocumentPanel({
                       )}
                     </HStack>
                   </Box>
+                  <ChapterGapsPanel
+                    chapter={chapter}
+                    lng={lng}
+                    rows={gapRows.get(chapter.chapter_id)!}
+                    onAnswerGap={onAnswerGap}
+                  />
                   {chapter.status === "draft" &&
-                    chapter.open_gap_count === 0 && (
+                    chapter.open_gap_count === 0 &&
+                    missingInformationRanges(chapter.body_markdown ?? "")
+                      .length === 0 && (
                       <Button
                         size="xs"
                         variant="solid"
@@ -687,32 +765,52 @@ export function DraftDocumentPanel({
                         </Box>
                       );
                     }
-                    // Standalone markers move out of the prose into one
-                    // gap block per chapter; inline ones stay as chips.
-                    const preview = splitStandaloneMarkers(
-                      chapterPreviewMarkdown(
-                        chapter.body_markdown!,
-                        chapter.title,
-                      ),
-                    );
                     return (
                       <Box
                         data-testid="concept-note-current-chapter-body"
                         data-current-chapter-id={chapter.chapter_id}
                         data-current-revision={chapter.revision_number}
                       >
-                        <ReactMarkdown
-                          components={markdownComponents}
-                          remarkPlugins={[remarkGfm, remarkMissingInformation]}
+                        <Box
+                          pr={{ base: 0, md: "44px" }}
+                          css={{
+                            "& p": { display: "flow-root" },
+                            "& p:has([data-testid='concept-note-gap-marker'][data-state='open'])":
+                              {
+                                borderInlineStart: "2px solid",
+                                borderColor: "sentiment.warningDefault",
+                                paddingInlineStart: 3,
+                                marginInlineStart: -3,
+                              },
+                            "& p:has([data-testid='concept-note-gap-marker'][data-severity='noncritical'][data-state='open'])":
+                              {
+                                borderColor: "gray.medium",
+                              },
+                          }}
                         >
-                          {preview.markdown}
-                        </ReactMarkdown>
-                        <ChapterGapsPanel
-                          chapter={chapter}
-                          lng={lng}
-                          rows={chapterGapRows(chapter, preview.messages)}
-                          onAnswerGap={onAnswerGap}
-                        />
+                          <ChapterGapContext.Provider
+                            value={{
+                              chapter,
+                              lng,
+                              rows: gapRows.get(chapter.chapter_id)!,
+                              onAnswerGap,
+                            }}
+                          >
+                            <ReactMarkdown
+                              components={previewMarkdownComponents}
+                              remarkPlugins={[
+                                remarkGfm,
+                                remarkMissingInformation,
+                                remarkGapPassages,
+                              ]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.body_markdown!,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </ChapterGapContext.Provider>
+                        </Box>
                       </Box>
                     );
                   })()

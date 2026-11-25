@@ -75,9 +75,9 @@ async def _snapshot_chapters(
     chapter_ids = [chapter.chapter_id for chapter in chapters]
     revisions = await _latest_revisions(session, chapter_ids)
     gaps = await _gaps_by_chapter(session, chapter_ids, only_open=False)
-    gap_resolutions = await _latest_gap_resolutions(
-        session, [gap.gap_id for chapter_gaps in gaps.values() for gap in chapter_gaps]
-    )
+    gap_ids = [gap.gap_id for chapter_gaps in gaps.values() for gap in chapter_gaps]
+    gap_resolutions = await _latest_gap_resolutions(session, gap_ids, partial=False)
+    partial_answers = await _latest_gap_resolutions(session, gap_ids, partial=True)
     evidence = await _evidence_by_chapter(session, chapter_ids)
     validations = {
         validation.chapter_id: validation
@@ -109,6 +109,7 @@ async def _snapshot_chapters(
             validation_chapters=validation_chapters,
             gaps=gaps[chapter.chapter_id],
             gap_resolutions=gap_resolutions,
+            partial_answers=partial_answers,
             confirmed=revision_history.get(chapter.confirmed_revision_id),
             evidence=evidence[chapter.chapter_id],
             stored_validation=validations.get(chapter.chapter_id),
@@ -162,6 +163,7 @@ def _chapter_snapshot(
     validation_chapters: list[WorkspaceValidationChapter],
     gaps: list[ConceptNoteGap],
     gap_resolutions: dict[UUID, ConceptNoteGapResolution],
+    partial_answers: dict[UUID, ConceptNoteGapResolution],
     confirmed: ConceptNoteChapterRevision | None,
     evidence: list[ConceptNoteEvidenceLink],
     stored_validation: ConceptNoteChapterValidation | None,
@@ -219,7 +221,10 @@ def _chapter_snapshot(
         ],
         gaps=[
             _snapshot_gap(
-                gap, gap_resolutions.get(gap.gap_id), chapter_title=chapter.title
+                gap,
+                gap_resolutions.get(gap.gap_id),
+                partial_answers.get(gap.gap_id),
+                chapter_title=chapter.title,
             )
             for gap in gaps
         ],

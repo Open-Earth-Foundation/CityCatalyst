@@ -1,5 +1,7 @@
 """Unit tests for conversation history manager and pruning behavior."""
 
+import json
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from typing import List
@@ -135,7 +137,28 @@ class TestHistoryManagerLoadMessages:
             assert len(loaded) == 5
             mock_message_service.get_thread_messages.assert_called_once()
             call_kwargs = mock_message_service.get_thread_messages.call_args[1]
-            assert call_kwargs["limit"] == 5
+            # One extra row only detects whether older messages exist.
+            assert call_kwargs["limit"] == 6
+            assert manager.older_messages_omitted is False
+
+    @pytest.mark.asyncio
+    async def test_load_messages_flags_older_messages(self, mock_session_factory):
+        """A probe row beyond the limit is dropped and flags omitted history."""
+        messages = [
+            MockMessage(f"msg{i}", MessageRole.USER, f"Message {i}") for i in range(6)
+        ]
+        mock_message_service = AsyncMock()
+        mock_message_service.get_thread_messages.return_value = messages
+
+        with patch(
+            "app.utils.history_manager.MessageService",
+            return_value=mock_message_service,
+        ):
+            manager = HistoryManager("thread123", "user456", mock_session_factory)
+            loaded = await manager.load_messages(limit=5)
+
+        assert [m.text for m in loaded] == [f"Message {i}" for i in range(1, 6)]
+        assert manager.older_messages_omitted is True
 
 
 class TestHistoryManagerBuildContext:
@@ -221,6 +244,41 @@ class TestHistoryManagerBuildContext:
             assert pruned_count == 2
             for msg in context:
                 assert set(msg.keys()) == {"role", "content"}
+
+
+def test_tool_context_replaces_visual_html_with_placeholder():
+    html = "<html>" + "x" * 1000 + "</html>"
+    result = {
+        "action": "concept_note.visual.render",
+        "success": True,
+        "data": {"title": "Chart", "html": html},
+        "error_code": None,
+    }
+    invocation = {
+        "id": "call-1",
+        "name": "concept_note_render_visual",
+        "status": "success",
+        "arguments": {"title": "Chart", "html": html},
+        "result": json.dumps(result),
+        "result_json": result,
+    }
+    manager = HistoryManager("thread123", "user456", None)
+
+    [message] = manager._tool_context_to_messages([invocation])
+
+    assert html not in message["content"]
+    [item] = json.loads(message["content"].split("\n", 1)[1])["tools_used"]
+    assert item["arguments"] == {
+        "title": "Chart",
+        "html": f"[{len(html)} chars omitted]",
+    }
+    assert item["result"]["data"] == {
+        "title": "Chart",
+        "html": f"[visual 'Chart' rendered, {len(html)} chars omitted]",
+    }
+    # The stored invocation keeps the full HTML for reload and the done event.
+    assert invocation["result_json"]["data"]["html"] == html
+    assert invocation["arguments"]["html"] == html
 
 
 class TestLoadConversationHistory:

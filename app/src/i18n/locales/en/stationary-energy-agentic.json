@@ -1,4 +1,9 @@
 {
+  "chat-pending-request-waiting": "I'll continue with your earlier request when the run is ready: {{request}}. To replace it, cancel it first and send your new request.",
+  "chat-pending-request-cancel": "Cancel earlier request",
+  "chat-pending-request-canceled": "Your earlier request was canceled. You can send a new request.",
+  "chat-pending-request-failed": "The run failed, so I couldn't continue with your earlier request. Please retry the draft and send your request again.",
+  "chat-pending-request-ended": "The run has ended, so your earlier request won't continue automatically.",
   "sector-card-let-agent-draft": "Agent drafting",
   "sector-card-review-before-saving": "Review every value before saving",
   "sector-card-draft-with-agent": "Draft with agent",
@@ -105,6 +110,12 @@
   "chat-panel-subtitle": "Climate Advisor",
   "chat-panel-ask-about-proposal": "Can you explain the connected source proposal for {{- label}}?",
   "chat-panel-thinking": "Thinking...",
+  "chat-activity-start-run": "Searching the connected sources for this inventory...",
+  "chat-activity-run-loading": "Loading the source results for this inventory...",
+  "chat-activity-checking-sources": "Checking the source options...",
+  "chat-activity-preparing-choices": "Preparing the review choices...",
+  "chat-activity-staging-choices": "Staging your choices...",
+  "chat-activity-running-tool": "Working on it...",
   "chat-panel-placeholder-review": "Ask about a source or row before deciding...",
   "chat-panel-placeholder-default": "Message Clima...",
   "chat-panel-stop": "Stop",
@@ -261,6 +272,10 @@
   "review-card-ask": "Ask about this row",
   "review-card-see-details": "See source details",
   "review-card-why-recommended": "Why this source",
+  "review-rationale-single-source": "This is the only connected source for this row. The value is taken directly from the dataset, with no model inference.",
+  "review-rationale-sources-agree": "Several connected sources report the same value. The recommended one is the closest geographic and time match; choose which source to attach.",
+  "review-rationale-sources-conflict": "Several connected sources report different values. The recommended one is the closest geographic and time match; review the alternatives before saving.",
+  "review-rationale-notation": "The connected source reports {{- notation}} for this row.",
   "review-summary-leave-empty": "Leave empty",
   "review-summary-choice-staged": "Choice staged",
   "review-summary-set-notation": "Set a notation key later",
@@ -308,5 +323,8 @@
   "error-chat-history-unavailable": "Clima chat history is unavailable, but the draft can still run.",
   "error-draft-start-response-missing-run-id": "Draft start response did not include draft_run_id.",
   "error-failed-to-send-message": "Failed to send message",
-  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target"
+  "source-does-not-match-stationary-energy-target": "Selected source does not match the reviewed Stationary Energy target",
+  "source-geography-city": "city",
+  "source-geography-country": "country",
+  "source-geography-region": "region"
 }

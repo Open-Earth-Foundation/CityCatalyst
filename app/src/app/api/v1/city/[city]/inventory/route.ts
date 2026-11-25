@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { City } from "@/models/City";
 import { QueryTypes } from "sequelize";
+import { sqlOmitFromTotal } from "@/util/GHGI/reported-totals";
 
 /**
  * @swagger
@@ -85,6 +86,16 @@ export const POST = apiHandler(
         cityId: (city as City)?.cityId,
       });
       didExistAlready = false;
+    } else {
+      // Same city+year is reused. Apply the type/GWP from this request so
+      // onboarding BASIC+ is not dropped when a BASIC inventory already exists.
+      await inventory.update({
+        inventoryType: body.inventoryType,
+        globalWarmingPotentialType: body.globalWarmingPotentialType,
+        inventoryName: body.inventoryName,
+        totalCountryEmissions:
+          body.totalCountryEmissions ?? inventory.totalCountryEmissions,
+      });
     }
     return NextResponse.json({ data: inventory, didExistAlready });
   },
@@ -151,6 +162,7 @@ export const GET = apiHandler(
           SELECT SUM(co2eq) as sum
           FROM "InventoryValue"
           WHERE inventory_id = :inventoryId
+            AND ${sqlOmitFromTotal()}
         `;
 
         const [{ sum }] = (await db.sequelize!.query(rawQuery, {
@@ -163,7 +175,7 @@ export const GET = apiHandler(
           ...inventory.toJSON(),
           totalEmissions: sum || 0,
         };
-      })
+      }),
     );
 
     return NextResponse.json({ data: inventoriesWithTotals });

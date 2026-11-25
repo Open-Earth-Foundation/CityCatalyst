@@ -113,6 +113,49 @@ async def test_runs_completeness_before_document_consistency() -> None:
     assert decision.status == "ready"
 
 
+@pytest.mark.parametrize("asks", ["open_gap", "marker"])
+async def test_open_questions_are_checked_against_the_other_chapters(asks: str) -> None:
+    calls: list[tuple[str, dict[str, Any]]] = []
+    answered = finding(
+        "cross_chapter_conflict",
+        "The output still asks for the project period, but chapter 2 states it.",
+        "Replace the question with the stated period once confirmed.",
+        severity="warning",
+        chapter_ids=[TARGET_ID, OTHER_ID],
+    )
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        calls.append((phase, payload))
+        if phase == "completeness":
+            return completeness()
+        return consistency(findings=[answered] if phase == "answered_gaps" else [])
+
+    question = "Confirm the planned start and end dates of the project."
+    body = f"[Information needed: {question}]" if asks == "marker" else "Text."
+    decision = await service(run_pass).validate(
+        request(
+            chapters=[
+                chapter(TARGET_ID, position=0, body=body),
+                chapter(OTHER_ID, position=1, body="The project runs from 2026 to 2028."),
+            ],
+            gaps=(
+                [ChapterValidationGap(severity="critical", reason=question)]
+                if asks == "open_gap"
+                else None
+            ),
+        )
+    )
+
+    assert [phase for phase, _ in calls] == ["completeness", "consistency", "answered_gaps"]
+    payload = calls[2][1]
+    assert set(payload) == {"document", "output", "open_gaps"}
+    assert [c["chapter_id"] for c in payload["document"]["chapters"]] == [str(OTHER_ID)]
+    assert "evidence_links" not in payload["document"]
+    stale = [f for f in decision.findings if f.category == "cross_chapter_conflict"]
+    assert len(stale) == 1 and stale[0].phase == "consistency"
+    assert set(stale[0].involved_chapter_ids) == {TARGET_ID, OTHER_ID}
+
+
 async def test_completeness_receives_only_selected_schema_and_associated_fields() -> (
     None
 ):

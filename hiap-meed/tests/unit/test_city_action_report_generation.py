@@ -43,6 +43,41 @@ def test_generate_output_plan_chapters_debug_mode_skips_llm() -> None:
     assert result.chapters[0].source_refs == ["city"]
 
 
+def _stub_output_plan_llm(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    source_refs: list[str],
+    markdown: str = "English report content for the selected action.",
+) -> None:
+    """Stub the output-plan provider with a valid chapter payload."""
+
+    class FakeCompletions:
+        """Return one ordinary chat-completion JSON payload."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Return structured chapter JSON with the requested source refs."""
+            del kwargs
+            content = json.dumps(
+                {
+                    "markdown": markdown,
+                    "source_refs": source_refs,
+                    "limitations": [],
+                }
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(report_generation, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(report_generation, "get_output_plan_model", lambda: "test-model")
+    monkeypatch.setattr(
+        report_generation, "get_output_plan_temperature", lambda: 0.0
+    )
+
+
 def test_generate_output_plan_chapters_uses_schema_and_validates_json(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -311,5 +346,90 @@ def test_language_validation_rejects_clearly_wrong_dominant_language() -> None:
                 title="Resumen",
                 language="es",
                 source_refs=["city"],
+            ),
+        )
+
+
+def test_non_debug_generation_restores_missing_chapter_source_refs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Partial or empty model source refs must not drop assembled provenance."""
+    chapter_input = ReportChapterInput(
+        key="snapshot",
+        title="Snapshot",
+        language="en",
+        facts={"rank": 1},
+        source_refs=["ranking_snapshot", "legal"],
+    )
+
+    _stub_output_plan_llm(monkeypatch, source_refs=["ranking_snapshot"])
+    partial = generate_output_plan_chapters(chapter_inputs=[chapter_input])
+    assert partial.chapters[0].source_refs == ["ranking_snapshot", "legal"]
+
+    _stub_output_plan_llm(monkeypatch, source_refs=[])
+    empty = generate_output_plan_chapters(chapter_inputs=[chapter_input])
+    assert empty.chapters[0].source_refs == ["ranking_snapshot", "legal"]
+
+
+def test_aggregated_languages_preserve_complete_chapter_source_refs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Every requested language must keep the full chapter source-ref set."""
+    english_input = ReportChapterInput(
+        key="snapshot",
+        title="Snapshot",
+        language="en",
+        facts={"rank": 1},
+        source_refs=["ranking_snapshot", "legal"],
+    )
+    spanish_input = ReportChapterInput(
+        key="snapshot",
+        title="Resumen",
+        language="es",
+        facts={"rank": 1},
+        source_refs=["ranking_snapshot", "legal"],
+    )
+
+    _stub_output_plan_llm(monkeypatch, source_refs=["ranking_snapshot"])
+    english = generate_output_plan_chapters(chapter_inputs=[english_input])
+    _stub_output_plan_llm(
+        monkeypatch,
+        source_refs=[],
+        markdown=(
+            "El informe describe la acción municipal seleccionada y el "
+            "siguiente paso de implementación."
+        ),
+    )
+    spanish = generate_output_plan_chapters(chapter_inputs=[spanish_input])
+
+    chapters = aggregate_localized_chapters(
+        languages=["en", "es"],
+        chapters_by_language={
+            "en": english.chapters,
+            "es": spanish.chapters,
+        },
+    )
+
+    assert english.chapters[0].source_refs == ["ranking_snapshot", "legal"]
+    assert spanish.chapters[0].source_refs == ["ranking_snapshot", "legal"]
+    assert chapters[0].source_refs == ["ranking_snapshot", "legal"]
+
+
+def test_chapter_output_still_rejects_unknown_source_refs() -> None:
+    """Invented provenance keys remain invalid after completeness repair."""
+    output = report_generation.OutputPlanChapterResponse(
+        markdown="English report content for the selected municipal action.",
+        source_refs=["ranking_snapshot", "invented_source"],
+        limitations=[],
+    )
+
+    with pytest.raises(ValueError, match="unknown source refs"):
+        _validate_chapter_output(
+            output,
+            ReportChapterInput(
+                key="snapshot",
+                title="Snapshot",
+                language="en",
+                source_refs=["ranking_snapshot", "legal"],
             ),
         )

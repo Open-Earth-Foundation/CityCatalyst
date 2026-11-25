@@ -7,7 +7,11 @@ import { useConceptNoteWorkspaceEvents } from "@/components/ConceptNoteWorkspace
 import { useTranslation } from "@/i18n/client";
 import { useAppDispatch } from "@/lib/hooks";
 import { api } from "@/services/api";
-import type { ConceptNoteRun, ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteRun,
+  ConceptNoteUploadResponse,
+  ConceptNoteSourceRole,
+} from "@/util/types";
 import {
   getConceptNoteContextState,
   getConceptNoteContextPresentation,
@@ -53,6 +57,7 @@ export function useConceptNoteWorkspaceData({
 
   const {
     data: run,
+    error: runError,
     isError: runFailed,
     isLoading: runLoading,
     refetch: refetchRun,
@@ -258,10 +263,9 @@ export function useConceptNoteWorkspaceData({
             : "population-unavailable",
       );
   const files = cityFiles ?? [];
+  // A programme's template or the note's own template; a funder is optional.
   const canStartDrafting = Boolean(
-    applicationContext?.funder &&
-    applicationContext.opportunity &&
-    applicationContext.template?.chapter_schema.length,
+    applicationContext?.template?.chapter_schema.length,
   );
   const hasApplicationTemplate = Boolean(applicationContext?.template);
   const hasDraftChapters = Boolean(draft?.chapters.length);
@@ -324,7 +328,10 @@ export function useConceptNoteWorkspaceData({
     return () => window.clearTimeout(timer);
   }, [waitingForContext, refetchRun]);
 
-  async function uploadSource(file: File): Promise<void> {
+  async function uploadSource(
+    file: File,
+    sourceRole: ConceptNoteSourceRole = "reference",
+  ): Promise<void> {
     setUploadError(null);
     if (uploadLimitReached) {
       setUploadError(
@@ -342,6 +349,7 @@ export function useConceptNoteWorkspaceData({
       const formData = new FormData();
       formData.set("file", file);
       formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
+      formData.set("sourceRole", sourceRole);
       const upload = await uploadSourceMutation({
         cityId,
         formData,
@@ -457,6 +465,8 @@ export function useConceptNoteWorkspaceData({
     run,
     runFailed,
     runLoading,
+    // Runs are owner-only; anyone else in the city gets a read-only preview.
+    runNotOwned: (runError as { status?: unknown } | undefined)?.status === 404,
     saveManualPopulation,
     selectInventory,
     startDrafting,
@@ -476,6 +486,7 @@ function toUploadResponse(upload: RunUpload): ConceptNoteUploadResponse {
     status: upload.status,
     filename: upload.filename,
     sourceLabel: upload.source_label,
+    sourceRole: upload.source_role ?? "reference",
     pageCount: upload.page_count,
     errorCode: upload.error_code ?? undefined,
     receivedAt: upload.received_at,

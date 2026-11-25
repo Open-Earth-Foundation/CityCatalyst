@@ -7,6 +7,7 @@ import { RankingTable } from "./RankingTable";
 import { RankingGlanceChart } from "./RankingGlanceChart";
 import type { MeedActionIndex } from "./actionCatalog";
 import type { MeedScoreWeights } from "./rankingFacts";
+import type { MeedLegalStanding } from "../../regulations/legalStanding";
 
 /**
  * The full ranking: the table first — it is where actions are selected and
@@ -31,6 +32,10 @@ export const FullRanking = React.forwardRef<
     progress?: string | null;
     /** Forwarded to the glance chart; see `RankingGlanceChart.colorOf`. */
     colorOf?: (sectorTag: string | null | undefined) => string | undefined;
+    /** Forwarded to the table; see `RankingTable.legalFor`. */
+    legalFor?: (actionId: string) => MeedLegalStanding | null;
+    /** Forwarded to the table; see `RankingTable.variant`. */
+    tableVariant?: "titled" | "controls";
   }
 >(function FullRanking(
   {
@@ -46,12 +51,14 @@ export const FullRanking = React.forwardRef<
     isGenerating,
     progress,
     colorOf,
+    legalFor,
+    tableVariant = "titled",
   },
   ref,
 ) {
   return (
     <Box ref={ref} scrollMarginTop="l">
-      <VStack alignItems="stretch" gap="xl">
+      <VStack alignItems="stretch" gap="l">
         <RankingTable
           actions={actions}
           index={index}
@@ -64,9 +71,11 @@ export const FullRanking = React.forwardRef<
           onGenerate={onGenerate}
           isGenerating={isGenerating}
           progress={progress}
+          legalFor={legalFor}
+          variant={tableVariant}
         />
         <Card.Root>
-          <Card.Body p="l">
+          <Card.Body p={tableVariant === "controls" ? "xl" : "l"}>
             <RankingGlanceChart
               actions={actions}
               index={index}

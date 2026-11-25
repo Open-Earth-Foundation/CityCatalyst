@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
 from app.config import Settings
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
@@ -101,6 +101,7 @@ class ConceptNoteSourceImpactReviewer:
                 result = await self._runner.run(
                     agent,
                     json.dumps(payload, ensure_ascii=False),
+                    run_config=RunConfig(tracing_disabled=True, trace_include_sensitive_data=False),
                 )
                 raw = result.final_output
                 parsed = json.loads(raw) if isinstance(raw, str) else raw

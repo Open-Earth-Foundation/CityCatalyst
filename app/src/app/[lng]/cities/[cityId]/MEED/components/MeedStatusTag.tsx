@@ -2,55 +2,17 @@
 import { Tag } from "@/components/ui/tag";
 import type { TagProps } from "@/components/ui/tag";
 import type { MeedSectionStatus } from "../meedStatus";
+import { MEED_TONE, type MeedTone } from "./meedTones";
 
 /**
  * Small status pill used across the module.
  *
- * Colours are set explicitly from semantic tokens rather than through Chakra's
- * `colorPalette` (which lands on stock greys) or the theme's `tagRecipe`
- * status variants (which are registered as a plain recipe while Chakra expects
- * a slot recipe, so they never render — see the root backlog).
+ * Colours come from the module's tone map (`meedTones.ts`) rather than through
+ * Chakra's `colorPalette` (which lands on stock greys) or the theme's
+ * `tagRecipe` status variants (which are registered as a plain recipe while
+ * Chakra expects a slot recipe, so they never render — see the root backlog).
  */
-export type MeedTone =
-  "neutral" | "info" | "positive" | "warning" | "caution" | "negative";
-
-const TONE_STYLES: Record<
-  MeedTone,
-  { bg: string; color: string; borderColor: string }
-> = {
-  neutral: {
-    bg: "background.neutral",
-    color: "content.secondary",
-    borderColor: "border.neutral",
-  },
-  info: {
-    bg: "background.neutral",
-    color: "content.link",
-    borderColor: "content.link",
-  },
-  positive: {
-    bg: "sentiment.positiveOverlay",
-    color: "interactive.tertiary",
-    borderColor: "interactive.tertiary",
-  },
-  // Dark amber text: the yellow default fails contrast on its own overlay.
-  warning: {
-    bg: "sentiment.warningOverlay",
-    color: "sentiment.warningFg",
-    borderColor: "sentiment.warningDefault",
-  },
-  // Orange: between warning (yellow) and negative (red).
-  caution: {
-    bg: "sentiment.warningSubtle",
-    color: "sentiment.warningFg",
-    borderColor: "interactive.quaternary",
-  },
-  negative: {
-    bg: "sentiment.negativeOverlay",
-    color: "sentiment.negativeDefault",
-    borderColor: "sentiment.negativeDefault",
-  },
-};
+export type { MeedTone } from "./meedTones";
 
 export const STATUS_TONE: Record<MeedSectionStatus, MeedTone> = {
   "not-started": "neutral",
@@ -76,12 +38,12 @@ export function MeedStatusTag({
   children,
   ...rest
 }: MeedStatusTagProps) {
-  const styles = TONE_STYLES[tone];
+  const styles = MEED_TONE[tone];
   return (
     <Tag
       bg={styles.bg}
-      color={styles.color}
-      borderColor={styles.borderColor}
+      color={styles.fg}
+      borderColor={styles.border}
       borderWidth="1px"
       borderRadius="pill"
       px="m"

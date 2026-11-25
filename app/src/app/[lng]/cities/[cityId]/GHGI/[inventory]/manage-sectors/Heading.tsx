@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { HelpDrawer, HelpDrawerItem } from "@/components/ui/help-drawer";
 import { Box, Icon, Text } from "@chakra-ui/react";
-import { usePathname, useRouter } from "next/navigation";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
 import type { FC } from "react";
 import type { TFunction } from "i18next";
@@ -78,28 +79,18 @@ const getNotationKeysHelpItems = (t: TFunction): HelpDrawerItem[] => {
 };
 
 const Heading: FC<HeadingProps> = ({ t }) => {
-  const router = useRouter();
   const pathname = usePathname();
   const inventoryHomePath = pathname.replace(/\/manage-sectors\/?$/, "");
 
   return (
     <Box pt="48px" display="flex" flexDir="column" gap="64px">
       <Box display="flex" alignItems="center">
-        <Button
-          variant="ghost"
-          color="content.link"
-          px={1}
-          onClick={() => router.push(inventoryHomePath)}
-        >
-          <Icon as={MdArrowBack} />
-          {t("go-back")}
+        <Button variant="ghost" color="content.link" asChild>
+          <NextLink href={inventoryHomePath}>
+            <Icon as={MdArrowBack} />
+            {t("go-back")}
+          </NextLink>
         </Button>
-        <Box
-          h="24px"
-          borderRightWidth={1}
-          borderColor="border.neutral"
-          w="24px"
-        />
       </Box>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box>

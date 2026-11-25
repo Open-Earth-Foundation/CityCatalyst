@@ -1,0 +1,580 @@
+import { describe, expect, it, jest } from "@jest/globals";
+import { logger } from "@/services/logger";
+import { buildStructuredDocument } from "@/backend/StructuredDocumentArtifact";
+import { VISUAL_ANNOTATION_SCHEMA_VERSION } from "@/backend/MistralVisualAnnotation";
+
+const annotation = {
+  schema_version: VISUAL_ANNOTATION_SCHEMA_VERSION,
+  kind: "chart",
+  title: "Sector trend",
+  short_description: "Line chart of three sectors.",
+  text_visible: ["Transport"],
+  chart: {
+    chart_type: "line",
+    x_axis: { label: "Year", values: [2020, 2025] },
+    y_axis: { label: "Emissions", unit: "ktCO2e", scale: "linear" },
+    legend: ["Transport"],
+    series: [],
+    trends: ["Transport declines", "Falls below 35 kt"],
+    targets: [],
+    callouts: [],
+    readable_values: [],
+  },
+  uncertainties: [],
+};
+
+function response(annotationMode: "none" | "visual_context" = "none") {
+  return buildStructuredDocument(
+    {
+      model: "mistral-ocr-latest",
+      usage_info: { pages_processed: 1 },
+      pages: [
+        {
+          index: 0,
+          markdown:
+            "# Title\n\n![img-0.jpeg](img-0.jpeg)\n\nFigure 1. Chart caption.",
+          header: "Synthetic header",
+          footer: null,
+          dimensions: { width: 1000, height: 1000, dpi: 72 },
+          blocks: [
+            {
+              type: "title",
+              level: 1,
+              content: "# Title",
+              top_left_x: 10,
+              top_left_y: 10,
+              bottom_right_x: 200,
+              bottom_right_y: 40,
+            },
+            {
+              type: "text",
+              content: "Narrative",
+              top_left_x: 10,
+              top_left_y: 50,
+              bottom_right_x: 200,
+              bottom_right_y: 80,
+            },
+            {
+              type: "image",
+              content: "![img-0.jpeg](img-0.jpeg)",
+              top_left_x: 100,
+              top_left_y: 100,
+              bottom_right_x: 500,
+              bottom_right_y: 400,
+            },
+            {
+              type: "caption",
+              content: "Figure 1. Chart caption.",
+              top_left_x: 100,
+              top_left_y: 410,
+              bottom_right_x: 500,
+              bottom_right_y: 440,
+            },
+          ],
+          images: [
+            {
+              id: "img-0.jpeg",
+              top_left_x: 100,
+              top_left_y: 100,
+              bottom_right_x: 500,
+              bottom_right_y: 400,
+              image_base64: "not-a-real-image",
+              image_annotation:
+                annotationMode === "visual_context" ? annotation : null,
+            },
+          ],
+          tables: [{ id: "table-1", markdown: "| A | 1 |" }],
+        },
+      ],
+    },
+    { annotationMode, requestedModel: "mistral-ocr-latest" },
+  );
+}
+
+describe("structured document artifact", () => {
+  it("keeps provider facts, derived hierarchy, and strips binary payloads", () => {
+    const document = response("none");
+    expect(document.schema_version).toBe("citycatalyst.structured-document.1");
+    expect(document.provider.payload).toMatchObject({
+      usage_info: { pages_processed: 1 },
+    });
+    expect(JSON.stringify(document.provider.payload)).not.toContain(
+      "not-a-real-image",
+    );
+    expect(document.document.pages[0].images[0].image_sha256).toHaveLength(64);
+    expect(document.document.pages[0].blocks[1].hierarchy).toEqual({
+      level: null,
+      parent_block_id: "p0-b0",
+      provenance: "derived",
+    });
+    expect(document.document.relationships).toEqual([
+      expect.objectContaining({
+        provenance: "derived",
+        rule: "nearest_caption_same_page",
+        type: "caption_of_image",
+      }),
+    ]);
+    expect(document.document.pages[0].blocks[0].reading_order_index).toBe(0);
+  });
+
+  it("stores requested annotations as unverified image annotations", () => {
+    const document = response("visual_context");
+    const stored = document.document.pages[0].images[0].annotation;
+    expect(stored).toMatchObject({
+      source: "image_annotation",
+      quantitative_reliability: "unverified",
+      page_index: 0,
+      image_id: "img-0.jpeg",
+    });
+    expect(stored?.provider_annotation).toEqual(annotation);
+    expect(stored?.provider_annotation).not.toHaveProperty(
+      "quantitative_reliability",
+    );
+  });
+
+  it("preserves English and Portuguese values, empty strings, and null fields", () => {
+    const richAnnotation = {
+      schema_version: VISUAL_ANNOTATION_SCHEMA_VERSION,
+      kind: "chart",
+      title: "Emissões setoriais / Sector emissions",
+      short_description: "",
+      text_visible: ["Transport", "12.5%", "Resíduos"],
+      chart: {
+        chart_type: "line",
+        x_axis: { label: "Year", values: [2020, null] },
+        y_axis: { label: "Emissions", unit: "ktCO2e", scale: "linear" },
+        legend: ["Transport", "Waste"],
+        series: [
+          {
+            name: "Transport",
+            points: [{ x: 2020, y: 12.5, value_kind: "printed" as const }],
+          },
+        ],
+        trends: ["Transport declines", "Queda de 12.5%"],
+        targets: [
+          { label: "2030", value: "12.5%", value_kind: "printed" as const },
+        ],
+        callouts: [],
+        readable_values: [
+          { label: "Fuel", value: null, value_kind: "unreadable" as const },
+        ],
+      },
+      uncertainties: [],
+    };
+    const document = buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        pages: [
+          {
+            index: 0,
+            markdown: "![img-0.jpeg](img-0.jpeg)",
+            dimensions: { width: 1000, height: 1000, dpi: 72 },
+            blocks: [],
+            images: [
+              {
+                id: "img-0.jpeg",
+                top_left_x: 100,
+                top_left_y: 100,
+                bottom_right_x: 500,
+                bottom_right_y: 400,
+                image_annotation: richAnnotation,
+              },
+            ],
+            tables: [],
+          },
+        ],
+      },
+      {
+        annotationMode: "visual_context",
+        requestedModel: "mistral-ocr-latest",
+      },
+    );
+    const stored = document.document.pages[0].images[0].annotation;
+    expect(stored?.source).toBe("image_annotation");
+    expect(stored?.quantitative_reliability).toBe("unverified");
+    expect(stored?.provider_annotation).toEqual(richAnnotation);
+    expect(stored?.provider_annotation.short_description).toBe("");
+    expect(stored?.provider_annotation.title).toBe(
+      "Emissões setoriais / Sector emissions",
+    );
+    expect(JSON.stringify(document.provider.payload)).not.toContain(
+      "image_base64",
+    );
+  });
+
+  it("fails the attempt when a requested image annotation is missing", () => {
+    expect(() => response("none")).not.toThrow();
+    expect(() =>
+      buildStructuredDocument(
+        {
+          pages: [
+            {
+              index: 0,
+              markdown: "page",
+              dimensions: { width: 10, height: 10 },
+              blocks: [],
+              images: [
+                {
+                  id: "img",
+                  top_left_x: 0,
+                  top_left_y: 0,
+                  bottom_right_x: 1,
+                  bottom_right_y: 1,
+                },
+              ],
+            },
+          ],
+        },
+        { annotationMode: "visual_context", requestedModel: "model" },
+      ),
+    ).toThrow(/missing/i);
+  });
+
+  it("accepts a requested annotation run with zero images", () => {
+    const document = buildStructuredDocument(
+      {
+        pages: [
+          {
+            index: 0,
+            markdown: "text",
+            dimensions: { width: 10, height: 10 },
+            blocks: [],
+            images: [],
+          },
+        ],
+      },
+      { annotationMode: "visual_context", requestedModel: "model" },
+    );
+    expect(document.document.pages[0].images).toEqual([]);
+  });
+
+  it("keeps OCR 4.1 table identity and average content confidence", () => {
+    const document = buildStructuredDocument(
+      {
+        model: "mistral-ocr-4-1",
+        pages: [
+          {
+            index: 0,
+            markdown: "![img-0.jpeg](img-0.jpeg)",
+            dimensions: { width: 1000, height: 1400 },
+            blocks: [
+              {
+                type: "table",
+                table_id: "tbl-0.md",
+                content: "| Sector | Direction |",
+                confidence_scores: {
+                  average_content_confidence_score: 0.99,
+                  minimum_content_confidence_score: 0.5,
+                  block_type_confidence_score: 1,
+                },
+                top_left_x: 10,
+                top_left_y: 20,
+                bottom_right_x: 400,
+                bottom_right_y: 200,
+              },
+              {
+                type: "image",
+                image_id: "img-0.jpeg",
+                content: "![img-0.jpeg](img-0.jpeg)",
+                confidence_scores: {
+                  minimum_content_confidence_score: 0.4,
+                },
+                top_left_x: 10,
+                top_left_y: 220,
+                bottom_right_x: 300,
+                bottom_right_y: 500,
+              },
+            ],
+            tables: [{ id: "tbl-0.md", content: "| Sector | Direction |" }],
+            images: [
+              {
+                id: "img-0.jpeg",
+                top_left_x: 10,
+                top_left_y: 220,
+                bottom_right_x: 300,
+                bottom_right_y: 500,
+              },
+            ],
+          },
+        ],
+      },
+      { annotationMode: "none", requestedModel: "mistral-ocr-4-1" },
+    );
+    const [tableBlock, imageBlock] = document.document.pages[0].blocks;
+    expect(tableBlock.related_table_id).toBe("tbl-0.md");
+    expect(tableBlock.confidence).toBe(0.99);
+    expect(tableBlock.confidence_metric).toBe(
+      "average_content_confidence_score",
+    );
+    expect(document.document.pages[0].tables[0].table_id).toBe("tbl-0.md");
+    expect(imageBlock.related_image_id).toBe("img-0.jpeg");
+    expect(imageBlock.confidence).toBeNull();
+    expect(imageBlock.confidence_metric).toBeNull();
+  });
+
+  it("rejects a table reference that is not on the same page", () => {
+    expect(() =>
+      buildStructuredDocument(
+        {
+          pages: [
+            {
+              index: 0,
+              markdown: "table",
+              dimensions: { width: 100, height: 100 },
+              blocks: [
+                {
+                  type: "table",
+                  table_id: "missing-table",
+                  content: "| A |",
+                  top_left_x: 0,
+                  top_left_y: 0,
+                  bottom_right_x: 10,
+                  bottom_right_y: 10,
+                },
+              ],
+              tables: [],
+            },
+          ],
+        },
+        { annotationMode: "none", requestedModel: "model" },
+      ),
+    ).toThrow(/missing table/i);
+  });
+});
+
+describe("image placeholders without a page image (CC-1008)", () => {
+  const dimensions = { width: 1000, height: 1000, dpi: 72 };
+  const box = {
+    top_left_x: 10,
+    top_left_y: 10,
+    bottom_right_x: 200,
+    bottom_right_y: 40,
+  };
+  const build = (headerContent: string) =>
+    buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        usage_info: { pages_processed: 1 },
+        pages: [
+          {
+            index: 0,
+            markdown: "Body",
+            header: null,
+            footer: null,
+            dimensions,
+            blocks: [
+              { type: "header", content: headerContent, ...box },
+              { type: "text", content: "Body", ...box },
+            ],
+            images: [],
+            tables: [],
+          },
+        ],
+      },
+      { annotationMode: "none", requestedModel: "model" },
+    );
+
+  it("keeps a logo whose target is a name, not an image id, as text", () => {
+    // Seen on the Auckland report: Mistral returned the organisation name as the target.
+    const doc = build(
+      "![LOGO](Auckland Council Te Kaunihera o Tāmaki Makaurau)",
+    );
+    const header = doc.document.pages[0].blocks[0];
+    expect(header.related_image_id).toBeNull();
+    expect(header.content).toContain("LOGO");
+  });
+
+  it("still rejects a reference that looks like an image id but is missing", () => {
+    expect(() => build("![img-3.jpeg](img-3.jpeg)")).toThrow(/missing image/i);
+  });
+});
+
+describe("block image id that differs from its markdown reference (CC-1132)", () => {
+  // Geometry copied from the Philadelphia 2022 report, page 5 (blocks 6 and 9), where
+  // Mistral returned `image_id` img-6 / img-7 for pictures that the text and the
+  // position identify as img-3 / img-4. No document text is reproduced.
+  const imageBox = (
+    id: string,
+    [x0, y0, x1, y1]: [number, number, number, number],
+  ) => ({
+    id,
+    top_left_x: x0,
+    top_left_y: y0,
+    bottom_right_x: x1,
+    bottom_right_y: y1,
+  });
+  const boxOf = ([x0, y0, x1, y1]: [number, number, number, number]) => ({
+    top_left_x: x0,
+    top_left_y: y0,
+    bottom_right_x: x1,
+    bottom_right_y: y1,
+  });
+  const IMG3: [number, number, number, number] = [432, 160, 729, 354];
+  const IMG4: [number, number, number, number] = [82, 420, 222, 589];
+  const build = (
+    blocks: Record<string, unknown>[],
+    mode: "none" | "visual_context" = "none",
+    extraImages: ReturnType<typeof imageBox>[] = [],
+  ) =>
+    buildStructuredDocument(
+      {
+        model: "mistral-ocr-latest",
+        usage_info: { pages_processed: 1 },
+        pages: [
+          {
+            index: 0,
+            markdown: "Body",
+            header: null,
+            footer: null,
+            dimensions: { width: 1000, height: 1000, dpi: 72 },
+            blocks,
+            images: [
+              imageBox("img-3.jpeg", IMG3),
+              imageBox("img-4.jpeg", IMG4),
+              imageBox("img-5.jpeg", [321, 423, 462, 588]),
+              imageBox("img-6.jpeg", [564, 423, 709, 588]),
+              imageBox("img-7.jpeg", [52, 663, 345, 913]),
+              ...extraImages,
+            ].map((image) => ({
+              ...image,
+              image_annotation: mode === "visual_context" ? annotation : null,
+            })),
+            tables: [],
+          },
+        ],
+      },
+      { annotationMode: mode, requestedModel: "model" },
+    );
+
+  it("uses the markdown reference when its image sits at the block position", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-6.jpeg",
+        ...boxOf(IMG3),
+      },
+      {
+        type: "image",
+        content: "![img-4.jpeg](img-4.jpeg)",
+        image_id: "img-7.jpeg",
+        ...boxOf(IMG4),
+      },
+    ]);
+    const blocks = doc.document.pages[0].blocks;
+    expect(blocks[0].related_image_id).toBe("img-3.jpeg");
+    expect(blocks[1].related_image_id).toBe("img-4.jpeg");
+  });
+
+  it("uses the block image_id when it is the one at the block position", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-4.jpeg](img-4.jpeg)",
+        image_id: "img-3.jpeg",
+        ...boxOf(IMG3),
+      },
+    ]);
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+
+  it("keeps the document and drops the link when the position confirms neither id", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-6.jpeg",
+        ...boxOf([10, 10, 60, 60]),
+      },
+    ]);
+    const block = doc.document.pages[0].blocks[0];
+    expect(block.related_image_id).toBeNull();
+    expect(block.content).toContain("img-3.jpeg");
+  });
+
+  it("accepts a 2 px difference but rejects a 3 px difference", () => {
+    for (const [offset, expected] of [
+      [2, "img-3.jpeg"],
+      [3, null],
+    ] as const) {
+      const doc = build([
+        {
+          type: "image",
+          content: "![img-3.jpeg](img-3.jpeg)",
+          image_id: "img-6.jpeg",
+          ...boxOf([IMG3[0] + offset, IMG3[1], IMG3[2], IMG3[3]]),
+        },
+      ]);
+      expect(doc.document.pages[0].blocks[0].related_image_id).toBe(expected);
+    }
+  });
+
+  it("prefers the markdown image when both candidates match", () => {
+    const doc = build(
+      [
+        {
+          type: "image",
+          content: "![img-3.jpeg](img-3.jpeg)",
+          image_id: "img-8.jpeg",
+          ...boxOf(IMG3),
+        },
+      ],
+      "none",
+      [imageBox("img-8.jpeg", IMG3)],
+    );
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+
+  it("rejects an unmatched figure in visual_context despite annotated images", () => {
+    expect(() =>
+      build(
+        [
+          {
+            type: "image",
+            content: "![img-3.jpeg](img-3.jpeg)",
+            image_id: "img-6.jpeg",
+            ...boxOf([10, 10, 60, 60]),
+          },
+        ],
+        "visual_context",
+      ),
+    ).toThrow(/Requested annotation is missing for figure p0-b0/);
+  });
+
+  it("logs whether a conflicting image link was resolved or dropped", () => {
+    const warning = jest.spyOn(logger, "warn").mockImplementation(() => logger);
+    try {
+      for (const box of [
+        IMG3,
+        [10, 10, 60, 60] as [number, number, number, number],
+      ]) {
+        build([
+          {
+            type: "image",
+            content: "![img-3.jpeg](img-3.jpeg)",
+            image_id: "img-6.jpeg",
+            ...boxOf(box),
+          },
+        ]);
+      }
+      expect(warning.mock.calls[0][1]).toContain("resolved by position");
+      expect(warning.mock.calls[1][1]).toContain(
+        "no image at the block position, link dropped",
+      );
+    } finally {
+      warning.mockRestore();
+    }
+  });
+
+  it("does not change blocks whose ids agree", () => {
+    const doc = build([
+      {
+        type: "image",
+        content: "![img-3.jpeg](img-3.jpeg)",
+        image_id: "img-3.jpeg",
+        ...boxOf([10, 10, 60, 60]),
+      },
+    ]);
+    expect(doc.document.pages[0].blocks[0].related_image_id).toBe("img-3.jpeg");
+  });
+});

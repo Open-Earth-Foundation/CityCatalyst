@@ -52,6 +52,8 @@ export interface FinanceMatchesProps {
   row: FeasibilityRow;
   cityId: string;
   t: TFunction;
+  /** Page language, for translated project names. */
+  lng?: string;
 }
 
 /**
@@ -59,7 +61,7 @@ export interface FinanceMatchesProps {
  * lazily fetched from hiap-meed — the same screening the ranking uses.
  * Shared by the finance table's expanded row and the results action drawer.
  */
-export function FinanceMatches({ row, cityId, t }: FinanceMatchesProps) {
+export function FinanceMatches({ row, cityId, t, lng }: FinanceMatchesProps) {
   const [showAllOpps, setShowAllOpps] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
 
@@ -201,7 +203,7 @@ export function FinanceMatches({ row, cityId, t }: FinanceMatchesProps) {
         ) : (
           <>
             {visibleProjects.map((proj, i) => (
-              <ProjectCard key={`proj-${i}`} proj={proj} t={t} />
+              <ProjectCard key={`proj-${i}`} proj={proj} t={t} lng={lng} />
             ))}
             {projects.rows.length > INITIAL_PROJECTS && (
               <MeedButton

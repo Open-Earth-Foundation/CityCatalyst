@@ -19,6 +19,12 @@ import { MeedFunnelStrip } from "./MeedFunnelStrip";
 import { MeedMeter } from "./MeedMeter";
 import { MeedShareBar } from "./MeedShareBar";
 import { MeedStatusTag } from "./MeedStatusTag";
+import {
+  LEGAL_CATEGORY_ORDER,
+  LEGAL_CATEGORY_TONE,
+  legalCategoryLabelKey,
+  type MeedLegalCategory,
+} from "../[inventory]/regulations/legalStanding";
 import { sectorShares } from "./sectorShares";
 
 export interface MeedContextVisualInputs {
@@ -27,6 +33,8 @@ export interface MeedContextVisualInputs {
   showEmissions: boolean;
   keyIndicators?: MeedKeyIndicator[];
   funnel?: MeedLegalFunnel | null;
+  /** Ranked actions per municipal-authority category; preferred over the funnel when known. */
+  legalCounts?: Record<MeedLegalCategory, number> | null;
   finance?: MeedFinanceFacts | null;
   policy?: PolicyAggregates | null;
   /** `meed-results` namespace. */
@@ -52,6 +60,7 @@ export function meedContextVisual(
     showEmissions,
     keyIndicators,
     funnel,
+    legalCounts,
     finance,
     policy,
     t,
@@ -102,6 +111,18 @@ export function meedContextVisual(
       ) : undefined;
 
     case "regulations":
+      if (legalCounts) {
+        const present = LEGAL_CATEGORY_ORDER.filter((c) => legalCounts[c] > 0);
+        return present.length ? (
+          <HStack gap="xs" flexWrap="wrap">
+            {present.map((c) => (
+              <MeedStatusTag key={c} tone={LEGAL_CATEGORY_TONE[c]}>
+                {t(legalCategoryLabelKey(c))} · {legalCounts[c]}
+              </MeedStatusTag>
+            ))}
+          </HStack>
+        ) : undefined;
+      }
       return funnel ? (
         <MeedFunnelStrip
           showSublabels={false}

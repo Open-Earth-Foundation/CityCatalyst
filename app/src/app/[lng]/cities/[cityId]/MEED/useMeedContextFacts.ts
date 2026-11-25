@@ -68,7 +68,7 @@ export function useMeedContextFacts({
   lng: string;
   cityId: string;
   inventoryId: string;
-  /** False until emissions have been retrieved; the results query is skipped. */
+  /** False to skip the inventory results query (emissions facts come back empty). */
   includeEmissions: boolean;
 }): MeedContextData {
   const { t: tContext } = useTranslation(lng, "meed-context");

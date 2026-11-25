@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import Decimal from "decimal.js";
 import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
-import { ActivityDataByScope } from "@/util/types";
+import { ActivityDataByScope, OmittedActivityData } from "@/util/types";
 import type { TFunction } from "i18next";
 import {
   formatEmissionsOrRemoval,
   formatNumber,
   toKebabCase,
 } from "@/util/helpers";
-import { InventoryTypeEnum, SECTORS } from "@/util/constants";
+import {
+  FILE_IMPORT_SOURCE_TYPE,
+  InventoryTypeEnum,
+  SECTORS,
+} from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
@@ -16,6 +20,8 @@ import { LuChevronDown } from "react-icons/lu";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
+  /** stored values left out of totals, shown apart so they are not counted here */
+  omittedFromTotal?: OmittedActivityData[];
   /** sum of non-negative (emissions-only) totalEmissions across `data` - % denominator, see CC-749 */
   grossTotalEmissions: Decimal;
   tData: TFunction;
@@ -28,6 +34,7 @@ interface ByScopeViewProps {
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
   data,
+  omittedFromTotal = [],
   grossTotalEmissions,
   tData,
   tDashboard,
@@ -77,12 +84,14 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     item: ActivityDataByScope,
     key: string,
     showActivityTitle?: boolean,
+    gpcReferenceNumber?: string | null,
   ) => (
     <Table.Row key={key}>
       <Table.Cell>
         {showActivityTitle && (
           <BodyMedium color="content.secondary">
             {tData(toKebabCase(item.activityTitle))}
+            {gpcReferenceNumber && ` (${gpcReferenceNumber})`}
           </BodyMedium>
         )}
       </Table.Cell>
@@ -97,7 +106,11 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {item.percentage === null ? "*" : `${item.percentage}%`}
+          {gpcReferenceNumber !== undefined
+            ? "-"
+            : item.percentage === null
+              ? "*"
+              : `${item.percentage}%`}
         </BodyMedium>
       </Table.Cell>
       {scopes.map((s) => (
@@ -112,7 +125,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         </Table.Cell>
       ))}
       <Table.Cell>
-        {item.datasource_name ? (
+        {item.datasource_name &&
+        item.datasource_source_type === FILE_IMPORT_SOURCE_TYPE ? (
+          <BodyMedium color="content.secondary" textTransform={"uppercase"}>
+            {item.datasource_name}
+          </BodyMedium>
+        ) : item.datasource_name ? (
           <BodyMedium
             color="content.link"
             textDecoration={"underline"}
@@ -266,6 +284,23 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         <Table.Body>
           {Object.entries(groupedData).map(([subsector, activities]) =>
             renderSubsectorContent(subsector, activities),
+          )}
+          {omittedFromTotal.length > 0 && (
+            <Table.Row>
+              <Table.Cell colSpan={scopes.length + 5}>
+                <BodyMedium color="content.tertiary">
+                  {tDashboard("omitted-from-total-heading")}
+                </BodyMedium>
+              </Table.Cell>
+            </Table.Row>
+          )}
+          {omittedFromTotal.map((item, index) =>
+            renderActivityRow(
+              item,
+              `omitted-${item.activityTitle}-${index}`,
+              true,
+              item.gpcReferenceNumber,
+            ),
           )}
         </Table.Body>
       </Table.Root>

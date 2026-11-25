@@ -8,7 +8,10 @@ const uploadProxyBodyLimitBytes = 22 * 1024 * 1024;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactCompiler: true,
   trailingSlash: true,
+  cacheComponents: true,
+  partialPrefetching: true,
   serverExternalPackages: ["sequelize"],
   turbopack: {
     rules: {},
@@ -50,8 +53,11 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        // RFC 8414 address, which MCP clients look up. It serves the same
+        // document as OpenID Connect discovery. The old /api/v1/oauth/metadata
+        // path is deprecated and no longer the target.
         source: "/.well-known/oauth-authorization-server",
-        destination: "/api/v1/oauth/metadata/",
+        destination: "/.well-known/openid-configuration/",
       },
       { source: "/api/v0/:path*", destination: "/api/v1/:path*" },
       { source: "/api/cron/:path*", destination: "/api/v1/cron/:path*" },

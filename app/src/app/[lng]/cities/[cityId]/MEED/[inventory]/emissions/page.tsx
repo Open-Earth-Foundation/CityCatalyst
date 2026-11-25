@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -31,8 +31,7 @@ import {
   MeedStatStripSkeleton,
   MeedTableSkeleton,
 } from "../../components/MeedSkeletons";
-import { setMeedStepState } from "../../meedLocalState";
-import { emissionsRetrievedState } from "../../meedEmissions";
+import { useMeedEmissions } from "../../useMeedEmissions";
 import { FOCUS_RING } from "../../focusRing";
 
 /** Applied to every focusable control on this screen. */
@@ -216,14 +215,13 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,
   });
+  // Reading the breakdown records the step, the same as the home screen does.
   const {
     data: results,
     isLoading,
     isError,
     refetch,
-  } = api.useGetResultsQuery(inventoryId, {
-    skip: !inventoryId,
-  });
+  } = useMeedEmissions(inventoryId, t);
 
   const bySector = results?.totalEmissions?.bySector ?? [];
   const totalEmissions = Number(results?.totalEmissions?.total ?? 0);
@@ -231,18 +229,6 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
     bySector.some((e) => e.sectorName === s.name && Number(e.co2eq) > 0),
   ).length;
   const formattedTotal = formatEmissions(totalEmissions);
-
-  // Seeing the breakdown with data on screen is the same as having retrieved
-  // it from the home screen, so a deep link (e.g. from pre-flight) leaves the
-  // step in the same state the "Retrieve emissions data" action would.
-  useEffect(() => {
-    if (!inventoryId || isLoading || isError || !results) return;
-    setMeedStepState(
-      inventoryId,
-      "emissions",
-      emissionsRetrievedState(results, t),
-    );
-  }, [inventoryId, isLoading, isError, results, t]);
 
   return (
     <VStack alignItems="stretch" gap="l">

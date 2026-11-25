@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import {
   formatIneCode,
   iso2FromInventoryCountry,
+  lookupCatalogPlace,
   lookupChileMeedCityByIne,
 } from "@/backend/chile-meed-city-catalog";
 
@@ -20,5 +21,18 @@ describe("chile-meed-city-catalog", () => {
     const santiago = lookupChileMeedCityByIne("CL13101");
     expect(santiago?.name).toBe("Santiago");
     expect(santiago?.locode).toBe("CL SCL");
+  });
+
+  it("returns place fields for a catalogued locode and nothing otherwise", () => {
+    const pintana = lookupCatalogPlace("CL13112");
+    expect(pintana).toMatchObject({
+      name: "La Pintana",
+      country: "Chile",
+      countryLocode: "CL",
+      unLocode: null,
+    });
+    expect(pintana?.region).toBeTruthy();
+    expect(pintana?.regionLocode).toBeTruthy();
+    expect(lookupCatalogPlace("XX ZZZ")).toBeUndefined();
   });
 });

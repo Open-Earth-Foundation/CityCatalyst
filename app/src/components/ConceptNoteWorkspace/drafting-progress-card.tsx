@@ -2,7 +2,7 @@
 
 import { Box, HStack, Icon, Spinner, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { LuCheck } from "react-icons/lu";
+import { LuCheck, LuCircleAlert } from "react-icons/lu";
 
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteDraftState } from "@/util/types";
@@ -29,18 +29,22 @@ export function isDraftingInProgress(
 /**
  * Chat-rail card shown while Clima drafts chapters (and until the drafting
  * overview message arrives). Reads only what the draft endpoint already
- * returns; timing comes from the run's progress summary.
+ * returns; timing comes from the run's progress summary. `summaryFailed`
+ * stops the wait once the overview request fails, so the card never spins
+ * for a message that is not coming.
  */
 export function DraftingProgressCard({
   draft,
   lng,
   startedAt,
   completedAt,
+  summaryFailed = false,
 }: {
   draft: ConceptNoteDraftState;
   lng: string;
   startedAt?: string | null;
   completedAt?: string | null;
+  summaryFailed?: boolean;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [now, setNow] = useState(() => Date.now());
@@ -53,6 +57,7 @@ export function DraftingProgressCard({
   if (!isDraftingInProgress(draft)) return null;
 
   const running = draft.status === "running";
+  const summaryStopped = !running && summaryFailed;
   const chapters = [...draft.chapters].sort((a, b) => a.position - b.position);
   const total = draft.total_chapters || chapters.length;
   const completed = running
@@ -82,13 +87,24 @@ export function DraftingProgressCard({
       data-testid="concept-note-drafting-card"
     >
       <HStack gap={3} align="start">
-        <Spinner
-          size="sm"
-          mt={0.5}
-          flexShrink={0}
-          color="interactive.primary/70"
-          aria-hidden="true"
-        />
+        {summaryStopped ? (
+          <Icon
+            as={LuCircleAlert}
+            boxSize={4}
+            mt={0.5}
+            flexShrink={0}
+            color="sentiment.warningDefault"
+            aria-hidden="true"
+          />
+        ) : (
+          <Spinner
+            size="sm"
+            mt={0.5}
+            flexShrink={0}
+            color="interactive.primary/70"
+            aria-hidden="true"
+          />
+        )}
         <Box minW={0} flex={1}>
           <Text fontSize="13px" fontWeight="semibold" color="content.primary">
             {t(
@@ -103,7 +119,13 @@ export function DraftingProgressCard({
             mt={0.5}
             data-testid="concept-note-drafting-progress"
           >
-            {running ? progressLabel : t("drafting-card-summarising")}
+            {running
+              ? progressLabel
+              : t(
+                  summaryStopped
+                    ? "drafting-card-summary-failed"
+                    : "drafting-card-summarising",
+                )}
             {elapsed ? ` · ${elapsed}` : ""}
           </Text>
         </Box>

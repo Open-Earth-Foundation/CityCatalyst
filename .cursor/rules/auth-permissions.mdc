@@ -63,3 +63,7 @@ import { Roles } from "@/util/types";
 ## Organization Frozen Check
 
 `apiHandler` blocks mutating methods (POST/PUT/PATCH/DELETE) when the organization is frozen (`active === false`), except for admin users and invite-related endpoints.
+
+## Native Input Catalog Access
+
+Clima reads catalog rows (`NativeInputCatalog`) through `authorizeCatalogScope` in `app/src/backend/NativeInputCatalogCapabilityService.ts`. Access is by city and project (`PermissionService.checkAccess({ cityId, projectId })`), never by the row creator, and never through the public-inventory path: HIAP-MEED data must not be public or downloadable. See `docs/NativeInputCatalog.md`.

@@ -1,0 +1,13 @@
+# Brazil (BR) region configuration.
+#
+# SCAFFOLD: nothing here is approved methodology. The weights are equal
+# placeholders that only exercise the scoring kernel. Replace them when the
+# Data team and C40 approve the methodology.
+methodologies:
+  ccc:
+    v1:
+      weights:
+        impact: 0.333333
+        alignment: 0.333333
+        feasibility: 0.333334
+      top_n: 20

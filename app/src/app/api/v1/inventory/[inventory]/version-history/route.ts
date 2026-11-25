@@ -115,8 +115,7 @@ export const GET = apiHandler(
         // try to get the subCategoryId from the previous version if available (necessary for deletes)
         if (!subCategoryId && version.previousVersion?.data) {
           subCategoryId = version.previousVersion.data?.subCategoryId as
-            | string
-            | undefined;
+            string | undefined;
         }
         let subCategory = undefined;
         if (subCategoryId) {
@@ -139,9 +138,14 @@ export const GET = apiHandler(
           : undefined;
 
         const scope = subCategory ? subCategory.scope.scopeName : undefined;
+        // same label: a replace snapshot and its deletions are 1ms apart but
+        // must restore to different points
         const mostRecentAssociatedVersion = versionHistory.find(
           (historyVersion) => {
             if (!historyVersion.created || !version.created) {
+              return false;
+            }
+            if ((historyVersion.label ?? null) !== (version.label ?? null)) {
               return false;
             }
             const timeDelta =

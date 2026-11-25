@@ -24,6 +24,7 @@ from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.persistence.concept_notes.source_revalidation import (
     queue_source_revalidation,
 )
+from app.services.cnb.visual_context import VISUAL_CONTEXT_CONTRACT_VERSION
 from app.utils.concept_note_context import (
     manual_population_context,
     omit_context_identifiers,
@@ -123,11 +124,13 @@ async def begin_build(
             )
             previous_sources = list(previous_bundle.selected_sources)
 
-            # Reuse only a ready bundle built from this exact source set.
+            # Reuse only a ready bundle built from this exact source set whose
+            # visual projection already matches the current full-envelope contract.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
+                and _selected_sources_have_current_visual_contract(previous_sources)
             )
             if not already_current:
                 # Preserve the last completed context while its replacement builds.
@@ -152,6 +155,9 @@ async def begin_build(
                         "source_provenance": _source_provenance_from_bundle(
                             previous_bundle
                         ),
+                        "included_upload_ids": [
+                            str(source.upload_id) for source in previous_sources
+                        ],
                         # Keep the checked inventory version so completion can
                         # report an inventory whose data changed as "updated".
                         "inventory_candidate": previous.get("inventory_candidate"),
@@ -297,6 +303,9 @@ async def complete_build(
                 "available_context": _available_context_from_bundle(bundle),
                 "city_population": _city_population_from_bundle(bundle),
                 "source_provenance": _source_provenance_from_bundle(bundle),
+                "included_upload_ids": [
+                    str(source.upload_id) for source in selected_sources
+                ],
                 "inventory_candidate": inventory_candidate,
                 "context_changes": (
                     _context_changes(
@@ -405,6 +414,36 @@ async def load_refresh_state(
         raise
     except (OSError, SQLAlchemyError) as exc:
         logger.exception("Failed to read Concept Note context refresh state")
+        raise ContextBundlePersistenceError(
+            "cnb_storage_unavailable",
+            503,
+            "Concept Note context storage is unavailable",
+        ) from exc
+
+
+async def load_selected_sources(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    user_id: str,
+    run_id: UUID,
+) -> list[SelectedSource]:
+    """Read the owned run's persisted selected sources; empty without a bundle."""
+    try:
+        async with session_factory() as session:
+            await _require_owned_run(
+                session=session,
+                user_id=user_id,
+                run_id=run_id,
+                lock=False,
+            )
+            bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+            return normalize_bundle(
+                bundle_row.context_bundle if bundle_row is not None else None
+            ).selected_sources
+    except ContextBundlePersistenceError:
+        raise
+    except (OSError, SQLAlchemyError) as exc:
+        logger.exception("Failed to read Concept Note selected sources")
         raise ContextBundlePersistenceError(
             "cnb_storage_unavailable",
             503,
@@ -661,8 +700,16 @@ async def load_agent_context(
                 {
                     "workflow_step": run.workflow_step,
                     "context_bundle_status": {
-                        key: value for key, value in bundle_progress.items()
-                        if key in {"status", "document_grounding", "available_context", "missing_context", "warnings"}
+                        key: value
+                        for key, value in bundle_progress.items()
+                        if key
+                        in {
+                            "status",
+                            "document_grounding",
+                            "available_context",
+                            "missing_context",
+                            "warnings",
+                        }
                     },
                     "selected_sources": [
                         {
@@ -672,6 +719,10 @@ async def load_agent_context(
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
+                            "visual_context": [
+                                item.model_dump(mode="json")
+                                for item in source.visual_context
+                            ],
                             "uploaded_at": _iso(uploaded_at.get(source.upload_id)),
                             "newest": newest is not None
                             and uploaded_at.get(source.upload_id) == newest,
@@ -795,11 +846,23 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
             "sha256": upload.markdown_sha256,
             "source_format": upload.source_format,
             "page_count": upload.page_count,
+            "structured_sha256": upload.structured_sha256,
+            "structured_schema_version": upload.structured_schema_version,
         }
         for upload in uploads
     ]
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _selected_sources_have_current_visual_contract(
+    sources: list[SelectedSource],
+) -> bool:
+    """Return whether every selected source already carries the full-envelope contract."""
+    return all(
+        source.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION
+        for source in sources
+    )
 
 
 async def _matches_current_source_fingerprint(
@@ -993,9 +1056,15 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         filename=upload.filename,
         source_label=upload.source_label,
         source_format=source_format_from_filename(upload.filename),
+        source_role=upload.source_role,
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,
+        annotation_mode=upload.annotation_mode,
+        structured_s3_key=upload.structured_s3_key,
+        structured_sha256=upload.structured_sha256,
+        structured_size_bytes=upload.structured_size_bytes,
+        structured_schema_version=upload.structured_schema_version,
         status=upload.ingest_status,
         error_code=upload.ingest_error_code,
         received_at=upload.received_at,

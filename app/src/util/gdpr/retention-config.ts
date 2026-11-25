@@ -4,6 +4,8 @@ export interface RetentionConfig {
   inactiveAccountDays: number;
   staleInviteDays: number;
   unusedTokenDays: number;
+  /** Withdrawn ingest-document bytes. Catalog rows stay. */
+  withdrawnDocumentDays: number;
   dryRun: boolean;
   batchSize: number;
 }
@@ -12,6 +14,7 @@ const DEFAULTS = {
   inactiveAccountDays: 1095,
   staleInviteDays: 180,
   unusedTokenDays: 365,
+  withdrawnDocumentDays: 365,
   batchSize: 200,
 } as const;
 
@@ -56,6 +59,12 @@ export function readRetentionConfig(
       "GDPR_UNUSED_TOKEN_DAYS",
       DEFAULTS.unusedTokenDays,
       env.GDPR_UNUSED_TOKEN_DAYS,
+      36500,
+    ),
+    withdrawnDocumentDays: positiveInt(
+      "INGEST_WITHDRAWN_DOCUMENT_DAYS",
+      DEFAULTS.withdrawnDocumentDays,
+      env.INGEST_WITHDRAWN_DOCUMENT_DAYS,
       36500,
     ),
     dryRun: env.GDPR_RETENTION_DRY_RUN === "true",

@@ -3,6 +3,7 @@
 type StoredDraftContext = {
   draftRunId: string;
   threadId: string | null;
+  pendingRequest?: string;
 };
 
 function buildDraftStorageKey(inventoryId: string): string {
@@ -25,6 +26,7 @@ export function readStoredDraftContext(
     const parsed = JSON.parse(raw) as {
       draftRunId?: unknown;
       threadId?: unknown;
+      pendingRequest?: unknown;
     };
     if (typeof parsed.draftRunId !== "string" || !parsed.draftRunId.trim()) {
       return null;
@@ -36,6 +38,10 @@ export function readStoredDraftContext(
         typeof parsed.threadId === "string" && parsed.threadId.trim()
           ? parsed.threadId
           : null,
+      ...(typeof parsed.pendingRequest === "string" &&
+      parsed.pendingRequest.trim()
+        ? { pendingRequest: parsed.pendingRequest }
+        : {}),
     };
   } catch {
     return null;
@@ -50,10 +56,14 @@ export function writeStoredDraftContext(
     return;
   }
 
-  window.localStorage.setItem(
-    buildDraftStorageKey(inventoryId),
-    JSON.stringify(context),
-  );
+  try {
+    window.localStorage.setItem(
+      buildDraftStorageKey(inventoryId),
+      JSON.stringify(context),
+    );
+  } catch {
+    // The current session can still continue when browser storage is unavailable.
+  }
 }
 
 export function clearStoredDraftContext(inventoryId: string) {
@@ -61,5 +71,9 @@ export function clearStoredDraftContext(inventoryId: string) {
     return;
   }
 
-  window.localStorage.removeItem(buildDraftStorageKey(inventoryId));
+  try {
+    window.localStorage.removeItem(buildDraftStorageKey(inventoryId));
+  } catch {
+    // Browser storage can be unavailable in private or restricted sessions.
+  }
 }

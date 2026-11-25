@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/menu";
 import { FOCUS_RING } from "@/app/[lng]/cities/[cityId]/MEED/focusRing";
 import { CITIES } from "../_lib/cities";
-import { trackHref } from "../_lib/hrefs";
+import { useTrackHref } from "../_lib/useTrackHref";
 import type { DemoTrack } from "../_lib/types";
 import { useDemoT } from "../_lib/useDemoT";
 
@@ -30,6 +30,7 @@ export function CitySwitcher({
   track: DemoTrack;
   segment?: string;
 }) {
+  const trackHrefIn = useTrackHref();
   const { t } = useDemoT(lng);
   const router = useRouter();
   const current = CITIES.find((c) => c.slug === city);
@@ -75,7 +76,7 @@ export function CitySwitcher({
               value={c.slug}
               onClick={() =>
                 !isCurrent &&
-                router.push(trackHref(lng, c.slug, track, segment))
+                router.push(trackHrefIn(lng, c.slug, track, segment))
               }
             >
               <HStack justifyContent="space-between" w="full">

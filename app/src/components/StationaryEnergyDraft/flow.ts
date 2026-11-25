@@ -17,6 +17,7 @@ export {
   buildReviewDecisionPayload,
   buildSourcePreferenceOptions,
   canPersistDraftReview,
+  canReviewDraftStatus,
   canSaveDraft,
   canSaveToInventory,
   decisionOptionsForProposal,

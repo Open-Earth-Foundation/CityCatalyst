@@ -8,7 +8,7 @@ interface HeadlineProps extends HeadingProps {
 
 export const HeadlineSmall = ({ text, children, color = "base.dark", ...props }: HeadlineProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="headline.sm"
     lineHeight="32px"
@@ -23,7 +23,7 @@ export const HeadlineSmall = ({ text, children, color = "base.dark", ...props }:
 
 export const HeadlineMedium = ({ children, color = "base.dark", ...props }: HeadingProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="headline.md"
     lineHeight="36px"
@@ -37,7 +37,7 @@ export const HeadlineMedium = ({ children, color = "base.dark", ...props }: Head
 
 export const HeadlineLarge = ({ children, color = "base.dark", ...props }: HeadingProps) => (
   <Heading
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="headline.lg"
     lineHeight="40px"

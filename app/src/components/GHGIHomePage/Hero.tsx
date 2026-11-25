@@ -133,10 +133,10 @@ export function Hero({
     <Box
       bg="content.alternative"
       w="full"
-      h={isCompact ? "auto" : "491px"}
+      h={isCompact ? "auto" : { base: "auto", lg: "491px" }}
       pt={isCompact ? "xxl" : "80px"}
-      pb={isCompact ? "xl" : 0}
-      px={8}
+      pb={isCompact ? "xl" : { base: 8, lg: 0 }}
+      px={{ base: 4, md: 8 }}
     >
       <Box
         display="flex"
@@ -177,13 +177,18 @@ export function Hero({
         </Box>
         <Box
           w="full"
-          h={isCompact ? "auto" : "240px"}
+          h={isCompact ? "auto" : { base: "auto", lg: "240px" }}
           display="flex"
           flexDirection="column"
           justifyContent="center"
           pt={isCompact ? "m" : "36px"}
         >
-          <Box display="flex" h={isCompact ? "auto" : "240px"} gap={8}>
+          <Box
+            display="flex"
+            flexDirection={{ base: "column", lg: "row" }}
+            h={isCompact ? "auto" : { base: "auto", lg: "240px" }}
+            gap={8}
+          >
             <Box
               display="flex"
               gap="24px"
@@ -257,7 +262,7 @@ export function Hero({
                 </Text>
               )}
               {!isCompact && (
-                <Box display="flex" gap={8} mt="24px">
+                <Box display="flex" flexWrap="wrap" gap={8} mt="24px">
                   <Box display="flex" gap={3}>
                     <Icon
                       as={HeatIcon}
@@ -453,8 +458,9 @@ export function Hero({
             </Box>
             {!isCompact && (
               <Box
-                mt={-25}
-                w="422px"
+                mt={{ base: 0, lg: -25 }}
+                w="full"
+                maxW="422px"
                 flexShrink={0}
                 borderRadius="8px"
                 overflow="hidden"
@@ -481,7 +487,9 @@ function ProjectTitle({
   return (
     <Text
       fontSize="title.md"
-      w="max-content"
+      w="fit-content"
+      maxW="full"
+      overflowWrap="anywhere"
       fontWeight="semibold"
       color="white"
       data-testid="hero-project-name"

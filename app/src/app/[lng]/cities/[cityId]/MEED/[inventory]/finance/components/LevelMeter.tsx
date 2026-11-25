@@ -1,7 +1,7 @@
 "use client";
 import type { TFunction } from "i18next";
-import { MeedMeter } from "../../../components/MeedMeter";
-import { LEVEL_KEYS, LEVEL_VALUE, levelTone, type Level } from "../labels";
+import { MeedLevel } from "../../../components/MeedLevel";
+import { LEVEL_KEYS, levelTone, type Level } from "../labels";
 
 export interface LevelMeterProps {
   label: string;
@@ -12,19 +12,14 @@ export interface LevelMeterProps {
 }
 
 /**
- * A single qualitative factor (capital intensity, delivery capacity, …).
- * Replaces the two divergent hand-rolled readouts — one a 6px bar, one a bare
- * label — with the module's one meter.
+ * A single qualitative factor (capital intensity, delivery capacity, …), as a
+ * dot and a word. These are four-step scales, not measurements, so a bar
+ * would suggest a precision the data does not have.
  */
 export function LevelMeter({ label, level, dir, t }: LevelMeterProps) {
-  const valueText = t(LEVEL_KEYS[level]);
   return (
-    <MeedMeter
-      value={LEVEL_VALUE[level]}
-      tone={levelTone(level, dir)}
-      label={label}
-      valueText={valueText}
-      ariaLabel={`${label} — ${valueText}`}
-    />
+    <MeedLevel tone={levelTone(level, dir)} label={label}>
+      {t(LEVEL_KEYS[level])}
+    </MeedLevel>
   );
 }

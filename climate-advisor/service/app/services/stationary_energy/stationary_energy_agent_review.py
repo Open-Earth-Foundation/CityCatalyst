@@ -745,7 +745,10 @@ class StationaryEnergyAgentReviewService:
             return result
 
         # Save through the draft service so existing review validation stays authoritative.
-        draft_service = StationaryEnergyDraftService(self.session)
+        draft_service = StationaryEnergyDraftService(
+            self.session,
+            cc_client=self.cc_client,
+        )
         response = await draft_service.review_draft(
             draft_run_id=draft_run_id,
             payload=ReviewStationaryEnergyDraftRequest(

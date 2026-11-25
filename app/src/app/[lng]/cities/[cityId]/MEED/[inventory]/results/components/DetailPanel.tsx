@@ -14,7 +14,13 @@ import { MeedScoreComposition } from "../../../components/MeedScoreComposition";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import { ActionFinanceSection } from "./ActionFinanceSection";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
-import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
+import {
+  actionName,
+  actionSectorTag,
+  sectorLabel,
+  type MeedActionIndex,
+} from "./actionCatalog";
+import { MeedSectorIcon } from "../../../components/MeedSectorIcon";
 import type { MeedScoreWeights } from "./rankingFacts";
 import {
   actionCoBenefitScores,
@@ -205,9 +211,15 @@ export function DetailPanel({
                       {t("detail-rank-of", { rank, total })}
                     </Overline>
                   )}
-                  <Overline color="content.tertiary">
-                    {sectorLabel(index, action.action_id, t)}
-                  </Overline>
+                  <HStack gap="xs" alignItems="center">
+                    <MeedSectorIcon
+                      sectorTag={actionSectorTag(index, action.action_id)}
+                      size="14px"
+                    />
+                    <Overline color="content.tertiary">
+                      {sectorLabel(index, action.action_id, t)}
+                    </Overline>
+                  </HStack>
                 </HStack>
                 <Drawer.CloseTrigger asChild>
                   <CloseButton
@@ -246,6 +258,7 @@ export function DetailPanel({
                       action={action}
                       weights={weights}
                       variant="detailed"
+                      layout="stacked"
                       t={t}
                     />
                   </DrawerSection>

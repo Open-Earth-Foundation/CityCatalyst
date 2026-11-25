@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Iterator, Mapping
-from contextlib import contextmanager, nullcontext
+from collections.abc import AsyncIterator, Iterator, Mapping
+from contextlib import asynccontextmanager, contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass, field, replace
 from hashlib import sha256
@@ -14,6 +14,7 @@ from typing import Any
 import mlflow
 from agents import FunctionTool
 from app.utils.mlflow_logging import (
+    async_start_run,
     climate_advisor_experiment_name,
     current_run_id,
     redact_payload,
@@ -95,27 +96,84 @@ def workflow_trace(
         )
     )
     with run_scope:
-        span_scope = (
-            start_trace_span(
-                name=name,
-                span_type="CHAIN",
-                inputs=inputs,
-                attributes=attributes,
-                link_run=False,
-            )
-            if parent is not None
-            else _trace_scope(name=name, inputs=inputs, attributes=attributes)
-        )
-        with span_scope as span:
-            if parent is None:
-                # Only real chat turns belong in MLflow's Sessions view.
-                correlation = {**attributes, "thread_id": session_id}
-                update_current_trace_context(
-                    user_id=user_id,
-                    tags=correlation,
-                    metadata=correlation,
-                )
+        with _workflow_span(
+            name=name,
+            inputs=inputs,
+            session_id=session_id,
+            user_id=user_id,
+            attributes=attributes,
+            parent=parent,
+        ) as span:
             yield span
+
+
+@asynccontextmanager
+async def async_workflow_trace(
+    *,
+    name: str,
+    inputs: dict[str, Any],
+    session_id: object,
+    user_id: object,
+    attributes: Mapping[str, object],
+) -> AsyncIterator[LiveSpan | None]:
+    """Trace service work while offloading standalone run creation and cleanup."""
+    try:
+        parent = mlflow.get_current_active_span()
+    except Exception:
+        parent = None
+    run_scope = (
+        nullcontext()
+        if parent is not None or current_run_id() is not None
+        else async_start_run(
+            run_name=name,
+            experiment_name=climate_advisor_experiment_name(),
+            tags={**attributes, "thread_id": session_id, "user_id": user_id},
+        )
+    )
+    async with run_scope:
+        with _workflow_span(
+            name=name,
+            inputs=inputs,
+            session_id=session_id,
+            user_id=user_id,
+            attributes=attributes,
+            parent=parent,
+        ) as span:
+            yield span
+
+
+@contextmanager
+def _workflow_span(
+    *,
+    name: str,
+    inputs: dict[str, Any],
+    session_id: object,
+    user_id: object,
+    attributes: Mapping[str, object],
+    parent: LiveSpan | None,
+) -> Iterator[LiveSpan | None]:
+    """Share span metadata between synchronous research and async service work."""
+    span_scope = (
+        start_trace_span(
+            name=name,
+            span_type="CHAIN",
+            inputs=inputs,
+            attributes=attributes,
+            link_run=False,
+        )
+        if parent is not None
+        else _trace_scope(name=name, inputs=inputs, attributes=attributes)
+    )
+    with span_scope as span:
+        if parent is None:
+            # Only real chat turns belong in MLflow's Sessions view.
+            correlation = {**attributes, "thread_id": session_id}
+            update_current_trace_context(
+                user_id=user_id,
+                tags=correlation,
+                metadata=correlation,
+            )
+        yield span
 
 
 @contextmanager

@@ -33,7 +33,8 @@ export function StationaryEnergyChatArtifactPage({
   const params = useParams();
   const searchParams = useSearchParams();
   const lng = getParamValueRequired(params.lng);
-  const { t } = useTranslation(lng, "stationary-energy-agentic");
+  // "data" holds the GPC subsector/subcategory names shown in rows and labels.
+  const { t } = useTranslation(lng, ["stationary-energy-agentic", "data"]);
   const cityId = getParamValueRequired(params.cityId);
   const inventoryId = getParamValueRequired(params.inventory);
   const queryDraftRunId = searchParams.get("draftRunId");
@@ -49,9 +50,11 @@ export function StationaryEnergyChatArtifactPage({
   const [draftsPanelOpen, setDraftsPanelOpen] = useState(true);
   const controller = useStationaryEnergyChatArtifactController({
     cityId,
+    cityName: inventory?.city?.name,
     featureEnabled,
     initialStage,
     inventoryId,
+    inventoryYear: inventory?.year,
     lng,
     queryDraftRunId,
     t,

@@ -764,6 +764,17 @@
     ]
   },
   {
+    "gpcRefNo": "III.1.3",
+    "sector": "waste",
+    "subsector": "solid-waste-disposal",
+    "subcategoryName": "emissions-from-waste-generated-outside-the-city-boundary-and-disposed-in-landfills-or-open-dumps-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "oxidation-factor-well-managed-landfill",
+      "oxidation-factor-unmanaged-landfill"
+    ]
+  },
+  {
     "gpcRefNo": "III.2.1",
     "sector": "waste",
     "subsector": "biological-treatment-of-waste",
@@ -792,6 +803,20 @@
     ]
   },
   {
+    "gpcRefNo": "III.2.3",
+    "sector": "waste",
+    "subsector": "biological-treatment-of-waste",
+    "subcategoryName": "emissions-from-waste-generated-outside-the-city-boundary-but-treated-biologically-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "treatment-type-all-organic-waste",
+      "treatment-type-composting",
+      "treatment-type-anaerobic-digestion",
+      "waste-state-dry-waste",
+      "waste-state-wet-waste"
+    ]
+  },
+  {
     "gpcRefNo": "III.3.1",
     "sector": "waste",
     "subsector": "incineration-and-open-burning",
@@ -811,6 +836,20 @@
     "subsector": "incineration-and-open-burning",
     "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-treated-outside-of-the-city-boundary",
     "scope": 3,
+    "fuelTypeOrActivity": [
+      "technology-continuous-incineration",
+      "technology-semi-continuous-incineration",
+      "technology-batch-type-incineration",
+      "boiler-type-stoker",
+      "boiler-type-fluidised-bed"
+    ]
+  },
+  {
+    "gpcRefNo": "III.3.3",
+    "sector": "waste",
+    "subsector": "incineration-and-open-burning",
+    "subcategoryName": "emissions-from-waste-generated-outside-the-city-boundary-but-treated-within-the-city-boundary",
+    "scope": 1,
     "fuelTypeOrActivity": [
       "technology-continuous-incineration",
       "technology-semi-continuous-incineration",
@@ -871,6 +910,42 @@
       "collection-status-type-wastewater-not-collected",
       "collection-status-type-wastewater-treated",
       "collection-status-type-wastewater-untreated",
+      "industry-type-alcohol-refining",
+      "industry-type-coffee",
+      "industry-type-dairy-products",
+      "industry-type-fish-processing",
+      "industry-type-meat-and-poultry",
+      "industry-type-organic-chemicals",
+      "industry-type-petroleum-refineries",
+      "industry-type-plastics-and-resins",
+      "industry-type-pulp-and-paper",
+      "industry-type-soap-and-detergents",
+      "industry-type-starch-production",
+      "industry-type-sugar-refining",
+      "industry-type-vegetable-oils",
+      "industry-type-vegetables-fruits-juices",
+      "industry-type-wine-and-vinegar",
+      "source-type-domestic-wastewater",
+      "source-type-industrial-wastewater",
+      "source-type-all-wastewater"
+    ]
+  },
+  {
+    "gpcRefNo": "III.4.3",
+    "sector": "waste",
+    "subsector": "wastewater-treatment-and-discharge",
+    "subcategoryName": "emissions-from-wastewater-generated-outside-the-city-boundary-but-treated-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "income-group-type-rural",
+      "income-group-type-urban-high-income",
+      "income-group-type-urban-low-income",
+      "garbage-disposal-type-non-garbage-disposals",
+      "garbage-disposal-type-garbage-disposals",
+      "collection-status-type-wastewater-collected",
+      "collection-status-type-wastewater-not-collected",
+      "treatment-status-type-wastewater-treated",
+      "treatment-status-type-wastewater-untreated",
       "industry-type-alcohol-refining",
       "industry-type-coffee",
       "industry-type-dairy-products",
@@ -968,5 +1043,13 @@
       "activity-type-rice-cultivations",
       "activity-type-harvested-wood-products"
     ]
+  },
+  {
+    "gpcRefNo": "VI.1",
+    "sector": "other-scope-3",
+    "subsector": "other-scope-3",
+    "subcategoryName": null,
+    "scope": 3,
+    "fuelTypeOrActivity": []
   }
 ]

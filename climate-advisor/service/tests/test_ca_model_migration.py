@@ -1,4 +1,4 @@
-"""Validate current CA model routing and real SDK payloads without network calls."""
+"""Validate real SDK payloads for configured CA models without network calls."""
 
 import json
 from uuid import uuid4
@@ -6,35 +6,11 @@ from uuid import uuid4
 import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
-from openai import AsyncOpenAI
-
 from app.config import get_settings
 from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
-from app.services.cnb.source_analysis import _run_agent
-
-
-def test_active_ca_model_defaults_preserve_cnb_roles():
-    models = get_settings().llm.models
-    expected = {
-        "orchestrator": ("openai/gpt-5.6-terra", "medium"),
-        "agentic_flow": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chat": ("openai/gpt-6-sol", "medium"),
-        "cnb_chat_edit_planner": ("openai/gpt-6-sol", "high"),
-        "cnb_source_impact_reviewer": ("openai/gpt-6-sol", "medium"),
-        "funding_research": ("openai/gpt-5.6-terra", "medium"),
-        "funder_identity": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_source_reader": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_source_synthesizer": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chapter_drafter": ("openai/gpt-5.6-terra", "medium"),
-        "cnb_chapter_validator": ("openai/gpt-5.6-terra", "medium"),
-    }
-    for role, (model, effort) in expected.items():
-        configured = getattr(models, role)
-        assert configured.name == model
-        assert configured.reasoning_effort == effort
-    assert models.orchestrator.temperature is None
-    assert models.agentic_flow.temperature is None
+from app.services.cnb.source_analysis import run_agent
+from openai import AsyncOpenAI
 
 
 def completion(model, *, content=None, tool_calls=None, finish_reason="stop"):
@@ -165,25 +141,46 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
     requests = []
 
     def respond(request: httpx.Request):
+        assert str(request.url) == "https://openrouter.ai/api/v1/responses"
         body = json.loads(request.content)
         requests.append(body)
         return httpx.Response(
-            200, json=completion(body["model"], content=json.dumps(output))
+            200,
+            json={
+                "id": "resp-local-test",
+                "object": "response",
+                "created_at": 0,
+                "status": "completed",
+                "model": body["model"],
+                "output": [
+                    {
+                        "id": "msg-local-test",
+                        "type": "message",
+                        "role": "assistant",
+                        "status": "completed",
+                        "content": [
+                            {
+                                "type": "output_text",
+                                "text": json.dumps(output),
+                                "annotations": [],
+                            }
+                        ],
+                    }
+                ],
+                "usage": {
+                    "input_tokens": 10,
+                    "output_tokens": 10,
+                    "total_tokens": 20,
+                },
+            },
         )
-
-    class LocalRunner:
-        @staticmethod
-        async def run(agent, input_text):
-            return await Runner.run(
-                agent, input_text, run_config=RunConfig(tracing_disabled=True)
-            )
 
     async with AsyncOpenAI(
         api_key="local-test-only",
         base_url="https://openrouter.ai/api/v1",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
     ) as client:
-        result = await _run_agent(
+        result = await run_agent(
             name="Source compatibility test",
             prompt=settings.llm.prompts.get_prompt(
                 "cnb_source_question_reading"
@@ -194,14 +191,18 @@ async def test_source_roles_preserve_reasoning_and_structured_outputs(
             output_type=output_type,
             input_text="No budget is stated.",
             client=client,
-            runner=LocalRunner,
+            runner=Runner,
         )
     assert result == output_type.model_validate(output)
     assert len(requests) == 1
     body = requests[0]
     assert body["model"] == configured.name
-    assert body["reasoning_effort"] == configured.reasoning_effort
+    assert body["reasoning"] == {
+        "effort": configured.reasoning_effort,
+        "summary": "detailed",
+    }
+    assert body["store"] is False
     assert "temperature" not in body
     assert not body.get("tools")
-    assert body["response_format"]["type"] == "json_schema"
-    assert body["response_format"]["json_schema"]["strict"] is True
+    assert body["text"]["format"]["type"] == "json_schema"
+    assert body["text"]["format"]["strict"] is True

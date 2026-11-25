@@ -41,6 +41,7 @@
  *         description: Unauthorized.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import FileParserService, {
   type ParsedFileData,
@@ -504,6 +505,7 @@ async function runInterpretationInBackground(
         processingResults: {
           rowCount: importResult.rowCount,
           validRowCount: importResult.validRowCount,
+          rowsSkippedEmptyEmissions: importResult.rowsSkippedEmptyEmissions,
           errors: importResult.errors,
           warnings: importResult.warnings,
         },
@@ -553,7 +555,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId: session.user.id,
+      userId: uploadedByOrOrphaned(session.user.id),
     },
   });
 

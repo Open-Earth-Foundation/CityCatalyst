@@ -138,10 +138,13 @@ class ModelsConfig(BaseModel):
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
+    cnb_golden_set_judge: ResearchModelConfig | None = None
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chapter_support_checker: ResearchModelConfig | None = None
     cnb_source_impact_reviewer: ResearchModelConfig | None = None
     cnb_chat_edit_planner: ResearchModelConfig | None = None
     cnb_chapter_validator: ResearchModelConfig
+    cnb_funder_extractor: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -162,10 +165,11 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
+    max_chapter_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
-    # Above this total, agents fall back to compact summaries and source queries.
-    full_text_max_tokens: int = Field(default=80000, ge=0)
+    # Above this whole-request size, agents fall back to summaries and quotations.
+    context_window_tokens: int = Field(default=350000, ge=0)
 
 
 class CnbSourceImpactPromptBudgetConfig(BaseModel):
@@ -180,10 +184,15 @@ class CnbEditPromptBudgetConfig(BaseModel):
     """Limits for the edit tool loop and concurrent chapter semantic reviews."""
 
     max_prompt_tokens: int = Field(default=50000, ge=2000)
-    max_concurrency: int = Field(default=5, ge=1, le=5)
+    # Parallel chapter reviews; 12 reviews a typical whole-document edit in one wave.
+    max_concurrency: int = Field(default=5, ge=1, le=12)
     max_agent_turns: int = Field(default=12, ge=3, le=30)
     max_review_repairs: int = Field(default=2, ge=0, le=3)
     max_searches: int = Field(default=100, ge=1, le=1000)
+    # Uncached source lookups allowed per planner run and per chapter review.
+    max_source_queries: int = Field(default=4, ge=0, le=20)
+    # Quotation characters kept from one lookup answer; bounds context growth.
+    max_source_answer_chars: int = Field(default=12000, ge=1000, le=80000)
     timeout_seconds: int = Field(default=300, ge=30, le=600)
 
 
@@ -191,6 +200,12 @@ class CnbValidationPromptBudgetConfig(BaseModel):
     """Full-prompt limit for non-truncating chapter validation batches."""
 
     max_prompt_tokens: int = Field(default=50000, ge=1000)
+
+
+class CnbFunderImportPromptBudgetConfig(BaseModel):
+    """Limit for reading one uploaded funder document in a single model call."""
+
+    max_document_tokens: int = Field(default=120000, ge=1000)
 
 
 class PromptBudgetConfig(BaseModel):
@@ -210,6 +225,9 @@ class PromptBudgetConfig(BaseModel):
     cnb_validation: CnbValidationPromptBudgetConfig = Field(
         default_factory=CnbValidationPromptBudgetConfig,
     )
+    cnb_funder_import: CnbFunderImportPromptBudgetConfig = Field(
+        default_factory=CnbFunderImportPromptBudgetConfig,
+    )
 
 
 class GenerationConfig(BaseModel):
@@ -222,6 +240,7 @@ class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
     cnb_chat_suggestions: str = "prompts/cnb/chat_suggestions.md"
+    cnb_gap_question: str = "prompts/cnb/gap_question.md"
 
     core: str
     chat: str
@@ -233,7 +252,16 @@ class PromptsConfig(BaseModel):
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_source_chapter_evidence: str = "prompts/cnb/source_chapter_evidence.md"
+    cnb_source_chapter_evidence_selection: str = (
+        "prompts/cnb/source_chapter_evidence_selection.md"
+    )
+    cnb_golden_set_extraction_judge: str = "benchmark/cnb/prompts/extraction.md"
+    cnb_golden_set_chapter_writing_judge: str = "benchmark/cnb/prompts/chapter_writing.md"
+    cnb_golden_set_verification_judge: str = "benchmark/cnb/prompts/verification.md"
+    cnb_golden_set_editing_judge: str = "benchmark/cnb/prompts/editing.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chapter_support_check: str = "prompts/cnb/chapter_support_check.md"
     cnb_source_impact_review: str = "prompts/cnb/source_impact_review.md"
     cnb_chat_edit_planner: str = "prompts/cnb/chat_edit_planner.md"
     cnb_chat_edit_review: str = "prompts/cnb/chat_edit_review.md"
@@ -243,6 +271,15 @@ class PromptsConfig(BaseModel):
     )
     cnb_chapter_validation_consistency: str = (
         "prompts/cnb/chapter_validation_consistency.md"
+    )
+    cnb_chapter_validation_answered_gaps: str = (
+        "prompts/cnb/chapter_validation_answered_gaps.md"
+    )
+    cnb_funder_document_extraction: str = (
+        "prompts/cnb/funder_document_extraction.md"
+    )
+    cnb_template_document_extraction: str = (
+        "prompts/cnb/template_document_extraction.md"
     )
 
     def get_prompt(self, prompt_type: str) -> str:
@@ -451,11 +488,28 @@ class CacheConfig(BaseModel):
     max_size_mb: Optional[int] = None
 
 
+class StreamingConfig(BaseModel):
+    """Bound recovery for transport failures after a model opens its stream."""
+
+    retry_attempts: int = Field(default=2, ge=0, le=3)
+    retry_delay_ms: int = Field(default=500, ge=0, le=5000)
+
+
+class ChatConfig(BaseModel):
+    """Execution bounds for streamed chat runs."""
+
+    # Maximum model turns per streamed run. N_MAX = 4 cities cost up to
+    # 1 + 2 * 4 + 1 = 10 sequential turns, so the SDK default of 10 has no slack.
+    max_agent_turns: int = Field(default=16, ge=1, le=64)
+
+
 class LLMConfig(BaseModel):
     models: ModelsConfig
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
+    chat: ChatConfig = Field(default_factory=ChatConfig)
     conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
@@ -479,7 +533,13 @@ def _load_llm_config() -> LLMConfig:
     with open(config_path, "r", encoding="utf-8") as f:
         config_data = yaml.safe_load(f)
 
-    return LLMConfig(**config_data)
+    config = LLMConfig(**config_data)
+
+    # CHAT_MAX_AGENT_TURNS overrides the YAML value, for example to force the turn limit locally.
+    override = os.getenv("CHAT_MAX_AGENT_TURNS")
+    if override:
+        config.chat = ChatConfig(max_agent_turns=int(override))
+    return config
 
 
 class Settings(BaseModel):
@@ -537,6 +597,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
     cnb_markdown_request_max_bytes: int = _parse_int(
         os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
+    cnb_structured_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_STRUCTURED_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
     )
 
     def model_post_init(self, __context: Any) -> None:

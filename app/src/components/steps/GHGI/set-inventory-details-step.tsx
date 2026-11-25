@@ -7,7 +7,6 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import type { GHGIFormInputs } from "@/util/GHGI/types";
-import { useEffect } from "react";
 import {
   Box,
   createListCollection,
@@ -42,6 +41,9 @@ export default function SetInventoryDetailsStep({
   selectedGlobalWarmingPotentialValue,
   setSelectedInventoryGoalValue,
   setSelectedGlobalWarmingPotentialValue,
+  yearAlreadyExists,
+  replaceOnImport,
+  selectedYear,
 }: {
   t: TFunction;
   register: UseFormRegister<GHGIFormInputs>;
@@ -55,16 +57,13 @@ export default function SetInventoryDetailsStep({
   setSelectedInventoryGoalValue: (value: string) => void;
   selectedGlobalWarmingPotentialValue?: string;
   setSelectedGlobalWarmingPotentialValue: (value: string) => void;
+  yearAlreadyExists?: boolean;
+  /** Upload flow: a year with data is allowed, the import replaces that data after confirmation. */
+  replaceOnImport?: boolean;
+  selectedYear?: number | null;
 }) {
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
-
-  // Handle inventory Goal Radio Input
-  // Set default inventory goal form value
-  useEffect(() => {
-    setValue("inventoryGoal", "gpc_basic");
-    setValue("globalWarmingPotential", "ar6");
-  }, [setValue]);
 
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
@@ -148,6 +147,40 @@ export default function SetInventoryDetailsStep({
             </Field>
           </Box>
         </Box>
+        {yearAlreadyExists && selectedYear != null && (
+          <Box
+            mt="16px"
+            p="16px"
+            borderWidth="1px"
+            borderColor="sentiment.warningDefault"
+            bg="sentiment.warningOverlay"
+            borderRadius="md"
+            display="flex"
+            gap="8px"
+            alignItems="flex-start"
+          >
+            <Icon
+              as={MdWarning}
+              boxSize={5}
+              color="sentiment.warningDefault"
+              mt="2px"
+            />
+            <Box>
+              <Text fontWeight="bold" color="content.primary">
+                {t("inventory-year-has-data-title")}
+              </Text>
+              <Text fontSize="body.md" color="content.secondary">
+                {replaceOnImport
+                  ? t("inventory-year-has-data-replace-description", {
+                      year: selectedYear,
+                    })
+                  : t("inventory-year-has-data-blocked-description", {
+                      year: selectedYear,
+                    })}
+              </Text>
+            </Box>
+          </Box>
+        )}
       </Box>
       {/* Inventory Goal */}
       <Box
@@ -204,7 +237,9 @@ export default function SetInventoryDetailsStep({
                             field={field}
                             key={value}
                             value={value}
-                            inputValue={selectedInventoryGoalValue ?? ""}
+                            inputValue={
+                              field.value || selectedInventoryGoalValue || ""
+                            }
                             inputValueFunction={setSelectedInventoryGoalValue}
                             t={t}
                           />
@@ -301,7 +336,11 @@ export default function SetInventoryDetailsStep({
                           field={field}
                           key={value}
                           value={value}
-                          inputValue={selectedGlobalWarmingPotentialValue ?? ""}
+                          inputValue={
+                            field.value ||
+                            selectedGlobalWarmingPotentialValue ||
+                            ""
+                          }
                           inputValueFunction={
                             setSelectedGlobalWarmingPotentialValue
                           }

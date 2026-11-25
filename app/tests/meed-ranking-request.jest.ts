@@ -37,6 +37,31 @@ describe("MEED run-ranking request", () => {
     expect(body.createExplanations).toBe(true);
   });
 
+  it("asks for the page language next to English, never twice", () => {
+    const es = buildRunRankingRequest({
+      inventoryId: INVENTORY,
+      preferences: preferences(),
+      excludedActionIds: [],
+      language: "es",
+    });
+    expect(es.requestedLanguages).toEqual(["en", "es"]);
+    const en = buildRunRankingRequest({
+      inventoryId: INVENTORY,
+      preferences: preferences(),
+      excludedActionIds: [],
+      language: "en",
+    });
+    expect(en.requestedLanguages).toEqual(["en"]);
+    // The engine only writes en and es; other UI languages must not break the run.
+    const de = buildRunRankingRequest({
+      inventoryId: INVENTORY,
+      preferences: preferences(),
+      excludedActionIds: [],
+      language: "de",
+    });
+    expect(de.requestedLanguages).toEqual(["en"]);
+  });
+
   it("sends the city's priority sectors, not the excluded ones", () => {
     const city = buildRunRankingRequest({
       inventoryId: INVENTORY,

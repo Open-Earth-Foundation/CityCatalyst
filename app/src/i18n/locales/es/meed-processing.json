@@ -1,7 +1,7 @@
 {
   "header-running": "Generando recomendaciones de acción",
   "header-done": "Recomendaciones listas",
-  "header-sub": "Iniciado justo ahora · tiempo de espera aproximado de unos 30 segundos",
+  "header-sub": "Iniciado justo ahora · tiempo de espera aproximado de un minuto",
   "percent-complete": "{{pct}}% completado",
   "stage-in-progress": "{{stage}} en progreso",
   "all-complete": "Todos los análisis completos",
@@ -16,9 +16,9 @@
   "header-error": "No se pudo generar la clasificación",
   "error-sub": "Nada se ha guardado — tus entradas están intactas.",
   "error-stopped": "detenido",
-  "error-detail": "El servicio de clasificación no devolvió un resultado. Esto suele ser temporal; inténtalo de nuevo, o regresa a la revisión previa al vuelo para revisar tus entradas primero.",
+  "error-detail": "El servicio de clasificación no devolvió un resultado. Esto suele ser temporal; inténtalo de nuevo, o regresa a la revisión previa para revisar tus entradas primero.",
   "error-retry": "Intenta de nuevo",
-  "error-back": "Regresar a la verificación previa al vuelo",
+  "error-back": "Regresar a la revisión previa",
   "footer-note": "¡Los resultados estarán listos en breve!",
   "cancel": "Cancelar y volver atrás"
 }

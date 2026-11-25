@@ -72,7 +72,6 @@ function getChangeSign(entry: VersionHistoryEntry): number {
   return co2eq < previousCo2eq ? 1 : -1;
 }
 
-
 function renderChangeText(
   t: TFunction,
   change: VersionChangeEntry,
@@ -163,7 +162,9 @@ export default function VersionEntry({
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`;
   const [isExpanded, setExpanded] = useState(false);
-  const userName = firstEntry.version.author.name;
+  // The author is null once their account has been deleted.
+  const deletedUserLabel = t("inventory-versions-deleted-user");
+  const userName = firstEntry.version.author?.name ?? deletedUserLabel;
 
   const [restoreVersion, { isLoading: isRestoreVersionLoading }] =
     api.useRestoreVersionMutation();
@@ -177,7 +178,7 @@ export default function VersionEntry({
   if (moduleName === "ghgi") {
     changes = versionEntries.map((entry) => ({
       versionId: entry.version.versionId,
-      author: entry.version.author.name,
+      author: entry.version.author?.name ?? deletedUserLabel,
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields
@@ -188,10 +189,7 @@ export default function VersionEntry({
           tData(entry.subCategory.subcategoryName ?? "")
         : "-",
       totalEmissions: entry.version.data?.co2eq
-        ? toEmissionsString(
-            entry.version.data.co2eq as number,
-            numberFormat,
-          )
+        ? toEmissionsString(entry.version.data.co2eq as number, numberFormat)
         : "-",
       previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
         ? toEmissionsString(
@@ -217,7 +215,7 @@ export default function VersionEntry({
   } else if (moduleName === "hiap") {
     changes = versionEntries.map((entry) => ({
       versionId: entry.version.versionId,
-      author: entry.version.author.name,
+      author: entry.version.author?.name ?? deletedUserLabel,
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields
@@ -292,6 +290,18 @@ export default function VersionEntry({
               />
               {userName}
             </Text>
+            {firstEntry.version.label && (
+              <Text
+                color="content.secondary"
+                fontSize="14px"
+                fontWeight="600"
+                lineHeight="20px"
+                letterSpacing="0.5px"
+                fontFamily="body"
+              >
+                {t(`inventory-versions-label-${firstEntry.version.label}`)}
+              </Text>
+            )}
           </VStack>
           <Spacer />
           {!isCurrent && (
@@ -469,9 +479,7 @@ export default function VersionEntry({
                           <Table.Cell bgColor={totalBgColor}>
                             {change.totalEmissions}
                           </Table.Cell>
-                          <Table.Cell
-                            bgColor={sourceBgColor}
-                          >
+                          <Table.Cell bgColor={sourceBgColor}>
                             {change.source}
                           </Table.Cell>
                         </>

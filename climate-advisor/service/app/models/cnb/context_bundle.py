@@ -6,6 +6,11 @@ from typing import Any, Literal
 from uuid import UUID
 
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
+from app.services.cnb.visual_context import (
+    VISUAL_CONTEXT_CONTRACT_VERSION,
+    UnverifiedVisualAnnotationEnvelope,
+    is_full_envelope_visual_context,
+)
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -30,6 +35,13 @@ class SourceExcerpt(ContextBundleContract):
         return self
 
 
+class ChapterExcerpts(ContextBundleContract):
+    """Exact quotations kept for one template chapter's required fields."""
+
+    chapter_ref: str = Field(min_length=1, max_length=255)
+    excerpts: list[SourceExcerpt] = Field(min_length=1, max_length=20)
+
+
 class SelectedSource(ContextBundleContract):
     """Compact, persisted summary of one ready city source."""
 
@@ -44,9 +56,50 @@ class SelectedSource(ContextBundleContract):
         default=None,
         pattern=r"^[0-9a-f]{64}$",
     )
+    visual_context_contract_version: str | None = None
     summary: str = Field(min_length=1, max_length=4000)
     topics: list[str] = Field(max_length=30)
     key_excerpts: list[SourceExcerpt] = Field(max_length=20)
+    # Quotations per template chapter, and the template and analysis settings
+    # they were chosen for; a different fingerprint means they must be rebuilt.
+    chapter_excerpts: list[ChapterExcerpts] = Field(default_factory=list)
+    chapter_evidence_fingerprint: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
+    # Fingerprint whose extraction last failed; opening the workspace does not
+    # retry it, an explicit rebuild does.
+    chapter_evidence_failed_fingerprint: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
+    structured_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    structured_schema_version: str | None = None
+    visual_context: list[UnverifiedVisualAnnotationEnvelope] = Field(
+        default_factory=list
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def drop_stale_reduced_visual_context(cls, data: Any) -> Any:
+        """Omit legacy filtered projections until an authorised refresh rebuilds them."""
+        if not isinstance(data, dict):
+            return data
+        version = data.get("visual_context_contract_version")
+        visual = data.get("visual_context")
+        if version != VISUAL_CONTEXT_CONTRACT_VERSION:
+            return {
+                **data,
+                "visual_context": [],
+                "visual_context_contract_version": None,
+            }
+        if not isinstance(visual, list) or any(
+            not is_full_envelope_visual_context(item) for item in visual
+        ):
+            return {
+                **data,
+                "visual_context": [],
+                "visual_context_contract_version": None,
+            }
+        return data
 
     @model_validator(mode="after")
     def validate_source_counts(self) -> SelectedSource:
@@ -70,7 +123,11 @@ class SourceDocumentText(ContextBundleContract):
 
 
 class SourceTextContext(ContextBundleContract):
-    """Complete source text when it fits the budget, otherwise summaries only."""
+    """Complete source text when the whole request fits the context window.
+
+    ``token_count`` counts the request (instructions, run context, and sources);
+    ``max_tokens`` is the configured context window.
+    """
 
     mode: Literal["full_text", "summary"]
     token_count: int = Field(ge=0)
@@ -112,6 +169,19 @@ class SourcePartitionMap(ContextBundleContract):
     covered_segment_ids: list[str] = Field(min_length=1)
 
 
+class ChapterTaggedSourceExcerpt(SourceExcerpt):
+    """A located quotation and the template chapters it serves."""
+
+    chapter_refs: list[str] = Field(min_length=1, max_length=50)
+
+
+class ChapterPartitionEvidence(ContextBundleContract):
+    """Chapter-evidence reader output for one complete partition."""
+
+    excerpts: list[ChapterTaggedSourceExcerpt] = Field(default_factory=list)
+    covered_segment_ids: list[str] = Field(min_length=1)
+
+
 class SourceDocumentSynthesis(ContextBundleContract):
     """Final compact document summary assembled from every partition."""
 
@@ -136,6 +206,9 @@ class SourceQueryResult(ContextBundleContract):
     source_label: str
     source_format: ConceptNoteSourceFormat
     excerpts: list[SourceExcerpt] = Field(default_factory=list, max_length=20)
+    visual_context: list[UnverifiedVisualAnnotationEnvelope] = Field(
+        default_factory=list
+    )
     units_processed: int = Field(ge=1)
     units_total: int = Field(ge=1)
     segments_processed: int = Field(ge=1)

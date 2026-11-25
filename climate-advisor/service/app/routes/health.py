@@ -1,12 +1,12 @@
+import asyncio
 import logging
 
+from app.db.session import get_session_factory
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 
-from app.db.session import get_session_factory
-
-
 logger = logging.getLogger(__name__)
+READINESS_TIMEOUT_SECONDS = 1.0
 
 router = APIRouter()
 
@@ -19,11 +19,12 @@ async def health() -> dict[str, str]:
 
 @router.get("/ready")
 async def readiness() -> dict[str, str]:
-    """Return readiness only when the workflow database accepts a query."""
+    """Bound connection acquisition and the query so an outage returns 503 promptly."""
     try:
-        session_factory = get_session_factory()
-        async with session_factory() as session:
-            await session.execute(text("SELECT 1"))
+        async with asyncio.timeout(READINESS_TIMEOUT_SECONDS):
+            session_factory = get_session_factory()
+            async with session_factory() as session:
+                await session.execute(text("SELECT 1"))
     except Exception as exc:
         logger.exception("Climate Advisor database readiness check failed")
         raise HTTPException(

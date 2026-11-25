@@ -4,18 +4,23 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
+from functools import partial
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
+from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
+from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.context_bundle import (
+    ChapterExcerpts,
     SelectedSource,
     SourceDocumentText,
     SourceTextContext,
 )
+from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
     ContextBundlePersistenceError,
@@ -23,10 +28,12 @@ from app.persistence.concept_notes.context_bundle import (
     complete_build,
     fail_build,
     load_refresh_state,
+    load_selected_sources,
     load_source_revalidation_inputs,
     recover_stale_builds,
     set_selected_inventory,
 )
+from app.persistence.concept_notes.edits import edit_planning_in_progress
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.persistence.concept_notes.source_revalidation import (
     claim_source_revalidation,
@@ -35,16 +42,30 @@ from app.persistence.concept_notes.source_revalidation import (
     recover_stale_source_revalidations,
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
+from app.services.cnb.application_context import (
+    ConceptNoteApplicationContextService,
+    template_chapter_requirements,
+)
 from app.services.cnb.chapter_drafting import ConceptNoteChapterDraftService
-from app.services.cnb.source_impact_review import RevalidationSource
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceUnit,
     analyze_document,
+    chapter_evidence_fingerprint,
+    extract_chapter_evidence,
     gather_all_or_raise,
     render_source_text,
     source_analysis_contract_version,
     verify_source_artifact,
+)
+from app.services.cnb.source_impact_review import RevalidationSource
+from app.services.cnb.visual_context import (
+    VISUAL_CONTEXT_CONTRACT_VERSION,
+    UnverifiedVisualAnnotationEnvelope,
+    VisualContextContractError,
+    is_full_envelope_visual_context,
+    project_visual_context,
+    validate_structured_delivery,
 )
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
@@ -55,7 +76,10 @@ from app.services.concept_note_city_context import (
     load_ghgi_context,
     load_hiap_context,
 )
-from app.utils.conversation_observability import finish_workflow_trace, workflow_trace
+from app.utils.conversation_observability import (
+    async_workflow_trace,
+    finish_workflow_trace,
+)
 from app.utils.prompt_budget import count_prompt_tokens
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -66,6 +90,8 @@ _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
 _BACKGROUND_REVALIDATIONS: set[asyncio.Task[bool]] = set()
 CONTEXT_BUNDLE_RECONCILE_INTERVAL_SECONDS = 300
 CONTEXT_BUNDLE_STALE_AFTER = timedelta(hours=1)
+# How often a queued revalidation checks whether the blocking chat edit finished.
+EDIT_WAIT_POLL_SECONDS = 5
 
 
 class ContextBundleService:
@@ -83,17 +109,30 @@ class ContextBundleService:
         ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
         revalidate_fn: Callable[..., Awaitable[bool]] | None = None,
+        load_template_fn: (
+            Callable[[UUID], Awaitable[ApplicationContextTemplate | None]] | None
+        ) = None,
+        extract_chapter_evidence_fn: Callable[
+            ..., Awaitable[list[ChapterExcerpts]]
+        ] = extract_chapter_evidence,
+        edit_in_progress_fn: Callable[[UUID], Awaitable[bool]] | None = None,
     ) -> None:
         """Store dependencies so background resources are created inside the task.
 
         ``revalidate_fn`` redrafts chapters affected by new sources and returns
         whether the pass succeeded; without it no revalidation job is queued.
+        ``load_template_fn`` returns the run's application template; without it
+        no per-chapter quotations are extracted. ``edit_in_progress_fn`` reports
+        whether a chat edit is being planned; revalidation waits for it.
         """
         self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
         self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
         self.revalidate_fn = revalidate_fn
+        self.load_template_fn = load_template_fn
+        self.extract_chapter_evidence_fn = extract_chapter_evidence_fn
+        self.edit_in_progress_fn = edit_in_progress_fn
 
     async def begin(
         self,
@@ -129,7 +168,7 @@ class ContextBundleService:
         if active.already_current:
             return True
 
-        with workflow_trace(
+        async with async_workflow_trace(
             name="cnb_source_analysis",
             inputs={"run_id": str(run_id), "build_id": str(active.build_id)},
             session_id=active.thread_id or run_id,
@@ -161,6 +200,9 @@ class ContextBundleService:
                         source.upload_id: source for source in active.previous_sources
                     }
                     selected_by_upload: dict[UUID, SelectedSource] = {}
+                    uploads_to_reproject_visual: list[
+                        tuple[ConceptNoteUploadSnapshot, SelectedSource]
+                    ] = []
                     for upload in active.uploads:
                         previous = previous_by_upload.get(upload.upload_id)
                         if previous is not None and _can_reuse_source_analysis(
@@ -168,9 +210,32 @@ class ContextBundleService:
                             previous,
                             contract_version,
                         ):
-                            selected_by_upload[upload.upload_id] = previous
+                            if _visual_context_contract_current(previous):
+                                selected_by_upload[upload.upload_id] = previous
+                            else:
+                                uploads_to_reproject_visual.append((upload, previous))
                         else:
                             uploads_to_analyze.append(upload)
+
+                    if uploads_to_reproject_visual:
+                        for upload, previous in uploads_to_reproject_visual:
+                            visual_context = await self._verified_visual_context(
+                                upload=upload,
+                                token=token,
+                                cc_client=cc_client,
+                            )
+                            selected_by_upload[upload.upload_id] = previous.model_copy(
+                                update={
+                                    "visual_context": visual_context,
+                                    "visual_context_contract_version": (
+                                        VISUAL_CONTEXT_CONTRACT_VERSION
+                                    ),
+                                    "structured_sha256": upload.structured_sha256,
+                                    "structured_schema_version": (
+                                        upload.structured_schema_version
+                                    ),
+                                }
+                            )
 
                     if uploads_to_analyze:
                         new_sources = await gather_all_or_raise(
@@ -193,13 +258,27 @@ class ContextBundleService:
                         selected_by_upload[upload.upload_id]
                         for upload in active.uploads
                     ]
-                    source_text = await self._build_source_text(
+                    units_by_upload = await self._load_all_source_units(
                         uploads=active.uploads,
                         analyzed_units={
                             item.source.upload_id: item.units for item in new_sources
                         },
                         token=token,
                         cc_client=cc_client,
+                    )
+                    template = await self._load_template(run_id)
+                    if template is not None and units_by_upload is not None:
+                        selected_sources = await self._attach_chapter_evidence(
+                            sources=selected_sources,
+                            units_by_upload=units_by_upload,
+                            template=template,
+                            settings=analysis_settings,
+                            reader_limit=reader_limit,
+                        )
+                    source_text = _source_text(
+                        uploads=active.uploads,
+                        units_by_upload=units_by_upload,
+                        selected_sources=selected_sources,
                         settings=analysis_settings,
                     )
 
@@ -314,6 +393,11 @@ class ContextBundleService:
             token=token,
             cc_client=cc_client,
         )
+        visual_context = await self._verified_visual_context(
+            upload=upload,
+            token=token,
+            cc_client=cc_client,
+        )
         # Analyze only the verified source units under the shared reader limit.
         analysis = await self.analyze_document_fn(
             upload_id=upload.upload_id,
@@ -327,7 +411,15 @@ class ContextBundleService:
         )
         return RevalidationSource(
             source=analysis.model_copy(
-                update={"analysis_contract_version": contract_version}
+                update={
+                    "analysis_contract_version": contract_version,
+                    "visual_context_contract_version": (
+                        VISUAL_CONTEXT_CONTRACT_VERSION
+                    ),
+                    "structured_sha256": upload.structured_sha256,
+                    "structured_schema_version": upload.structured_schema_version,
+                    "visual_context": visual_context,
+                }
             ),
             units=source_units,
         )
@@ -342,11 +434,29 @@ class ContextBundleService:
 
         ``preloaded`` holds verified source text from the build that queued the
         job; any other queued upload is re-fetched with a service-minted token
-        for the run owner. The lease is always released, and a failed pass
-        stays queued for the reconciler to retry.
+        for the run owner. A chat edit being planned is awaited for at most the
+        edit planning deadline. The lease is always released, and a failed or
+        deferred pass stays queued for the reconciler to retry.
         """
         if self.revalidate_fn is None:
             return False
+        # Rewriting chapters mid-plan would make that edit stale, so wait for it.
+        # New edits are refused while this job is pending, so the wait ends with
+        # the current edit; past the planning deadline the reconciler retries.
+        if self.edit_in_progress_fn is not None:
+            loop = asyncio.get_running_loop()
+            deadline = (
+                loop.time()
+                + get_settings().llm.generation.prompt_budget.cnb_edits.timeout_seconds
+            )
+            while await self.edit_in_progress_fn(run_id):
+                if loop.time() >= deadline:
+                    logger.info(
+                        "Deferred Concept Note source revalidation during an edit run_id=%s",
+                        run_id,
+                    )
+                    return False
+                await asyncio.sleep(EDIT_WAIT_POLL_SECONDS)
         claim = await claim_source_revalidation(
             session_factory=self.session_factory,
             run_id=run_id,
@@ -455,22 +565,21 @@ class ContextBundleService:
             page_count=upload.page_count,
         )
 
-    async def _build_source_text(
+    async def _load_all_source_units(
         self,
         *,
         uploads: list[ConceptNoteUploadSnapshot],
         analyzed_units: dict[UUID, list[SourceUnit]],
         token: str,
         cc_client: CityCatalystClient,
-        settings: Settings,
-    ) -> SourceTextContext:
-        """Keep complete source text for agents only while it fits the budget."""
-        budget = settings.llm.generation.prompt_budget
-        max_tokens = budget.cnb_sources.full_text_max_tokens
+    ) -> dict[UUID, list[SourceUnit]] | None:
+        """Return verified units for every upload, or None when a fetch fails.
+
+        Reused analyses need their verified text fetched again; no LLM runs.
+        """
+        units_by_upload = dict(analyzed_units)
+        missing = [u for u in uploads if u.upload_id not in units_by_upload]
         try:
-            # Reused analyses need their verified text fetched again; no LLM runs.
-            units_by_upload = dict(analyzed_units)
-            missing = [u for u in uploads if u.upload_id not in units_by_upload]
             fetched = await gather_all_or_raise(
                 *(
                     self._load_source_units(
@@ -479,49 +588,182 @@ class ContextBundleService:
                     for upload in missing
                 )
             )
-            units_by_upload.update(
-                {
-                    upload.upload_id: units
-                    for upload, units in zip(missing, fetched, strict=True)
-                }
-            )
         except SourceAnalysisError as exc:
-            # Summaries stay usable, so a text fetch failure only drops full text.
+            # Summaries stay usable, so a fetch failure only drops full text and
+            # leaves existing chapter quotations in place.
             logger.warning(
                 "Concept Note source text unavailable; using summaries code=%s",
                 exc.code,
             )
-            return SourceTextContext(mode="summary", token_count=0, max_tokens=max_tokens)
+            return None
+        units_by_upload.update(
+            {upload.upload_id: units for upload, units in zip(missing, fetched, strict=True)}
+        )
+        return units_by_upload
 
-        documents = [
-            SourceDocumentText(
-                upload_id=upload.upload_id,
-                source_label=upload.source_label or upload.filename,
-                filename=upload.filename,
-                source_format=upload.source_format,
-                text=render_source_text(units_by_upload[upload.upload_id]),
+    async def _load_template(self, run_id: UUID) -> ApplicationContextTemplate | None:
+        """Return the run's application template; reference outages skip chapter evidence."""
+        if self.load_template_fn is None:
+            return None
+        try:
+            return await self.load_template_fn(run_id)
+        except Exception:
+            logger.warning(
+                "Concept Note application template unavailable for chapter evidence run_id=%s",
+                run_id,
+                exc_info=True,
             )
-            for upload in uploads
-        ]
-        token_count = count_prompt_tokens(
-            [document.text for document in documents],
-            model=settings.llm.models.cnb_chapter_drafter.name,
-            fallback_encoding=budget.tokenizer_encoding,
-        ).tokens
-        full_text = token_count <= max_tokens
-        logger.info(
-            "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
-            "full_text" if full_text else "summary",
-            token_count,
-            max_tokens,
-            len(documents),
+            return None
+
+    async def _attach_chapter_evidence(
+        self,
+        *,
+        sources: list[SelectedSource],
+        units_by_upload: dict[UUID, list[SourceUnit]],
+        template: ApplicationContextTemplate,
+        settings: Settings,
+        reader_limit: asyncio.Semaphore,
+    ) -> list[SelectedSource]:
+        """Extract per-chapter quotations for sources built for another template.
+
+        A failed extraction keeps the source's previous quotations and
+        fingerprint and records the failed fingerprint, so the next explicit
+        build retries it but opening the workspace does not.
+        """
+        chapters = template_chapter_requirements(template)
+        fingerprint = chapter_evidence_fingerprint(settings, chapters)
+
+        async def refresh(source: SelectedSource) -> SelectedSource:
+            if source.chapter_evidence_fingerprint == fingerprint:
+                return source
+            try:
+                excerpts = await self.extract_chapter_evidence_fn(
+                    source_label=source.source_label,
+                    source_format=source.source_format,
+                    pages=units_by_upload[source.upload_id],
+                    chapters=chapters,
+                    settings=settings,
+                    reader_limit=reader_limit,
+                )
+            except SourceAnalysisError as exc:
+                logger.warning(
+                    "Concept Note chapter evidence unavailable upload_id=%s code=%s",
+                    source.upload_id,
+                    exc.code,
+                )
+                return source.model_copy(
+                    update={"chapter_evidence_failed_fingerprint": fingerprint}
+                )
+            return source.model_copy(
+                update={
+                    "chapter_excerpts": excerpts,
+                    "chapter_evidence_fingerprint": fingerprint,
+                    "chapter_evidence_failed_fingerprint": None,
+                }
+            )
+
+        return list(await asyncio.gather(*(refresh(source) for source in sources)))
+
+    async def _chapter_evidence_stale(self, *, user_id: str, run_id: UUID) -> bool:
+        """Whether any source's chapter quotations predate the run's current template."""
+        template = await self._load_template(run_id)
+        if template is None:
+            return False
+        sources = await load_selected_sources(
+            session_factory=self.session_factory, user_id=user_id, run_id=run_id
         )
-        return SourceTextContext(
-            mode="full_text" if full_text else "summary",
-            token_count=token_count,
-            max_tokens=max_tokens,
-            documents=documents if full_text else [],
+        fingerprint = chapter_evidence_fingerprint(
+            get_settings(), template_chapter_requirements(template)
         )
+        # A failed extraction is not retried on open, so a provider outage
+        # cannot turn every visit into a blocking, paid rebuild.
+        return any(
+            fingerprint
+            not in (source.chapter_evidence_fingerprint, source.chapter_evidence_failed_fingerprint)
+            for source in sources
+        )
+
+    async def _verified_visual_context(
+        self,
+        *,
+        upload: ConceptNoteUploadSnapshot,
+        token: str,
+        cc_client: CityCatalystClient,
+    ) -> list[UnverifiedVisualAnnotationEnvelope]:
+        """Fetch and project a structured artifact without mixing it into excerpts."""
+        structured_fields = (
+            upload.annotation_mode,
+            upload.structured_s3_key,
+            upload.structured_sha256,
+            upload.structured_size_bytes,
+            upload.structured_schema_version,
+        )
+        if all(value is None for value in structured_fields):
+            return []
+        if (
+            upload.source_format != "pdf"
+            or any(value is None for value in structured_fields)
+            or upload.page_count is None
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable structured metadata",
+            )
+        annotation_mode = upload.annotation_mode
+        structured_s3_key = upload.structured_s3_key
+        structured_sha256 = upload.structured_sha256
+        structured_schema_version = upload.structured_schema_version
+        page_count = upload.page_count
+        if (
+            annotation_mode is None
+            or structured_s3_key is None
+            or structured_sha256 is None
+            or structured_schema_version is None
+            or page_count is None
+        ):
+            raise SourceAnalysisError(
+                "incomplete_source_pointer",
+                "Ready upload is missing immutable structured metadata",
+            )
+        try:
+            artifact = await cc_client.get_concept_note_structured(
+                upload_id=str(upload.upload_id),
+                token=token,
+            )
+        except CityCatalystClientError as exc:
+            raise SourceAnalysisError(
+                "structured_fetch_failed",
+                "Ready structured artifact could not be fetched from CityCatalyst",
+            ) from exc
+        error_code = validate_structured_delivery(
+            body=artifact.body,
+            raw_bytes=artifact.raw_bytes,
+            content_type=artifact.content_type,
+            s3_key=structured_s3_key,
+            sha256=structured_sha256,
+            schema_version=structured_schema_version,
+            annotation_mode=annotation_mode,
+            page_count=page_count,
+            upload_id=str(upload.upload_id),
+            header_s3_key=artifact.s3_key,
+            header_sha256=artifact.sha256,
+            header_schema_version=artifact.schema_version,
+            header_annotation_mode=artifact.annotation_mode,
+            header_page_count=str(artifact.page_count),
+            header_upload_id=artifact.upload_id,
+        )
+        if error_code:
+            raise SourceAnalysisError(
+                error_code,
+                "CityCatalyst structured artifact did not match its pointer",
+            )
+        try:
+            return project_visual_context(artifact.body)
+        except VisualContextContractError as exc:
+            raise SourceAnalysisError(
+                exc.code,
+                str(exc),
+            ) from exc
 
     async def _load_optional_context(
         self,
@@ -599,10 +841,11 @@ class ContextBundleService:
         run_id: UUID,
         token: str,
     ) -> Literal["queued", "current", "building"]:
-        """Rebuild a ready bundle only when its inventory changed in the city.
+        """Rebuild a ready bundle when its inventory or application template changed.
 
-        Called once per workspace open, so it compares cheap inventory list
-        metadata instead of reloading GHGI and HIAP.
+        Called once per workspace open and after a funding change, so it
+        compares cheap inventory list metadata and the template fingerprint of
+        the stored chapter quotations instead of reloading GHGI and HIAP.
         """
         state = await load_refresh_state(
             session_factory=self.session_factory,
@@ -623,7 +866,9 @@ class ContextBundleService:
             )
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             return "current"
-        if candidate == state.inventory_candidate:
+        if candidate == state.inventory_candidate and not await self._chapter_evidence_stale(
+            user_id=user_id, run_id=run_id
+        ):
             return "current"
         await self._queue_rebuild(user_id=user_id, run_id=run_id, token=token)
         return "queued"
@@ -736,7 +981,16 @@ class ContextBundleService:
                 selected_inventory=inventory,
                 token=token,
             )
-        except (CityCatalystClientError, ConceptNoteCityContextDataError):
+        except ConceptNoteCityContextDataError as exc:
+            # Contract messages are fixed strings, so the reason is safe to log.
+            logger.warning("GHGI context rejected for city %s: %s", city_id, exc)
+            return None, "unavailable", "GHGI context was unavailable."
+        except CityCatalystClientError as exc:
+            logger.warning(
+                "GHGI context request failed for city %s (status %s)",
+                city_id,
+                exc.status_code,
+            )
             return None, "unavailable", "GHGI context was unavailable."
         except Exception:
             logger.exception("Unexpected optional GHGI lookup failure")
@@ -799,12 +1053,78 @@ class ContextBundleService:
         )
 
 
+def _source_text(
+    *,
+    uploads: list[ConceptNoteUploadSnapshot],
+    units_by_upload: dict[UUID, list[SourceUnit]] | None,
+    selected_sources: Sequence[SelectedSource],
+    settings: Settings,
+) -> SourceTextContext:
+    """Render every upload's verified text, or summaries when it is unavailable."""
+    if units_by_upload is None:
+        return SourceTextContext(
+            mode="summary",
+            token_count=0,
+            max_tokens=settings.llm.generation.prompt_budget.cnb_sources.context_window_tokens,
+        )
+    documents = [
+        SourceDocumentText(
+            upload_id=upload.upload_id,
+            source_label=upload.source_label or upload.filename,
+            filename=upload.filename,
+            source_format=upload.source_format,
+            text=render_source_text(units_by_upload[upload.upload_id]),
+        )
+        for upload in uploads
+    ]
+    return source_text_context(documents, settings, selected_sources=selected_sources)
+
+
+def source_text_context(
+    documents: list[SourceDocumentText],
+    settings: Settings,
+    *,
+    selected_sources: Sequence[SelectedSource] = (),
+) -> SourceTextContext:
+    """Keep complete verified source text while the whole request fits the window.
+
+    The count covers the chapter drafter's instructions, the selected-source
+    context, and every document. Each chapter request is checked again when it
+    is drafted, once its earlier chapters are known.
+    """
+    budget = settings.llm.generation.prompt_budget
+    max_tokens = budget.cnb_sources.context_window_tokens
+    token_count = count_prompt_tokens(
+        [
+            settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
+            [source.model_dump(mode="json") for source in selected_sources],
+            *(document.text for document in documents),
+        ],
+        model=settings.llm.models.cnb_chapter_drafter.name,
+        fallback_encoding=budget.tokenizer_encoding,
+    ).tokens
+    full_text = token_count <= max_tokens
+    logger.info(
+        "Concept Note source text mode=%s tokens=%s max_tokens=%s sources=%s",
+        "full_text" if full_text else "summary",
+        token_count,
+        max_tokens,
+        len(documents),
+    )
+    return SourceTextContext(
+        mode="full_text" if full_text else "summary",
+        token_count=token_count,
+        max_tokens=max_tokens,
+        documents=documents if full_text else [],
+    )
+
+
 def _can_reuse_source_analysis(
     upload: ConceptNoteUploadSnapshot,
     previous: SelectedSource,
     contract_version: str,
 ) -> bool:
-    """Return whether a persisted analysis matches this immutable source input."""
+    """Return whether a persisted Markdown analysis matches this immutable source."""
     return (
         upload.markdown_sha256 is not None
         and previous.upload_id == upload.upload_id
@@ -813,6 +1133,15 @@ def _can_reuse_source_analysis(
         and previous.filename == upload.filename
         and previous.source_label == (upload.source_label or upload.filename)
         and previous.analysis_contract_version == contract_version
+        and previous.structured_sha256 == upload.structured_sha256
+        and previous.structured_schema_version == upload.structured_schema_version
+    )
+
+
+def _visual_context_contract_current(previous: SelectedSource) -> bool:
+    """Return whether cached visual context matches the full-envelope contract."""
+    return previous.visual_context_contract_version == VISUAL_CONTEXT_CONTRACT_VERSION and all(
+        is_full_envelope_visual_context(item) for item in previous.visual_context
     )
 
 
@@ -901,12 +1230,30 @@ async def resume_source_revalidations(
     return len(pending)
 
 
+async def load_run_template(
+    session_factory: async_sessionmaker[AsyncSession], run_id: UUID
+) -> ApplicationContextTemplate | None:
+    """Load a run's selected application template from the reference database."""
+    async with session_factory() as session:
+        run = await session.get(ConceptNoteRun, run_id)
+    if run is None:
+        return None
+    return await ConceptNoteApplicationContextService().load_template_for_run(run)
+
+
 def get_context_bundle_service() -> ContextBundleService | None:
     """Provide a build service, or a safe unavailable marker without a database."""
     try:
+        session_factory = get_session_factory()
         return ContextBundleService(
-            get_session_factory(),
+            session_factory,
             revalidate_fn=_revalidate_with_chapter_service,
+            load_template_fn=partial(load_run_template, session_factory),
+            edit_in_progress_fn=(
+                partial(edit_planning_in_progress, get_cnb_reference_session_factory())
+                if get_settings().cnb_database_url
+                else None
+            ),
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")

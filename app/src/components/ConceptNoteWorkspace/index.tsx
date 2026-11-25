@@ -38,6 +38,8 @@ import {
 } from "@/components/ConceptNoteDashboard/utils";
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
+import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
+import type { ChapterGapRow } from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
 import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
@@ -45,7 +47,6 @@ import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
 import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
 import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
 import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
-import { StartNewChatDialog } from "@/components/ConceptNoteWorkspace/start-new-chat-dialog";
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
@@ -54,12 +55,15 @@ import {
   editFeedbackKey,
   selectReviewProposal,
 } from "@/components/ConceptNoteWorkspace/document-review";
+import { draftBehindProposal } from "@/components/ConceptNoteWorkspace/inline-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
+import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
 import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
 } from "@/components/ConceptNoteWorkspace/workspace-states";
+import { ConceptNoteCollaboratorPreview } from "@/components/ConceptNoteWorkspace/collaborator-preview";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -93,13 +97,8 @@ export function ConceptNoteWorkspace({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
-  const [startNewChatOpen, setStartNewChatOpen] = useState(false);
   const [fundingOpen, setFundingOpen] = useState(false);
   const [retryInitialUploadOpen, setRetryInitialUploadOpen] = useState(false);
-  const [resetThread, setResetThread] = useState<{
-    previousThreadId: string | null;
-    threadId: string;
-  } | null>(null);
   const [editScope, setEditScope] = useState<EditScope>({
     kind: "auto",
   });
@@ -126,6 +125,7 @@ export function ConceptNoteWorkspace({
     content: string;
     id: string;
   } | null>(null);
+  const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(
     initialReviewChapterId ?? null,
   );
@@ -175,6 +175,7 @@ export function ConceptNoteWorkspace({
     run,
     runFailed,
     runLoading,
+    runNotOwned,
     saveManualPopulation,
     selectInventory,
     startDrafting,
@@ -183,6 +184,9 @@ export function ConceptNoteWorkspace({
     uploadSource,
     uploadState,
   } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  // Kept here so a funder document keeps converting after the dialog closes.
+  const funderImport = useFunderImport({ cityId, runId });
+  const templateImport = useFunderImport({ cityId, runId, kind: "template" });
   const edits = useConceptNoteEdits({
     runId,
     onApplied: async (chapterIds) => {
@@ -328,6 +332,38 @@ export function ConceptNoteWorkspace({
     : reviewChanges[0]?.change_id;
   const shownReview = useRef<string | null>(null);
   const reviewIdentity = reviewProposal?.proposal_id;
+  // A source re-check can rewrite chapters while this page is open, and a proposal
+  // planned afterwards would look stale against the loaded draft. Load the saved draft
+  // once per proposal so it can be reviewed and accepted.
+  const draftBehind = Boolean(
+    reviewProposal &&
+    draft &&
+    draftBehindProposal(reviewProposal, draft.chapters),
+  );
+  const draftSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (
+      !draftBehind ||
+      !reviewIdentity ||
+      draftSyncedFor.current === reviewIdentity
+    )
+      return;
+    draftSyncedFor.current = reviewIdentity;
+    void refetchDraft();
+  }, [draftBehind, reviewIdentity, refetchDraft]);
+  // A form answer fails when its gap was answered or changed elsewhere; reload the
+  // gaps once so reopening the form shows the current version, not the same error.
+  const gapChangedId = edits.proposals.find(
+    (proposal) =>
+      proposal.error_code === "gap_changed" ||
+      proposal.error_code === "stale_gap",
+  )?.proposal_id;
+  const gapSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gapChangedId || gapSyncedFor.current === gapChangedId) return;
+    gapSyncedFor.current = gapChangedId;
+    void refetchDraft();
+  }, [gapChangedId, refetchDraft]);
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {
@@ -385,8 +421,27 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  /** Open the gap form for a record-backed row; an unrecorded marker has no form. */
+  function answerGap(
+    chapter: ConceptNoteDraftChapter,
+    row: ChapterGapRow,
+  ): void {
+    if (!row.gap) return;
+    setGapAnswer({
+      chapterId: chapter.chapter_id,
+      chapterTitle: chapter.title,
+      row,
+    });
+  }
+
   if (runLoading) {
     return <WorkspaceLoadingState />;
+  }
+
+  if (!run && runNotOwned) {
+    return (
+      <ConceptNoteCollaboratorPreview cityId={cityId} lng={lng} runId={runId} />
+    );
   }
 
   if (!run || run.city_id !== cityId) {
@@ -409,16 +464,13 @@ export function ConceptNoteWorkspace({
     incompleteUploads ? "upload-incomplete" : status.translationKey,
   );
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
-  const activeThreadId =
-    resetThread?.previousThreadId === run.thread_id
-      ? resetThread.threadId
-      : run.thread_id;
 
   return (
     <Box
+      data-testid="concept-note-workspace"
       h="calc(100dvh - 80px)"
       minH={0}
-      overflow="hidden"
+      overflowY="auto"
       bg="background.alternativeLight"
     >
       <motion.main
@@ -430,8 +482,9 @@ export function ConceptNoteWorkspace({
         <VStack
           align="stretch"
           gap={4}
-          h="full"
-          minH={0}
+          h={{ base: "auto", md: "full" }}
+          // Keep the panels usable when zoom or a short window reduces height.
+          minH={{ base: "full", md: "640px" }}
           maxW="1800px"
           mx="auto"
           px={{ base: 2, md: 5 }}
@@ -483,7 +536,7 @@ export function ConceptNoteWorkspace({
           <Grid
             flex={1}
             data-testid="concept-note-workspace-panels"
-            minH={0}
+            minH={{ base: "auto", md: 0 }}
             overflow="hidden"
             gap={2.5}
             alignItems="stretch"
@@ -492,17 +545,28 @@ export function ConceptNoteWorkspace({
               md: "minmax(280px, 31%) minmax(0, 1fr)",
             }}
             gridTemplateRows={{
-              base: "repeat(2, minmax(0, 1fr))",
+              // Stacked panes must not compete for half of a phone viewport.
+              base: "minmax(420px, 60dvh) minmax(640px, 85dvh)",
               md: "minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
+              cityId={cityId}
               contextStatus={contextStatus}
               contextBuildId={bundle.buildId}
               contextChanges={bundle.contextChanges}
               composerRequest={composerRequest}
+              gapAnswer={gapAnswer}
+              onCloseGap={() => setGapAnswer(null)}
+              uploads={uploads}
+              onAddGapSource={() => {
+                setTab("context");
+                setUploadPickerRequest((value) => value + 1);
+              }}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
+              onGapAnswersSaved={() => void refetchDraft()}
+              onRefreshDraft={() => void refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");
@@ -510,9 +574,8 @@ export function ConceptNoteWorkspace({
                   setUploadPickerRequest((value) => value + 1);
                 }
               }}
-              onStartNewChat={() => setStartNewChatOpen(true)}
               runId={run.run_id}
-              threadId={activeThreadId}
+              threadId={run.thread_id}
               editScope={editScope}
               edits={edits}
               draft={draft ?? null}
@@ -527,18 +590,6 @@ export function ConceptNoteWorkspace({
               }
               onOpenDraft={() => setTab("draft")}
               onOpenFundingSetup={() => void openFundingSetup()}
-              activeTab={tab}
-              hasDocument={draftHasContent}
-              suggestionRevision={JSON.stringify([
-                run.updated_at,
-                contextStatus.state,
-                draft?.status,
-                draft?.chapters.map((chapter) => [
-                  chapter.chapter_id,
-                  chapter.revision_number,
-                  chapter.open_gap_count,
-                ]),
-              ])}
             />
 
             <Tabs.Root
@@ -742,15 +793,7 @@ export function ConceptNoteWorkspace({
                   focusFindingKey={reviewFindingKey}
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
-                  onAnswerGap={(chapter, row) =>
-                    setComposerRequest({
-                      id: crypto.randomUUID(),
-                      content: t("gap-answer-prefill", {
-                        chapter: chapter.title,
-                        question: row.question,
-                      }),
-                    })
-                  }
+                  onAnswerGap={(chapter, row) => answerGap(chapter, row)}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -900,28 +943,13 @@ export function ConceptNoteWorkspace({
           busy={isDraftRunning || Boolean(edits.busy)}
           lng={lng}
           runId={runId}
+          funderImport={funderImport}
+          templateImport={templateImport}
           onClose={() => setFundingOpen(false)}
           onSaved={() => {
             setTab("draft");
             setNextStep("start-drafting");
             setHighlightStartDrafting(true);
-          }}
-        />
-      )}
-      {startNewChatOpen && (
-        <StartNewChatDialog
-          cityId={cityId}
-          lng={lng}
-          runId={runId}
-          onClose={() => setStartNewChatOpen(false)}
-          onReset={(updatedRun) => {
-            if (updatedRun.thread_id) {
-              setResetThread({
-                previousThreadId: run.thread_id,
-                threadId: updatedRun.thread_id,
-              });
-            }
-            void refetchRun();
           }}
         />
       )}

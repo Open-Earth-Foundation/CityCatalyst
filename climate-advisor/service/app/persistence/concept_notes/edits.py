@@ -16,6 +16,7 @@ from app.models.cnb.concept_note_edits import (
     EditNotice,
     EditProposalRequest,
     EditProposalResponse,
+    EditReviewObjection,
     PlannedTextChange,
 )
 from app.models.cnb.concept_note_structure import (
@@ -31,6 +32,22 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
+from app.persistence.concept_notes.gaps import (
+    carry_forward_saved_answer,
+    latest_partial_answer,
+    record_accepted_narrowing,
+)
+from app.utils.cnb_gap_edit import (
+    GapEditError,
+    estimate_anchor_problem,
+    gap_answer_digest,
+    intersects_span,
+    marker_edit_shape,
+    marker_question,
+    occurrence_spans,
+    unambiguous_span,
+    validate_marker_transitions,
+)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
@@ -44,15 +61,26 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
+# A proposal still processing after this long was interrupted, e.g. by a restart.
+PLANNING_ABANDONED_AFTER = timedelta(minutes=10)
+
 
 class EditOperationError(Exception):
     """A safe, machine-readable edit failure exposed at the API boundary."""
 
-    def __init__(self, code: str, message: str, *, status_code: int = 409) -> None:
-        """Retain an allowlisted failure category without private document text."""
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        status_code: int = 409,
+        objections: list[EditReviewObjection] | None = None,
+    ) -> None:
+        """Retain an allowlisted failure category; only review objections carry text."""
         super().__init__(message)
         self.code = code
         self.status_code = status_code
+        self.objections = objections or []
 
 
 class ConceptNoteEditRepository:
@@ -99,20 +127,24 @@ class ConceptNoteEditRepository:
                 )
                 .returning(ConceptNoteEditProposal.proposal_id)
             )
-            row = await session.scalar(
-                select(ConceptNoteEditProposal).where(
-                    ConceptNoteEditProposal.run_id == run_id,
-                    ConceptNoteEditProposal.actor_user_id == user_id,
-                    ConceptNoteEditProposal.idempotency_key == request.idempotency_key,
-                )
-            )
+            row = await stored_proposal_request(session, run_id, user_id, request)
             assert row is not None
-            if row.request_fingerprint != fingerprint:
-                raise EditOperationError(
-                    "idempotency_key_reused",
-                    "This request key was already used for different edit instructions.",
-                )
             return to_response(row), proposal_id is not None
+
+    async def replay(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        request: EditProposalRequest,
+    ) -> EditProposalResponse | None:
+        """Return the proposal stored for this request key, or None for a new key.
+
+        Raises ``idempotency_key_reused`` when the key belongs to other instructions.
+        """
+        async with self._sessions() as session:
+            row = await stored_proposal_request(session, run_id, user_id, request)
+            return to_response(row) if row is not None else None
 
     async def finish(
         self,
@@ -126,6 +158,7 @@ class ConceptNoteEditRepository:
         error_code: str | None = None,
         notices: list[EditNotice] | None = None,
         structure: StructureProposal | None = None,
+        review_objections: list[EditReviewObjection] | None = None,
     ) -> EditProposalResponse:
         """Finalize a processing proposal without reviving a concurrent rejection."""
         async with self._sessions() as session, session.begin():
@@ -142,6 +175,10 @@ class ConceptNoteEditRepository:
             row.structure = structure.model_dump(mode="json") if structure else None
             row.clarification = clarification
             row.error_code = error_code
+            row.review_objections = [
+                objection.model_dump(mode="json")
+                for objection in (review_objections or [])
+            ]
             row.status = (
                 "clarification_required"
                 if clarification
@@ -171,7 +208,7 @@ class ConceptNoteEditRepository:
                     ConceptNoteEditProposal.actor_user_id == user_id,
                     ConceptNoteEditProposal.status == "processing",
                     ConceptNoteEditProposal.updated_at
-                    < datetime.now(UTC) - timedelta(minutes=10),
+                    < datetime.now(UTC) - PLANNING_ABANDONED_AFTER,
                 )
                 .values(
                     status="failed",
@@ -428,46 +465,112 @@ async def resolve_filled_information_gaps(
     user_id: str,
     idempotency_key: UUID,
 ) -> None:
-    """Close structured gaps whose accepted grounded edits replace their markers."""
-    removed = removed_information_markers(before, after)
-    if not removed:
-        return
+    """Apply each reviewed gap transition exactly once, or reject the whole set.
 
-    gaps = list(
-        (
+    Every bound gap is locked and must still match its version, status and saved
+    answers. The assembled chapter must hold exactly the reviewed marker sequence.
+    A change without bindings may not move a marker or confirm an estimate, so a
+    proposal from before gap binding must be regenerated.
+    """
+    try:
+        validate_marker_transitions(before, after, changes)
+    except GapEditError:
+        raise _stale_gap() from None
+    estimates = await _caveat_estimates(session, chapter.chapter_id)
+    # The selected set, not just each proposal's own check, must keep estimates unique.
+    if estimate_anchor_problem(
+        before,
+        after,
+        [
+            marker_replacement_text(change.after)
+            for change in changes
+            if change.estimate
+        ],
+        estimates,
+    ):
+        raise EditOperationError(
+            "ambiguous_gap",
+            "Keep one uniquely identifiable estimate passage for this gap. Remove identical repetitions and resubmit the candidate.",
+        )
+    unbound = [change for change in changes if not change.gap_bindings]
+    if unbound and await _unbound_gap_edit(before, unbound, estimates):
+        raise _stale_gap()
+
+    bound = [(change, binding) for change in changes for binding in change.gap_bindings]
+    gap_ids = sorted({binding.gap_id for _, binding in bound}, key=str)
+    if not gap_ids:
+        return
+    gaps = {
+        gap.gap_id: gap
+        for gap in (
             await session.scalars(
                 select(ConceptNoteGap)
-                .where(
-                    ConceptNoteGap.chapter_id == chapter.chapter_id,
-                    ConceptNoteGap.status.in_(["open", "caveat"]),
-                )
+                .where(ConceptNoteGap.gap_id.in_(gap_ids))
+                .order_by(ConceptNoteGap.gap_id)
                 .with_for_update()
             )
         ).all()
-    )
-    gaps_by_key = {information_marker_key(gap.question): gap for gap in gaps}
-    now = datetime.now(UTC)
-    resolved_gap_ids: set[UUID] = set()
-    for marker in removed:
-        gap = gaps_by_key.get(information_marker_key(marker))
-        change = next(
-            (
-                change
-                for change in changes
-                if marker in change.before
-                and marker not in change.after
-                and marker_replacement_text(change.after)
-            ),
-            None,
+    }
+    # Verify every binding before any write; repeated occurrences share one gap.
+    confirmed: dict[UUID, str] = {}
+    for change, binding in bound:
+        gap = gaps.get(binding.gap_id)
+        expected_status = "caveat" if binding.mode == "confirm_estimate" else "open"
+        if (
+            gap is None
+            or gap.chapter_id != chapter.chapter_id
+            or gap.status != expected_status
+            or gap.version != binding.gap_version
+        ):
+            raise _stale_gap()
+        saved = await latest_partial_answer(
+            session, gap_id=gap.gap_id, gap_version=gap.version
         )
-        if gap is None or change is None:
-            raise EditOperationError(
-                "stale_gap",
-                "The information gap changed. Generate a fresh proposal before applying.",
-            )
-        if gap.gap_id in resolved_gap_ids:
+        if gap_answer_digest(saved.answer if saved else None) != (
+            binding.saved_answers_digest
+        ):
+            raise _stale_gap()
+        if binding.mode == "confirm_estimate":
+            estimate = await _latest_estimate(session, gap.gap_id)
+            if not _overlaps_estimate(before, estimate, change):
+                raise _stale_gap()
+            confirmed[gap.gap_id] = estimate or ""
+        else:
+            transition = marker_edit_shape(change.before, change.after)
+            if transition is None or information_marker_key(
+                transition.old_marker
+            ) != information_marker_key(gap.question):
+                raise _stale_gap()
+    # A confirmation must replace its estimate; leaving the stored text in place is no answer.
+    if any(unambiguous_span(after, text) is not None for text in confirmed.values()):
+        raise _stale_gap()
+
+    now = datetime.now(UTC)
+    settled: set[UUID] = set()
+    for change, binding in bound:
+        gap = gaps[binding.gap_id]
+        if gap.gap_id in settled:
             continue
-        gap.status = "resolved"
+        settled.add(gap.gap_id)
+        if binding.mode == "narrow":
+            # The gap stays open on its remaining question, keeping the same identity.
+            previous_version = gap.version
+            record_accepted_narrowing(
+                gap, previous_question=gap.question, passage=change.after
+            )
+            gap.question = marker_question(
+                marker_edit_shape(change.before, change.after).new_marker
+            )
+            gap.version += 1
+            gap.suggestions = []
+            gap.source_refs = []
+            gap.updated_at = now
+            await carry_forward_saved_answer(
+                session, gap=gap, previous_version=previous_version
+            )
+            continue
+        # A labelled estimate fills the marker but stays visible as a caveat.
+        gap.status = "caveat" if change.estimate else "resolved"
         gap.version += 1
         gap.updated_at = now
         session.add(
@@ -480,7 +583,75 @@ async def resolve_filled_information_gaps(
                 idempotency_key=idempotency_key,
             )
         )
-        resolved_gap_ids.add(gap.gap_id)
+
+
+def _stale_gap() -> EditOperationError:
+    """Report that the reviewed gap state no longer holds; nothing is written."""
+    return EditOperationError(
+        "stale_gap",
+        "The information gap changed. Generate a fresh proposal before applying.",
+    )
+
+
+async def _latest_estimate(session: AsyncSession, gap_id: UUID) -> str | None:
+    """Return the estimate a caveat gap currently states, from its latest non-partial event."""
+    return await session.scalar(
+        select(ConceptNoteGapResolution.answer)
+        .where(
+            ConceptNoteGapResolution.gap_id == gap_id,
+            ConceptNoteGapResolution.action != "partial_answer",
+        )
+        .order_by(
+            ConceptNoteGapResolution.created_at.desc(),
+            ConceptNoteGapResolution.resolution_id.desc(),
+        )
+        .limit(1)
+    )
+
+
+def _overlaps_estimate(body: str, estimate: str | None, change: EditChange) -> bool:
+    """Require a replacing change to touch the estimate's one unambiguous span."""
+    span = unambiguous_span(body, estimate or "")
+    end = change.start + len(change.before)
+    return (
+        bool(change.before)
+        and span is not None
+        and intersects_span(span, change.start, end)
+    )
+
+
+async def _caveat_estimates(session: AsyncSession, chapter_id: UUID) -> list[str]:
+    """Return the estimate text each caveat gap in the chapter currently states."""
+    caveats = (
+        await session.scalars(
+            select(ConceptNoteGap.gap_id).where(
+                ConceptNoteGap.chapter_id == chapter_id,
+                ConceptNoteGap.status == "caveat",
+            )
+        )
+    ).all()
+    estimates = [await _latest_estimate(session, gap_id) for gap_id in caveats]
+    return [estimate for estimate in estimates if estimate]
+
+
+async def _unbound_gap_edit(
+    before: str, changes: list[EditChange], estimates: list[str]
+) -> bool:
+    """Return whether an unbound change moves a marker or touches any copy of an estimate.
+
+    Every occurrence counts, including repeated copies that cannot bind, so an
+    unbound write never silently replaces part of a caveat's estimate.
+    """
+    if any(
+        removed_information_markers(change.before, change.after) for change in changes
+    ):
+        return True
+    return any(
+        intersects_span(span, change.start, change.start + len(change.before))
+        for change in changes
+        for estimate in estimates
+        for span in occurrence_spans(before, estimate)
+    )
 
 
 async def lock_run(session: AsyncSession, run_id: UUID) -> None:
@@ -737,6 +908,43 @@ def replace_anchors(body: str, changes: Sequence[PlannedTextChange]) -> str:
     return result
 
 
+async def stored_proposal_request(
+    session: AsyncSession, run_id: UUID, user_id: str, request: EditProposalRequest
+) -> ConceptNoteEditProposal | None:
+    """Load the proposal stored under a request key, rejecting reuse for other instructions."""
+    row = await session.scalar(
+        select(ConceptNoteEditProposal).where(
+            ConceptNoteEditProposal.run_id == run_id,
+            ConceptNoteEditProposal.actor_user_id == user_id,
+            ConceptNoteEditProposal.idempotency_key == request.idempotency_key,
+        )
+    )
+    if row is not None and row.request_fingerprint != request_fingerprint(request):
+        raise EditOperationError(
+            "idempotency_key_reused",
+            "This request key was already used for different edit instructions.",
+        )
+    return row
+
+
+async def edit_planning_in_progress(
+    sessions: async_sessionmaker[AsyncSession], run_id: UUID
+) -> bool:
+    """Return whether an edit proposal for the run is still being planned."""
+    async with sessions() as session:
+        planning = await session.scalar(
+            select(ConceptNoteEditProposal.proposal_id)
+            .where(
+                ConceptNoteEditProposal.run_id == run_id,
+                ConceptNoteEditProposal.status == "processing",
+                ConceptNoteEditProposal.updated_at
+                >= datetime.now(UTC) - PLANNING_ABANDONED_AFTER,
+            )
+            .limit(1)
+        )
+    return planning is not None
+
+
 def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
     """Detach public proposal data from the managed database session."""
     return EditProposalResponse.model_validate(
@@ -752,8 +960,68 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
             "structure": row.structure,
             "clarification": row.clarification,
             "error_code": row.error_code,
+            "review_objections": row.review_objections,
             "result": row.applied_result,
             "created_at": row.created_at,
             "updated_at": row.updated_at,
         }
     )
+
+
+async def applied_gap_answers(
+    session: AsyncSession,
+    *,
+    run_id: UUID,
+    chapter_id: UUID,
+    question: str,
+    limit: int = 3,
+) -> list[str]:
+    """Return what the user accepted for this chapter gap, newest first.
+
+    A fully applied request contributes its instruction without the repeated gap
+    question. A partially applied one contributes only the user text quoted by
+    its accepted changes, so rejected answers are asked again. Entries stay whole
+    (each instruction is capped at 8,000 characters) so later answers and their
+    "Not decided yet" states are never cut off.
+    """
+    # shortcut: matches the quoted question text within the chapter, not a gap ID;
+    # store gap_id on proposals if answers ever need exact attribution.
+    rows = (
+        await session.execute(
+            select(
+                ConceptNoteEditProposal.instruction,
+                ConceptNoteEditProposal.status,
+                ConceptNoteEditProposal.changes,
+                ConceptNoteEditProposal.applied_result,
+            )
+            .where(
+                ConceptNoteEditProposal.run_id == run_id,
+                ConceptNoteEditProposal.status.in_(["applied", "partially_applied"]),
+                ConceptNoteEditProposal.scope["focused_chapter_id"].as_string()
+                == str(chapter_id),
+                ConceptNoteEditProposal.instruction.contains(question, autoescape=True),
+            )
+            .order_by(ConceptNoteEditProposal.created_at.desc())
+            .limit(limit)
+        )
+    ).all()
+    answers: list[str] = []
+    for row in rows:
+        if row.status == "applied":
+            # The UI request reads "<question>\n\n<label>:\n<answers>\n\n<instructions>";
+            # keep only the answers so the planner never sees the request prose.
+            paragraphs = row.instruction.partition(question)[2].strip().split("\n\n")
+            answer = "\n\n".join(paragraphs[:-1]).partition("\n")[2].strip()
+        else:
+            accepted = set((row.applied_result or {}).get("accepted_change_ids", []))
+            answer = "\n\n".join(
+                dict.fromkeys(
+                    change["user_input_quote"]
+                    for change in row.changes
+                    if change.get("change_id") in accepted
+                    and change.get("user_input_quote")
+                )
+            )
+        if answer:
+            answers.append(answer)
+    return answers

@@ -290,6 +290,41 @@ describe("Inventory API", () => {
     );
   });
 
+  it("should apply BASIC+ when reusing an existing city year", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+    const year = 3010;
+    await db.models.Inventory.destroy({
+      where: { cityId: city.cityId, year },
+    });
+    const basicBody = {
+      ...inventoryData,
+      year,
+      inventoryName: "REUSE_YEAR_BASIC",
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+    };
+    const first = await createInventory(mockRequest(basicBody), {
+      params: Promise.resolve({ city: city.cityId }),
+    });
+    await expectStatusCode(first, 200);
+
+    const plusBody = {
+      ...basicBody,
+      inventoryName: "REUSE_YEAR_BASIC_PLUS",
+      inventoryType: InventoryTypeEnum.GPC_BASIC_PLUS,
+    };
+    const second = await createInventory(mockRequest(plusBody), {
+      params: Promise.resolve({ city: city.cityId }),
+    });
+    await expectStatusCode(second, 200);
+    const { data } = await second.json();
+    expect(data.inventoryType).toEqual(InventoryTypeEnum.GPC_BASIC_PLUS);
+    expect(data.inventoryName).toEqual("REUSE_YEAR_BASIC_PLUS");
+
+    await db.models.Inventory.destroy({
+      where: { cityId: city.cityId, year },
+    });
+  });
+
   it("should not create an inventory with invalid data", async () => {
     const req = mockRequest(invalidInventory);
     const res = await createInventory(req, {

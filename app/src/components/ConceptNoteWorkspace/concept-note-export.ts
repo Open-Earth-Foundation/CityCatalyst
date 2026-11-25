@@ -86,6 +86,17 @@ export function countUnresolvedExportItems(
   }, 0);
 }
 
+/** Accepted estimates (caveat gaps) that still need a confirmed value. */
+export function countEstimatesToConfirm(
+  chapters: ConceptNoteDraftChapter[],
+): number {
+  return exportableChapters(chapters).reduce(
+    (total, chapter) =>
+      total + chapter.gaps.filter((gap) => gap.state === "caveat").length,
+    0,
+  );
+}
+
 export function hasCriticalExportBlocker(
   chapters: ConceptNoteDraftChapter[],
 ): boolean {

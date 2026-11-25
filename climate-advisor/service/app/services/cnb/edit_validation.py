@@ -16,17 +16,64 @@ from app.models.cnb.concept_note_edits import (
     EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
+    EditScope,
     EditSourceSnapshot,
+    GapEditBinding,
     PlannedTextChange,
 )
 from app.persistence.concept_notes.edits import EditOperationError, replace_anchors
-from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace_snapshots import (
+    WorkspaceChapterSnapshot,
+    WorkspaceGapSnapshot,
+)
+from app.utils.cnb_gap_edit import (
+    GapEditError,
+    MarkerTransition,
+    estimate_anchor_problem,
+    gap_answer_digest,
+    intersects_span,
+    marker_edit_shape,
+    occurrence_spans,
+    unambiguous_span,
+    validate_marker_transitions,
+)
 from app.utils.cnb_information_markers import (
     information_marker_key,
     information_needed_markers,
     marker_replacement_text,
-    removed_information_markers,
 )
+
+
+def bind_answer_gap(
+    request: EditProposalRequest, chapters: list[WorkspaceChapterSnapshot]
+) -> list[WorkspaceChapterSnapshot]:
+    """Check that a gap-form answer names the open gap version it answers.
+
+    The binding only tells the planner which question the form answered. It
+    neither hides gaps nor implies a complete answer; the reviewed transition
+    decides what each change covers.
+    """
+    scope = request.scope
+    if scope.gap_id is None:
+        return chapters
+    gap = next(
+        (
+            gap
+            for chapter in chapters
+            if chapter.chapter_id == scope.focused_chapter_id
+            for gap in chapter.gaps
+            if gap.gap_id == scope.gap_id
+        ),
+        None,
+    )
+    if gap is None or gap.state not in {"open", "caveat"} or (
+        gap.version != scope.gap_version
+    ):
+        raise EditOperationError(
+            "gap_changed",
+            "This gap was answered or changed. Reopen it to answer its current version.",
+        )
+    return chapters
 
 
 def validate_edit_plan(
@@ -37,8 +84,13 @@ def validate_edit_plan(
     *,
     prior_proposal: EditProposalResponse | None = None,
     recent_messages: list[dict[str, str]] | None = None,
+    chosen_options: list[str] | None = None,
 ) -> list[EditChange]:
-    """Check identities and document integrity without reinterpreting LLM edits."""
+    """Check identities and document integrity without reinterpreting LLM edits.
+
+    chosen_options are suggested answers the user picked; their exact text is
+    human input, like a message the user typed.
+    """
     if plan.intent != "edit":
         raise EditOperationError(
             "not_edit_request",
@@ -58,6 +110,7 @@ def validate_edit_plan(
     prior_inputs = [
         *recent_user_inputs(recent_messages),
         *prior_user_inputs(prior_proposal),
+        *(chosen_options or []),
     ]
     affected = {change.chapter_id for change in plan.changes}
     if affected - set(current):
@@ -77,6 +130,7 @@ def validate_edit_plan(
         )
         for change in plan.changes
     ]
+    changes = [with_gap_group(change) for change in changes]
     validate_document_integrity(current, changes, affected)
     return sorted(
         changes,
@@ -107,34 +161,43 @@ def validated_change(
         )
 
     anchored = anchor_change(change, chapter.body_markdown)
-    fills_information_gap = is_information_gap_fill(anchored, chapter)
-    if (
-        removed_information_markers(anchored.before, anchored.after)
-        and not fills_information_gap
-    ):
-        raise EditOperationError(
-            "marker_changed",
-            "Replace a missing-information marker only with content that fills its matching open gap.",
-            status_code=422,
-        )
-
+    bindings = gap_bindings_for_change(anchored, chapter, request.scope)
     if anchored.semantic_support is None:
         raise EditOperationError(
             "invalid_review",
             "The proposal did not receive a complete semantic review.",
             status_code=422,
         )
+    # A complete confirmation aimed at a gap whose recorded estimate is gone cannot bind.
+    if (
+        anchored.reviewed_gap_coverage == "complete"
+        and not bindings
+        and estimate_missing_for_scope(request.scope, chapter)
+    ):
+        raise EditOperationError(
+            "invalid_target",
+            "The estimate recorded for this gap is no longer in the draft. Reopen the gap to answer its current text.",
+            status_code=422,
+        )
+    # Only the independent review's coverage can match the transition's shape.
+    if (anchored.reviewed_gap_coverage or "none") != expected_gap_coverage(bindings):
+        raise EditOperationError(
+            "invalid_review",
+            "The proposal did not receive a semantic review matching its gap transition.",
+            status_code=422,
+        )
     factual = (
         anchored.kind == "factual"
+        or anchored.estimate
         or anchored.semantic_support in {"user", "source", "context"}
-        or fills_information_gap
+        or bool(bindings)
     )
     snapshots, context_snapshots = validate_provenance(
         anchored,
         request.instruction,
         run_context,
         factual,
-        prior_inputs=prior_inputs,
+        prior_inputs=[*prior_inputs, *gap_evidence_inputs(bindings, chapter)],
     )
     return EditChange(
         **{
@@ -146,6 +209,7 @@ def validated_change(
         base_revision=chapter.revision_number,
         source_snapshots=snapshots,
         context_snapshots=context_snapshots,
+        gap_bindings=bindings,
     )
 
 
@@ -162,12 +226,25 @@ def validate_document_integrity(
     for chapter_id, chapter_changes in changes_by_chapter.items():
         before = chapters[chapter_id].body_markdown or ""
         after = replace_anchors(before, chapter_changes)
-        if not valid_information_marker_result(
-            chapters[chapter_id], before, after, chapter_changes
+        try:
+            validate_marker_transitions(before, after, chapter_changes)
+        except GapEditError as error:
+            raise EditOperationError(
+                "marker_changed", str(error), status_code=422
+            ) from None
+        if estimate_anchor_problem(
+            before,
+            after,
+            [
+                marker_replacement_text(change.after)
+                for change in chapter_changes
+                if change.estimate
+            ],
+            caveat_estimates(chapters[chapter_id]),
         ):
             raise EditOperationError(
-                "marker_changed",
-                "Replace a missing-information marker only with content that fills its matching open gap.",
+                "ambiguous_gap",
+                "Keep one uniquely identifiable estimate passage for this gap. Remove identical repetitions and resubmit the candidate.",
                 status_code=422,
             )
         heading_pattern = r"^#{1,6} .+$"
@@ -181,50 +258,184 @@ def validate_document_integrity(
             )
 
 
-def is_information_gap_fill(
+def gap_bindings_for_change(
     change: PlannedTextChange,
     chapter: WorkspaceChapterSnapshot,
-) -> bool:
-    """Allow replacement only when it supplies a matching open gap."""
-    removed = removed_information_markers(change.before, change.after)
-    if not removed or not marker_replacement_text(change.after):
-        return False
-    if information_needed_markers(change.after):
-        return False
-    open_gap_keys = {
-        information_marker_key(gap.question)
+    scope: EditScope,
+) -> list[GapEditBinding]:
+    """Derive the exact gap identities a change transitions, from the current snapshot.
+
+    A marker transition binds to its unique open gap with the same question key.
+    A marker-free factual change binds to the caveat estimates it overlaps.
+    """
+    try:
+        transition = marker_edit_shape(change.before, change.after)
+    except GapEditError as error:
+        raise EditOperationError(
+            "marker_changed", str(error), status_code=422
+        ) from None
+    if transition is not None:
+        return [marker_binding(transition, chapter)]
+    return estimate_bindings(change, chapter, scope)
+
+
+def marker_binding(
+    transition: MarkerTransition, chapter: WorkspaceChapterSnapshot
+) -> GapEditBinding:
+    """Bind a marker transition to one open gap; a narrowing needs an unclaimed question."""
+    key = information_marker_key(transition.old_marker)
+    matches = [
+        gap
         for gap in chapter.gaps
-        if gap.state in {"open", "caveat"}
-    }
-    return all(information_marker_key(marker) in open_gap_keys for marker in removed)
-
-
-def valid_information_marker_result(
-    chapter: WorkspaceChapterSnapshot,
-    before: str,
-    after: str,
-    changes: Sequence[PlannedTextChange],
-) -> bool:
-    """Preserve marker order while permitting validated gap-filling removals."""
-    before_markers = information_needed_markers(before)
-    next_before = 0
-    for marker in information_needed_markers(after):
-        while (
-            next_before < len(before_markers) and before_markers[next_before] != marker
-        ):
-            next_before += 1
-        if next_before == len(before_markers):
-            return False
-        next_before += 1
-    return all(
-        any(
-            marker in change.before
-            and marker not in change.after
-            and is_information_gap_fill(change, chapter)
-            for change in changes
+        if gap.state == "open" and information_marker_key(gap.question) == key
+    ]
+    if len(matches) != 1:
+        raise EditOperationError(
+            "marker_changed",
+            "This missing-information marker does not match exactly one open gap. Read the chapter again.",
+            status_code=422,
         )
-        for marker in removed_information_markers(before, after)
+    gap = matches[0]
+    if transition.mode == "narrow":
+        new_key = information_marker_key(transition.new_marker or "")
+        claimed = any(
+            information_marker_key(other.question) == new_key for other in chapter.gaps
+        ) or any(
+            information_marker_key(marker) == new_key
+            for marker in information_needed_markers(chapter.body_markdown or "")
+        )
+        if claimed:
+            raise EditOperationError(
+                "marker_changed",
+                "The narrowed question already has a gap or marker in this chapter.",
+                status_code=422,
+            )
+    return gap_binding(gap, transition.mode)
+
+
+def estimate_bindings(
+    change: PlannedTextChange,
+    chapter: WorkspaceChapterSnapshot,
+    scope: EditScope,
+) -> list[GapEditBinding]:
+    """Bind a factual change to the caveat estimates its text overlaps.
+
+    Duplicate caveats with the same question and estimate bind together. When
+    estimates for different questions overlap, only the form's gap may bind.
+    """
+    body = chapter.body_markdown or ""
+    start, end = change.start, change.start + len(change.before)
+    # A repeated estimate cannot be bound, so no change may touch one copy silently.
+    for gap in chapter.gaps:
+        if gap.state != "caveat" or gap.resolution is None:
+            continue
+        spans = occurrence_spans(body, gap.resolution.answer or "")
+        if len(spans) > 1 and any(intersects_span(span, start, end) for span in spans):
+            raise EditOperationError(
+                "ambiguous_gap",
+                "This passage repeats a stored estimate. Keep one uniquely identifiable copy of it and resubmit the change.",
+                status_code=422,
+            )
+    if change.kind != "factual" or not change.before.strip():
+        return []
+    overlapping = []
+    for gap in chapter.gaps:
+        if gap.state != "caveat" or gap.resolution is None:
+            continue
+        span = unambiguous_span(body, gap.resolution.answer or "")
+        if span is not None and intersects_span(span, start, end):
+            overlapping.append(gap)
+    if not overlapping:
+        return []
+    keys = {information_marker_key(gap.question) for gap in overlapping}
+    if scope.gap_id is not None and any(
+        gap.gap_id == scope.gap_id for gap in overlapping
+    ):
+        chosen = information_marker_key(
+            next(gap for gap in overlapping if gap.gap_id == scope.gap_id).question
+        )
+    elif len(keys) == 1:
+        chosen = keys.pop()
+    else:
+        raise EditOperationError(
+            "ambiguous_gap",
+            "This edit matches the estimates for several gaps. Answer one gap at a time.",
+            status_code=422,
+        )
+    return [
+        gap_binding(gap, "confirm_estimate")
+        for gap in overlapping
+        if information_marker_key(gap.question) == chosen
+    ]
+
+
+def caveat_estimates(chapter: WorkspaceChapterSnapshot) -> list[str]:
+    """Return the estimate text each caveat gap in the chapter currently states."""
+    return [
+        gap.resolution.answer
+        for gap in chapter.gaps
+        if gap.state == "caveat" and gap.resolution and gap.resolution.answer
+    ]
+
+
+def estimate_missing_for_scope(
+    scope: EditScope, chapter: WorkspaceChapterSnapshot
+) -> bool:
+    """Return whether the form's caveat gap no longer has its recorded estimate in the chapter."""
+    if scope.gap_id is None or scope.focused_chapter_id != chapter.chapter_id:
+        return False
+    body = chapter.body_markdown or ""
+    return any(
+        gap.gap_id == scope.gap_id
+        and gap.state == "caveat"
+        and gap.resolution is not None
+        and gap.resolution.answer
+        and not occurrence_spans(body, gap.resolution.answer)
+        for gap in chapter.gaps
     )
+
+
+def gap_binding(gap: WorkspaceGapSnapshot, mode: str) -> GapEditBinding:
+    """Stamp one gap's identity, version and current saved-answer digest."""
+    return GapEditBinding(
+        gap_id=gap.gap_id,
+        gap_version=gap.version,
+        mode=mode,
+        saved_answers_digest=gap_answer_digest(gap.answered_so_far),
+    )
+
+
+def expected_gap_coverage(bindings: list[GapEditBinding]) -> str:
+    """Name the coverage a reviewer must report for a derived transition."""
+    if not bindings:
+        return "none"
+    if any(binding.mode == "narrow" for binding in bindings):
+        return "partial"
+    return "complete"
+
+
+def gap_evidence_inputs(
+    bindings: list[GapEditBinding], chapter: WorkspaceChapterSnapshot
+) -> list[str]:
+    """Return human and accepted evidence for the bound gaps only, never other gaps."""
+    gaps = {gap.gap_id: gap for gap in chapter.gaps}
+    values: list[str] = []
+    for binding in bindings:
+        gap = gaps.get(binding.gap_id)
+        if gap is None:
+            continue
+        values.extend(
+            value for value in (gap.answered_so_far, *gap.accepted_passages) if value
+        )
+    return values
+
+
+def with_gap_group(change: EditChange) -> EditChange:
+    """Give each gap's transitions their own consistency group, never the planner's."""
+    if not change.gap_bindings:
+        return change
+    gap_id = min(binding.gap_id for binding in change.gap_bindings)
+    return change.model_copy(update={"group_id": f"gap-{gap_id.hex[:20]}"})
 
 
 def anchor_change(change: PlannedTextChange, body: str) -> PlannedTextChange:

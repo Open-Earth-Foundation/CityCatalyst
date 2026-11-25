@@ -4,7 +4,7 @@ import { Text, TextProps } from "@chakra-ui/react";
 
 export const ButtonLarge = ({ color = "content.secondary", ...props }: TextProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="button.lg"
     lineHeight="24px"
@@ -19,7 +19,7 @@ export const ButtonLarge = ({ color = "content.secondary", ...props }: TextProps
 
 export const ButtonMedium = ({ color = "content.secondary", ...props }: TextProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="button.md"
     lineHeight="16px"
@@ -34,7 +34,7 @@ export const ButtonMedium = ({ color = "content.secondary", ...props }: TextProp
 
 export const ButtonSmall = ({ color = "content.secondary", ...props }: TextProps) => (
   <Text
-    fontFamily="Poppins"
+    fontFamily="heading"
     fontWeight={600}
     fontSize="button.sm"
     lineHeight="16px"

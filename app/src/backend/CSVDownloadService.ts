@@ -113,7 +113,7 @@ export default class CSVDownloadService {
             : "";
 
         return [
-          value.inventory_reference || "N/A",
+          value.inventory_reference ?? "",
           value.gpc_reference_number,
           value.subsector_name,
           value.notation_key,
@@ -191,10 +191,17 @@ export default class CSVDownloadService {
             activityValue?.activityData?.[activityTypeKey],
             "tried translatin",
           );
-          const activity_amount = Number(
+          const rawActivityAmount =
             activityValue.activityData?.[activityTitleKey?.toString() ?? ""] ??
-              activityValue.activityData?.["activity-value"],
-          );
+            activityValue.activityData?.["activity-value"];
+          const parsedActivityAmount = Number(rawActivityAmount);
+          const activity_amount =
+            rawActivityAmount == null ||
+            (typeof rawActivityAmount === "string" &&
+              rawActivityAmount.trim() === "") ||
+            !Number.isFinite(parsedActivityAmount)
+              ? null
+              : parsedActivityAmount;
           const activity_unit = t(
             (
               activityValue.activityData?.[`${activityTitleKey}-unit`] ??
@@ -216,37 +223,26 @@ export default class CSVDownloadService {
           let emission_ch4 = null;
           let emission_n2o = null;
 
-          if (activityValue.gasValues) {
-            const co2_gas = activityValue.gasValues.find(
-              (g) => g.gas === "CO2",
-            );
-            const ch4_gas = activityValue.gasValues.find(
-              (g) => g.gas === "CH4",
-            );
-            const n2o_gas = activityValue.gasValues.find(
-              (g) => g.gas === "N2O",
-            );
+          const co2_gas = activityValue.gasValues?.find((g) => g.gas === "CO2");
+          const ch4_gas = activityValue.gasValues?.find((g) => g.gas === "CH4");
+          const n2o_gas = activityValue.gasValues?.find((g) => g.gas === "N2O");
 
-            emission_factor_co2 =
-              co2_gas?.emissionsFactor?.emissionsPerActivity;
-            emission_factor_ch4 =
-              ch4_gas?.emissionsFactor?.emissionsPerActivity;
-            emission_factor_n2o =
-              n2o_gas?.emissionsFactor?.emissionsPerActivity;
-            emission_ch4 = ch4_gas?.gasAmount;
-            emission_co2 = co2_gas?.gasAmount;
-            emission_n2o = n2o_gas?.gasAmount;
-          }
-          // if there is an existing emission factor value
-          const usesEmissionFactor =
-            inventoryValue.gpcReferenceNumber?.split(".")?.includes("I") ||
-            inventoryValue.gpcReferenceNumber?.split(".").includes("II");
-          let emission_factor_unit: string | null = null;
-
-          if (usesEmissionFactor) {
-            const scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
-            emission_factor_unit = scope === "1" ? "kg/m3" : "kg/TJ";
-          }
+          emission_factor_co2 = co2_gas?.emissionsFactor?.emissionsPerActivity;
+          emission_factor_ch4 = ch4_gas?.emissionsFactor?.emissionsPerActivity;
+          emission_factor_n2o = n2o_gas?.emissionsFactor?.emissionsPerActivity;
+          emission_ch4 = ch4_gas?.gasAmount;
+          emission_co2 = co2_gas?.gasAmount;
+          emission_n2o = n2o_gas?.gasAmount;
+          const exportedFactors = [co2_gas, ch4_gas, n2o_gas]
+            .map((gas) => gas?.emissionsFactor)
+            .filter((factor) => factor?.emissionsPerActivity != null);
+          const factorUnits = new Set(
+            exportedFactors.map((factor) => factor!.units?.trim()),
+          );
+          const emission_factor_unit =
+            factorUnits.size === 1 && [...factorUnits][0]
+              ? [...factorUnits][0]
+              : null;
 
           const total_co2e =
             activityValue.co2eq != null

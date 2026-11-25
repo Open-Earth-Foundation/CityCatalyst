@@ -715,6 +715,10 @@ export const appTheme = createSystem(defaultConfig, {
           value:
             "0 1px 3px 0 rgba(0, 0, 31, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10)",
         },
+        "shadow-lg-top": {
+          value:
+            "0 -1px 3px 0 rgba(0, 0, 31, 0.10), 0 -1px 2px -1px rgba(0, 0, 0, 0.10)",
+        },
       },
 
       radii: {

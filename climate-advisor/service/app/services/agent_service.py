@@ -9,7 +9,7 @@ management.
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union
 from urllib.parse import urlparse
 from uuid import UUID
 
@@ -17,9 +17,12 @@ import openai
 from agents import (
     Agent,
     FunctionTool,
+    FunctionToolResult,
     ModelSettings,
     OpenAIChatCompletionsModel,
     OpenAIResponsesModel,
+    RunContextWrapper,
+    ToolsToFinalOutputResult,
 )
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -43,8 +46,13 @@ from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
+from app.tools.concept_note_question import (
+    concept_note_ask_question,
+    is_question_output,
+)
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
+from app.tools.concept_note_visual_tools import concept_note_render_visual
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
 from app.tools.stationary_energy_review_tools import (
@@ -56,8 +64,23 @@ from app.tools.stationary_energy_start_draft_tools import (
 from app.utils.agent_tracing import configure_agents_tracing
 from app.utils.cnb_model_settings import cnb_model_settings
 from app.utils.conversation_observability import traced_conversation_tool
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 logger = logging.getLogger(__name__)
+
+
+def stop_at_valid_question(
+    _context: RunContextWrapper[Any], results: list[FunctionToolResult]
+) -> ToolsToFinalOutputResult:
+    """End the turn on a shown card; let the model repair rejected card arguments."""
+    for result in results:
+        if result.tool.name == "concept_note_ask_question" and is_question_output(
+            result.output
+        ):
+            return ToolsToFinalOutputResult(
+                is_final_output=True, final_output=result.output
+            )
+    return ToolsToFinalOutputResult(is_final_output=False)
 
 
 class AgentService:
@@ -80,31 +103,37 @@ class AgentService:
         concept_note_run_id: Optional[Union[str, UUID]] = None,
         concept_note_edit_request: EditProposalRequest | None = None,
         concept_note_edit_history: list[dict[str, str]] | None = None,
+        concept_note_question_cards: list[dict[str, Any]] | None = None,
         concept_note_ui_locale: str | None = None,
         native_input_catalog_service: Optional[NativeInputCatalogService] = None,
         native_input_catalog_context: Optional[ActiveRequestContext] = None,
+        request_token_refresh_context: Optional[RequestTokenRefreshContext] = None,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
 
         Args:
             cc_access_token: JWT token from CityCatalyst for inventory access
             cc_thread_id: Current thread ID (for token refresh context)
-            cc_user_id: User ID (for token refresh and inventory queries)
+            cc_user_id: Canonical authenticated user ID for inventory queries
             inventory_id: Active inventory ID, used by pre-draft Stationary Energy tools
             city_id: Active city ID, used by pre-draft Stationary Energy tools
             concept_note_edit_request: Optional CNB edit proposal request
             concept_note_edit_history: Bounded recent CNB edit messages
+            concept_note_question_cards: Recent suggested-answer cards and answers
             concept_note_ui_locale: Active frontend language for CNB help labels
             native_input_catalog_service: Optional request-scoped Core coordinator
                 used by runtime NativeInputCatalog tools
             native_input_catalog_context: Authenticated active context for catalog
                 tools; never supplied by the model
+            request_token_refresh_context: Request-owned canonical identity and
+                shared bearer state, created only after write authentication
         """
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
 
         # Store CC credentials for tools to use.
         self.cc_access_token = cc_access_token
+        self.request_token_refresh_context = request_token_refresh_context
         self.cc_thread_id = cc_thread_id
         self.cc_user_id = cc_user_id
         self.inventory_id = inventory_id
@@ -120,12 +149,17 @@ class AgentService:
         )
         self.concept_note_edit_request = concept_note_edit_request
         self.concept_note_edit_history = list(concept_note_edit_history or [])
+        self.concept_note_question_cards = list(concept_note_question_cards or [])
         self.concept_note_ui_locale = concept_note_ui_locale
         self._stationary_energy_surface = bool(
             stationary_energy_surface or self.stationary_energy_draft_run_id
         )
         self._inventory_tool: Optional[CCInventoryTool] = None
-        self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
+        self._token_ref: Dict[str, Optional[str]] = (
+            request_token_refresh_context.token_ref
+            if request_token_refresh_context
+            else {"value": cc_access_token}
+        )
         self.native_input_catalog_context = native_input_catalog_context
         self._native_input_catalog_client: Optional[CityCatalystClient] = None
         self.native_input_catalog_service = native_input_catalog_service
@@ -134,7 +168,9 @@ class AgentService:
             and self.native_input_catalog_context is not None
             and self._token_ref.get("value")
         ):
-            self._native_input_catalog_client = CityCatalystClient()
+            self._native_input_catalog_client = CityCatalystClient(
+                request_token_refresh_context=request_token_refresh_context
+            )
             self.native_input_catalog_service = NativeInputCatalogService(
                 core_client=self._native_input_catalog_client
             )
@@ -148,8 +184,10 @@ class AgentService:
         openai.timeout = self.client.timeout
         openai.max_retries = self.client.max_retries
 
+        # The whole Stationary Energy page uses its workflow prompt; before a run
+        # exists the agent gets the start-run and scoped inventory tools.
         self._uses_stationary_energy_review_prompt = bool(
-            self.stationary_energy_draft_run_id
+            self._stationary_energy_surface
             and self.session_factory
             and self.cc_user_id
         )
@@ -206,7 +244,7 @@ class AgentService:
         """Choose the default chat model for the current workflow context."""
         if concept_note_run_id:
             return self.cnb_chat_model
-        if stationary_energy_draft_run_id:
+        if stationary_energy_draft_run_id or self._uses_stationary_energy_review_prompt:
             return self.agentic_flow_model
         return self.default_model
 
@@ -287,6 +325,7 @@ class AgentService:
             user_id=str(self.cc_user_id),
             thread_id=(UUID(str(self.cc_thread_id)) if self.cc_thread_id else None),
             token_ref=self._token_ref,
+            client_factory=self._citycatalyst_client_factory,
         )
 
     def _build_native_input_catalog_tools(self) -> Sequence[object]:
@@ -300,6 +339,7 @@ class AgentService:
             service=service,
             context=context,
             token_ref=self._token_ref,
+            client_factory=self._citycatalyst_client_factory,
         )
 
     async def create_agent(
@@ -356,9 +396,9 @@ class AgentService:
         # Stable catalog tools defer current discovery and Core authorization to runtime.
         tools.extend(self._build_native_input_catalog_tools())
 
-        # General chat can query CityCatalyst inventory data directly. Active
-        # Stationary Energy review chat uses the persisted draft snapshot and
-        # scoped review tools instead.
+        # General chat can query CityCatalyst inventory data directly. The
+        # Stationary Energy page uses the persisted draft snapshot and scoped
+        # review tools instead, or the start-run pack before a run exists.
         if (
             not self._uses_stationary_energy_review_prompt
             and not self._has_concept_note_context
@@ -367,17 +407,21 @@ class AgentService:
             and self.cc_thread_id
         ):
             thread_identifier = str(self.cc_thread_id)
-            self._inventory_tool = CCInventoryTool()
+            self._inventory_tool = CCInventoryTool(
+                client=self._citycatalyst_client_factory()
+            )
             datasource_tools, token_ref = build_cc_datasource_tools(
                 inventory_tool=self._inventory_tool,
                 access_token=self._token_ref["value"],
                 user_id=str(self.cc_user_id),
                 thread_id=thread_identifier,
+                token_ref=self._token_ref,
             )
             self._token_ref = token_ref
             inventory_tools = build_inventory_capability_tools(
                 user_id=str(self.cc_user_id),
                 token_ref=self._token_ref,
+                client_factory=self._citycatalyst_client_factory,
             )
             tools.extend(inventory_tools)
             tools.extend(datasource_tools)
@@ -405,6 +449,7 @@ class AgentService:
                 draft_run_id=self.stationary_energy_draft_run_id,
                 user_id=str(self.cc_user_id),
                 token_ref=self._token_ref,
+                request_token_refresh_context=self.request_token_refresh_context,
             )
             tools.extend(stationarity_tools)
             logger.info(
@@ -426,6 +471,7 @@ class AgentService:
 
         # The CNB source capability is captured to one persisted run and user.
         if self._has_concept_note_context:
+            tools.append(concept_note_ask_question)
             assert self.session_factory is not None
             assert self.concept_note_run_id is not None
             assert self.cc_user_id is not None
@@ -457,6 +503,7 @@ class AgentService:
                         user_id=str(self.cc_user_id),
                     )
                 )
+                tools.append(concept_note_render_visual)
             if (
                 concept_note_context is not None
                 and concept_note_context.get("workflow_step")
@@ -468,6 +515,7 @@ class AgentService:
                         run_id=self.concept_note_run_id,
                         user_id=str(self.cc_user_id),
                         token_ref=self._token_ref,
+                        client_factory=self._citycatalyst_client_factory,
                     )
                 )
                 if self.concept_note_edit_request is not None:
@@ -479,6 +527,8 @@ class AgentService:
                             token_ref=self._token_ref,
                             request=self.concept_note_edit_request,
                             recent_messages=self.concept_note_edit_history,
+                            question_cards=self.concept_note_question_cards,
+                            request_token_refresh_context=self.request_token_refresh_context,
                         )
                     )
                 logger.info(
@@ -515,13 +565,23 @@ class AgentService:
         )
         agent = Agent(
             name="Climate Advisor",
+            tool_use_behavior=(
+                stop_at_valid_question
+                if self._has_concept_note_context
+                else "run_llm_again"
+            ),
             instructions=agent_instructions,
             model=model_class(
                 model=agent_model,
                 openai_client=self.client,
             ),
             model_settings=(
-                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                cnb_model_settings(
+                    reasoning_effort,
+                    temperature=agent_temperature,
+                    # Every CNB chat call starts with the same long system prompt.
+                    prompt_cache_key="cnb_chat",
+                )
                 if self._has_concept_note_context
                 else ModelSettings(
                     temperature=agent_temperature,
@@ -556,6 +616,12 @@ class AgentService:
         """Update the cached CC token used by inventory tools."""
         self.cc_access_token = token
         self._token_ref["value"] = token
+
+    def _citycatalyst_client_factory(self) -> CityCatalystClient:
+        """Create a Core client bound to this authenticated turn's token context."""
+        return CityCatalystClient(
+            request_token_refresh_context=self.request_token_refresh_context
+        )
 
     def current_cc_token(self) -> Optional[str]:
         """Return the latest CC token after tool execution."""

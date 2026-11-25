@@ -1,0 +1,17 @@
+# HIAP-BRAZILV3 gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Editor
+.vscode/
+
+# Service local (never commit real secrets)
+.env
+.venv
+
+# Testing
+.pytest_cache/
+
+# Runtime artifacts
+logs/

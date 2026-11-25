@@ -1,6 +1,7 @@
 import "../globals.css";
 import type { Metadata } from "next";
 import { Providers } from "../providers";
+import { openSans, poppins } from "../fonts";
 import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
 import { RuntimeEnvScript, env } from "@/lib/runtime-env";
@@ -8,11 +9,15 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
-import ChatPopover from "@/components/ChatBot/chat-popover";
-import IframeAwareWrapper from "@/components/IframeAwareWrapper";
-import { HighlightInit } from "@highlight-run/next/client";
-import HighlightIdentifier from "@/components/HighlightIo/HighlightIdentifier";
+import ChatWrapper from "@/components/ChatWrapper";
+import HighlightWidgets from "@/components/HighlightIo/HighlightWidgets";
 import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+
+// @next-codemod-ignore Cache Components adoption: this segment temporarily allows blocking.
+// Remove this opt-out after verifying the segment passes validation without it.
+// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+export const instant = false;
+
 export const metadata: Metadata = {
   title: {
     default: "CityCatalyst",
@@ -46,44 +51,30 @@ export default function RootLayout(props: {
   }
 
   return (
-    <>
-      <HighlightInit
-        projectId={isHighlightEnabled ? HIGHLIGHT_PROJECT_ID : ""}
-        serviceName={`CityCatalyst-${ENVIRONMENT}`}
-        tracingOrigins={isHighlightEnabled}
-        networkRecording={
-          isHighlightEnabled
-            ? {
-                enabled: true,
-                recordHeadersAndBody: true,
-                urlBlocklist: [],
-              }
-            : {
-                enabled: false,
-                recordHeadersAndBody: false,
-                urlBlocklist: [],
-              }
-        }
-      />
-
-      <html lang={lng} dir={dir(lng)} suppressHydrationWarning>
-        <head>
-          <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
-          <link rel="icon" type="image/png" href="/assets/icon.png" />
-          <RuntimeEnvScript />
-        </head>
-        <body>
-          <Providers>
-            <Toaster />
-            {isHighlightEnabled && <HighlightIdentifier />}
-            <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-            <IframeAwareWrapper>
-              <CookieConsent lng={lng} />
-              <ChatPopover lng={lng} />
-            </IframeAwareWrapper>
-          </Providers>
-        </body>
-      </html>
-    </>
+    <html
+      lang={lng}
+      dir={dir(lng)}
+      suppressHydrationWarning
+      className={`${openSans.variable} ${poppins.variable}`}
+    >
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
+        <link rel="icon" type="image/png" href="/assets/icon.png" />
+        <RuntimeEnvScript />
+      </head>
+      <body className={openSans.className}>
+        <Providers>
+          <Toaster />
+          <HighlightWidgets
+            enabled={isHighlightEnabled}
+            projectId={HIGHLIGHT_PROJECT_ID}
+            serviceName={`CityCatalyst-${ENVIRONMENT}`}
+          />
+          <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
+          <CookieConsent lng={lng} />
+          <ChatWrapper lng={lng} />
+        </Providers>
+      </body>
+    </html>
   );
 }

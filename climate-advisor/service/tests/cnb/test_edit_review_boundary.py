@@ -2,21 +2,41 @@
 
 import asyncio
 import json
+from contextlib import asynccontextmanager
 from dataclasses import replace
 from datetime import UTC, datetime
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 from agents.tool_context import ToolContext
 
+from datetime import timedelta
+
 from app.config import get_settings
+from app.models.cnb.concept_note_edits import EditChange
+from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.persistence.concept_notes.edits import (
+    ConceptNoteEditRepository,
+    edit_planning_in_progress,
+)
+from app.routes import concept_note_edits as edit_routes
+from sqlalchemy import select, update
+from tests.test_concept_note_lifecycle import _workspace_repository
+from app.services.cnb.edits import ConceptNoteEditService
+from app.tools import concept_note_edit_tools as edit_tools
+from app.tools.concept_note_draft_tools import (
+    bound_source_answer,
+    build_source_query_tool,
+)
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
     EditAgentOutput,
     EditPlanOutput,
     EditProposalRequest,
     EditProposalResponse,
+    EditReviewObjection,
     EditScope,
     PlannedTextChange,
 )
@@ -26,9 +46,24 @@ from app.services.cnb.edit_planner import (
     ConceptNoteEditPlanner,
     bind_semantic_review,
     build_planner_input,
+    fit_review_evidence,
+    gap_review_targets,
+    unavailable_source_lookup,
 )
-from app.services.cnb.edit_validation import context_snapshot, validate_edit_plan
+from app.services.cnb.edit_validation import (
+    bind_answer_gap,
+    context_snapshot,
+    gap_bindings_for_change,
+    validate_edit_plan,
+)
 from app.utils.cnb_progress import bind_cnb_progress
+from tests.cnb.gap_edit_helpers import (
+    caveat_gap,
+    chapter_snapshot as chapter,
+    edit_request,
+    gap_snapshot,
+    marker,
+)
 
 
 class StreamingTestRunner:
@@ -50,45 +85,69 @@ class StreamingTestRunner:
         return Result()
 
 
-async def propose_with_tools(
-    agent, before, after, *, source_refs=None, kind="wording", replace_all=False
-):
+def tool_context(tool_name: str, call_id: str) -> ToolContext:
+    return ToolContext(
+        context=None, tool_name=tool_name, tool_call_id=call_id, tool_arguments="{}"
+    )
+
+
+async def propose_replacements(agent, replacements: list[dict]) -> None:
+    """Search each ``before`` text, then propose every replacement in one tool call."""
     tools = {tool.name: tool for tool in agent.tools}
-    context = ToolContext(
-        context=None,
-        tool_name="search_draft",
-        tool_call_id="search",
-        tool_arguments="{}",
-    )
-    found = await tools["search_draft"].on_invoke_tool(
-        context, json.dumps({"text": before, "chapter_positions": None})
-    )
-    context = ToolContext(
-        context=None,
-        tool_name="propose_edits",
-        tool_call_id="propose",
-        tool_arguments="{}",
-    )
-    proposed = await tools["propose_edits"].on_invoke_tool(
-        context,
-        json.dumps(
+    operations = []
+    for item in replacements:
+        found = await tools["search_draft"].on_invoke_tool(
+            tool_context("search_draft", "search"),
+            json.dumps({"text": item["before"], "chapter_positions": None}),
+        )
+        operations.append(
             {
-                "replacements": [
-                    {
-                        "search_id": found["search_id"],
-                        "replacement": after,
-                        "replace_all": replace_all,
-                        "match_ids": [],
-                        "kind": kind,
-                        "group_id": "edit",
-                        "source_refs": source_refs or [],
-                        "user_input_quote": None,
-                    }
-                ]
+                "search_id": found["search_id"],
+                "replacement": item["after"],
+                "replace_all": item.get("replace_all", False),
+                "match_ids": [],
+                "kind": item.get("kind", "wording"),
+                "group_id": item.get("group_id", "edit"),
+                "source_refs": item.get("source_refs") or [],
+                "user_input_quote": item.get("user_input_quote"),
             }
-        ),
+        )
+    proposed = await tools["propose_edits"].on_invoke_tool(
+        tool_context("propose_edits", "propose"),
+        json.dumps({"replacements": operations}),
     )
     assert proposed["ok"], proposed
+
+
+async def propose_with_tools(agent, before, after, **fields):
+    await propose_replacements(agent, [{"before": before, "after": after, **fields}])
+
+
+def single_review(support: str, coverage: str, explanation: str) -> ChapterEditReview:
+    """The reviewer's decision on the only change in a chapter."""
+    return ChapterEditReview(
+        decisions=[
+            {
+                "change_index": 0,
+                "support": support,
+                "gap_coverage": coverage,
+                "explanation": explanation,
+            }
+        ]
+    )
+
+
+def change_at(body: str, before: str, after: str, quote: str, group: str, **fields):
+    """A factual planned change anchored at the first ``before`` in ``body``."""
+    return {
+        "start": body.index(before),
+        "before": before,
+        "after": after,
+        "kind": "factual",
+        "group_id": group,
+        "user_input_quote": quote,
+        **fields,
+    }
 
 
 @pytest.mark.asyncio
@@ -206,7 +265,8 @@ async def test_reviewer_feedback_repairs_and_rechecks_the_complete_candidate(rej
                 )
                 output = EditAgentOutput(intent="edit")
             else:
-                assert not agent.tools
+                # Reviewers can only read sources; they never get draft or edit tools.
+                assert [tool.name for tool in agent.tools] == ["query_source"]
                 assert "review_feedback" not in data
                 reviewer_inputs.append(data)
                 unsupported = (
@@ -227,7 +287,10 @@ async def test_reviewer_feedback_repairs_and_rechecks_the_complete_candidate(rej
         request, [current, second], {}
     )
     assert len(editor_inputs) == rejections + 1
-    assert len(reviewer_inputs) == 2 * (rejections + 1)
+    # The second chapter's unchanged, supported changes keep their first review;
+    # every changed candidate is reviewed again.
+    assert len(reviewer_inputs) == rejections + 3
+    assert [item["chapter"]["position"] for item in reviewer_inputs].count(1) == 2
     assert all(c.after == "10" and c.semantic_support == "preserved" for c in plan.changes)
     assert len(validate_edit_plan(request, [current, second], plan)) == 2
     assert current.body_markdown == "ten schools"
@@ -277,6 +340,570 @@ async def test_repair_limits_never_bypass_candidate_or_review_guards(
         )
     assert error.value.code == expected_code
     assert attempts == expected_attempts
+    # Only a final semantic rejection explains itself to chat.
+    assert error.value.objections == (
+        [
+            EditReviewObjection(
+                chapter_title="Implementation",
+                explanation="The user did not request doubling the number.",
+            )
+        ]
+        if expected_code == "unsupported_edit"
+        else []
+    )
+
+
+@pytest.mark.asyncio
+async def test_planner_and_reviewers_share_one_bounded_verified_source_lookup():
+    current = replace(chapter("Minimum DSCR is to be confirmed."), chapter_ref="financing")
+    # The DSCR quotation was kept for the risk chapter, not the edited one.
+    context = {
+        "selected_sources": [
+            {
+                "upload_id": str(uuid4()),
+                "sha256": "a" * 64,
+                "source_label": "Financing pack",
+                "summary": "Lender terms.",
+                "topics": [],
+                "key_excerpts": [],
+                "chapter_excerpts": [
+                    {
+                        "chapter_ref": "risks",
+                        "excerpts": [{"text": "Minimum DSCR 1.15x.", "page": 7}],
+                    }
+                ],
+            },
+            {
+                "upload_id": str(uuid4()),
+                "sha256": "b" * 64,
+                "source_label": "Climate report",
+                "summary": "Emissions.",
+                "topics": [],
+                "key_excerpts": [],
+                "chapter_excerpts": [
+                    {
+                        "chapter_ref": "climate",
+                        "excerpts": [{"text": "1,853 t CO2e avoided.", "page": 1}],
+                    }
+                ],
+            },
+        ]
+    }
+    uncited = {"source_index": "2", "text": "1,853 t CO2e avoided.", "page": 1}
+    asked = []
+
+    async def lookup(source_index, question):
+        asked.append(question)
+        return json.dumps({"success": "fail" not in question, "data": {"q": question}})
+
+    async def ask(agent, question):
+        tool = next(tool for tool in agent.tools if tool.name == "query_source")
+        context = ToolContext(
+            context=None,
+            tool_name="query_source",
+            tool_call_id=question,
+            tool_arguments="{}",
+        )
+        return json.loads(
+            await tool.on_invoke_tool(
+                context, json.dumps({"source_index": 1, "question": question})
+            )
+        )
+
+    class LookupRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            data = json.loads(payload)
+            assert {"source_index": "1", "text": "Minimum DSCR 1.15x.", "page": 7} in (
+                data["run_context"]["source_excerpts"]
+            )
+            # The planner sees every quotation; a reviewer only its cited sources'.
+            assert (uncited in data["run_context"]["source_excerpts"]) == (
+                agent.output_type is EditAgentOutput
+            )
+            if agent.output_type is EditAgentOutput:
+                assert (await ask(agent, "What is the DSCR?"))["success"]
+                assert not (await ask(agent, "fail once"))["success"]
+                # The failure was not cached, but this run's limit is spent.
+                limited = await ask(agent, "fail once")
+                assert limited["error_code"] == "source_query_limit"
+                await propose_with_tools(
+                    agent,
+                    "is to be confirmed",
+                    "is 1.15x",
+                    source_refs=["1"],
+                    kind="factual",
+                )
+                output = EditAgentOutput(intent="edit")
+            else:
+                # The planner's answer is shared, and costs this reviewer nothing.
+                assert (await ask(agent, "  what is the  DSCR? "))["success"]
+                assert (await ask(agent, "Is it base case?"))["success"]
+                assert not (await ask(agent, "fail once"))["success"]
+                limited = await ask(agent, "One more?")
+                assert limited["error_code"] == "source_query_limit"
+                output = ChapterEditReview(decisions=[{
+                    "change_index": 0,
+                    "support": "source",
+                    "explanation": "Page 7 states a minimum DSCR of 1.15x.",
+                }])
+            return SimpleNamespace(final_output=output)
+
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    settings.llm.generation.prompt_budget.cnb_edits.max_source_queries = 2
+    plan = await ConceptNoteEditPlanner(settings, runner=LookupRunner).plan(
+        EditProposalRequest(instruction="Fill the DSCR.", idempotency_key=uuid4()),
+        [current],
+        context,
+        source_lookup=lookup,
+    )
+    assert asked == ["What is the DSCR?", "fail once", "Is it base case?", "fail once"]
+    assert plan.changes[0].semantic_support == "source"
+
+
+@pytest.mark.asyncio
+async def test_service_pins_lookups_to_snapshot_and_keeps_review_objections(
+    monkeypatch,
+):
+    current = chapter("Minimum DSCR is to be confirmed.")
+    snapshot_source = {"upload_id": str(uuid4()), "sha256": "a" * 64}
+    objection = EditReviewObjection(
+        chapter_title="Implementation",
+        explanation="No supplied source states 70% CPI indexation.",
+    )
+    queried = []
+
+    async def query(**kwargs):
+        queried.append(kwargs)
+        return json.dumps({"success": True})
+
+    monkeypatch.setattr("app.services.cnb.edits.query_concept_note_source", query)
+
+    async def plan(request, chapters, context, *, source_lookup, **kwargs):
+        # An index the snapshot never held cannot answer from a newer upload.
+        outside = json.loads(await source_lookup(2, "Is the amendment signed?"))
+        assert outside["error_code"] == "concept_note_source_not_selected"
+        assert json.loads(await source_lookup(1, "Is the amendment signed?"))["success"]
+        raise EditOperationError(
+            "unsupported_edit", "Rejected.", status_code=422, objections=[objection]
+        )
+
+    repository = SimpleNamespace(
+        start=AsyncMock(return_value=(SimpleNamespace(proposal_id=uuid4()), True)),
+        finish=AsyncMock(return_value="failed"),
+    )
+    service = ConceptNoteEditService(
+        repository,
+        SimpleNamespace(list_chapters=AsyncMock(return_value=[current])),
+        SimpleNamespace(plan=plan),
+        workflow_sessions="sessions",
+    )
+
+    @asynccontextmanager
+    async def locked(run):
+        yield run, {"selected_sources": [snapshot_source]}
+
+    service.locked_context = locked
+    result = await service._propose(
+        SimpleNamespace(run_id=uuid4(), user_id="owner", context_summary={}),
+        EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+        token="token-1",
+        recent_messages=None,
+    )
+
+    assert result == "failed"
+    assert repository.finish.await_args.kwargs["review_objections"] == [objection]
+    [call] = queried
+    assert call["expected_source"] == (snapshot_source["upload_id"], "a" * 64)
+    assert call["token"] == "token-1"
+    assert call["session_factory"] == "sessions"
+    assert call["include_visual_context"] is False
+
+
+@pytest.mark.asyncio
+async def test_chat_tool_returns_review_objections_for_a_rejected_proposal(
+    monkeypatch,
+):
+    now = datetime.now(UTC)
+    proposal = EditProposalResponse(
+        proposal_id=uuid4(),
+        run_id=uuid4(),
+        instruction="Fill the gaps.",
+        scope=EditScope(),
+        status="failed",
+        error_code="unsupported_edit",
+        review_objections=[
+            EditReviewObjection(
+                chapter_title="Financing plan",
+                explanation="No supplied source states 70% CPI indexation.",
+            )
+        ],
+        created_at=now,
+        updated_at=now,
+    )
+    service = SimpleNamespace(propose=AsyncMock(return_value=proposal))
+    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
+    monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
+    monkeypatch.setattr(
+        edit_tools,
+        "ConceptNoteRunService",
+        lambda session, cc_client: SimpleNamespace(
+            get_authorized_run=AsyncMock(return_value="run"),
+            cc_client=SimpleNamespace(close=AsyncMock()),
+        ),
+    )
+
+    @asynccontextmanager
+    async def sessions():
+        yield None
+
+    [tool] = edit_tools.build_concept_note_edit_tools(
+        session_factory=sessions,
+        run_id=proposal.run_id,
+        user_id="owner",
+        token_ref={"value": "token-1"},
+        request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+    )
+    context = ToolContext(
+        context=None,
+        tool_name="concept_note_edit_propose",
+        tool_call_id="edit",
+        tool_arguments="{}",
+    )
+    result = json.loads(await tool.on_invoke_tool(context, "{}"))
+
+    assert result["error_code"] == "unsupported_edit"
+    assert result["data"]["review_objections"] == [
+        {
+            "chapter_title": "Financing plan",
+            "explanation": "No supplied source states 70% CPI indexation.",
+        }
+    ]
+    assert service.propose.await_args.kwargs["token"] == "token-1"
+
+
+async def invoke_query_source(tool, question, source_index=1):
+    context = ToolContext(
+        context=None, tool_name="query_source", tool_call_id=question, tool_arguments="{}"
+    )
+    return json.loads(
+        await tool.on_invoke_tool(
+            context, json.dumps({"source_index": source_index, "question": question})
+        )
+    )
+
+
+@pytest.mark.asyncio
+async def test_concurrent_reviewers_share_one_in_flight_source_read():
+    release = asyncio.Event()
+    calls = []
+
+    async def lookup(source_index, question):
+        calls.append(question)
+        await release.wait()
+        return json.dumps({"success": True, "data": {"excerpts": []}})
+
+    cache = {}
+    reviewers = [
+        build_source_query_tool(
+            lookup, stage="reviewing", max_queries=1, max_answer_chars=1000, cache=cache
+        )
+        for _ in range(2)
+    ]
+    pending = [
+        asyncio.create_task(invoke_query_source(tool, "Is the tranche drawn?"))
+        for tool in reviewers
+    ]
+    await asyncio.sleep(0)
+    release.set()
+    results = await asyncio.gather(*pending)
+
+    assert calls == ["Is the tranche drawn?"]
+    assert all(result["success"] for result in results)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failure", [RuntimeError("source store down"), "not json"])
+async def test_a_lookup_that_raises_or_returns_non_json_stays_retryable(failure):
+    calls = []
+
+    async def lookup(source_index, question):
+        calls.append(question)
+        if len(calls) > 1:
+            return json.dumps({"success": True, "data": {"excerpts": []}})
+        if isinstance(failure, Exception):
+            raise failure
+        return failure
+
+    tool = build_source_query_tool(
+        lookup, stage="planning", max_queries=2, max_answer_chars=1000, cache={}
+    )
+    context = ToolContext(
+        context=None, tool_name="query_source", tool_call_id="q", tool_arguments="{}"
+    )
+    arguments = json.dumps({"source_index": 1, "question": "Is the tranche drawn?"})
+
+    # The SDK turns the raised error into a tool message; the retry must read again.
+    await tool.on_invoke_tool(context, arguments)
+    retried = json.loads(await tool.on_invoke_tool(context, arguments))
+
+    assert len(calls) == 2
+    assert retried["success"] is True
+
+
+def test_long_source_answers_keep_whole_quotations_and_say_what_was_left_out():
+    answer = json.dumps(
+        {
+            "success": True,
+            "data": {
+                "excerpts": [{"text": "a" * 600, "page": 1}, {"text": "b" * 600, "page": 2}],
+                "caveats": [],
+            },
+        }
+    )
+
+    bounded = json.loads(bound_source_answer(answer, 1000))
+
+    assert bounded["data"]["excerpts"] == [{"text": "a" * 600, "page": 1}]
+    assert "1 more quotations were left out" in bounded["data"]["caveats"][0]
+    assert bound_source_answer(answer, 5000) == answer
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("route", ["propose", "refine"])
+async def test_edit_routes_accept_any_bearer_scheme_case(route):
+    service = SimpleNamespace(
+        propose=AsyncMock(return_value="proposal"),
+        repository=SimpleNamespace(get=AsyncMock()),
+    )
+    run = SimpleNamespace(run_id=uuid4(), user_id="owner", status="active")
+    request = EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+
+    if route == "propose":
+        await edit_routes.propose_edit(request, run, service, authorization="bearer token-1")
+    else:
+        await edit_routes.refine_edit_proposal(
+            uuid4(), request, run, service, authorization="BEARER token-1"
+        )
+
+    assert service.propose.await_args.kwargs["token"] == "token-1"
+
+
+def test_a_large_rewrite_trims_review_quotations_instead_of_failing():
+    def size(value):
+        return len(json.dumps(value))
+
+    excerpts = [{"source_index": "1", "text": f"Quotation {i} " + "x" * 80} for i in range(10)]
+    payload = {
+        "chapter": {"body_markdown": "Body."},
+        "run_context": {"source_excerpts": excerpts},
+        "changes": [{"before": "b" * 300, "after": "a" * 300}],
+    }
+    full = size(["prompt", payload])
+
+    assert fit_review_evidence(payload, "prompt", count=size, limit=full) is payload
+    trimmed = fit_review_evidence(payload, "prompt", count=size, limit=full - 400)
+    kept = trimmed["run_context"]["source_excerpts"]
+    assert kept == excerpts[: len(kept)] and 0 < len(kept) < len(excerpts)
+    assert trimmed["run_context"]["source_excerpts_omitted"] == len(excerpts) - len(kept)
+    assert size(["prompt", trimmed]) <= full - 400
+    assert payload["run_context"]["source_excerpts"] == excerpts
+    # The chapter and changes alone must still fit; otherwise review stays a context limit.
+    assert fit_review_evidence(payload, "prompt", count=size, limit=600) is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", ["pending", "running"])
+async def test_no_edit_is_planned_while_a_new_source_rewrites_chapters(status):
+    repository = SimpleNamespace(
+        start=AsyncMock(), replay=AsyncMock(return_value=None)
+    )
+    service = ConceptNoteEditService(
+        repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
+    )
+
+    @asynccontextmanager
+    async def locked(run):
+        yield SimpleNamespace(
+            context_summary={"source_revalidation": {"status": status}}
+        ), {}
+
+    service.locked_context = locked
+    with pytest.raises(EditOperationError) as error:
+        await service._propose(
+            SimpleNamespace(run_id=uuid4(), user_id="owner"),
+            EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+            token="token",
+            recent_messages=None,
+        )
+
+    assert error.value.code == "sources_updating"
+    repository.start.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_a_replayed_request_returns_its_proposal_while_sources_update():
+    async with _workspace_repository() as (_, sessions):
+        repository = ConceptNoteEditRepository(sessions)
+        run = SimpleNamespace(run_id=uuid4(), user_id="owner")
+        request = EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+        stored, _ = await repository.start(
+            run_id=run.run_id, user_id="owner", request=request
+        )
+        service = ConceptNoteEditService(
+            repository, SimpleNamespace(), SimpleNamespace(), workflow_sessions=None
+        )
+
+        @asynccontextmanager
+        async def locked(run):
+            yield SimpleNamespace(
+                context_summary={"source_revalidation": {"status": "pending"}}
+            ), {}
+
+        service.locked_context = locked
+
+        # A replay resolves to the stored proposal instead of the source guard.
+        replayed = await service._propose(
+            run, request, token="token", recent_messages=None
+        )
+        assert replayed.proposal_id == stored.proposal_id
+
+        # A new request still waits for the sources and stores nothing.
+        with pytest.raises(EditOperationError) as error:
+            await service._propose(
+                run,
+                EditProposalRequest(
+                    instruction="Fill the gaps.", idempotency_key=uuid4()
+                ),
+                token="token",
+                recent_messages=None,
+            )
+        assert error.value.code == "sources_updating"
+        async with sessions() as session:
+            stored_ids = (
+                await session.scalars(select(ConceptNoteEditProposal.proposal_id))
+            ).all()
+        assert stored_ids == [stored.proposal_id]
+
+
+@pytest.mark.asyncio
+async def test_rejection_objections_persist_and_planning_state_expires():
+    async with _workspace_repository() as (_, sessions):
+        repository = ConceptNoteEditRepository(sessions)
+        run_id = uuid4()
+
+        def request():
+            return EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4())
+
+        rejected, _ = await repository.start(run_id=run_id, user_id="owner", request=request())
+        assert await edit_planning_in_progress(sessions, run_id)
+        objection = EditReviewObjection(
+            chapter_title="Financing plan",
+            explanation="No supplied source states 70% CPI indexation.",
+        )
+        await repository.finish(
+            run_id=run_id,
+            user_id="owner",
+            proposal_id=rejected.proposal_id,
+            base_revisions={},
+            changes=[],
+            error_code="unsupported_edit",
+            review_objections=[objection],
+        )
+        restored = await repository.get(
+            run_id=run_id, user_id="owner", proposal_id=rejected.proposal_id
+        )
+        assert restored.status == "failed"
+        assert restored.review_objections == [objection]
+        assert not await edit_planning_in_progress(sessions, run_id)
+
+        # An interrupted plan must not hold source revalidation back forever.
+        abandoned, _ = await repository.start(
+            run_id=run_id, user_id="owner", request=request()
+        )
+        async with sessions() as session, session.begin():
+            await session.execute(
+                update(ConceptNoteEditProposal)
+                .where(ConceptNoteEditProposal.proposal_id == abandoned.proposal_id)
+                .values(updated_at=datetime.now(UTC) - timedelta(minutes=11))
+            )
+        assert not await edit_planning_in_progress(sessions, run_id)
+
+
+@pytest.mark.asyncio
+async def test_chat_tool_reports_proposal_scope_and_source_updates(monkeypatch):
+    now = datetime.now(UTC)
+
+    def change(title, start):
+        return EditChange(
+            change_id=uuid4(),
+            chapter_id=uuid4(),
+            chapter_title=title,
+            base_revision=1,
+            start=start,
+            before="[Information needed: x]",
+            after="Filled.",
+            kind="factual",
+            group_id="g",
+            source_refs=["5"],
+        )
+
+    proposal = EditProposalResponse(
+        proposal_id=uuid4(),
+        run_id=uuid4(),
+        instruction="Fill the gaps.",
+        scope=EditScope(),
+        status="proposed",
+        changes=[change("Financing plan", 0), change("Financing plan", 9), change("Risk management", 0)],
+        created_at=now,
+        updated_at=now,
+    )
+    service = SimpleNamespace(
+        propose=AsyncMock(
+            side_effect=[proposal, EditOperationError("sources_updating", "Wait.")]
+        )
+    )
+    monkeypatch.setattr(edit_tools, "get_edit_service", lambda: service)
+    monkeypatch.setattr(edit_tools, "CityCatalystClient", lambda **kwargs: None)
+    monkeypatch.setattr(
+        edit_tools,
+        "ConceptNoteRunService",
+        lambda session, cc_client: SimpleNamespace(
+            get_authorized_run=AsyncMock(return_value="run"),
+            cc_client=SimpleNamespace(close=AsyncMock()),
+        ),
+    )
+
+    @asynccontextmanager
+    async def sessions():
+        yield None
+
+    [tool] = edit_tools.build_concept_note_edit_tools(
+        session_factory=sessions,
+        run_id=proposal.run_id,
+        user_id="owner",
+        token_ref={"value": "token-1"},
+        request=EditProposalRequest(instruction="Fill the gaps.", idempotency_key=uuid4()),
+    )
+    context = ToolContext(
+        context=None, tool_name="concept_note_edit_propose", tool_call_id="edit", tool_arguments="{}"
+    )
+
+    proposed = json.loads(await tool.on_invoke_tool(context, "{}"))
+    assert proposed["data"]["chapters"] == [
+        {"title": "Financing plan", "change_count": 2},
+        {"title": "Risk management", "change_count": 1},
+    ]
+    updating = json.loads(await tool.on_invoke_tool(context, "{}"))
+    assert updating["error_code"] == "sources_updating"
+
+
+@pytest.mark.asyncio
+async def test_unbound_source_lookup_fails_closed():
+    result = json.loads(await unavailable_source_lookup(1, "What is the DSCR?"))
+    assert result["success"] is False
+    assert result["error_code"] == "source_lookup_unavailable"
 
 
 @pytest.mark.asyncio
@@ -284,7 +911,7 @@ async def test_operation_deadline_cancels_pending_work_and_returns_retryable_err
     cancelled = asyncio.Event()
 
     class SlowPlanner(ConceptNoteEditPlanner):
-        async def _plan(self, *args):
+        async def _plan(self, *args, **kwargs):
             try:
                 await asyncio.Event().wait()
             finally:
@@ -352,21 +979,137 @@ async def test_repair_remains_inside_the_original_operation_deadline():
     assert repairing.is_set() and cancelled.is_set()
 
 
-def chapter(body: str) -> WorkspaceChapterSnapshot:
-    return WorkspaceChapterSnapshot(
-        chapter_id=uuid4(),
-        chapter_ref=None,
-        title="Implementation",
-        position=0,
-        status="needs_review",
-        required=True,
-        user_locked=False,
-        body_markdown=body,
-        revision_number=1,
+BOUND_AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
+
+
+def planner_settings(timeout_seconds: float | None = None):
+    """Test settings, optionally with a short operation deadline."""
+    settings = get_settings().model_copy(deep=True)
+    settings.openrouter_api_key = "test-key"
+    if timeout_seconds is not None:
+        settings.llm.generation.prompt_budget.cnb_edits = (
+            settings.llm.generation.prompt_budget.cnb_edits.model_copy(
+                update={"timeout_seconds": timeout_seconds}
+            )
+        )
+    return settings
+
+
+def stalled_runner(started: asyncio.Event | None = None):
+    """A runner whose every model call hangs; the returned list counts the calls."""
+    calls: list[object] = []
+
+    class StalledRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            calls.append(agent)
+            if started is not None:
+                started.set()
+            await asyncio.Event().wait()
+
+    return StalledRunner, calls
+
+
+def bound_reopen(
+    state: str = "open",
+) -> tuple[WorkspaceChapterSnapshot, EditProposalRequest]:
+    """A chapter whose one gap has an accepted narrowing and a bound answer."""
+    current = chapter(f"Finance: {BOUND_AMOUNT_MARKER}")
+    gap = gap_snapshot(
+        "What amount will the city contribute?",
+        state=state,
+        original="Confirm the instrument and amount.",
+        passages=("The city will use stormwater utility funds.",),
     )
+    current.gaps.append(gap)
+    request = edit_request(
+        "The city contribution is USD 2,500,000.", chapter=current, gap=gap
+    )
+    return current, request
 
 
-def reviewed_plan(current, changes, supports):
+@pytest.mark.asyncio
+async def test_bound_reopen_retries_initial_planner_timeout_then_reviews_fresh_changes():
+    current, request = bound_reopen()
+    planner_calls = 0
+    reviewed_after: list[str] = []
+
+    class StalledThenFreshRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal planner_calls
+            if agent.output_type is EditAgentOutput:
+                planner_calls += 1
+                if planner_calls == 1:
+                    # Stage a stale candidate before the first planner slice expires.
+                    amount = "USD 2,000,000."
+                else:
+                    amount = "USD 2,500,000."
+                await propose_with_tools(
+                    agent,
+                    BOUND_AMOUNT_MARKER,
+                    amount,
+                    kind="factual",
+                    user_input_quote="USD 2,500,000",
+                )
+                if planner_calls == 1:
+                    await asyncio.Event().wait()
+                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+            # Only the fresh candidate reaches the independent reviewer.
+            [change] = json.loads(payload)["changes"]
+            [target] = change["gap_targets"]
+            assert target["original_question"] == "Confirm the instrument and amount."
+            assert target["accepted_passages"] == [
+                "The city will use stormwater utility funds."
+            ]
+            reviewed_after.append(change["after"])
+            review = single_review("user", "complete", "The user states the amount.")
+            return SimpleNamespace(final_output=review)
+
+    plan = await ConceptNoteEditPlanner(
+        planner_settings(1.0), runner=StalledThenFreshRunner
+    ).plan(request, [current], {})
+    assert planner_calls == 2
+    assert reviewed_after == ["USD 2,500,000."]
+    assert [change.after for change in plan.changes] == ["USD 2,500,000."]
+
+
+@pytest.mark.parametrize("case,attempts", [("unbound", 1), ("caveat", 1), ("open", 2)])
+async def test_planner_deadline_only_retries_a_reopened_gap(case, attempts):
+    if case == "unbound":
+        current, request = (
+            chapter("Finance: nothing to answer."),
+            edit_request("Use digits."),
+        )
+    else:
+        current, request = bound_reopen(state=case)
+    runner, calls = stalled_runner()
+    with pytest.raises(EditOperationError) as error:
+        await ConceptNoteEditPlanner(planner_settings(0.5), runner=runner).plan(
+            request, [current], {}
+        )
+    assert error.value.code == "planning_timeout"
+    assert len(calls) == attempts
+
+
+@pytest.mark.asyncio
+async def test_external_cancellation_never_retries_planner():
+    current, request = bound_reopen()
+    started = asyncio.Event()
+    runner, calls = stalled_runner(started)
+    task = asyncio.create_task(
+        ConceptNoteEditPlanner(planner_settings(5), runner=runner).plan(
+            request, [current], {}
+        )
+    )
+    await started.wait()
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert len(calls) == 1
+
+
+def reviewed_plan(current, changes, supports, coverages=None):
     resolved = [
         PlannedTextChange(**change, chapter_id=current.chapter_id) for change in changes
     ]
@@ -375,6 +1118,7 @@ def reviewed_plan(current, changes, supports):
             {
                 "change_index": index,
                 "support": support,
+                "gap_coverage": (coverages or ["none"] * len(supports))[index],
                 "explanation": "Reviewed in chapter and instruction context",
             }
             for index, support in enumerate(supports)
@@ -912,3 +1656,338 @@ def test_context_snapshot_changes_when_citycatalyst_data_changes():
     assert before == context_snapshot(CITY_CONTEXT, "city")
     assert before != context_snapshot(updated, "city")
     assert context_snapshot(CITY_CONTEXT, "manual_population") is None
+
+
+FINANCE_MARKER = "[Information needed: Confirm the instrument and amount.]"
+AMOUNT_MARKER = "[Information needed: What amount will the city contribute?]"
+FUNDS = "The city will use stormwater utility funds"
+
+
+@pytest.mark.parametrize(
+    "replacement,coverage,hint,mode",
+    [
+        (FUNDS, "complete", False, "fill"),
+        (f"{FUNDS}. {AMOUNT_MARKER}", "partial", True, "narrow"),
+        (FUNDS, "partial", True, None),
+        (f"{FUNDS}. {AMOUNT_MARKER}", "complete", False, None),
+    ],
+)
+def test_reviewed_coverage_decides_the_transition(replacement, coverage, hint, mode):
+    current = chapter(f"Finance: {FINANCE_MARKER}")
+    gap = gap_snapshot("Confirm the instrument and amount.")
+    current.gaps.append(gap)
+    request = EditProposalRequest(
+        instruction=FUNDS,
+        idempotency_key=uuid4(),
+        scope=EditScope(
+            focused_chapter_id=current.chapter_id,
+            gap_id=gap.gap_id,
+            gap_version=gap.version,
+            answer_complete=hint,
+        ),
+    )
+    change = change_at(
+        current.body_markdown, FINANCE_MARKER, replacement, FUNDS, "finance"
+    )
+    plan = reviewed_plan(current, [change], ["user"], [coverage])
+    if mode is None:
+        with pytest.raises(EditOperationError) as error:
+            validate_edit_plan(request, [current], plan)
+        assert error.value.code == "invalid_review"
+    else:
+        [accepted] = validate_edit_plan(request, [current], plan)
+        assert [(b.gap_id, b.mode) for b in accepted.gap_bindings] == [
+            (gap.gap_id, mode)
+        ]
+
+
+def test_bound_form_refuses_a_superseded_gap():
+    current, request = bound_reopen()
+    current.gaps[0] = replace(current.gaps[0], version=2)
+    with pytest.raises(EditOperationError) as error:
+        bind_answer_gap(request, [current])
+    assert error.value.code == "gap_changed"
+
+
+def test_edits_require_a_chapter_for_bound_answers_and_factual_support_for_estimates():
+    with pytest.raises(ValueError, match="gap_id requires"):
+        EditProposalRequest(
+            instruction=FUNDS,
+            idempotency_key=uuid4(),
+            scope={"gap_id": uuid4(), "gap_version": 1},
+        )
+    with pytest.raises(ValueError, match="an estimate is a factual change"):
+        PlannedTextChange(
+            chapter_id=uuid4(),
+            start=0,
+            before="Old",
+            after="About 2 million",
+            group_id="amount",
+            kind="wording",
+            estimate=True,
+        )
+
+
+@pytest.mark.parametrize("repair", ["corrected", "removed"])
+async def test_optional_funding_scope_objection_repairs_without_losing_bound_gap_change(
+    repair,
+):
+    target_question = (
+        "What is the City's contribution source, amount and proposed budget status?"
+    )
+    target_answer = (
+        "The city will use stormwater utility funds for its contribution of USD "
+        "2,500,000 in its proposed 2027 budget."
+    )
+    sibling_question = (
+        "Confirm the project and phase capability evidence, available local match, "
+        "applicable project-phase debt or bonding authority, and authorized official."
+    )
+    quote = "No borrowing is proposed for the City's contribution."
+    objection = (
+        "Retain applicable project-phase debt or bonding authority in the remaining "
+        "marker."
+    )
+    dropped = (
+        quote
+        + " "
+        + marker(
+            "Confirm the project and phase capability evidence, available local match, and authorized official."
+        )
+    )
+    repaired = (
+        quote
+        + " "
+        + marker(
+            "Confirm the project and phase capability evidence, available local match, whether applicable project-phase debt or bonding authority applies, and authorized official."
+        )
+    )
+    target_chapter = chapter(f"Financing: {marker(target_question)}")
+    target_gap = gap_snapshot(target_question)
+    target_chapter.gaps.append(target_gap)
+    sibling_chapter = chapter(f"Capability: {marker(sibling_question)}", position=1)
+    sibling_chapter.gaps.append(gap_snapshot(sibling_question))
+    chapters = [target_chapter, sibling_chapter]
+    request = edit_request(
+        f"{target_answer} {quote}", chapter=target_chapter, gap=target_gap
+    )
+    target = factual(
+        marker(target_question), target_answer, target_answer, group="target"
+    )
+
+    def sibling(after: str) -> dict:
+        return factual(marker(sibling_question), after, quote, group="sibling")
+
+    editor_calls = 0
+
+    class OptionalRepairRunner(StreamingTestRunner):
+        @staticmethod
+        async def run(agent, payload, **kwargs):
+            nonlocal editor_calls
+            data = json.loads(payload)
+            if agent.output_type is EditAgentOutput:
+                editor_calls += 1
+                if editor_calls == 1:
+                    await propose_replacements(agent, [target, sibling(dropped)])
+                else:
+                    assert objection in payload
+                    retry = [sibling(repaired)] if repair == "corrected" else []
+                    await propose_replacements(agent, [target, *retry])
+                return SimpleNamespace(final_output=EditAgentOutput(intent="edit"))
+            after = data["changes"][0]["after"]
+            if after == dropped:
+                review = single_review("unsupported", "partial", objection)
+            else:
+                coverage = "partial" if "[Information needed" in after else "complete"
+                review = single_review(
+                    "user", coverage, "The user's facts cover the grounded part."
+                )
+            return SimpleNamespace(final_output=review)
+
+    plan = await ConceptNoteEditPlanner(
+        planner_settings(), runner=OptionalRepairRunner
+    ).plan(request, chapters, {})
+    # The rejected optional sibling costs one bounded repair; the target is unchanged.
+    assert editor_calls == 2
+    changes = validate_edit_plan(request, chapters, plan)
+    [bound] = [c for c in changes if c.chapter_id == target_chapter.chapter_id]
+    assert bound.after == target_answer
+    assert [(b.gap_id, b.gap_version, b.mode) for b in bound.gap_bindings] == [
+        (target_gap.gap_id, target_gap.version, "fill")
+    ]
+    sibling_changes = [c for c in changes if c.chapter_id == sibling_chapter.chapter_id]
+    if repair == "removed":
+        assert sibling_changes == []
+    else:
+        [sibling_change] = sibling_changes
+        assert sibling_change.after == repaired
+        assert [b.mode for b in sibling_change.gap_bindings] == ["narrow"]
+
+
+def test_review_input_never_uses_another_gaps_saved_answers_for_provenance():
+    lead_marker = marker("Confirm the lead partner.")
+    budget_marker = marker("Confirm the budget.")
+    current = chapter(f"Lead: {lead_marker} Budget: {budget_marker}")
+    current.gaps.extend(
+        [
+            gap_snapshot("Confirm the lead partner.", answered="Lincoln Park Council"),
+            gap_snapshot("Confirm the budget.", answered="EUR 4 million"),
+        ]
+    )
+    body = current.body_markdown
+    request = edit_request("Other text.")
+    lead = change_at(
+        body, lead_marker, "Lincoln Park Council will lead.", "EUR 4 million", "lead"
+    )
+    planned_lead = PlannedTextChange(**lead, chapter_id=current.chapter_id)
+    bindings = gap_bindings_for_change(planned_lead, current, request.scope)
+    [target] = gap_review_targets(planned_lead, current, bindings)
+    assert target["saved_answers"] == "Lincoln Park Council"
+    # The budget's saved answer is evidence for the budget gap only.
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            request, [current], reviewed_plan(current, [lead], ["user"], ["complete"])
+        )
+    assert error.value.code == "invalid_user_input"
+
+    budget = change_at(
+        body, budget_marker, "The budget is EUR 4 million.", "EUR 4 million", "budget"
+    )
+    [accepted] = validate_edit_plan(
+        request, [current], reviewed_plan(current, [budget], ["user"], ["complete"])
+    )
+    assert accepted.gap_bindings[0].mode == "fill"
+
+
+def test_estimate_confirmation_requires_review_of_the_actual_estimate():
+    estimate = "an estimated EUR 2 million, the City's unconfirmed figure"
+    body = f"Budget: {estimate}. Schedule: 12 months."
+    confirmed = "EUR 2.1 million, confirmed by the city council"
+    current = chapter(body)
+    current.gaps.append(caveat_gap("Confirm the budget.", estimate))
+    instruction = "The city confirms EUR 2.1 million and 14 months."
+    request = edit_request(instruction)
+    confirm = change_at(body, estimate, confirmed, "EUR 2.1 million", "budget")
+
+    def modes(chapter_snapshot, change, *, scoped=request, coverage="complete"):
+        [accepted] = validate_edit_plan(
+            scoped,
+            [chapter_snapshot],
+            reviewed_plan(chapter_snapshot, [change], ["user"], [coverage]),
+        )
+        return [binding.mode for binding in accepted.gap_bindings]
+
+    # Without a reviewed confirmation the caveat keeps its estimate.
+    with pytest.raises(EditOperationError) as error:
+        modes(current, confirm, coverage="none")
+    assert error.value.code == "invalid_review"
+    assert modes(current, confirm) == ["confirm_estimate"]
+
+    # An unrelated factual edit, even inside a request bound to the caveat, never resolves it.
+    unrelated = change_at(body, "12 months", "14 months", "14 months", "schedule")
+    bound = edit_request(instruction, chapter=current, gap=current.gaps[0])
+    with pytest.raises(EditOperationError) as error:
+        modes(current, unrelated, scoped=bound)
+    assert error.value.code == "invalid_review"
+
+    # A partial-span confirmation of the unique estimate binds the same gap.
+    partial = change_at(body, "EUR 2 million", "EUR 2.1 million", "EUR 2.1 million", "budget")
+    assert modes(current, partial) == ["confirm_estimate"]
+
+    # Two gaps for the same question and estimate bind together.
+    twins = chapter(body)
+    twins.gaps.extend(caveat_gap("Confirm the budget.", estimate) for _ in range(2))
+    assert modes(twins, confirm) == ["confirm_estimate", "confirm_estimate"]
+
+    # Different questions sharing one estimate: only the form's gap may bind.
+    shared = chapter(body)
+    budget_gap = caveat_gap("Confirm the budget.", estimate)
+    shared.gaps.extend([budget_gap, caveat_gap("Confirm the schedule.", estimate)])
+    with pytest.raises(EditOperationError) as error:
+        modes(shared, confirm)
+    assert error.value.code == "ambiguous_gap"
+    scoped = edit_request(instruction, chapter=shared, gap=budget_gap)
+    [bound_one] = validate_edit_plan(
+        scoped, [shared], reviewed_plan(shared, [confirm], ["user"], ["complete"])
+    )
+    assert [binding.gap_id for binding in bound_one.gap_bindings] == [budget_gap.gap_id]
+
+
+def test_edit_plan_rejects_duplicate_candidate_estimate_anchor():
+    """CC-1239: a newly estimated passage must be one uniquely identifiable copy.
+
+    The fill would repeat the estimate already in the chapter, so the candidate
+    is refused before it can reach the reviewer's gap transition.
+    """
+    estimate = "an estimated EUR 2 million"
+    budget_marker = marker("Confirm the budget.")
+    current = chapter(f"Budget: {budget_marker}. Summary: {estimate}.")
+    current.gaps.append(gap_snapshot("Confirm the budget."))
+    fill = change_at(
+        current.body_markdown,
+        budget_marker,
+        estimate,
+        "EUR 2 million",
+        "budget",
+        estimate=True,
+    )
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            edit_request("The budget is about EUR 2 million."),
+            [current],
+            reviewed_plan(current, [fill], ["user"], ["complete"]),
+        )
+    assert error.value.code == "ambiguous_gap"
+
+    # A narrowing whose prose copies an existing caveat anchor is refused too.
+    caveat_text = "a provisional schedule of 12 months"
+    schedule_marker = marker("Confirm the schedule.")
+    narrowing = chapter(f"Plan: {caveat_text}. Gap: {schedule_marker}")
+    narrowing.gaps.extend(
+        [
+            caveat_gap("Confirm the budget.", caveat_text),
+            gap_snapshot("Confirm the schedule."),
+        ]
+    )
+    narrow = change_at(
+        narrowing.body_markdown,
+        schedule_marker,
+        f"{marker('Confirm the completion date.')} Note: {caveat_text}.",
+        caveat_text,
+        "schedule",
+    )
+    with pytest.raises(EditOperationError) as error:
+        validate_edit_plan(
+            edit_request(f"The schedule is {caveat_text}."),
+            [narrowing],
+            reviewed_plan(narrowing, [narrow], ["user"], ["partial"]),
+        )
+    assert error.value.code == "ambiguous_gap"
+
+
+def test_ambiguous_existing_estimate_cannot_be_edited_unbound():
+    """CC-1239: a repeated estimate cannot be edited through an unbound change.
+
+    No gap can be proven as the target of one copy, so the edit is refused for
+    both factual and wording changes instead of rewriting the estimate silently.
+    """
+    estimate = "an estimated EUR 2 million"
+    current = chapter(f"Budget: {estimate}. Finance: {estimate}.")
+    current.gaps.append(caveat_gap("Confirm the budget.", estimate))
+    request = edit_request("The city confirms EUR 2.1 million.")
+    factual_change = change_at(
+        current.body_markdown,
+        estimate,
+        "EUR 2.1 million, confirmed by the city council",
+        "EUR 2.1 million",
+        "budget",
+    )
+    wording = {**factual_change, "kind": "wording", "user_input_quote": None}
+    for change in (factual_change, wording):
+        with pytest.raises(EditOperationError) as error:
+            validate_edit_plan(
+                request,
+                [current],
+                reviewed_plan(current, [change], ["user"], ["complete"]),
+            )
+        assert error.value.code == "ambiguous_gap"

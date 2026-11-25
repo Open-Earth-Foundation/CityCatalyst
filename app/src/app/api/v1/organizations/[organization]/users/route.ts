@@ -39,7 +39,7 @@ import { NextResponse } from "next/server";
 export const DELETE = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
 
-  UserService.validateIsAdminOrOrgAdmin(session, organizationId);
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
 
   // Get Query Parameter (email) from the URL
   const email = req.nextUrl.searchParams.get("email");

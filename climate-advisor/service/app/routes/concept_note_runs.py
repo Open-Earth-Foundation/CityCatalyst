@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+from collections.abc import Awaitable
 from contextlib import suppress
-from typing import Annotated
+from typing import Annotated, TypeVar
 from uuid import UUID
 
 from app.config.settings import get_settings
+from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session
 from app.models.cnb.chat_suggestions import (
     ChatSuggestionsRequest,
@@ -21,6 +24,7 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteDraftResponse,
 )
 from app.models.cnb.concept_note_runs import (
+    ConceptNoteChatThreadListResponse,
     ConceptNotePopulationRequest,
     ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
@@ -31,7 +35,18 @@ from app.models.cnb.funding_catalogue import (
     FundingCatalogueResponse,
     FundingSelectionRequest,
 )
+from app.models.cnb.gap_question import (
+    GapAnswersRequest,
+    GapQuestionOutput,
+    GapQuestionRequest,
+    GapSubQuestion,
+)
 from app.models.db.concept_note import ConceptNoteContextBundle as ContextBundleRow
+from app.persistence.concept_notes.edits import applied_gap_answers
+from app.persistence.concept_notes.gaps import (
+    LEGACY_GENERIC_GAP_RATIONALE,
+    save_partial_answer,
+)
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
 )
@@ -44,6 +59,7 @@ from app.services.cnb.chapter_drafting import (
 from app.services.cnb.chat_suggestions import (
     build_suggestion_context,
     generate_chat_suggestions,
+    generate_suggestion,
 )
 from app.services.cnb.context_bundle import (
     ContextBundleService,
@@ -54,16 +70,19 @@ from app.services.cnb.funding_selection import save_funding_selection
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.message_service import MessageService
+from app.utils.citycatalyst_auth import extract_bearer_token
+from app.utils.cnb_information_markers import find_information_marker
 from app.utils.cnb_observability import CNBInteraction
+from app.utils.mlflow_logging import (
+    async_start_run as start_mlflow_run,
+)
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_tags,
+    run_mlflow_io,
     set_span_outputs,
     start_trace_span,
     update_current_trace_context,
-)
-from app.utils.mlflow_logging import (
-    start_run as start_mlflow_run,
 )
 from fastapi import (
     APIRouter,
@@ -80,6 +99,157 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+GenerationResult = TypeVar("GenerationResult")
+
+
+async def _until_disconnect(
+    request: Request, result: Awaitable[GenerationResult]
+) -> GenerationResult:
+    """Cancel read-only generation when the browser abandons its request."""
+    generation = asyncio.ensure_future(result)
+
+    async def cancel_on_disconnect() -> None:
+        """Observe disconnects without consuming the request body."""
+        while not generation.done():
+            if await request.is_disconnected():
+                generation.cancel()
+                return
+            await asyncio.sleep(0.1)
+
+    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
+    try:
+        return await generation
+    finally:
+        disconnect_watcher.cancel()
+        with suppress(asyncio.CancelledError):
+            await disconnect_watcher
+
+
+@router.post("/concept-notes/{run_id}/gap-question", response_model=GapQuestionOutput)
+async def propose_gap_question(
+    run_id: UUID,
+    payload: GapQuestionRequest,
+    request: Request,
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> GapQuestionOutput:
+    """Read an authorized gap and suggest questions for its still-missing parts."""
+    run = await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    if draft_service is None:
+        raise HTTPException(status_code=503, detail="Draft service unavailable")
+    draft = await draft_service.load_state(run)
+    chapter = next(
+        (item for item in draft.chapters if item.chapter_id == payload.chapter_id), None
+    )
+    if chapter is None:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+    gap = next((item for item in chapter.gaps if item.gap_id == payload.gap_id), None)
+    # A caveat gap holds an estimate that the user can still confirm.
+    if payload.gap_id and (
+        gap is None or gap.state not in {"open", "processing", "caveat"}
+    ):
+        raise HTTPException(status_code=409, detail="Gap is no longer open")
+    # A narrowed gap asks exactly its persisted remainder, so no model call is needed.
+    if (
+        gap is not None
+        and gap.state in {"open", "processing"}
+        and gap.has_accepted_narrowing
+    ):
+        return GapQuestionOutput(
+            why_asking=(gap.why_asking or LEGACY_GENERIC_GAP_RATIONALE)[:240],
+            questions=[GapSubQuestion(question=gap.question, options=[])],
+        )
+    body = chapter.body_markdown or ""
+    # Legacy inline markers have no persisted gap ID, but must belong to this chapter.
+    if not payload.gap_id and payload.question not in body:
+        raise HTTPException(status_code=404, detail="Gap question not found")
+    question = gap.question if gap else payload.question or ""
+    # Center long chapters on the gap's marker, even when it is formatted
+    # differently from the question, so facts near it stay in context.
+    marker_start = find_information_marker(body, question)
+    # An estimate's text is the marker-free part to confirm, so center on it.
+    if gap is not None and gap.state == "caveat" and gap.resolution is not None:
+        estimate = gap.resolution.answer or ""
+        estimate_start = body.find(estimate) if estimate else -1
+        if estimate_start >= 0:
+            marker_start = estimate_start
+    start = max(0, min(marker_start - 6000, len(body) - 12000))
+    async with get_cnb_reference_session_factory()() as cnb_session:
+        previous_answers = await applied_gap_answers(
+            cnb_session, run_id=run_id, chapter_id=chapter.chapter_id, question=question
+        )
+    output = await _until_disconnect(
+        request,
+        generate_suggestion(
+            get_settings(),
+            {
+                "language": payload.language,
+                "chapter_title": chapter.title,
+                "chapter_excerpt": body[start : start + 12000],
+                "question": question,
+                "why_asking": gap.why_asking if gap else "",
+                "previous_answers": previous_answers,
+                # Saved on the gap version, so every device and teammate sees them.
+                "earlier_answers": (gap.answered_so_far or "") if gap else "",
+                "source_suggestions": [
+                    suggestion.model_dump() for suggestion in gap.suggestions
+                ]
+                if gap
+                else [],
+            },
+            "cnb_gap_question",
+            GapQuestionOutput,
+        ),
+    )
+    if output is None:
+        raise HTTPException(status_code=503, detail="Gap question unavailable")
+    return output
+
+
+@router.post(
+    "/concept-notes/{run_id}/gaps/{gap_id}/answers",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def save_gap_answers(
+    run_id: UUID,
+    gap_id: UUID,
+    payload: GapAnswersRequest,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+) -> Response:
+    """Save the answers given so far for an open gap version, without a chat turn.
+
+    The draft stays unchanged; the gap lists them as answered_so_far for every
+    viewer, and the next gap question asks only for what they miss.
+    """
+    await ConceptNoteRunService(session).get_authorized_run(
+        run_id=run_id, requested_user_id=user_id, authorization=authorization
+    )
+    async with get_cnb_reference_session_factory()() as cnb_session:
+        async with cnb_session.begin():
+            saved = await save_partial_answer(
+                cnb_session,
+                run_id=run_id,
+                gap_id=gap_id,
+                gap_version=payload.gap_version,
+                answer=payload.answers,
+                expected_previous=payload.expected_previous,
+                user_id=user_id,
+            )
+    if not saved:
+        raise HTTPException(
+            status_code=409,
+            detail="Gap is no longer open or its saved answers changed",
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(
@@ -114,22 +284,9 @@ async def propose_chat_questions(
     context = build_suggestion_context(
         payload, run, draft, bundle.context_bundle if bundle else {}, messages
     )
-    generation = asyncio.create_task(generate_chat_suggestions(get_settings(), context))
-
-    async def cancel_on_disconnect() -> None:
-        while not generation.done():
-            if await request.is_disconnected():
-                generation.cancel()
-                return
-            await asyncio.sleep(0.1)
-
-    disconnect_watcher = asyncio.create_task(cancel_on_disconnect())
-    try:
-        return await generation
-    finally:
-        disconnect_watcher.cancel()
-        with suppress(asyncio.CancelledError):
-            await disconnect_watcher
+    return await _until_disconnect(
+        request, generate_chat_suggestions(get_settings(), context)
+    )
 
 
 @router.get(
@@ -168,7 +325,7 @@ async def start_concept_note_run(
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
     interaction = CNBInteraction.START
-    with start_mlflow_run(
+    async with start_mlflow_run(
         run_name=interaction.mlflow_run_name,
         experiment_name=climate_advisor_experiment_name(),
         tags={
@@ -177,36 +334,37 @@ async def start_concept_note_run(
             "workflow_name": "concept_note_run_lifecycle",
             "interaction": interaction.value,
         },
-    ), start_trace_span(
-        name="CNB start",
-        span_type="CHAIN",
-        attributes={
-            "workflow": "CNB",
-            "workflow_name": "concept_note_run_lifecycle",
-            "interaction": interaction.value,
-        },
-    ) as span:
-        service = ConceptNoteRunService(session)
-        response = await service.start_run_and_schedule_context(
-            payload,
-            authorization=authorization,
-            context_bundle_service=context_bundle_service,
-        )
-        result = "created" if response.created else "replayed"
-        correlation_tags = {
-            "concept_note_run_id": str(response.run_id),
-            "result": result,
-        }
-        log_tags(correlation_tags)
-        update_current_trace_context(
-            tags={
+    ):
+        with start_trace_span(
+            name="CNB start",
+            span_type="CHAIN",
+            attributes={
                 "workflow": "CNB",
+                "workflow_name": "concept_note_run_lifecycle",
                 "interaction": interaction.value,
-                **correlation_tags,
             },
-            metadata=correlation_tags,
-        )
-        set_span_outputs(span, correlation_tags)
+        ) as span:
+            service = ConceptNoteRunService(session)
+            response = await service.start_run_and_schedule_context(
+                payload,
+                authorization=authorization,
+                context_bundle_service=context_bundle_service,
+            )
+            result = "created" if response.created else "replayed"
+            correlation_tags = {
+                "concept_note_run_id": str(response.run_id),
+                "result": result,
+            }
+            await run_mlflow_io(log_tags, correlation_tags)
+            update_current_trace_context(
+                tags={
+                    "workflow": "CNB",
+                    "interaction": interaction.value,
+                    **correlation_tags,
+                },
+                metadata=correlation_tags,
+            )
+            set_span_outputs(span, correlation_tags)
 
     return JSONResponse(
         status_code=201 if response.created else 200,
@@ -321,20 +479,61 @@ async def duplicate_concept_note_run(
     )
 
 
-@router.post(
-    "/concept-notes/{run_id}/chat/reset",
-    response_model=ConceptNoteRunResponse,
+@router.get(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteChatThreadListResponse,
 )
-async def reset_concept_note_chat(
+async def list_concept_note_chat_threads(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteChatThreadListResponse:
+    """List every chat attached to one concept note, newest first."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.list_chat_threads(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads",
+    response_model=ConceptNoteRunResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def start_concept_note_chat(
     run_id: UUID,
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ConceptNoteRunResponse:
-    """Replace one concept note's dedicated chat and remove its history."""
+    """Open a new chat on one concept note and make it active; history is kept."""
     service = ConceptNoteLifecycleService(session)
-    return await service.reset_chat(
+    return await service.start_chat(
         run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/chat/threads/{thread_id}/activate",
+    response_model=ConceptNoteRunResponse,
+)
+async def activate_concept_note_chat_thread(
+    run_id: UUID,
+    thread_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Switch one concept note back to a previously attached chat."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.activate_chat_thread(
+        run_id=run_id,
+        thread_id=thread_id,
         requested_user_id=user_id,
         authorization=authorization,
     )
@@ -408,17 +607,39 @@ async def get_concept_note_funding_catalogue(
 async def update_concept_note_application_context(
     run_id: UUID,
     payload: FundingSelectionRequest,
+    context_bundle_service: Annotated[
+        ContextBundleService | None,
+        Depends(get_context_bundle_service),
+    ],
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ConceptNoteApplicationContextResponse:
-    """Save a compatible funding selection on an authorized concept-note run."""
+    """Save a compatible funding selection on an authorized concept-note run.
+
+    A new template needs its own per-chapter source quotations, so the bundle
+    is refreshed in the background; a refresh failure never undoes the save.
+    """
     run = await ConceptNoteRunService(session).get_authorized_run(
         run_id=run_id,
         requested_user_id=user_id,
         authorization=authorization,
     )
-    return await save_funding_selection(session, run, payload)
+    response = await save_funding_selection(session, run, payload)
+    if context_bundle_service is not None:
+        try:
+            await context_bundle_service.refresh_if_stale(
+                user_id=user_id,
+                run_id=run_id,
+                token=extract_bearer_token(authorization),
+            )
+        except Exception:
+            logger.warning(
+                "Concept Note bundle refresh after funding change failed run_id=%s",
+                run_id,
+                exc_info=True,
+            )
+    return response
 
 
 @router.get(

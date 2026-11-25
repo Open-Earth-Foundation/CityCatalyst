@@ -61,6 +61,7 @@ import { Client, LangMap } from "@/util/types";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { db } from "@/models";
+import UserService from "@/backend/UserService";
 
 /** gets all available clients */
 export const GET = apiHandler(async (_req, { session }) => {
@@ -188,9 +189,7 @@ export const POST = apiHandler(async (_req, { session }) => {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
 
-  if (!session) {
-    throw new createHttpError.Unauthorized("Must be logged in!");
-  }
+  UserService.ensureIsAdmin(session);
 
   const body = await _req.json();
   const newClient = NewClientRequest.parse(body);

@@ -167,7 +167,7 @@ describe("MEED ranking adapter — downstream consumers", () => {
     expect(map?.ipcc_0052?.legal_assessment_present).toBe(true);
   });
 
-  it("flags a kept action whose legal assessment is missing", () => {
+  it("groups a kept action without a legal assessment as not assessed", () => {
     const payload = {
       data: {
         rankedActions: [
@@ -187,25 +187,51 @@ describe("MEED ranking adapter — downstream consumers", () => {
       toMeedPrioritizeCityResult(payload),
       new Map() as MeedActionIndex,
     );
-    expect(screening.flagged.map((f) => f.actionId)).toEqual([
+    expect(screening.groups.not_assessed.map((f) => f.actionId)).toEqual([
       "kept_but_unassessed",
     ]);
+    expect(screening.isEmpty).toBe(false);
   });
 
-  it("feeds legal screening real blocked actions with their reasons", () => {
+  it("groups ranked actions by municipal authority", () => {
     const screening = deriveLegalScreening(
       adapted,
       new Map() as MeedActionIndex,
     );
     expect(screening.isEmpty).toBe(false);
-    expect(screening.blocked).toHaveLength(19);
     expect(screening.includedCount).toBe(5);
+    expect(screening.groups.blocked.map((a) => a.actionId)).toEqual([
+      "ipcc_0053",
+    ]);
+    expect(screening.groups.conditional).toHaveLength(1);
+    expect(screening.groups.enabled).toHaveLength(1);
+    expect(screening.groups.not_assessed).toHaveLength(2);
+    const blocked = screening.groups.blocked[0];
+    expect(blocked.rank).toBe(2);
+    expect(blocked.standing?.verdict).toBe("conditional");
+    expect(blocked.standing?.score).toBe(0);
+    expect(blocked.standing?.justification).toContain("18.695");
+    // The map the adapter rebuilds carries the same ownership.
+    expect(
+      adapted.metadata?.hard_filter_evidence_by_action_id?.ipcc_0053
+        ?.legal_ownership_category,
+    ).toBe("blocked");
+  });
 
-    const blocked = screening.blocked.find((b) => b.actionId === "icare_0008")!;
+  it("keeps actions the backend removed before scoring, with their reasons", () => {
+    const screening = deriveLegalScreening(
+      adapted,
+      new Map() as MeedActionIndex,
+    );
+    expect(screening.excludedBeforeScoring).toHaveLength(19);
+
+    const blocked = screening.excludedBeforeScoring.find(
+      (b) => b.actionId === "icare_0008",
+    )!;
     // Falls back to the response's own name when the catalog is not loaded.
     expect(blocked.actionName).toContain("smart grid");
-    expect(blocked.reasons?.[0]).toBe("legal_verdict_blocked");
-    expect(blocked.reasons?.[1]).toContain("Regulation of electrical networks");
+    expect(blocked.removalReason).toBe("legal_verdict_blocked");
+    expect(blocked.reasons?.[0]).toContain("Regulation of electrical networks");
   });
 });
 

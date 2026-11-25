@@ -2,16 +2,7 @@
 import { Box, HStack, Progress, VStack } from "@chakra-ui/react";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
-import type { MeedTone } from "./MeedStatusTag";
-
-const TONE_COLOR: Record<MeedTone, string> = {
-  neutral: "content.tertiary",
-  info: "content.link",
-  positive: "interactive.tertiary",
-  warning: "sentiment.warningDefault",
-  caution: "interactive.quaternary",
-  negative: "sentiment.negativeDefault",
-};
+import { MEED_TONE_DOT, type MeedTone } from "./meedTones";
 
 export interface MeedMeterProps {
   /** 0..1 */
@@ -85,7 +76,7 @@ export function MeedMeter({
           borderRadius="full"
           overflow="hidden"
         >
-          <Progress.Range bg={TONE_COLOR[tone]} borderRadius="full" />
+          <Progress.Range bg={MEED_TONE_DOT[tone]} borderRadius="full" />
         </Progress.Track>
       </Progress.Root>
       {description && (

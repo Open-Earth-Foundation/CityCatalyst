@@ -2,21 +2,25 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
 import re
 import time
-from collections.abc import Mapping, Sequence
-from contextlib import contextmanager
+from collections.abc import Callable, Mapping, Sequence
+from contextlib import asynccontextmanager, contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterator
+from threading import Lock
+from typing import Any, AsyncIterator, Iterator
 from uuid import UUID
+
+from anyio import CancelScope
 
 try:
     import mlflow
@@ -53,6 +57,7 @@ _SECRET_PATTERN = re.compile(r"\b(?:sk|lsv2)-[A-Za-z0-9_-]{8,}\b")
 _INITIALIZED = False
 _LAST_INITIALIZATION_FAILURE_AT: float | None = None
 _EXPERIMENT_IDS: dict[str, str] = {}
+_INITIALIZATION_LOCK = Lock()
 
 
 @dataclass
@@ -221,6 +226,64 @@ def _experiment_id(experiment_name: str) -> str | None:
     return str(experiment_id)
 
 
+def _create_run(
+    *,
+    run_name: str,
+    experiment_name: str,
+    tags: Mapping[str, object] | None = None,
+    parent_run_id: str | None = None,
+) -> tuple[Any | None, _RunContext | None]:
+    """Create a remote run without changing the caller's task-local context."""
+    # Initialization mutates global MLflow settings; serialize it across threads.
+    with _INITIALIZATION_LOCK:
+        if not initialize_mlflow() or mlflow is None:
+            return None, None
+        experiment_id = _experiment_id(experiment_name)
+    if experiment_id is None:
+        return None, None
+    try:
+        client = mlflow.tracking.MlflowClient()
+        run_tags = {
+            "mlflow.user": mlflow_run_user(),
+            "service": "climate-advisor",
+            "environment": mlflow_environment_tag(),
+            **dict(tags or {}),
+        }
+        if parent_run_id is not None:
+            run_tags["mlflow.parentRunId"] = parent_run_id
+        run = client.create_run(
+            experiment_id=experiment_id,
+            run_name=run_name,
+            tags=_string_map(run_tags),
+        )
+        return run, _RunContext(client=client, run_id=run.info.run_id)
+    except Exception as error:
+        logger.warning(
+            "MLflow run start failed run_name=%s experiment=%s error=%s",
+            run_name,
+            experiment_name,
+            error,
+        )
+        return None, None
+
+
+def _finish_run(context: _RunContext, status: str) -> None:
+    """Drain pending writes before terminating an already closed logging scope."""
+    for operation in context.pending_operations:
+        try:
+            operation.wait()
+        except Exception as error:
+            logger.warning(
+                "MLflow pending write failed run_id=%s error=%s", context.run_id, error
+            )
+    try:
+        context.client.set_terminated(context.run_id, status=status)
+    except Exception as error:
+        logger.warning(
+            "MLflow run close failed run_id=%s error=%s", context.run_id, error
+        )
+
+
 @contextmanager
 def start_run(
     *,
@@ -230,52 +293,18 @@ def start_run(
     params: Mapping[str, object] | None = None,
     nested: bool = False,
 ) -> Iterator[Any | None]:
-    """Create an explicit run isolated across awaits; failures disable only this scope.
-
-    Child tasks may log to the request while it is open. Nested runs get an
-    explicit parent tag; independent requests never use MLflow's fluent stack.
-    Pending writes are drained and the run is terminated on exit, including
-    cancellation, before restoring the enclosing task's logging target.
-    """
-    parent = _current_run()
+    """Track a synchronous workflow; async service code must use async_start_run."""
+    parent_run_id = current_run_id() if nested else None
     token = _RUN_CONTEXT.set(None)
     context = None
     status = "FINISHED"
     try:
-        # Mask an inherited target even if initialization or run creation fails.
-        if not initialize_mlflow() or mlflow is None:
-            yield None
-            return
-        experiment_id = _experiment_id(experiment_name)
-        if experiment_id is None:
-            yield None
-            return
-        try:
-            client = mlflow.tracking.MlflowClient()
-            run_tags = {
-                "mlflow.user": mlflow_run_user(),
-                "service": "climate-advisor",
-                "environment": mlflow_environment_tag(),
-                **dict(tags or {}),
-            }
-            if nested and parent is not None:
-                run_tags["mlflow.parentRunId"] = parent.run_id
-            run = client.create_run(
-                experiment_id=experiment_id,
-                run_name=run_name,
-                tags=_string_map(run_tags),
-            )
-        except Exception as error:
-            logger.warning(
-                "MLflow run start failed run_name=%s experiment=%s error=%s",
-                run_name,
-                experiment_name,
-                error,
-            )
-            yield None
-            return
-
-        context = _RunContext(client=client, run_id=run.info.run_id)
+        run, context = _create_run(
+            run_name=run_name,
+            experiment_name=experiment_name,
+            tags=tags,
+            parent_run_id=parent_run_id,
+        )
         _RUN_CONTEXT.set(context)
         if params:
             log_params(params)
@@ -287,22 +316,94 @@ def start_run(
         # Inherited child contexts must not write to a request after it closes.
         if context is not None:
             context.closed = True
-            for operation in context.pending_operations:
-                try:
-                    operation.wait()
-                except Exception as error:
-                    logger.warning(
-                        "MLflow pending write failed run_id=%s error=%s",
-                        context.run_id,
-                        error,
-                    )
-            try:
-                context.client.set_terminated(context.run_id, status=status)
-            except Exception as error:
-                logger.warning(
-                    "MLflow run close failed run_id=%s error=%s", context.run_id, error
-                )
+            _finish_run(context, status)
         _RUN_CONTEXT.reset(token)
+
+
+@asynccontextmanager
+async def async_start_run(
+    *,
+    run_name: str,
+    experiment_name: str,
+    tags: Mapping[str, object] | None = None,
+    params: Mapping[str, object] | None = None,
+    nested: bool = False,
+) -> AsyncIterator[Any | None]:
+    """Offload run I/O while keeping its context in the original async task.
+
+    Creation and cleanup are awaited, including on cancellation, so requests do
+    not orphan runs or terminate them before their pending writes have drained.
+    Blocking artifact helpers within this scope must also use run_mlflow_io.
+    """
+    parent_run_id = current_run_id() if nested else None
+    token = _RUN_CONTEXT.set(None)
+    context = None
+    status = "FINISHED"
+    creation = asyncio.create_task(
+        asyncio.to_thread(
+            _create_run,
+            run_name=run_name,
+            experiment_name=experiment_name,
+            tags=tags,
+            parent_run_id=parent_run_id,
+        )
+    )
+    try:
+        # A cancelled await cannot stop a thread: collect its run for cleanup.
+        try:
+            run, context = await asyncio.shield(creation)
+        except asyncio.CancelledError:
+            _, context = await _await_mlflow_completion(creation)
+            raise
+        _RUN_CONTEXT.set(context)
+        if params:
+            await run_mlflow_io(log_params, params)
+        yield run
+    except BaseException:
+        status = "FAILED"
+        raise
+    finally:
+        try:
+            if context is not None:
+                context.closed = True
+                with CancelScope(shield=True):
+                    await run_mlflow_io(_finish_run, context, status)
+        finally:
+            _RUN_CONTEXT.reset(token)
+
+
+async def run_mlflow_io(
+    operation: Callable[..., Any], /, *args: Any, **kwargs: Any
+) -> Any:
+    """Await blocking telemetry off-loop, finishing its write before cancellation.
+
+    All keyword arguments, including ``operation``, belong to the wrapped callable.
+    Cancelling a thread await cannot stop the underlying write. Waiting for it
+    prevents run cleanup racing that write or its pending-operation registration.
+    """
+    task = asyncio.create_task(asyncio.to_thread(operation, *args, **kwargs))
+    try:
+        return await asyncio.shield(task)
+    except asyncio.CancelledError:
+        await _await_mlflow_completion(task)
+        raise
+
+
+async def _await_mlflow_completion(task: asyncio.Task[Any]) -> Any:
+    """Collect worker completion despite repeated cancellation of its caller.
+
+    The caller re-raises its original cancellation after consuming the result.
+    AnyIO shielding handles scope cancellation; asyncio shielding must be renewed
+    after each direct task cancellation because the worker thread keeps running.
+    """
+    with CancelScope(shield=True):
+        # Keep ownership of the result until creation, writing or cleanup finishes.
+        while not task.done():
+            try:
+                await asyncio.shield(task)
+            except asyncio.CancelledError:
+                continue
+        return task.result()
 
 
 @contextmanager

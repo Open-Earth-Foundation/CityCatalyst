@@ -6,8 +6,10 @@ export interface MeedActionReportAttributes {
   id: string;
   inventoryId?: string;
   actionId?: string;
+  catalogEligible?: boolean;
   languages?: string[];
   chapters?: object;
+  authorityScopeClassification?: object | null;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -15,7 +17,13 @@ export interface MeedActionReportAttributes {
 export type MeedActionReportPk = "id";
 export type MeedActionReportId = MeedActionReport[MeedActionReportPk];
 export type MeedActionReportOptionalAttributes =
-  "actionId" | "languages" | "chapters" | "created" | "lastUpdated";
+  | "actionId"
+  | "catalogEligible"
+  | "languages"
+  | "chapters"
+  | "authorityScopeClassification"
+  | "created"
+  | "lastUpdated";
 export type MeedActionReportCreationAttributes = Optional<
   MeedActionReportAttributes,
   MeedActionReportOptionalAttributes
@@ -28,8 +36,10 @@ export class MeedActionReport
   declare id: string;
   declare inventoryId?: string;
   declare actionId?: string;
+  declare catalogEligible?: boolean;
   declare languages?: string[];
   declare chapters?: object;
+  declare authorityScopeClassification?: object | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -64,6 +74,12 @@ export class MeedActionReport
           field: "action_id",
           allowNull: false,
         },
+        catalogEligible: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "catalog_eligible",
+        },
         languages: {
           type: DataTypes.ARRAY(DataTypes.TEXT),
           allowNull: false,
@@ -73,6 +89,11 @@ export class MeedActionReport
           type: DataTypes.JSONB,
           allowNull: false,
           defaultValue: {},
+        },
+        authorityScopeClassification: {
+          type: DataTypes.JSONB,
+          allowNull: true,
+          field: "authority_scope_classification",
         },
         created: {
           type: DataTypes.DATE,
@@ -98,6 +119,15 @@ export class MeedActionReport
             name: "MeedActionReport_pkey",
             unique: true,
             fields: [{ name: "id" }],
+          },
+          {
+            name: "idx_meed_action_report_inventory_action_created_id",
+            fields: [
+              { name: "inventory_id" },
+              { name: "action_id" },
+              { name: "created" },
+              { name: "id" },
+            ],
           },
         ],
       },

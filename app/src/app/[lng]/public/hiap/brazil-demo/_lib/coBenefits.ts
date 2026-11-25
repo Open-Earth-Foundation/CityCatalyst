@@ -93,3 +93,24 @@ export function coBenefitMatch(
   if (scored.length === 0) return 0.5;
   return scored.reduce((sum, v) => sum + v, 0) / scored.length;
 }
+
+export type CoBenefitCell =
+  | { key: CoBenefitKey; kind: "score"; value: number }
+  | { key: CoBenefitKey; kind: "in_impact" };
+
+/**
+ * One action's co-benefit assessment as the proposal screens print it: a
+ * score per category it touches, or "counted in Impact" where a credited risk
+ * cell already carries the category. Zero scores are left out.
+ */
+export function coBenefitCells(action: AdaptationAction): CoBenefitCell[] {
+  const suppressed = new Map(
+    suppressionSources(action).map(({ key, cell }) => [key, cell]),
+  );
+  return CO_BENEFIT_KEYS.flatMap((key): CoBenefitCell[] => {
+    if (suppressed.has(key)) return [{ key, kind: "in_impact" }];
+    const value = action.coBenefits[key];
+    if (value === undefined || value === 0) return [];
+    return [{ key, kind: "score", value }];
+  });
+}

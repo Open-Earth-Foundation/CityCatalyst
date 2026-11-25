@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Header, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session
@@ -13,8 +14,16 @@ from app.models.responses import (
     ThreadMessageResponse,
     ThreadMessagesResponse,
 )
+from app.services.cnb.chat_turn import reply_clock, reply_in_progress
+from app.services.cnb.question_reply import thread_run_id
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
+from app.tools.concept_note_question import saved_question
+from app.utils.citycatalyst_auth import (
+    authenticate_write_request,
+    normalize_write_context,
+)
+from app.utils.concept_note_context import rendered_visuals
 
 
 logger = logging.getLogger(__name__)
@@ -30,24 +39,38 @@ async def create_thread(
     payload: ThreadCreateRequest,
     response: Response,
     session: AsyncSession = Depends(get_session),
+    authorization: Annotated[str | None, Header()] = None,
 ):
+    # Bind the write to Core's canonical subject before any persistence.
+    identity = await authenticate_write_request(
+        authorization=authorization,
+        claimed_user_id=payload.user_id,
+    )
+    authenticated_payload = payload.model_copy(
+        update={
+            "user_id": identity.user_id,
+            "context": normalize_write_context(payload.context, identity.token),
+        }
+    )
     logger.info(
         "=== POST /threads request received ===\n"
         "  user_id: %s\n"
         "  inventory_id: %s\n"
         "  has_context: %s\n"
         "  context_keys: %s",
-        payload.user_id,
-        payload.inventory_id,
-        bool(payload.context),
-        list(payload.context.keys()) if payload.context and isinstance(payload.context, dict) else []
+        authenticated_payload.user_id,
+        authenticated_payload.inventory_id,
+        bool(authenticated_payload.context),
+        list(authenticated_payload.context.keys())
+        if authenticated_payload.context and isinstance(authenticated_payload.context, dict)
+        else [],
     )
-    
+
     service = ThreadService(session)
     try:
-        thread = await service.create_thread(payload)
+        thread = await service.create_thread(authenticated_payload)
         await session.commit()
-        
+
         logger.info(
             "=== Thread created successfully ===\n"
             "  thread_id: %s (type: %s)\n"
@@ -67,7 +90,7 @@ async def create_thread(
     except Exception as e:
         logger.error(
             "Failed to create thread for user_id=%s: %s",
-            payload.user_id,
+            identity.user_id,
             str(e),
             exc_info=True
         )
@@ -100,6 +123,12 @@ async def get_thread_messages(
     thread_service = ThreadService(session)
     message_service = MessageService(session)
     thread = await thread_service.get_thread_for_user(thread_id, user_id)
+    in_progress = False
+    if thread_run_id(thread) or thread.reply_turn_id is not None:
+        # Hold a share lock through the message read so the reply status and
+        # the saved user message come from the same side of a new turn claim.
+        thread = await thread_service.get_thread_for_user(thread_id, user_id, for_share=True)
+        in_progress = reply_in_progress(thread, await reply_clock(session))
     messages = await message_service.get_thread_messages(
         thread_id=thread.thread_id,
         limit=limit,
@@ -107,14 +136,20 @@ async def get_thread_messages(
 
     return ThreadMessagesResponse(
         thread_id=thread.thread_id,
+        reply_in_progress=in_progress,
         messages=[
             ThreadMessageResponse(
                 message_id=message.message_id,
                 role=message.role.value,
                 text=message.text,
                 created_at=message.created_at,
+                visuals=rendered_visuals(message.tools_used),
+                choices=question.options if question else None,
+                choice_action=question.on_answer if question else None,
             )
-            for message in messages
+            for message, question in (
+                (message, saved_question(message.tools_used)) for message in messages
+            )
         ],
     )
 

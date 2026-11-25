@@ -1,7 +1,7 @@
 {
   "header-running": "Generating action recommendations",
   "header-done": "Recommendations ready",
-  "header-sub": "Started just now · expected wait time about 30 seconds",
+  "header-sub": "Started just now · expected wait time about a minute",
   "percent-complete": "{{pct}}% complete",
   "stage-in-progress": "{{stage}} in progress",
   "all-complete": "All analyses complete",

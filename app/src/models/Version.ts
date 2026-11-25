@@ -6,13 +6,15 @@ import { User, UserId } from "./User";
 export interface VersionAttributes {
   versionId: string;
   inventoryId?: string;
-  authorId?: string;
+  /** Null once the author's account has been deleted. */
+  authorId?: string | null;
   entryId?: string; // ID of the table entry that was changed
   previousVersionId?: string; // ID of the previous version entry of the same table entry
   table?: string;
   moduleName?: string;
   data?: Record<string, unknown>;
   isDeleted?: boolean;
+  label?: string | null; // set by bulk operations, e.g. replacing the inventory from a file
   created?: Date;
   lastUpdated?: Date;
 }
@@ -28,6 +30,7 @@ export type VersionOptionalAttributes =
   | "moduleName"
   | "data"
   | "isDeleted"
+  | "label"
   | "created"
   | "lastUpdated";
 export type VersionCreationAttributes = Optional<
@@ -41,13 +44,14 @@ export class Version
 {
   declare versionId: string;
   declare inventoryId?: string;
-  declare authorId?: string;
+  declare authorId?: string | null;
   declare entryId?: string; // ID of the table entry that was changed
   declare previousVersionId?: string; // ID of the previous version entry of the same table entry
   declare table?: string;
   declare moduleName?: string;
   declare data?: Record<string, unknown>;
   declare isDeleted?: boolean;
+  declare label?: string | null;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -60,12 +64,12 @@ export class Version
   >;
   declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
 
-  // Version belongsTo User via authorId
-  declare author: User;
+  // Version belongsTo User via authorId. Null once the author is deleted.
+  declare author: User | null;
   declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
-  // Version hasOne Version via previousVersionId
+  // Version belongsTo Version via previousVersionId
   declare previousVersion: Version;
   declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;
   declare setPreviousVersion: Sequelize.BelongsToSetAssociationMixin<
@@ -93,11 +97,13 @@ export class Version
         },
         authorId: {
           type: DataTypes.UUID,
-          allowNull: false,
+          allowNull: true,
           references: {
             model: "User",
             key: "user_id",
           },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
           field: "author_id",
         },
         entryId: {
@@ -132,6 +138,10 @@ export class Version
           type: DataTypes.BOOLEAN,
           allowNull: false,
           field: "is_deleted",
+        },
+        label: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
       },
       {

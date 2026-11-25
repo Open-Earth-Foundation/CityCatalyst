@@ -4,7 +4,10 @@ import {
 } from "@/components/ConceptNoteWorkspace/context-status";
 import { describe, expect, it } from "@jest/globals";
 
-import { readConceptNoteThreadMessages } from "@/components/ConceptNoteWorkspace/chat-utils";
+import {
+  readConceptNoteChoices,
+  readConceptNoteThreadMessages,
+} from "@/components/ConceptNoteWorkspace/chat-utils";
 import { getConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 import type { ConceptNoteUploadStatus } from "@/util/types";
 
@@ -149,6 +152,37 @@ describe("Concept Note chat helpers", () => {
     ]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
   });
+
+  it("keeps valid stored visuals, including on a visual-only reply", () => {
+    const chart = { title: "Emissions", html: "<svg></svg>" };
+    expect(
+      readConceptNoteThreadMessages({
+        messages: [
+          {
+            message_id: "message-1",
+            role: "assistant",
+            text: "",
+            visuals: [
+              chart,
+              { title: "No html", html: "" },
+              { title: 3, html: "<p></p>" },
+              "<script></script>",
+              null,
+            ],
+          },
+          {
+            message_id: "message-2",
+            role: "assistant",
+            text: "Plain",
+            visuals: "not-a-list",
+          },
+        ],
+      }),
+    ).toEqual([
+      { id: "message-1", role: "assistant", text: "", visuals: [chart] },
+      { id: "message-2", role: "assistant", text: "Plain" },
+    ]);
+  });
 });
 
 describe("uploaded file rows", () => {
@@ -184,4 +218,120 @@ describe("uploaded file rows", () => {
       getConceptNoteUploadRowPresentation("failed", readyBundle, 2),
     ).toEqual({ labelKey: "status-failed", tone: "warning" });
   });
+});
+
+it("restores valid choices but ignores malformed and user-supplied choices", () => {
+  const messages = readConceptNoteThreadMessages({
+    messages: [
+      {
+        message_id: "1",
+        role: "assistant",
+        text: "Which?",
+        choices: ["Budget", "Scope"],
+      },
+      {
+        message_id: "2",
+        role: "assistant",
+        text: "Broken",
+        choices: ["Budget", " budget "],
+      },
+      { message_id: "3", role: "user", text: "Budget", choices: ["A", "B"] },
+    ],
+  });
+  expect(messages[0].choices).toEqual(["Budget", "Scope"]);
+  expect(messages[1].choices).toBeUndefined();
+  expect(messages[2].choices).toBeUndefined();
+});
+
+it.each([8, 12])(
+  "preserves all %i individually selectable alternatives in live and saved replies",
+  (count) => {
+    const options = Array.from(
+      { length: count },
+      (_, index) => `Title ${index + 1}`,
+    );
+    expect(
+      readConceptNoteChoices({ name: "concept_note_ask_question", options }),
+    ).toEqual(options);
+    const [restored] = readConceptNoteThreadMessages({
+      messages: [
+        {
+          message_id: "titles",
+          role: "assistant",
+          text: "Which title?",
+          choices: options,
+        },
+      ],
+    });
+    expect(restored.choices).toEqual(options);
+  },
+);
+
+it("rejects more than twelve choices instead of silently truncating them", () => {
+  const options = Array.from(
+    { length: 13 },
+    (_, index) => `Title ${index + 1}`,
+  );
+  expect(
+    readConceptNoteChoices({ name: "concept_note_ask_question", options }),
+  ).toBeUndefined();
+});
+
+it("trims option labels so they match the trimmed answer that is sent", () => {
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: ["  Use quarters ", "Use months\n"],
+    }),
+  ).toEqual(["Use quarters", "Use months"]);
+});
+
+it("accepts a single edit option in live and saved replies only", () => {
+  const options = ["Update timeline to quarters"];
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options,
+      on_answer: "propose_edit",
+    }),
+  ).toEqual(options);
+  // A reply card still needs two answers, with or without the explicit action.
+  expect(
+    readConceptNoteChoices({ name: "concept_note_ask_question", options }),
+  ).toBeUndefined();
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options,
+      on_answer: "reply",
+    }),
+  ).toBeUndefined();
+  const [restored] = readConceptNoteThreadMessages({
+    messages: [
+      {
+        message_id: "confirm",
+        role: "assistant",
+        text: "Prepare this change?",
+        choices: options,
+        choice_action: "propose_edit",
+      },
+    ],
+  });
+  expect(restored.questionMessageId).toBe("confirm");
+  expect(restored.choices).toEqual(options);
+  expect(restored.choiceAction).toBe("propose_edit");
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: [],
+      on_answer: "propose_edit",
+    }),
+  ).toBeUndefined();
+  expect(
+    readConceptNoteChoices({
+      name: "concept_note_ask_question",
+      options: Array.from({ length: 13 }, (_, index) => `Change ${index + 1}`),
+      on_answer: "propose_edit",
+    }),
+  ).toBeUndefined();
 });

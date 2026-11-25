@@ -5,18 +5,27 @@ import type {
   ImportedInventoryFile,
   ImportedInventoryFileAttributes,
 } from "@/models/ImportedInventoryFile";
-import type { PdfOcrJob, PdfOcrStatus } from "@/models/PdfOcrJob";
+import type {
+  PdfOcrAnnotationMode,
+  PdfOcrJob,
+  PdfOcrStatus,
+} from "@/models/PdfOcrJob";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   convertPdfUrlToMarkdown,
   MistralOcrError,
 } from "@/backend/MistralOcrService";
 import {
+  STRUCTURED_DOCUMENT_SCHEMA_VERSION,
+  StructuredDocumentError,
+} from "@/backend/StructuredDocumentArtifact";
+import {
   getPdfOcrConfig,
   getPdfOcrRetryDelayMs,
 } from "@/backend/pdf-ocr-config";
-import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
+import { extractInventoryFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
+import { zeroRowReason } from "@/util/GHGI/extraction-summary";
 import { logger } from "@/services/logger";
 import {
   syncGHGIImportedInventorySource,
@@ -42,6 +51,27 @@ function resultKey(
   return `pdf-ocr/results/${sourceType}/${sourceId}/${resultRevision}/combined_markdown.md`;
 }
 
+export function structuredResultKey(
+  sourceType: string,
+  sourceId: string,
+  resultRevision: number | string,
+): string {
+  return `pdf-ocr/results/${sourceType}/${sourceId}/${resultRevision}/document.structured.json`;
+}
+
+function assertAnnotationMode(
+  job: PdfOcrJob,
+  annotationMode: PdfOcrAnnotationMode,
+): void {
+  const current = job.annotationMode ?? "none";
+  if (current !== annotationMode) {
+    throw new PdfSourceError(
+      "annotation_mode_conflict",
+      "OCR annotation mode cannot change",
+    );
+  }
+}
+
 export function normalizeConceptNoteMarkdown(markdown: string): string {
   const normalized = markdown.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
   if (normalized.includes("\0")) {
@@ -65,6 +95,26 @@ export function getConceptNoteSourceFormat(job: {
   return job.model === DIRECT_MARKDOWN_MODEL ? "markdown" : "pdf";
 }
 
+/** Identify only pre-feature completed CNB PDFs with their original Markdown identity. */
+export function isLegacyMarkdownOnlyPdfJob(job: PdfOcrJob): boolean {
+  return (
+    job.sourceType === CONCEPT_NOTE_SOURCE_TYPE &&
+    job.status === "succeeded" &&
+    getConceptNoteSourceFormat(job) === "pdf" &&
+    job.annotationMode === "none" &&
+    job.resultS3Key != null &&
+    job.resultS3Key.trim().length > 0 &&
+    typeof job.resultSha256 === "string" &&
+    /^[0-9a-f]{64}$/.test(job.resultSha256) &&
+    Number.isInteger(job.pageCount) &&
+    (job.pageCount ?? 0) > 0 &&
+    job.structuredS3Key == null &&
+    job.structuredSha256 == null &&
+    job.structuredSizeBytes == null &&
+    job.structuredSchemaVersion == null
+  );
+}
+
 class PdfSourceError extends Error {
   constructor(
     public readonly code: string,
@@ -73,6 +123,12 @@ class PdfSourceError extends Error {
     super(message);
   }
 }
+
+/** Extraction errors the import wizard can show in the user's language. */
+const EXTRACTION_ERROR_KEYS: Record<string, string> = {
+  "Inventory not found for the target year":
+    "i18n:inventory-not-found-for-target-year",
+};
 
 function sanitizedMessage(error: unknown): string {
   return error instanceof Error
@@ -83,7 +139,7 @@ function sanitizedMessage(error: unknown): string {
 export async function enqueueInventoryPdfOcr(
   importedFile: ImportedInventoryFile,
 ): Promise<PdfOcrJob> {
-  const [job] = await db.models.PdfOcrJob.findOrCreate({
+  const [job, created] = await db.models.PdfOcrJob.findOrCreate({
     where: {
       sourceType: INVENTORY_SOURCE_TYPE,
       sourceId: importedFile.id,
@@ -94,9 +150,11 @@ export async function enqueueInventoryPdfOcr(
       status: "queued",
       attemptCount: 0,
       runAfter: new Date(),
+      annotationMode: "none",
       deliveryAttemptCount: 0,
     },
   });
+  if (!created) assertAnnotationMode(job, "none");
   await importedFile.update({
     importStatus: ImportStatusEnum.EXTRACTING,
     errorLog: null,
@@ -109,7 +167,7 @@ export async function enqueueInventoryPdfOcr(
 export async function enqueueConceptNotePdfOcr(
   uploadId: string,
 ): Promise<PdfOcrJob> {
-  const [job] = await db.models.PdfOcrJob.findOrCreate({
+  const [job, created] = await db.models.PdfOcrJob.findOrCreate({
     where: {
       sourceType: CONCEPT_NOTE_SOURCE_TYPE,
       sourceId: uploadId,
@@ -120,11 +178,13 @@ export async function enqueueConceptNotePdfOcr(
       status: "queued",
       attemptCount: 0,
       runAfter: new Date(),
+      annotationMode: "visual_context",
       deliveryTarget: "climate_advisor",
       deliveryStatus: "pending",
       deliveryAttemptCount: 0,
     },
   });
+  if (!created) assertAnnotationMode(job, "visual_context");
   return job;
 }
 
@@ -162,6 +222,7 @@ export async function registerConceptNoteMarkdownUpload(
       attemptCount: 0,
       model: DIRECT_MARKDOWN_MODEL,
       pageCount: null,
+      annotationMode: "none",
       resultS3Key,
       resultSizeBytes: resultBuffer.byteLength,
       resultSha256,
@@ -186,6 +247,8 @@ function requireDirectMarkdownIdentity(
 ): void {
   if (
     job.model !== DIRECT_MARKDOWN_MODEL ||
+    (job.annotationMode ?? "none") !== "none" ||
+    job.structuredS3Key != null ||
     job.resultS3Key !== expected.resultS3Key ||
     job.resultSha256 !== expected.resultSha256 ||
     job.pageCount !== null
@@ -380,19 +443,58 @@ async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
     source.s3Key,
     config.presignedUrlSeconds,
   );
-  const result = await convertPdfUrlToMarkdown(documentUrl);
-  const resultS3Key = resultKey(job.sourceType, job.sourceId, job.attemptCount);
+  const annotationMode = job.annotationMode ?? "none";
+  const result = await convertPdfUrlToMarkdown(documentUrl, annotationMode);
+  const resultRevision = job.attemptCount;
+  const resultS3Key = resultKey(job.sourceType, job.sourceId, resultRevision);
+  const structuredS3Key = structuredResultKey(
+    job.sourceType,
+    job.sourceId,
+    resultRevision,
+  );
   const resultBuffer = Buffer.from(result.markdown, "utf8");
+  const structuredJson = JSON.stringify(result.structured);
+  const structuredBuffer = Buffer.from(structuredJson, "utf8");
+  if (structuredBuffer.byteLength > config.maxStructuredArtifactBytes) {
+    throw new StructuredDocumentError(
+      "structured_artifact_too_large",
+      false,
+      "Structured OCR artifact exceeds the size limit",
+    );
+  }
   await InventoryFileStorageService.putTextFile(resultS3Key, result.markdown);
+  await InventoryFileStorageService.putTextFile(
+    structuredS3Key,
+    structuredJson,
+  );
+  logger.info(
+    {
+      sourceId: job.sourceId,
+      sourceType: job.sourceType,
+      annotationMode,
+      attempt: resultRevision,
+      markdownBytes: resultBuffer.byteLength,
+      structuredBytes: structuredBuffer.byteLength,
+      pageCount: result.pageCount,
+    },
+    "Stored PDF OCR Markdown and structured artifacts",
+  );
   const completedAt = new Date();
   const [updated] = await db.models.PdfOcrJob.update(
     {
       status: "succeeded",
       model: result.model,
       pageCount: result.pageCount,
+      annotationMode,
       resultS3Key,
       resultSizeBytes: resultBuffer.byteLength,
       resultSha256: createHash("sha256").update(resultBuffer).digest("hex"),
+      structuredS3Key,
+      structuredSizeBytes: structuredBuffer.byteLength,
+      structuredSha256: createHash("sha256")
+        .update(structuredBuffer)
+        .digest("hex"),
+      structuredSchemaVersion: STRUCTURED_DOCUMENT_SCHEMA_VERSION,
       completedAt,
       leaseOwner: null,
       leaseExpiresAt: null,
@@ -421,7 +523,7 @@ async function failOrRetry(
 ): Promise<void> {
   const config = getPdfOcrConfig();
   const retryable =
-    error instanceof MistralOcrError
+    error instanceof MistralOcrError || error instanceof StructuredDocumentError
       ? error.retryable
       : !(error instanceof PdfSourceError);
   const retryDelayMs = getPdfOcrRetryDelayMs(
@@ -431,7 +533,9 @@ async function failOrRetry(
   );
   const shouldRetry = retryDelayMs !== null;
   const code =
-    error instanceof MistralOcrError || error instanceof PdfSourceError
+    error instanceof MistralOcrError ||
+    error instanceof StructuredDocumentError ||
+    error instanceof PdfSourceError
       ? error.code
       : "pdf_ocr_internal_error";
   const runAfter =
@@ -584,7 +688,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
       inventory?.year != null && Number.isInteger(Number(inventory.year))
         ? Number(inventory.year)
         : undefined;
-    const rows = await extractInventoryRowsFromDocument(markdown, {
+    const { rows, summary } = await extractInventoryFromDocument(markdown, {
       targetYear,
       onChunkProgress: async (current, total) => {
         const renewed = await heartbeat(job, owner, "succeeded");
@@ -597,13 +701,33 @@ export async function extractInventoryRowsFromStoredMarkdown(
         });
       },
     });
-    if (!rows.length)
-      throw new Error("PDF does not contain extractable inventory data");
+    if (!rows.length) {
+      // Keep the summary so the reason (e.g. totals only) can be checked later.
+      const failed = await finalizeInventoryExtraction(job, owner, {
+        importStatus: ImportStatusEnum.FAILED,
+        mappingConfiguration: {
+          ...(importedFile.mappingConfiguration || {}),
+          rows: undefined,
+          extractionSummary: summary,
+          extractionProgress: undefined,
+        },
+        errorLog: `i18n:${zeroRowReason(summary)}`,
+        lastUpdated: new Date(),
+      });
+      if (!failed) {
+        logger.warn(
+          { sourceId: job.sourceId },
+          "Inventory extraction lease was lost before failure registration",
+        );
+      }
+      return;
+    }
     const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       mappingConfiguration: {
         ...(importedFile.mappingConfiguration || {}),
         rows,
+        extractionSummary: summary,
         extractionProgress: undefined,
       },
       rowCount: rows.length,
@@ -621,9 +745,12 @@ export async function extractInventoryRowsFromStoredMarkdown(
       { error, sourceId: job.sourceId },
       "Inventory extraction from OCR Markdown failed",
     );
+    const message = sanitizedMessage(error);
     const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.FAILED,
-      errorLog: sanitizedMessage(error),
+      errorLog: Object.hasOwn(EXTRACTION_ERROR_KEYS, message)
+        ? EXTRACTION_ERROR_KEYS[message]
+        : message,
       lastUpdated: new Date(),
     });
     if (!finalized) {
@@ -780,6 +907,17 @@ export async function retryConceptNotePdfOcr(
       status: "queued",
       attemptCount: 0,
       runAfter: new Date(),
+      annotationMode:
+        job.model === DIRECT_MARKDOWN_MODEL ? "none" : "visual_context",
+      model: null,
+      pageCount: null,
+      resultS3Key: null,
+      resultSizeBytes: null,
+      resultSha256: null,
+      structuredS3Key: null,
+      structuredSizeBytes: null,
+      structuredSha256: null,
+      structuredSchemaVersion: null,
       completedAt: null,
       errorCode: null,
       errorMessage: null,

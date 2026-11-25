@@ -65,6 +65,7 @@ let canExportConceptNote: typeof import("@/components/ConceptNoteWorkspace/conce
 let conceptNoteExportFilename: typeof import("@/components/ConceptNoteWorkspace/concept-note-export").conceptNoteExportFilename;
 let hasCriticalExportBlocker: typeof import("@/components/ConceptNoteWorkspace/concept-note-export").hasCriticalExportBlocker;
 let countUnresolvedExportItems: typeof import("@/components/ConceptNoteWorkspace/concept-note-export").countUnresolvedExportItems;
+let countEstimatesToConfirm: typeof import("@/components/ConceptNoteWorkspace/concept-note-export").countEstimatesToConfirm;
 
 beforeAll(async () => {
   ({
@@ -74,6 +75,7 @@ beforeAll(async () => {
     canExportConceptNote,
     conceptNoteExportFilename,
     countUnresolvedExportItems,
+    countEstimatesToConfirm,
     hasCriticalExportBlocker,
   } = await import("@/components/ConceptNoteWorkspace/concept-note-export"));
 });
@@ -210,6 +212,9 @@ describe("concept note export preparation", () => {
     ];
     expect(hasCriticalExportBlocker(caveat)).toBe(false);
     expect(canExportConceptNote(caveat, false)).toBe(true);
+    // An accepted estimate does not block export, but the preflight names it.
+    expect(countEstimatesToConfirm(caveat)).toBe(1);
+    expect(countEstimatesToConfirm(blocked)).toBe(0);
   });
 
   test("creates a safe download filename", () => {

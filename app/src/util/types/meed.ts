@@ -140,6 +140,8 @@ export interface MeedHardFilterEvidence {
   discard_reason?: string | null;
   legal_assessment_present?: boolean | null;
   legal_verdict_category?: string | null;
+  /** Whether the municipality can act on its own authority: enabled | conditional | blocked. */
+  legal_ownership_category?: string | null;
   legal_assessment_summary?: Record<string, unknown> | null;
 }
 
@@ -573,4 +575,14 @@ export interface MeedPlanRouteReport {
   chapters?: MeedReportChapter[];
   created?: string;
   lastUpdated?: string;
+  /**
+   * Backend classification provenance. Absent on reports stored before this
+   * field existed; clients must not invent a reviewed status.
+   */
+  authorityScopeClassification?: {
+    classification_method: "ai_classified" | "human_classified";
+    review_status: "pending_human_review" | "human_accepted" | "human_rejected";
+    authority_scope: string;
+    authority_scope_status: string;
+  } | null;
 }

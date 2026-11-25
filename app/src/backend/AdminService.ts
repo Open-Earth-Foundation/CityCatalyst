@@ -22,7 +22,7 @@ import {
   normalizeCityName,
   countryCodeFromLocode,
 } from "@/backend/BulkInventoryImportMatcher";
-import { lookupChileMeedCityByIne } from "@/backend/chile-meed-city-catalog";
+import { lookupCatalogPlace } from "@/backend/chile-meed-city-catalog";
 import { fetchGlobalApiCityPopulation } from "@/backend/global-api-city-population";
 export interface BulkInventoryCreateProps {
   cityLocodes: string[]; // List of city locodes
@@ -45,8 +45,7 @@ export interface CreateBulkInventoriesResponse {
   results: { locode: string; result: string[] }[];
 }
 
-export type CityInventoryShellErrorCode =
-  "missing_city_identity" | "city_in_other_project";
+export type CityInventoryShellErrorCode = "missing_city_identity";
 
 export class CityInventoryShellError extends Error {
   constructor(
@@ -296,10 +295,7 @@ export default class AdminService {
     }
 
     if (storedLocode) {
-      await props.onProgress?.(
-        "enriching_population",
-        storedLocode,
-      );
+      await props.onProgress?.("enriching_population", storedLocode);
       await this.enrichCityBestEffort(
         storedLocode,
         props.year,
@@ -342,20 +338,11 @@ export default class AdminService {
       if (inProject.length > 0) {
         return { record: inProject[0], created: false };
       }
-      const elsewhere = existing.find(
-        (row) => row.projectId && row.projectId !== input.projectId,
-      );
-      if (elsewhere) {
-        throw new CityInventoryShellError(
-          "city_in_other_project",
-          `Locode ${input.locode} already belongs to another project`,
-        );
-      }
-      if (existing.length > 0) {
-        const orphan = existing[0];
-        if (!orphan.projectId) {
-          await orphan.update({ projectId: input.projectId });
-        }
+      // The same locode may exist in other projects. Only a city with no
+      // project is claimed here; otherwise a new city is created below.
+      const orphan = existing.find((row) => !row.projectId);
+      if (orphan) {
+        await orphan.update({ projectId: input.projectId });
         return { record: orphan, created: false };
       }
     }
@@ -393,12 +380,10 @@ export default class AdminService {
       );
     }
 
-    const chile = input.locode
-      ? lookupChileMeedCityByIne(input.locode)
-      : undefined;
-    const countryLocode = input.locode
-      ? countryCodeFromLocode(input.locode)
-      : null;
+    const place = input.locode ? lookupCatalogPlace(input.locode) : undefined;
+    const countryLocode =
+      place?.countryLocode ??
+      (input.locode ? countryCodeFromLocode(input.locode) : null);
 
     try {
       const record = await db.models.City.create({
@@ -407,9 +392,9 @@ export default class AdminService {
         locode: input.locode ?? undefined,
         projectId: input.projectId,
         countryLocode: countryLocode ?? undefined,
-        country: countryLocode === "CL" ? "Chile" : undefined,
-        region: chile?.regionName,
-        regionLocode: chile?.regionCode,
+        country: place?.country,
+        region: place?.region,
+        regionLocode: place?.regionLocode,
       });
       return { record, created: true };
     } catch (err) {
@@ -421,12 +406,6 @@ export default class AdminService {
           (row) => row.projectId === input.projectId,
         );
         if (inProject) return { record: inProject, created: false };
-        if (raced.length > 0) {
-          throw new CityInventoryShellError(
-            "city_in_other_project",
-            `Locode ${input.locode} already belongs to another project`,
-          );
-        }
       }
       throw err;
     }
@@ -490,8 +469,8 @@ export default class AdminService {
       }
     }
     if (locode) {
-      const chile = lookupChileMeedCityByIne(locode);
-      if (chile?.name) return chile.name;
+      const place = lookupCatalogPlace(locode);
+      if (place?.name) return place.name;
     }
     return fallbackName || locode;
   }
@@ -499,7 +478,7 @@ export default class AdminService {
   /**
    * Pull population nearest to `year` (10-year window, same as onboarding)
    * and Global API boundary. Never throws to the caller.
-   * UN/LOCODE uses OpenClimate; INE-only Chile uses Global API / census.
+   * UN/LOCODE uses OpenClimate. Other keys use the locode catalog and Global API.
    */
   public static async enrichCityBestEffort(
     locode: string,
@@ -544,8 +523,8 @@ export default class AdminService {
   }
 
   /**
-   * INE-only comunas: city population from Global API, country from OpenClimate
-   * `CL`. Missing numbers must not fail the import.
+   * Non-UN locodes: city population from Global API, country from the catalog
+   * or OpenClimate. Missing numbers must not fail the import.
    */
   private static async enrichIneCityBestEffort(
     locode: string,
@@ -554,18 +533,15 @@ export default class AdminService {
     projectId?: string,
   ): Promise<{ locode: string; error: string }[]> {
     const errors: { locode: string; error: string }[] = [];
-    const chile = lookupChileMeedCityByIne(locode);
-    const countryLocode = countryCodeFromLocode(locode) ?? "CL";
+    const place = lookupCatalogPlace(locode);
+    const countryLocode = place?.countryLocode ?? countryCodeFromLocode(locode);
     const actorIds = [
       locode,
-      chile?.ineCode,
-      chile?.locode ? formatStoredLocode(chile.locode) : null,
+      place?.ineCode,
+      place?.unLocode ? formatStoredLocode(place.unLocode) : null,
     ].filter((id): id is string => Boolean(id));
 
-    const cityPop = await fetchGlobalApiCityPopulation(
-      actorIds,
-      inventoryYear,
-    );
+    const cityPop = await fetchGlobalApiCityPopulation(actorIds, inventoryYear);
     if (cityPop) {
       await db.models.Population.upsert({
         population: cityPop.population,
@@ -579,10 +555,12 @@ export default class AdminService {
       });
     }
 
-    const countryPop = await OpenClimateService.getActorPopulation(
-      countryLocode,
-      inventoryYear,
-    );
+    const countryPop = countryLocode
+      ? await OpenClimateService.getActorPopulation(
+          countryLocode,
+          inventoryYear,
+        )
+      : null;
     if (countryPop) {
       await db.models.Population.upsert({
         countryPopulation: countryPop.population,
@@ -593,10 +571,10 @@ export default class AdminService {
 
     await db.models.City.update(
       {
-        region: chile?.regionName,
-        regionLocode: chile?.regionCode,
-        country: countryPop?.name ?? (countryLocode === "CL" ? "Chile" : undefined),
-        countryLocode,
+        region: place?.region,
+        regionLocode: place?.regionLocode,
+        country: countryPop?.name ?? place?.country,
+        countryLocode: countryLocode ?? undefined,
         projectId: projectId ?? undefined,
       },
       { where: { cityId } },
@@ -666,7 +644,7 @@ export default class AdminService {
         await CityBoundaryService.getCityBoundary(cityLocode);
       area = boundaryData.area;
     } catch (err) {
-      // Expected for many Chile locodes / Global API gaps — keep the warning short.
+      // Missing boundaries are common — keep the warning short.
       logger.warn(
         {
           locode: cityLocode,

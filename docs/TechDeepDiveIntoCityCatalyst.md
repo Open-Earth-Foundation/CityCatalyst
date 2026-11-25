@@ -144,7 +144,7 @@ flowchart TB
 
 **Door 1 — REST API.** ~150 endpoints under [`app/src/app/api/v1`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/app/api/v1). Every route carries its OpenAPI annotation in the code itself, and the spec is regenerated on every build — documentation cannot drift from reality. Reference: [API wiki](https://github.com/Open-Earth-Foundation/CityCatalyst/wiki).
 
-**Door 2 — OAuth 2.0 authorization server.** External applications obtain tokens via the authorization-code flow with PKCE and refresh tokens, and act on a user's behalf under that user's exact permissions. Discovery follows RFC 8414: [`oauth/metadata/route.ts`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/app/src/app/api/v1/oauth/metadata/route.ts). A working example client ships in the repo: [`api-demo`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/api-demo).
+**Door 2 — OAuth 2.0 authorization server.** External applications obtain tokens via the authorization-code flow with PKCE and refresh tokens, and act on a user's behalf under that user's exact permissions. Discovery follows OpenID Connect Discovery and RFC 8414: [`.well-known/openid-configuration/route.ts`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/app/src/app/.well-known/openid-configuration/route.ts). A working example client ships in the repo: [`api-demo`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/api-demo).
 
 **Door 3 — Generated SDKs.** Client SDKs in five languages (TypeScript, Python, Ruby, Swift, Kotlin) are generated from the OpenAPI spec and packaged by CI on every API change: [`sdk-generator.yml`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/.github/workflows/sdk-generator.yml). They are built and stored as CI artifacts today; publication to the public registries (npm, PyPI) is planned but not yet wired into the pipeline.
 
@@ -304,7 +304,7 @@ Everything referenced above, in one place:
 
 | Resource | Link |
 |---|---|
-| OAuth 2.0 discovery endpoint (RFC 8414) | [`oauth/metadata/route.ts`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/app/src/app/api/v1/oauth/metadata/route.ts) |
+| OAuth 2.0 / OpenID Connect discovery endpoint (RFC 8414) | [`.well-known/openid-configuration/route.ts`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/app/src/app/.well-known/openid-configuration/route.ts) |
 | MCP server + agent tools | [`/app/src/lib/mcp`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/lib/mcp) |
 | MCP agent discovery endpoint | [`.well-known/mcp-server`](https://github.com/Open-Earth-Foundation/CityCatalyst/tree/develop/app/src/app/api/v1/.well-known/mcp-server) |
 | SDK generation pipeline (TS + Python) | [`sdk-generator.yml`](https://github.com/Open-Earth-Foundation/CityCatalyst/blob/develop/.github/workflows/sdk-generator.yml) |

@@ -91,6 +91,7 @@ jobs:
           uv sync --locked --group dev
 
       - name: Validate OpenRouter API key
+        if: github.event_name != 'pull_request'
         working-directory: climate-advisor
         env:
           OPENROUTER_SMOKE_TEST: "1"
@@ -125,6 +126,7 @@ jobs:
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
+          uv run pytest benchmark/cnb/tests -v --color=yes
 
       - name: Generate test coverage report
         working-directory: climate-advisor
@@ -134,7 +136,7 @@ jobs:
                  --cov-report=html \
                  --cov-report=term-missing \
                  --cov-report=xml \
-                 -v || true
+                 -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

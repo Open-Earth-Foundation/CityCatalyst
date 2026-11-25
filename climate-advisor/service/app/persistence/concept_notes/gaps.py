@@ -3,15 +3,22 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
-from app.models.cnb.concept_note_draft import ConceptNoteDraftGapOutput
+from app.models.cnb.concept_note_draft import (
+    ConceptNoteChapterDraftOutput,
+    ConceptNoteDraftGapOutput,
+)
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteGap,
     ConceptNoteGapResolution,
+)
+from app.utils.cnb_information_markers import (
+    information_marker_key,
+    marker_replacement_text,
 )
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,6 +36,7 @@ class WorkspaceGapResolutionSnapshot:
     actor_user_id: str
     source_refs: list[str]
     created_at: datetime
+    gap_version: int | None = None
 
 
 @dataclass(frozen=True)
@@ -47,6 +55,12 @@ class WorkspaceGapSnapshot:
     resolution: WorkspaceGapResolutionSnapshot | None
     created_at: datetime
     updated_at: datetime
+    # Partial answers saved for the current open version (see save_partial_answer).
+    answered_so_far: str | None = None
+    # Set once an accepted narrowing has occurred; the original scope and the
+    # reviewed passages written so far for this gap, in version order.
+    original_question: str | None = None
+    accepted_passages: tuple[str, ...] = ()
 
 
 async def _chapter_gaps(
@@ -63,14 +77,30 @@ async def _chapter_gaps(
 
 
 async def _latest_gap_resolutions(
-    session: AsyncSession, gap_ids: list[UUID]
+    session: AsyncSession, gap_ids: list[UUID], *, partial: bool
 ) -> dict[UUID, ConceptNoteGapResolution]:
-    """Load the latest resolution for each visible gap in one query."""
+    """Load one batched latest event per gap.
+
+    Non-partial events give the gap's resolution. Partial answers count only at
+    the gap's current version, so answers saved on an earlier version never show.
+    """
     if not gap_ids:
         return {}
+    ranked_query = select(ConceptNoteGapResolution.resolution_id).select_from(
+        ConceptNoteGapResolution
+    )
+    if partial:
+        ranked_query = ranked_query.join(
+            ConceptNoteGap,
+            (ConceptNoteGap.gap_id == ConceptNoteGapResolution.gap_id)
+            & (ConceptNoteGap.version == ConceptNoteGapResolution.gap_version),
+        ).where(ConceptNoteGapResolution.action == "partial_answer")
+    else:
+        ranked_query = ranked_query.where(
+            ConceptNoteGapResolution.action != "partial_answer"
+        )
     ranked = (
-        select(
-            ConceptNoteGapResolution.resolution_id,
+        ranked_query.add_columns(
             func.row_number()
             .over(
                 partition_by=ConceptNoteGapResolution.gap_id,
@@ -97,10 +127,11 @@ async def _latest_gap_resolutions(
 def _snapshot_gap(
     gap: ConceptNoteGap,
     resolution: ConceptNoteGapResolution | None,
+    partial_answer: ConceptNoteGapResolution | None,
     *,
     chapter_title: str,
 ) -> WorkspaceGapSnapshot:
-    """Detach one gap and its latest resolution."""
+    """Detach one gap, its latest non-partial resolution and its saved answers."""
     resolution_snapshot = (
         WorkspaceGapResolutionSnapshot(
             resolution_id=resolution.resolution_id,
@@ -109,10 +140,19 @@ def _snapshot_gap(
             actor_user_id=resolution.actor_user_id,
             source_refs=list(resolution.source_refs or []),
             created_at=resolution.created_at,
+            gap_version=resolution.gap_version,
         )
         if resolution is not None
         else None
     )
+    # Saved answers count only while the gap is open or an estimate awaits
+    # confirmation at their version; a clear row exposes null.
+    answered_so_far = (
+        partial_answer.answer
+        if partial_answer is not None and gap.status in {"open", "processing", "caveat"}
+        else None
+    )
+    progress = gap.answer_progress if isinstance(gap.answer_progress, dict) else {}
     return WorkspaceGapSnapshot(
         gap_id=gap.gap_id,
         field_key=gap.field_key,
@@ -130,7 +170,153 @@ def _snapshot_gap(
         resolution=resolution_snapshot,
         created_at=gap.created_at,
         updated_at=gap.updated_at,
+        answered_so_far=answered_so_far,
+        original_question=progress.get("original_question"),
+        accepted_passages=tuple(
+            str(passage) for passage in progress.get("accepted_passages") or ()
+        ),
     )
+
+
+async def latest_partial_answer(
+    session: AsyncSession,
+    *,
+    gap_id: UUID,
+    gap_version: int,
+) -> ConceptNoteGapResolution | None:
+    """Return the newest saved partial answer for one gap version.
+
+    Ordering matches the workspace read: created_at, then resolution_id.
+    """
+    return await session.scalar(
+        select(ConceptNoteGapResolution)
+        .where(
+            ConceptNoteGapResolution.gap_id == gap_id,
+            ConceptNoteGapResolution.action == "partial_answer",
+            ConceptNoteGapResolution.gap_version == gap_version,
+        )
+        .order_by(
+            ConceptNoteGapResolution.created_at.desc(),
+            ConceptNoteGapResolution.resolution_id.desc(),
+        )
+        .limit(1)
+    )
+
+
+async def save_partial_answer(
+    session: AsyncSession,
+    *,
+    run_id: UUID,
+    gap_id: UUID,
+    gap_version: int,
+    answer: str,
+    expected_previous: str | None,
+    user_id: str,
+) -> bool:
+    """Save a gap's answers so far as its newest event; empty text clears them.
+
+    Each save holds every answer given so far, so the newest one replaces the
+    rest. Returns False when the gap is not open at that version, or when its
+    saved answers are not the text the form last saw, so a stale form cannot
+    attach answers to a changed or closed gap or overwrite newer answers.
+    """
+    gap = await session.get(ConceptNoteGap, gap_id, with_for_update=True)
+    if (
+        gap is None
+        or gap.run_id != run_id
+        or gap.status not in {"open", "processing", "caveat"}
+        or gap.version != gap_version
+    ):
+        return False
+    # The gap row lock serializes saves, so this latest event is current.
+    previous = await latest_partial_answer(
+        session, gap_id=gap_id, gap_version=gap_version
+    )
+    if _saved_text(previous.answer if previous else None) != _saved_text(
+        expected_previous
+    ):
+        return False
+    # Postgres now() is the transaction start, so use the wall clock and keep
+    # this save after the one it follows.
+    created_at = datetime.now(UTC)
+    if previous is not None:
+        previous_at = previous.created_at
+        if previous_at.tzinfo is None:
+            previous_at = previous_at.replace(tzinfo=UTC)
+        created_at = max(created_at, previous_at + timedelta(microseconds=1))
+    session.add(
+        ConceptNoteGapResolution(
+            gap_id=gap_id,
+            action="partial_answer",
+            answer=answer.strip() or None,
+            gap_version=gap_version,
+            actor_user_id=user_id,
+            idempotency_key=uuid4(),
+            created_at=created_at,
+        )
+    )
+    return True
+
+
+async def carry_forward_saved_answer(
+    session: AsyncSession,
+    *,
+    gap: ConceptNoteGap,
+    previous_version: int,
+) -> bool:
+    """Copy the saved answers of the previous version onto the gap's new version.
+
+    The caller applies an accepted narrowing: it holds the gap row lock and has
+    already moved ``gap.version`` to the new version. The new partial_answer event
+    keeps the saved text and the actor of the newest saved event, with its own
+    idempotency key, and creates no non-partial resolution. An empty or missing
+    saved answer leaves the gap clear. Returns True when an event was added.
+    """
+    previous = await latest_partial_answer(
+        session, gap_id=gap.gap_id, gap_version=previous_version
+    )
+    if previous is None or _saved_text(previous.answer) is None:
+        return False
+    session.add(
+        ConceptNoteGapResolution(
+            gap_id=gap.gap_id,
+            action="partial_answer",
+            answer=previous.answer,
+            gap_version=gap.version,
+            actor_user_id=previous.actor_user_id,
+            idempotency_key=uuid4(),
+            created_at=datetime.now(UTC),
+        )
+    )
+    return True
+
+
+def record_accepted_narrowing(
+    gap: ConceptNoteGap,
+    *,
+    previous_question: str,
+    passage: str,
+) -> None:
+    """Record one reviewed accepted passage and keep the original scope.
+
+    The original question is the first scope narrowed and is kept afterward.
+    The passage has its markers removed, and an exact duplicate is not added
+    again. The mapping is replaced as a whole so JSONB change tracking sees it.
+    """
+    progress = gap.answer_progress if isinstance(gap.answer_progress, dict) else {}
+    passages = [str(item) for item in progress.get("accepted_passages") or ()]
+    text = marker_replacement_text(passage)
+    if text and text not in passages:
+        passages.append(text)
+    gap.answer_progress = {
+        "original_question": progress.get("original_question") or previous_question,
+        "accepted_passages": passages,
+    }
+
+
+def _saved_text(text: str | None) -> str | None:
+    """Compare saved answers as trimmed text, where empty means no answers."""
+    return (text or "").strip() or None
 
 
 def _specific_gap_rationale(
@@ -211,7 +397,40 @@ def _dropped_unanswered_gaps(
     ]
 
 
-def _reconcile_evidence_gaps(
+def _restore_dropped_gaps(
+    generated: ConceptNoteChapterDraftOutput,
+    dropped: list[ConceptNoteGap],
+) -> ConceptNoteChapterDraftOutput:
+    """Keep a redraft, but put back each unanswered gap it left out.
+
+    Each dropped question is appended to the chapter as its marker and kept in
+    the gap list, so the gap stays open and visible instead of losing the
+    whole redraft.
+    """
+    markers = "\n\n".join(f"[Information needed: {gap.question}]" for gap in dropped)
+    return ConceptNoteChapterDraftOutput.model_validate(
+        {
+            "body_markdown": f"{generated.body_markdown.rstrip()}\n\n{markers}",
+            "missing_information": [
+                *generated.missing_information,
+                *(
+                    ConceptNoteDraftGapOutput.model_validate(
+                        {
+                            "field_key": gap.field_key,
+                            "question": gap.question,
+                            "why_asking": gap.why_asking,
+                            "severity": gap.severity,
+                            "suggestions": gap.suggestions or [],
+                        }
+                    )
+                    for gap in dropped
+                ),
+            ],
+        }
+    )
+
+
+async def _reconcile_evidence_gaps(
     session: AsyncSession,
     chapter: ConceptNoteChapter,
     existing: list[ConceptNoteGap],
@@ -223,6 +442,8 @@ def _reconcile_evidence_gaps(
 
     Only gaps in ``answered_gap_ids`` (backed by a successful new-source query)
     can close. Caveat gaps are user decisions and are never closed here.
+    A refresh that keeps the normalized question still moves the gap to a new
+    version, so stale forms are refused, but its saved answers move with it.
     """
     by_key = {gap.field_key: gap for gap in existing}
     output_by_key = {output.field_key: output for output in outputs}
@@ -259,10 +480,16 @@ def _reconcile_evidence_gaps(
             continue
         if gap.status == "dismissed":
             continue
+        previous_version = gap.version
+        same_question = information_marker_key(gap.question) == information_marker_key(
+            output.question
+        )
         presentation_changed = _update_gap_from_output(gap, output)
         reopened = gap.status == "resolved"
         if reopened:
             gap.status = "open"
+            # A reopened gap is a new scope, so its accepted lineage restarts.
+            gap.answer_progress = None
             session.add(
                 ConceptNoteGapResolution(
                     gap_id=gap.gap_id,
@@ -277,6 +504,10 @@ def _reconcile_evidence_gaps(
             gap.version += 1
             gap.updated_at = datetime.now(UTC)
             changed = True
+            if same_question and not reopened:
+                await carry_forward_saved_answer(
+                    session, gap=gap, previous_version=previous_version
+                )
     return changed
 
 
@@ -302,6 +533,10 @@ def _update_gap_from_output(
     )
     if not changed:
         return False
+    # Only a changed normalized question starts a new specification, so
+    # presentation-only redrafts keep the accepted lineage.
+    if information_marker_key(gap.question) != information_marker_key(output.question):
+        gap.answer_progress = None
     gap.question = output.question
     gap.why_asking = output.why_asking
     gap.severity = output.severity

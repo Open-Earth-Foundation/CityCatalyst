@@ -1,0 +1,296 @@
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
+
+import pytest
+from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
+from app.models.cnb.gap_question import (
+    GapQuestionOutput,
+    GapQuestionRequest,
+    GapSubQuestion,
+)
+from app.models.db.cnb_edit import ConceptNoteEditProposal
+from app.persistence.concept_notes.edits import applied_gap_answers
+from app.routes.concept_note_runs import propose_gap_question
+from fastapi import HTTPException
+from pydantic import ValidationError
+from tests.test_concept_note_lifecycle import _workspace_repository
+
+
+@pytest.mark.parametrize(
+    "options", [["Loan"], ["Loan", " loan "], ["", "Grant"], ["x"] * 6]
+)
+def test_rejects_single_or_invalid_choices(options):
+    with pytest.raises(ValidationError):
+        GapSubQuestion(question="Instrument?", options=options)
+
+
+@pytest.fixture
+def gap_route(monkeypatch):
+    chapter_id, gap_id = uuid4(), uuid4()
+    run = SimpleNamespace(run_id=uuid4())
+    authorize = AsyncMock(return_value=run)
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.ConceptNoteRunService.get_authorized_run",
+        authorize,
+    )
+    chapter = SimpleNamespace(
+        chapter_id=chapter_id,
+        title="Financing",
+        body_markdown="Current draft " * 2000
+        + "[Information needed: Original question]",
+        gaps=[
+            SimpleNamespace(
+                gap_id=gap_id,
+                state="open",
+                question="Original question",
+                why_asking="Needed",
+                answered_so_far="1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet",
+                resolution=None,
+                has_accepted_narrowing=False,
+                suggestions=[
+                    ConceptNoteGapSuggestion(
+                        value="Loan of EUR 2 million", source_refs=["Plan"]
+                    )
+                ],
+            )
+        ],
+    )
+    draft_service = SimpleNamespace(
+        load_state=AsyncMock(return_value=SimpleNamespace(chapters=[chapter]))
+    )
+    generate = AsyncMock(
+        return_value=GapQuestionOutput(
+            why_asking="Support needed",
+            questions=[{"question": "Instrument?", "options": ["Loan", "Grant"]}],
+        )
+    )
+    monkeypatch.setattr("app.routes.concept_note_runs.generate_suggestion", generate)
+    previous = AsyncMock(return_value=["Earlier answer " * 300])
+    monkeypatch.setattr("app.routes.concept_note_runs.applied_gap_answers", previous)
+    sessions = MagicMock()
+    monkeypatch.setattr(
+        "app.routes.concept_note_runs.get_cnb_reference_session_factory",
+        lambda: sessions,
+    )
+    return SimpleNamespace(
+        authorize=authorize,
+        chapter=chapter,
+        generate=generate,
+        previous=previous,
+        args={
+            "run_id": run.run_id,
+            "payload": GapQuestionRequest(
+                chapter_id=chapter_id, gap_id=gap_id, question="Client text"
+            ),
+            "request": SimpleNamespace(is_disconnected=AsyncMock(return_value=False)),
+            "draft_service": draft_service,
+            "session": AsyncMock(),
+            "user_id": "owner",
+            "authorization": "Bearer test",
+        },
+    )
+
+
+async def test_authorizes_before_reading_gap(gap_route):
+    gap_route.authorize.side_effect = HTTPException(status_code=403)
+    with pytest.raises(HTTPException) as error:
+        await propose_gap_question(**gap_route.args)
+    assert error.value.status_code == 403
+    gap_route.args["draft_service"].load_state.assert_not_called()
+    gap_route.generate.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "change,status", [("chapter", 404), ("gap", 409), ("closed", 409), ("legacy", 404)]
+)
+async def test_rejects_foreign_or_stale_gap(gap_route, change, status):
+    payload = gap_route.args["payload"]
+    if change == "chapter":
+        payload.chapter_id = uuid4()
+    elif change == "gap":
+        payload.gap_id = uuid4()
+    elif change == "closed":
+        gap_route.chapter.gaps[0].state = "resolved"
+    else:
+        payload.gap_id = None
+    with pytest.raises(HTTPException) as error:
+        await propose_gap_question(**gap_route.args)
+    assert error.value.status_code == status
+    gap_route.generate.assert_not_called()
+
+
+async def test_uses_server_question_and_bounded_chapter_without_writing(gap_route):
+    await propose_gap_question(**gap_route.args)
+    context = gap_route.generate.call_args.args[1]
+    assert context["question"] == "Original question"
+    # Answers saved on this gap version reach the model, so it asks only the rest.
+    assert context["earlier_answers"] == (
+        "1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet"
+    )
+    # Long chapters are cut around the gap, not from the start.
+    assert len(context["chapter_excerpt"]) == 12000
+    assert context["chapter_excerpt"].endswith("Original question]")
+    # Earlier accepted answers in this chapter steer the model away from re-asking.
+    assert gap_route.previous.call_args.kwargs == {
+        "run_id": gap_route.args["run_id"],
+        "chapter_id": gap_route.chapter.chapter_id,
+        "question": "Original question",
+    }
+    # Whole entries: truncating would drop later answers and undecided parts.
+    assert context["previous_answers"] == ["Earlier answer " * 300]
+    # Source-grounded values let the model confirm instead of asking from scratch.
+    assert context["source_suggestions"] == [
+        {"value": "Loan of EUR 2 million", "source_refs": ["Plan"]}
+    ]
+    gap_route.args["session"].commit.assert_not_called()
+
+
+async def test_narrowed_gap_returns_only_the_literal_remaining_question(gap_route):
+    gap = gap_route.chapter.gaps[0]
+    gap.has_accepted_narrowing = True
+    gap.question = "What amount will the city contribute?"
+    gap.why_asking = ""
+    gap_route.args["payload"].question = None
+    result = await propose_gap_question(**gap_route.args)
+    # The persisted remainder is asked as one free-text field, with no model call.
+    assert result.questions == [
+        GapSubQuestion(question="What amount will the city contribute?", options=[])
+    ]
+    assert result.questions[0].confirms is False
+    assert result.questions[0].multiple is False
+    assert result.why_asking == "This information is required to complete the chapter."
+    gap_route.generate.assert_not_called()
+    gap_route.previous.assert_not_called()
+    # Reading the remainder writes nothing, so reopening the form changes no gap.
+    gap_route.args["session"].commit.assert_not_called()
+
+
+ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
+
+
+@pytest.mark.parametrize(
+    ("kept", "body", "resolution"),
+    [
+        # A marker formatted unlike its question still anchors the excerpt.
+        (
+            "[Information needed: **original  question?**]",
+            "Before " * 2000
+            + "[Information needed: **original  question?**]"
+            + " After" * 2000,
+            None,
+        ),
+        # An estimate to confirm anchors it even beyond the first 12,000 characters.
+        (
+            ESTIMATE,
+            "Filler " * 3000
+            + ESTIMATE
+            + " Tail " * 2000
+            + "[Information needed: Original question]",
+            SimpleNamespace(answer=ESTIMATE),
+        ),
+    ],
+    ids=["formatted-marker", "accepted-estimate"],
+)
+async def test_excerpt_is_centered_on_the_gap(gap_route, kept, body, resolution):
+    gap = gap_route.chapter.gaps[0]
+    if resolution is not None:
+        gap.state = "caveat"
+        gap.resolution = resolution
+    gap_route.chapter.body_markdown = body
+    assert body.index(kept) > 12000
+    await propose_gap_question(**gap_route.args)
+    excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
+    assert len(excerpt) == 12000
+    assert kept in excerpt
+
+
+async def test_provider_failure_is_explicit_and_retryable(gap_route):
+    gap_route.generate.return_value = None
+    with pytest.raises(HTTPException) as error:
+        await propose_gap_question(**gap_route.args)
+    assert error.value.status_code == 503
+
+
+async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
+    run_id, chapter_id = uuid4(), uuid4()
+    accepted, rejected = str(uuid4()), str(uuid4())
+    question = "What is the requested instrument?"
+    # The app's real request templates, so their prose never counts as an answer.
+    templates = json.loads(
+        (
+            Path(__file__).parents[4] / "app/src/i18n/locales/en/concept-notes.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    def request(key, answer):
+        return (
+            templates[key]
+            .replace("{{chapter}}", "Financing plan")
+            .replace("{{question}}", question)
+            .replace("{{answer}}", answer)
+        )
+
+    def proposal(minute, status, instruction, chapter=chapter_id, **values):
+        return ConceptNoteEditProposal(
+            run_id=run_id,
+            actor_user_id="owner",
+            idempotency_key=uuid4(),
+            request_fingerprint="a" * 64,
+            instruction=instruction,
+            scope={"kind": "auto", "focused_chapter_id": str(chapter)},
+            status=status,
+            created_at=datetime(2026, 10, 26, 12, minute, tzinfo=UTC),
+            **values,
+        )
+
+    async with _workspace_repository() as (_, factory):
+        async with factory() as session, session.begin():
+            session.add_all(
+                [
+                    proposal(
+                        0,
+                        "applied",
+                        request("gap-answer-request", "1. Amount?\nEUR 1m"),
+                    ),
+                    proposal(
+                        1,
+                        "applied",
+                        request(
+                            "gap-answer-estimate-confirm-request",
+                            "1. Instrument?\nLoan\n\nPaid back over ten years.",
+                        ),
+                    ),
+                    proposal(2, "applied", f"{question}\nBond", chapter=uuid4()),
+                    proposal(3, "rejected", f"{question}\nGuarantee"),
+                    proposal(4, "applied", "Another gap\nGrant"),
+                    proposal(
+                        5,
+                        "partially_applied",
+                        f"{question}\n1. Instrument?\nGrant\n\n2. Amount?\nEUR 2m",
+                        changes=[
+                            {"change_id": accepted, "user_input_quote": "Grant"},
+                            {"change_id": rejected, "user_input_quote": "EUR 2m"},
+                        ],
+                        applied_result={"accepted_change_ids": [accepted]},
+                    ),
+                ]
+            )
+        async with factory() as session:
+            answers = await applied_gap_answers(
+                session,
+                run_id=run_id,
+                chapter_id=chapter_id,
+                question=question,
+                limit=6,
+            )
+    # The rejected amount is asked again; the same question in another chapter
+    # does not count as answered here.
+    assert answers == [
+        "Grant",
+        "1. Instrument?\nLoan\n\nPaid back over ten years.",
+        "1. Amount?\nEUR 1m",
+    ]

@@ -43,11 +43,13 @@ def build_cc_datasource_tools(
     access_token: Optional[str],
     user_id: Optional[str],
     thread_id: Union[str, UUID],
+    token_ref: Dict[str, Optional[str]] | None = None,
 ) -> Tuple[Sequence[object], Dict[str, Optional[str]]]:
-    """Create the temporary legacy datasource tool for CityCatalyst inventories."""
+    """Create the legacy datasource tool with a shared request token reference."""
     thread_str = str(thread_id)
     user = user_id or ""
-    token_ref: Dict[str, Optional[str]] = {"value": access_token}
+    if token_ref is None:
+        token_ref = {"value": access_token}
 
     @function_tool
     async def cc_get_all_datasources(inventory_id: str) -> str:

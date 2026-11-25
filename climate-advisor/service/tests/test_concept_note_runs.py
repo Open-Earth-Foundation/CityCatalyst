@@ -480,6 +480,56 @@ async def test_get_run_revalidates_city_access_owned_by_citycatalyst() -> None:
     )
 
 
+async def test_city_collaborator_can_view_but_not_write_another_users_run() -> None:
+    """A preview needs current access to the run's own city; writes stay owner-only."""
+    payload = _start_request()
+    run = _persisted_run(payload, request_fingerprint=_request_fingerprint(payload))
+    service, repository, cc_client, _ = _run_service(canonical_user_id="teammate")
+    service.session.get.return_value = run
+
+    async def view(city_id: UUID = payload.city_id, user_id: str = "teammate"):
+        return await service.get_city_viewable_run(
+            run_id=run.run_id,
+            city_id=city_id,
+            requested_user_id=user_id,
+            authorization="Bearer token",
+        )
+
+    assert await view() is run
+    cc_client.get_city.assert_awaited_once_with(
+        city_id=str(payload.city_id), token="token", user_id="teammate"
+    )
+
+    async def status(**kwargs) -> int:
+        with pytest.raises(HTTPException) as exc_info:
+            await view(**kwargs)
+        return exc_info.value.status_code
+
+    assert await status(user_id="owner-1") == 403
+    # Another city's URL, revoked city access and a missing run all read as not found.
+    assert await status(city_id=uuid4()) == 404
+    cc_client.get_city.side_effect = CityCatalystClientError(
+        "City access revoked", status_code=403
+    )
+    assert await status() == 404
+    cc_client.get_city.side_effect = None
+    service.session.get.return_value = None
+    assert await status() == 404
+
+    # Every write authorizes through the owner-only run lookup.
+    repository.get_for_user.return_value = None
+    with pytest.raises(HTTPException) as exc_info:
+        await service.get_authorized_run(
+            run_id=run.run_id,
+            requested_user_id="teammate",
+            authorization="Bearer token",
+        )
+    assert exc_info.value.status_code == 404
+    repository.get_for_user.assert_awaited_once_with(
+        run_id=run.run_id, user_id="teammate"
+    )
+
+
 async def test_get_run_returns_owned_upload_metadata() -> None:
     """Keep uploaded filenames visible when the workspace is resumed."""
     payload = _start_request()
@@ -493,6 +543,7 @@ async def test_get_run_returns_owned_upload_metadata() -> None:
         uploaded_by_user_id=payload.user_id,
         filename="Richfield_FloodRiskPrioritization.pdf",
         source_label="Richfield Flood Risk Prioritization",
+        source_role="reference",
         ingest_status="ready",
         page_count=55,
         received_at=datetime.now(timezone.utc),
@@ -568,7 +619,9 @@ async def test_list_runs_revalidates_city_access_before_querying() -> None:
     repository.list_for_user_city.assert_not_awaited()
 
 
-async def test_list_runs_maps_city_authorization_outage_to_service_unavailable() -> None:
+async def test_list_runs_maps_city_authorization_outage_to_service_unavailable() -> (
+    None
+):
     """Keep authorization integration failures distinct from access denial."""
     service, repository, cc_client, _ = _run_service()
     cc_client.get_city.side_effect = CityCatalystClientError(
@@ -612,9 +665,11 @@ async def test_list_runs_returns_stable_progress_and_resume_fields() -> None:
     assert listed.runs[0].thread_id == detailed.thread_id
     assert listed.runs[0].status == detailed.status == "paused"
     assert listed.runs[0].workflow_step == detailed.workflow_step == "interviewing"
-    assert listed.runs[0].progress_summary == detailed.progress_summary == {
-        "ready_sources": 3
-    }
+    assert (
+        listed.runs[0].progress_summary
+        == detailed.progress_summary
+        == {"ready_sources": 3}
+    )
 
 
 async def test_list_runs_returns_empty_envelope() -> None:
@@ -669,6 +724,7 @@ async def test_repository_filters_and_orders_city_runs_deterministically() -> No
     try:
         async with engine.begin() as connection:
             await connection.run_sync(ConceptNoteRun.__table__.create)
+            await connection.run_sync(ConceptNoteUpload.__table__.create)
 
         owner_payload = _start_request(city_id=city_id)
         other_user_payload = _start_request(user_id="other-user", city_id=city_id)
@@ -777,6 +833,7 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             await session.commit()
             stored_thread = await session.get(Thread, owned_thread_id)
             assert stored_thread is not None
+            assert stored_thread.concept_note_run_id == concept_note_run_id
             assert stored_thread.context["concept_note_run_id"] == str(
                 concept_note_run_id
             )

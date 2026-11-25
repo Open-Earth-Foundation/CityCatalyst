@@ -9,6 +9,7 @@ describe("retention config", () => {
       inactiveAccountDays: 1095,
       staleInviteDays: 180,
       unusedTokenDays: 365,
+      withdrawnDocumentDays: 365,
       dryRun: false,
       batchSize: 200,
     });

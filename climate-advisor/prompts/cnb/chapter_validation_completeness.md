@@ -22,20 +22,21 @@ Rules:
   unresolved, but do not duplicate an open gap unless the chapter text itself
   demonstrates the same omission; when it does, repeat the exact gap `reason`
   in the finding message or suggested action so the service can deduplicate it
-- assess whether material factual claims have usable support in
-  `document.evidence_links`; a link label alone is not proof of claim support,
-  but do not warn merely because the array is empty when the chapter has no
-  material factual claim that requires evidence
+- evidence links are optional metadata that drafting does not create: when
+  `document.evidence_links` is empty, return no `evidence` findings, because
+  the user has no link to add; when links are supplied, report an `evidence`
+  finding only for a supplied link that does not support, or contradicts, the
+  claim it is attached to; a link label alone is not proof of claim support
 - identify supporting or conflicting source records only through their supplied
   one-based `position`; include those positions in `evidence_positions` and
   never copy or invent source metadata
 - when a factual claim has no supporting evidence link, return an empty
   `evidence_positions` array rather than attaching an unrelated source
-- treat named-project facts, route or location descriptions, quantities,
-  dates, costs, progress, financing, attributed statements, and predicted
-  impacts as material factual claims even when they appear in a chapter whose
-  primary required fields are still missing; do not assume a repeated claim is
-  supported elsewhere in the document
+- when links are supplied, treat named-project facts, route or location
+  descriptions, quantities, dates, costs, progress, financing, attributed
+  statements, and predicted impacts as material factual claims even when they
+  appear in a chapter whose primary required fields are still missing; do not
+  assume a repeated claim is supported elsewhere in the document
 - classify missing information and template violations as `blocking`
 - classify evidence deficiencies and non-blocking ambiguity as `warning`;
   evidence findings must never be `blocking`

@@ -276,6 +276,7 @@ describe("Chat routes", () => {
       }),
     });
     expect(createThreadHeaders.get("Content-Type")).toBe("application/json");
+    expect(createThreadHeaders.get("Authorization")).toBe("Bearer token-123");
   });
 
   it("uses configured HOST instead of request origin for CA token issuance", async () => {
@@ -569,12 +570,42 @@ describe("Chat routes", () => {
     expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
   });
 
-  it("preserves the CNB readiness rejection as HTTP 409 with its stable code", async () => {
+  it.each([
+    "concept_note_context_not_ready",
+    "concept_note_question_stale",
+    "concept_note_thread_mismatch",
+    "concept_note_reply_in_progress",
+  ])(
+    "preserves the CNB %s rejection as HTTP 409 with its stable code",
+    async (code) => {
+      const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+      const detail = {
+        code,
+        message: "Context is not ready",
+      };
+      fetchMock
+        .mockResolvedValueOnce(
+          jsonResponse({
+            access_token: "fresh-token",
+            expires_in: 3600,
+            token_type: "Bearer",
+          }),
+        )
+        .mockResolvedValueOnce(jsonResponse({ detail }, { status: 409 }));
+      const response = await postChatMessage(
+        makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+          threadId: "thread-1",
+          content: "Hello",
+        }),
+        { params: Promise.resolve({}) },
+      );
+      expect(response.status).toBe(409);
+      await expect(response.json()).resolves.toEqual(detail);
+    },
+  );
+
+  it("propagates a Climate Advisor 401 without starting a stream", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
-    const detail = {
-      code: "concept_note_context_not_ready",
-      message: "Context is not ready",
-    };
     fetchMock
       .mockResolvedValueOnce(
         jsonResponse({
@@ -583,7 +614,17 @@ describe("Chat routes", () => {
           token_type: "Bearer",
         }),
       )
-      .mockResolvedValueOnce(jsonResponse({ detail }, { status: 409 }));
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            title: "CityCatalyst authentication failed",
+            detail: "CityCatalyst authentication failed",
+            status: 401,
+          },
+          { status: 401 },
+        ),
+      );
+
     const response = await postChatMessage(
       makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
         threadId: "thread-1",
@@ -591,8 +632,52 @@ describe("Chat routes", () => {
       }),
       { params: Promise.resolve({}) },
     );
-    expect(response.status).toBe(409);
-    await expect(response.json()).resolves.toEqual(detail);
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get("Content-Type")).toContain("application/json");
+    await expect(response.json()).resolves.toEqual({
+      message: "CityCatalyst authentication failed",
+    });
+    const [, messageRequest] = fetchMock.mock.calls[1] ?? [];
+    expect(new Headers(messageRequest?.headers).get("Authorization")).toBe(
+      "Bearer fresh-token",
+    );
+  });
+
+  it("propagates a Climate Advisor identity 503 without starting a stream", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "fresh-token",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            title: "CityCatalyst identity service is unavailable",
+            detail: "CityCatalyst identity service is unavailable",
+            status: 503,
+          },
+          { status: 503 },
+        ),
+      );
+
+    const response = await postChatMessage(
+      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
+        threadId: "thread-1",
+        content: "Hello",
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("Content-Type")).toContain("application/json");
+    await expect(response.json()).resolves.toEqual({
+      message: "CityCatalyst identity service is unavailable",
+    });
   });
 
   it("preserves a CA storage failure instead of reporting a successful stream", async () => {
@@ -688,6 +773,9 @@ describe("Chat routes", () => {
       context: { access_token: "current-user-token" },
       options: {},
     });
+    expect(new Headers(messageRequest?.headers).get("Authorization")).toBe(
+      "Bearer current-user-token",
+    );
   });
 
   it("loads thread messages through the shared CA proxy helper", async () => {
@@ -695,6 +783,7 @@ describe("Chat routes", () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({
         thread_id: "thread-1",
+        reply_in_progress: true,
         messages: [
           {
             message_id: "message-1",
@@ -717,6 +806,7 @@ describe("Chat routes", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       thread_id: "thread-1",
+      reply_in_progress: true,
       messages: [
         {
           message_id: "message-1",

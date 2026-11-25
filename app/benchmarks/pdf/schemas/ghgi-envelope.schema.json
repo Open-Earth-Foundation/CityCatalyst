@@ -1,0 +1,179 @@
+{
+  "$comment": "Copy of pdf-extraction/benchmarks/schemas/ghgi.schema.json from branch mr/pdf-taxonomy-extraction at commit dc595f6b9. Describes result.data of a precomputed extraction envelope.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "reporting_year": {
+      "type": ["integer", "null"],
+      "description": "Requested inventory year, not publication year."
+    },
+    "reported_total_tco2e": {
+      "type": ["number", "null"],
+      "description": "Explicitly reported city/community-wide total for the requested year, in tonnes CO2e. Prefer gross emissions unless case_context specifies another boundary. Null when no total is printed; never invent a sum."
+    },
+    "total_basis": {
+      "type": ["string", "null"],
+      "description": "Explain the total boundary (gross/net/core, city/region/community/corporate), source unit, and important alternative totals."
+    },
+    "rows": {
+      "type": "array",
+      "description": "Distinct detailed CO2e emissions/notation rows for the requested year. Avoid duplicate facts and overlapping aggregates/subtotals. Keep removals; exclude separately reported biogenic CO2.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source_label": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Original source row label, including enough context to identify it."
+          },
+          "gpc_ref": {
+            "type": ["string", "null"],
+            "description": "Use a subsector prefix such as I.1 with scope null when the source does not split scopes. GPC reference supported by source meaning; null when unclear. Catalogue: I.1.1: stationary energy, residential buildings, scope 1, emissions from fuel combustion within the city boundary; I.1.2: stationary energy, residential buildings, scope 2, emissions from grid supplied energy consumed within the city boundary; I.1.3: stationary energy, residential buildings, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption; I.2.1: stationary energy, commercial and institutional buildings and facilities, scope 1, emissions from fuel combustion within the city boundary; I.2.2: stationary energy, commercial and institutional buildings and facilities, scope 2, emissions from grid supplied energy consumed within the city boundary; I.2.3: stationary energy, commercial and institutional buildings and facilities, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption; I.3.1: stationary energy, manufacturing industries and construction, scope 1, emissions from fuel combustion within the city boundary; I.3.2: stationary energy, manufacturing industries and construction, scope 2, emissions from grid supplied energy consumed within the city boundary; I.3.3: stationary energy, manufacturing industries and construction, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption; I.4.1: stationary energy, energy industries, scope 1, emissions from energy used in power plant auxiliary operations within the city boundary; I.4.2: stationary energy, energy industries, scope 2, emissions from grid supplied energy consumed in power plant auxiliary operations within the city boundary; I.4.3: stationary energy, energy industries, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption in power plant auxiliary operations; I.4.4: stationary energy, energy industries, scope None, emissions from energy generation supplied to the grid; I.5.1: stationary energy, agriculture forestry and fishing activities, scope 1, emissions from fuel combustion within the city boundary; I.5.2: stationary energy, agriculture forestry and fishing activities, scope 2, emissions from grid supplied energy consumed within the city boundary; I.5.3: stationary energy, agriculture forestry and fishing activities, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption; I.6.1: stationary energy, non specified sources, scope 1, emissions from fuel combustion within the city boundary; I.6.2: stationary energy, non specified sources, scope 2, emissions from grid supplied energy consumed within the city boundary; I.6.3: stationary energy, non specified sources, scope 3, emissions from transmission and distribution losses from grid supplied energy consumption; I.7.1: stationary energy, fugitive emissions from mining processing storage and transportation of coal, scope 1, emissions from fugitive emissions within the city boundary; I.8.1: stationary energy, fugitive emissions from oil and natural gas systems, scope 1, emissions from fugitive emissions within the city boundary; II.1.1: transportation, on road transportation, scope 1, emissions from fuel combustion on road transportation occurring within the city boundary; II.1.2: transportation, on road transportation, scope 2, emissions from grid supplied energy consumed within the city boundary for on road transportation; II.1.3: transportation, on road transportation, scope 3, emissions from portion of transboundary journeys occurring outside the city boundary and transmission and distribution losses from grid supplied energy consumption; II.2.1: transportation, railways, scope 1, emissions from fuel combustion for railway transportation occurring within the city boundary; II.2.2: transportation, railways, scope 2, emissions from grid supplied energy consumed within the city boundary for railways; II.2.3: transportation, railways, scope 3, emissions from portion of transboundary journeys occurring outside the city boundary and transmission and distribution losses from grid supplied energy consumption; II.3.1: transportation, waterborne navigation, scope 1, emissions from fuel combustion for waterborne navigation occurring within the city boundary; II.3.2: transportation, waterborne navigation, scope 2, emissions from grid supplied energy consumed within the city boundary for waterborne navigation; II.3.3: transportation, waterborne navigation, scope 3, emissions from portion of transboundary journeys occurring outside the city boundary and transmission and distribution losses from grid supplied energy consumption; II.4.1: transportation, aviation, scope 1, emissions from fuel combustion for aviation occurring within the city boundary; II.4.2: transportation, aviation, scope 2, emissions from grid supplied energy consumed within the city boundary for aviation; II.4.3: transportation, aviation, scope 3, emissions from portion of transboundary journeys occurring outside the city boundary and transmission and distribution losses from grid supplied energy consumption; II.5.1: transportation, off road transportation, scope 1, emissions from fuel combustion for off road transportation occurring within the city boundary; II.5.2: transportation, off road transportation, scope 2, emissions from grid supplied energy consumed within the city boundary for off road transportation; III.1.1: waste, solid waste disposal, scope 1, emissions from solid waste generated within the city boundary and disposed in landfills or open dumps within the city boundary; III.1.2: waste, solid waste disposal, scope 3, emissions from solid waste generated within the city boundary but disposed in landfills or open dumps outside the city boundary; III.2.1: waste, biological treatment of waste, scope 1, emissions from solid waste generated within the city boundary that is treated biologically within the city boundary; III.2.2: waste, biological treatment of waste, scope 3, emissions from solid waste generated within the city boundary but treated biologically outside of the city boundary; III.3.1: waste, incineration and open burning, scope 1, emissions from solid waste generated and treated within the city boundary; III.3.2: waste, incineration and open burning, scope 3, emissions from solid waste generated within the city boundary but treated outside of the city boundary; III.4.1: waste, wastewater treatment and discharge, scope 1, emissions from wastewater generated and treated within the city boundary; III.4.2: waste, wastewater treatment and discharge, scope 3, emissions from wastewater generated within the city boundary but treated outside of the city boundary; IV.1: industrial processes and product uses ippu, emissions from industrial processes occurring within the city boundary, scope 1, ; IV.2: industrial processes and product uses ippu, emissions from product use occurring within the city boundary, scope 1, ; V.1: agriculture forestry and other land use afolu, emissions from livestock within the city boundary, scope 1, ; V.2: agriculture forestry and other land use afolu, emissions from land within the city boundary, scope 1, ; V.3: agriculture forestry and other land use afolu, emissions from aggregate sources and non co2 emission sources on land within the city boundary, scope 1, ",
+            "enum": [
+              "I.1",
+              "I.1.1",
+              "I.1.2",
+              "I.1.3",
+              "I.2",
+              "I.2.1",
+              "I.2.2",
+              "I.2.3",
+              "I.3",
+              "I.3.1",
+              "I.3.2",
+              "I.3.3",
+              "I.4",
+              "I.4.1",
+              "I.4.2",
+              "I.4.3",
+              "I.4.4",
+              "I.5",
+              "I.5.1",
+              "I.5.2",
+              "I.5.3",
+              "I.6",
+              "I.6.1",
+              "I.6.2",
+              "I.6.3",
+              "I.7",
+              "I.7.1",
+              "I.8",
+              "I.8.1",
+              "II.1",
+              "II.1.1",
+              "II.1.2",
+              "II.1.3",
+              "II.2",
+              "II.2.1",
+              "II.2.2",
+              "II.2.3",
+              "II.3",
+              "II.3.1",
+              "II.3.2",
+              "II.3.3",
+              "II.4",
+              "II.4.1",
+              "II.4.2",
+              "II.4.3",
+              "II.5",
+              "II.5.1",
+              "II.5.2",
+              "III.1",
+              "III.1.1",
+              "III.1.2",
+              "III.2",
+              "III.2.1",
+              "III.2.2",
+              "III.3",
+              "III.3.1",
+              "III.3.2",
+              "III.4",
+              "III.4.1",
+              "III.4.2",
+              "IV.1",
+              "IV.2",
+              "V.1",
+              "V.2",
+              "V.3",
+              null
+            ]
+          },
+          "scope": {
+            "type": ["integer", "null"],
+            "description": "GPC scope, if supported by source/definitions.",
+            "enum": [1, 2, 3, null]
+          },
+          "emissions_tco2e": {
+            "type": ["number", "null"],
+            "description": "Source emissions normalized to tonnes CO2e. Preserve original value/unit and explain conversion in evidence notes. Null for notation-only rows."
+          },
+          "notation_key": {
+            "type": ["string", "null"],
+            "description": "Original notation such as NO, NE, IE or C. Null for numeric rows."
+          },
+          "row_role": {
+            "type": "string",
+            "enum": ["emission", "removal", "notation", "information"],
+            "description": "Meaning of this row in the source. Retain removals with negative emissions_tco2e. Exclude separately reported biogenic CO2 and other information from the selected total."
+          },
+          "total_inclusion": {
+            "type": "string",
+            "enum": ["included", "excluded", "unclear"],
+            "description": "Whether this distinct row belongs in the selected reported_total_tco2e boundary. Exclude removals for gross, include for net. Use source protocol/boundary rules, not a row-sum fit. Explain unclear decisions; never silently drop an unmapped numeric row."
+          },
+          "scope_basis": {
+            "type": "string",
+            "enum": ["explicit", "inferred", "combined", "unknown"],
+            "description": "Explicit scope column or source-supported inference from energy/source meaning. Combined scopes keep scope null and a parent GPC reference. Unknown scope stays null; do not guess to match a benchmark."
+          }
+        },
+        "required": [
+          "source_label",
+          "gpc_ref",
+          "scope",
+          "emissions_tco2e",
+          "notation_key",
+          "row_role",
+          "total_inclusion",
+          "scope_basis"
+        ]
+      }
+    },
+    "reported_gross_total_tco2e": {
+      "type": ["number", "null"],
+      "description": "Explicitly printed gross emissions total; null if unavailable. Excludes removals."
+    },
+    "reported_removals_tco2e": {
+      "type": ["number", "null"],
+      "description": "Explicitly reported removal total as a negative number. Preserve original sign convention in evidence. Null if unavailable; do not infer from gross/net."
+    },
+    "reported_net_total_tco2e": {
+      "type": ["number", "null"],
+      "description": "Explicitly printed net total including removals. Null if unavailable; do not calculate an unreported total."
+    },
+    "total_kind": {
+      "type": "string",
+      "enum": ["gross", "net", "other", "unknown"],
+      "description": "Basis of reported_total_tco2e; choose from source definitions and case guidance, never an expected answer."
+    },
+    "reconciliation_tolerance_tco2e": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Maximum arithmetic discrepancy explained by source rounding for the distinct included rows and selected printed total, in tonnes. Derive from printed precision (half a last printed digit for each rounded value) and explain the derivation in evidence. Never choose it from the observed gap or an expected answer. Null if precision cannot be established."
+    }
+  },
+  "required": [
+    "reporting_year",
+    "reported_total_tco2e",
+    "total_basis",
+    "rows",
+    "reported_gross_total_tco2e",
+    "reported_removals_tco2e",
+    "reported_net_total_tco2e",
+    "total_kind",
+    "reconciliation_tolerance_tco2e"
+  ],
+  "$id": "urn:oef:ghgi-extraction:2"
+}

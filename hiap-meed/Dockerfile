@@ -26,5 +26,5 @@ RUN chmod +x app/run.sh
 EXPOSE 8000
 
 # Command to run the application
-CMD ["./app/run.sh"]
+CMD ["ddtrace-run", "./app/run.sh"]
 

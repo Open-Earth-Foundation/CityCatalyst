@@ -45,8 +45,16 @@ export function buildDemoReport(
   data: TrackData,
   lng: string,
   t: TFunction,
+  /** Words for the timeline band ("Medium term"), from the page's labels. */
+  timelineLabel: (key: string) => string = (key) => key,
 ): MeedReportActionDocument[] {
   const { city, adaptation, ranked, index } = data;
+  // Numbers in the report follow the reader's language (0,50 in Portuguese).
+  const fmt = (v: number, digits: number) =>
+    new Intl.NumberFormat(lng === "pt" ? "pt-BR" : "en", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(v);
   return ids.flatMap((id) => {
     const scored = adaptation?.ranked.find((s) => s.action.id === id) ?? null;
     const action = ACTION_BY_ID[id];
@@ -62,7 +70,7 @@ export function buildDemoReport(
             {
               key: "snapshot",
               title: t("report-ch-snapshot"),
-              markdown: `**${t("report-ask")}** ${index.get(id)?.description ?? ""}\n\n| ${t("report-col-checked")} | ${t("report-col-reading")} |\n|---|---|\n| ${t("report-row-impact")} | ${row ? row.impact_score.toFixed(2) : "—"} |\n| ${t("report-row-feasibility")} | ${row ? row.feasibility_score.toFixed(2) : "—"} |\n| ${t("report-row-alignment")} | ${row ? row.alignment_score.toFixed(2) : "—"} |`,
+              markdown: `**${t("report-ask")}** ${index.get(id)?.description ?? ""}\n\n| ${t("report-col-checked")} | ${t("report-col-reading")} |\n|---|---|\n| ${t("report-row-impact")} | ${row ? fmt(row.impact_score, 2) : "—"} |\n| ${t("report-row-feasibility")} | ${row ? fmt(row.feasibility_score, 2) : "—"} |\n| ${t("report-row-alignment")} | ${row ? fmt(row.alignment_score, 2) : "—"} |`,
               limitations: [t("report-lim-mitigation")],
             },
           ],
@@ -91,8 +99,8 @@ export function buildDemoReport(
       "|---|---|---|",
       `| ${t("report-row-climate")} | ${scored ? reading(scored.impact, t) : t("report-na")} | ${topCell ? t("report-detail-climate", { cell: pick(RISK_CELL_BY_KEY[topCell.cell].label, lng) }) : action.uncoveredHazard ? t("report-detail-uncovered", { hazard: pick(UNCOVERED_HAZARD_LABEL[action.uncoveredHazard], lng) }) : t("report-na")} |`,
       `| ${t("report-row-fit")} | ${scored ? reading(scored.feasibility, t) : t("report-na")} | ${t("report-detail-fit", { legal: pick(GRADE_LABEL[grade], lng), funding: pick(GAP_LABEL[funding.gap], lng) })} |`,
-      `| ${t("report-row-policy")} | ${reading(action.policy.score / 100, t)} | ${t("report-detail-policy", { score: action.policy.score.toFixed(1), count: action.policy.evidence.length })} |`,
-      `| ${t("report-row-legal")} | ${pick(GRADE_LABEL[grade], lng)} | ${t("report-detail-legal", { score: action.legal.score.toFixed(1), level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng) })} |`,
+      `| ${t("report-row-policy")} | ${reading(action.policy.score / 100, t)} | ${t("report-detail-policy", { score: fmt(action.policy.score, 1), count: action.policy.evidence.length })} |`,
+      `| ${t("report-row-legal")} | ${pick(GRADE_LABEL[grade], lng)} | ${t("report-detail-legal", { score: fmt(action.legal.score, 1), level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng) })} |`,
       `| ${t("report-row-funding")} | ${pick(GAP_LABEL[funding.gap], lng)} | ${pick(CREDIT_LABEL[funding.credit], lng)} |`,
       `| ${t("report-row-track")} | ${action.comparableProjects.length ? t("report-projects-count", { count: action.comparableProjects.length }) : t("report-na")} | ${action.comparableProjects.map((p) => p.city).join(", ") || t("report-na")} |`,
       "",
@@ -103,7 +111,7 @@ export function buildDemoReport(
       .filter((l) => l.directness === "direct")
       .map((l) => {
         const r = city.risk[l.cell];
-        return `| ${pick(RISK_CELL_BY_KEY[l.cell].label, lng)} | ${t(`component-${l.component}`)} | ${t(`effectiveness-${l.effectiveness}`)} / ${t(`confidence-${l.confidence}`)} | ${componentScore(l, action).toFixed(2)} | ${r ? r[l.component].toFixed(2) : "—"} |`;
+        return `| ${pick(RISK_CELL_BY_KEY[l.cell].label, lng)} | ${t(`component-${l.component}`)} | ${t(`effectiveness-${l.effectiveness}`)} / ${t(`confidence-${l.confidence}`)} | ${fmt(componentScore(l, action), 2)} | ${r ? fmt(r[l.component], 2) : "—"} |`;
       });
     const impact = [
       action.uncoveredHazard
@@ -123,8 +131,8 @@ export function buildDemoReport(
       scored && topCell
         ? t("drawer-impact-formula", {
             cell: pick(RISK_CELL_BY_KEY[topCell.cell].label, lng),
-            raw: topCell.raw.toFixed(2),
-            impact: scored.impact.toFixed(2),
+            raw: fmt(topCell.raw, 2),
+            impact: fmt(scored.impact, 2),
           })
         : "",
     ].join("\n");
@@ -132,7 +140,7 @@ export function buildDemoReport(
     const legal = [
       t("report-legal-intro", {
         grade: pick(GRADE_LABEL[grade], lng),
-        score: action.legal.score.toFixed(1),
+        score: fmt(action.legal.score, 1),
         level: pick(LEVEL_LABEL[action.legal.responsibleLevel], lng),
       }),
       "",
@@ -171,7 +179,7 @@ export function buildDemoReport(
     const policy = action.policy.evidence.length
       ? [
           t("report-policy-intro", {
-            score: action.policy.score.toFixed(1),
+            score: fmt(action.policy.score, 1),
             count: action.policy.evidence.length,
           }),
           "",
@@ -215,7 +223,7 @@ export function buildDemoReport(
           {
             key: "action",
             title: t("report-ch-action"),
-            markdown: `${pick(action.description, lng)}\n\n- ${t("report-cost")}: ${t(`cost-${action.costBand}`)}\n- ${t("report-timeline")}: ${action.timeline}\n- ${t("report-scale")}: ${action.scale ? t(`scale-${action.scale}`) : t("report-na")}\n- ${t("report-aim")}: ${action.aimStrategy ? t(`aim-${action.aimStrategy}`) : t("report-na")}`,
+            markdown: `${pick(action.description, lng)}\n\n- ${t("report-cost")}: ${t(`cost-${action.costBand}`)}\n- ${t("report-timeline")}: ${timelineLabel(action.timeline)}\n- ${t("report-scale")}: ${action.scale ? t(`scale-${action.scale}`) : t("report-na")}\n- ${t("report-aim")}: ${action.aimStrategy ? t(`aim-${action.aimStrategy}`) : t("report-na")}`,
             limitations: [],
           },
           {

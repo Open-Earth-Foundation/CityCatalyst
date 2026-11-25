@@ -102,16 +102,21 @@
                     },
                     "feasibility": {
                         "legal": {
-                            "component_score": 0.5,
+                            "component_score": 0.0,
                             "ownership_score": null,
-                            "component_source": "neutral_fallback",
-                            "legal_references": [],
-                            "verdict_category": null,
+                            "component_source": "assessment",
+                            "legal_references": [
+                                "Ley 18.695, art. 4"
+                            ],
+                            "verdict_category": "conditional",
                             "assessment_missing": false,
                             "assessment_present": true,
-                            "ownership_category": null,
+                            "ownership_category": "blocked",
                             "restrictions_score": null,
-                            "legal_justification": null,
+                            "legal_justification": {
+                                "es": "La Ley 18.695 no otorga al municipio esta competencia.",
+                                "en": "Law 18.695 does not grant the municipality this power."
+                            },
                             "ownership_description": null,
                             "restrictions_category": null,
                             "legal_justification_en": null,
@@ -175,12 +180,12 @@
                         "legal": {
                             "component_score": 0.5,
                             "ownership_score": null,
-                            "component_source": "neutral_fallback",
+                            "component_source": "assessment",
                             "legal_references": [],
-                            "verdict_category": null,
+                            "verdict_category": "conditional",
                             "assessment_missing": false,
                             "assessment_present": true,
-                            "ownership_category": null,
+                            "ownership_category": "conditional",
                             "restrictions_score": null,
                             "legal_justification": null,
                             "ownership_description": null,
@@ -244,14 +249,14 @@
                     },
                     "feasibility": {
                         "legal": {
-                            "component_score": 0.5,
+                            "component_score": 1.0,
                             "ownership_score": null,
-                            "component_source": "neutral_fallback",
+                            "component_source": "assessment",
                             "legal_references": [],
-                            "verdict_category": null,
+                            "verdict_category": "enabled",
                             "assessment_missing": false,
                             "assessment_present": true,
-                            "ownership_category": null,
+                            "ownership_category": "enabled",
                             "restrictions_score": null,
                             "legal_justification": null,
                             "ownership_description": null,

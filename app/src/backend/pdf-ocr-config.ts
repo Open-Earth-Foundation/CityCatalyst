@@ -20,6 +20,10 @@ export function getPdfOcrConfig() {
       "CA_MARKDOWN_DELIVERY_MAX_BYTES",
       20 * 1024 * 1024,
     ),
+    maxStructuredArtifactBytes: positiveInteger(
+      "PDF_OCR_STRUCTURED_MAX_BYTES",
+      20 * 1024 * 1024,
+    ),
     caDeliveryTimeoutMs: positiveInteger(
       "CA_MARKDOWN_DELIVERY_TIMEOUT_MS",
       30_000,

@@ -2,6 +2,7 @@
 import React from "react";
 import { Box, Card, HStack, Table, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { MeedInfoTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedInfoTip";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelMedium } from "@/components/package/Texts/Label";
@@ -15,6 +16,7 @@ import { MeedChartTip } from "@/app/[lng]/cities/[cityId]/MEED/components/MeedCh
 import type { CityFixture, RiskCellKey } from "../_lib/types";
 import { RISK_CELLS, SECTOR_HEX, SECTOR_LABEL } from "../_lib/riskCells";
 import { pick } from "../_lib/localized";
+import { SectorGlyph } from "./next/SectorIcon";
 
 export type RiskScenario = "today" | "2030" | "2050";
 
@@ -37,6 +39,7 @@ export function RiskCellTable({
   t,
   scenario,
   highlight,
+  sectors,
 }: {
   city: CityFixture;
   lng: string;
@@ -44,8 +47,14 @@ export function RiskCellTable({
   scenario: RiskScenario;
   /** Cells credited by the action being inspected, when any. */
   highlight?: RiskCellKey[];
+  /** Show only these sectors; empty means all. */
+  sectors?: string[];
 }) {
   const highlighted = new Set(highlight ?? []);
+  const visible =
+    sectors && sectors.length > 0
+      ? RISK_CELLS.filter((c) => sectors.includes(c.sector))
+      : RISK_CELLS;
   return (
     <Card.Root overflow="hidden" borderColor="border.neutral">
       <Table.Root size="md" tableLayout="fixed">
@@ -54,14 +63,32 @@ export function RiskCellTable({
             <Table.ColumnHeader w="36%">
               {t("risk-col-cell")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
-              {t("risk-col-hazard")}
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
+              <HStack gap="xs" alignItems="center">
+                <span>{t("risk-col-hazard")}</span>
+                <MeedInfoTip
+                  content={t("risk-tip-hazard")}
+                  ariaLabel={t("risk-tip-hazard")}
+                />
+              </HStack>
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
-              {t("risk-col-exposure")}
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
+              <HStack gap="xs" alignItems="center">
+                <span>{t("risk-col-exposure")}</span>
+                <MeedInfoTip
+                  content={t("risk-tip-exposure")}
+                  ariaLabel={t("risk-tip-exposure")}
+                />
+              </HStack>
             </Table.ColumnHeader>
-            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>
-              {t("risk-col-vulnerability")}
+            <Table.ColumnHeader display={{ base: "none", "2xl": "table-cell" }}>
+              <HStack gap="xs" alignItems="center">
+                <span>{t("risk-col-vulnerability")}</span>
+                <MeedInfoTip
+                  content={t("risk-tip-vulnerability")}
+                  ariaLabel={t("risk-tip-vulnerability")}
+                />
+              </HStack>
             </Table.ColumnHeader>
             <Table.ColumnHeader>
               {t(`risk-col-index-${scenario}`)}
@@ -69,7 +96,7 @@ export function RiskCellTable({
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {RISK_CELLS.map((cell) => {
+          {visible.map((cell) => {
             const reading = city.risk[cell.key];
             const index =
               reading === undefined || reading === null
@@ -86,29 +113,40 @@ export function RiskCellTable({
                 bg={isHighlighted ? "background.neutral" : undefined}
               >
                 <Table.Cell>
-                  <HStack gap="s" alignItems="flex-start">
-                    <Box
-                      boxSize="10px"
-                      mt="6px"
-                      borderRadius="full"
-                      bg={SECTOR_HEX[cell.sector]}
-                      flexShrink={0}
-                    />
-                    <VStack alignItems="flex-start" gap="0" minW={0}>
-                      <LabelMedium color="content.primary">
-                        {pick(cell.label, lng)}
-                      </LabelMedium>
-                      <Caption color="content.tertiary">
-                        {pick(SECTOR_LABEL[cell.sector], lng)}
-                      </Caption>
-                    </VStack>
-                  </HStack>
+                  <MeedChartTip
+                    title={pick(cell.label, lng)}
+                    rows={
+                      reading && cell.hasComponents
+                        ? (
+                            ["hazard", "exposure", "vulnerability"] as const
+                          ).map((component) => ({
+                            label: t(`risk-col-${component}`),
+                            value: reading[component].toFixed(2),
+                          }))
+                        : [{ label: t("risk-no-components") }]
+                    }
+                    note={t("risk-hover-note")}
+                  >
+                    <HStack gap="s" alignItems="flex-start" tabIndex={0}>
+                      <Box mt="2px">
+                        <SectorGlyph sector={cell.sector} size="16px" />
+                      </Box>
+                      <VStack alignItems="flex-start" gap="0" minW={0}>
+                        <LabelMedium color="content.primary">
+                          {pick(cell.label, lng)}
+                        </LabelMedium>
+                        <Caption color="content.tertiary">
+                          {pick(SECTOR_LABEL[cell.sector], lng)}
+                        </Caption>
+                      </VStack>
+                    </HStack>
+                  </MeedChartTip>
                 </Table.Cell>
                 {(["hazard", "exposure", "vulnerability"] as const).map(
                   (component) => (
                     <Table.Cell
                       key={component}
-                      display={{ base: "none", md: "table-cell" }}
+                      display={{ base: "none", "2xl": "table-cell" }}
                     >
                       {reading && cell.hasComponents ? (
                         <BodySmall

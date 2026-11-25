@@ -6,7 +6,17 @@ import { ForeignKeyConstraintError, ValidationError } from "sequelize";
 import { ZodError } from "zod";
 
 import "@/util/big_int_json";
+import {
+  IngestItemError,
+  ingestItemErrorStatus,
+} from "@/backend/ingest/types";
 import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
+import {
+  OAUTH_SIGNING_ALGORITHM,
+  OAuthTokenType,
+  getOAuthSigningKey,
+  verifyOAuthToken,
+} from "@/lib/auth/oauth-signing";
 import { AppSession, Auth } from "@/lib/auth";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
@@ -60,6 +70,13 @@ export type ApiRequestAuthenticator = (
 export interface ApiHandlerOptions {
   /** Use for endpoints with dedicated authentication that still need the standard API lifecycle. */
   authenticateRequest?: ApiRequestAuthenticator;
+  /**
+   * The scope an OAuth access token must carry for this route. It replaces the
+   * default, which is `read` for GET and HEAD and `write` for other methods.
+   * For routes whose meaning does not follow the HTTP method, such as the OIDC
+   * userinfo endpoint, which needs `openid` for both GET and POST.
+   */
+  oauthScope?: string;
 }
 
 // TODO extend this to other endpoints that need to skip the frozen check
@@ -187,23 +204,73 @@ const organizationContextCheck = async ({
   }
 };
 
-function getBearerToken(header: string): BearerTokenPayload {
+/**
+ * Which key verified a bearer token.
+ * - `oauth`: RS256, signed with OAUTH_SIGNING_KEY. Issued by /api/v1/token.
+ * - `shared-secret`: HS256, signed with VERIFICATION_TOKEN_SECRET. Climate
+ *   Advisor user tokens, and anything else that uses that secret.
+ */
+type BearerTokenKind = "oauth" | "shared-secret";
+
+/**
+ * Verifies a bearer JWT and says which key it was signed with.
+ *
+ * The `alg` in the token header only selects which key to check against. Each
+ * branch then pins its own algorithm, so a token cannot be verified with the
+ * other key, `alg: none` is refused, and an HMAC token made with the public
+ * key as its secret is refused. Callers must check `kind` for the flow they
+ * serve (see apiHandler).
+ */
+function getBearerToken(header: string): {
+  token: BearerTokenPayload;
+  kind: BearerTokenKind;
+} {
   const match = header.match(/^Bearer\s+(.*)$/);
   if (!match) {
     throw new createHttpError.BadRequest(`Malformed Authorization header`);
   }
-  if (!process.env.VERIFICATION_TOKEN_SECRET) {
-    logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
-    throw createHttpError.InternalServerError("Configuration error");
+  const rawToken = match[1];
+  const alg = jwt.decode(rawToken, { complete: true })?.header.alg;
+
+  if (alg === OAUTH_SIGNING_ALGORITHM) {
+    // Without a key, this server has never issued an OAuth token.
+    if (!process.env.OAUTH_SIGNING_KEY) {
+      throw new createHttpError.Unauthorized("Invalid or expired access token");
+    }
+    // A key that is set but unusable is a 500, not a 401.
+    getOAuthSigningKey();
+    try {
+      return {
+        token: verifyOAuthToken(
+          rawToken,
+          OAuthTokenType.Access,
+        ) as unknown as BearerTokenPayload,
+        kind: "oauth",
+      };
+    } catch {
+      throw new createHttpError.Unauthorized("Invalid or expired access token");
+    }
   }
-  try {
-    return jwt.verify(
-      match[1],
-      process.env.VERIFICATION_TOKEN_SECRET,
-    ) as BearerTokenPayload;
-  } catch {
-    throw new createHttpError.Unauthorized("Invalid or expired access token");
+
+  if (alg === "HS256") {
+    if (!process.env.VERIFICATION_TOKEN_SECRET) {
+      logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
+      throw createHttpError.InternalServerError("Configuration error");
+    }
+    try {
+      return {
+        token: jwt.verify(rawToken, process.env.VERIFICATION_TOKEN_SECRET, {
+          algorithms: ["HS256"],
+        }) as unknown as BearerTokenPayload,
+        kind: "shared-secret",
+      };
+    } catch {
+      throw new createHttpError.Unauthorized("Invalid or expired access token");
+    }
   }
+
+  // Malformed tokens, `alg: none` and any other algorithm.
+  throw new createHttpError.Unauthorized("Invalid or expired access token");
 }
 
 async function makeOAuthUserSession(
@@ -349,12 +416,7 @@ export function apiHandler(
             session = patSession;
           } else {
             // Existing JWT/OAuth validation
-            const token = getBearerToken(authorization);
-            if (!token) {
-              throw new createHttpError.Unauthorized(
-                "Invalid or expired access token",
-              );
-            }
+            const { token, kind } = getBearerToken(authorization);
 
             const origin = process.env.HOST || new URL(req.url).origin;
             if (token.aud !== origin) {
@@ -372,6 +434,11 @@ export function apiHandler(
                 throw new createHttpError.Unauthorized(
                   "Invalid service credentials",
                 );
+              }
+              // Service tokens are signed with the shared secret. An OAuth
+              // token is never a service token.
+              if (kind !== "shared-secret") {
+                throw new createHttpError.Unauthorized("Invalid service token");
               }
               if (
                 token.iss !== "climate-advisor-service" ||
@@ -393,7 +460,14 @@ export function apiHandler(
                 "Service-to-service token validated",
               );
             } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-              // OAuth validation path for regular client tokens
+              // OAuth validation path for regular client tokens. Only a token
+              // signed with the OAuth key counts. Invite, verification and
+              // other shared-secret tokens never reach a session here.
+              if (kind !== "oauth") {
+                throw new createHttpError.Unauthorized(
+                  "Invalid or expired access token",
+                );
+              }
               const client = await OAuthClient.findByPk(token.client_id);
               if (!client) {
                 throw new createHttpError.Unauthorized("Invalid client");
@@ -402,21 +476,29 @@ export function apiHandler(
                 throw new createHttpError.Unauthorized("Token missing scope");
               }
               const scopes = token.scope.split(" ");
-              if (
-                ["GET", "HEAD"].includes(req.method) &&
-                !scopes.includes("read")
-              ) {
-                throw new createHttpError.Unauthorized(
-                  "No read scope available",
-                );
-              }
-              if (
-                ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-                !scopes.includes("write")
-              ) {
-                throw new createHttpError.Unauthorized(
-                  "No write scope available",
-                );
+              if (options.oauthScope) {
+                if (!scopes.includes(options.oauthScope)) {
+                  throw new createHttpError.Unauthorized(
+                    `No ${options.oauthScope} scope available`,
+                  );
+                }
+              } else {
+                if (
+                  ["GET", "HEAD"].includes(req.method) &&
+                  !scopes.includes("read")
+                ) {
+                  throw new createHttpError.Unauthorized(
+                    "No read scope available",
+                  );
+                }
+                if (
+                  ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+                  !scopes.includes("write")
+                ) {
+                  throw new createHttpError.Unauthorized(
+                    "No write scope available",
+                  );
+                }
               }
               const authz = await OAuthClientAuthz.findOne({
                 where: {
@@ -504,6 +586,11 @@ function errorHandler(err: unknown) {
     err instanceof CustomInviteError
   ) {
     return NextResponse.json(err.data, { status: 409 });
+  } else if (err instanceof IngestItemError) {
+    return NextResponse.json(
+      { error: { message: err.message, code: err.code } },
+      { status: ingestItemErrorStatus(err) },
+    );
   } else if (createHttpError.isHttpError(err) && err.expose) {
     const details = err as typeof err & {
       code?: unknown;

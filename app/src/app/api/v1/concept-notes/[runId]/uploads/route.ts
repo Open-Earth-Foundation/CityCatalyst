@@ -33,6 +33,10 @@
  *                 type: string
  *                 maxLength: 255
  *                 nullable: true
+ *               sourceRole:
+ *                 type: string
+ *                 enum: [reference, climate_action_plan]
+ *                 default: reference
  *     responses:
  *       202:
  *         description: Upload registered and processing accepted
@@ -58,6 +62,9 @@
  *                 sourceLabel:
  *                   type: string
  *                   nullable: true
+ *                 sourceRole:
+ *                   type: string
+ *                   enum: [reference, climate_action_plan]
  *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
@@ -116,6 +123,7 @@ import {
   callConceptNoteApi,
   readConceptNoteApiPayload,
 } from "@/backend/concept-notes";
+import { registerConceptNoteOnDocumentPool } from "@/backend/ingest/cnb-path-b";
 import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "@/backend/inventory-import-file-limits";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
@@ -217,6 +225,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
   const fileBuffer = Buffer.from(await fileEntry.arrayBuffer());
+  const contentHash = createHash("sha256").update(fileBuffer).digest("hex");
   if (isPdf) {
     if (fileEntry.type !== "application/pdf") {
       throw new createHttpError.UnsupportedMediaType(
@@ -245,6 +254,9 @@ export const POST = apiHandler(async (req, { session, params }) => {
   if (sourceLabel && sourceLabel.length > 255) {
     throw new createHttpError.UnprocessableEntity("Source label is too long");
   }
+  const sourceRole = z
+    .enum(["reference", "climate_action_plan"])
+    .parse(formData.get("sourceRole") ?? "reference");
 
   // Only persisted creation identities may be replayed; bind them to file bytes.
   const requestedUploadId = formData.get("initialUploadId");
@@ -256,8 +268,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     requestedUploadId !== null &&
     (!initialUpload ||
       initialUpload.filename !== filename ||
-      initialUpload.sha256 !==
-        createHash("sha256").update(fileBuffer).digest("hex"))
+      initialUpload.sha256 !== contentHash)
   ) {
     throw new createHttpError.Conflict(
       "Select the original source file to retry this upload",
@@ -275,6 +286,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
       filename,
       source_label: sourceLabel,
       source_format: isPdf ? "pdf" : "markdown",
+      // CA defaults to reference; omitting it keeps ordinary uploads working on a CA without roles.
+      ...(sourceRole === "climate_action_plan" && { source_role: sourceRole }),
     },
   });
   const createPayload = await readConceptNoteApiPayload(createResponse);
@@ -331,6 +344,18 @@ export const POST = apiHandler(async (req, { session, params }) => {
     if (normalizeConceptNotePdfOcrStatus(job).status === "failed") {
       await retryConceptNotePdfOcr(job);
     }
+    // Path B only after CA accepted the id and the bytes are stored.
+    failureCode = "path_b_registration_failed";
+    await registerConceptNoteOnDocumentPool({
+      uploadId,
+      cityId,
+      userId,
+      filename,
+      contentHash,
+      buffer: fileBuffer,
+      s3Key: isPdf ? conceptNotePdfSourceKey(uploadId) : null,
+      markdownReady: isMarkdown,
+    });
   } catch (error) {
     if (createHttpError.isHttpError(error)) {
       throw error;
@@ -373,6 +398,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       canRetry: state.canRetry,
       filename,
       sourceLabel,
+      sourceRole,
       ...(state.retryKind ? { retryKind: state.retryKind } : {}),
     },
     { status: 202 },

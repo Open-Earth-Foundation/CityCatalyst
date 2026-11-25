@@ -2,10 +2,12 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import i18next from "eslint-plugin-i18next";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  reactCompiler.configs.recommended,
   i18next.configs["flat/recommended"],
   globalIgnores([
     "node_modules/**",

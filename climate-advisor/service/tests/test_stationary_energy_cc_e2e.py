@@ -159,6 +159,7 @@ def test_stationary_energy_cc_manual_llm_e2e() -> None:
                 "inventory_id": inventory_id,
                 "context": {"access_token": token},
             },
+            headers={"Authorization": f"Bearer {token}"},
         )
         assert thread_response.status_code == 201, thread_response.text
         thread_id = thread_response.json()["thread_id"]
@@ -206,6 +207,7 @@ def test_stationary_energy_cc_manual_llm_e2e() -> None:
                     "and why the recommended source is a good fit."
                 ),
             },
+            headers={"Authorization": f"Bearer {token}"},
         )
         assert message_response.status_code == 200, message_response.text
         message_events = _parse_sse_events(message_response.text)

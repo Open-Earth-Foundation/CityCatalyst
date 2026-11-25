@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from hashlib import sha256
+from typing import Any
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
@@ -13,6 +14,7 @@ from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
+from app.models.cnb.funder_creation import StoredCustomTemplate
 from app.models.db.cnb_reference import (
     CnbFunder,
     CnbFunderTemplate,
@@ -22,6 +24,7 @@ from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun
+from app.persistence.concept_notes.workspace import normalize_template_chapters
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -55,6 +58,11 @@ class ConceptNoteApplicationContextService:
                 else await self._load_included_sources(run.run_id)
             ),
         )
+        custom = custom_template(run)
+        if custom is not None:
+            response.template = custom_template_response(custom)
+            response.template_source = custom.added_from
+            return response
         if run.funder_id is None:
             return response
 
@@ -97,7 +105,20 @@ class ConceptNoteApplicationContextService:
         self,
         run: ConceptNoteRun,
     ) -> str | None:
-        """Load the current template fingerprint with one reference query."""
+        """Fingerprint the custom template or the selected reference template."""
+        template = await self.load_template_for_run(run)
+        if template is None:
+            return None
+        return calculate_application_template_fingerprint(template)
+
+    async def load_template_for_run(
+        self,
+        run: ConceptNoteRun,
+    ) -> ApplicationContextTemplate | None:
+        """Return the custom template, or load the selected reference template."""
+        custom = custom_template(run)
+        if custom is not None:
+            return custom_template_response(custom)
         if run.funder_id is None or run.selected_funding_opportunity_id is None:
             return None
 
@@ -118,9 +139,7 @@ class ConceptNoteApplicationContextService:
         async with session_factory() as session:
             template = await session.scalar(statement)
 
-        if template is None:
-            return None
-        return calculate_application_template_fingerprint(_template_response(template))
+        return _template_response(template) if template is not None else None
 
     async def _load_included_sources(
         self,
@@ -195,6 +214,26 @@ def included_sources_from_bundle(
     )
 
 
+def custom_template(run: ConceptNoteRun) -> StoredCustomTemplate | None:
+    """The note's own template, which replaces any funder template."""
+    if not run.custom_template:
+        return None
+    return StoredCustomTemplate.model_validate(run.custom_template)
+
+
+def custom_template_response(
+    template: StoredCustomTemplate,
+) -> ApplicationContextTemplate:
+    """Expose a note's own template in the same shape as a catalogue template."""
+    return ApplicationContextTemplate(
+        id=template.id,
+        name=template.template_name,
+        output_format=template.output_format,
+        chapter_schema=template.chapter_schema,
+        required_fields=template.required_fields,
+    )
+
+
 def _template_response(template: CnbFunderTemplate) -> ApplicationContextTemplate:
     """Convert a managed template row to the stable public model."""
     return ApplicationContextTemplate(
@@ -204,6 +243,26 @@ def _template_response(template: CnbFunderTemplate) -> ApplicationContextTemplat
         chapter_schema=template.chapter_schema,
         required_fields=template.required_fields,
     )
+
+
+def template_chapter_requirements(
+    template: ApplicationContextTemplate,
+) -> list[dict[str, Any]]:
+    """Each template chapter's reference, title, description, and required fields."""
+    required_fields = {
+        str(chapter.get("chapter_ref") or "").strip(): chapter.get("required_fields") or []
+        for chapter in template.chapter_schema
+        if isinstance(chapter, dict)
+    }
+    return [
+        {
+            "chapter_ref": chapter.chapter_ref,
+            "title": chapter.title,
+            "description": chapter.description,
+            "required_fields": [str(field) for field in required_fields.get(chapter.chapter_ref, [])],
+        }
+        for chapter in normalize_template_chapters(template.chapter_schema)
+    ]
 
 
 def calculate_application_template_fingerprint(

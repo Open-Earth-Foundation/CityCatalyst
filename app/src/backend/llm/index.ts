@@ -4,17 +4,14 @@
  * Purpose: Single provider-agnostic interface for LLM calls.
  * Scope: New code only;
  *
- * Config (env):
- *   OPENAI_API_KEY - API key (required)
- *   LLM_PROVIDER   - e.g. "openai" (default)
- *   LLM_MODEL      - e.g. "gpt-4o-mini" (default)
- *   LLM_BASE_URL   - (optional) override API base URL
- *   LLM_TIMEOUT_MS - (optional) request timeout, default 60000
- *   LLM_MAX_RETRIES - (optional) retries on timeout/rate-limit/provider error, default 1
+ * Config: llm_config.yaml (app root; path override LLM_CONFIG_PATH) maps each role
+ * (`use`) to a model, temperature and reasoning effort, plus api timeout and retries.
+ * Env: OPENAI_API_KEY (required), LLM_PROVIDER ("openai" default), LLM_BASE_URL (optional).
  *
  * Example:
  *   const client = createLLMClient();
  *   const { content } = await client.complete({
+ *     use: "pdf_extraction",
  *     messages: [{ role: "system", content: "..." }, { role: "user", content: "..." }],
  *     jsonMode: true,
  *   });
@@ -25,7 +22,7 @@
 
 export { createLLMClient } from "./client";
 export type { LLMClient } from "./client";
-export { loadLLMConfigFromEnv } from "./config";
+export { loadLLMConfig } from "./config";
 export { LLMError, LLMErrorCode } from "./types";
 export type {
   LLMConfig,
@@ -33,5 +30,7 @@ export type {
   LLMCompleteResult,
   LLMMessage,
   LLMMessageRole,
+  LLMModelConfig,
+  LLMUse,
   LLMUsage,
 } from "./types";

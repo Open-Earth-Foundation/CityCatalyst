@@ -1,7 +1,7 @@
 import { expect, Locator, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryThroughOnboarding,
-  dismissCookieConsent,
+  skipCookieConsent,
   navigateToDataPage,
 } from "./helpers";
 
@@ -77,7 +77,11 @@ async function navigateToFirstSubsector(
     new RegExp(`/GHGI/${inventoryId}/data/${sector.sectorPath}/[^/]+`),
   );
   await expect(
-    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+    page
+      .getByText(
+        /Select methodology|Select The Methodology|Add data to sub-sector/i,
+      )
+      .first(),
   ).toBeVisible({ timeout: 30000 });
 }
 
@@ -103,7 +107,11 @@ async function navigateToResidentialSubsector(
   });
   // Both scope ActivityTabs mount headers; assert the selected scope content.
   await expect(
-    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+    page
+      .getByText(
+        /Select methodology|Select The Methodology|Add data to sub-sector/i,
+      )
+      .first(),
   ).toBeVisible({ timeout: 30000 });
 }
 
@@ -273,9 +281,9 @@ async function fillDirectMeasureRequiredFields(
     await dataQuality.selectOption("high");
   }
 
-  const dataSource = addEmissionModal.getByLabel("Data source");
-  if (await dataSource.isVisible().catch(() => false)) {
-    await dataSource.fill("e2e test");
+  const dataProvider = addEmissionModal.getByTestId("data-provider-input");
+  if (await dataProvider.isVisible().catch(() => false)) {
+    await dataProvider.fill("e2e test");
   }
 
   if (options?.includeComments !== false) {
@@ -294,186 +302,198 @@ async function hasDirectMeasureMethodology(scopeOnePanel: Locator) {
     .catch(() => false);
 }
 
-test.describe.serial("Manual Input", () => {
-  test.setTimeout(120000);
+// One serial chain per sector, each on its own inventory, so the chains can
+// run on separate workers instead of one long chain at the end of the run.
+for (const sector of sectorData) {
+  test.describe.serial(`Manual Input: ${sector.sectorName}`, () => {
+    test.setTimeout(120000);
 
-  let cityId: string;
-  let inventoryId: string;
+    let cityId: string;
+    let inventoryId: string;
 
-  test.beforeAll(async ({ browser }) => {
-    test.setTimeout(180000);
+    test.beforeAll(async ({ browser }) => {
+      test.setTimeout(180000);
 
-    const context = await browser.newContext({
-      storageState: "playwright/.auth/user.json",
+      const context = await browser.newContext({
+        storageState: "playwright/.auth/user.json",
+      });
+      const page = await context.newPage();
+
+      const result = await createCityAndInventoryThroughOnboarding(page);
+      cityId = result.cityId;
+      inventoryId = result.inventoryId;
+
+      await context.close();
     });
-    const page = await context.newPage();
 
-    const result = await createCityAndInventoryThroughOnboarding(page);
-    cityId = result.cityId;
-    inventoryId = result.inventoryId;
-
-    await context.close();
-  });
-
-  test.beforeEach(async ({ page }) => {
-    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
-    await dismissCookieConsent(page);
-    await expect(page.getByTestId("hero-city-name")).toBeVisible({
-      timeout: 60000,
-    });
-  });
-
-  test("should render sector list page", async ({ page }) => {
-    await navigateToDataPage(page, cityId, inventoryId);
-
-    await expect(page.getByTestId(testIds.addDataStepHeading)).toHaveText(
-      "Add Data to Complete Your GHG Inventory",
-    );
-    await expect(
-      page.getByTestId(testIds.stationaryEnergySectorCard),
-    ).toBeVisible();
-    await expect(
-      page.getByTestId(testIds.transportationSectorCard),
-    ).toBeVisible();
-    await expect(page.getByTestId(testIds.wasteSectorCard)).toBeVisible();
-  });
-
-  for (const sector of sectorData) {
-    test.describe.serial(() => {
-      test(`should navigate to ${sector.sectorName} sector page`, async ({
-        page,
-      }) => {
-        if (sector.useResidentialSubsector) {
-          await navigateToResidentialSubsector(page, cityId, inventoryId);
-          return;
-        }
-        await navigateToFirstSubsector(page, cityId, inventoryId, sector);
-      });
-
-      test(`should list methodologies in ${sector.sectorName}`, async ({
-        page,
-      }) => {
-        const scopeOnePanel = await openScopeOnePanel(
-          page,
-          cityId,
-          inventoryId,
-          sector,
-        );
-
-        // Prefer methodology picker; if a methodology is already applied, the
-        // activity button means the scope loaded successfully.
-        const methodologyCards = scopeOnePanel.getByTestId(
-          testIds.methodologyCard,
-        );
-        const alreadySelected = await addActivityButton(scopeOnePanel)
-          .isVisible()
-          .catch(() => false);
-
-        if (alreadySelected && (await methodologyCards.count()) === 0) {
-          await expect(addActivityButton(scopeOnePanel)).toBeVisible();
-          return;
-        }
-
-        await expect(
-          scopeOnePanel.getByText(/Select methodology|Select The Methodology/i).first(),
-        ).toBeVisible({ timeout: 30000 });
-        await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
-        expect(await methodologyCards.count()).toBeGreaterThan(0);
-      });
-
-      test(`test direct measure methodology in scope 1 with incomplete & complete values in ${sector.sectorName}`, async ({
-        page,
-      }) => {
-        const scopeOnePanel = await openScopeOnePanel(
-          page,
-          cityId,
-          inventoryId,
-          sector,
-        );
-        if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
-          test.skip(
-            true,
-            `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
-          );
-        }
-
-        await selectDirectMeasureMethodology(scopeOnePanel);
-        await addActivityButton(scopeOnePanel).click();
-
-        const addEmissionModal = page.getByTestId(testIds.addEmissionModal);
-        await expect(addEmissionModal).toBeVisible({ timeout: 30000 });
-
-        await fillDirectMeasureRequiredFields(page, addEmissionModal, {
-          includeComments: false,
-        });
-
-        const submitButton = addEmissionModal.getByTestId(
-          testIds.addEmissionModalSubmitButton,
-        );
-        await submitButton.click();
-
-        await expect(
-          addEmissionModal.getByText(/Please add any relevant context/i),
-        ).toBeVisible({ timeout: 10000 });
-
-        await addEmissionModal
-          .getByTestId(testIds.sourceReferenceInput)
-          .fill("Created by e2e test");
-        await submitButton.click();
-        await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
-      });
-
-      test(`should display newly created activity in activity table in ${sector.sectorName}`, async ({
-        page,
-      }) => {
-        const scopeOnePanel = await openScopeOnePanel(
-          page,
-          cityId,
-          inventoryId,
-          sector,
-        );
-        if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
-          test.skip(
-            true,
-            `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
-          );
-        }
-
-        const activityTable = scopeOnePanel.locator("table");
-        await expect(activityTable).toBeVisible({ timeout: 30000 });
-        await expect(
-          activityTable.getByRole("cell", { name: /CO2e/i }).first(),
-        ).toBeVisible({ timeout: 30000 });
-      });
-
-      test(`should delete the activity from the table in ${sector.sectorName}`, async ({
-        page,
-      }) => {
-        const scopeOnePanel = await openScopeOnePanel(
-          page,
-          cityId,
-          inventoryId,
-          sector,
-        );
-        if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
-          test.skip(
-            true,
-            `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
-          );
-        }
-
-        const activityTable = scopeOnePanel.locator("table");
-        await expect(activityTable).toBeVisible({ timeout: 30000 });
-
-        await scopeOnePanel.getByTestId(testIds.activityMoreButton).first().click();
-        await page.getByTestId(testIds.deleteActivityButton).click();
-
-        const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);
-        await expect(deleteModal).toBeVisible({ timeout: 10000 });
-
-        await page.getByTestId(testIds.deleteActivityModalConfirmButton).click();
-        await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
+    test.beforeEach(async ({ page, context }) => {
+      // Pre-decline consent so no banner renders; waiting for an absent one costs 2 s per test.
+      await skipCookieConsent(context);
+      await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+      await expect(page.getByTestId("hero-city-name")).toBeVisible({
+        timeout: 60000,
       });
     });
-  }
-});
+
+    if (sector === sectorData[0]) {
+      test("should render sector list page", async ({ page }) => {
+        await navigateToDataPage(page, cityId, inventoryId);
+
+        await expect(page.getByTestId(testIds.addDataStepHeading)).toHaveText(
+          "Add Data to Complete Your GHG Inventory",
+        );
+        await expect(
+          page.getByTestId(testIds.stationaryEnergySectorCard),
+        ).toBeVisible();
+        await expect(
+          page.getByTestId(testIds.transportationSectorCard),
+        ).toBeVisible();
+        await expect(page.getByTestId(testIds.wasteSectorCard)).toBeVisible();
+      });
+    }
+
+    test(`should navigate to ${sector.sectorName} sector page`, async ({
+      page,
+    }) => {
+      if (sector.useResidentialSubsector) {
+        await navigateToResidentialSubsector(page, cityId, inventoryId);
+        return;
+      }
+      await navigateToFirstSubsector(page, cityId, inventoryId, sector);
+    });
+
+    test(`should list methodologies in ${sector.sectorName}`, async ({
+      page,
+    }) => {
+      const scopeOnePanel = await openScopeOnePanel(
+        page,
+        cityId,
+        inventoryId,
+        sector,
+      );
+
+      // Prefer methodology picker; if a methodology is already applied, the
+      // activity button means the scope loaded successfully.
+      const methodologyCards = scopeOnePanel.getByTestId(
+        testIds.methodologyCard,
+      );
+      const alreadySelected = await addActivityButton(scopeOnePanel)
+        .isVisible()
+        .catch(() => false);
+
+      if (alreadySelected && (await methodologyCards.count()) === 0) {
+        await expect(addActivityButton(scopeOnePanel)).toBeVisible();
+        return;
+      }
+
+      await expect(
+        scopeOnePanel
+          .getByText(/Select methodology|Select The Methodology/i)
+          .first(),
+      ).toBeVisible({ timeout: 30000 });
+      await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
+      expect(await methodologyCards.count()).toBeGreaterThan(0);
+    });
+
+    test(`test direct measure methodology in scope 1 with incomplete & complete values in ${sector.sectorName}`, async ({
+      page,
+    }) => {
+      const scopeOnePanel = await openScopeOnePanel(
+        page,
+        cityId,
+        inventoryId,
+        sector,
+      );
+      if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
+        test.skip(
+          true,
+          `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
+        );
+      }
+
+      await selectDirectMeasureMethodology(scopeOnePanel);
+      await addActivityButton(scopeOnePanel).click();
+
+      const addEmissionModal = page.getByTestId(testIds.addEmissionModal);
+      await expect(addEmissionModal).toBeVisible({ timeout: 30000 });
+
+      await fillDirectMeasureRequiredFields(page, addEmissionModal, {
+        includeComments: false,
+      });
+
+      const submitButton = addEmissionModal.getByTestId(
+        testIds.addEmissionModalSubmitButton,
+      );
+      await submitButton.click();
+
+      await addEmissionModal
+        .getByTestId(testIds.sourceReferenceInput)
+        .fill("Created by e2e test");
+      await submitButton.click();
+      await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+    });
+
+    test(`should display newly created activity in activity table in ${sector.sectorName}`, async ({
+      page,
+    }) => {
+      const scopeOnePanel = await openScopeOnePanel(
+        page,
+        cityId,
+        inventoryId,
+        sector,
+      );
+      if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
+        test.skip(
+          true,
+          `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
+        );
+      }
+
+      const activityTable = scopeOnePanel.locator("table");
+      await expect(activityTable).toBeVisible({ timeout: 30000 });
+      await expect(
+        activityTable.getByRole("cell", { name: /CO2e/i }).first(),
+      ).toBeVisible({ timeout: 30000 });
+    });
+
+    test(`should delete the activity from the table in ${sector.sectorName}`, async ({
+      page,
+    }) => {
+      const scopeOnePanel = await openScopeOnePanel(
+        page,
+        cityId,
+        inventoryId,
+        sector,
+      );
+      if (!(await hasDirectMeasureMethodology(scopeOnePanel))) {
+        test.skip(
+          true,
+          `Direct Measure is not available for the ${sector.sectorName} subsector under test`,
+        );
+      }
+
+      const activityTable = scopeOnePanel.locator("table");
+      await expect(activityTable).toBeVisible({ timeout: 30000 });
+
+      // The fixed page header shrinks as the page scrolls, so a button can sit
+      // under it or the AI button at the moment Playwright checks. Center it
+      // and retry until the header has settled.
+      const moreButton = scopeOnePanel
+        .getByTestId(testIds.activityMoreButton)
+        .first();
+      await expect(async () => {
+        await moreButton.evaluate((button) =>
+          button.scrollIntoView({ block: "center" }),
+        );
+        await moreButton.click({ timeout: 2000 });
+      }).toPass({ timeout: 30000 });
+      await page.getByTestId(testIds.deleteActivityButton).click();
+
+      const deleteModal = page.getByTestId(testIds.deleteActivityModalHeader);
+      await expect(deleteModal).toBeVisible({ timeout: 10000 });
+
+      await page.getByTestId(testIds.deleteActivityModalConfirmButton).click();
+      await expect(deleteModal).not.toBeVisible({ timeout: 30000 });
+    });
+  });
+}

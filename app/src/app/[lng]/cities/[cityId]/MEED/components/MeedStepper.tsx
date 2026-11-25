@@ -7,6 +7,7 @@ import { MEED_WIZARD_STEPS } from "../steps";
 import { stepHref, type MeedReturnTarget } from "../navigation";
 import type { MeedSectionStates, MeedSectionStatus } from "../meedStatus";
 import { FOCUS_RING } from "../focusRing";
+import { MEED_CONTENT_MAX_W } from "../contentWidth";
 
 export interface MeedStepperProps {
   /** Index into MEED_WIZARD_STEPS, or -1 when on a non-step screen. */
@@ -55,7 +56,7 @@ export function MeedStepper({
       borderBottomWidth="1px"
       borderColor="border.overlay"
     >
-      <Box mx="auto" w="full" maxW="1090px" px="l" py="m">
+      <Box mx="auto" w="full" maxW={MEED_CONTENT_MAX_W} px="l" py="m">
         <Steps.Root
           step={activeIndex}
           count={MEED_WIZARD_STEPS.length}
@@ -83,7 +84,7 @@ export function MeedStepper({
                   <Steps.Trigger
                     disabled={disabled}
                     aria-current={isActive ? "step" : undefined}
-                    style={{ width: "100%" }}
+                    w="full"
                     // Chakra's stock steps recipe fills the current trigger with
                     // colorPalette.muted, which boxed the active step and broke
                     // the row's alignment. Own the background here instead.
@@ -158,7 +159,7 @@ export function MeedStepper({
                         as="span"
                         fontSize="label.sm"
                         fontFamily="heading"
-                        lineHeight="16px"
+                        lineHeight="16"
                         textAlign="center"
                         // Two lines are reserved for every label so the circles
                         // and the baselines line up whether the label wraps or not.

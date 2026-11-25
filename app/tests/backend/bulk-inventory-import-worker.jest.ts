@@ -89,6 +89,15 @@ describe("Bulk inventory import worker", () => {
       await db.models.BulkInventoryImportJob.destroy({ where: { id: jobId } });
     }
     if (createdCityIds.length) {
+      await db.models.IngestItem.destroy({
+        where: { targetCityId: createdCityIds },
+      });
+      await db.models.IngestDocument.destroy({
+        where: { cityId: createdCityIds },
+      });
+      await db.models.IngestJob.destroy({
+        where: { cityId: createdCityIds },
+      });
       const inventories = await db.models.Inventory.findAll({
         where: { cityId: createdCityIds },
       });

@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import json
 from collections.abc import AsyncIterator
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import uuid4
@@ -26,7 +27,7 @@ from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
     SourcePage,
-    _run_agent,
+    run_agent,
     analyze_document,
     gather_all_or_raise,
     parse_markdown_blocks,
@@ -52,7 +53,7 @@ async def test_source_worker_uses_live_stream_and_validates_result(
     }))
     monkeypatch.setattr("app.services.cnb.source_analysis.run_with_cnb_reasoning", stream)
     with bind_cnb_progress(AsyncMock()):
-        result = await _run_agent(
+        result = await run_agent(
             name="Source reader",
             prompt="Read source",
             model_config=settings.llm.models.cnb_source_reader,
@@ -178,6 +179,48 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert set(runner.covered_pages) == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
+
+
+def test_source_pages_keep_values_inserted_at_mistral_table_placeholders() -> None:
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "# Emissions\n\n"
+        "| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert pages == [
+        SourcePage(
+            number=1,
+            text="\n# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |",
+        )
+    ]
+    assert "12.50" in pages[0].text
+
+
+def test_source_pages_keep_each_pages_header_and_footer_in_order() -> None:
+    footer = "This project has received funding from the EU (grant 101036519)"
+    markdown = (
+        "<!-- page: 1 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "# Emissions\n\n| Fuel | tCO2e |\n|---|---:|\n| Gas | 12.50 |\n\n"
+        f"{footer}\n\n"
+        "<!-- page: 2 -->\n"
+        "Action Plan | City of Krakow\n\n"
+        "Second page\n\n"
+        "2"
+    )
+
+    pages = parse_source_pages(markdown)
+
+    assert [page.number for page in pages] == [1, 2]
+    assert pages[0].text.index("Action Plan") < pages[0].text.index("12.50")
+    assert pages[0].text.index("12.50") < pages[0].text.index(footer)
+    assert "101036519" in pages[0].text
+    assert "101036519" not in pages[1].text
+    assert pages[1].text.startswith("\nAction Plan | City of Krakow")
+    assert render_source_text(pages) == markdown
 
 
 @pytest.mark.asyncio
@@ -440,7 +483,7 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
         base_url="https://openrouter.ai/api/v1",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
     ) as client:
-        result = await _run_agent(
+        result = await run_agent(
             name="Source model compatibility test",
             prompt=settings.llm.prompts.get_prompt(
                 "cnb_source_question_reading"
@@ -470,11 +513,70 @@ async def test_source_worker_serializes_terra_requests_without_temperature(
         assert sections["minItems"] == sections["maxItems"] == 1
 
 
-@pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
-def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
+def _set_reader_model(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_reader.name = "previous-model"
+
+
+def _set_reader_effort(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_reader.reasoning_effort = "minimal"
+
+
+def _set_synthesizer_model(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_synthesizer.name = "previous-model"
+
+
+def _set_synthesizer_effort(settings: Settings, _: Path) -> None:
+    settings.llm.models.cnb_source_synthesizer.reasoning_effort = "minimal"
+
+
+def _set_mapping_prompt(settings: Settings, tmp_path: Path) -> None:
+    prompt = tmp_path / "mapping.md"
+    prompt.write_text("Changed mapping prompt", encoding="utf-8")
+    settings.llm.prompts.cnb_source_document_mapping = str(prompt)
+
+
+def _set_synthesis_prompt(settings: Settings, tmp_path: Path) -> None:
+    prompt = tmp_path / "synthesis.md"
+    prompt.write_text("Changed synthesis prompt", encoding="utf-8")
+    settings.llm.prompts.cnb_source_summary_synthesis = str(prompt)
+
+
+def _set_tokenizer(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.tokenizer_encoding = "cl100k_base"
+
+
+def _set_partition_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens -= 1
+
+
+def _set_excerpt_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_key_excerpts -= 1
+
+
+def _set_topic_limit(settings: Settings, _: Path) -> None:
+    settings.llm.generation.prompt_budget.cnb_sources.max_topics -= 1
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        _set_reader_model,
+        _set_reader_effort,
+        _set_synthesizer_model,
+        _set_synthesizer_effort,
+        _set_mapping_prompt,
+        _set_synthesis_prompt,
+        _set_tokenizer,
+        _set_partition_limit,
+        _set_excerpt_limit,
+        _set_topic_limit,
+    ],
+)
+def test_every_analysis_input_invalidates_the_reuse_contract(change, tmp_path) -> None:
+    """Any configured input that can change analysis output forces re-analysis."""
     settings = get_settings().model_copy(deep=True)
     current_contract = source_analysis_contract_version(settings)
-    getattr(settings.llm.models, role).name = "previous-model"
+    change(settings, tmp_path)
     assert source_analysis_contract_version(settings) != current_contract
 
 

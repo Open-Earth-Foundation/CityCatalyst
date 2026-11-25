@@ -13,9 +13,7 @@ import {
 import NextLink from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { LabelMedium } from "@/components/package/Texts/Label";
-import { BodyMedium } from "@/components/package/Texts/Body";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium, TitleLarge } from "@/components/package/Texts/Title";
 import type { MeedPolicyBacking } from "./rankingFacts";
@@ -73,23 +71,25 @@ function ContextCard({
         : "content.primary";
 
   const body = (
-    <Card.Body display="flex" flexDirection="column" gap="m" h="full" p="l">
+    <Card.Body display="flex" flexDirection="column" gap="m" h="full" p="xl">
       <HStack gap="s" alignItems="center">
         <Icon as={icon} boxSize="20px" color="content.link" />
-        <TitleMedium color="content.primary">{title}</TitleMedium>
+        <TitleMedium as="h3" color="content.primary">
+          {title}
+        </TitleMedium>
       </HStack>
 
       {indicator && (
         <VStack alignItems="stretch" gap="xs">
           <Overline color="content.tertiary">{indicator.label}</Overline>
           <HStack alignItems="baseline" gap="s" flexWrap="wrap">
-            <HeadlineSmall
+            <TitleLarge
+              as="p"
               color={indicatorColor}
               fontVariantNumeric="tabular-nums"
-              lineHeight="1.1"
             >
               {indicator.value}
-            </HeadlineSmall>
+            </TitleLarge>
             {indicator.sub && (
               <BodyMedium color="content.secondary">{indicator.sub}</BodyMedium>
             )}
@@ -103,8 +103,11 @@ function ContextCard({
         {summary}
       </BodyMedium>
 
+      {/* The card itself is the link, so this is text, not a nested control. */}
       <HStack gap="xs" mt="xs">
-        <LabelMedium color="content.link">{cta.label}</LabelMedium>
+        <BodySmall color="content.link" fontWeight="semibold">
+          {cta.label}
+        </BodySmall>
         {cta.isLoading ? (
           <Spinner size="xs" color="content.link" />
         ) : (
@@ -164,6 +167,7 @@ export function ContextCardGrid({
   ctaFor,
   visualFor,
   indicatorFor,
+  heading = true,
 }: {
   facts: MeedContextFacts;
   backing: MeedPolicyBacking;
@@ -182,54 +186,58 @@ export function ContextCardGrid({
    * know (another track's inputs) would otherwise show none.
    */
   indicatorFor?: (area: MeedContextArea) => MeedContextStat | null | undefined;
+  /** False when the caller frames the grid in its own section heading. */
+  heading?: boolean;
 }) {
   const defaultCta = (area: MeedContextArea): MeedContextCta => ({
     label: t("context-view-details"),
     href: hrefFor(area.segment),
   });
 
+  const grid = (
+    <Grid
+      templateColumns={{
+        base: "1fr",
+        md: "repeat(2, 1fr)",
+        lg: "repeat(6, 1fr)",
+      }}
+      gap="xl"
+    >
+      {areas.map((area) => (
+        <GridItem
+          key={area.key}
+          colSpan={{
+            base: 1,
+            md: (area.wide ?? area.key === "emissions") ? 2 : 1,
+            lg: (area.wide ?? WIDE_AREAS.has(area.key)) ? 3 : 2,
+          }}
+        >
+          <ContextCard
+            icon={area.icon}
+            title={t(area.titleKey)}
+            indicator={
+              indicatorFor?.(area) ?? contextIndicator(area, facts, backing, t)
+            }
+            visual={visualFor?.(area)}
+            summary={contextSummary(area, facts, t)}
+            cta={ctaFor?.(area) ?? defaultCta(area)}
+          />
+        </GridItem>
+      ))}
+    </Grid>
+  );
+  if (!heading) return grid;
   return (
-    <VStack alignItems="stretch" gap="m">
+    <VStack alignItems="stretch" gap="l">
       <VStack alignItems="stretch" gap="xs">
-        <TitleLarge color="content.primary">
+        <TitleLarge as="h2" color="content.primary">
           {title ?? t("context-title")}
         </TitleLarge>
         <BodyMedium color="content.secondary">
           {description ?? t("context-description")}
         </BodyMedium>
       </VStack>
-
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(6, 1fr)",
-        }}
-        gap="m"
-      >
-        {areas.map((area) => (
-          <GridItem
-            key={area.key}
-            colSpan={{
-              base: 1,
-              md: (area.wide ?? area.key === "emissions") ? 2 : 1,
-              lg: (area.wide ?? WIDE_AREAS.has(area.key)) ? 3 : 2,
-            }}
-          >
-            <ContextCard
-              icon={area.icon}
-              title={t(area.titleKey)}
-              indicator={
-                indicatorFor?.(area) ??
-                contextIndicator(area, facts, backing, t)
-              }
-              visual={visualFor?.(area)}
-              summary={contextSummary(area, facts, t)}
-              cta={ctaFor?.(area) ?? defaultCta(area)}
-            />
-          </GridItem>
-        ))}
-      </Grid>
+      {grid}
     </VStack>
   );
 }

@@ -119,6 +119,7 @@ class ConceptNoteRunListItemResponse(BaseModel):
     status: str = Field(min_length=1)
     workflow_step: str = Field(min_length=1)
     progress_summary: dict[str, Any] = Field(default_factory=dict)
+    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 
@@ -129,12 +130,29 @@ class ConceptNoteRunListResponse(BaseModel):
     runs: list[ConceptNoteRunListItemResponse] = Field(default_factory=list)
 
 
+class ConceptNoteChatThreadResponse(BaseModel):
+    """One chat attached to a concept-note run, newest first in listings."""
+
+    thread_id: UUID
+    title: str | None = None
+    created_at: datetime
+    last_message_at: datetime | None = None
+    message_count: int = 0
+    preview: str | None = None
+
+
+class ConceptNoteChatThreadListResponse(BaseModel):
+    """Every chat attached to one run plus the run's currently active chat."""
+
+    active_thread_id: UUID | None = None
+    threads: list[ConceptNoteChatThreadResponse] = Field(default_factory=list)
+
+
 class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
     """Persisted concept-note run returned by start and detail endpoints."""
 
     user_id: str
     manual_population: ManualConceptNotePopulation | None = None
-    uploads: list[ConceptNoteUploadStatusResponse] = Field(default_factory=list)
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None

@@ -5,15 +5,15 @@ import { FOCUS_RING, ROUTE_META, ROUTE_ORDER, type RouteKey } from "../labels";
 
 const Pill = chakra("button", {
   base: {
-    px: "14px",
-    py: "7px",
+    px: "m",
+    py: "s",
     borderRadius: "pill",
     borderWidth: "1px",
     cursor: "pointer",
     fontFamily: "heading",
     fontSize: "label.md",
     fontWeight: "medium",
-    lineHeight: "16px",
+    lineHeight: "16",
     whiteSpace: "nowrap",
     transition: "background-color 0.15s, border-color 0.15s, color 0.15s",
     _focusVisible: FOCUS_RING,

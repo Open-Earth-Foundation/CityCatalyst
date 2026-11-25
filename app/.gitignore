@@ -44,3 +44,4 @@ playwright/.auth
 
 # generated files
 /public/openapi-spec.json
+/reports/

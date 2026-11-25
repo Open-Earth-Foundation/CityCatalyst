@@ -1,7 +1,52 @@
+export interface ConceptNoteChatVisual {
+  title: string;
+  html: string;
+}
+
 export interface ConceptNoteChatMessage {
   id: string;
+  /** Durable server id required when replying to a suggested-answer card. */
+  questionMessageId?: string;
   role: "assistant" | "user";
   text: string;
+  visuals?: ConceptNoteChatVisual[];
+  choices?: string[];
+  /** What choosing an option does: answer only, or prepare a proposed change. */
+  choiceAction?: ConceptNoteChoiceAction;
+  /** The request never reached Clima; the message is shown but not saved. */
+  unsent?: boolean;
+}
+
+export type ConceptNoteChoiceAction = "reply" | "propose_edit";
+
+/** Cards saved before the action existed only answered the question. */
+export function readConceptNoteChoiceAction(
+  value: unknown,
+): ConceptNoteChoiceAction {
+  return value === "propose_edit" ? "propose_edit" : "reply";
+}
+
+/** The same bounded tool contract is used by the stream and saved history. */
+export function readConceptNoteChoices(value: unknown): string[] | undefined {
+  if (!isRecord(value) || value.name !== "concept_note_ask_question") return;
+  const options = value.options;
+  // A confirmation for one document change has a single option.
+  const minimum =
+    readConceptNoteChoiceAction(value.on_answer) === "propose_edit" ? 1 : 2;
+  if (
+    !Array.isArray(options) ||
+    options.length < minimum ||
+    options.length > 12 ||
+    !options.every(
+      (option): option is string =>
+        typeof option === "string" && option.trim().length > 0,
+    ) ||
+    new Set(options.map((option) => option.trim().toLowerCase())).size !==
+      options.length
+  )
+    return;
+  // Sent answers are trimmed, so labels must match them for the selected state.
+  return options.map((option) => option.trim());
 }
 
 export interface ConceptNoteReasoning {
@@ -54,6 +99,112 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** Model-authored HTML; render it only through the sandboxed visual frame. */
+export function readConceptNoteVisual(
+  value: unknown,
+): ConceptNoteChatVisual | null {
+  if (
+    !isRecord(value) ||
+    typeof value.title !== "string" ||
+    typeof value.html !== "string" ||
+    !value.html
+  )
+    return null;
+  return { title: value.title, html: value.html };
+}
+
+/** A live render result keeps only the title; the HTML is in the call arguments. */
+export function readConceptNoteToolVisual(
+  result: Record<string, unknown>,
+): ConceptNoteChatVisual | null {
+  if (
+    result.action !== "concept_note.visual.render" ||
+    result.success !== true ||
+    !isRecord(result.data) ||
+    !isRecord(result.arguments)
+  )
+    return null;
+  return readConceptNoteVisual({
+    title: result.data.title,
+    html: result.arguments.html,
+  });
+}
+
+/** The i18n templates that wrap gap-form answers in the requests sent to Clima now. */
+export const GAP_ANSWER_REQUEST_KEYS = [
+  "gap-answer-request",
+  "gap-answer-estimate-confirm-request",
+] as const;
+
+/** The longest gap question a request shows; the server still uses the whole one. */
+const REQUEST_QUESTION_MAX_CHARS = 2000;
+
+/** The question as a request shows it: the first 2,000 characters, then an ellipsis. */
+export function requestQuestion(question: string): string {
+  const characters = Array.from(question);
+  return characters.length > REQUEST_QUESTION_MAX_CHARS
+    ? `${characters.slice(0, REQUEST_QUESTION_MAX_CHARS).join("")}…`
+    : question;
+}
+
+// Stand-ins for the template slots; control characters never occur in a translation.
+export const GAP_ANSWER_SLOTS = {
+  chapter: "\u0001",
+  question: "\u0002",
+  answer: "\u0003",
+} as const;
+
+export interface GapAnswerMessage {
+  chapter: string;
+  /** The gap's original question. */
+  question: string;
+  /** The numbered questions and answers, as the form wrote them. */
+  answer: string;
+}
+
+/** Turns a template rendered with GAP_ANSWER_SLOTS into a pattern for its slot values. */
+function gapAnswerPattern(template: string): RegExp {
+  const names = Object.fromEntries(
+    Object.entries(GAP_ANSWER_SLOTS).map(([name, slot]) => [slot, name]),
+  );
+  const source = template
+    .split(/([\u0001-\u0003])/)
+    .map((part) => {
+      const name = names[part];
+      if (!name) return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return `(?<${name}>[\\s\\S]+?)`;
+    })
+    .join("");
+  return new RegExp(`^${source}$`);
+}
+
+/**
+ * Reads a gap-form request back into what the user answered, or returns null
+ * for any other message. History returns the request as the same plain text
+ * that was sent, so live and reloaded messages read the same. `templates` are
+ * the request templates rendered with GAP_ANSWER_SLOTS.
+ */
+export function readGapAnswerMessage(
+  text: string,
+  templates: readonly string[],
+): GapAnswerMessage | null {
+  for (const template of templates) {
+    const groups = gapAnswerPattern(template).exec(text)?.groups;
+    if (groups?.chapter && groups.question && groups.answer) {
+      return {
+        chapter: groups.chapter,
+        question: groups.question,
+        answer: groups.answer,
+      };
+    }
+  }
+  return null;
+}
+
+export function readConceptNoteReplyInProgress(payload: unknown): boolean {
+  return isRecord(payload) && payload.reply_in_progress === true;
+}
+
 export function readConceptNoteThreadMessages(
   payload: unknown,
 ): ConceptNoteChatMessage[] {
@@ -70,6 +221,9 @@ export function readConceptNoteThreadMessages(
     if ((role !== "assistant" && role !== "user") || typeof text !== "string") {
       return [];
     }
+    const visuals = Array.isArray(message.visuals)
+      ? message.visuals.flatMap((visual) => readConceptNoteVisual(visual) ?? [])
+      : [];
     return [
       {
         id:
@@ -78,6 +232,21 @@ export function readConceptNoteThreadMessages(
             : crypto.randomUUID(),
         role,
         text,
+        ...(visuals.length > 0 ? { visuals } : {}),
+        ...(role === "assistant" && message.choices
+          ? {
+              questionMessageId:
+                typeof message.message_id === "string"
+                  ? message.message_id
+                  : undefined,
+              choices: readConceptNoteChoices({
+                name: "concept_note_ask_question",
+                options: message.choices,
+                on_answer: message.choice_action,
+              }),
+              choiceAction: readConceptNoteChoiceAction(message.choice_action),
+            }
+          : {}),
       },
     ];
   });

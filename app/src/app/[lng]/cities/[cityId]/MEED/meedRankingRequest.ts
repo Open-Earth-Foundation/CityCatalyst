@@ -23,8 +23,27 @@ import {
 /** Matches the route's own default when the city expressed no preference. */
 const DEFAULT_TIMEFRAMES: MeedTimeframePreference[] = ["no_preference"];
 
-/** Only `en` locale files exist for MEED, so only `en` is worth requesting. */
-const REQUESTED_LANGUAGES = ["en"];
+/**
+ * Languages hiap-meed can write explanations in (its translations.yaml). Any
+ * other language makes the whole ranking request fail, so those pages get
+ * English, which the detail panel already falls back to.
+ * Keep in sync with hiap-meed/app/modules/prioritizer/translations.yaml.
+ */
+const MEED_EXPLANATION_LANGUAGES = ["en", "es"];
+
+/**
+ * English is the engine's canonical explanation language; the page language
+ * is requested next to it so the detail drawer can show the explanation in
+ * the language the user is reading. One language means one less translation
+ * call, so the two are never duplicated.
+ */
+export function requestedLanguagesFor(language?: string): string[] {
+  return language &&
+    language !== "en" &&
+    MEED_EXPLANATION_LANGUAGES.includes(language)
+    ? ["en", language]
+    : ["en"];
+}
 
 const DEFAULT_TOP_N = 20;
 
@@ -64,6 +83,8 @@ export interface BuildRunRankingRequestParams {
   preferences: MeedStrategicPreferences | null;
   /** Confirmed on the pre-flight screen; `[]` when the user confirmed none. */
   excludedActionIds: string[];
+  /** The page language (i18n `lng`); explanations are produced in it too. */
+  language?: string;
   topN?: number;
 }
 
@@ -71,13 +92,14 @@ export function buildRunRankingRequest({
   inventoryId,
   preferences,
   excludedActionIds,
+  language,
   topN = DEFAULT_TOP_N,
 }: BuildRunRankingRequestParams): MeedRunRankingRequest {
   const timeframes = preferences?.timeline ?? [];
 
   return {
     inventoryId,
-    requestedLanguages: [...REQUESTED_LANGUAGES],
+    requestedLanguages: requestedLanguagesFor(language),
     topN,
     createExplanations: true,
     // An array even though one inventory means one city — the upstream

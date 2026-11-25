@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import json
 import logging
+from collections import Counter
 from typing import Any
 from uuid import UUID
 
 from agents import function_tool
 from app.models.cnb.concept_note_edits import EditProposalRequest
+from app.persistence.concept_notes.edits import EditOperationError
 from app.services.cnb.edits import get_edit_service
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.citycatalyst_client import CityCatalystClient
+from app.utils.request_token_refresh import RequestTokenRefreshContext
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -26,20 +30,30 @@ def build_concept_note_edit_tools(
     token_ref: dict[str, str | None],
     request: EditProposalRequest,
     recent_messages: list[dict[str, str]] | None = None,
+    question_cards: list[dict[str, Any]] | None = None,
+    request_token_refresh_context: RequestTokenRefreshContext | None = None,
 ) -> list:
-    """Bind the user's exact instruction and UI selection outside model arguments."""
+    """Bind edit inputs and optional authenticated-turn renewal outside the model."""
     run_uuid = UUID(str(run_id))
 
     @function_tool
     async def concept_note_edit_propose() -> str:
         """Propose precise revisions for the CURRENT user's explicit edit request.
 
-        Use only when the user asks to change the existing Concept Note, not for
+        Also use it for facts the current user supplies that match open gaps. Those
+        facts may fill part of a gap, several gaps, or several chapters; a partial
+        answer is previewed with the rest still marked. Use it only when the user
+        asks to change the existing Concept Note or states such facts, not for
         questions, explanations or source queries. The exact current instruction,
         automatic scope, optional focused-chapter hint, and idempotency key are
         already bound by the UI.
         When status is "proposed", tell the user to review the inline document
         changes, or the structural before/after preview when proposal_kind is structure.
+        Describe a text proposal only by the returned chapters (title and
+        change_count); never claim it covers a topic the request mentioned but
+        those chapters do not show. Say the proposal is not applied yet, not that
+        the draft or its gaps are unchanged: other updates may have changed them.
+        Call concept_note_gaps before stating which gaps remain.
         Structural proposals cover chapter titles, descriptions, insertion, removal and order.
         When status is "clarification_required", ask the returned
         clarification directly in chat. Never refer to a proposal or clarification
@@ -48,7 +62,12 @@ def build_concept_note_edit_tools(
         An unsupported_edit error means independent semantic review still rejected
         the candidate after the configured repair attempts. Explain that the
         proposal could not pass review and the draft is unchanged; it does not
-        mean bulk edits are unavailable. Do not invent the reviewer's objections.
+        mean bulk edits are unavailable. Summarize the returned review_objections
+        (chapter_title and explanation): they name the claims that lacked support.
+        Offer a narrower retry that leaves out those claims, or ask the user for
+        the missing evidence. Never add objections that were not returned.
+        A sources_updating error means a newly added source is still updating
+        chapters: say so and ask the user to send the request again in a minute.
         This tool NEVER applies, undoes or restores text, even if asked to do so.
         Do not promise that the draft changed. Do not fabricate proposal IDs.
         """
@@ -61,8 +80,15 @@ def build_concept_note_edit_tools(
         try:
             # Recheck token identity, run ownership and current city access at use time.
             async with session_factory() as session:
-                run_service = ConceptNoteRunService(session)
+                client = CityCatalystClient(
+                    request_token_refresh_context=request_token_refresh_context
+                )
+                run_service = ConceptNoteRunService(session, cc_client=client)
                 try:
+                    if request_token_refresh_context is not None:
+                        token = await request_token_refresh_context.token_for_request(
+                            client.refresh_token
+                        )
                     run = await run_service.get_authorized_run(
                         run_id=run_uuid,
                         requested_user_id=user_id,
@@ -71,7 +97,9 @@ def build_concept_note_edit_tools(
                     proposal = await service.propose(
                         run,
                         request,
+                        token=token,
                         recent_messages=recent_messages,
+                        question_cards=question_cards,
                     )
                 finally:
                     await run_service.cc_client.close()
@@ -87,14 +115,27 @@ def build_concept_note_edit_tools(
                 "change_count": len(proposal.changes),
                 "proposal_kind": "structure" if proposal.structure else "text",
                 "notices": [notice.model_dump() for notice in proposal.notices],
+                # Server-counted scope, so chat can describe only what was proposed.
+                "chapters": [
+                    {"title": title, "change_count": count}
+                    for title, count in Counter(
+                        change.chapter_title for change in proposal.changes
+                    ).items()
+                ],
             }
             if proposal.status == "clarification_required" and proposal.clarification:
                 data["clarification"] = proposal.clarification
+            if proposal.review_objections:
+                data["review_objections"] = [
+                    objection.model_dump() for objection in proposal.review_objections
+                ]
             return tool_result(
                 success,
                 data=data,
                 code=None if success else proposal.error_code or "not_edit_request",
             )
+        except EditOperationError as error:
+            return tool_result(False, code=error.code)
         except HTTPException as error:
             return tool_result(
                 False,

@@ -12,7 +12,7 @@ Runtime input:
 </input>
 
 <output>
-Return only the strict `ReportTranslationBatch` JSON response. Include exactly the requested target languages and exactly the canonical chapter keys in their original order. Preserve all facts, qualifications, Markdown structure, numbers, identifiers, and limitations. Canonical URLs in Markdown and limitations are represented as placeholders such as `[[URL_SNAPSHOT_1]]`: copy every placeholder exactly once, unchanged, in its corresponding Markdown or limitation position. Apply the exact target-language chapter titles and recurring terms supplied under `terminology_by_language`.
+Return only the strict `ReportTranslationBatch` JSON response. Include exactly the requested target languages and exactly the canonical chapter keys in their original order. Preserve all facts, qualifications, Markdown structure, numbers, identifiers, and limitations. Canonical URLs in Markdown and limitations are represented as placeholders such as `[[URL_SNAPSHOT_1]]`: copy every placeholder exactly once, unchanged, in its corresponding Markdown or limitation position. Apply the exact target-language chapter titles and recurring terms supplied under `terminology_by_language`. Named projects, programmes and funds are proper names: keep them as written, except that every `source` name listed under `proper_names_by_language` must be rendered with its listed `target` form in that language.
 </output>
 
 <example_output>

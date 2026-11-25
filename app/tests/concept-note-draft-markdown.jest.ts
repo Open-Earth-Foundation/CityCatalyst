@@ -18,12 +18,12 @@ describe("concept note draft missing-information markers", () => {
   test("counts and removes missing-information markers for export", () => {
     const markdown = [
       "Known text. [Information needed: Confirm the sponsor.]",
-      "[Information needed: Supply the opening date.] More known text.",
+      "[Information needed: Supply the opening\ndate.] See [the plan](plan.pdf).",
     ].join("\n\n");
 
     expect(countMissingInformationMarkers(markdown)).toBe(2);
     expect(stripMissingInformationMarkers(markdown)).toBe(
-      "Known text.\n\nMore known text.",
+      "Known text.\n\nSee [the plan](plan.pdf).",
     );
   });
 });

@@ -137,7 +137,28 @@ class TestHistoryManagerLoadMessages:
             assert len(loaded) == 5
             mock_message_service.get_thread_messages.assert_called_once()
             call_kwargs = mock_message_service.get_thread_messages.call_args[1]
-            assert call_kwargs["limit"] == 5
+            # One extra row only detects whether older messages exist.
+            assert call_kwargs["limit"] == 6
+            assert manager.older_messages_omitted is False
+
+    @pytest.mark.asyncio
+    async def test_load_messages_flags_older_messages(self, mock_session_factory):
+        """A probe row beyond the limit is dropped and flags omitted history."""
+        messages = [
+            MockMessage(f"msg{i}", MessageRole.USER, f"Message {i}") for i in range(6)
+        ]
+        mock_message_service = AsyncMock()
+        mock_message_service.get_thread_messages.return_value = messages
+
+        with patch(
+            "app.utils.history_manager.MessageService",
+            return_value=mock_message_service,
+        ):
+            manager = HistoryManager("thread123", "user456", mock_session_factory)
+            loaded = await manager.load_messages(limit=5)
+
+        assert [m.text for m in loaded] == [f"Message {i}" for i in range(1, 6)]
+        assert manager.older_messages_omitted is True
 
 
 class TestHistoryManagerBuildContext:

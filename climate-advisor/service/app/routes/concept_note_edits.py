@@ -8,6 +8,7 @@ from uuid import UUID
 
 from app.middleware.request_context import get_request_id
 from app.models.cnb.concept_note_edits import (
+    ConceptNotePreviewResponse,
     EditApplyRequest,
     EditProposalRequest,
     EditProposalResponse,
@@ -17,8 +18,12 @@ from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.structure import structure_snapshot
 from app.persistence.concept_notes.workspace import normalize_template_chapters
-from app.routes.dependencies import AuthorizedRun
+from app.routes.dependencies import AuthorizedRun, CityViewableRun
 from app.services.cnb.application_context import ConceptNoteApplicationContextService
+from app.services.cnb.chapter_drafting import (
+    ConceptNoteChapterDraftService,
+    get_chapter_draft_service,
+)
 from app.services.cnb.edits import (
     ConceptNoteEditService,
     get_edit_service,
@@ -80,6 +85,33 @@ async def list_edit_proposals(
 ) -> list[EditProposalResponse]:
     """Restore durable pending and completed proposals for the authorized run."""
     return await service.repository.list(run_id=run.run_id, user_id=run.user_id)
+
+
+@router.get(
+    "/concept-notes/{run_id}/preview", response_model=ConceptNotePreviewResponse
+)
+async def get_note_preview(
+    run: CityViewableRun,
+    service: Annotated[ConceptNoteEditService, Depends(edit_service)],
+    draft_service: Annotated[
+        ConceptNoteChapterDraftService | None, Depends(get_chapter_draft_service)
+    ],
+) -> ConceptNotePreviewResponse:
+    """Show a note, its saved answers and its author's proposals, without edit rights.
+
+    Every write route still requires the run owner, so a collaborator can only read.
+    """
+    if draft_service is None:
+        raise HTTPException(
+            status_code=503, detail="Concept Note chapter drafting is unavailable"
+        )
+    return ConceptNotePreviewResponse(
+        run_id=run.run_id,
+        name=run.name,
+        city_id=run.city_id,
+        draft=await draft_service.load_state(run),
+        proposals=await service.repository.list(run_id=run.run_id, user_id=run.user_id),
+    )
 
 
 @router.post(

@@ -480,6 +480,56 @@ async def test_get_run_revalidates_city_access_owned_by_citycatalyst() -> None:
     )
 
 
+async def test_city_collaborator_can_view_but_not_write_another_users_run() -> None:
+    """A preview needs current access to the run's own city; writes stay owner-only."""
+    payload = _start_request()
+    run = _persisted_run(payload, request_fingerprint=_request_fingerprint(payload))
+    service, repository, cc_client, _ = _run_service(canonical_user_id="teammate")
+    service.session.get.return_value = run
+
+    async def view(city_id: UUID = payload.city_id, user_id: str = "teammate"):
+        return await service.get_city_viewable_run(
+            run_id=run.run_id,
+            city_id=city_id,
+            requested_user_id=user_id,
+            authorization="Bearer token",
+        )
+
+    assert await view() is run
+    cc_client.get_city.assert_awaited_once_with(
+        city_id=str(payload.city_id), token="token", user_id="teammate"
+    )
+
+    async def status(**kwargs) -> int:
+        with pytest.raises(HTTPException) as exc_info:
+            await view(**kwargs)
+        return exc_info.value.status_code
+
+    assert await status(user_id="owner-1") == 403
+    # Another city's URL, revoked city access and a missing run all read as not found.
+    assert await status(city_id=uuid4()) == 404
+    cc_client.get_city.side_effect = CityCatalystClientError(
+        "City access revoked", status_code=403
+    )
+    assert await status() == 404
+    cc_client.get_city.side_effect = None
+    service.session.get.return_value = None
+    assert await status() == 404
+
+    # Every write authorizes through the owner-only run lookup.
+    repository.get_for_user.return_value = None
+    with pytest.raises(HTTPException) as exc_info:
+        await service.get_authorized_run(
+            run_id=run.run_id,
+            requested_user_id="teammate",
+            authorization="Bearer token",
+        )
+    assert exc_info.value.status_code == 404
+    repository.get_for_user.assert_awaited_once_with(
+        run_id=run.run_id, user_id="teammate"
+    )
+
+
 async def test_get_run_returns_owned_upload_metadata() -> None:
     """Keep uploaded filenames visible when the workspace is resumed."""
     payload = _start_request()

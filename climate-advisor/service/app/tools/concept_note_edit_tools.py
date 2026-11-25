@@ -30,6 +30,7 @@ def build_concept_note_edit_tools(
     token_ref: dict[str, str | None],
     request: EditProposalRequest,
     recent_messages: list[dict[str, str]] | None = None,
+    question_cards: list[dict[str, Any]] | None = None,
     request_token_refresh_context: RequestTokenRefreshContext | None = None,
 ) -> list:
     """Bind edit inputs and optional authenticated-turn renewal outside the model."""
@@ -39,7 +40,10 @@ def build_concept_note_edit_tools(
     async def concept_note_edit_propose() -> str:
         """Propose precise revisions for the CURRENT user's explicit edit request.
 
-        Use only when the user asks to change the existing Concept Note, not for
+        Also use it for facts the current user supplies that match open gaps. Those
+        facts may fill part of a gap, several gaps, or several chapters; a partial
+        answer is previewed with the rest still marked. Use it only when the user
+        asks to change the existing Concept Note or states such facts, not for
         questions, explanations or source queries. The exact current instruction,
         automatic scope, optional focused-chapter hint, and idempotency key are
         already bound by the UI.
@@ -95,6 +99,7 @@ def build_concept_note_edit_tools(
                         request,
                         token=token,
                         recent_messages=recent_messages,
+                        question_cards=question_cards,
                     )
                 finally:
                     await run_service.cc_client.close()

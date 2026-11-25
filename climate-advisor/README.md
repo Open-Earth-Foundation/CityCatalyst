@@ -64,23 +64,31 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      Browser-only state remains unknown; unavailable workspace storage preserves
      the guide without implying an empty draft. Funding and source facts remain
      in the existing context bundle. The result also carries
-     `ui_state.open_gaps_by_chapter` (open and critical counts per chapter) and
+     `ui_state.open_gaps_by_chapter` (open and Required counts per chapter, by
+     `chapter_number`) and
      `uploaded_files` (every ready upload with `uploaded_at` and `newest`).
    - Exposes read-only `concept_note_gaps` alongside `concept_note_help`. It
      reauthorizes the run and lists missing-information gaps with their
-     chapter, question, reason, severity, and state, filtered by
-     `chapter_position`, `severity`, or `include_closed`. Each gap gets a `G#`
-     handle numbered in creation order, so handles stay stable across filters.
+     chapter, question, reason, severity with its UI `label` ("Required" or
+     "Optional"), and state, filtered by `chapter_number`, `severity`, or
+     `include_closed`. Gaps use the numbers the Draft preview shows:
+     `chapter_number` is the chapter's 1-based number (`position + 1`) and
+     `gap_number` is the per-chapter "Gap N" of an open gap, reproduced from
+     the chapter's `[Information needed: …]` marker order as in the UI's
+     `chapterGapRows` (markers without a gap record take a number too). An
+     unknown `chapter_number` fails with the valid chapter numbers and titles
+     instead of returning an empty list.
    - Also exposes `concept_note_render_visual(title, html)`. It validates one static HTML/SVG
-     chart, diagram, or table (title at most 200 characters, HTML at most
-     200,000) and returns `concept_note.visual.render` with the title and size;
+     chart, diagram, table, expandable sections or CSS radio tabs (title at
+     most 200 characters, HTML at most 200,000) and returns `concept_note.visual.render` with the title and size;
      the HTML stays only in the call arguments. CityCatalyst strips scripts,
      links, forms and external resources with DOMPurify and renders the rest in
      a script-free sandboxed iframe, so a visual cannot send note context out.
      The SSE `done` event and the stored message keep one copy of the HTML,
      `GET /v1/threads/{thread_id}/messages` returns it as `visuals`, and
      replayed history replaces it with a short placeholder. A visual-only turn
-     is saved with empty text.
+     is saved with empty text. See the
+     [chat visual rendering policy](#concept-note-chat-visual-rendering-cc-1241).
    - Injected `selected_sources` include `uploaded_at` and a `newest` flag, so
      Clima can identify the file a user just uploaded.
    - Resolved gaps that source revalidation filled from an uploaded file list
@@ -91,6 +99,30 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
      cannot be derived
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
+
+### Concept Note chat visual rendering (CC-1241)
+
+CityCatalyst strips scripts, links, forms and external resources with DOMPurify
+and shows the rest in a sandboxed iframe with a restrictive content security
+policy. The sandbox uses `allow-same-origin` so the chat can measure the frame
+height, so it must stay script-free: a script in that frame could reach the
+parent document in the user's session. See the
+[chat frame implementation](../app/src/components/ConceptNoteWorkspace/chat-visual-frame.tsx).
+
+Native radio, checkbox, select and details controls work without scripts; the
+prompt uses them for tabs, sliders, filters and series toggles with every state
+precomputed. The tool rejects, each with a one-retry hint, visuals that would
+show nothing (`visual_no_visible_content`), Mermaid source or a canvas
+(`visual_needs_svg`), scripts, dead controls, `:target` tabs,
+`<foreignObject>` and external files (`visual_unsupported_html`), SVG
+animation elements (`visual_uses_svg_animation`), and more than 300 SVG `<use>`
+elements or any `<use>` that is not a direct `href="#id"` to one SVG element
+without a `<use>` inside (`visual_unsafe_svg_use`; nested copies can freeze the
+browser). A rejected attempt's HTML is not stored; the chat runs the same `<use>`
+check on saved visuals and shows a note instead of an unsafe one.
+
+CNB chat calls send `prompt_cache_key="cnb_chat"`, so the long shared system
+prompt is served from the provider cache; each run logs `cached_tokens`.
 
 ### Concept Note chapter structure
 
@@ -660,7 +692,11 @@ Each proposal permits up to 100 draft searches, shared across repair attempts,
 configured by `generation.prompt_budget.cnb_edits.max_searches`.
 The tools resolve exact occurrences and validate replacements immediately so the
 agent can correct a failed selection. Independent semantic review then checks
-only affected chapters, with at most five reviews concurrently. The planner and
+only affected chapters, with at most 12 reviews concurrently
+(`cnb_edits.max_concurrency`), so a whole-document edit is reviewed in one wave.
+When review asks for a repair, a chapter whose changes come back unchanged and
+were fully supported keeps its earlier review instead of being reviewed again.
+The planner and
 the reviewers draw on the same evidence: `run_context.source_excerpts` lists every
 quotation the selected sources keep for any template chapter, deduplicated (each
 reviewer receives the quotations of the sources its changes cite; when a large
@@ -1075,7 +1111,11 @@ same transaction, without a separate interview or background regeneration.
 revision; open critical gaps and any remaining missing-information markers block
 confirmation. Generated markers must match the structured gap questions before
 the chapter is saved; mismatches fail generation rather than producing a chapter
-that can be incorrectly marked Ready.
+that can be incorrectly marked Ready. A marker matches its gap when both have the
+same `information_marker_key` (lowercased letter and digit runs, so Markdown
+emphasis, quotes, punctuation, spacing and line breaks do not matter); the web
+app mirrors this key and the marker pattern in `draft-markdown.ts`, so every
+recorded gap opens from its marker.
 
 Chat creates durable edit proposals; only explicit web review applies changes.
 The LLM planner selects contextual matches or an explicit all-match replacement;
@@ -1489,15 +1529,21 @@ streaming starts. When the Concept Note chat retries a failed turn it sends
 question again if it is still the thread's latest message. A retry after a
 request that never reached the service stores the question normally.
 
-This is best-effort deduplication, not per-turn idempotency. The browser's
-45-second stall timeout aborts only the client request; cancellation may not
-reach the service before it finishes and saves an answer. If that answer is
-already stored when Retry arrives, the question is saved again and another
-answer is generated. If the original stream is still running, Retry can start
-a second stream even though it skips saving the question. A follow-up should
-use a stable per-turn idempotency key to claim one generation and return its
-existing result on retry, similar to the `concept_note_edit` idempotency key.
-The existing retry option does not guarantee one question and one answer.
+For Concept Note chat, Climate Advisor claims the thread when it stores the user
+message and runs the accepted turn independently of the SSE connection. A browser
+disconnect leaves the turn running so the assistant message and tool results can
+be saved. A concurrent send or retry receives 409
+(`concept_note_reply_in_progress`). Thread history returns `reply_in_progress`,
+which the workspace polls while a reply is active.
+
+A turn can run for up to 12 minutes. Its database lease lasts 60 seconds and
+the worker renews it every 20 seconds, whether or not a browser is connected or
+the model is sending text. If the worker stops unexpectedly, the lease expires
+within a minute and a saved unanswered message can be retried. A worker that
+cannot renew its lease (it expired or another turn owns the thread) stops
+generating, and persistence refuses an assistant message from a turn that no
+longer holds the lease. Apply CA Alembic revision `20261122_120000`
+before rolling out the updated Climate Advisor workers.
 
 Offline regression checks (from `climate-advisor/`):
 
@@ -2220,14 +2266,53 @@ checks, manual verification steps, and remaining limitations.
 
 CNB can optionally use `concept_note_ask_question` when a short set of concrete
 choices makes a clarification or next-step decision easier for the user.
-It ends the turn with a Markdown `message` and 2–6 distinct `options` (no length
-cap, so an option can be a complete rewrite when the user asks for alternatives
-to choose from). The UI renders lettered answers and a custom-answer input
+It ends the turn with a Markdown `message` and distinct `options`: 2–12 on
+`reply` cards or 1–12 changes on `propose_edit` cards (no length cap, so an
+option can be a complete rewrite when the user asks for alternatives to choose
+from). The UI renders lettered answers and a custom-answer input
 inside that assistant bubble. Informational answers, acknowledgements, and
 open-ended questions can remain ordinary text; a previous choice does not force
-another question or set of choices.
-Clicking an option immediately sends its full text as a normal user message.
-The arrow or Enter sends a custom answer; document edits still require review.
+another question or set of choices. Alternatives requested only for discussion,
+with no decision to make yet, remain plain text. Exact requested counts up to 12
+appear as individually selectable alternatives in one card. Larger requests
+explicitly explain the card limit and use a complete plain-text list, or clearly
+numbered batches with the remaining count and instructions to continue.
+Conflicting point estimates remain separate unless source evidence supports a
+range; an uncertainty caveat alone does not justify deriving one.
+Each card has `on_answer`: `reply` (default; also assumed for cards saved
+before the field existed) or `propose_edit`. Picking an option of the latest
+`reply` card answers the question only: CNB does not register
+`concept_note_edit_propose` for that turn, so it cannot start a document change.
+A picked reply option with a `document_topic` ends the reply with one action that
+prepares a proposed edit for review. CA supplies this action if the model omits
+it. Informational and older unmarked cards continue as ordinary replies.
+A custom answer, or a pick on a `propose_edit` card, keeps the normal edit path.
+The planner and reviewer receive up to three recent saved cards (`question_cards`:
+question, lettered options, the user's answer and the matching label).
+`chosen_options` lists the option texts the user clicked; their exact words
+count as user input for `user_input_quote`. Only a click is a pick: a typed
+"go with option B" stays ordinary chat, which the planner resolves against the
+cards, but the option's text is not user input. A confirmation pick carries
+the original answer into `chosen_options`. A pick authorizes only what its card
+asked about; it must not fill unrelated markers such as a project title or dates.
+If the model sends invalid card arguments, the error goes back to the model,
+which can correct them or answer in text; only a valid card ends the turn.
+History returns the choices as `choices` and the mode as `choice_action`.
+Clicking an option immediately sends its full text. The arrow or Enter sends
+a custom answer. Both carry `context.concept_note_question_message_id`: use
+`message_id` from history or `done.assistant_message_id` when `history_saved`
+is true. CNB checks the question and appends its reply atomically. A superseded
+question returns 409 (`concept_note_question_stale`) before the model runs.
+Edit-scoped text that cannot form an `EditProposalRequest` (for example longer
+than 8,000 characters) returns 422 (`concept_note_edit_request_invalid`) before
+any thread or message is written.
+Document edits require review. A failed turn can retry the exact saved answer
+without duplicating its user message. The card claim is released when the turn
+finishes and expires with the 60-second turn lease if the worker stops
+unexpectedly; a retry then takes over and the old worker cannot save its reply. The
+thread lease covers both ordinary CNB messages and answers submitted from cards.
+Older clients that omit the card binding continue using ordinary chat. Older
+threads with a context-only CNB binding are supported.
 Older questions become read-only after a subsequent user message. Validated
 choices reload from existing `tools_used` history via the `choices` response
 field; raw tool audit data is not exposed.
@@ -2240,9 +2325,36 @@ The standalone suggestions below are hidden while the latest message has choices
 `POST /v1/concept-notes/{run_id}/gap-question` authorizes the run, validates the
 chapter/gap, and uses the suggestion model with `prompts/cnb/gap_question.md` to
 return 1–4 questions for the gap's still-missing parts (answers accepted earlier
-in the same chapter are skipped), each with zero or two to five answer categories.
+in the same chapter are skipped), each with zero or two to five answer categories
+and a `where_to_find` hint (kind of document or office, never a citation). The
+gap's source suggestions are sent as unverified values: each value gets its own
+confirmation (`confirms: true`, no options), for which the UI shows its own
+"still correct" choice and a field for the changed value, and no other question
+asks for a confirmed value again. A reply with more than 4 questions is trimmed to
+the first 4 instead of failing; the dropped parts stay open for the next round.
+The model also receives the answers saved on this gap version (`earlier_answers`)
+and asks only for what they miss. A narrowed gap returns its stored remaining
+question without a model call.
 It writes nothing; answers go through the review-only chapter-edit flow.
 Generation failures return 503; browser disconnect cancels generation.
+
+Gap answers:
+- Binding: the form's edit request carries `gap_id`, `gap_version` and
+  `answer_complete` in `concept_note_edit.scope`. Planning fails with
+  `gap_changed` when that gap version is no longer open, and acceptance closes
+  only that gap version plus any duplicate gap the same answer fully covers.
+- Partial answers: answers that do not cover the whole gap are saved on the gap
+  version with `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/answers` (a
+  `partial_answer` resolution, shown as `answered_so_far` to the UI, the
+  gap-question model and the chat agent). A reviewed edit may narrow a marker to
+  one new marker asking only for the remaining parts; the gap keeps its identity,
+  moves to a new version and records its original question and accepted
+  passages in `answer_progress` (CNB migration `20261121_120000`).
+- Estimates: a hedged user value, or one derived from stated figures when the
+  user asks, may fill a marker as a labelled estimate that names its basis
+  (`estimate: true`). Accepting it leaves the gap in the `caveat` state, listed
+  as an estimate to confirm without blocking export; a later bound answer that
+  replaces the estimate resolves it. Values no one states are never estimated.
 
 `POST /v1/concept-notes/{run_id}/chat/suggestions` proposes exactly two questions
 for the authorized run and its active conversation. Questions target 3–7 words

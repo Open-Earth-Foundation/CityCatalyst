@@ -60,6 +60,7 @@ const PIPELINE_ATTEMPT_FIELDS = [
   "costSource",
   "usage",
   "lostRows",
+  "sourcePdf",
   "parentRefRows",
   "parentRefOverlap",
   "variantScore",

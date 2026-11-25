@@ -197,6 +197,7 @@
  *         description: Import file not found or access denied.
  */
 
+import { uploadedByOrOrphaned } from "@/models/ImportedInventoryFile";
 import UserService from "@/backend/UserService";
 import { buildImportResult } from "@/backend/ImportResultBuilder";
 import { previewImportRows } from "@/backend/ImportRowPreviewService";
@@ -224,7 +225,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       id: importedFileId,
       inventoryId,
       cityId,
-      userId: session.user.id,
+      userId: uploadedByOrOrphaned(session.user.id),
     },
   });
   if (!importedFile) {

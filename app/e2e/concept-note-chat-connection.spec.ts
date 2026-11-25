@@ -11,6 +11,7 @@ test.beforeEach(({ context }) => skipCookieConsent(context));
 const cityId = "f8063baa-e795-4ffb-a507-7a2ea6090eae";
 const runId = "e7cca88d-de54-4050-88ed-d6b39790853c";
 const threadId = "30000000-0000-4000-8000-000000000001";
+const questionId = "40000000-0000-4000-8000-000000000001";
 
 type ChatReply = (route: Route) => Promise<void> | void;
 
@@ -43,7 +44,18 @@ const interrupted = stream(": keep-alive\n\nevent: progress\ndata: {}\n\n");
 // Leave the request open with no bytes, like a frozen connection.
 const stalled: ChatReply = () => new Promise(() => {});
 
-async function openWorkspace(page: Page, replies: ChatReply[]) {
+type HistoryMessage = {
+  message_id: string;
+  role: "assistant" | "user";
+  text: string;
+  choices?: string[];
+};
+
+async function openWorkspace(
+  page: Page,
+  replies: ChatReply[],
+  history: HistoryMessage[] = [],
+) {
   const chatRequests: Array<Record<string, unknown>> = [];
   await page.route("**/api/auth/session/**", (route) =>
     route.fulfill({
@@ -63,7 +75,7 @@ async function openWorkspace(page: Page, replies: ChatReply[]) {
       return reply(route);
     }
     if (path === `/api/v1/chat/threads/${threadId}/messages`)
-      return route.fulfill({ json: { messages: [] } });
+      return route.fulfill({ json: { messages: history } });
     if (path === "/api/v1/user")
       return route.fulfill({
         json: {
@@ -213,30 +225,19 @@ test("names an unreachable service and reconnects with the next message", async 
   await expect(badge(page)).toHaveAttribute("data-state", "connected");
 });
 
-test("treats a stream that ends without completing as a failure", async ({
-  page,
-}) => {
-  await openWorkspace(page, [interrupted]);
-
-  await ask(page, "Summarise the plan.");
-
-  await expect(badge(page)).toHaveAttribute("data-state", "error");
-  await expect(page.getByTestId("concept-note-chat-retry")).toBeVisible();
-});
-
 test("times out a stalled stream instead of thinking forever", async ({
   page,
 }) => {
-  // The chat waits 45 s for any byte, heartbeats included.
-  test.setTimeout(120_000);
+  // The chat waits 45 s for any byte, heartbeats included. Jump the page clock
+  // past that instead of waiting it out in real time.
+  await page.clock.install();
   await openWorkspace(page, [stalled]);
 
   await ask(page, "Summarise the financing plan.");
   await expect(badge(page)).toHaveAttribute("data-state", "connected");
 
-  await expect(badge(page)).toHaveAttribute("data-state", "error", {
-    timeout: 60_000,
-  });
+  await page.clock.fastForward(45_000);
+  await expect(badge(page)).toHaveAttribute("data-state", "error");
   await expect(chatError(page)).toContainText("stopped responding");
 });
 
@@ -314,4 +315,131 @@ test("shows a static visual without letting it reach the network", async ({
   } finally {
     listener.close();
   }
+});
+
+test("recovers drafts after a stale answer and loads the next reply after disconnect", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  const questionText = "Which opening should we use?";
+  const details =
+    "The proposed tram extension would connect residential areas with jobs and essential services. Its benefits need to be supported by evidence, with clear delivery responsibilities and milestones.";
+  const question = stream(
+    sse(
+      ["message", { content: questionText, index: 0 }],
+      [
+        "tool_result",
+        {
+          name: "concept_note_ask_question",
+          options: [
+            `Lead with accessibility. ${details}\n\nConfirm the budget before publishing.`,
+            `Lead with public transport. ${details}\n\nConfirm dates before publishing.`,
+          ],
+        },
+      ],
+      [
+        "done",
+        { ok: true, history_saved: true, assistant_message_id: questionId },
+      ],
+    ),
+  );
+  const latestId = "40000000-0000-4000-8000-000000000002";
+  const history: HistoryMessage[] = [];
+  const rejected: ChatReply = (route) => {
+    history.splice(0, history.length, {
+      message_id: latestId,
+      role: "assistant",
+      text: "Which source should we use?",
+      choices: ["City climate plan", "Feasibility report"],
+    });
+    return route.fulfill({
+      status: 409,
+      json: {
+        code: "concept_note_question_stale",
+        message: "Question changed",
+      },
+    });
+  };
+  const acceptedText = "Fresh choice accepted.";
+  const accepted: ChatReply = (route) => {
+    history.push(
+      { message_id: "reply", role: "user", text: "City climate plan" },
+      { message_id: "followup", role: "assistant", text: acceptedText },
+    );
+    return interrupted(route);
+  };
+  const { chatRequests } = await openWorkspace(
+    page,
+    [question, rejected, accepted],
+    history,
+  );
+  await ask(page, "Give me two complete alternative introductions.");
+
+  const card = page.getByTestId("concept-note-chat-question");
+  await expect(card).toContainText(questionText);
+  await expect
+    .poll(async () => {
+      const bounds = await card.boundingBox();
+      const pane = await page
+        .getByTestId("concept-note-chat-scroll")
+        .boundingBox();
+      return Boolean(
+        bounds && pane && bounds.y >= pane.y && bounds.y < pane.y + 30,
+      );
+    })
+    .toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    375,
+  );
+  const draft = "Custom answer written in the old tab";
+  await page
+    .getByRole("textbox", { name: "Write your own answer…" })
+    .fill(draft);
+  await page
+    .getByTestId("concept-note-chat-input")
+    .fill("Keep this separate main draft");
+  await page.getByRole("button", { name: "Send answer", exact: true }).click();
+  await expect(
+    page.getByText("Which source should we use?", { exact: true }),
+  ).toBeVisible();
+  await expect(chatError(page)).toContainText("another tab");
+  await expect(page.getByTestId("concept-note-chat-retry")).toHaveCount(0);
+  await expect(
+    page.getByTestId("concept-note-saved-answer-draft"),
+  ).toContainText(draft);
+  await expect(page.getByTestId("concept-note-chat-input")).toHaveValue(
+    "Keep this separate main draft",
+  );
+  expect(chatRequests).toHaveLength(2);
+  expect(chatRequests[1]).toMatchObject({
+    content: draft,
+    context: { concept_note_question_message_id: questionId },
+  });
+
+  await page
+    .getByTestId("concept-note-saved-answer-draft")
+    .getByRole("button", { name: "Use draft", exact: true })
+    .click();
+  await expect(page.getByTestId("concept-note-chat-input")).toHaveValue(
+    `Keep this separate main draft
+
+${draft}`,
+  );
+  expect(chatRequests).toHaveLength(2);
+
+  const freshChoice = page.getByRole("button", {
+    name: "City climate plan",
+    exact: true,
+  });
+  await freshChoice.click();
+  await expect(page.getByText(acceptedText, { exact: true })).toBeVisible();
+  expect(chatRequests).toHaveLength(3);
+  expect(chatRequests[2]).toMatchObject({
+    content: "City climate plan",
+    context: { concept_note_question_message_id: latestId },
+  });
+
+  await page.reload();
+  await expect(freshChoice).toBeDisabled();
+  await expect(freshChoice).toHaveAttribute("aria-pressed", "true");
 });

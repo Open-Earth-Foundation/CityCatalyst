@@ -5,6 +5,29 @@ frontend and backend code for the app, as well as database management scripts.
 
 ## Concept Note chat
 
+Selecting a suggested answer or sending the card's custom text replies to that
+specific question. If someone has already answered in another tab, the chat
+refreshes its history and shows the accepted reply. If another tab opened a newer
+chat, the send is refused with an explanation and the chat list offers the way back
+to the latest chat; the unsent card text stays in place. Picking an option while
+the card's own field holds text moves that text into the main composer, after any
+text already there. While the workspace is open, **Use draft** retrieves other
+unused inline text into the main composer for that chat.
+Most cards only answer a question. When a preference is about the document,
+Clima follows the answer with an action that prepares a proposed edit for review.
+A card that prepares a change says so above its options. If an answer never
+reached Clima, it is marked **Not sent**, Retry stays available and the card can
+be answered again. Reopening a chat during a reply shows **Clima is still
+replying…** and loads the saved answer when ready. An overlapping send is
+declined and shows the same status; when the service saved nothing, the typed
+message returns to that chat's composer (before anything typed since) and is
+not resent automatically. A connection lost after Clima accepted a message
+reloads history instead. **Retry** is available when Clima is idle
+and the latest saved message has no reply.
+A tall card opens at its question and first options rather than at its top.
+Chat messages and custom answers are limited to the 8,000-character edit-request
+limit: longer text stays in the field with a hint and cannot be sent.
+
 **Answer in chat** on a chapter gap opens up to four questions in Clima, each
 with suggested choices (possible answers, not source facts), free text, or
 **Not decided yet**; a retry appears if generation fails. Answers become a
@@ -18,8 +41,12 @@ HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
 asks them to reload the workspace. Other non-transient 4xx responses ask the
 user to check the request. These errors clear any previous failed turn and do
 not offer Retry. HTTP 408/429, server errors, transport failures, and stream
-failures remain retryable. A context-not-ready response also clears a previous
-failed turn because Clima answered successfully and declined that new request.
+failures remain retryable. If an accepted reply stream disconnects, the workspace
+checks history for the active or completed reply. A context-not-ready response
+also clears a previous failed turn because Clima declined that new request.
+The Next.js proxy retries non-streaming Climate Advisor GET and HEAD requests
+on supported connection errors and timeouts. It allows up to three attempts, with
+five seconds per attempt and a 16-second total deadline.
 
 ## Prerequisites
 
@@ -169,6 +196,65 @@ will follow, without tokens, service keys, headers, or upstream response bodies.
 After deployment, compare token issuance volume and exhausted-retry logs during
 workspace refreshes, including after a pod restart. Rollback requires only a code
 revert, with no database migration.
+
+### OAuth signing key
+
+OAuth 2.0 (the `OAUTH_ENABLED` feature flag) signs access tokens, refresh tokens and
+OpenID Connect id_tokens with its own RS256 key pair in `OAUTH_SIGNING_KEY`. (Authorization
+codes are opaque random values stored in the database, not signed.) It is separate
+from `VERIFICATION_TOKEN_SECRET`, which still signs invites, email verification and
+Climate Advisor user tokens. The code is in `src/lib/auth/oauth-signing.ts`.
+
+`OAUTH_SIGNING_KEY` is a PEM private key of 2048 bits or more. Line breaks may be
+written as `\n` so the key fits on one line, for example in a GitHub secret. Make one with:
+
+```bash
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
+```
+
+- Only needed when `OAUTH_ENABLED` is on. Nothing checks it at startup. If it is
+  missing or invalid, `/api/v1/token` and `/.well-known/jwks.json` answer 500 and log why.
+- The `kid` token header is derived from the public key (RFC 7638), so there is no
+  key id to set.
+- Bearer tokens are told apart by their signature algorithm. An RS256 token is checked
+  against this key. An HS256 token is checked against the shared secret and is never
+  accepted as an OAuth token. Each path accepts only its own kind.
+- Every OAuth token carries its kind in the JWT `typ` header (`at+jwt` for access
+  tokens, `oauth-refresh+jwt` for refresh tokens, `JWT` for id_tokens), and
+  `verifyOAuthToken` requires the expected kind. Without it, all kinds would verify as
+  each other, for example a refresh token as a bearer token or an access token as a
+  refresh token.
+- Tokens issued before this key existed were signed with the shared secret and stop
+  working. Clients must authorize again.
+- Never commit a real key. Tests create a throwaway key in memory
+  (`setupOAuthSigningKey` in `tests/helpers.ts`).
+
+### OpenID Connect
+
+The OAuth server also acts as an OpenID Connect provider (code flow with PKCE S256,
+public clients). When a client asks for the `openid` scope, `/api/v1/token` returns an
+`id_token` next to the access token. All endpoints need `OAUTH_ENABLED`.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `/.well-known/openid-configuration` | Discovery document. Also served at `/.well-known/oauth-authorization-server` (RFC 8414). |
+| `/.well-known/jwks.json` | Public key (JWK) that verifies id_tokens and access tokens. |
+| `/api/v1/oauth/userinfo` | Claims for the access token's user. GET and POST. Needs the `openid` scope. |
+| `/api/v1/auth/code` | Issues the authorization code. Accepts an optional `nonce`. |
+
+- **Authorization codes** are 256 random bits, valid for 60 seconds, usable once. Only
+  the SHA-256 hash is stored (table `AuthorizationCode`). A code is spent by its first
+  exchange attempt, even a failed one. Codes that are in flight during a deploy stop
+  working.
+- **id_token** (RS256, 15 minutes): `iss`, `sub` (the CityCatalyst user id), `aud` (the
+  client id), `email`, `name`, `org_ids`, `amr` (`["pwd"]`, or `["pwd","otp"]` when the
+  user has two-factor authentication on) and the `nonce` from the request. It is for the
+  client and cannot be used to call the API. `email_verified` is left out because
+  CityCatalyst does not record it. No id_token is issued when a token is refreshed.
+- `/api/v1/oauth/metadata` is **deprecated**. It returns the same document with
+  `Deprecation`, `Sunset` and `Link` headers. It stays until the sunset date
+  (`LEGACY_METADATA_SUNSET` in `src/backend/oauth/discovery.ts`) because the public
+  API contract only allows removing an endpoint after a deprecation window.
 
 ## Running
 

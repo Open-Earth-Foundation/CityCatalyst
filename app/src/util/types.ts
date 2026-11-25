@@ -1200,7 +1200,8 @@ export interface ImportStatusResponse {
 }
 
 export type VersionChange = VersionAttributes & {
-  author: { name: string; userId: string };
+  /** Null once the author's account has been deleted. */
+  author: { name: string; userId: string } | null;
   previousVersion: VersionAttributes | null;
 };
 
@@ -1482,7 +1483,12 @@ export type ConceptNoteGapSeverity = "critical" | "noncritical";
 export type ConceptNoteGapState =
   "open" | "processing" | "resolved" | "dismissed" | "caveat";
 export type ConceptNoteGapResolutionAction =
-  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+  | "answer"
+  | "correction"
+  | "not_a_gap"
+  | "defer_as_caveat"
+  | "evidence_update"
+  | "partial_answer";
 
 export interface ConceptNoteGapSuggestion {
   value: string;
@@ -1509,6 +1515,8 @@ export interface ConceptNoteGap {
   source_refs: string[];
   version: number;
   resolution: ConceptNoteGapResolution | null;
+  /** Answers saved from the gap form for this open version, not in the draft yet. */
+  answered_so_far?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -1596,6 +1604,15 @@ export interface ConceptNoteDraftState {
   error_code: string | null;
   overview_pending?: boolean;
   chapters: ConceptNoteDraftChapter[];
+}
+
+/** Read-only view of a note for a collaborator with access to its city. */
+export interface ConceptNotePreview {
+  run_id: string;
+  name: string;
+  city_id: string;
+  draft: ConceptNoteDraftState;
+  proposals: EditProposal[];
 }
 
 export interface ConfirmConceptNoteChapterRequest {

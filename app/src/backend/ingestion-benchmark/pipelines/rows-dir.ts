@@ -1,6 +1,8 @@
 /**
  * Reads a folder of precomputed extraction envelopes (manifest.json plus one
  * result file per case/attempt) and verifies each file against its sha256.
+ * An entry can also name the SHA-256 of the PDF the pipeline read
+ * (`source_pdf_sha256`); checkSourcePdf compares it with the local PDF.
  *
  * Envelopes also carry answer-key material (`benchmark`) and repair output.
  * Only a fixed allow-list of fields is ever picked from the parsed envelope,
@@ -40,6 +42,8 @@ export type ReadEnvelope = {
   executionStatus: string;
   info: PipelineInfo;
   costUsd: number | null;
+  /** Lowercase hex SHA-256 of the PDF the pipeline read; null when the manifest entry has none. */
+  sourcePdfSha256: string | null;
 };
 
 export type RowsDirErrorCode =
@@ -47,7 +51,8 @@ export type RowsDirErrorCode =
   | "duplicate_entry"
   | "missing_file"
   | "hash_mismatch"
-  | "invalid_envelope";
+  | "invalid_envelope"
+  | "source_mismatch";
 
 export class RowsDirError extends Error {
   constructor(
@@ -70,7 +75,10 @@ type ManifestEntry = {
   attempt: number;
   file: string;
   sha256: string;
+  source_pdf_sha256?: unknown;
 };
+
+const SHA256_HEX = /^[0-9a-f]{64}$/i;
 
 const DEFAULT_SCHEMA_PATH = path.join(
   process.cwd(),
@@ -228,6 +236,16 @@ export function readRowsDir(
       const actual = createHash("sha256").update(bytes).digest("hex");
       if (actual !== entry.sha256)
         throw new RowsDirError("hash_mismatch", `${where}, file ${entry.file}`);
+      // Absent or null leaves the source unverified; anything else must be a hash.
+      const source = entry.source_pdf_sha256 ?? null;
+      if (
+        source !== null &&
+        !(typeof source === "string" && SHA256_HEX.test(source))
+      )
+        throw new RowsDirError(
+          "invalid_envelope",
+          `${where}, file ${entry.file}, invalid field source_pdf_sha256`,
+        );
 
       let parsed: unknown;
       try {
@@ -265,6 +283,8 @@ export function readRowsDir(
         usage: flattenUsage(parsed.usage),
         executionStatus: parsed.execution_status,
         costUsd: isNum(parsed.cost_usd) ? (parsed.cost_usd as number) : null,
+        sourcePdfSha256:
+          typeof source === "string" ? source.toLowerCase() : null,
         info: {
           id: "precomputed",
           study,
@@ -275,4 +295,24 @@ export function readRowsDir(
       };
     },
   };
+}
+
+/**
+ * Checks that an envelope was made from the PDF the benchmark is about to
+ * upload. Throws source_mismatch when the hashes differ; returns "unverified"
+ * when the manifest entry named no source PDF (older envelopes).
+ */
+export function checkSourcePdf(
+  envelope: Pick<ReadEnvelope, "sourcePdfSha256">,
+  pdfSha256: string,
+  caseId: string,
+  attempt: number,
+): "verified" | "unverified" {
+  if (envelope.sourcePdfSha256 === null) return "unverified";
+  if (envelope.sourcePdfSha256 !== pdfSha256.toLowerCase())
+    throw new RowsDirError(
+      "source_mismatch",
+      `case ${caseId} attempt ${attempt}, the envelope was made from a different PDF`,
+    );
+  return "verified";
 }

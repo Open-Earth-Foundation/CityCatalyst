@@ -74,6 +74,7 @@ import {
   ConfirmConceptNoteChapterRequest,
   ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
+  ConceptNotePreview,
   ConceptNoteChatThreadListResponse,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
@@ -2112,12 +2113,15 @@ export const api = createApi({
           redirectUri,
           codeChallenge,
           scope,
+          nonce,
           csrfToken,
         }: {
           clientId: string;
           redirectUri: string;
           codeChallenge: string;
           scope: string;
+          /** OpenID Connect nonce from the authorization request, if any. */
+          nonce?: string;
           csrfToken: string;
         }) => ({
           method: "POST",
@@ -2127,6 +2131,7 @@ export const api = createApi({
             redirectUri,
             codeChallenge,
             scope,
+            nonce,
             csrfToken,
           },
         }),
@@ -2704,6 +2709,19 @@ export const api = createApi({
         invalidatesTags: (_result, _error, { runId }) => [
           "ConceptNoteFundingCatalogue",
           { type: "ConceptNoteFunderImport", id: runId },
+        ],
+      }),
+      getConceptNotePreview: builder.query<
+        ConceptNotePreview,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}/preview/`,
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+          { type: "ConceptNoteEdits", id: runId },
         ],
       }),
       getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({

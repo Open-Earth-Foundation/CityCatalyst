@@ -631,6 +631,79 @@
             "statement": "The concept note is unchanged; no contact person is invented."
           }
         ]
+      },
+      {
+        "id": "card-street-trees",
+        "instruction": "How should I describe adding street trees in this concept note? Give me a few options to choose from.",
+        "expected_outcome": "question_card",
+        "expected_changes": [
+          {
+            "id": "tree-scope-and-certainty",
+            "statement": "Every selectable answer presents tree planting as planned and stays within the cool corridors in Eastside and Millbrook. Do not assert any guaranteed heat reduction, quantified cooling or other guaranteed impact. The documented canopy target for the two neighbourhoods may be stated as a target."
+          }
+        ]
+      },
+      {
+        "id": "card-summary-openings",
+        "instruction": "Suggest a few openings for the project summary",
+        "expected_outcome": "question_card",
+        "expected_changes": [
+          {
+            "id": "grounded-openings",
+            "statement": "Every option is a standalone candidate opening. Any hazard trend must be supported for that hazard. The source gives a historical heat comparison and flood design-event and closure observations, but no worsening flood trend. No option invents partners, dates, budgets or official names. An official plan name requires explicit source support, and a proposed measure or sought grant retains its source status."
+          }
+        ]
+      },
+      {
+        "id": "card-monitoring-indicator",
+        "instruction": "Which indicator should I use in the expected results chapter? Give me a few options to choose from.",
+        "expected_outcome": "question_card",
+        "expected_changes": [
+          {
+            "id": "grounded-indicators",
+            "statement": "Every option is a distinct indicator supported by the project inputs. Tree canopy cover, flooded intersections during monitored storms and heat-related emergency department visits are documented indicators. No option introduces a new target, deadline, commitment, reporting frequency or data-collection owner. A stated source target must retain its original scope and status."
+          }
+        ]
+      },
+      {
+        "id": "card-timeline-reply",
+        "instruction": "Should the timeline in the implementation chapter show quarters or months? I'm not sure.",
+        "expected_outcome": "question_card",
+        "pick_first_option": true,
+        "expected_changes": [
+          {
+            "id": "timeline-formats-and-follow-up",
+            "statement": "The first card offers quarters and months as distinct timeline formats. After the user picks the first displayed option, the next turn acknowledges that exact format and offers to prepare the implementation timeline change for review as a separate step. The follow-up may be a question in prose or a card. It must not claim a document change or proposal already happened, re-ask which format, or present declining as an edit-preparing option."
+          }
+        ]
+      },
+      {
+        "id": "edit-click-option-b",
+        "instruction": "Planned measures include 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres.",
+        "expected_outcome": "edit",
+        "focused_chapter": "project_summary",
+        "allowed_chapters": [
+          "project_summary"
+        ],
+        "option_selection": {
+          "card": {
+            "message": "Which wording should replace only the first paragraph under Scope, duration and financing in the Project summary?",
+            "on_answer": "propose_edit",
+            "options": [
+              "The project plans to add 4,800 street trees across 12 cool corridors in Eastside and Millbrook, build 85 bioretention cells, create 3.2 hectares of permeable green schoolyard play areas, and designate 18 community cooling centres.",
+              "Planned measures include 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres.",
+              "The project combines planned tree planting, green stormwater infrastructure and community cooling: 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres."
+            ]
+          },
+          "expected_index": 1,
+          "before": "The project will deliver 4,800 street trees along 12 cool corridors in Eastside and Millbrook, 85 bioretention cells, 3.2 hectares of permeable green schoolyard play areas, and 18 community cooling centres."
+        },
+        "expected_changes": [
+          {
+            "id": "exact-option-b",
+            "statement": "Replace only the paragraph named by the card with the clicked option B, verbatim. Keep the title, dates, markers and all other chapters as they were."
+          }
+        ]
       }
     ]
   },
@@ -640,6 +713,6 @@
     "reviewed_at": null,
     "source_sha256": "7c3ec022d7c2fd3f8b9cb936da99557cde50f71940753ebcc22dd0935872a84a",
     "template_sha256": "096b99db207606ba322afefa2ad3ad97bb117b8c2d3e4b7bf16217cc9cb2bc02",
-    "requirements_sha256": "6db17145ed0a6bd6c94f3854c69dee8eba619fbd052c7e749684bbeca1efe019"
+    "requirements_sha256": "fa196b70a304433501beeaad8df091192ab28286b4dbef9b7a8839bb2321306d"
   }
 }

@@ -57,6 +57,7 @@ export function useConceptNoteWorkspaceData({
 
   const {
     data: run,
+    error: runError,
     isError: runFailed,
     isLoading: runLoading,
     refetch: refetchRun,
@@ -464,6 +465,8 @@ export function useConceptNoteWorkspaceData({
     run,
     runFailed,
     runLoading,
+    // Runs are owner-only; anyone else in the city gets a read-only preview.
+    runNotOwned: (runError as { status?: unknown } | undefined)?.status === 404,
     saveManualPopulation,
     selectInventory,
     startDrafting,

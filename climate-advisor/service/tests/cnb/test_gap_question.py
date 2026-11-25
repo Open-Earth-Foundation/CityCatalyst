@@ -2,11 +2,11 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
-from app.config.settings import Settings, _load_llm_config
+from app.models.cnb.concept_note_draft import ConceptNoteGapSuggestion
 from app.models.cnb.gap_question import (
     GapQuestionOutput,
     GapQuestionRequest,
@@ -15,7 +15,6 @@ from app.models.cnb.gap_question import (
 from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.persistence.concept_notes.edits import applied_gap_answers
 from app.routes.concept_note_runs import propose_gap_question
-from app.services.cnb.chat_suggestions import generate_suggestion
 from fastapi import HTTPException
 from pydantic import ValidationError
 from tests.test_concept_note_lifecycle import _workspace_repository
@@ -29,49 +28,14 @@ def test_rejects_single_or_invalid_choices(options):
         GapSubQuestion(question="Instrument?", options=options)
 
 
-@pytest.mark.parametrize("count", [0, 5])
-def test_requires_one_to_four_questions(count):
-    with pytest.raises(ValidationError):
-        GapQuestionOutput(
-            why_asking="Support needed",
-            questions=[{"question": f"Part {i}?", "options": []} for i in range(count)],
-        )
-
-
-async def test_generates_validated_question_with_dedicated_prompt(monkeypatch):
-    settings = Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
-    output = {
-        "why_asking": "Support needed",
-        "questions": [
-            {"question": "Instrument?", "options": ["Loan", "Grant", "Guarantee"]},
-            {"question": "Amount?", "options": []},
-        ],
-    }
-    client = AsyncMock()
-    client.__aenter__.return_value = client
-    client.chat.completions.create.return_value = SimpleNamespace(
-        choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(output)))]
-    )
-    monkeypatch.setattr(
-        "app.services.cnb.chat_suggestions.AsyncOpenAI", Mock(return_value=client)
-    )
-    result = await generate_suggestion(
-        settings, {"question": "Original gap"}, "cnb_gap_question", GapQuestionOutput
-    )
-    assert result.model_dump() == output
-    messages = client.chat.completions.create.call_args.kwargs["messages"]
-    assert "one short question" in messages[0]["content"]
-    assert json.loads(messages[1]["content"]) == {"question": "Original gap"}
-
-
 @pytest.fixture
 def gap_route(monkeypatch):
     chapter_id, gap_id = uuid4(), uuid4()
     run = SimpleNamespace(run_id=uuid4())
     authorize = AsyncMock(return_value=run)
     monkeypatch.setattr(
-        "app.routes.concept_note_runs.ConceptNoteRunService",
-        Mock(return_value=SimpleNamespace(get_authorized_run=authorize)),
+        "app.routes.concept_note_runs.ConceptNoteRunService.get_authorized_run",
+        authorize,
     )
     chapter = SimpleNamespace(
         chapter_id=chapter_id,
@@ -84,6 +48,14 @@ def gap_route(monkeypatch):
                 state="open",
                 question="Original question",
                 why_asking="Needed",
+                answered_so_far="1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet",
+                resolution=None,
+                has_accepted_narrowing=False,
+                suggestions=[
+                    ConceptNoteGapSuggestion(
+                        value="Loan of EUR 2 million", source_refs=["Plan"]
+                    )
+                ],
             )
         ],
     )
@@ -99,11 +71,10 @@ def gap_route(monkeypatch):
     monkeypatch.setattr("app.routes.concept_note_runs.generate_suggestion", generate)
     previous = AsyncMock(return_value=["Earlier answer " * 300])
     monkeypatch.setattr("app.routes.concept_note_runs.applied_gap_answers", previous)
-    cnb_session = AsyncMock()
-    cnb_session.__aenter__.return_value = cnb_session
+    sessions = MagicMock()
     monkeypatch.setattr(
         "app.routes.concept_note_runs.get_cnb_reference_session_factory",
-        Mock(return_value=Mock(return_value=cnb_session)),
+        lambda: sessions,
     )
     return SimpleNamespace(
         authorize=authorize,
@@ -153,10 +124,13 @@ async def test_rejects_foreign_or_stale_gap(gap_route, change, status):
 
 
 async def test_uses_server_question_and_bounded_chapter_without_writing(gap_route):
-    result = await propose_gap_question(**gap_route.args)
-    assert result.questions[0].options == ["Loan", "Grant"]
+    await propose_gap_question(**gap_route.args)
     context = gap_route.generate.call_args.args[1]
     assert context["question"] == "Original question"
+    # Answers saved on this gap version reach the model, so it asks only the rest.
+    assert context["earlier_answers"] == (
+        "1. Instrument?\nLoan\n\n2. Amount?\nNot decided yet"
+    )
     # Long chapters are cut around the gap, not from the start.
     assert len(context["chapter_excerpt"]) == 12000
     assert context["chapter_excerpt"].endswith("Original question]")
@@ -168,7 +142,70 @@ async def test_uses_server_question_and_bounded_chapter_without_writing(gap_rout
     }
     # Whole entries: truncating would drop later answers and undecided parts.
     assert context["previous_answers"] == ["Earlier answer " * 300]
+    # Source-grounded values let the model confirm instead of asking from scratch.
+    assert context["source_suggestions"] == [
+        {"value": "Loan of EUR 2 million", "source_refs": ["Plan"]}
+    ]
     gap_route.args["session"].commit.assert_not_called()
+
+
+async def test_narrowed_gap_returns_only_the_literal_remaining_question(gap_route):
+    gap = gap_route.chapter.gaps[0]
+    gap.has_accepted_narrowing = True
+    gap.question = "What amount will the city contribute?"
+    gap.why_asking = ""
+    gap_route.args["payload"].question = None
+    result = await propose_gap_question(**gap_route.args)
+    # The persisted remainder is asked as one free-text field, with no model call.
+    assert result.questions == [
+        GapSubQuestion(question="What amount will the city contribute?", options=[])
+    ]
+    assert result.questions[0].confirms is False
+    assert result.questions[0].multiple is False
+    assert result.why_asking == "This information is required to complete the chapter."
+    gap_route.generate.assert_not_called()
+    gap_route.previous.assert_not_called()
+    # Reading the remainder writes nothing, so reopening the form changes no gap.
+    gap_route.args["session"].commit.assert_not_called()
+
+
+ESTIMATE = "The City estimates 120 volunteers, pending confirmation."
+
+
+@pytest.mark.parametrize(
+    ("kept", "body", "resolution"),
+    [
+        # A marker formatted unlike its question still anchors the excerpt.
+        (
+            "[Information needed: **original  question?**]",
+            "Before " * 2000
+            + "[Information needed: **original  question?**]"
+            + " After" * 2000,
+            None,
+        ),
+        # An estimate to confirm anchors it even beyond the first 12,000 characters.
+        (
+            ESTIMATE,
+            "Filler " * 3000
+            + ESTIMATE
+            + " Tail " * 2000
+            + "[Information needed: Original question]",
+            SimpleNamespace(answer=ESTIMATE),
+        ),
+    ],
+    ids=["formatted-marker", "accepted-estimate"],
+)
+async def test_excerpt_is_centered_on_the_gap(gap_route, kept, body, resolution):
+    gap = gap_route.chapter.gaps[0]
+    if resolution is not None:
+        gap.state = "caveat"
+        gap.resolution = resolution
+    gap_route.chapter.body_markdown = body
+    assert body.index(kept) > 12000
+    await propose_gap_question(**gap_route.args)
+    excerpt = gap_route.generate.call_args.args[1]["chapter_excerpt"]
+    assert len(excerpt) == 12000
+    assert kept in excerpt
 
 
 async def test_provider_failure_is_explicit_and_retryable(gap_route):
@@ -223,7 +260,7 @@ async def test_previous_answers_keep_only_accepted_text_from_this_chapter():
                         1,
                         "applied",
                         request(
-                            "gap-answer-complete-request",
+                            "gap-answer-estimate-confirm-request",
                             "1. Instrument?\nLoan\n\nPaid back over ten years.",
                         ),
                     ),

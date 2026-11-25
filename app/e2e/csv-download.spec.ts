@@ -3,6 +3,7 @@ import { parse } from "csv-parse/sync";
 import {
   createCityAndInventoryViaApi,
   dismissCookieConsent,
+  skipCookieConsent,
   dismissToasts,
   navigateToDataPage,
   openAddEmissionModal,
@@ -290,11 +291,12 @@ test.describe("CSV Download", () => {
     await context.close();
   });
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Pre-decline consent so no banner renders; waiting for an absent one costs 2 s per test.
+    await skipCookieConsent(context);
     await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`, {
       waitUntil: "domcontentloaded",
     });
-    await dismissCookieConsent(page);
 
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 60000 });

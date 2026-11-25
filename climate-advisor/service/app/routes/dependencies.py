@@ -29,3 +29,26 @@ async def authorized_run(
 
 
 AuthorizedRun = Annotated[ConceptNoteRun, Depends(authorized_run)]
+
+
+async def city_viewable_run(
+    run_id: UUID,
+    city_id: UUID = Query(...),
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRun:
+    """Recheck the caller's current city access for a read-only preview of any run."""
+    service = ConceptNoteRunService(session)
+    try:
+        return await service.get_city_viewable_run(
+            run_id=run_id,
+            city_id=city_id,
+            requested_user_id=user_id,
+            authorization=authorization,
+        )
+    finally:
+        await service.cc_client.close()
+
+
+CityViewableRun = Annotated[ConceptNoteRun, Depends(city_viewable_run)]

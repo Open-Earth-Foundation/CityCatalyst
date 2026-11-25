@@ -162,7 +162,9 @@ export default function VersionEntry({
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`;
   const [isExpanded, setExpanded] = useState(false);
-  const userName = firstEntry.version.author.name;
+  // The author is null once their account has been deleted.
+  const deletedUserLabel = t("inventory-versions-deleted-user");
+  const userName = firstEntry.version.author?.name ?? deletedUserLabel;
 
   const [restoreVersion, { isLoading: isRestoreVersionLoading }] =
     api.useRestoreVersionMutation();
@@ -176,7 +178,7 @@ export default function VersionEntry({
   if (moduleName === "ghgi") {
     changes = versionEntries.map((entry) => ({
       versionId: entry.version.versionId,
-      author: entry.version.author.name,
+      author: entry.version.author?.name ?? deletedUserLabel,
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields
@@ -213,7 +215,7 @@ export default function VersionEntry({
   } else if (moduleName === "hiap") {
     changes = versionEntries.map((entry) => ({
       versionId: entry.version.versionId,
-      author: entry.version.author.name,
+      author: entry.version.author?.name ?? deletedUserLabel,
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields

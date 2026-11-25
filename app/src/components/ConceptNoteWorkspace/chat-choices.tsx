@@ -1,38 +1,55 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { chakra, Flex, Icon, Input, Text, VStack } from "@chakra-ui/react";
-import { LuArrowRight, LuCheck } from "react-icons/lu";
+import { useId, useRef, useState } from "react";
+import { chakra, Flex, Icon, Text, Textarea, VStack } from "@chakra-ui/react";
+import { LuArrowRight, LuCheck, LuFilePen } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
+import { EDIT_INSTRUCTION_MAX_CHARS } from "@/util/concept-note-edit-types";
+import type { ConceptNoteChoiceAction } from "./chat-utils";
 
 /** Suggested and custom replies stay inside the message that asked the question. */
 export function ChatChoices({
   choices,
+  choiceAction = "reply",
   disabled,
   answered,
+  selectedAnswer,
+  draft,
+  onDraftChange,
   lng,
   onReply,
 }: {
   choices: string[];
+  /** "propose_edit" cards prepare a proposed change; the card says so. */
+  choiceAction?: ConceptNoteChoiceAction;
   disabled: boolean;
   answered: boolean;
+  selectedAnswer?: string;
+  draft: string;
+  onDraftChange: (draft: string) => void;
   lng: string;
-  onReply: (answer: string) => Promise<void>;
+  onReply: (answer: string) => Promise<boolean | void>;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [selected, setSelected] = useState<string | null>(null);
-  const [custom, setCustom] = useState("");
+  const tooLongId = useId();
+  const proposesEditId = useId();
   const [sending, setSending] = useState(false);
   const submitting = useRef(false);
   const locked = disabled || answered || sending;
-  const answer = custom.trim();
+  const answer = draft.trim();
+  // Every CNB reply becomes an edit request, which the service caps.
+  const overLimit = answer.length - EDIT_INSTRUCTION_MAX_CHARS;
+  const canSendCustom = !locked && Boolean(answer) && overLimit <= 0;
 
   async function submit(reply: string) {
     if (locked || !reply || submitting.current) return;
     submitting.current = true;
     setSending(true);
     try {
-      await onReply(reply);
+      const completed = await onReply(reply);
+      if (completed !== false && reply === answer) onDraftChange("");
+    } catch {
+      // The parent reports errors; preserve the draft so the user can retry.
     } finally {
       submitting.current = false;
       setSending(false);
@@ -46,34 +63,51 @@ export function ChatChoices({
       mt={3}
       data-testid="concept-note-chat-choices"
     >
+      {choiceAction === "propose_edit" && (
+        <Flex
+          id={proposesEditId}
+          gap={2}
+          align="flex-start"
+          fontSize="label.sm"
+          color="content.secondary"
+          mb={1}
+          data-testid="concept-note-chat-choices-proposes-edit"
+        >
+          <Icon as={LuFilePen} boxSize={3.5} flexShrink={0} mt="2px" />
+          <Text>{t("chat-choices-proposes-edit")}</Text>
+        </Flex>
+      )}
       <VStack
         align="stretch"
         gap={0}
         role="group"
         aria-label={t("chat-choices-label")}
+        aria-describedby={
+          choiceAction === "propose_edit" ? proposesEditId : undefined
+        }
       >
         {choices.map((choice, index) => (
           <chakra.button
             key={choice}
             type="button"
             disabled={locked}
-            aria-pressed={selected === choice}
-            onClick={() => {
-              setSelected(choice);
-              void submit(choice);
-            }}
+            aria-pressed={selectedAnswer === choice}
+            onClick={() => void submit(choice)}
             display="flex"
-            alignItems="center"
+            // Top alignment keeps each letter beside the first line of a long answer.
+            alignItems="flex-start"
             gap={2.5}
             minH="42px"
-            py={1}
+            py="9px"
             pr={2}
             textAlign="left"
             fontSize="body.sm"
-            bg={selected === choice ? "content.link/6" : "transparent"}
+            bg={selectedAnswer === choice ? "content.link/6" : "transparent"}
             border={0}
-            color={selected === choice ? "content.link" : "content.primary"}
-            fontWeight={selected === choice ? "semibold" : "normal"}
+            color={
+              selectedAnswer === choice ? "content.link" : "content.primary"
+            }
+            fontWeight={selectedAnswer === choice ? "semibold" : "normal"}
             cursor={locked ? "default" : "pointer"}
             borderRadius="sm"
             _hover={
@@ -93,18 +127,29 @@ export function ChatChoices({
               flexShrink={0}
               boxSize="24px"
               borderRadius="sm"
-              bg={selected === choice ? "content.link/12" : "content.link/8"}
+              bg={
+                selectedAnswer === choice ? "content.link/12" : "content.link/8"
+              }
+              // An explicit color keeps the letter readable on the hover tint.
+              color={
+                selectedAnswer === choice ? "content.link" : "content.primary"
+              }
               fontSize="body.sm"
               fontWeight="medium"
               aria-hidden="true"
             >
               {String.fromCharCode(65 + index)}
             </Text>
-            <Text as="span" overflowWrap="anywhere">
+            <Text
+              as="span"
+              py="2px"
+              whiteSpace="pre-wrap"
+              overflowWrap="anywhere"
+            >
               {choice}
             </Text>
-            {selected === choice && (
-              <Icon as={LuCheck} boxSize={3.5} flexShrink={0} />
+            {selectedAnswer === choice && (
+              <Icon as={LuCheck} boxSize={3.5} flexShrink={0} mt="5px" />
             )}
           </chakra.button>
         ))}
@@ -114,26 +159,27 @@ export function ChatChoices({
           <Text fontSize="body.sm" mt={2}>
             {t("chat-choices-or")}
           </Text>
-          <Flex gap={2} align="center">
-            <Input
+          <Flex gap={2} align="flex-end">
+            <Textarea
               unstyled
+              autoresize
+              rows={1}
               aria-label={t("chat-choices-custom")}
               placeholder={t("chat-choices-custom")}
-              value={custom}
+              value={draft}
               disabled={locked}
-              onFocus={() => setSelected(null)}
-              onChange={(event) => {
-                setCustom(event.target.value);
-                setSelected(null);
-              }}
+              aria-invalid={overLimit > 0 || undefined}
+              aria-describedby={overLimit > 0 ? tooLongId : undefined}
+              onChange={(event) => onDraftChange(event.target.value)}
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
                   !event.shiftKey &&
-                  !event.nativeEvent.isComposing
+                  !event.nativeEvent.isComposing &&
+                  event.nativeEvent.keyCode !== 229
                 ) {
                   event.preventDefault();
-                  void submit(answer);
+                  if (canSendCustom) void submit(answer);
                 }
               }}
               border={0}
@@ -142,6 +188,8 @@ export function ChatChoices({
               px={0}
               py={1}
               minH="36px"
+              maxH="200px"
+              width="100%"
               fontSize="body.sm"
               flex={1}
               minW={0}
@@ -154,7 +202,7 @@ export function ChatChoices({
             <chakra.button
               type="button"
               aria-label={t("chat-choices-send")}
-              disabled={locked || !answer}
+              disabled={!canSendCustom}
               onClick={() => void submit(answer)}
               minW="40px"
               minH="40px"
@@ -173,6 +221,16 @@ export function ChatChoices({
               <Icon as={LuArrowRight} boxSize={5} />
             </chakra.button>
           </Flex>
+          {overLimit > 0 && (
+            <Text
+              id={tooLongId}
+              role="alert"
+              fontSize="label.sm"
+              color="sentiment.negativeDefault"
+            >
+              {t("chat-message-too-long", { count: overLimit })}
+            </Text>
+          )}
         </>
       )}
     </VStack>

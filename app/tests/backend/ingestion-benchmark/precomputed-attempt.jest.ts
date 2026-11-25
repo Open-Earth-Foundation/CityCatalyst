@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -61,6 +62,7 @@ const envelope = (
     version: null,
   },
   costUsd: 0.5,
+  sourcePdfSha256: null,
   ...over,
 });
 
@@ -110,10 +112,12 @@ const entry: CaseManifestEntry = {
   fileName: "synthetic.pdf",
 };
 const key = { id: "C-T1" } as KeyFile;
+const PDF_TEXT = "%PDF-1.4 synthetic";
+const pdfSha = createHash("sha256").update(PDF_TEXT).digest("hex");
 
 beforeAll(() => {
   pdfDir = fs.mkdtempSync(path.join(os.tmpdir(), "precomputed-attempt-"));
-  fs.writeFileSync(path.join(pdfDir, entry.fileName), "%PDF-1.4 synthetic");
+  fs.writeFileSync(path.join(pdfDir, entry.fileName), PDF_TEXT);
 });
 afterAll(() => fs.rmSync(pdfDir, { recursive: true, force: true }));
 
@@ -314,6 +318,38 @@ describe("runPrecomputedAttempt", () => {
     };
     const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, prices);
     expect(run.pipeline).toMatchObject({ costUsd: 3, costSource: "tokens" });
+  });
+
+  it("fails an envelope made from a different PDF before any upload", async () => {
+    const { ctx, seen } = fakeContext();
+    const other = createHash("sha256").update("another edition").digest("hex");
+    const rows = rowsDirOf(() => envelope([row()], { sourcePdfSha256: other }));
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
+    expect(run.failureMode).toBe("setup_error");
+    expect(run.message).toBe(
+      "source_mismatch: case C-T1 attempt 1, the envelope was made from a different PDF",
+    );
+    expect(run.missingEnvelope).toBeUndefined();
+    expect(run.pipeline).toBeUndefined();
+    expect(seen.cityCreates).toBe(0);
+    expect(seen.uploads).toBe(0);
+  });
+
+  it("uploads and records a verified source when the PDF hash matches", async () => {
+    const { ctx, seen } = fakeContext();
+    const rows = rowsDirOf(() => envelope([], { sourcePdfSha256: pdfSha }));
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
+    expect(seen.uploads).toBe(1);
+    expect(run.failureMode).toBe("zero_rows");
+    expect(run.pipeline?.sourcePdf).toBe("verified");
+  });
+
+  it("runs an envelope without a source PDF hash and records it as unverified", async () => {
+    const { ctx, seen } = fakeContext();
+    const rows = rowsDirOf(() => envelope([]));
+    const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
+    expect(seen.uploads).toBe(1);
+    expect(run.pipeline?.sourcePdf).toBe("unverified");
   });
 
   it("registers its test city before the upload", async () => {

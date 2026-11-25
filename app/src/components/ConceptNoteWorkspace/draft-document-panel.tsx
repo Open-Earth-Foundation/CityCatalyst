@@ -38,6 +38,7 @@ import type { ConceptNoteDraftChapter } from "@/util/types";
 import {
   decodeMissingInformationMessage,
   MISSING_INFORMATION_LINK,
+  missingInformationRanges,
   remarkGapPassages,
   remarkMissingInformation,
 } from "./draft-markdown";
@@ -47,6 +48,7 @@ import {
   ChapterGapMarker,
   chapterGapRows,
   gapRowForMessage,
+  isEstimate,
   type ChapterGapRow,
 } from "./chapter-gaps-panel";
 import {
@@ -474,14 +476,20 @@ export function DraftDocumentPanel({
           >
             {chapters.map((chapter) => {
               const isSelected = focus.selectedChapterId === chapter.chapter_id;
-              const gapCount = gapRows.get(chapter.chapter_id)!.length;
+              // Estimates stay listed in the chapter, but they are not open gaps.
+              const gapCount = gapRows
+                .get(chapter.chapter_id)!
+                .filter((row) => !isEstimate(row)).length;
               return (
                 <Button
                   key={chapter.chapter_id}
                   type="button"
                   variant="ghost"
                   aria-current={isSelected ? "location" : undefined}
-                  aria-label={t("jump-to-chapter", { chapter: chapter.title })}
+                  aria-label={t("jump-to-chapter", {
+                    chapter: chapter.title,
+                    interpolation: { escapeValue: false },
+                  })}
                   title={`${chapter.position + 1} ${chapter.title}`}
                   display="flex"
                   alignItems="center"
@@ -589,7 +597,11 @@ export function DraftDocumentPanel({
               fontWeight="semibold"
               color="content.primary"
             >
-              {t("draft-preview-document-title", { name: noteName })}
+              {/* React escapes text; i18next escaping would show &#39; for "Lima's plan". */}
+              {t("draft-preview-document-title", {
+                name: noteName,
+                interpolation: { escapeValue: false },
+              })}
             </Text>
           </Box>
 
@@ -654,7 +666,9 @@ export function DraftDocumentPanel({
                     onAnswerGap={onAnswerGap}
                   />
                   {chapter.status === "draft" &&
-                    chapter.open_gap_count === 0 && (
+                    chapter.open_gap_count === 0 &&
+                    missingInformationRanges(chapter.body_markdown ?? "")
+                      .length === 0 && (
                       <Button
                         size="xs"
                         variant="solid"

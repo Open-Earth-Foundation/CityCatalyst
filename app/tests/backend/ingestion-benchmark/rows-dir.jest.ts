@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
+  checkSourcePdf,
   readRowsDir,
   RowsDirError,
 } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
@@ -46,7 +47,11 @@ const sha = (text: string) => createHash("sha256").update(text).digest("hex");
 
 function writeFixture(
   env: unknown,
-  opts: { entries?: Record<string, unknown>[]; skipFile?: boolean } = {},
+  opts: {
+    entries?: Record<string, unknown>[];
+    skipFile?: boolean;
+    extra?: Record<string, unknown>;
+  } = {},
 ) {
   const text = JSON.stringify(env);
   fs.mkdirSync(path.join(dir, "results"), { recursive: true });
@@ -56,6 +61,7 @@ function writeFixture(
     attempt: 1,
     file: "results/a.json",
     sha256: sha(text),
+    ...opts.extra,
   };
   fs.writeFileSync(
     path.join(dir, "manifest.json"),
@@ -278,5 +284,70 @@ describe("readRowsDir", () => {
     } finally {
       fs.rmSync(outside, { force: true });
     }
+  });
+
+  it("reads the source PDF hash in lowercase, and null when the entry has none", () => {
+    const pdfHash = sha("edition A");
+    writeFixture(envelope(), {
+      extra: { source_pdf_sha256: pdfHash.toUpperCase() },
+    });
+    expect(readRowsDir(dir).get("C-015", 1).sourcePdfSha256).toBe(pdfHash);
+    writeFixture(envelope());
+    expect(readRowsDir(dir).get("C-015", 1).sourcePdfSha256).toBeNull();
+    writeFixture(envelope(), { extra: { source_pdf_sha256: null } });
+    expect(readRowsDir(dir).get("C-015", 1).sourcePdfSha256).toBeNull();
+  });
+
+  it("rejects a malformed source PDF hash without echoing it", () => {
+    for (const bad of ["abc123", "z".repeat(64), `${sha("x")}0`, 42, ""]) {
+      writeFixture(envelope(), { extra: { source_pdf_sha256: bad } });
+      try {
+        readRowsDir(dir).get("C-015", 1);
+        throw new Error("expected throw");
+      } catch (e) {
+        expect((e as RowsDirError).code).toBe("invalid_envelope");
+        expect((e as Error).message).toContain("source_pdf_sha256");
+        if (typeof bad === "string" && bad)
+          expect((e as Error).message).not.toContain(bad);
+      }
+    }
+  });
+});
+
+describe("checkSourcePdf", () => {
+  const editionA = createHash("sha256").update("edition A").digest("hex");
+  const editionB = createHash("sha256").update("edition B").digest("hex");
+
+  it("verifies a matching PDF, whatever the hex case", () => {
+    expect(
+      checkSourcePdf({ sourcePdfSha256: editionA }, editionA, "C-015", 1),
+    ).toBe("verified");
+    expect(
+      checkSourcePdf(
+        { sourcePdfSha256: editionA },
+        editionA.toUpperCase(),
+        "C-015",
+        1,
+      ),
+    ).toBe("verified");
+  });
+
+  it("fails a different PDF with a fixed message naming case and attempt", () => {
+    try {
+      checkSourcePdf({ sourcePdfSha256: editionA }, editionB, "C-015", 2);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(RowsDirError);
+      expect((e as RowsDirError).code).toBe("source_mismatch");
+      expect((e as Error).message).toContain("case C-015 attempt 2");
+      expect((e as Error).message).not.toContain(editionA);
+      expect((e as Error).message).not.toContain(editionB);
+    }
+  });
+
+  it("marks an envelope without a source PDF hash as unverified", () => {
+    expect(
+      checkSourcePdf({ sourcePdfSha256: null }, editionB, "C-015", 1),
+    ).toBe("unverified");
   });
 });

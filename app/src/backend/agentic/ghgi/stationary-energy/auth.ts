@@ -2,6 +2,8 @@ import createHttpError from "http-errors";
 import type { NextRequest } from "next/server";
 
 import type { AppSession } from "@/lib/auth";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import type { Inventory } from "@/models/Inventory";
 import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 export function requireClimateAdvisorIntegrationEnabled(): void {
@@ -45,4 +47,23 @@ export function requireRequestUser(
       "Request user does not match authenticated service token",
     );
   }
+}
+
+export async function requireStationaryEnergyInventoryEditor(
+  session: AppSession | null,
+  inventoryId: string,
+  cityId: string,
+): Promise<Inventory> {
+  const { resource } = await PermissionService.canAccessInventory(
+    session,
+    inventoryId,
+    { allowPublicRead: false },
+  );
+  const inventory = resource as Inventory | undefined;
+  if (!inventory || inventory.cityId !== cityId) {
+    throw new createHttpError.BadRequest(
+      "Inventory does not belong to the requested city",
+    );
+  }
+  return inventory;
 }

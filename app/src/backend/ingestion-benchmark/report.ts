@@ -133,6 +133,12 @@ export type PipelineAttempt = {
   /** Rows approve skipped, by import issue code (e.g. gpc-reference-unknown). */
   lostRows: Record<string, number>;
   /**
+   * Whether the manifest entry's source_pdf_sha256 matched the uploaded PDF
+   * ("verified") or the entry had none ("unverified"); a mismatch never gets
+   * here, it fails the attempt. Absent in runs before the check: read as unverified.
+   */
+  sourcePdf?: "verified" | "unverified";
+  /**
    * Unsplit I/II/III subsector rows of the envelope that approve did not store,
    * as the pipeline gave them (pipeline output, not answer-key content). Set
    * on scored attempts.
@@ -232,6 +238,21 @@ export type RunSummary = {
   /** Set when the run rescored an earlier results.json instead of calling OCR or the LLM. */
   rescoredFrom?: { measuredAt: string; commit: string };
 };
+
+/**
+ * Pipeline attempts whose envelope was not checked against the scored PDF,
+ * by case: their rows may come from another edition of the document.
+ */
+export function unverifiedSourceAttempts(
+  summary: Pick<RunSummary, "results">,
+): { id: string; attempts: number[] }[] {
+  return summary.results.flatMap((result) => {
+    const attempts = result.runs
+      .filter((run) => run.pipeline && run.pipeline.sourcePdf !== "verified")
+      .map((run) => run.run);
+    return attempts.length ? [{ id: result.id, attempts }] : [];
+  });
+}
 
 /** Reason recorded for a case the precomputed rows folder has no envelope for. */
 export const NO_ENVELOPE_REASON = "no envelope in the rows folder";
@@ -640,12 +661,12 @@ function renderPipelineNotes(summary: RunSummary): string[] {
       if (run.pipeline) {
         const p = run.pipeline;
         return [
-          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(clip(p.reported.totalBasis ?? "n/a"))} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) |`,
+          `| ${cell(result.id)} | ${run.run} | ${cell(p.executionStatus)} | ${p.rowsInEnvelope} | ${tally(p.unknownRowRoles)} | ${tally(p.droppedRows)} | ${tally(p.lostRows)} | ${reportedText(p.reported)} | ${cell(clip(p.reported.totalBasis ?? "n/a"))} / ${cell(p.reported.totalKind ?? "n/a")} | ${tally(p.scopeBasis)} | ${tally(p.totalInclusion)} | ${money(p.costUsd)} (${cell(p.costSource)}) | ${p.sourcePdf ?? "unverified"} |`,
         ];
       }
       return run.missingEnvelope
         ? [
-            `| ${cell(result.id)} | ${run.run} | no envelope | - | - | - | - | - | - | - | - | - |`,
+            `| ${cell(result.id)} | ${run.run} | no envelope | - | - | - | - | - | - | - | - | - | - |`,
           ]
         : [];
     }),
@@ -655,10 +676,10 @@ function renderPipelineNotes(summary: RunSummary): string[] {
     "",
     "## Pipeline notes",
     "",
-    "What the pipeline reported for each attempt: facts about the envelope, not scored. Lost rows are the rows approve skipped, by import issue code; `unexplained` and `notSkipped` mark a mismatch between the rows approve skipped and the issues it reported.",
+    "What the pipeline reported for each attempt: facts about the envelope, not scored. Lost rows are the rows approve skipped, by import issue code; `unexplained` and `notSkipped` mark a mismatch between the rows approve skipped and the issues it reported. Source PDF is `verified` when the envelope's source_pdf_sha256 matched the uploaded PDF, `unverified` when it had none.",
     "",
-    "| Case | Attempt | Execution status | Rows in envelope | Unknown row roles | Dropped rows | Lost rows | Reported totals (t) | Total basis / kind | Scope basis | Total inclusion | Cost |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Case | Attempt | Execution status | Rows in envelope | Unknown row roles | Dropped rows | Lost rows | Reported totals (t) | Total basis / kind | Scope basis | Total inclusion | Cost | Source PDF |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ...rows,
   ];
 }
@@ -830,6 +851,13 @@ export function renderReport(
       "",
     );
   }
+  const unverified = unverifiedSourceAttempts(summary);
+  if (unverified.length) {
+    lines.push(
+      `**SOURCE PDF NOT VERIFIED**: these envelopes have no source_pdf_sha256, so their rows may come from a different PDF than the one scored: ${unverified.map((u) => `${u.id} (attempt ${u.attempts.join(", ")})`).join("; ")}.`,
+      "",
+    );
+  }
 
   for (const block of blocks) {
     const rows = aggregate(
@@ -988,7 +1016,7 @@ export function renderIndexLine(
 ): string {
   const recall = (block: Block) =>
     pct(blocks.find((b) => b.block === block)?.headlineRecall ?? null);
-  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${summary.pipeline ? ` pipeline=${cell(summary.pipeline.id)}:${cell(summary.pipeline.study ?? "unknown")}` : ""}`;
+  const flags = `${summary.exploratory ? " (exploratory)" : ""}${summary.rescoredFrom ? " (rescore)" : ""}${summary.interrupted ? " (INTERRUPTED)" : ""}${summary.incomplete ? " (incomplete)" : ""}${unverifiedSourceAttempts(summary).length ? " (source unverified)" : ""}${summary.pipeline ? ` pipeline=${cell(summary.pipeline.id)}:${cell(summary.pipeline.study ?? "unknown")}` : ""}`;
   const cost = runCostUsd(summary);
   return `| ${summary.measuredAt.slice(0, 16).replace("T", " ")}${flags} | \`${summary.commit}\` | ${summary.results.length} | ${recall("validated")} | ${recall("held-out")} | ${money(cost)} | [${folder}](./${folder}/report.md)${summary.mlflowRunUrl ? ` · [MLflow](${summary.mlflowRunUrl})` : ""} |`;
 }

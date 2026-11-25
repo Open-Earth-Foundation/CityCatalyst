@@ -147,6 +147,7 @@ async def _copy_gaps(
             source_refs=list(gap.source_refs),
             status=gap.status,
             version=gap.version,
+            answer_progress=deepcopy(gap.answer_progress),
         )
         session.add(destination)
         await session.flush()
@@ -166,6 +167,8 @@ async def _copy_gaps(
                 gap_id=gap_map[resolution.gap_id],
                 action=resolution.action,
                 answer=resolution.answer,
+                # Each event keeps its own version; saved answers are read by it.
+                gap_version=resolution.gap_version,
                 actor_user_id=resolution.actor_user_id,
                 source_refs=list(resolution.source_refs),
                 idempotency_key=resolution.idempotency_key,

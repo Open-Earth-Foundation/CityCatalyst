@@ -18,6 +18,7 @@ import {
 } from "./chapter-validation";
 import {
   canExportConceptNote,
+  countEstimatesToConfirm,
   hasCriticalExportBlocker,
   countUnresolvedExportItems,
   exportConceptNote,
@@ -110,6 +111,8 @@ export function useGuidedReview({
     null;
   const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
   const hasCriticalGap = hasCriticalExportBlocker(chapters);
+  // Estimates are exported as written; the preflight only names them.
+  const estimateCount = countEstimatesToConfirm(chapters);
   const requiresExportAcknowledgement =
     blockingIssueCount > 0 || failedChapters.length > 0 || hasCriticalGap;
   const canExport =
@@ -324,6 +327,7 @@ export function useGuidedReview({
     cancelActiveRequest,
     canExport,
     hasCriticalGap,
+    estimateCount,
     chapters,
     chapterTitles,
     completedChapterCount,

@@ -125,7 +125,7 @@
       return stage === "verification" ? to("verification", "sd-" + rest[0]) : to("reference", "rd-" + rest[0]);
     if (kind === "change") return to("editing", `cg-${rest[0]}-${rest[1]}`);
     if (kind === "edited") return to("editing", `ed-${rest[0]}-${rest[1]}`);
-    if (kind === "instruction") return to("editing", "case-" + rest[0]);
+    if (["instruction", "answer", "picked", "selected-option"].includes(kind)) return to("editing", "case-" + rest[0]);
     if (kind === "context") return `#/f/${fid}/input`;
     return null;
   }
@@ -170,6 +170,16 @@
     if (kind === "change") {
       const change = f.stages.editing?.cases?.find((c) => c.case_id === rest[0])?.changes?.[+rest[1]];
       return change ? `Before: ${change.before}\nAfter: ${change.after}` : undefined;
+    }
+    if (kind === "answer" || kind === "picked") {
+      const record = f.stages.editing?.cases?.find((c) => c.case_id === rest[0]);
+      if (kind === "picked") return record?.picked_option;
+      const turn = record?.chat_turns?.[+rest[1] - 1];
+      return rest[2] === "message" ? turn?.text : turn?.card?.options[+rest[2] - 1];
+    }
+    if (kind === "selected-option") {
+      const selection = f.golden.editing?.cases.find((c) => c.id === rest[0])?.option_selection;
+      return selection?.card.options[selection.expected_index];
     }
     if (kind === "instruction") return f.golden.editing?.cases.find((c) => c.id === rest[0])?.instruction;
     return undefined;
@@ -426,21 +436,22 @@
       gates: "Defects detected ≥ 75% · false alarms ≤ 25% of model findings · no missed defect",
     },
     editing: {
-      question: "Does a chat edit do what the user asked, keep what must survive, and leave the document consistent?",
-      input: ["The reference draft plus one chat request per case: fill a gap, propagate a change across chapters, rewrite while keeping facts, or ask for a value nobody supplied."],
-      production: ["Edit planner with exact-anchor tools and an independent semantic review, then plan validation and anchor replacement. All validated changes are accepted, as a user would."],
-      python: ["Outcome: edit, or clarification when no value was given.", "Chapters changed outside the allowed set.", "Missing-information markers removed."],
-      judge: ["Each expected change applied.", "Each protected statement preserved.", "Each applied change authorized by the instruction or the evidence.", "No contradiction left after the edit."],
+      question: "Do chat edits and suggested answers follow the request and stay grounded?",
+      input: ["The frozen reference draft and source, plus a chat request per case. One case also selects a displayed option."],
+      production: ["Edit planner with exact-anchor tools and an independent semantic review, followed by validation and anchor replacement.", "Configured chat prompt and question tool for suggested answers."],
+      python: ["Outcome, edit scope, and missing-information markers.", "Reply-only selection, exact confirmation action, and verbatim Option B replacement and quote."],
+      judge: ["Expected changes and protected statements.", "Authorization, factual support, and consistency for each edit or answer."],
       gates: "Every case passes all checks",
     },
   };
   const cityOf = (f) => f.drafting_input?.cc_context?.city?.name || f.golden.fixture_id;
   const caseType = (c) =>
-    c.expected_outcome === "clarification" ? "Ask for a missing value"
+    c.expected_outcome === "question_card" ? "Suggested answers"
+    : c.expected_outcome === "clarification" ? "Ask for a missing value"
     : c.allowed_chapters.length > 1 ? "Propagate across chapters"
     : /shorten|skróć/i.test(c.id + " " + c.instruction) ? "Rewrite, keep facts"
     : "Fill a gap";
-  const CASE_TYPES = ["Fill a gap", "Propagate across chapters", "Rewrite, keep facts", "Ask for a missing value"];
+  const CASE_TYPES = ["Fill a gap", "Propagate across chapters", "Rewrite, keep facts", "Ask for a missing value", "Suggested answers"];
 
   function listBlock(title, items) {
     return `<div class="card"><div class="eyebrow">${esc(title)}</div><ul class="method">${items.map((x) => `<li>${x}</li>`).join("")}</ul></div>`;
@@ -1180,6 +1191,7 @@
       plainTile(pct(m.expected_change_rate), "Expected changes applied"),
       plainTile(pct(m.preservation_rate), "Protected statements preserved"),
       plainTile(`${m.unsupported_changes ?? 0} · ${m.collateral_edits ?? 0}`, "Unauthorized changes · collateral edits"),
+      ...(m.unsupported_answers == null ? [] : [plainTile(m.unsupported_answers, "Unsupported answers")]),
     ]) : "";
     return `${head}
       ${jump(fid, stage, cases.map((c) => [`case-${c.id}`, c.id]))}
@@ -1192,6 +1204,19 @@
           <div class="spread"><div><div class="eyebrow">edit case · ${esc(c.id)}</div><div class="instruction">“${esc(c.instruction)}”</div></div>
             <div style="text-align:right">${badge(ch.outcome_ok ? "pass" : "fail", `expected ${c.expected_outcome}, got ${r.outcome || "–"}`)}</div></div>
           ${r.clarification ? `<div class="callout" style="margin-top:10px"><b>Pipeline asked:</b> ${esc(r.clarification)}</div>` : ""}
+          ${(r.chat_turns || []).map((turn, index) => {
+            const prefix = `answer/${c.id}/${index + 1}`;
+            const answer = (id, text) => {
+              const verdict = chJ[id];
+              return `<div class="item"><span class="stmt">${esc(text)}</span>${verdict ? badge(verdict.verdict) + `<div class="reason">${esc(verdict.reason)}</div>` : ""}
+                ${verdict?.evidence?.length ? quotes(f, stage, verdict.evidence, "gold") : ""}</div>`;
+            };
+            return `<div class="colhead">Chat turn ${index + 1}${turn.card ? ` · ${esc(turn.card.on_answer)}` : ""}</div>
+              ${turn.text.trim() ? answer(`${prefix}/message`, turn.text) : ""}
+              ${(turn.card?.options || []).map((option, i) => answer(`${prefix}/${i + 1}`, option)).join("")}
+              ${index === 0 && r.picked_option ? `<div class="callout">Picked option · ${esc(r.picked_option)}</div>` : ""}`;
+          }).join("")}
+          ${(ch.contract_failures || []).map((failure) => `<div class="callout">${esc(failure)}</div>`).join("")}
           <div class="row small" style="margin-top:10px">
             ${(ch.changed_chapters || []).map((x) => `<span class="pill">changed: ${esc(chapterTitle(f, x))}</span>`).join("") || `<span class="pill">no chapter changed</span>`}
             ${(ch.collateral_chapters || []).map((x) => badge("fail", `outside the request: ${chapterTitle(f, x)}`)).join("")}
@@ -1199,7 +1224,7 @@
           </div>
           ${v ? `
           <div class="cols">
-            <div><div class="colhead">Expected changes</div>${v.expected_changes.map((x) => `<div class="item" style="margin-top:6px">${badge(x.verdict)} <span class="stmt">${esc(c.expected_changes.find((e) => e.id === x.id)?.statement || x.id)}</span>${x.output_refs.length ? `<div style="margin-top:6px">${quotes(f, stage, x.output_refs, "out")}</div>` : ""}<div class="reason">${esc(x.reason)}</div></div>`).join("") || `<div class="empty">None expected.</div>`}</div>
+            <div><div class="colhead">${c.expected_outcome === "question_card" ? "Answer requirements" : "Expected changes"}</div>${v.expected_changes.map((x) => `<div class="item" style="margin-top:6px">${badge(x.verdict)} <span class="stmt">${esc(c.expected_changes.find((e) => e.id === x.id)?.statement || x.id)}</span>${x.output_refs.length ? `<div style="margin-top:6px">${quotes(f, stage, x.output_refs, "out")}</div>` : ""}<div class="reason">${esc(x.reason)}</div></div>`).join("") || `<div class="empty">None expected.</div>`}</div>
             <div><div class="colhead">Must survive</div>${v.preserved.map((x) => `<div class="item" style="margin-top:6px">${badge(x.verdict)} <span class="stmt">${esc(c.must_preserve.find((e) => e.id === x.id)?.statement || x.id)}</span>${x.output_refs.length ? `<div style="margin-top:6px">${quotes(f, stage, x.output_refs, "gold")}</div>` : ""}<div class="reason">${esc(x.reason)}</div></div>`).join("") || `<div class="empty">–</div>`}</div>
           </div>` : ""}
           ${(r.changes || []).length ? `<div class="colhead" style="margin-top:14px">Applied changes (${r.changes.length})</div>
@@ -1208,7 +1233,8 @@
             const verdict = chJ[x.unit_id];
             return `<div class="diff" id="cg-${esc(c.id)}-${n}"><div class="spread"><div class="colhead">${esc(chapterTitle(f, x.chapter_ref))} · ${esc(x.kind)}${x.user_input_quote ? " · user input" : ""}${x.source_refs.length ? ` · source ${esc(x.source_refs.join(","))}` : ""}</div>${verdict ? badge(verdict.verdict) : ""}</div>
               <del>${esc(x.before)}</del><ins>${esc(x.after) || "<i>(deleted)</i>"}</ins>
-              ${verdict ? `<div class="reason">${esc(verdict.reason)}</div>` : ""}</div>`;
+              ${verdict ? `<div class="reason">${esc(verdict.reason)}</div>` : ""}
+              ${verdict?.evidence?.length ? quotes(f, stage, verdict.evidence, "gold") : ""}</div>`;
           }).join("")}` : ""}
           ${v?.contradictions?.length ? `<div class="colhead" style="margin-top:14px">Inconsistent after the edit</div>${v.contradictions.map(contradiction(f, stage)).join("")}` : ""}
           ${Object.entries(r.edited_chapters || {}).map(([ref, body]) => `<details style="margin-top:12px" id="ed-${esc(c.id)}-${esc(ref)}"><summary>Edited chapter · ${esc(chapterTitle(f, ref))}</summary>

@@ -25,6 +25,7 @@ import {
   renderReport,
   runCostUsd,
   rescoredRunFlags,
+  unverifiedSourceAttempts,
   reserveRunFolder,
   runFolderName,
   writeRunArtifact,
@@ -34,6 +35,7 @@ import {
   type RunSummary,
 } from "@/backend/ingestion-benchmark/report";
 import type { ReadEnvelope } from "@/backend/ingestion-benchmark/pipelines/rows-dir";
+import { publishableSummary } from "@/backend/ingestion-benchmark/redact";
 import type {
   BlockSummary,
   CaseVerdict,
@@ -847,6 +849,47 @@ describe("precomputed pipeline report", () => {
 
   it("has no pipeline notes section for a built-in run", () => {
     expect(render(summary([result("A", 0.8)]))).not.toContain("Pipeline notes");
+  });
+
+  it("flags attempts whose source PDF was not verified in the report, INDEX and results", () => {
+    const s = pipelineSummary();
+    const first = s.results[0].runs[0];
+    s.results[0].runs = [
+      { ...first, pipeline: pipelineAttempt({ sourcePdf: "unverified" }) },
+      {
+        ...first,
+        run: 2,
+        pipeline: pipelineAttempt({ sourcePdf: "verified" }),
+      },
+      // A run written before the check has no sourcePdf: also unverified.
+      { ...first, run: 3, pipeline: pipelineAttempt() },
+    ];
+    expect(unverifiedSourceAttempts(s)).toEqual([
+      { id: "A", attempts: [1, 3] },
+    ]);
+    const report = render(s);
+    expect(report).toContain(
+      "**SOURCE PDF NOT VERIFIED**: these envelopes have no source_pdf_sha256, so their rows may come from a different PDF than the one scored: A (attempt 1, 3).",
+    );
+    const notes = report.slice(report.indexOf("## Pipeline notes"));
+    expect(notes).toContain("| Cost | Source PDF |");
+    expect(notes).toContain("(envelope) | unverified |");
+    expect(notes).toContain("(envelope) | verified |");
+    expect(renderIndexLine(s, [block({})], "f")).toContain(
+      "(source unverified)",
+    );
+    const published = publishableSummary(s);
+    expect(published.results[0].runs[0].pipeline?.sourcePdf).toBe("unverified");
+    expect(published.results[0].runs[1].pipeline?.sourcePdf).toBe("verified");
+  });
+
+  it("adds no source note when every attempt was verified", () => {
+    const s = pipelineSummary();
+    s.results[0].runs[0].pipeline = pipelineAttempt({ sourcePdf: "verified" });
+    expect(render(s)).not.toContain("SOURCE PDF NOT VERIFIED");
+    expect(renderIndexLine(s, [block({})], "f")).not.toContain(
+      "source unverified",
+    );
   });
 
   it("words the incomplete text as no envelope for a precomputed run", () => {

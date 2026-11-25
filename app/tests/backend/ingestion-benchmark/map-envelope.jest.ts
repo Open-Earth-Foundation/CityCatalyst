@@ -44,6 +44,7 @@ const envelope = (
     version: null,
   },
   costUsd: null,
+  sourcePdfSha256: null,
   ...over,
 });
 

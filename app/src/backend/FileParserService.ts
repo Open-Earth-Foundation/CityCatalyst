@@ -39,8 +39,8 @@ export interface ParsedFileData {
 export default class FileParserService {
   /**
    * Parse an XLSX/XLSM file from a buffer.
-   * CIRIS workbooks only materialize eCRF_3 (+ Report/Overview) so ExcelJS
-   * does not expand the full ~53-sheet template into memory.
+   * CIRIS workbooks only materialize eCRF_3, eCRF_1, and Report/Overview so
+   * ExcelJS does not expand the full ~53-sheet template into memory.
    */
   public static async parseXLSX(buffer: Buffer): Promise<ParsedFileData> {
     let loadBuffer = buffer;
@@ -115,18 +115,21 @@ export default class FileParserService {
       // CIRIS Report/Overview sheets have sparse/empty header rows; still keep
       // numeric total cells under stable Column N keys. Do not invent headers
       // for eCRF_3 (would surface as unmapped Column N in the mapping UI).
+      const isEcrf1 = /^ecrf_1$/i.test(worksheet.name);
       const synthesizeMissingHeaders =
         !sheetNameLooksLikeEcrf3(worksheet.name) &&
         (/^report$/i.test(worksheet.name) ||
-          /^results_overview$/i.test(worksheet.name));
+          /^results_overview$/i.test(worksheet.name) ||
+          isEcrf1);
       if (synthesizeMissingHeaders) {
         for (let col = 1; col <= maxCol; col++) {
           if (!headers[col]) headers[col] = `Column ${col}`;
         }
       }
 
-      // Data starts at Excel row 2 (row 1 is the header; exceljs is 1-based).
-      for (let rowNum = 2; rowNum <= lastUsedRow; rowNum++) {
+      // eCRF_1 is a label/value form; row 1 is data, not column names.
+      const firstDataRow = isEcrf1 ? 1 : 2;
+      for (let rowNum = firstDataRow; rowNum <= lastUsedRow; rowNum++) {
         const row = worksheet.getRow(rowNum);
         const rowData: Record<string, string | number | null> = {};
 

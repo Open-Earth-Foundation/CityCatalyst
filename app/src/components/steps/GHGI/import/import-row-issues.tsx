@@ -172,7 +172,7 @@ export default function ImportRowIssues({
               {data.omittedFromTotalTonnes ? (
                 <span data-testid="import-omitted-tonnes">
                   {t("import-rows-omitted-tonnes", {
-                    tonnes: data.omittedFromTotalTonnes.toLocaleString(),
+                    tonnes: data.omittedFromTotalTonnes.toLocaleString(lng),
                   })}
                 </span>
               ) : null}

@@ -3,7 +3,17 @@ import {
   resolveGpcRefFromLabels,
   refForScope,
   resolveGpcRefNo,
+  scopeFromLabel,
 } from "@/util/GHGI/gpc-ref-resolver";
+
+describe("scopeFromLabel", () => {
+  it("reads CIRIS outside city boundary as scope 3", () => {
+    expect(scopeFromLabel("Outside city boundary")).toBe(3);
+    expect(scopeFromLabel("Emissions occurring outside the city boundary")).toBe(
+      3,
+    );
+  });
+});
 
 describe("resolveGpcRefNo scope", () => {
   it("stores indirect grid electricity as scope 2", () => {

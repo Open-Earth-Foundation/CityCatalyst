@@ -88,6 +88,8 @@ import ECRFImportService from "@/backend/ECRFImportService";
 import FormatAdapterService from "@/backend/FormatAdapterService";
 import {
   extractCirisWorkbookTotalTonnes,
+  extractCirisCityContext,
+  extractCirisDifferingSectors,
   sumCirisEcrfImportedTonnes,
 } from "@/backend/ciris-workbook";
 import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
@@ -325,6 +327,8 @@ async function runUploadProcessingInBackground(
           importedSum: number;
           yearAssumed: boolean;
           targetYear: number | null;
+          source?: "ciris";
+          differingSectors?: string[];
         }
       | undefined;
     if (isCIRIS) {
@@ -333,31 +337,41 @@ async function runUploadProcessingInBackground(
         importResult.rows,
         isOmittedGPCReference,
       );
-      if (reportTotal != null && reportTotal > 0) {
-        extractionSummary = {
-          reportedTotals: [
-            {
-              label: "CIRIS Report total",
-              value: reportTotal,
-              year: null,
-              scope: null,
-              sector: null,
-              subsector: null,
-              level: "total",
-            },
-          ],
-          droppedRows: {},
-          importedSum,
-          yearAssumed: false,
-          targetYear: importResult.inferredYearFromFile ?? null,
-        };
-        const deviation =
-          Math.abs(importedSum - reportTotal) / Math.abs(reportTotal);
-        if (deviation > 0.01) {
-          cirisWarnings.push(
-            `eCRF_3 import total (${importedSum.toLocaleString()} tCO2e) differs from the CIRIS Report total (${reportTotal.toLocaleString()} tCO2e)`,
-          );
-        }
+      const differingSectors = extractCirisDifferingSectors(
+        parsedData.sheets,
+        importResult.rows,
+        isOmittedGPCReference,
+      );
+      extractionSummary = {
+        reportedTotals:
+          reportTotal != null && reportTotal > 0
+            ? [
+                {
+                  label: "CIRIS Report total",
+                  value: reportTotal,
+                  year: null,
+                  scope: null,
+                  sector: null,
+                  subsector: null,
+                  level: "total" as const,
+                },
+              ]
+            : [],
+        droppedRows: {},
+        importedSum,
+        yearAssumed: false,
+        targetYear: importResult.inferredYearFromFile ?? null,
+        source: "ciris",
+        ...(differingSectors.length > 0 ? { differingSectors } : {}),
+      };
+      if (
+        reportTotal != null &&
+        reportTotal > 0 &&
+        Math.abs(importedSum - reportTotal) / Math.abs(reportTotal) > 0.01
+      ) {
+        cirisWarnings.push(
+          `eCRF_3 import total (${importedSum.toLocaleString()} tCO2e) differs from the CIRIS Report total (${reportTotal.toLocaleString()} tCO2e)`,
+        );
       }
     }
 
@@ -393,6 +407,9 @@ async function runUploadProcessingInBackground(
           hasWarnings: !!row.warnings && row.warnings.length > 0,
         })),
         ...(extractionSummary ? { extractionSummary } : {}),
+        ...(isCIRIS
+          ? { cityContext: extractCirisCityContext(parsedData.sheets) }
+          : {}),
       },
       lastUpdated: new Date(),
     });

@@ -37,6 +37,7 @@ const CIRIS_SHEET_INDICATORS =
 /** Sheets loaded for CIRIS Path A + Report reconciliation. Prefer exact eCRF_3. */
 export const CIRIS_PARSE_SHEET_NAMES = [
   "eCRF_3",
+  "eCRF_1",
   "Report",
   "Results_Overview",
 ] as const;
@@ -78,7 +79,11 @@ export function cirisSheetsToParse(sheetNames: string[]): string[] {
   const keep = new Set<string>();
   if (ecrf3) keep.add(ecrf3);
   for (const name of sheetNames) {
-    if (/^report$/i.test(name) || /^results_overview$/i.test(name)) {
+    if (
+      /^ecrf_1$/i.test(name) ||
+      /^report$/i.test(name) ||
+      /^results_overview$/i.test(name)
+    ) {
       keep.add(name);
     }
   }
@@ -406,4 +411,149 @@ export function sumCirisEcrfImportedTonnes(
     if (value !== 0) sum += value;
   }
   return sum;
+}
+
+export type CirisCityContext = {
+  population?: number;
+  populationYear?: number;
+  landAreaKm2?: number;
+};
+
+function rowLabelAndNumber(
+  row: Record<string, string | number | null>,
+): { label: string; value?: number } {
+  const texts: string[] = [];
+  let value: number | undefined;
+  for (const cell of Object.values(row)) {
+    const parsed = numericCell(cell);
+    if (parsed != null) {
+      value = parsed;
+      continue;
+    }
+    const text = String(cell ?? "").trim();
+    if (text) texts.push(text);
+  }
+  return { label: texts.join(" ").toLowerCase(), value };
+}
+
+/** Population, inventory year, and land area from CIRIS eCRF_1. */
+export function extractCirisCityContext(
+  sheets: Array<{ name: string; rows: Record<string, string | number | null>[] }>,
+): CirisCityContext | undefined {
+  const sheet = sheets.find((item) => /^ecrf_1$/i.test(item.name));
+  if (!sheet) return undefined;
+  const context: CirisCityContext = {};
+  for (const row of sheet.rows) {
+    const { label, value } = rowLabelAndNumber(row);
+    if (value == null) continue;
+    if (/resident population within city boundary/i.test(label)) {
+      context.population = value;
+    } else if (/land area \(km2\) within city boundary/i.test(label)) {
+      context.landAreaKm2 = value;
+    } else if (/^boundary inventory year$|^inventory year$/.test(label)) {
+      if (value >= 1900 && value <= 2100) context.populationYear = value;
+    }
+  }
+  if (
+    context.population == null &&
+    context.landAreaKm2 == null &&
+    context.populationYear == null
+  ) {
+    return undefined;
+  }
+  return context;
+}
+
+const CIRIS_SECTOR_REPORT_LABELS: Array<{
+  prefix: string;
+  display: string;
+  match: RegExp;
+}> = [
+  {
+    prefix: "I",
+    display: "I (Stationary Energy)",
+    match: /stationary energy/i,
+  },
+  { prefix: "II", display: "II (Transportation)", match: /transport/i },
+  { prefix: "III", display: "III (Waste)", match: /\bwaste\b/i },
+  {
+    prefix: "IV",
+    display: "IV (IPPU)",
+    match: /ippu|industrial processes?\s*(and|&)?\s*product/i,
+  },
+  {
+    prefix: "V",
+    display: "V (AFOLU)",
+    match: /\bafolu\b|agriculture,?\s*forestry/i,
+  },
+];
+
+function gpcSectorPrefix(gpcRefNo?: string): string | undefined {
+  const match = gpcRefNo?.trim().match(/^([IVX]+)\b/i);
+  return match?.[1]?.toUpperCase();
+}
+
+/**
+ * Report/Overview sector totals that disagree with eCRF_3 (e.g. IPPU valued
+ * on the Report while eCRF_3 is NO).
+ */
+export function extractCirisDifferingSectors(
+  sheets: Array<{ name: string; rows: Record<string, string | number | null>[] }>,
+  importedRows: Array<{
+    gpcRefNo?: string;
+    totalCO2e?: number;
+    co2?: number;
+    ch4?: number;
+    n2o?: number;
+    errors?: string[];
+  }>,
+  isOmitted: (gpcRefNo?: string | null) => boolean,
+): string[] {
+  const importedByPrefix = new Map<string, number>();
+  for (const row of importedRows) {
+    if (row.errors && row.errors.length > 0) continue;
+    if (isOmitted(row.gpcRefNo)) continue;
+    const prefix = gpcSectorPrefix(row.gpcRefNo);
+    if (!prefix) continue;
+    const value =
+      typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)
+        ? row.totalCO2e
+        : [row.co2, row.ch4, row.n2o].reduce<number>(
+            (acc, part) =>
+              acc +
+              (typeof part === "number" && Number.isFinite(part) ? part : 0),
+            0,
+          );
+    importedByPrefix.set(prefix, (importedByPrefix.get(prefix) ?? 0) + value);
+  }
+
+  const reportSheets = sheets.filter(
+    (sheet) =>
+      /^report$/i.test(sheet.name) || /^results_overview$/i.test(sheet.name),
+  );
+  const reportByPrefix = new Map<string, number>();
+  for (const sheet of reportSheets) {
+    for (const row of sheet.rows) {
+      const { label, value } = rowLabelAndNumber(row);
+      if (value == null || value < 10_000) continue;
+      for (const sector of CIRIS_SECTOR_REPORT_LABELS) {
+        if (!sector.match.test(label)) continue;
+        const previous = reportByPrefix.get(sector.prefix);
+        reportByPrefix.set(
+          sector.prefix,
+          previous == null ? value : Math.max(previous, value),
+        );
+      }
+    }
+  }
+
+  const differing: string[] = [];
+  for (const sector of CIRIS_SECTOR_REPORT_LABELS) {
+    const reported = reportByPrefix.get(sector.prefix);
+    if (reported == null) continue;
+    const imported = importedByPrefix.get(sector.prefix) ?? 0;
+    const deviation = Math.abs(imported - reported) / Math.abs(reported);
+    if (deviation > 0.01) differing.push(sector.display);
+  }
+  return differing;
 }

@@ -27,6 +27,7 @@ import {
 
 interface ReviewConfirmStepProps {
   t: TFunction;
+  lng?: string;
   cityId: string;
   cityName?: string;
   inventoryId: string;
@@ -37,6 +38,7 @@ interface ReviewConfirmStepProps {
 
 export default function ReviewConfirmStep({
   t,
+  lng = "en",
   cityId,
   cityName,
   importedFileId,
@@ -120,6 +122,15 @@ export default function ReviewConfirmStep({
   ].filter((warning, index, all) => all.indexOf(warning) === index);
 
   const extractionSummary = data?.mappingConfiguration?.extractionSummary;
+  const cityContext = (
+    data?.mappingConfiguration as
+      | {
+          cityContext?: { population?: number; landAreaKm2?: number };
+        }
+      | undefined
+  )?.cityContext;
+  const formatTonnes = (value: number) =>
+    Math.round(value).toLocaleString(lng);
   const {
     reconciliation,
     reconciledPages,
@@ -241,8 +252,28 @@ export default function ReviewConfirmStep({
               </VStack>
             </Box>
           </HStack>
+          {extractionSummary?.importedSum != null && (
+            <HStack w="174px" alignItems="flex-start">
+              <VStack alignItems="flex-start" gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">
+                  {formatTonnes(extractionSummary.importedSum)}
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("import-total-to-import")}
+                </Text>
+              </VStack>
+            </HStack>
+          )}
         </HStack>
       </VStack>
+      {cityContext?.population != null && cityContext.landAreaKm2 != null && (
+        <Text fontSize="body.sm" color="content.secondary" mb={4}>
+          {t("import-ciris-city-data", {
+            population: cityContext.population.toLocaleString(lng),
+            area: cityContext.landAreaKm2.toLocaleString(lng),
+          })}
+        </Text>
+      )}
       {reconciliation?.mismatch && (
         <Box
           bg="sentiment.warningOverlay"
@@ -271,15 +302,22 @@ export default function ReviewConfirmStep({
               {t("import-reconciliation-title")}
             </Text>
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
-              {t("import-reconciliation-detail", {
-                imported: Math.round(
-                  reconciliation.importedSum,
-                ).toLocaleString(),
-                reported: Math.round(
-                  reconciliation.reportedTotal,
-                ).toLocaleString(),
-                deviation: (reconciliation.deviation * 100).toFixed(1),
-              })}
+              {extractionSummary?.source === "ciris"
+                ? t("import-ciris-report-mismatch", {
+                    imported: formatTonnes(reconciliation.importedSum),
+                    reported: formatTonnes(reconciliation.reportedTotal),
+                    sectorDetail: extractionSummary.differingSectors?.length
+                      ? t("import-ciris-report-mismatch-sectors", {
+                          sectors:
+                            extractionSummary.differingSectors.join(", "),
+                        })
+                      : "",
+                  })
+                : t("import-reconciliation-detail", {
+                    imported: formatTonnes(reconciliation.importedSum),
+                    reported: formatTonnes(reconciliation.reportedTotal),
+                    deviation: (reconciliation.deviation * 100).toFixed(1),
+                  })}
             </Text>
           </Box>
         </Box>
@@ -314,12 +352,10 @@ export default function ReviewConfirmStep({
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
               {removalsWarning.kind === "orphan"
                 ? t("import-removals-orphan", {
-                    removals: Math.round(
-                      Math.abs(removalsWarning.removals),
-                    ).toLocaleString(),
+                    removals: formatTonnes(Math.abs(removalsWarning.removals)),
                   })
                 : t("import-removals-gross-only", {
-                    net: Math.round(removalsWarning.net).toLocaleString(),
+                    net: formatTonnes(removalsWarning.net),
                   })}
             </Text>
           </Box>

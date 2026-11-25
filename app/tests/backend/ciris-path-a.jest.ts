@@ -5,6 +5,8 @@ import { describe, expect, it } from "@jest/globals";
 import {
   cirisMissingEcrf3,
   cirisSheetsToParse,
+  extractCirisCityContext,
+  extractCirisDifferingSectors,
   extractCirisWorkbookTotalTonnes,
   isCirisIgnorableHeader,
   isCirisSheetList,
@@ -60,6 +62,51 @@ describe("CC-1217 CIRIS Path A helpers", () => {
         validationResults: { isCIRIS: true },
       }),
     ).toBe(true);
+  });
+
+  it("reads eCRF_1 population and names IPPU when the Report disagrees", () => {
+    expect(
+      extractCirisCityContext([
+        {
+          name: "eCRF_1",
+          rows: [
+            {
+              a: "Boundary",
+              b: "Resident population within city boundary",
+              c: 706000,
+            },
+            {
+              a: "Boundary",
+              b: "Land area (km2) within city boundary",
+              c: 125,
+            },
+            { a: "Boundary", b: "Inventory year", c: 2023 },
+          ],
+        },
+      ]),
+    ).toEqual({
+      population: 706000,
+      landAreaKm2: 125,
+      populationYear: 2023,
+    });
+    expect(
+      extractCirisDifferingSectors(
+        [
+          {
+            name: "Report",
+            rows: [
+              { sector: "Industrial processes and product use (IPPU)", t: 1_400_000 },
+              { sector: "Stationary Energy", t: 3_000_000 },
+            ],
+          },
+        ],
+        [
+          { gpcRefNo: "I.1.1", totalCO2e: 3_000_000 },
+          { gpcRefNo: "IV.1", totalCO2e: undefined },
+        ],
+        () => false,
+      ),
+    ).toEqual(["IV (IPPU)"]);
   });
 
   it("rejects CIRIS-like packs without eCRF_3", () => {
@@ -127,12 +174,18 @@ describe("CC-1217 full CIRIS workbooks (local Downloads)", () => {
     expect(names.length).toBeGreaterThan(40);
     expect(isCirisSheetList(names)).toBe(true);
     expect(cirisSheetsToParse(names)).toEqual(
-      expect.arrayContaining(["eCRF_3", "Report"]),
+      expect.arrayContaining(["eCRF_3", "eCRF_1", "Report"]),
     );
     const parsed = await FileParserService.parseXLSX(buffer);
     expect(parsed.isCIRIS).toBe(true);
     expect(parsed.sheets.map((s) => s.name)).toEqual(
-      expect.arrayContaining(["eCRF_3", "Report"]),
+      expect.arrayContaining(["eCRF_3", "eCRF_1", "Report"]),
+    );
+    expect(extractCirisCityContext(parsed.sheets)).toEqual(
+      expect.objectContaining({
+        population: 706000,
+        landAreaKm2: 125,
+      }),
     );
     expect(parsed.sheets.length).toBeLessThanOrEqual(5);
     expect(parsed.primarySheet?.name).toBe("eCRF_3");

@@ -89,6 +89,10 @@ export function scopeFromLabel(scopeLabel?: string | null): number | undefined {
   if (scopeLabel == null) return undefined;
   const label = scopeLabel.trim().toLowerCase();
   if (!label) return undefined;
+  // CIRIS uses this instead of "Scope 3"; check before "direct"/"indirect".
+  if (/outside\s+(the\s+)?city\s+boundary/i.test(label)) {
+    return 3;
+  }
   if (label === "2" || label === "scope 2" || label.includes("indirect")) {
     return 2;
   }

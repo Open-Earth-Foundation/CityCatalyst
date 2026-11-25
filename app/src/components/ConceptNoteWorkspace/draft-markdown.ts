@@ -1,9 +1,22 @@
 export const MISSING_INFORMATION_LINK = "#cnb-missing-information";
 
-const MISSING_INFORMATION_PATTERN_SOURCE = String.raw`\[(Information needed:\s*[^\]\r\n]+)\]`;
+// Mirrors INFORMATION_NEEDED_PATTERN and information_marker_key in Climate
+// Advisor (service/app/utils/cnb_information_markers.py): both sides must pair
+// the same marker with the same gap record. A marker may wrap over lines.
+const MISSING_INFORMATION_PATTERN_SOURCE = String.raw`\[(Information needed:\s*[^\]]+)\]`;
 
 function missingInformationPattern(): RegExp {
   return new RegExp(MISSING_INFORMATION_PATTERN_SOURCE, "gi");
+}
+
+/**
+ * Pairing key for a marker, its message or a gap question: the lowercased runs
+ * of letters and digits after any "Information needed:" prefix, so Markdown
+ * emphasis, quotes, punctuation, spacing and line breaks never split a pair.
+ */
+export function informationMarkerKey(value: string): string {
+  const question = value.replace(/^\s*\[?\s*information needed:/i, "");
+  return (question.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).join(" ");
 }
 
 export function missingInformationRanges(markdown: string) {

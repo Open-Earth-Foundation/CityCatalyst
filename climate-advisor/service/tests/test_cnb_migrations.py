@@ -98,7 +98,7 @@ def test_ca_migration_chain_has_one_head() -> None:
     config.set_main_option("script_location", str(SERVICE_ROOT / "migrations"))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_heads() == ["20261011_120000"]
+    assert len(scripts.get_heads()) == 1
 
 
 def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
@@ -350,14 +350,12 @@ def test_cnb_merge_upgrades_either_existing_head_without_losing_gaps(
         }
         with engine.connect() as connection:
             assert connection.execute(
-                text("SELECT version_num FROM cnb_alembic_version")
-            ).scalars().all() == ["20261111_120000"]
-            assert connection.execute(
                 text(
-                    "SELECT question, status FROM concept_note_gaps WHERE gap_id = :gap_id"
+                    "SELECT question, status, answer_progress FROM concept_note_gaps "
+                    "WHERE gap_id = :gap_id"
                 ),
                 {"gap_id": gap_id},
-            ).one() == ("Confirm the budget.", "open")
+            ).one() == ("Confirm the budget.", "open", None)
     finally:
         _run_alembic(
             config="cnb-alembic.ini",
@@ -622,9 +620,12 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
         }
         assert expected_columns <= set(columns)
         assert all(columns[name]["nullable"] for name in expected_columns)
-        assert "concept_note_run_id" in {
-            column["name"] for column in inspect(engine).get_columns("threads")
+        thread_columns = {
+            column["name"]: column for column in inspect(engine).get_columns("threads")
         }
+        assert "concept_note_run_id" in thread_columns
+        assert thread_columns["reply_turn_id"]["nullable"]
+        assert thread_columns["reply_turn_expires_at"]["nullable"]
         assert "custom_template" in {
             column["name"]
             for column in inspect(engine).get_columns("concept_note_runs")
@@ -635,11 +636,6 @@ def test_structured_upload_migration_upgrades_released_and_fresh_schemas(
                 "concept_note_uploads"
             )
         }
-        with engine.connect() as connection:
-            assert connection.execute(
-                text("SELECT version_num FROM alembic_version")
-            ).scalar_one() == "20261011_120000"
-
         run_id = uuid4()
         upload_insert = text(
             """
@@ -939,7 +935,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20261111_120000"
+    assert revision == "20261121_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

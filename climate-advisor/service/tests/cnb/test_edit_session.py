@@ -1,7 +1,6 @@
 """Exercise agent selections against exact snapshots and protected draft content."""
 
 from dataclasses import replace
-from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -11,20 +10,10 @@ from app.models.cnb.concept_note_edits import DraftReplacement, EditProposalRequ
 from app.persistence.concept_notes.edits import replace_anchors
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_session import DraftEditSession
-
-
-def chapter(body: str, position: int = 0) -> WorkspaceChapterSnapshot:
-    return WorkspaceChapterSnapshot(
-        chapter_id=uuid4(),
-        chapter_ref=None,
-        title="Summary",
-        position=position,
-        status="needs_review",
-        required=True,
-        user_locked=False,
-        body_markdown=body,
-        revision_number=1,
-    )
+from tests.cnb.gap_edit_helpers import (
+    chapter_snapshot as chapter,
+    gap_snapshot as gap,
+)
 
 
 def session(
@@ -49,6 +38,18 @@ def replacement(search_id: str, text: str = "Cracow", **kwargs) -> DraftReplacem
         group_id="rename",
         **kwargs,
     )
+
+
+def replacement_for(search_id: str, text: str, **kwargs) -> DraftReplacement:
+    """A factual replacement for one gap-marker search, with exact provenance."""
+    values = {"kind": "factual", "group_id": "gap", **kwargs}
+    return DraftReplacement(search_id=search_id, replacement=text, **values)
+
+
+def propose_one(edits: DraftEditSession, search: str, text: str, **kwargs) -> dict:
+    """Search the draft for ``search`` and propose one factual replacement for it."""
+    found = edits.search_draft(search)
+    return edits.propose_edits([replacement_for(found["search_id"], text, **kwargs)])
 
 
 def test_ambiguous_replacement_can_be_repaired_using_an_exact_match_id():
@@ -116,7 +117,7 @@ def test_invalid_correction_clears_previous_candidate_and_overlaps_fail_early():
 
 def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
     current = chapter("Budget: [Information needed: confirmed budget]")
-    current.gaps.append(SimpleNamespace(question="confirmed budget", state="open"))
+    current.gaps.append(gap("confirmed budget"))
     edits = session([current], "The confirmed budget is EUR 10 million.")
     partial = edits.search_draft("confirmed budget")
     assert (
@@ -130,6 +131,25 @@ def test_partial_marker_edit_is_rejected_but_complete_gap_fill_is_supported():
         [
             replacement(
                 whole["search_id"], "EUR 10 million", user_input_quote="EUR 10 million"
+            )
+        ]
+    )["ok"]
+    assert (
+        replace_anchors(current.body_markdown, edits.plan.changes)
+        == "Budget: EUR 10 million"
+    )
+
+
+def test_a_reformatted_or_wrapped_marker_is_filled_through_its_gap_record():
+    marker = "[Information needed: **What is the\nconfirmed budget**]"
+    current = chapter(f"Budget: {marker}")
+    current.gaps.append(gap("What is the confirmed budget?"))
+    edits = session([current], "The confirmed budget is EUR 10 million.")
+    found = edits.search_draft(marker)
+    assert edits.propose_edits(
+        [
+            replacement(
+                found["search_id"], "EUR 10 million", user_input_quote="EUR 10 million"
             )
         ]
     )["ok"]
@@ -183,3 +203,157 @@ def test_search_ids_and_match_ids_cannot_be_reused_across_other_searches():
         == "invalid_selection"
     )
     assert edits.propose_edits([replacement("invented")])["code"] == "invalid_search"
+
+
+GAP_ASK = "[Information needed: Confirm the instrument and amount.]"
+GAP_REMAINDER = "[Information needed: What amount will the city contribute?]"
+FUNDS = "The city will use stormwater utility funds."
+
+
+@pytest.mark.parametrize(
+    "suffix,search_suffix,replacement,other_gap",
+    [
+        ("", "", GAP_REMAINDER, None),  # No fact was added.
+        (
+            " Other [Information needed: Who signs?]",
+            " Other",
+            f"{FUNDS} {GAP_REMAINDER} Other",
+            None,
+        ),
+        ("", "", f"{FUNDS} [Information needed: Who signs?]", "Who signs?"),
+        ("", "", f"{FUNDS} Information needed: What amount?]", None),
+    ],
+)
+def test_narrowing_rejects_unanchored_or_invalid_remainders(
+    suffix, search_suffix, replacement, other_gap
+):
+    current = chapter(f"Finance: {GAP_ASK}{suffix}")
+    current.gaps.append(gap("Confirm the instrument and amount."))
+    if other_gap:
+        current.gaps.append(gap(other_gap))
+    edits = session([current], FUNDS)
+    result = propose_one(
+        edits, GAP_ASK + search_suffix, replacement, user_input_quote=FUNDS
+    )
+    assert result["code"] == "protected_markers"
+    assert edits.plan is None
+
+
+def test_a_plain_edit_may_not_introduce_a_broken_or_new_marker() -> None:
+    """Outside a gap transition, no replacement may add a marker or a broken prefix."""
+    current = chapter("Finance: the budget is open.")
+    edits = session([current], "The budget is open.")
+    broken = propose_one(
+        edits, "Finance:", "Finance: [Information needed: budget", kind="wording"
+    )
+    assert not broken["ok"] and broken["code"] == "marker_changed"
+    assert edits.plan is None
+
+
+def test_locked_target_marker_is_never_a_gap_transition() -> None:
+    current = replace(
+        chapter("Finance: [Information needed: Confirm the amount.]"),
+        user_locked=True,
+    )
+    current.gaps.append(gap("Confirm the amount."))
+    edits = session([current], "The amount is EUR 2 million.")
+    result = propose_one(
+        edits,
+        "[Information needed: Confirm the amount.]",
+        "EUR 2 million",
+        user_input_quote="EUR 2 million",
+    )
+    assert result["code"] == "locked_chapters"
+
+
+def test_same_gap_marker_duplicates_are_an_atomic_group() -> None:
+    marker = "[Information needed: Who signs?]"
+    current = chapter(f"A {marker} and B {marker}")
+    current.gaps.append(gap("Who signs?"))
+    edits = session([current], "The Mayor signs.")
+    found = edits.search_draft(marker)
+    partial = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                "The Mayor signs.",
+                match_ids=[found["matches"][0]["match_id"]],
+                user_input_quote="The Mayor signs.",
+            )
+        ]
+    )
+    assert not partial["ok"] and partial["code"] == "marker_changed"
+    complete = edits.propose_edits(
+        [
+            replacement_for(
+                found["search_id"],
+                "The Mayor signs.",
+                replace_all=True,
+                user_input_quote="The Mayor signs.",
+            )
+        ]
+    )
+    assert complete["ok"], complete
+    assert replace_anchors(current.body_markdown, edits.plan.changes) == (
+        "A The Mayor signs. and B The Mayor signs."
+    )
+
+
+def test_saved_gap_quote_rejects_cross_gap_then_accepts_valid_same_gap_retry() -> None:
+    """A saved answer from another gap is refused whole, then the same-gap edit lands."""
+    location = "[Information needed: Confirm the project location.]"
+    phase = "[Information needed: Confirm the current phase and outcomes.]"
+    saved = "The grant funds planning and design."
+    body = f"Location: {location} Phase: {phase}"
+    current = chapter(body)
+    current.gaps.append(gap("Confirm the project location."))
+    current.gaps.append(gap("Confirm the current phase and outcomes.", answered=saved))
+    edits = session([current], "Update the chapter.")
+    location_search = edits.search_draft(location)["search_id"]
+    phase_search = edits.search_draft(phase)["search_id"]
+
+    phase_edit = replacement_for(
+        phase_search,
+        f"{saved} [Information needed: What measurable outcomes will the phase deliver?]",
+        user_input_quote=saved,
+    )
+    location_edit = replacement_for(
+        location_search, "The site is on Lake Street.", user_input_quote=saved
+    )
+    cross_gap = edits.propose_edits([location_edit, phase_edit])
+    assert not cross_gap["ok"]
+    assert cross_gap["code"] == "invalid_user_input"
+    assert cross_gap["operation_index"] == 0
+    assert edits.plan is None
+    assert saved not in cross_gap["message"] + cross_gap["recovery"]
+    assert "Omit this operation" in cross_gap["recovery"]
+
+    # The retry omits the unsupported location edit and keeps only the same-gap phase edit.
+    retry = edits.propose_edits([phase_edit])
+    assert retry["ok"], retry
+    [change] = edits.plan.changes
+    assert change.before == phase
+    result = replace_anchors(body, edits.plan.changes)
+    assert location in result
+    assert result.startswith(f"Location: {location} Phase: {saved}")
+
+
+@pytest.mark.parametrize(("length", "accepted"), [(2000, True), (2001, False)])
+def test_overlong_new_remainder_is_rejected_before_review(length, accepted) -> None:
+    """A narrowed question is capped at 2,000 characters before any model review."""
+    current = chapter(f"Finance: {GAP_ASK}")
+    current.gaps.append(gap("Confirm the instrument and amount."))
+    edits = session([current], FUNDS)
+    remainder = f"[Information needed: {'x' * length}]"
+    result = propose_one(edits, GAP_ASK, f"{FUNDS} {remainder}", user_input_quote=FUNDS)
+    if accepted:
+        assert result["ok"], result
+        assert (
+            replace_anchors(current.body_markdown, edits.plan.changes)
+            == f"Finance: {FUNDS} {remainder}"
+        )
+    else:
+        assert not result["ok"]
+        assert result["code"] == "marker_changed"
+        assert "at most 2,000 characters" in result["message"]
+        assert edits.plan is None

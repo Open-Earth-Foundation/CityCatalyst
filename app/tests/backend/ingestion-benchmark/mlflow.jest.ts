@@ -327,6 +327,93 @@ describe("logBenchmarkRun", () => {
     }
   });
 
+  it("tags a precomputed run with its pipeline and logs only counts and cost from the envelope", async () => {
+    const pipelineSummary = {
+      ...summary,
+      exploratory: true,
+      pipeline: {
+        id: "precomputed",
+        study: "study-a",
+        stage: "stage-2",
+        mode: "batch",
+        version: "v3",
+      },
+      results: summary.results.map((r) => ({
+        ...r,
+        runs: r.runs.map((run) => ({
+          ...run,
+          pipeline: {
+            executionStatus: "ok",
+            rowsInEnvelope: 12,
+            unknownRowRoles: { mystery: 2 },
+            droppedRows: {},
+            rowRoles: {},
+            scopeBasis: {},
+            totalInclusion: {},
+            reported: {
+              totalT: 5000,
+              grossT: 5200,
+              netT: 4800,
+              removalsT: 400,
+              totalBasis: "gpc",
+              totalKind: "net",
+            },
+            costUsd: 0.25,
+            costSource: "envelope",
+            usage: { input_tokens: 77 },
+            lostRows: { "gpc-reference-unknown": 3 },
+          },
+        })),
+      })),
+    } as unknown as RunSummary;
+    const { calls, fetchImpl } = server();
+    await logBenchmarkRun({
+      config,
+      summary: pipelineSummary,
+      verdicts,
+      blocks,
+      runFolder: makeFolder(),
+      fetchImpl,
+      now: () => 5,
+    });
+    const parent = calls.find((c) => c.url.endsWith("runs/create"))!;
+    const tags = Object.fromEntries(
+      parent.body.tags.map((t: any) => [t.key, t.value]),
+    );
+    // No built-in model, prompt or input is claimed for a precomputed run.
+    expect(Object.keys(tags)).not.toContain("extraction_model");
+    expect(Object.keys(tags)).not.toContain("prompt_hash");
+    expect(Object.keys(tags)).not.toContain("input_representation");
+    expect(Object.keys(tags)).not.toContain("ocr_model");
+    expect(Object.keys(tags)).not.toContain("reasoning_effort");
+    expect(tags).toMatchObject({
+      pipeline: "precomputed",
+      pipeline_study: "study-a",
+      pipeline_stage: "stage-2",
+      pipeline_mode: "batch",
+      pipeline_version: "v3",
+      exploratory: "true",
+    });
+    const metricKeys = new Set(
+      calls
+        .filter((c) => c.url.endsWith("runs/log-batch"))
+        .flatMap((c) => c.body.metrics.map((m: any) => m.key)),
+    );
+    expect(metricKeys).toContain("attempt.rows_in_envelope");
+    expect(metricKeys).toContain("attempt.cost_usd");
+    for (const key of metricKeys) {
+      expect(key).not.toMatch(/total|gross|net|removals|usage|lost/i);
+    }
+  });
+
+  it("adds no pipeline tags to a built-in run", async () => {
+    const { calls, fetchImpl } = server();
+    await log(fetchImpl, makeFolder());
+    const parent = calls.find((c) => c.url.endsWith("runs/create"))!;
+    const keys = parent.body.tags.map((t: any) => t.key);
+    expect(keys.filter((k: string) => k.startsWith("pipeline"))).toEqual([]);
+  });
+
   it("sends no answer-key content in any metric, tag or artifact", async () => {
     const secret = {
       expectedTotal: 987654.321,

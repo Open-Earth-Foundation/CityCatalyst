@@ -281,6 +281,42 @@ class ConceptNoteRunService:
         )
         return run
 
+    async def get_city_viewable_run(
+        self,
+        *,
+        run_id: UUID,
+        city_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRun:
+        """Return a run of any author for a read-only preview by a city collaborator.
+
+        The caller must hold current CityCatalyst access to the run's city. A run
+        outside ``city_id`` and a city the caller can no longer open both read as
+        not found. Writes keep using ``get_authorized_run``, which is owner-only.
+        """
+        token = _require_bearer_token(authorization)
+        canonical_user_id = await self._authorize_user(
+            token=token,
+            requested_user_id=requested_user_id,
+        )
+        run = await self.session.get(ConceptNoteRun, run_id)
+        if run is None or UUID(run.city_id) != city_id:
+            raise HTTPException(status_code=404, detail="Concept Note run not found")
+        try:
+            await self._validate_city_access(
+                token=token,
+                user_id=canonical_user_id,
+                city_id=city_id,
+            )
+        except HTTPException as exc:
+            if exc.status_code in {403, 404}:
+                raise HTTPException(
+                    status_code=404, detail="Concept Note run not found"
+                ) from exc
+            raise
+        return run
+
     async def list_runs(
         self,
         *,

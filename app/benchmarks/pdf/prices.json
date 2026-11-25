@@ -3,5 +3,6 @@
     "llmInputPerMTok": 0.2,
     "llmOutputPerMTok": 1.2,
     "ocrPerPage": 0.002
-  }
+  },
+  "models": {}
 }

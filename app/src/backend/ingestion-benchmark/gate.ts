@@ -90,13 +90,13 @@ const failures = (
     .filter(([mode]) => mode !== "scored" && include(mode))
     .reduce((sum, [, count]) => sum + count, 0);
 
-const isRunnerFailure = (mode: FailureMode) => RUNNER_FAILURES.includes(mode);
-/** Failures of the benchmark itself (approve, readback, OCR, setup). */
-const runnerFailures = (verdict: CaseVerdict) =>
-  failures(verdict, isRunnerFailure);
-/** Failures of the model output (extraction error, truncated, zero rows). */
-const modelFailures = (verdict: CaseVerdict) =>
-  failures(verdict, (mode) => !isRunnerFailure(mode));
+/**
+ * Failures of the benchmark itself (approve, readback, OCR, setup). A
+ * precomputed pipeline run counts a failed approve as the pipeline's own: its
+ * rows are what the import rejected.
+ */
+const runnerFailureCheck = (pipelineRun: boolean) => (mode: FailureMode) =>
+  RUNNER_FAILURES.includes(mode) && !(pipelineRun && mode === "approve_error");
 
 const pct = (ratio: number) => `${Math.round(ratio * 100)}%`;
 
@@ -105,8 +105,15 @@ export function gateAgainstBaseline(
   comparison: Comparison,
   forecast: number | null,
   expectedAttempts?: number,
+  pipelineRun = false,
 ): CaseGate {
   const base = comparison.baseline;
+  const isRunnerFailure = runnerFailureCheck(pipelineRun);
+  const runnerFailures = (verdict: CaseVerdict) =>
+    failures(verdict, isRunnerFailure);
+  // Failures of the model output (extraction error, truncated, zero rows).
+  const modelFailures = (verdict: CaseVerdict) =>
+    failures(verdict, (mode) => !isRunnerFailure(mode));
   let hits: { verdict: Verdict; text: string }[] = [];
 
   // A runner failure is never acceptable: a baseline whose model failed to

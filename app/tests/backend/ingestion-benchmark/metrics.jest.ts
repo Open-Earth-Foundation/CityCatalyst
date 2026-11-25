@@ -162,6 +162,22 @@ describe("caseVerdict", () => {
     expect(v.casePasses).toBe(false);
   });
 
+  it("3 attempts from a precomputed pipeline are exploratory", () => {
+    const pipeline = {} as NonNullable<RunEntry["pipeline"]>;
+    const v = caseVerdict(
+      three(
+        { ...entry(1), pipeline },
+        { ...entry(2), pipeline },
+        { ...entry(3), pipeline },
+      ),
+      key,
+    );
+    expect(v.exploratory).toBe(true);
+    expect(
+      caseVerdict(three(entry(1), entry(2), entry(3)), key).exploratory,
+    ).toBe(false);
+  });
+
   it("counts 10x attempts separately from recall", () => {
     const v = caseVerdict(
       three(entry(1), entry(2, {}, { storedTotal: 10_000_000 }), entry(3)),

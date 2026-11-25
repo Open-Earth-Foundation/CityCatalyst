@@ -16,10 +16,12 @@ from app.models.cnb.concept_note_edits import (
 from app.persistence.concept_notes.edits import EditOperationError
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.services.cnb.edit_validation import (
-    is_information_gap_fill,
+    gap_bindings_for_change,
+    gap_evidence_inputs,
     validate_document_integrity,
     validate_provenance,
 )
+from app.utils.cnb_gap_edit import marker_question_too_long
 from app.utils.cnb_information_markers import (
     INFORMATION_NEEDED_PATTERN,
     removed_information_markers,
@@ -140,12 +142,21 @@ class DraftEditSession:
                     reason = protected_reason(
                         match.chapter, change.start, change.before
                     )
-                    if reason == "protected_markers" and is_information_gap_fill(
+                    if reason == "protected_markers" and self.is_gap_transition(
                         change, match.chapter
                     ):
                         reason = None
                     if reason:
                         if not replacement.replace_all:
+                            # An over-cap remainder is refused with its own repair, not as a protected match.
+                            if (
+                                reason == "protected_markers"
+                                and marker_question_too_long(change.after)
+                            ):
+                                raise EditOperationError(
+                                    "marker_changed",
+                                    "A missing-information question may be at most 2,000 characters. Shorten the remaining question and resubmit.",
+                                )
                             raise EditOperationError(
                                 reason,
                                 "Use propose_structure to rename a chapter title. Internal template subheadings cannot be changed through text replacements."
@@ -156,12 +167,18 @@ class DraftEditSession:
                             (match.chapter.position, match.start, match.text)
                         )
                         continue
+                    bindings = gap_bindings_for_change(
+                        change, match.chapter, self.request.scope
+                    )
                     validate_provenance(
                         change,
                         self.request.instruction,
                         self.run_context,
                         change.kind == "factual",
-                        prior_inputs=self.prior_inputs,
+                        prior_inputs=[
+                            *self.prior_inputs,
+                            *gap_evidence_inputs(bindings, match.chapter),
+                        ],
                     )
                     changes.append(change)
                 if len(changes) > 100:
@@ -170,9 +187,20 @@ class DraftEditSession:
                         "This proposal exceeds 100 changes; narrow the search scope.",
                     )
             except (EditOperationError, ValueError) as error:
+                code = getattr(error, "code", "invalid_edit")
+                if code == "invalid_user_input" and self.quote_saved_on_other_gap(
+                    replacement.user_input_quote
+                ):
+                    return {
+                        "ok": False,
+                        "code": code,
+                        "operation_index": index,
+                        "message": "This quoted answer was saved for a different gap. Saved answers support only the gap they belong to.",
+                        "recovery": "Omit this operation and any other that relies on the same quote, then resubmit the complete proposal with only changes supported by their own gap's saved answers or new user facts. Do not paste saved answers into the request.",
+                    }
                 return {
                     "ok": False,
-                    "code": getattr(error, "code", "invalid_edit"),
+                    "code": code,
                     "operation_index": index,
                     "message": str(error),
                     "recovery": "Read the affected chapter or search with more context, then submit the complete corrected proposal.",
@@ -210,6 +238,29 @@ class DraftEditSession:
             "chapters": len({change.chapter_id for change in changes}),
             "notices": [notice.model_dump() for notice in notices],
         }
+
+    def quote_saved_on_other_gap(self, quote: str | None) -> bool:
+        """Tell whether a rejected quote is a saved answer of some gap in this draft."""
+        if not quote or not quote.strip():
+            return False
+        return any(
+            quote in saved
+            for chapter in self.chapters.values()
+            for gap in chapter.gaps
+            for saved in (gap.answered_so_far, *gap.accepted_passages)
+            if saved
+        )
+
+    def is_gap_transition(
+        self, change: PlannedTextChange, chapter: WorkspaceChapterSnapshot
+    ) -> bool:
+        """Allow a marker match to bypass protection only as an exact, bound transition."""
+        if not removed_information_markers(change.before, change.after):
+            return False
+        try:
+            return bool(gap_bindings_for_change(change, chapter, self.request.scope))
+        except EditOperationError:
+            return False
 
     def select_matches(self, replacement: DraftReplacement) -> list[DraftMatch]:
         """Reject unknown or ambiguous selections instead of guessing an occurrence."""
@@ -338,4 +389,5 @@ def resolve_change(
         source_refs=replacement.source_refs,
         user_input_quote=replacement.user_input_quote,
         context_refs=replacement.context_refs,
+        estimate=replacement.estimate,
     )

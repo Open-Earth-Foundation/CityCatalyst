@@ -87,7 +87,7 @@ it("cancels a silent stream and reports it as stalled, not as a user cancel", as
   expect(onError).toHaveBeenCalledWith(
     "The response stream stalled",
     STREAM_STALLED_CODE,
-    { status: 200, streamStarted: true },
+    { status: 200, streamStarted: true, interrupted: true },
   );
 });
 

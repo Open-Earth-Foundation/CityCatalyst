@@ -1,1 +1,3 @@
 config.local.json
+# Envelope folders of external pipelines (third-party output and document text)
+generated/

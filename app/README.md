@@ -5,6 +5,29 @@ frontend and backend code for the app, as well as database management scripts.
 
 ## Concept Note chat
 
+Selecting a suggested answer or sending the card's custom text replies to that
+specific question. If someone has already answered in another tab, the chat
+refreshes its history and shows the accepted reply. If another tab opened a newer
+chat, the send is refused with an explanation and the chat list offers the way back
+to the latest chat; the unsent card text stays in place. Picking an option while
+the card's own field holds text moves that text into the main composer, after any
+text already there. While the workspace is open, **Use draft** retrieves other
+unused inline text into the main composer for that chat.
+Most cards only answer a question. When a preference is about the document,
+Clima follows the answer with an action that prepares a proposed edit for review.
+A card that prepares a change says so above its options. If an answer never
+reached Clima, it is marked **Not sent**, Retry stays available and the card can
+be answered again. Reopening a chat during a reply shows **Clima is still
+replying…** and loads the saved answer when ready. An overlapping send is
+declined and shows the same status; when the service saved nothing, the typed
+message returns to that chat's composer (before anything typed since) and is
+not resent automatically. A connection lost after Clima accepted a message
+reloads history instead. **Retry** is available when Clima is idle
+and the latest saved message has no reply.
+A tall card opens at its question and first options rather than at its top.
+Chat messages and custom answers are limited to the 8,000-character edit-request
+limit: longer text stays in the field with a hint and cannot be sent.
+
 **Answer in chat** on a chapter gap opens up to four questions in Clima, each
 with suggested choices (possible answers, not source facts), free text, or
 **Not decided yet**; a retry appears if generation fails. Answers become a
@@ -18,8 +41,12 @@ HTTP 401 asks the user to sign in, 403 explains the access restriction, and 404
 asks them to reload the workspace. Other non-transient 4xx responses ask the
 user to check the request. These errors clear any previous failed turn and do
 not offer Retry. HTTP 408/429, server errors, transport failures, and stream
-failures remain retryable. A context-not-ready response also clears a previous
-failed turn because Clima answered successfully and declined that new request.
+failures remain retryable. If an accepted reply stream disconnects, the workspace
+checks history for the active or completed reply. A context-not-ready response
+also clears a previous failed turn because Clima declined that new request.
+The Next.js proxy retries non-streaming Climate Advisor GET and HEAD requests
+on supported connection errors and timeouts. It allows up to three attempts, with
+five seconds per attempt and a 16-second total deadline.
 
 ## Prerequisites
 

@@ -263,6 +263,17 @@ def fixture_problems(loaded: LoadedFixture) -> list[str]:
                 f"reference {chapter.chapter_ref}: {problem}"
                 for problem in marker_parity_problems(chapter.body_markdown, chapter.gaps)
             ]
+        if fixture.editing:
+            bodies = {chapter.chapter_ref: chapter.body_markdown for chapter in reference.chapters}
+            for case in fixture.editing.cases:
+                selection = case.option_selection
+                if selection is None:
+                    continue
+                paragraphs = bodies.get(case.focused_chapter or "", "").split("\n\n")
+                if paragraphs.count(selection.before) != 1:
+                    problems.append(
+                        f"{case.id}: expected option target must be one exact reference paragraph"
+                    )
     return problems
 
 

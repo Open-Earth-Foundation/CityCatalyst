@@ -6,8 +6,9 @@ A command that runs PDF inventories through the real GHGI import flow (upload, O
 
 - Command: `npx tsx scripts/pdf-benchmark.ts` from `app/`.
 - Code: `app/src/backend/ingestion-benchmark/` (scoring, metrics, baseline, report, MLflow) and `app/scripts/pdf-benchmark/` (runner).
-- Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`).
-- Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`.
+- Data: `app/benchmarks/pdf/` (`cases.json`, `baseline.json`, `prices.json`, `config.example.json`, `schemas/`).
+- `prices.json` holds the built-in model prices (by model name), plus `models` (USD per million tokens, with `source` and `date`) that prices the envelopes of an external pipeline.
+- Output: one folder per run in `docs/ingestion-accuracy-runs/`, plus a line in `docs/ingestion-accuracy-runs/INDEX.md`. The folder is named `<date>-<HHMM>-<commit>`, with `-<study>` added for an [external pipeline](#external-pipelines) run. A run never overwrites a folder: if the name exists (two runs finishing in the same minute), it adds `-2`, `-3` and so on.
 
 ## Prerequisites
 
@@ -70,10 +71,12 @@ npx tsx scripts/pdf-benchmark.ts --rescore ../docs/ingestion-accuracy-runs/<run-
 | `--dry-run`                      | Resolve the selection, print the forecast, exit.                                                                                                                                                                |
 | `--update-baseline`              | After a run with 3 attempts per case, write the baseline entries for the cases in this run.                                                                                                                     |
 | `--rescore <results.json>`       | Rescore a stored run. Writes a run folder marked `rescore`; never changes the baseline.                                                                                                                         |
+| `--pipeline precomputed`         | Score rows made by an external pipeline instead of running the built-in one. Needs `--rows-dir`. Always `exploratory`. See [External pipelines](#external-pipelines).                                           |
+| `--rows-dir <folder>`            | The folder with the pipeline's `manifest.json` and result files. Only with `--pipeline precomputed`; alone it exits 2 ("--rows-dir needs --pipeline precomputed").                                                                                                            |
 | `--no-mlflow`                    | Skip MLflow even when it is configured.                                                                                                                                                                         |
 | `--config path`                  | Use another local config.                                                                                                                                                                                       |
 
-Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error, 3 incomplete `--all` run (missing inputs or unfinished cases, no regression or error), 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
+Exit codes: 0 ok, 1 regression or error, 2 configuration or selection error (also `--update-baseline` with `--pipeline`), 3 incomplete run (an `--all` run with missing inputs or unfinished cases; no regression or error), 130 interrupted (Ctrl+C writes a partial report marked `interrupted` and does not update the baseline).
 
 With `--all`, a missing PDF or key does not stop the run: the case is left out and the report and INDEX line are marked `incomplete`, with the missing and unfinished cases listed. Otherwise, a run fails before any paid call when the selection is empty (for example `--eligible` while no case has `textTables: true`), when a case id is unknown, when a PDF or key is missing locally, or when the selection has more than 10 files.
 
@@ -107,7 +110,7 @@ Update it when a change is meant to move the numbers (a merged fix, a new model)
 
 Open `report.md` in the run folder. It has:
 
-- **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged.
+- **Header:** commit and branch (and a dirty flag), models, reasoning effort, prompt hash, input representation, test-set version, selection, MLflow link or the reason it was not logged. A precomputed pipeline run shows its `Pipeline:` line and `Exploratory: pipeline` instead of the model, prompt hash and input representation, and adds a `Pipeline notes` table per attempt (unknown row roles, dropped rows, lost rows, reported totals, scope basis; unscored). Its INDEX line carries `pipeline=precomputed:<study>`. In a pipeline run the per-case tokens come from the envelope `usage` (n/a when absent), a run with no envelope cost shows cost n/a, the report cuts `total_basis` at 200 characters (`results.json` keeps it whole), and `results.json` has no `ocrModel` or `reasoningEffort`. `appendIndexLine` accepts an INDEX.md saved with CRLF and rewrites it with LF.
 - **One section per block** (validated, held-out, dev), never merged: headline recall (failed attempts count as 0), cases with totals within tolerance, recall over scored attempts only, a provisional recall over the row-scored cases whose `textTables` is still unknown (until Product classifies them), share of attempts that pass, attempts 10x or more off the expected total, the share of wrong totals that carried a warning, mean precision, value accuracy and classification accuracy over the cases scored row by row, notation keys recovered, and the cases that stored a distractor value.
 - **Guardrails** and warnings returned by the import.
 - **Change from the baseline:** per block, the baseline score, the new score and the difference (headline recall, provisional recall, attempts passing, cases with every total within tolerance), then one row per case. Only cases with a baseline count, on both sides; the section says which cases and attempts each score uses.
@@ -131,11 +134,67 @@ An attempt passes when it is `scored`, its total is within tolerance and it is n
 
 `results.json` holds no answer-key content. In each score the key rows that were not found become `missingRowCount`, the stored distractors `distractorsStoredCount` and the stored groups that match no key row `unexpectedStoredCount`; the expected total and the difference to it (`expectedTotal`, `totalDiffPct`) are not written. Recall, precision, accuracies, counts, the stored total and `totalWithinTolerance` stay. Comparison and rescore recompute every score from the stored values and the local keys, so they never need those fields. To clean a run folder written before this rule: `npx tsx scripts/pdf-benchmark/redact-results.ts <run>/results.json <run>/report.md` (rewrites in place; no DB, LLM or OCR call).
 
+## External pipelines
+
+Purpose: score the output of a whole extraction pipeline that is not the built-in one (a vendor API, another team's pipeline) with the same key and the same scorer. The rows go through the real approve step, so the result is what the app would store. Only approve, read-back and scoring are shared: no OCR and no LLM call of the built-in import run.
+
+```bash
+npx tsx scripts/pdf-benchmark.ts --cases C-015,C-016 --pipeline precomputed --rows-dir <folder> --dry-run
+npx tsx scripts/pdf-benchmark.ts --cases C-015,C-016 --pipeline precomputed --rows-dir <folder>
+```
+
+`--pipeline precomputed` needs `--rows-dir`. The run reads one envelope per case and attempt, uploads the PDF, stores the mapped rows on the imported file, approves, reads back and scores. A pipeline run is always `exploratory` (reason `pipeline`), never updates the baseline and is not compared with it. `--update-baseline` with `--pipeline` exits 2. A case with no envelope runs as `setup_error`: the run is marked `incomplete`, even without `--all`, and the case gets the verdict `error`, so the run exits 1. An envelope that cannot be read fails only that attempt: a field that breaks the envelope schema or a status other than `completed` is an `extraction_error` (the pipeline wrote it badly); a missing entry, duplicate, missing file, hash mismatch or source PDF mismatch is a `setup_error`. Either way nothing is uploaded. A pipeline run is not compared with the built-in baseline or budgeted against its forecast; an `approve_error` from the pipeline rows counts as the pipeline's own failure (verdict `error`, "failed" rather than "failed in the runner"), while readback, OCR and setup failures stay the runner's.
+
+### Folder layout
+
+```text
+<rows-dir>/
+  manifest.json                         study, stage, entries[]
+  results/<caseId>-attempt-<n>.json     one envelope per case and attempt
+```
+
+Each entry of `manifest.json` has `case_id`, `attempt`, `file` (relative to the folder) and `sha256` of the file. A file that is missing, outside the folder or whose hash differs fails the attempt. `study` and `stage` label the run (`Pipeline:` line, INDEX `pipeline=precomputed:<study>`).
+
+An entry should also have `source_pdf_sha256`: the hex SHA-256 of the PDF the pipeline read, recorded when the envelope is generated (case does not matter). Before uploading, the runner hashes the local PDF it selected for the case and compares. A different hash fails the attempt as `setup_error` (`source_mismatch`), so rows from another edition of the report are never scored under the same case ID. An entry without `source_pdf_sha256` (or with `null`) is still run and scored but marked unverified: the Pipeline notes show `unverified` in the Source PDF column, the report adds a **SOURCE PDF NOT VERIFIED** note naming the cases and attempts, the INDEX line gets `(source unverified)`, and `results.json` records `pipeline.sourcePdf` per attempt (`verified` or `unverified`). A value that is not 64 hex characters is an invalid entry (`invalid_envelope`, `extraction_error`).
+
+### What the runner reads
+
+From each envelope the runner reads only: `result.data`, `usage`, `execution_status`, `cost_usd`, `mode` and `version`. The pipeline id is always `precomputed`; the envelope `pipeline` field is not read. `result.data` is checked against `app/benchmarks/pdf/schemas/ghgi-envelope.schema.json` (reporting year, reported totals, `total_kind`, and per row `source_label`, `gpc_ref`, `scope`, `emissions_tco2e`, `notation_key`, `row_role`, `total_inclusion`, `scope_basis`). Everything else is never read, copied or written. That includes `benchmark` and `repair`, which can hold expected values, and any other field. Error messages name the case, attempt, file and field, never a value.
+
+### How rows are mapped
+
+The mapping is field by field, with no repair or guessing.
+
+- `row_role` `emission`, `removal` and `notation` become rows. `information` rows are dropped and counted. Any other role is skipped and counted under `unknownRowRoles`.
+- A `notation` row has no value; its `notation_key` is kept in canonical form.
+- `total_inclusion: excluded` is counted as `excludedNotCarried`. Approve cannot carry it (the omit-from-total flag comes only from fixed GPC references), so the row is still imported and counts in the application total.
+- Approve drops some mapped rows. A parent reference such as `I.3` with `scope: null` is dropped as `gpc-reference-unknown`; a row with neither a value nor a notation key is dropped too. The report lists them as lost rows, by import issue code, in the Pipeline notes. `unexplained` or `notSkipped` marks a mismatch between the rows approve skipped and the issues it reported.
+
+The Pipeline notes table shows these counts per attempt, with the reported totals, scope basis and cost. It is not scored.
+
+### Cost
+
+In order: the envelope's `cost_usd` (`envelope`); else its tokens at the price of a model in `prices.json` `models` (`tokens`), found by the envelope `version` or by `<model>.input_tokens` keys in `usage`; else `n/a`. The built-in `prices.json` entries are not used for a pipeline run. A missing price gives `n/a`, never a guess.
+
+### Score variant
+
+The standard score is the headline. A pipeline can report an unsplit subsector (`I.3`, no scope) where the key has children; approve drops that row, so the standard score never sees it. The report adds a labelled variant, "parent refs (Mirco)", beside the standard score, per block and per case. It adds back the parent rows approve dropped, written as `<ref>.x` (Mirco's `scoringReference`). `I.3.x` matches a key row written `I.3` or `I.3.x` only, never a scoped child such as `I.3.1`. If the pipeline gave the children too and approve stored them, the variant counts that amount twice: see the "Of which children were stored too" column. Read the variant as an upper bound for that pipeline, not as a result. `SCORER_VERSION` is unchanged.
+
+### Generators
+
+The vendor generators (Mistral annotations, Reducto Deep Extract, LlamaExtract Agentic Plus) and the runs of the 19 Nov 2026 study were removed from the branch before merge. They are kept in commit `54b066c8a`; the study report is `docs/ingestion-accuracy-runs/external-pipelines-2026-11-19.md`. A rows folder can come from any pipeline that writes the layout above, for example Mirco's agent pipeline.
+
+### Limits
+
+- The result depends on the pipeline's instructions and on a model that can change; the envelope `version` records what ran.
+- Approve cannot carry `total_inclusion` or scope for parent references, so some correct pipeline output is lost (see the Pipeline notes and the score variant).
+- No baseline, no regression verdict and no comparison with the built-in import: read the report side by side.
+
 ## MLflow
 
 Optional and best effort. When `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` are set and `--no-mlflow` is absent, each run is logged to the experiment `ghgi-pdf-benchmark` (created on first use) with the non-admin service account:
 
-- One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection; metrics per block; `report.md` and `results.json` as artifacts.
+- One parent run per benchmark run: tags for commit, branch, models, prompt hash, test-set version and selection (a precomputed run adds `pipeline`, `pipeline_study`, `pipeline_stage` and, when the envelope has them, `pipeline_mode` and `pipeline_version`, and has no `extraction_model`, `ocr_model` or `reasoning_effort` tag); metrics per block; `report.md` and `results.json` as artifacts.
 - One child run per case: case metrics, per-attempt metrics (step = attempt number), verdict, and `extracted-values.json` per attempt.
 - PDFs, OCR text and answer keys are never uploaded. Metrics and `results.json` pass through the same redaction as the run folder, so no expected value (key row, expected total, difference to it, distractor) reaches MLflow.
 

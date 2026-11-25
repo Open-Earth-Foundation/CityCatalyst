@@ -11,6 +11,10 @@ Its checks, `CNB quality report (non-required, markdown)` and
 branch protection. Failures remain visible and are not hidden with
 `continue-on-error`.
 
+Harbor Point's Editing pass includes four suggested-answer cases (up to five chat
+turns) and a clicked Option B planner case. The same Editing judge call scores them
+with the other edit cases.
+
 The frozen-Markdown and fresh-PDF-conversion paths run as parallel jobs, each
 with its own status and review artifact, so a quality failure on one path is not
 masked by an unavailable evaluation on the other. Within a path, fixtures run one
@@ -54,6 +58,9 @@ policy. Keep approved run directories durably in `results/runs/<run-id>/`; the
 The scoped `.gitattributes` rule preserves exact saved-run bytes on Windows and
 Linux. Keep it when publishing approved runs; scorer fingerprints normalize text
 line endings so checkout conventions alone cannot invalidate a comparison.
+The Harbor Point fixture and Editing judge prompt changes update the corpus and
+judge-policy fingerprints. A comparison requires a freshly reviewed baseline
+with matching fingerprints.
 
 An approval PR replaces the corresponding manifest with this shape:
 

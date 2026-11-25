@@ -104,6 +104,19 @@ function isEnergyGenerationSector(sector: string): boolean {
   return /energy\s*generation/i.test(sector);
 }
 
+/** CIRIS/eCRF activity label for I.4.4, including "Generation of grid-supplied energy". */
+export function isGridSuppliedEnergyActivity(
+  activity?: string | null,
+): boolean {
+  if (!activity) return false;
+  const label = activity.trim();
+  return (
+    /supplied\s+to\s+(the\s+)?grid/i.test(label) ||
+    /grid[- ]supplied/i.test(label) ||
+    /generation of grid/i.test(label)
+  );
+}
+
 /**
  * Table options are prefixed (`fuel-type-natural-gas`, `energy-usage-electricity`).
  * File values are the bare name (`Natural gas`, `Electricity`).
@@ -138,9 +151,7 @@ export function resolveGpcRefNo(
   const scope = scopeFromLabel(scopeLabel);
   // "Energy generation" is I.4.4 (supplied to the grid). I.4.1 is only auxiliary
   // fuel use at the plant, so a scope-1 filter would store generation in the wrong row.
-  const suppliedToGrid =
-    fuelTypeOrActivity != null &&
-    /supplied\s+to\s+(the\s+)?grid/i.test(fuelTypeOrActivity);
+  const suppliedToGrid = isGridSuppliedEnergyActivity(fuelTypeOrActivity);
   if (isEnergyGenerationSector(sector) || suppliedToGrid) {
     if (scope === 2) return "I.4.2";
     if (scope === 3) return "I.4.3";

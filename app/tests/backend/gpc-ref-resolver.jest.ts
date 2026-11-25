@@ -121,6 +121,14 @@ describe("resolveGpcRefNo for PDF extraction rows (CC-1008)", () => {
       ),
     ).toBe("I.4.4");
     expect(
+      resolveGpcRefNo(
+        "Stationary Energy",
+        "Energy industries",
+        "Generation of grid-supplied energy",
+        "Direct emissions",
+      ),
+    ).toBe("I.4.4");
+    expect(
       resolveGpcRefNo("Stationary Energy", "Energy Industries", undefined, "1"),
     ).toBe("I.4.1");
   });

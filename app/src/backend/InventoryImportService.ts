@@ -62,6 +62,14 @@ export function importRowSkipReason(
   return "no-value-or-notation-key";
 }
 
+/** Inferred GPC rows must not replace a notation already stored for that ref. */
+export function shouldSkipInferredNotationOverwrite(
+  existingUnavailableReason?: string | null,
+  refSource?: "document" | "inferred" | null,
+): boolean {
+  return Boolean(existingUnavailableReason) && refSource === "inferred";
+}
+
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
   /** When set (e.g. file name), used as activity data source when row does not provide one. */
@@ -961,9 +969,24 @@ export default class InventoryImportService {
                 return "skipped";
               }
 
-              // Create or update inventory value with notation key
-              // Note: eCRF files don't typically include explanation, so we use a default
-              const unavailableExplanation = `Imported from eCRF file with notation key: ${row.notationKey}`;
+              // CIRIS energy-generation lines with no GPC were inferred onto I.4.1
+              // and overwrote a stated NO/IE. Only a row that named the GPC may
+              // replace an existing notation.
+              if (
+                shouldSkipInferredNotationOverwrite(
+                  existingValue?.unavailableReason,
+                  row.review?.refSource,
+                )
+              ) {
+                rowWarnings.push(
+                  `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: Notation key "${row.notationKey}" was not applied because ${row.gpcRefNo} already has a notation from a stated GPC row`,
+                );
+                return "skipped";
+              }
+
+              const unavailableExplanation =
+                row.notationExplanation?.trim() ||
+                `Imported from eCRF file with notation key: ${row.notationKey}`;
 
               const notationValue = existingValue
                 ? await existingValue.update(

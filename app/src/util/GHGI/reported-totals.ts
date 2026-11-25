@@ -16,6 +16,7 @@ export const GRID_GENERATION_GPC_REF = "I.4.4";
  */
 const OMITTED_FROM_TOTAL_GPC_REFS: ReadonlySet<string> = new Set([
   GRID_GENERATION_GPC_REF,
+  "II.5.3",
   "III.1.3",
   "III.2.3",
   "III.3.3",

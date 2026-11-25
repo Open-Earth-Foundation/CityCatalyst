@@ -34,12 +34,19 @@ function resolveNotationFromActivity(args: {
   return { notationKey: undefined, activityType: args.activityType };
 }
 
+function isMeaningfulParsedCell(value: string | number | null): boolean {
+  if (value == null) return false;
+  const text = String(value).trim();
+  if (!text) return false;
+  if (/^please select$/i.test(text)) return false;
+  if (/^\{\{/.test(text)) return false;
+  return true;
+}
+
 function isBlankParsedRow(
   row: Record<string, string | number | null>,
 ): boolean {
-  return !Object.values(row).some(
-    (value) => value != null && String(value).trim() !== "",
-  );
+  return !Object.values(row).some((value) => isMeaningfulParsedCell(value));
 }
 
 export interface ECRFRowData {
@@ -67,6 +74,8 @@ export interface ECRFRowData {
   emissionFactorCH4?: number;
   emissionFactorN2O?: number;
   emissionFactorTotalCO2e?: number;
+  /** File explanation for a notation key (CIRIS AD / method description). */
+  notationExplanation?: string;
   year?: number;
   rowIndex: number;
   /** 1-based row number in the uploaded file, when known. */
@@ -217,6 +226,56 @@ export default class ECRFImportService {
         ? row[scopeHeader]?.toString()
         : undefined;
 
+      // Skip empty template rows before inferring a GPC or raising missing-GPC.
+      const earlyNotationHeader =
+        detectedColumns.notationKey !== undefined
+          ? headers[detectedColumns.notationKey]
+          : this.findHeader(headers, [
+              "notation key",
+              "notation_key",
+              "notation",
+            ]);
+      const earlyNotation = earlyNotationHeader
+        ? row[earlyNotationHeader]?.toString().trim()
+        : undefined;
+      const earlyActivityHeader =
+        detectedColumns.activityType !== undefined
+          ? headers[detectedColumns.activityType]
+          : this.findHeader(headers, [
+              "fuel type or activity",
+              "activity_name",
+              "activity name",
+              "activity type",
+              "activity_type",
+              "fuel type",
+              "fuel_type",
+              "fuel",
+            ]);
+      const earlyActivity = earlyActivityHeader
+        ? row[earlyActivityHeader]?.toString().trim()
+        : undefined;
+      const earlyNotationResolved = resolveNotationFromActivity({
+        notationKey: earlyNotation || undefined,
+        activityType: earlyActivity || undefined,
+      }).notationKey;
+      const earlyHasEmissions =
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.co2),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.ch4),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.n2o),
+        ) ||
+        hasSignedNumericValue(
+          this.extractGasValue(row, headers, detectedColumns.totalCO2e),
+        );
+      if (!earlyHasEmissions && !earlyNotationResolved) {
+        rowsSkippedEmptyEmissions += 1;
+        continue;
+      }
+
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
         const rawSector = hasSectorColumn
           ? row[headers[detectedColumns.sector!]]?.toString().trim()
@@ -288,58 +347,8 @@ export default class ECRFImportService {
         continue;
       }
 
-      // Skip empty CIRIS/eCRF template rows before taxonomy lookups.
-      // Treat activity_name notation labels (e.g. "Not Occuring") as real content.
-      const earlyNotationHeader =
-        detectedColumns.notationKey !== undefined
-          ? headers[detectedColumns.notationKey]
-          : this.findHeader(headers, [
-              "notation key",
-              "notation_key",
-              "notation",
-            ]);
-      const earlyNotation = earlyNotationHeader
-        ? row[earlyNotationHeader]?.toString().trim()
-        : undefined;
-      const earlyActivityHeader =
-        detectedColumns.activityType !== undefined
-          ? headers[detectedColumns.activityType]
-          : this.findHeader(headers, [
-              "activity_name",
-              "activity name",
-              "activity type",
-              "activity_type",
-              "fuel type",
-              "fuel_type",
-              "fuel",
-            ]);
-      const earlyActivity = earlyActivityHeader
-        ? row[earlyActivityHeader]?.toString().trim()
-        : undefined;
-      const earlyNotationResolved = resolveNotationFromActivity({
-        notationKey: earlyNotation || undefined,
-        activityType: earlyActivity || undefined,
-      }).notationKey;
-      const earlyHasEmissions =
-        hasSignedNumericValue(
-          this.extractGasValue(row, headers, detectedColumns.co2),
-        ) ||
-        hasSignedNumericValue(
-          this.extractGasValue(row, headers, detectedColumns.ch4),
-        ) ||
-        hasSignedNumericValue(
-          this.extractGasValue(row, headers, detectedColumns.n2o),
-        ) ||
-        hasSignedNumericValue(
-          this.extractGasValue(row, headers, detectedColumns.totalCO2e),
-        );
-      if (!earlyHasEmissions && !earlyNotationResolved) {
-        rowsSkippedEmptyEmissions += 1;
-        continue;
-      }
-
-      // Look up GPC reference number in database
-      const gpcMapping = await this.lookupGPCReference(gpcRefNo);
+      // Look up GPC reference number in database (II.5.3 etc. can use a sibling).
+      const gpcMapping = await this.lookupGPCReferenceOrSibling(gpcRefNo);
       if (!gpcMapping) {
         rowErrors.push(
           `GPC reference number "${gpcRefNo}" not found in taxonomy`,
@@ -515,6 +524,16 @@ export default class ECRFImportService {
       ]);
       const methodology = methodologyHeader
         ? row[methodologyHeader]?.toString().trim()
+        : undefined;
+
+      const notationExplanationHeader = this.findHeader(headers, [
+        "description of method(s) used or explanation for using notation key(s)",
+        "explanation for using notation",
+        "notation key explanation",
+        "unavailable explanation",
+      ]);
+      const notationExplanation = notationExplanationHeader
+        ? row[notationExplanationHeader]?.toString().trim()
         : undefined;
 
       // Get activity data source header (using detectedColumns index or findHeader)
@@ -699,6 +718,9 @@ export default class ECRFImportService {
         activityAmount,
         activityUnit,
         methodology,
+        notationExplanation:
+          notationExplanation ||
+          (notationKey ? methodology : undefined),
         activityDataSource,
         activityDataQuality,
         emissionFactorSource,
@@ -836,6 +858,32 @@ export default class ECRFImportService {
   }
 
   /**
+   * II.5.3 (off-road scope 3) is used in CIRIS BASIC packs as NE but is not
+   * always a catalogue subcategory. Reuse the sibling II.5.1 / II.5.2 IDs.
+   */
+  public static async lookupGPCReferenceOrSibling(gpcRefNo: string): Promise<{
+    sectorId: string;
+    subsectorId: string;
+    subcategoryId: string | null;
+    scopeId: string;
+  } | null> {
+    const direct = await this.lookupGPCReference(gpcRefNo);
+    if (direct) return direct;
+    const parts = gpcRefNo.split(".");
+    if (parts.length < 3) return null;
+    for (const suffix of ["1", "2", "3"]) {
+      if (parts[2] === suffix) continue;
+      const sibling = `${parts[0]}.${parts[1]}.${suffix}`;
+      const mapped = await this.lookupGPCReference(sibling);
+      if (mapped) {
+        // Keep the file's GPC ref on the row; do not attach a sibling subcategory.
+        return { ...mapped, subcategoryId: null };
+      }
+    }
+    return null;
+  }
+
+  /**
    * Convert Adapter D / PDF extracted rows into the same shape processECRFFile
    * produces so InventoryImportService.importECRFData can persist them.
    * Shared by the approve route path and the bulk import worker.
@@ -925,7 +973,7 @@ export default class ECRFImportService {
         continue;
       }
 
-      const gpcMapping = await this.lookupGPCReference(gpcRefNo);
+      const gpcMapping = await this.lookupGPCReferenceOrSibling(gpcRefNo);
       if (!gpcMapping) {
         errors.push(
           `Row ${sourceRowNumber}: GPC reference "${gpcRefNo}" not in taxonomy`,
@@ -1023,6 +1071,10 @@ export default class ECRFImportService {
             activityType,
           });
         })(),
+        notationExplanation:
+          row.notationKey?.trim() && row.methodology?.trim()
+            ? row.methodology.trim()
+            : undefined,
         activityDataSource: row.activityDataSource?.trim() || undefined,
         activityDataQuality: row.activityDataQuality?.trim() || undefined,
         emissionFactorUnit: row.emissionFactorUnit?.trim() || undefined,

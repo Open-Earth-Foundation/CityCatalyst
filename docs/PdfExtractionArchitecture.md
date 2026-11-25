@@ -11,6 +11,7 @@
 > - Before integrating the agentic extraction pipeline into a module (GHGI, CRVA, CNB, FastCap).
 > - When deciding which pipeline an uploaded file should go through.
 > - When adding provenance (source evidence) to extracted values.
+> - When deciding how the agentic service is built, deployed and called.
 
 ## Summary
 
@@ -123,6 +124,81 @@ Loop 1 runs inside one agent turn. Loop 2 is run by the server and stops when th
 Scores come from the CC-1124 PDF benchmark, cases C-015 to C-021 (`docs/ingestion-accuracy-runs/`). The two sides used different models, so the gap is not only the method.
 
 Sources: current flow in `app/src/backend/PdfOcrService.ts` and `app/src/backend/InventoryExtractionService.ts`; agentic flow in `pdf-extraction/README.md` on the PR #3463 branch.
+
+## The agentic service
+
+Proposal: one deployed service that any module calls over HTTP. It knows how to read a PDF with an agent and return values with their source. It knows nothing about inventories, CRVA fields or concept notes: that knowledge arrives as an adapter. This is the HIAP pattern: a shared core with adapters for inputs and outputs.
+
+### Responsibilities
+
+| The service does | The service does not |
+| --- | --- |
+| Accept a job: one PDF plus one adapter | Choose the route. The module decides at upload |
+| Run one agent session on the original file | Store the uploaded file. `app` and S3 own it |
+| Validate the answer against the adapter's schema and rules, and ask the agent to repair it | Write module records or run review and approve |
+| Return values with page and quote, the issues left, and tokens used | Know users, cities or permissions. Only `app` calls it, with a service token |
+| Keep job state so a restart does not lose a running job | Replace the current pipeline for structured files |
+
+### Inputs
+
+| Input | What it is | Who provides it |
+| --- | --- | --- |
+| PDF | The original uploaded file, not OCR text | Module, from storage |
+| Adapter: schema | JSON Schema of the values to extract | Adapter (GHGI, CRVA, ...) |
+| Adapter: prompt | Rules of the standard: categories, units, what to keep apart | Adapter |
+| Case context | City, year, and other facts of this upload | Module |
+| Options | Repair on or off, repair limit, OCR context on or off | Adapter defaults |
+
+### Outputs
+
+| Output | What it is | Who uses it |
+| --- | --- | --- |
+| Values | Data that matches the adapter's schema | Module maps them to its own rows |
+| Provenance | Document, page and quote per value | Provenance check, then the review screen |
+| Issues | Fields not found, ambiguous, or still failing validation | Review screen |
+| Run record | Status, repair rounds, model, tokens, time | Logs and cost tracking |
+
+### How a job runs
+
+```mermaid
+sequenceDiagram
+  participant M as Module in app
+  participant S as Agentic service
+  participant A as Hosted agent session
+
+  M->>S: 1. Submit: PDF + adapter (schema, prompt) + context
+  S-->>M: 2. Job id, at once
+  S->>A: 3. Files + prompts
+  A->>A: 4. Read, search, inspect pages
+  A->>S: 5. extraction.json
+  S->>S: 6. Validate against the adapter
+  S-->>A: 7. Issues back, up to 3 repairs
+  M->>S: 8. Poll status until finished (minutes)
+  S-->>M: 9. Values + provenance, issues, run record
+  M->>M: 10. Check, map to rows, review
+```
+
+A job takes minutes, so the call is submit and poll, never one blocking request. Steps 1 to 9 exist in the PR #3463 prototype (`POST /v1/extractions`, then `GET /v1/extractions/{id}`). Step 10 is the module's side and is not built.
+
+### Alternatives
+
+| Option | For | Against | Status |
+| --- | --- | --- | --- |
+| **A. One shared service, one adapter per document type** | One core to improve and operate; a new document type is a schema and a prompt; runs the code the benchmark measured | A new deployment that needs an owner, secrets and a volume | Direction from the 25 Nov 1:1 |
+| B. One service per standard (GHGI service, CRVA service) | Each module is independent | The agent core is the same code twice; fixes must be made twice | Discarded in the 1:1 |
+| C. Put the agent inside the current pipeline, replacing its LLM step | No new service; one path for users | Changes a pipeline that works for structured data; a job of minutes does not fit the 1-minute OCR cron | Discarded in the 1:1: do not touch the current one |
+| D. Host it inside Climate Advisor | No new deployment | Couples two release cycles; its one-worker job state conflicts with replicas | Open |
+| E. Rewrite it in TypeScript inside `app` | No service to operate | A rewrite; the benchmark result no longer describes it | Open |
+
+### Decisions to make before building
+
+- **Where adapters live.** In the prototype the caller sends schema and prompt with each job, so adapters would live in each module. The alternative is a registry inside the service, called by adapter name. Caller-owned keeps the service generic; a registry keeps prompts in one place and versioned with the core.
+- **Where the provenance check runs.** In the service, as one more validation step that can trigger a repair, or in `app` after the result. In the service it works for every module at once.
+- **Job state.** The prototype keeps state in one SQLite file with one worker. Keep that with one replica and a volume, or move to Postgres to allow more than one replica.
+- **Failure.** When a job fails or times out: fail the import visibly, or fall back to the current pipeline. A silent fallback hides a quality drop.
+- **Rollout.** A feature flag per module, so the current pipeline stays the default until each module switches.
+- **Cost limits.** The prototype has no spend limit and does not detect a PDF submitted twice. Measured for CRVA (CC-1307, PR #3443): 20 to 28 minutes and 34 to 44M input tokens per report with 3 runs, against about 5 minutes and 0.6M tokens today. GHGI is not measured.
+- **Owner.** Who operates the service and its secrets in dev, test and prod.
 
 ## What the code does today
 

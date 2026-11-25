@@ -1050,7 +1050,8 @@ export type ImportRowIssue =
   | "gpc-parent-gap"
   | "subsector-not-split-by-scope"
   | "gpc-subsector-total-at-risk"
-  | "gpc-subsector-scope-combined";
+  | "gpc-subsector-scope-combined"
+  | "merge-total-inclusion-mixed";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */

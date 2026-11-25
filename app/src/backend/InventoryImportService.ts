@@ -1,5 +1,9 @@
 import { db } from "@/models";
-import { type ECRFImportResult, type ECRFRowData } from "./ECRFImportService";
+import {
+  isRowOmittedFromTotal,
+  type ECRFImportResult,
+  type ECRFRowData,
+} from "./ECRFImportService";
 import VersionHistoryService from "./VersionHistoryService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
@@ -552,6 +556,16 @@ export default class InventoryImportService {
                 ? "direct-measure"
                 : resolvedMethodology;
 
+              // One value has one omitFromTotal: rows that disagree are held
+              // in the review (merge-total-inclusion-mixed), never merged.
+              if (
+                existingValue?.co2eq != null &&
+                existingValue.omitFromTotal !== isRowOmittedFromTotal(row)
+              ) {
+                throw new Error(
+                  `${row.gpcRefNo} has rows counted in the total and rows left out of it; they cannot be merged into one value`,
+                );
+              }
               let inventoryValue;
               if (existingValue) {
                 // Accumulate co2eq when multiple rows share the same GPC reference
@@ -564,11 +578,9 @@ export default class InventoryImportService {
                 inventoryValue = await existingValue.update(
                   {
                     co2eq: accumulatedCo2eq,
-                    // Rows merged into one value stay out of the total only
-                    // when every one of them is marked excluded.
-                    omitFromTotal:
-                      existingValue.omitFromTotal === true &&
-                      row.omitFromTotal === true,
+                    // Merged rows agree on the flag (checked above); a
+                    // notation key stored first takes the row's flag.
+                    omitFromTotal: row.omitFromTotal === true,
                     co2eqYears: 100, // Default value
                     unavailableReason: null,
                     unavailableExplanation: null,

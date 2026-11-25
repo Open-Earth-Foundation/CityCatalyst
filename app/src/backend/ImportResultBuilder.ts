@@ -1,4 +1,5 @@
 import ECRFImportService, {
+  markMixedTotalInclusion,
   supersedeParentsWithChildren,
   type ECRFImportResult,
 } from "@/backend/ECRFImportService";
@@ -66,15 +67,18 @@ export async function applyReviewedRows(
       continue;
     }
     const askedTotal = reviewIssue(row) === "gpc-subsector-scope-combined";
+    const mixedTotal = reviewIssue(row) === "merge-total-inclusion-mixed";
     if (
       !["keep", "reclassify", "correct-scope"].includes(
         String(decision.reviewDecision),
       ) &&
-      // Only the total-at-risk question offers "leave out" and "not sure".
+      // Only the total-at-risk question offers "leave out" and "not sure";
+      // rows that disagree on the total offer "leave out".
       !(
         askedTotal &&
         ["omit", "unsure"].includes(String(decision.reviewDecision))
-      )
+      ) &&
+      !(mixedTotal && decision.reviewDecision === "omit")
     )
       continue;
     const chosenRef =
@@ -148,10 +152,16 @@ export async function applyReviewedRows(
     review.decision = decision.reviewDecision as
       "keep" | "reclassify" | "correct-scope" | "omit" | "unsure";
     // "Leave out" stores the value apart from the totals (GPC Box 4.1).
-    if (askedTotal) row.omitFromTotal = decision.reviewDecision === "omit";
+    if (
+      askedTotal ||
+      (mixedTotal && ["keep", "omit"].includes(review.decision ?? ""))
+    )
+      row.omitFromTotal = decision.reviewDecision === "omit";
   }
-  // A reclassify can move a child into or out of a subsector (CC-1311).
+  // A reclassify can move a child into or out of a subsector (CC-1311), or
+  // next to a row of its new reference that disagrees on the total.
   supersedeParentsWithChildren(result.rows, result.warnings);
+  markMixedTotalInclusion(result.rows);
 }
 
 // Fields a user may correct per row on PDF/AI-extracted imports.

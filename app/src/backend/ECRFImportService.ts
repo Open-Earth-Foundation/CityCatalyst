@@ -15,6 +15,7 @@ import type { ExtractedRow } from "./InventoryExtractionService";
 import type { ImportRowIssue, ParentSupersededDetail } from "@/util/types";
 import { supersedeParentRows } from "./import/parent-child-rows";
 import { resolveImportedTotalCO2e } from "./InventoryImportService";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
 import { excelRowNumber } from "@/util/excel-row-number";
 
@@ -56,6 +57,9 @@ export function supersedeParentsWithChildren(
 ): void {
   for (const row of rows) {
     if (!row.parentSuperseded) continue;
+    // Drop the warning of the earlier run too, so a re-run never repeats it.
+    const stale = warnings.indexOf(parentGapWarning(row, row.parentSuperseded));
+    if (stale !== -1) warnings.splice(stale, 1);
     delete row.parentSuperseded;
     delete row.issue;
     delete row.errors;
@@ -86,12 +90,49 @@ export function supersedeParentsWithChildren(
     row.errors = [
       `Replaced by ${detail.childrenCount} child rows of the same subsector`,
     ];
-    if (severity === "warning") {
-      warnings.push(
-        `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`,
-      );
-    }
+    if (severity === "warning") warnings.push(parentGapWarning(row, detail));
   }
+}
+
+/** Stored apart from the total; omitted references always are (InventoryValue hook). */
+export function isRowOmittedFromTotal(
+  row: Pick<ECRFRowData, "gpcRefNo" | "omitFromTotal">,
+): boolean {
+  return row.omitFromTotal === true || isOmittedGPCReference(row.gpcRefNo);
+}
+
+/**
+ * Valued rows of one reference that disagree on omitFromTotal. Rows of one
+ * reference merge into one stored value (unique per inventory and reference)
+ * with one flag, so merging them would count an excluded amount or hide a
+ * counted one. The import review holds them until they agree.
+ */
+export function mixedTotalInclusionRows(rows: ECRFRowData[]): ECRFRowData[] {
+  const groups = new Map<string, ECRFRowData[]>();
+  for (const row of rows) {
+    if (row.errors?.length || !row.gpcRefNo) continue;
+    if (!hasSignedNumericValue(resolveImportedTotalCO2e(row))) continue;
+    groups.set(row.gpcRefNo, [...(groups.get(row.gpcRefNo) ?? []), row]);
+  }
+  return [...groups.values()].flatMap((group) =>
+    new Set(group.map(isRowOmittedFromTotal)).size > 1 ? group : [],
+  );
+}
+
+/**
+ * Marks those rows for the review. The mark outlives the decisions that make
+ * the rows agree, so they stay listed and the decisions can be changed.
+ */
+export function markMixedTotalInclusion(rows: ECRFRowData[]): void {
+  for (const row of mixedTotalInclusionRows(rows))
+    if (row.review) row.review.mixedTotalInclusion = true;
+}
+
+function parentGapWarning(
+  row: ECRFRowData,
+  detail: ParentSupersededDetail,
+): string {
+  return `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`;
 }
 
 export interface ECRFRowData {
@@ -154,6 +195,8 @@ export interface ECRFRowReviewData {
   scopeBasis?: string | null;
   /** External pipelines only: whether the source counts the row in its total. */
   totalInclusion?: string | null;
+  /** Another row of the same reference disagrees on omitFromTotal. */
+  mixedTotalInclusion?: boolean;
   finalScope?: string | null;
   decisionToken?: string;
   catalogueScope?: number | null;
@@ -756,6 +799,7 @@ export default class ECRFImportService {
     }
 
     supersedeParentsWithChildren(rows, warnings);
+    markMixedTotalInclusion(rows);
     const validRows = rows.filter((r) => !r.errors || r.errors.length === 0);
     if (validRows.length === 0) {
       errors.push("No valid rows found in file");
@@ -1082,6 +1126,7 @@ export default class ECRFImportService {
     }
 
     supersedeParentsWithChildren(rows, warnings);
+    markMixedTotalInclusion(rows);
 
     return {
       rows,

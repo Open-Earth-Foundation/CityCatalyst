@@ -189,6 +189,31 @@ describe("ImportReviewRows", () => {
     expect(html).toContain("import-review-change-scope");
   });
 
+  it("asks whether rows that merge into one value count in the total", () => {
+    const html = render(
+      [
+        {
+          ...row,
+          issue: "merge-total-inclusion-mixed",
+          suggestedRefNo: "I.3.1",
+          chosenRefNo: "I.3.1",
+          value: 20,
+        },
+      ],
+      realT,
+    );
+    expect(html).toContain(
+      strings["import-row-issue-merge-total-inclusion-mixed"].replace(
+        "{{reference}}",
+        "I.3.1",
+      ),
+    );
+    expect(html).toContain(strings["import-review-merge-keep"]);
+    expect(html).toContain(strings["import-review-merge-omit"]);
+    expect(html).toContain(strings["import-review-skip"]);
+    expect(html).not.toContain(strings["import-review-reclassify"]);
+  });
+
   it("renders nothing with no held rows", () => {
     expect(render([])).not.toContain("import-review-rows");
   });

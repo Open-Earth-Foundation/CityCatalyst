@@ -177,6 +177,7 @@
  *                               - subsector-not-split-by-scope
  *                               - gpc-subsector-total-at-risk
  *                               - gpc-subsector-scope-combined
+ *                               - merge-total-inclusion-mixed
  *                           tonnes:
  *                             type: number
  *                             nullable: true

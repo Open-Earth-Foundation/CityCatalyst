@@ -16,6 +16,7 @@ import CityBoundaryService, {
 } from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
 import { toShort } from "@/util/notation-keys";
+import { isUnsplitSubsectorRef } from "@/util/GHGI/reported-totals";
 import fs from "fs";
 import path from "path";
 
@@ -161,9 +162,33 @@ export default class ECRFDownloadService {
 
     // prepare the data for sheet 2
     const dataDictionary = this.transformDataForTemplate2(output);
-    const fugitive_emissions_data =
-      this.groupFugitiveEmissionData(dataDictionary);
-    totals.stationary1 = fugitive_emissions_data?.total;
+
+    // A subsector value with no scope split has no cell of its own: its
+    // subcategories show IE and the subsector note says where the value is.
+    // It stays out of the scope totals (GPC Table 2.1, p. 71; CC-1311).
+    const unsplitNotes = new Map<string, string>();
+    for (const value of output.inventoryValues) {
+      const ref = value.gpcReferenceNumber;
+      const entry = ref ? dataDictionary[ref] : undefined;
+      if (!isUnsplitSubsectorRef(ref) || !entry || entry.total == null)
+        continue;
+      unsplitNotes.set(
+        ref!,
+        t("ecrf-included-elsewhere-unsplit", {
+          ref,
+          tonnes: (Number(entry.total) / 1000).toLocaleString("en-US"),
+        }),
+      );
+    }
+    const unsplitParent = (ref: string) =>
+      unsplitNotes.has(ref.split(".").slice(0, 2).join(".")) &&
+      ref.split(".").length === 3;
+
+    const fugitive_emissions_data = this.groupFugitiveEmissionData(
+      dataDictionary,
+      unsplitNotes,
+    );
+    totals.stationary1 = fugitive_emissions_data.total;
 
     const updatedDataDictionary: Record<string, Template2Entry> = {
       ...dataDictionary,
@@ -194,6 +219,16 @@ export default class ECRFDownloadService {
           if (targetIdentifier === "full-total") {
             // if sector total placeholder read from totals
             replacementValue = totals[referenceNoIdentifier];
+          } else if (
+            targetIdentifier === "explanation" &&
+            unsplitNotes.has(referenceNoIdentifier)
+          ) {
+            replacementValue = [
+              justificationString,
+              unsplitNotes.get(referenceNoIdentifier),
+            ]
+              .filter(Boolean)
+              .join(", ");
           } else if (referenceNoIdentifier in updatedDataDictionary) {
             replacementValue =
               updatedDataDictionary[referenceNoIdentifier]?.[targetIdentifier]; // eg dataDictionary.I.total or dataDictionary.I.notation-key
@@ -222,7 +257,7 @@ export default class ECRFDownloadService {
             }
           } else if (targetIdentifier === "notation-key") {
             // Leave blank. Filling NE here invents a claim the city did not make.
-            replacementValue = "";
+            replacementValue = unsplitParent(referenceNoIdentifier) ? "IE" : "";
           } else if (targetIdentifier === "explanation") {
             replacementValue = justificationString;
           }
@@ -322,43 +357,43 @@ export default class ECRFDownloadService {
     }
   }
 
+  /**
+   * The template has one fugitive row for I.7.1 and I.8.1. An unsplit I.7 or
+   * I.8 value (CC-1311) gives IE to its part without a value of its own and a
+   * note in the explanation; it stays out of the total. A value of either
+   * part wins over the notation keys, as on any other row.
+   */
   private static groupFugitiveEmissionData(
-    subcategoryDataGroup: Record<
-      string,
-      {
-        total?: bigint;
-        "notation-key"?: string;
-        explanation?: string;
-      }
-    >,
-  ) {
-    const {
-      total: totalI71 = BigInt(0),
-      "notation-key": keyI71 = "",
-      explanation: explanationI71 = "",
-    } = subcategoryDataGroup["I.7.1"] || {};
-    const {
-      total: totalI81 = BigInt(0),
-      "notation-key": keyI81 = "",
-      explanation: explanationI81 = "",
-    } = subcategoryDataGroup["I.8.1"] || {};
-
-    // Calculate fugitive emissions total
-    const fugitiveEmissionsTotal = totalI71 + totalI81;
-
-    // Combine notation keys
-    const fugitiveEmissionsNotationKey = [keyI71, keyI81]
-      .filter(Boolean)
-      .join(" / ");
-
-    const fugitiveEmissionsUnavailableReasons = [explanationI71, explanationI81]
-      .filter(Boolean)
-      .join(", ");
+    subcategoryDataGroup: Record<string, Template2Entry>,
+    unsplitNotes: Map<string, string>,
+  ): Template2Entry & { total: bigint } {
+    const parts = ["I.7", "I.8"].map((ref) => {
+      const entry = subcategoryDataGroup[`${ref}.1`];
+      return {
+        total: entry?.total,
+        key:
+          entry?.["notation-key"] ||
+          (!entry && unsplitNotes.has(ref) ? "IE" : ""),
+        explanations: [entry?.explanation, unsplitNotes.get(ref)],
+      };
+    });
+    const hasValue = parts.some((part) => part.total != null);
+    const notationKey = hasValue
+      ? ""
+      : parts
+          .map((part) => part.key)
+          .filter(Boolean)
+          .join(" / ");
 
     return {
-      total: fugitiveEmissionsTotal,
-      "notation-key": fugitiveEmissionsNotationKey,
-      explanation: fugitiveEmissionsUnavailableReasons,
+      total: parts.reduce((sum, part) => sum + (part.total ?? 0n), 0n),
+      "notation-key": notationKey,
+      // The template's placeholder for this row is `fugitive_notation`.
+      notation: notationKey,
+      explanation: parts
+        .flatMap((part) => part.explanations)
+        .filter(Boolean)
+        .join(", "),
     };
   }
 

@@ -8,6 +8,9 @@ export const PUBLIC_RUNTIME_ENV_KEYS = [
   "NEXT_PUBLIC_SUPPORT_EMAILS",
   "NEXT_PUBLIC_CC_CCRA_REPLIT_URL",
   "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID",
+  // core-identity-service OIDC RP (CC-1281); used for signup/logout redirects
+  "NEXT_PUBLIC_IDENTITY_ISSUER",
+  "NEXT_PUBLIC_IDENTITY_CLIENT_ID",
 ] as const;
 
 export type PublicRuntimeEnvKey = (typeof PUBLIC_RUNTIME_ENV_KEYS)[number];

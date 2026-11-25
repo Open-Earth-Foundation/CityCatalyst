@@ -205,6 +205,7 @@ Result:       ❌ FALSE (localStorage wins)
 | `UPLOAD_OWN_DATA_ENABLED` | File upload functionality | ON |
 | `JN_ENABLED` | Journey Navigation (new UI) | ON |
 | `OAUTH_ENABLED` | OAuth authentication | ON |
+| `IDENTITY_SERVICE_LOGIN` | Login via core-identity-service (OIDC RP) | OFF |
 | `ANALYTICS_ENABLED` | Analytics tracking | ON |
 | `CCRA_MODULE` | Climate Change Risk Assessment | OFF |
 | `CONCEPT_NOTE_BUILDER` | Concept Note Builder pages; also requires `CA_SERVICE_INTEGRATION` | OFF |

@@ -1,0 +1,405 @@
+import { readFileSync } from "node:fs";
+
+import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
+import {
+  buildTableBundles,
+  bundleText,
+  continuationChain,
+  parseMarkdownTable,
+  type TableBundle,
+} from "@/util/GHGI/table-bundles";
+
+/**
+ * StructuredDocument as JSON can type it: string literal unions widen to
+ * string. A hand-written fixture must have this shape (checked by
+ * `npx tsc --noEmit -p tests/tsconfig.json`).
+ */
+type JsonShape<T> = T extends string
+  ? string
+  : T extends number | boolean | null
+    ? T
+    : T extends Array<infer U>
+      ? JsonShape<U>[]
+      : T extends object
+        ? { [K in keyof T]: JsonShape<T[K]> }
+        : T;
+
+function assertFixtureShape<_T extends JsonShape<StructuredDocument>>(): void {}
+assertFixtureShape<
+  typeof import("./fixtures/structured/two-tables-one-page.json")
+>();
+assertFixtureShape<
+  typeof import("./fixtures/structured/continued-table.json")
+>();
+
+function loadFixture(name: string): StructuredDocument {
+  return JSON.parse(
+    readFileSync(`tests/fixtures/structured/${name}`, "utf8"),
+  ) as StructuredDocument;
+}
+
+const CURRENT_YEAR = 2026;
+
+describe("parseMarkdownTable", () => {
+  it("counts every row above the separator as a header row", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t1",
+      [
+        "| | 2019 | 2020 |",
+        "| Sector | kt CO2e | kt CO2e |",
+        "| --- | --- | --- |",
+        "| Energy | 1,200 | 1,150 |",
+        "| Waste | 80.3 | 79.9 |",
+      ].join("\n"),
+    );
+    expect(headerRowCount).toBe(2);
+    expect(grid).toHaveLength(4);
+    expect(grid[0][1]).toEqual({ ref: "t1:r0:c1", text: "2019", header: true });
+    expect(grid[1][1].header).toBe(true);
+    expect(grid[2][1]).toEqual({
+      ref: "t1:r2:c1",
+      text: "1,200",
+      header: false,
+    });
+    expect(grid[3][0]).toEqual({
+      ref: "t1:r3:c0",
+      text: "Waste",
+      header: false,
+    });
+  });
+
+  it("keeps an escaped pipe inside its cell", () => {
+    const { grid } = parseMarkdownTable(
+      "t2",
+      "| Name | Value |\n|---|---|\n| Fuel \\| diesel | 3 |",
+    );
+    expect(grid[1]).toHaveLength(2);
+    expect(grid[1][0].text).toBe("Fuel | diesel");
+    expect(grid[1][1]).toEqual({ ref: "t2:r1:c1", text: "3", header: false });
+  });
+
+  it("reads a later separator-like line as a body row", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t4",
+      [
+        "| Sector | CO2 |",
+        "| --- | --- |",
+        "| Energy | 12 |",
+        "| --- | --- |",
+        "| Waste | 3 |",
+      ].join("\n"),
+    );
+    expect(headerRowCount).toBe(1);
+    expect(grid).toHaveLength(4);
+    expect(grid[2].map((cell) => cell.text)).toEqual(["---", "---"]);
+    expect(grid[3][1]).toEqual({ ref: "t4:r3:c1", text: "3", header: false });
+  });
+
+  it("keeps a ragged row short", () => {
+    const { grid } = parseMarkdownTable(
+      "t5",
+      "| Sector | CO2 | CH4 |\n| --- | --- | --- |\n| A | 1 |",
+    );
+    expect(grid[1]).toHaveLength(2);
+    expect(grid[1][1]).toEqual({ ref: "t5:r1:c1", text: "1", header: false });
+  });
+
+  it("reads a row without outer pipes", () => {
+    const { grid } = parseMarkdownTable("t6", "A | 1");
+    expect(grid[0].map((cell) => cell.text)).toEqual(["A", "1"]);
+  });
+
+  it("reads a unit row right below the separator as a header row (R30, Santiago)", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t7",
+      [
+        "| Sector / subsector | Alcance 1 | Alcance 2 | TOTAL (KgCO2e) |",
+        "| --- | --- | --- | --- |",
+        "| Item / Unidad | Valor | Emisiones totales (KgCO2eq) | Emisiones totales (KgCO2eq) |",
+        "| Residencial | 1.234 | 357.198.425 | 358.432.659 |",
+      ].join("\n"),
+    );
+    expect(headerRowCount).toBe(2);
+    expect(grid[1][2]).toEqual({
+      ref: "t7:r1:c2",
+      text: "Emisiones totales (KgCO2eq)",
+      header: true,
+    });
+    expect(grid[2][2].header).toBe(false);
+  });
+
+  it("keeps a row below the separator in the body when it has a number or no unit", () => {
+    const withNumber = parseMarkdownTable(
+      "t8",
+      "| Sector | Total |\n| --- | --- |\n| Energy (kt CO2e) | 1,200 |",
+    );
+    expect(withNumber.headerRowCount).toBe(1);
+    const noUnit = parseMarkdownTable(
+      "t9",
+      "| Sector | A | B |\n| --- | --- | --- |\n| Item | Valor | Nota |\n| Energy | 1 | 2 |",
+    );
+    expect(noUnit.headerRowCount).toBe(1);
+    // A first cell alone does not count: the row label names the unit.
+    const labelOnly = parseMarkdownTable(
+      "t10",
+      "| Sector | A |\n| --- | --- |\n| Waste (t CO2e) | n/a |",
+    );
+    expect(labelOnly.headerRowCount).toBe(1);
+  });
+
+  it("has no header rows without a separator", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t3",
+      "| Industrial | 830.4 |\n| Total | 1,744.5 |",
+    );
+    expect(headerRowCount).toBe(0);
+    expect(grid.flat().every((cell) => !cell.header)).toBe(true);
+  });
+});
+
+describe("buildTableBundles", () => {
+  it("gives each table on a page its own caption, headings and units", () => {
+    const bundles = buildTableBundles(
+      loadFixture("two-tables-one-page.json"),
+      CURRENT_YEAR,
+    );
+    expect(bundles).toHaveLength(2);
+    const [energy, waste] = bundles;
+
+    expect(energy).toMatchObject({
+      tableId: "tbl-3a.md",
+      page: 4,
+      caption: "Table 3: Stationary energy emissions 2021 (kt CO2e)",
+      headings: ["## 4. Sector results 2021"],
+      unitNotes: ["Table 3: Stationary energy emissions 2021 (kt CO2e)"],
+      yearNotes: [2021],
+      headerRowCount: 1,
+      continuationOf: null,
+    });
+    expect(energy.grid[1][1]).toEqual({
+      ref: "tbl-3a.md:r1:c1",
+      text: "1,234.5",
+      header: false,
+    });
+
+    expect(waste).toMatchObject({
+      tableId: "tbl-3b.md",
+      page: 4,
+      caption: "Table 4: Waste emissions (t CO2e)",
+      headings: ["### Waste"],
+      unitNotes: ["Table 4: Waste emissions (t CO2e)", "tCO2e"],
+      yearNotes: [],
+      continuationOf: null,
+    });
+    expect(waste.unitNotes.some((note) => /\bkt\b/i.test(note))).toBe(false);
+  });
+
+  it("attaches a heading only to the tables after it, up to the next table", () => {
+    const doc = loadFixture("two-tables-one-page.json");
+    doc.document.pages[3].blocks[3].content = "### Waste 2019 (kt CO2e)";
+    const [energy, waste] = buildTableBundles(doc, CURRENT_YEAR);
+    expect(energy.headings).toEqual(["## 4. Sector results 2021"]);
+    expect(energy.yearNotes).toEqual([2021]);
+    expect(energy.unitNotes).not.toContain("### Waste 2019 (kt CO2e)");
+    expect(waste.headings).toEqual(["### Waste 2019 (kt CO2e)"]);
+    expect(waste.yearNotes).toEqual([2019]);
+    expect(waste.unitNotes).not.toContain("## 4. Sector results 2021");
+  });
+
+  it("carries the caption and units of a table continued on the next page", () => {
+    const bundles = buildTableBundles(
+      loadFixture("continued-table.json"),
+      CURRENT_YEAR,
+    );
+    expect(bundles.map((b) => [b.tableId, b.page])).toEqual([
+      ["tbl-4.md", 4],
+      ["tbl-5.md", 5],
+    ]);
+    const continued = bundles[1];
+    expect(continued).toMatchObject({
+      continuationOf: "tbl-4.md",
+      caption: "Table 5: Stationary energy emissions 2021 (kt CO2e)",
+      unitNotes: ["Table 5: Stationary energy emissions 2021 (kt CO2e)"],
+      yearNotes: [2021],
+      headerRowCount: 0,
+    });
+    expect(continued.grid[1][1].ref).toBe("tbl-5.md:r1:c1");
+  });
+
+  it("reads a continuation's first Markdown row as data when it holds numbers (R16)", () => {
+    const doc = loadFixture("continued-table.json");
+    doc.document.pages[4].tables[0].content =
+      "| Industrial | 830.4 | 2.5 |\n| --- | --- | --- |\n| Total | 1,744.5 | 4.6 |";
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued.continuationOf).toBe("tbl-4.md");
+    expect(continued.headerRowCount).toBe(0);
+    expect(continued.grid[0].map((cell) => [cell.ref, cell.header])).toEqual([
+      ["tbl-5.md:r0:c0", false],
+      ["tbl-5.md:r0:c1", false],
+      ["tbl-5.md:r0:c2", false],
+    ]);
+    expect(continued.grid[1][1].ref).toBe("tbl-5.md:r1:c1");
+  });
+
+  it("keeps a continuation's repeated header row when it holds only years", () => {
+    const doc = loadFixture("continued-table.json");
+    doc.document.pages[4].tables[0].content =
+      "| Sector | 2020 | 2021 |\n| --- | --- | --- |\n| Total | 1,744.5 | 4.6 |";
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued.continuationOf).toBe("tbl-4.md");
+    expect(continued.headerRowCount).toBe(1);
+    expect(continued.grid[0][1].header).toBe(true);
+  });
+
+  it("does not continue a table with a different column count", () => {
+    const doc = loadFixture("continued-table.json");
+    doc.document.pages[4].tables[0].content =
+      "| Industrial | 830.4 | 2.5 | 0.1 |\n| Total | 1,744.5 | 4.6 | 0.2 |";
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued).toMatchObject({
+      tableId: "tbl-5.md",
+      continuationOf: null,
+      caption: null,
+      unitNotes: [],
+      yearNotes: [],
+    });
+  });
+
+  it("does not continue a table under a heading of its own", () => {
+    const doc = loadFixture("continued-table.json");
+    const page = doc.document.pages[4];
+    for (const block of page.blocks) block.reading_order_index += 1;
+    page.blocks.unshift({
+      ...page.blocks[1],
+      block_id: "p4-bh",
+      reading_order_index: 0,
+      provider_type: "heading",
+      normalized_type: "heading",
+      content: "## Annex B",
+    });
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued).toMatchObject({
+      tableId: "tbl-5.md",
+      headings: ["## Annex B"],
+      continuationOf: null,
+      caption: null,
+      unitNotes: [],
+      yearNotes: [],
+    });
+  });
+
+  it("does not continue a table that has its own caption", () => {
+    const doc = loadFixture("continued-table.json");
+    const page = doc.document.pages[4];
+    page.blocks[1].normalized_type = "caption";
+    page.blocks[1].content = "Table 6: Transport emissions (t CO2e)";
+    doc.document.relationships.push({
+      id: "rel-p4-p4-b0-p4-b1",
+      type: "caption_of_table",
+      from_block_id: "p4-b1",
+      to_block_id: "p4-b0",
+      page_index: 4,
+      provenance: "derived",
+      rule: "nearest_caption_same_page",
+    });
+    const continued = buildTableBundles(doc, CURRENT_YEAR)[1];
+    expect(continued.continuationOf).toBeNull();
+    expect(continued.caption).toBe("Table 6: Transport emissions (t CO2e)");
+    expect(continued.unitNotes).toEqual([
+      "Table 6: Transport emissions (t CO2e)",
+    ]);
+  });
+
+  it("keeps only years from 1990 to the current year", () => {
+    const doc = loadFixture("two-tables-one-page.json");
+    doc.document.pages[3].blocks[1].content =
+      "Table 3: Emissions 2021 and 2050 target, 1985 (kt CO2e)";
+    const [energy] = buildTableBundles(doc, CURRENT_YEAR);
+    expect(energy.yearNotes).toEqual([2021]);
+  });
+});
+
+describe("bundleText", () => {
+  it("renders one line per row, each cell prefixed with its ref", () => {
+    const [energy] = buildTableBundles(
+      loadFixture("two-tables-one-page.json"),
+      CURRENT_YEAR,
+    );
+    const lines = bundleText(energy).split("\n");
+    expect(lines).toContain(
+      "[tbl-3a.md:r0:c0] Sector | [tbl-3a.md:r0:c1] 2021",
+    );
+    expect(lines).toContain(
+      "[tbl-3a.md:r1:c0] Residential | [tbl-3a.md:r1:c1] 1,234.5",
+    );
+    expect(lines).toContain(
+      "Caption: Table 3: Stationary energy emissions 2021 (kt CO2e)",
+    );
+  });
+
+  it("escapes a pipe inside a cell", () => {
+    const { grid, headerRowCount } = parseMarkdownTable(
+      "t2",
+      "| Name | Value |\n|---|---|\n| Fuel \\| diesel | 3 |",
+    );
+    const text = bundleText({
+      tableId: "t2",
+      page: 1,
+      caption: null,
+      headings: [],
+      unitNotes: [],
+      yearNotes: [],
+      headerRowCount,
+      grid,
+      continuationOf: null,
+    });
+    expect(text).toContain("[t2:r1:c0] Fuel \\| diesel | [t2:r1:c1] 3");
+  });
+
+  it("escapes a backslash inside a cell before the pipe", () => {
+    const text = bundleText({
+      tableId: "t2",
+      page: 1,
+      caption: null,
+      headings: [],
+      unitNotes: [],
+      yearNotes: [],
+      headerRowCount: 0,
+      grid: [
+        [
+          { ref: "t2:r0:c0", text: "a\\|b", header: false },
+          { ref: "t2:r0:c1", text: "3", header: false },
+        ],
+      ],
+      continuationOf: null,
+    });
+    expect(text).toBe("Table t2 (page 1)\n[t2:r0:c0] a\\\\\\|b | [t2:r0:c1] 3");
+  });
+});
+
+describe("continuationChain", () => {
+  const bundle = (tableId: string, continuationOf: string | null) =>
+    ({ tableId, continuationOf }) as TableBundle;
+
+  it("walks back to the first table, and stops at a loop or a missing source", () => {
+    const a = bundle("a", null);
+    const b = bundle("b", "a");
+    const c = bundle("c", "b");
+    expect(continuationChain([a, b, c], c).map((x) => x.tableId)).toEqual([
+      "c",
+      "b",
+      "a",
+    ]);
+    const x = bundle("x", "y");
+    const y = bundle("y", "x");
+    expect(continuationChain([x, y], x).map((t) => t.tableId)).toEqual([
+      "x",
+      "y",
+    ]);
+    expect(
+      continuationChain([bundle("d", "gone")], bundle("d", "gone")).map(
+        (t) => t.tableId,
+      ),
+    ).toEqual(["d"]);
+  });
+});

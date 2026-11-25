@@ -1,0 +1,754 @@
+import {
+  detectNumberStyle,
+  isValueInText,
+  isValueInNumbers,
+  numbersInText,
+  numbersOnTableLines,
+  parseNumberString,
+  captionLines,
+  tableCaptionLines,
+  yearEvidence,
+  namesLargeUnit,
+  pageScaleEvidence,
+  isLineItemValueInNumbers,
+  numbersInTableCells,
+  inheritedPageScales,
+  namesPerPerson,
+} from "@/util/GHGI/source-text";
+import type { NumberStyle, Scale } from "@/util/GHGI/source-text";
+
+describe("parseNumberString", () => {
+  it.each<[string, NumberStyle, number | null]>([
+    ["1,5", "unknown", 1.5],
+    ["1,500", "unknown", 1500],
+    ["1.500", "unknown", 1.5],
+    ["1,500", "english", 1500],
+    ["1.500", "european", 1500],
+    ["1,500", "european", 1.5],
+    ["1.234,5", "english", 1234.5],
+    ["1,234.5", "european", 1234.5],
+    ["1,234,567", "european", 1234567],
+    ["1.234.567", "english", 1234567],
+    ["(1,234)", "unknown", -1234],
+    ["−603,983", "unknown", -603983],
+    ["-603,983", "unknown", -603983],
+    ["1 234,5", "european", 1234.5],
+    ["9 559 215", "unknown", 9559215],
+    ["12,25", "unknown", 12.25],
+    ["abc", "unknown", null],
+    ["1,2,3.4.5", "unknown", null],
+  ])("parses %j with style %s as %s", (input, style, expected) => {
+    expect(parseNumberString(input, style)).toBe(expected);
+  });
+});
+
+describe("detectNumberStyle", () => {
+  it("detects european", () => {
+    expect(detectNumberStyle("Total 1.234.567 und 2.345,6")).toBe("european");
+  });
+  it("detects english", () => {
+    expect(detectNumberStyle("Total 1,234,567 and 2,345.6")).toBe("english");
+  });
+  it("is unknown without evidence", () => {
+    expect(detectNumberStyle("Total 48 and 12")).toBe("unknown");
+  });
+  it("is unknown on a tie", () => {
+    expect(detectNumberStyle("1.234.567 and 1,234,567")).toBe("unknown");
+  });
+});
+
+describe("isValueInText", () => {
+  it.each<[number, string, boolean, Scale[]?]>([
+    [9559215, "| TOTAL | 9,559,215 |", true],
+    [9559215, "Total 9,559,215.4", true],
+    // Scaled: the model converted kt to tonnes itself.
+    [9559215, "(kt CO2e) Total 9,559.2", true, [1000]],
+    [-811512, "Forestry (811,512)", true],
+    [-603983, "AFOLU −603,983", true],
+    [-603983, "| AFOLU | -603,983 |", true],
+    [-25639000, "(kt CO2e) Net ( 25,639.0 )", true, [1000]],
+    // The sign must match: a positive answer is not a printed negative.
+    [25639, "Net emissions (25,639)", false],
+    [25639, "Net emissions −25,639", false],
+    [25639, "Net emissions -25,639", false],
+    [-25639, "Net emissions 25,639", false],
+    // A hyphen joining two numbers or words is not a minus.
+    [2021, "Period 2019-2021", true],
+    [2021, "I.1-2021", true],
+    [5000000, "Total 4,876,120", false],
+    [9559215, "about 9.56 million", false],
+    // A short figure never matches scaled: the "2" of CO2e is not 2 Mt.
+    [2000000, "CO2e emissions", false, [1000, 1000000]],
+    // Scaled down: the page prints kg and the model converted to tonnes
+    // (Santiago 2022, CC-950 backtest 2026-11-09).
+    [
+      2145243.596,
+      "| TOTAL DE EMISIONES (NETAS) | 2.145.243.596 |",
+      true,
+      [0.001],
+    ],
+    [841891, "| Subtotal Transporte | 841.891.000 |", true, [0.001]],
+    // A short kg figure never matches: 500 kg is not 0.5 t of a total.
+    [0.5, "500 kg", false, [0.001]],
+  ])("finds %s in %j: %s", (...row) => {
+    const [raw, text, expected, scales] = row;
+    expect(isValueInText(raw, text, undefined, scales)).toBe(expected);
+  });
+});
+
+describe("numbersInText", () => {
+  it("reads a space-grouped number merged and token by token", () => {
+    const values = numbersInText("9 559 215", "unknown").map((n) => n.value);
+    expect(values).toEqual(expect.arrayContaining([9559215, 9, 559, 215]));
+  });
+
+  it("gives the place value of the last digit as step", () => {
+    expect(numbersInText("9,559.2", "english")).toEqual([
+      { value: 9559.2, step: 0.1 },
+    ]);
+  });
+});
+
+describe("captionLines", () => {
+  const text = [
+    "Intro prose that mentions Table 3 in the middle.",
+    "**Table 2: Emissions (kt CO2e)**",
+    "Figure 4 Emissions by sector",
+    "## Summary",
+    "(kt CO2e)",
+    "Total GHGs (metric tonnes CO2e)",
+    "| Sector | 2019 |",
+    "| :--- | ---: |",
+    "| Energy | 5 (approx) |",
+  ].join("\n");
+
+  it("lists tables, figures, headings, unit lines and header rows", () => {
+    expect(captionLines(text)).toEqual([
+      "**Table 2: Emissions (kt CO2e)**",
+      "Figure 4 Emissions by sector",
+      "## Summary",
+      "(kt CO2e)",
+      "Total GHGs (metric tonnes CO2e)",
+      "| Sector | 2019 |",
+    ]);
+  });
+
+  it("tableCaptionLines leaves out figures and unit lines", () => {
+    expect(tableCaptionLines(text)).toEqual([
+      "**Table 2: Emissions (kt CO2e)**",
+      "## Summary",
+      "| Sector | 2019 |",
+    ]);
+  });
+});
+
+describe("yearEvidence", () => {
+  it("other year in a table caption", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions for 2019\n1,000 2,000", 2021, 2026),
+    ).toMatchObject({ kind: "other", years: [2019] });
+  });
+  it("target year", () => {
+    expect(
+      yearEvidence("Table 3-1 Emissions summary for 2021", 2021, 2026).kind,
+    ).toBe("target");
+  });
+  it("a figure heading does not date the table next to it", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("none");
+    expect(tableCaptionLines(page)).toEqual(["| Sector | tCO2e |"]);
+  });
+  it("a figure heading beside a 2021 table heading: target", () => {
+    const page =
+      "## Figure 2: Emissions 2019\n" +
+      "## Table 3 Emissions 2021\n" +
+      "| Sector | tCO2e |\n| --- | --- |\n| Residential | 6,000 |";
+    expect(yearEvidence(page, 2021, 2026).kind).toBe("target");
+  });
+  it.each([2021, 2022])("fiscal 2021/22 is target for %i", (year) => {
+    expect(yearEvidence("Table 4 Emissions 2021/22", year, 2026).kind).toBe(
+      "target",
+    );
+  });
+  it.each(["2020-21", "FY2021", "FY21", "2021-22"])("fiscal %s", (form) => {
+    expect(yearEvidence(`Table 4 Emissions ${form}`, 2021, 2026).kind).toBe(
+      "target",
+    );
+  });
+  it.each([
+    ["FY2021", 2020, "target"],
+    ["FY2021", 2021, "target"],
+    ["FY21", 2020, "target"],
+    ["FY21", 2022, "other"],
+  ])("%s with target %i is %s", (form, year, kind) => {
+    expect(yearEvidence(`Table 4 Emissions ${form}`, year, 2026).kind).toBe(
+      kind,
+    );
+  });
+  it("figure captions are left out", () => {
+    expect(yearEvidence("Figure 2 Emissions 2019", 2021, 2026).kind).toBe(
+      "none",
+    );
+  });
+  it.each(["2005–2019", "2005-2019", "2005 to 2019"])(
+    "range %s is ignored",
+    (range) => {
+      expect(yearEvidence(`Table 9 Trend ${range}`, 2021, 2026).kind).toBe(
+        "none",
+      );
+    },
+  );
+  it("projection year is ignored", () => {
+    expect(yearEvidence("## Targets to 2050", 2021, 2026).kind).toBe("none");
+  });
+  it("year after the current year is ignored", () => {
+    expect(yearEvidence("Table 5 Outlook 2030", 2021, 2026).kind).toBe("none");
+  });
+  it("prose is not a caption", () => {
+    expect(yearEvidence("In 2019 the council grew.", 2021, 2026).kind).toBe(
+      "none",
+    );
+  });
+  // Review Focus 3
+  it("markdown header row names the target", () => {
+    expect(
+      yearEvidence(
+        "| Sector | 2019 | 2021 |\n| --- | --- | --- |\n| A | 1 | 2 |",
+        2021,
+        2026,
+      ).kind,
+    ).toBe("target");
+  });
+  it("several other years in order", () => {
+    expect(
+      yearEvidence("Table 1 Emissions 2018 and 2019", 2021, 2026),
+    ).toMatchObject({ kind: "other", years: [2018, 2019] });
+  });
+});
+
+describe("yearEvidence leadText", () => {
+  it("is the text above the first caption naming another year", () => {
+    const page =
+      "| V.1 | Ganaderia | 49,71 |\n" +
+      "| V.2 | Uso del suelo | -14.041,40 |\n" +
+      "## Tabla de Resultados Inventario 2021\n" +
+      "| I.1.1 | Residencial | 364.749,37 |";
+    const ev = yearEvidence(page, 2022, 2026);
+    expect(ev.kind).toBe("other");
+    expect(ev.leadText).toContain("49,71");
+    expect(ev.leadText).not.toContain("364.749,37");
+  });
+  it("is empty for target and none", () => {
+    expect(yearEvidence("Table 3 Emissions 2021", 2021, 2026).leadText).toBe(
+      "",
+    );
+    expect(yearEvidence("| a | 1 |", 2021, 2026).leadText).toBe("");
+  });
+});
+
+describe("namesLargeUnit", () => {
+  it.each([
+    "Table 2 Emissions (kt CO2e)",
+    "| Sector | ktCO2e |\n| --- | --- |",
+    "| Sector | ktCO₂e |\n| --- | --- |",
+    "Table 3 Emissions (ktCO₂e)",
+    "Table 5 (Mt CO2e)",
+    "Table 5 Mt CO2-e",
+    "Table 7 thousand tonnes CO2e",
+    "Table 8 (Gg)",
+    "Table 9 Emissions (million tonnes CO2e)",
+    "Table 9 million tons",
+  ])("is true for %j", (text) => {
+    expect(namesLargeUnit(text)).toBe(true);
+  });
+
+  it.each([
+    "Total GHGs (metric tonnes CO2e)",
+    "Table 3 (t CO2e)",
+    "Table 4 (mt CO2e)",
+    "about 3 kt of waste",
+    "Table 6 Emissions at Mt Eden and Mt Wellington (t CO2e)",
+  ])("is false for %j", (text) => {
+    expect(namesLargeUnit(text)).toBe(false);
+  });
+});
+
+describe("yearEvidence: comparison and publication lines", () => {
+  it.each([
+    "| Sector | tCO2e | Change since 2016 (%) |\n| --- | --- | --- |",
+    "## Comparison with the 2016 baseline",
+    "# Report published June 2023",
+    "Table 6 Emissions compared with 2016",
+    "Table 6 Changes from 2018",
+    "Table 6 Emissions vs. 2019",
+    "Table 6 Base year 2016 emissions",
+    "## Revised 2024",
+  ])("%j is none for 2021", (text) => {
+    expect(yearEvidence(text, 2021, 2026).kind).toBe("none");
+  });
+  it("a comparison line that names the target is target", () => {
+    expect(
+      yearEvidence(
+        "| Sector | 2021 tCO2e | Change since 2016 (%) |\n| --- | --- | --- |",
+        2021,
+        2026,
+      ),
+    ).toMatchObject({ kind: "target", years: [] });
+  });
+  it("whole words only", () => {
+    // "Fromage" and "prepared" inside other words do not count.
+    expect(yearEvidence("Table 2 Fromagerie 2019", 2021, 2026).kind).toBe(
+      "other",
+    );
+  });
+  it("from before a noun governs no year", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions from transport 2019", 2021, 2026),
+    ).toMatchObject({ kind: "other", years: [2019] });
+  });
+  it("from a range is a range", () => {
+    expect(
+      yearEvidence("Table 5 Emissions from 2016 to 2019", 2021, 2026).kind,
+    ).toBe("none");
+  });
+  it("the table year before a comparison counts", () => {
+    expect(
+      yearEvidence("Table 6 2021 emissions compared with 2016", 2021, 2026),
+    ).toMatchObject({ kind: "target", years: [] });
+  });
+  it.each([
+    ["Table 6 Change since the 2016 inventory", "none"],
+    ["Table 6 Emissions relative to 2018", "none"],
+    ["Table 6 Emissions 2019 versus 2016", "other"],
+    ["Table 6 Change (%) 2019", "other"],
+    ["Table 6 2016 base year, emissions for the 2019 inventory", "other"],
+  ])("%j is %s for 2021", (text, kind) => {
+    expect(yearEvidence(text, 2021, 2026).kind).toBe(kind);
+  });
+  it("other-year caption still counts", () => {
+    expect(
+      yearEvidence("Table A-3 GHG emissions for 2019", 2021, 2026).kind,
+    ).toBe("other");
+  });
+});
+
+describe("namesLargeUnit: table lines over figures", () => {
+  it("a kt figure does not void a tonnes table header", () => {
+    expect(
+      namesLargeUnit(
+        "Figure 3: Emissions by sector (kt CO2e)\n| Sector | tCO2e |\n| --- | --- |",
+      ),
+    ).toBe(false);
+  });
+  it("a kt figure counts when no table line names tonnes", () => {
+    expect(
+      namesLargeUnit(
+        "Figure 3 (kt CO2e)\n| Sector | Emissions |\n| --- | --- |",
+      ),
+    ).toBe(true);
+  });
+  it("a kt unit line does not void a tonnes caption", () => {
+    expect(namesLargeUnit("Table 4 Emissions (tonnes CO2e)\n(kt CO2e)")).toBe(
+      false,
+    );
+  });
+  it("a kt table header wins over a tonnes caption", () => {
+    expect(
+      namesLargeUnit(
+        "Table 4 Emissions (t CO2e)\n| Sector | kt CO2e |\n| --- | --- |",
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("isValueInNumbers", () => {
+  it.each<[number, string]>([
+    [9559215, "| TOTAL | 9,559,215 |"],
+    [9559215, "Total 9,559,215.4"],
+    [9559215, "(kt CO2e) Total 9,559.2"],
+    [-811512, "Forestry (811,512)"],
+    [-603983, "AFOLU −603,983"],
+    [5000000, "Total 4,876,120"],
+    [9559215, "about 9.56 million"],
+    [2000000, "CO2e emissions"],
+  ])("agrees with isValueInText for %s in %j", (raw, text) => {
+    const numbers = numbersInText(text, detectNumberStyle(text));
+    expect(isValueInNumbers(raw, numbers)).toBe(isValueInText(raw, text));
+    expect(isValueInNumbers(raw, numbers, [1000])).toBe(
+      isValueInText(raw, text, undefined, [1000]),
+    );
+  });
+});
+
+describe("scales from unit evidence", () => {
+  it("reads the scale a caption line names", () => {
+    expect(
+      pageScaleEvidence("Table 3: Emissions (kt CO2e)\n| a | 9,559.2 |"),
+    ).toEqual([1000]);
+    expect(pageScaleEvidence("Table 3 (Mt CO2e)")).toEqual([1000000]);
+    expect(pageScaleEvidence("Tabla 2: Emisiones (kg CO2e)")).toEqual([0.001]);
+  });
+
+  it("ignores a unit named only in prose", () => {
+    expect(pageScaleEvidence("About 3 kt of waste was collected.")).toEqual([]);
+  });
+
+  it("finds no scale on a page without unit evidence", () => {
+    expect(pageScaleEvidence("Population 5.000")).toEqual([]);
+    expect(isValueInText(5000000, "Population 5.000", "european")).toBe(false);
+  });
+
+  it("matches a kt figure only when kt scale is allowed", () => {
+    expect(isValueInText(9559215, "Total 9,559.2", "english")).toBe(false);
+    expect(isValueInText(9559215, "Total 9,559.2", "english", [1000])).toBe(
+      true,
+    );
+  });
+
+  it("matches a kg figure (Santiago) only when kg scale is allowed", () => {
+    const text = "2.145.243.596";
+    expect(isValueInText(2145243.596, text, "european", [0.001])).toBe(true);
+    expect(isValueInText(2145243.596, text, "european")).toBe(false);
+  });
+
+  it("does not read a per-person kg header as kg evidence", () => {
+    for (const header of [
+      "| Sector | t CO2e | kg/capita |\n| --- | --- | --- |",
+      "Table 5: Emissions per capita (kg CO2e/capita)",
+      "Table 5: Emissions (kg per capita)",
+      "Table 5: Emissions (kg per person)",
+      "Tabla 5: Emisiones (kg per cápita)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+    expect(
+      pageScaleEvidence("Table 5: Emissions (kg CO2e) and kg/capita"),
+    ).toEqual([0.001]);
+  });
+
+  it("does not read a kg per inhabitant or per head header as kg evidence", () => {
+    expect(pageScaleEvidence("| Sector | kg CO2e/hab. |")).toEqual([]);
+    for (const header of [
+      "Tabla 5: Emisiones (kg/hab)",
+      "Tabla 5: Emisiones (kg/habitante)",
+      "Table 5: Emissions (kg per head)",
+    ]) {
+      expect(pageScaleEvidence(header)).toEqual([]);
+    }
+  });
+
+  it("reads plural and por forms as per person", () => {
+    for (const line of [
+      "Table 5: Emissions (kg CO2e per inhabitants)",
+      "Table 5: Emissions (kg/inhabitants)",
+      "Tabla 5: Emisiones (kg/habitantes)",
+      "Tabla 5: Emisiones (kg CO2e por habitante)",
+      "Tabla 5: Emisiones (kg CO2e por habitantes)",
+      "Tabla 5: Emisiones (kg por cápita)",
+      "Tabla 5: Emisiones (kg por persona)",
+      "Table 5: Emissions (kg per persons)",
+    ]) {
+      expect(pageScaleEvidence(line)).toEqual([]);
+    }
+    expect(namesPerPerson("t CO2e por habitante")).toBe(true);
+    expect(namesPerPerson("t CO2e/inhabitants")).toBe(true);
+    // A word that only starts with the same letters is not per person.
+    expect(namesPerPerson("t CO2e por habitación")).toBe(false);
+    expect(namesPerPerson("Emisiones por sector")).toBe(false);
+  });
+});
+
+describe("numbersOnTableLines", () => {
+  it("reads numbers only on lines containing |", () => {
+    const text = "Total emissions were 300 t.\n| Total | 1,200 |\n";
+    expect(numbersOnTableLines(text, "english").map((n) => n.value)).toEqual([
+      1200,
+    ]);
+  });
+});
+
+describe("parseNumberString with unit, percent or plus sign", () => {
+  it.each<[string, NumberStyle, number]>([
+    ["1234 tCO2e", "unknown", 1234],
+    ["1,234.5 tCO2e", "english", 1234.5],
+    ["9.559.215 t CO2e", "european", 9559215],
+    ["-603,983 tCO2e", "english", -603983],
+    ["+5", "unknown", 5],
+    ["12%", "unknown", 12],
+    ["12,5 %", "european", 12.5],
+    ["1500 kg", "unknown", 1500],
+    ["1.5e3", "unknown", 1500],
+    ["9e2", "european", 900],
+    ["15E+2", "unknown", 1500],
+    ["-2.5e-1", "unknown", -0.25],
+    ["1.5e3 tCO2e", "unknown", 1500],
+  ])("parses %s (%s) as %s", (input, style, expected) => {
+    expect(parseNumberString(input, style)).toBe(expected);
+  });
+
+  it.each(["tCO2e", "abc", "t 1234", "1.2.3 t", "+-5", "%"])(
+    "still rejects %s",
+    (input) => {
+      expect(parseNumberString(input, "unknown")).toBeNull();
+    },
+  );
+});
+
+describe("parseNumberString ambiguous group callback", () => {
+  it("reports a single 3-digit group read with style unknown", () => {
+    const seen: string[] = [];
+    expect(parseNumberString("1.500", "unknown", (s) => seen.push(s))).toBe(
+      1.5,
+    );
+    expect(parseNumberString("1,500", "unknown", (s) => seen.push(s))).toBe(
+      1500,
+    );
+    expect(seen).toEqual(["1.500", "1,500"]);
+  });
+
+  it("does not report when the style is known or the value is not ambiguous", () => {
+    const seen: string[] = [];
+    parseNumberString("1.500", "european", (s) => seen.push(s));
+    parseNumberString("1,500", "english", (s) => seen.push(s));
+    parseNumberString("1.5", "unknown", (s) => seen.push(s));
+    parseNumberString("1,234,567", "unknown", (s) => seen.push(s));
+    expect(seen).toEqual([]);
+  });
+});
+
+describe("thousand MT as kt evidence (Phoenix 2022)", () => {
+  it.each([
+    "Table 2 (thousand MT CO₂e)",
+    "Table ES-2. Stationary Energy GHG Emissions (thousand MT CO₂e)",
+    "Table ES-3. Transportation GHG Emissions (thousand MT CO$_{2}$e)",
+    "Table 2 (Thousand MT)",
+    "Table 2 (THOUSAND MT CO2e)",
+    "Table 2 (thousand mt CO2e)",
+    "Table 2 (thousand MTCO2e)",
+    "Table 2 (thousand metric tons CO2e)",
+    "Table 2 (Thousand Metric Tonnes CO₂e)",
+    "Table 2 (thousand Mt CO2e)",
+  ])("reads %j as kt only", (caption) => {
+    expect(pageScaleEvidence(caption)).toEqual([1000]);
+  });
+
+  it("still reads Mt and MT alone as before", () => {
+    expect(pageScaleEvidence("Table 3 (Mt CO2e)")).toEqual([1000000]);
+    expect(pageScaleEvidence("Table 3 (MT CO2e)")).toEqual([]);
+  });
+});
+
+describe("isLineItemValueInNumbers: short figures with scale evidence", () => {
+  const phoenix = numbersInText(
+    "| Manufacturing Industries & Construction | 80.3 |",
+    "english",
+  );
+
+  it("finds 80,300 printed as 80.3 when kt is allowed", () => {
+    expect(isLineItemValueInNumbers(80300, phoenix, phoenix, [1000])).toBe(
+      true,
+    );
+  });
+
+  it("needs the scale evidence", () => {
+    expect(isLineItemValueInNumbers(80300, phoenix, phoenix, [])).toBe(false);
+  });
+
+  it("leaves the totals check guarded", () => {
+    expect(isValueInNumbers(80300, phoenix, [1000])).toBe(false);
+  });
+
+  it("still matches unscaled values and respects the sign", () => {
+    expect(isLineItemValueInNumbers(80.3, phoenix, phoenix, [])).toBe(true);
+    expect(isLineItemValueInNumbers(-80300, phoenix, phoenix, [1000])).toBe(
+      false,
+    );
+  });
+
+  it("matches a short figure scaled only on a table line", () => {
+    const prose = numbersInText("Emissions are shown in kt CO2e.", "english");
+    expect(isLineItemValueInNumbers(2000, prose, [], [1000])).toBe(false);
+    // Off a table line, the 4-digit scaled match and exact matches still count.
+    const long = numbersInText("Total 9,559.2 and 80.3", "english");
+    expect(isLineItemValueInNumbers(9559200, long, [], [1000])).toBe(true);
+    expect(isLineItemValueInNumbers(80.3, long, [], [1000])).toBe(true);
+    expect(isLineItemValueInNumbers(80300, long, [], [1000])).toBe(false);
+  });
+
+  it("ignores unit and reference digits for short scaled matches", () => {
+    const text = "| Sector | kt CO2e |\n| --- | --- |\n| I.1.1 | 80.3 |";
+    const numbers = numbersInText(text, "english");
+    const cells = numbersInTableCells(text, "english");
+    expect(pageScaleEvidence(text)).toEqual([1000]);
+    expect(isLineItemValueInNumbers(2000, numbers, cells, [1000])).toBe(false);
+    expect(isLineItemValueInNumbers(1100, numbers, cells, [1000])).toBe(false);
+    expect(isLineItemValueInNumbers(80300, numbers, cells, [1000])).toBe(true);
+  });
+
+  it("gives no scale for population 5.000 without a unit caption", () => {
+    const text = "Population 5.000";
+    expect(pageScaleEvidence(text)).toEqual([]);
+    expect(
+      isLineItemValueInNumbers(
+        5000000,
+        numbersInText(text, "european"),
+        [],
+        pageScaleEvidence(text),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("inheritedPageScales: tables continued from the previous page", () => {
+  const santiago = [
+    {
+      page: 20,
+      text: "| Sector | TOTAL (KgCO2e) |\n| --- | --- |\n| Energía | 1 |",
+    },
+    { page: 21, text: "| Residuos | 2 |" },
+    { page: 22, text: "| Uso de Productos | KgCO2e/año | 85.668.155 |" },
+  ];
+
+  it("carries kg evidence from p20 through p21 onto p22", () => {
+    const inherited = inheritedPageScales(santiago);
+    expect(inherited.get(21)).toEqual([0.001]);
+    expect(inherited.get(22)).toEqual([0.001]);
+  });
+
+  it("gives a page with its own unit caption nothing to inherit", () => {
+    const inherited = inheritedPageScales(santiago);
+    expect(inherited.get(20)).toEqual([]);
+  });
+
+  it("lets a page without captions after a kt page allow x1000", () => {
+    const inherited = inheritedPageScales([
+      {
+        page: 9,
+        text: "Table ES-2 (thousand MT CO₂e)\n| Residential | 3,190 |",
+      },
+      { page: 10, text: "| On-road | 6,504 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([1000]);
+  });
+
+  it("does not inherit onto a page with its own tonne caption", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "Table 2 (tonnes CO2e)\n| On-road | 6,504 |" },
+      { page: 11, text: "| Rail | 12 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+  });
+
+  it("does not inherit onto a page that starts with prose", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "Population 5.000\n| Households | 1.234 |" },
+      { page: 11, text: "| Rail | 12 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+  });
+
+  it("resets the chain at a Table caption or heading without a unit", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      { page: 10, text: "| Annex | 1 |\n## Annex B\n| a | 1 |" },
+      { page: 11, text: "| b | 2 |" },
+      { page: 12, text: "| c | 3 |\nTable 7 Population" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([]);
+    expect(inherited.get(12)).toEqual([]);
+  });
+
+  it("takes the nearest unit caption in a chain kt, kg, none", () => {
+    const inherited = inheritedPageScales([
+      { page: 9, text: "Table 1 (kt CO2e)\n| Residential | 3,190 |" },
+      {
+        page: 10,
+        text: "| Energía | 1 |\n| Sector | TOTAL (KgCO2e) |\n| --- | --- |",
+      },
+      { page: 11, text: "\n| Residuos | 2 |" },
+    ]);
+    expect(inherited.get(10)).toEqual([]);
+    expect(inherited.get(11)).toEqual([0.001]);
+  });
+
+  it("does not inherit across a missing page", () => {
+    const inherited = inheritedPageScales([
+      { page: 20, text: "Tabla 2 (kg CO2e)" },
+      { page: 22, text: "| Residuos | 2 |" },
+    ]);
+    expect(inherited.get(22)).toEqual([]);
+  });
+});
+
+describe("Piotr's #3414 review: tolerance, minus forms, unit wording", () => {
+  it("a small printed figure allows only half its last digit", () => {
+    const mt = numbersInText("| Energy | 2.3 |\n| Waste | 3.4 |", "english");
+    expect(isValueInNumbers(1.8, mt)).toBe(false);
+    expect(isValueInNumbers(3.8, mt)).toBe(false);
+    expect(isValueInNumbers(2.3, mt)).toBe(true);
+    expect(isValueInNumbers(2.34, mt)).toBe(true);
+    const kt = numbersInText("| Energy | 12.4 |", "english");
+    expect(isValueInNumbers(12.0, kt)).toBe(false);
+  });
+
+  it("a large figure still allows the model to round to an integer", () => {
+    const n = numbersInText("Total 9,559,215.4", "english");
+    expect(isValueInNumbers(9559215, n)).toBe(true);
+  });
+
+  it.each([
+    "| Forestry | –25,639 |",
+    "| Forestry | - 25,639 |",
+    "| Forestry | – 25,639 |",
+    "- 25,639",
+  ])("reads %s as negative", (text) => {
+    const n = numbersInText(text, "english");
+    expect(isValueInNumbers(-25639, n)).toBe(true);
+    expect(isValueInNumbers(25639, n)).toBe(false);
+  });
+
+  it.each(["2019–2021", "2019 - 2021 change", "CO2–e 25,639"])(
+    "does not read a joining dash in %s as a minus",
+    (text) => {
+      const values = numbersInText(text, "english").map((n) => n.value);
+      expect(values.every((v) => v >= 0)).toBe(true);
+    },
+  );
+
+  it("parses a leading en dash as a minus", () => {
+    expect(parseNumberString("–25,639", "english")).toBe(-25639);
+  });
+
+  it.each<[string, Scale]>([
+    ["Table 3 Emissions (GgCO2e)", 1000],
+    ["Table 3 Emissions (Gg CO2e)", 1000],
+    ["Tabela 3 Emissões (mil tCO2e)", 1000],
+    ["Tabla 2 Emisiones (miles de toneladas de CO2e)", 1000],
+    ["Tabela 2 Emissões (milhares de toneladas CO2e)", 1000],
+    ["Tableau 2 Émissions (milliers de tonnes CO2e)", 1000],
+    ["Tabelle 2 Emissionen (Tsd. t CO2e)", 1000],
+    ["| Sektor | Emissionen in 1.000 t CO2e |\n| --- | --- |", 1000],
+    ["Table 2 Emissions (MMTCO2e)", 1000000],
+    ["Tabla 2 Emisiones (millones de toneladas de CO2e)", 1000000],
+    ["Tableau 2 Émissions (millions de tonnes CO2e)", 1000000],
+    ["Tabelle 2 Emissionen (Mio. t CO2e)", 1000000],
+  ])("%s names scale %d", (caption, scale) => {
+    const text = `${caption}\n| Energy | 686 |`;
+    expect(pageScaleEvidence(text)).toContain(scale);
+    expect(namesLargeUnit(text)).toBe(true);
+  });
+
+  it.each([
+    "Table 2 Emissions (t CO2e)",
+    "Tabla 2 Emisiones (toneladas de CO2e)",
+  ])("%s names no large unit", (caption) => {
+    expect(namesLargeUnit(`${caption}\n| Energy | 686 |`)).toBe(false);
+  });
+});

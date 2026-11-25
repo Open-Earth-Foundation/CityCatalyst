@@ -6,7 +6,23 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
-import { EXTRACTION_RESPONSE_SCHEMA } from "@/backend/extraction-response-schema";
+import {
+  EXTRACTION_RESPONSE_SCHEMA,
+  STRUCTURED_EXTRACTION_RESPONSE_SCHEMA,
+} from "@/backend/extraction-response-schema";
+import type { StructuredDocument } from "@/backend/StructuredDocumentArtifact";
+import {
+  buildTableBundles,
+  bundleText,
+  continuationChain,
+  type TableBundle,
+} from "@/util/GHGI/table-bundles";
+import {
+  findCell,
+  readCell,
+  type CellRead,
+  type SourceCell,
+} from "@/util/GHGI/cell-values";
 import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { applyActivityClassRules } from "@/util/GHGI/activity-class-rules";
@@ -21,6 +37,26 @@ import {
 } from "@/util/GHGI/reported-totals";
 import { toCanonical } from "@/util/notation-keys";
 import {
+  detectNumberStyle,
+  inheritedPageScales,
+  isLineItemValueInNumbers,
+  isValueInNumbers,
+  numbersInText,
+  numbersInTableCells,
+  numbersOnTableLines,
+  parseNumberString,
+  yearEvidence,
+  namesLargeUnit,
+  namesSmallUnit,
+  namesKilogram,
+  namesMegatonne,
+  namesUnit,
+  KILOTONNE_PATTERNS,
+  pageScaleEvidence,
+  type NumberStyle,
+  type Scale,
+} from "@/util/GHGI/source-text";
+import {
   RECONCILIATION_TOLERANCE,
   isGrandTotal,
   namesRemovals,
@@ -32,7 +68,10 @@ import {
   type ReportedTotal,
 } from "@/util/GHGI/extraction-summary";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
-import { SYSTEM_PROMPT } from "@/backend/extraction-system-prompt";
+import {
+  STRUCTURED_SYSTEM_PROMPT,
+  SYSTEM_PROMPT,
+} from "@/backend/extraction-system-prompt";
 import {
   isActivityClass,
   type ActivityClass,
@@ -146,6 +185,38 @@ export type ExtractedRow = {
   directionEvidenceFound?: boolean | null;
   /** Page of the extracted text, when extraction ran page by page. */
   page?: number | null;
+  /**
+   * `not_found`: the model's raw totalCO2e (before the unit multiplier) is not
+   * printed in the row's source text, exactly or with a scale the page's unit
+   * captions allow. The row is kept and goes to review.
+   */
+  valueCheck?: "not_found" | null;
+  /**
+   * `missing`: the row has no unit on a page whose captions name kt, Mt, Gg or
+   * kg. It is kept as tonnes, not rescaled, and goes to review.
+   */
+  unitCheck?: "missing" | null;
+  /**
+   * `caption_other`: the model labeled the row with the target year, but the
+   * page's table captions name only other years. The row keeps its year and
+   * goes to review.
+   */
+  yearCheck?: "caption_other" | null;
+  /**
+   * Structured path: the value as printed in its cell, as the model copied it
+   * (normalized by `readCell` when the read succeeded).
+   */
+  totalCO2eText?: string | null;
+  /** Structured path: the model's reference of the value cell (`t3:r5:c2`). */
+  valueCell?: string | null;
+  /** Structured path: the model's references of the gas cells. */
+  co2Cell?: string | null;
+  ch4Cell?: string | null;
+  n2oCell?: string | null;
+  /** Structured path: the cell the value was read from, when the read succeeded. */
+  sourceCell?: SourceCell | null;
+  /** Structured path: where the value's unit was found (`readCell`). */
+  unitSource?: "column" | "row" | "table" | "caption" | null;
   /** User decision on a row held for review (`mappingConfiguration.overrides`). */
   reviewDecision?: "keep" | "reclassify" | "skip" | null;
   /** Reference the model suggested, kept when the user chose another one. */
@@ -222,6 +293,12 @@ const PROMPT_INJECTION_PREFIXES = [
   "### instruction",
   "### system",
 ];
+
+/**
+ * Message of the LLMError thrown when the year filter drops every row of an
+ * extraction (both paths). Callers match it to fall back or to translate it.
+ */
+export const TARGET_YEAR_NOT_FOUND = "Inventory not found for the target year";
 
 export type ExtractOptions = {
   /** When set, prompt and filter so only rows for this year are returned (inventory year). */
@@ -305,8 +382,9 @@ const EMPTY_RESULT: ExtractionResult = {
  */
 function ownTotalDeviation({ rows, summary }: ExtractionResult): number | null {
   if (!rows.some((row) => row.scope && row.gpcRefNo)) return null;
+  // A total not printed on the page is no reason to ask again (CC-1163).
   const totals = summary.reportedTotals.filter(
-    (t) => isGrandTotal(t) && t.value !== 0,
+    (t) => isGrandTotal(t) && t.value !== 0 && t.inText !== false,
   );
   if (totals.length === 0) return null;
   return Math.min(
@@ -362,6 +440,7 @@ function selectPages(
       (p) =>
         p.result.rows.some((row) => row.year != null) ||
         (p.result.summary.droppedRows.other_year ?? 0) > 0 ||
+        (p.result.summary.droppedRows.caption_year ?? 0) > 0 ||
         (p.result.summary.droppedRows.missing_year ?? 0) > 0,
     );
   const yearAssumed =
@@ -390,7 +469,33 @@ function selectPages(
         },
       };
     });
-  const reportedTotals = sorted.flatMap((p) => p.result.summary.reportedTotals);
+  // A total is tied to its rows when a kept line item of the target year sits on
+  // its page or the page before, or, for a total on a table line (a summary table
+  // far from the detail), on any page. Otherwise it is no target. A total without
+  // page-path information (no page, or no page source) stays unknown.
+  const rowPages = new Set(
+    sorted
+      .filter((p) =>
+        p.result.rows.some(
+          (row) =>
+            (targetYear == null || row.year === targetYear) &&
+            row.yearCheck !== "caption_other",
+        ),
+      )
+      .map((p) => p.page),
+  );
+  const reportedTotals = sorted.flatMap((p) =>
+    p.result.summary.reportedTotals.map((total): ReportedTotal => {
+      if (total.page == null || total.onTableLine === undefined) return total;
+      return {
+        ...total,
+        rowsNearby:
+          rowPages.has(total.page) ||
+          rowPages.has(total.page - 1) ||
+          (total.onTableLine && rowPages.size > 0),
+      };
+    }),
+  );
   // Without any year in the document a wrong table cannot be told apart by year:
   // accept only a run that reconciles within the review tolerance.
   const selectionTolerance = yearAssumed
@@ -456,7 +561,11 @@ function selectPages(
     ) {
       // A run must be consecutive pages of the document.
       if (end > start && sorted[end].page !== sorted[end - 1].page + 1) break;
-      const { rows } = sorted[end].result;
+      // A row held because its table's caption names another year
+      // (`yearCheck`) does not help a run reach a total of the target year.
+      const rows = sorted[end].result.rows.filter(
+        (r) => r.yearCheck !== "caption_other",
+      );
       // Notation keys of the same GPC table carry no value but belong to the run.
       const notationOnly =
         rows.length > 0 &&
@@ -569,7 +678,15 @@ function selectPages(
   }
 
   if (best) {
-    const chosen = sorted.slice(best.start, best.end + 1);
+    // A run reached a total without the rows held for another caption year
+    // (`yearCheck`): they are another year's table, so they are dropped.
+    const heldYear = (row: ExtractedRow) => row.yearCheck === "caption_other";
+    const countable = (p: PageResult) =>
+      p.result.rows.filter((row) => !heldYear(row)).length;
+    // Pages without such rows (another year's table) lead no run.
+    let first = best.start;
+    while (first < best.end && countable(sorted[first]) === 0) first++;
+    const chosen = sorted.slice(first, best.end + 1);
     const otherRows = sorted
       .filter((p) => !chosen.includes(p))
       .reduce((n, p) => n + p.result.rows.length, 0);
@@ -577,6 +694,10 @@ function selectPages(
     const keys = new Set<string>();
     const rows: ExtractedRow[] = [];
     for (const row of chosen.flatMap((p) => p.result.rows)) {
+      if (heldYear(row)) {
+        droppedRows.caption_year = (droppedRows.caption_year ?? 0) + 1;
+        continue;
+      }
       const key = repeatKey(row);
       if (keys.has(key)) {
         droppedRows.duplicate = (droppedRows.duplicate ?? 0) + 1;
@@ -677,7 +798,20 @@ export async function extractInventoryFromDocument(
   documentContent: string,
   options?: ExtractOptions,
 ): Promise<ExtractionResult> {
-  const result = await extractRowsFromDocument(documentContent, options);
+  return withProvenance(
+    await extractRowsFromDocument(documentContent, options),
+    documentContent,
+  );
+}
+
+/**
+ * verifyRowProvenance (references, direction quotes, activity-class rules)
+ * on extracted rows, and the reconciliation sum after it.
+ */
+function withProvenance(
+  result: ExtractionResult,
+  documentContent: string,
+): ExtractionResult {
   const rows = verifyRowProvenance(result.rows, documentContent);
   // The activity-class rules can move a row onto or off a reference left out
   // of the total (I.4.4), so the reconciliation sum is taken after them.
@@ -785,10 +919,8 @@ export function isSchemaRejection(err: unknown): boolean {
   );
 }
 
-async function extractRowsFromDocument(
-  documentContent: string,
-  options?: ExtractOptions,
-): Promise<ExtractionResult> {
+/** Rejects content that starts with instruction-like text (possible prompt injection). */
+function rejectPromptInjection(documentContent: string): void {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
   const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
@@ -803,20 +935,157 @@ async function extractRowsFromDocument(
       LLMErrorCode.BAD_REQUEST,
     );
   }
+}
+
+function yearInstructionFor(targetYear: number | undefined): string {
+  return targetYear != null
+    ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
+    : "";
+}
+
+/** Rows and totals of one page, with whether page evidence dropped or marked rows. */
+type PageExtraction = { result: ExtractionResult; evidenceDropped: boolean };
+
+type PagePhase = {
+  perPage: PageResult[];
+  /** Pages whose extraction failed and were skipped, ascending. */
+  failedPages: number[];
+  /** Pages where caption year or unit evidence dropped rows (see finalizeRows). */
+  evidencePages: Set<number>;
+};
+
+/**
+ * Extracts every page with the LLM concurrency (`mapPool`), for both page
+ * paths. An unusable answer is asked for once more; a page that still fails
+ * is skipped, and when every page fails the first error is thrown. When a
+ * page states its own grand total and its rows miss it, the page is asked
+ * once more and the closer answer kept. `onProgress` gets the completed count.
+ */
+async function extractPages<P extends { page: number }>(
+  pages: P[],
+  extract: (page: P) => Promise<PageExtraction>,
+  onProgress?: (completed: number) => Promise<void>,
+): Promise<PagePhase> {
+  const failedPages: { page: number; error: unknown }[] = [];
+  const evidencePages = new Set<number>();
+  const perPage = await mapPool(
+    pages,
+    getLlmChunkConcurrency(),
+    async (page): Promise<PageResult> => {
+      let finalized: PageExtraction;
+      try {
+        // Like a chunk: only an unusable answer is asked for once more. The
+        // LLM client already retries timeouts, rate limits and provider errors.
+        finalized = await extract(page).catch((error) => {
+          if (!(error instanceof ExtractionResponseError)) throw error;
+          logger.info(
+            { page: page.page, err: error },
+            "Page answer unusable; retrying once",
+          );
+          return extract(page);
+        });
+      } catch (error) {
+        // One unreadable page must not fail the whole import.
+        logger.warn(
+          { page: page.page, err: error },
+          "Page extraction failed; page skipped",
+        );
+        failedPages.push({ page: page.page, error });
+        return { page: page.page, result: EMPTY_RESULT };
+      }
+      // The model sometimes skips a column of a dense table. When the page states
+      // its own grand total and the rows miss it, ask once more; keep the closer.
+      const first = ownTotalDeviation(finalized.result);
+      if (first != null && first > RECONCILIATION_TOLERANCE) {
+        const retry = await extract(page).catch(() => null);
+        const second = retry ? ownTotalDeviation(retry.result) : null;
+        if (retry && second != null && second < first) finalized = retry;
+        logger.info(
+          { page: page.page, first, second },
+          "Page retried: rows did not add up to the page total",
+        );
+      }
+      if (finalized.evidenceDropped) evidencePages.add(page.page);
+      return { page: page.page, result: finalized.result };
+    },
+    async (completedCount) => {
+      if (onProgress) await onProgress(completedCount);
+    },
+  );
+  if (failedPages.length > 0 && failedPages.length === pages.length) {
+    throw failedPages[0].error;
+  }
+  return {
+    perPage,
+    failedPages: failedPages.map((f) => f.page).sort((a, b) => a - b),
+    evidencePages,
+  };
+}
+
+function withFailedPages(
+  result: ExtractionResult,
+  failedPages: number[],
+): ExtractionResult {
+  return failedPages.length > 0
+    ? { ...result, summary: { ...result.summary, failedPages } }
+    : result;
+}
+
+/** selectReconciledPages over a page phase, with its failed pages recorded. */
+function selectPagePhase(
+  phase: PagePhase,
+  year: number | undefined,
+): ExtractionResult {
+  const selected = withFailedPages(
+    selectReconciledPages(phase.perPage, year),
+    phase.failedPages,
+  );
+  logger.info(
+    {
+      pageSelection: selected.summary.pageSelection,
+      selectedPages: selected.summary.selectedPages,
+      importedSum: selected.summary.importedSum,
+      failedPages: phase.failedPages,
+    },
+    "Page selection finished",
+  );
+  return selected;
+}
+
+/** Rows the pages returned, kept or dropped. */
+function extractedRowCount(perPage: PageResult[]): number {
+  return perPage.reduce(
+    (n, p) =>
+      n +
+      p.result.rows.length +
+      Object.values(p.result.summary.droppedRows).reduce(
+        (a, b) => a + (b ?? 0),
+        0,
+      ),
+    0,
+  );
+}
+
+async function extractRowsFromDocument(
+  documentContent: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
+  rejectPromptInjection(documentContent);
 
   const targetYear = options?.targetYear;
-  const yearInstruction =
-    targetYear != null
-      ? `Extract only emissions data for the year ${targetYear}. Do not output rows from tables or columns of other years. Set year to the year each value belongs to (${targetYear}); use null only when the document gives no year.\n\n`
-      : "";
+  const yearInstruction = yearInstructionFor(targetYear);
 
   const year =
     targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
   // One state per extraction: the first schema rejection switches every later call.
   const schemaState: SchemaState = { useSchema: true };
-  const pages = splitDocumentPages(documentContent).filter((p) =>
-    isCandidatePage(p.text),
-  );
+  const allPages = splitDocumentPages(documentContent);
+  const pages = allPages.filter((p) => isCandidatePage(p.text));
+  // Unit evidence of a table continued from previous pages, read from the page
+  // text of every page before the concurrent page calls.
+  const inheritedScales = inheritedPageScales(allPages);
+  // The document's number style, for pages without evidence of their own.
+  const documentStyle = detectNumberStyle(documentContent);
   if (pages.length > 0 && pages.length <= MAX_CANDIDATE_PAGES) {
     logger.info(
       { pageCount: pages.length, totalChars: documentContent.length },
@@ -826,82 +1095,39 @@ async function extractRowsFromDocument(
     // One progress bar for the page phase and a possible chunk fallback, so the
     // bar never moves back. The chunk count is known before any call.
     const progressTotal = pages.length + countChunks(documentContent);
-    const failedPages: { page: number; error: unknown }[] = [];
-    const perPage = await mapPool(
+    const phase = await extractPages(
       pages,
-      getLlmChunkConcurrency(),
-      async (page): Promise<PageResult> => {
-        const extract = async () =>
-          finalizeExtractedRows(
-            normalizeExtractedRows(
-              await extractSegment(
-                page.text,
-                yearInstruction,
-                false,
-                schemaState,
-              ),
-            ).map((row) => ({ ...row, page: page.page })),
-            year,
-            { deferYearAssumption: true },
-          );
-        let result: ExtractionResult;
-        try {
-          // Like a chunk: only an unusable answer is asked for once more. The
-          // LLM client already retries timeouts, rate limits and provider errors.
-          result = await extract().catch((error) => {
-            if (!(error instanceof ExtractionResponseError)) throw error;
-            logger.info(
-              { page: page.page, err: error },
-              "Page answer unusable; retrying once",
-            );
-            return extract();
-          });
-        } catch (error) {
-          // One unreadable page must not fail the whole import.
-          logger.warn(
-            { page: page.page, err: error },
-            "Page extraction failed; page skipped",
-          );
-          failedPages.push({ page: page.page, error });
-          return { page: page.page, result: EMPTY_RESULT };
-        }
-        // The model sometimes skips a column of a dense table. When the page states
-        // its own grand total and the rows miss it, ask once more; keep the closer.
-        const first = ownTotalDeviation(result);
-        if (first != null && first > RECONCILIATION_TOLERANCE) {
-          const retry = await extract().catch(() => null);
-          const second = retry ? ownTotalDeviation(retry) : null;
-          if (retry && second != null && second < first) result = retry;
-          logger.info(
-            { page: page.page, first, second },
-            "Page retried: rows did not add up to the page total",
-          );
-        }
-        return { page: page.page, result };
-      },
-      async (completedCount) => {
-        if (onProgress) {
-          await Promise.resolve(onProgress(completedCount, progressTotal));
-        }
-      },
+      async (page) =>
+        finalizeRows(
+          normalizeExtractedRows(
+            await extractSegment(
+              page.text,
+              yearInstruction,
+              false,
+              schemaState,
+              pageNumberStyle(page.text, documentStyle),
+            ),
+          ).map((row) => ({ ...row, page: page.page })),
+          year,
+          {
+            deferYearAssumption: true,
+            source: { text: page.text, kind: "page" },
+            inheritedScales: inheritedScales.get(page.page) ?? [],
+            fallbackNumberStyle: documentStyle,
+          },
+        ),
+      onProgress
+        ? async (completed) => {
+            await Promise.resolve(onProgress(completed, progressTotal));
+          }
+        : undefined,
     );
-    if (failedPages.length === pages.length) throw failedPages[0].error;
-    const failed = failedPages.map((f) => f.page).sort((a, b) => a - b);
-    const withFailed = (result: ExtractionResult): ExtractionResult =>
-      failed.length > 0
-        ? { ...result, summary: { ...result.summary, failedPages: failed } }
-        : result;
-    const selected = withFailed(selectReconciledPages(perPage, year));
-    logger.info(
-      {
-        pageSelection: selected.summary.pageSelection,
-        selectedPages: selected.summary.selectedPages,
-        importedSum: selected.summary.importedSum,
-        failedPages: failedPages.map((f) => f.page),
-      },
-      "Page selection finished",
-    );
-    if (selected.summary.pageSelection === "fallback") {
+    const { perPage, evidencePages } = phase;
+    const selected = selectPagePhase(phase, year);
+    if (
+      selected.summary.pageSelection === "fallback" &&
+      evidencePages.size === 0
+    ) {
       // No page run reconciles. Per-page rows carry more noise than whole-document
       // chunks (CC-1008 live runs), so extract the old way.
       const chunked = await extractByChunks(
@@ -914,30 +1140,36 @@ async function extractRowsFromDocument(
       const result = finalizeExtractedRows(
         normalizeExtractedRows(chunked),
         year,
+        { source: { text: documentContent, kind: "document" } },
       );
       return checkExtractionResult(
-        withFailed({
-          rows: result.rows,
-          summary: { ...result.summary, pageSelection: "fallback" },
-        }),
+        withFailedPages(
+          {
+            rows: result.rows,
+            summary: { ...result.summary, pageSelection: "fallback" },
+          },
+          phase.failedPages,
+        ),
         chunked.length,
         targetYear,
+      );
+    }
+    if (selected.summary.pageSelection === "fallback") {
+      // Page evidence dropped rows: the chunk path would read them again without
+      // the caption year or unit, so the per-page rows stand.
+      logger.info(
+        { evidencePages: [...evidencePages].sort((a, b) => a - b) },
+        "Chunk fallback skipped: page evidence dropped rows",
       );
     }
     if (onProgress) {
       await Promise.resolve(onProgress(progressTotal, progressTotal));
     }
-    const extractedCount = perPage.reduce(
-      (n, p) =>
-        n +
-        p.result.rows.length +
-        Object.values(p.result.summary.droppedRows).reduce(
-          (a, b) => a + (b ?? 0),
-          0,
-        ),
-      0,
+    return checkExtractionResult(
+      selected,
+      extractedRowCount(perPage),
+      targetYear,
     );
-    return checkExtractionResult(selected, extractedCount, targetYear);
   }
 
   const allRows = await extractByChunks(
@@ -947,9 +1179,439 @@ async function extractRowsFromDocument(
     schemaState,
   );
   return checkExtractionResult(
-    finalizeExtractedRows(normalizeExtractedRows(allRows), year),
+    finalizeExtractedRows(normalizeExtractedRows(allRows), year, {
+      source: { text: documentContent, kind: "document" },
+    }),
     allRows.length,
     targetYear,
+  );
+}
+
+/** The single year (1990 to the current year) a bundle's notes name, or null. */
+function singleNoteYear(bundle: TableBundle): number | null {
+  return bundle.yearNotes.length === 1 ? bundle.yearNotes[0] : null;
+}
+
+/**
+ * True when a successful read is in tonnes: its unit is known, or no level
+ * named a unit (`unitSource` null: not a conflict, not `MT`) and its table has
+ * no kt, Mt, Gg or kg evidence.
+ */
+function readsAsTonnes(
+  read: Extract<CellRead, { ok: true }>,
+  bundle: TableBundle,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
+): boolean {
+  if (read.unit != null) return true;
+  const unitless = !read.unitConflict && read.unitSource == null;
+  return unitless && !hasScaleEvidence(bundle);
+}
+
+/**
+ * The gas cell `ref` in tonnes, or null: it must be in the value cell's table
+ * and row, read (`readCell` on the cell's own text, so the parse, per-person
+ * and unit checks apply), and be in tonnes (`readsAsTonnes`).
+ */
+function gasFromCell(
+  bundles: TableBundle[],
+  ref: string | null | undefined,
+  valueCell: NonNullable<ReturnType<typeof findCell>>,
+  style: NumberStyle,
+  currentYear: number,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
+): number | null {
+  if (!ref) return null;
+  const found = findCell(bundles, ref);
+  if (
+    !found ||
+    found.bundle !== valueCell.bundle ||
+    found.row !== valueCell.row
+  ) {
+    return null;
+  }
+  // The model names the gas cell but copies no text: the cell's own text is read.
+  const read = readCell(bundles, ref, found.cell.text, style, currentYear);
+  if (!read.ok || !readsAsTonnes(read, found.bundle, hasScaleEvidence)) {
+    return null;
+  }
+  return read.tonnes;
+}
+
+/**
+ * Replaces the model's numbers by what code reads from the cells (structured
+ * path). The value cell must be in a table of the row's own page (`row.page`;
+ * `readCell` still follows the continuation chain for headers). For a row
+ * whose value cell reads, the model's totalCO2e and unit are ignored: the
+ * value is the cell's, in tonnes; `unit` is "t". A cell with no unit is
+ * tonnes when its table has no kt, Mt, Gg or kg evidence (`hasScaleEvidence`,
+ * as stage 1 reads a page without it) and the model's own unit is tonnes or
+ * absent or not a known unit; otherwise (a model unit of a known factor
+ * other than 1, such as kt, Mt or kg: R26), and for a unit conflict or `MT`,
+ * `unit` is null with
+ * `unitCheck: "missing"` (kept as printed). The
+ * year is the cell's column year, else the single year of its table's notes,
+ * else the model's. A row whose cell does not read (no cell on its page, text
+ * not in the cell, not a number, per-person column), or that names no cell,
+ * keeps the model's value and unit for review (`valueCheck: "not_found"`);
+ * finalizeRows converts it with that unit. Gases come only from cells in the value cell's table
+ * and row, in tonnes (`gasFromCell`); any other gas is null.
+ */
+function readRowCells(
+  row: ExtractedRow,
+  bundles: TableBundle[],
+  style: NumberStyle,
+  currentYear: number,
+  hasScaleEvidence: (bundle: TableBundle) => boolean,
+): ExtractedRow {
+  const out: ExtractedRow = { ...row, co2: null, ch4: null, n2o: null };
+  const found = row.valueCell ? findCell(bundles, row.valueCell) : null;
+  const onPage = found != null && found.bundle.page === row.page;
+  const read = onPage
+    ? readCell(bundles, row.valueCell, row.totalCO2eText, style, currentYear)
+    : null;
+  if (!read?.ok || !found) {
+    // Kept in the model's number and unit: finalizeRows converts it (an
+    // unknown unit is dropped there) and checks a total in the page text.
+    if (out.totalCO2e != null) out.valueCheck = "not_found";
+    return out;
+  }
+  const gas = (ref: string | null | undefined) =>
+    gasFromCell(bundles, ref, found, style, currentYear, hasScaleEvidence);
+  out.co2 = gas(row.co2Cell);
+  out.ch4 = gas(row.ch4Cell);
+  out.n2o = gas(row.n2oCell);
+  out.totalCO2e = read.tonnes;
+  out.totalCO2eText = read.printed;
+  // No level names a unit, yet the model read a known unit other than
+  // tonnes (kt, Mt, kg): code cannot tell which is right (R26). An unknown
+  // or ambiguous model unit (`MT`, `tCO_{2}e` OCR markup) is not evidence.
+  const modelFactor =
+    row.unit && namesKilogram(row.unit) ? 0.001 : tonnesMultiplier(row.unit);
+  const modelUnitDiffers =
+    read.unitSource == null &&
+    !read.unitConflict &&
+    modelFactor != null &&
+    modelFactor !== 1;
+  const tonnes =
+    !modelUnitDiffers && readsAsTonnes(read, found.bundle, hasScaleEvidence);
+  out.unit = tonnes ? "t" : null;
+  out.unitSource = read.unitSource;
+  if (!tonnes) out.unitCheck = "missing";
+  out.sourceCell = {
+    tableId: found.bundle.tableId,
+    page: found.bundle.page,
+    row: found.row,
+    col: found.col,
+  };
+  out.year = read.columnYear ?? singleNoteYear(found.bundle) ?? row.year;
+  return out;
+}
+
+/** Cell references and printed text of one model row (structured path). */
+function cellFields(
+  raw: Record<string, unknown>,
+): Pick<
+  ExtractedRow,
+  "valueCell" | "totalCO2eText" | "co2Cell" | "ch4Cell" | "n2oCell"
+> {
+  const text = (value: unknown): string | null => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return String(value);
+    }
+    return typeof value === "string" && !isPlaceholderOrEmpty(value)
+      ? value.trim()
+      : null;
+  };
+  return {
+    valueCell: text(raw.valueCell),
+    totalCO2eText: text(raw.totalCO2eText),
+    co2Cell: text(raw.co2Cell),
+    ch4Cell: text(raw.ch4Cell),
+    n2oCell: text(raw.n2oCell),
+  };
+}
+
+/**
+ * Structured path, the Markdown summary-table rule (R20): a total read from a
+ * cell is near its rows (`rowsNearby`) when its table's continuation chain
+ * holds a kept line item of the target year, or when the document keeps any
+ * line item of the target year (a summary table far from its detail tables;
+ * a cell is on a table line by construction). The second case contains the
+ * first, so any kept line item of the year decides. A total without a cell
+ * keeps the page check of finalizeRows (`page`, `onTableLine`), and
+ * selectPages applies the page rule to it (R21).
+ */
+function withTableTargets(
+  perPage: PageResult[],
+  year: number | undefined,
+): PageResult[] {
+  const anyRows = perPage
+    .flatMap((p) => p.result.rows)
+    .some((row) => year == null || row.year == null || row.year === year);
+  return perPage.map((p) => ({
+    page: p.page,
+    result: {
+      ...p.result,
+      summary: {
+        ...p.result.summary,
+        reportedTotals: p.result.summary.reportedTotals.map((total) =>
+          total.sourceCell == null ? total : { ...total, rowsNearby: anyRows },
+        ),
+      },
+    },
+  }));
+}
+
+/** The page's text outside its tables (headings, captions, prose), in reading order. */
+function pageTextOutsideTables(doc: StructuredDocument, page: number): string {
+  return (
+    doc.document.pages.find((p) => p.page_index + 1 === page)?.blocks ?? []
+  )
+    .filter((block) => block.related_table_id == null && block.content.trim())
+    .sort((a, b) => a.reading_order_index - b.reading_order_index)
+    .map((block) => block.content.trim())
+    .join("\n\n");
+}
+
+/**
+ * True when a table, or a table up its continuation chain, has kt, Mt, Gg or
+ * kg evidence: in its caption, headings, unit notes or header cells, or in
+ * the text outside the tables of its page (`namesLargeUnit`, `namesSmallUnit`:
+ * the stage 1 page rule). A cell with no unit there is then not tonnes.
+ */
+function tableScaleEvidence(
+  doc: StructuredDocument,
+  bundles: TableBundle[],
+  bundle: TableBundle,
+): boolean {
+  return continuationChain(bundles, bundle).some((b) => {
+    const notes = [
+      ...(b.caption ? [b.caption] : []),
+      ...b.headings,
+      ...b.unitNotes,
+      ...b.grid
+        .slice(0, b.headerRowCount)
+        .flat()
+        .map((cell) => cell.text),
+    ];
+    const pageText = pageTextOutsideTables(doc, b.page);
+    return (
+      notes.some(
+        (line) =>
+          namesUnit(line, KILOTONNE_PATTERNS) ||
+          namesMegatonne(line) ||
+          namesKilogram(line),
+      ) ||
+      namesLargeUnit(pageText) ||
+      namesSmallUnit(pageText)
+    );
+  });
+}
+
+/**
+ * The user message of one page on the structured path: the page's table
+ * bundles (`bundleText`), with the column headers of the table a continuation
+ * continues, then the page text outside the tables.
+ */
+function structuredPagePrompt(
+  doc: StructuredDocument,
+  bundles: TableBundle[],
+  page: number,
+): string {
+  const tables = bundles
+    .filter((bundle) => bundle.page === page)
+    .map((bundle) => {
+      const text = bundleText(bundle);
+      const source = bundle.continuationOf
+        ? bundles.find((b) => b.tableId === bundle.continuationOf)
+        : null;
+      if (!source || source.headerRowCount === 0) return text;
+      const columns = source.grid
+        .slice(0, source.headerRowCount)
+        .map((cells) => cells.map((cell) => cell.text).join(" | "));
+      return `${text}\nColumns of ${source.tableId}: ${columns.join(" / ")}`;
+    });
+  const pageText = pageTextOutsideTables(doc, page);
+  return `Tables:\n\n${tables.join("\n\n")}\n\nPage text outside the tables:\n\n${pageText || "(none)"}`;
+}
+
+/**
+ * Extract inventory rows from the stored structured OCR document: one call
+ * per page that has tables, with that page's table bundles. The model names
+ * the cell of each row and total and copies its text; code reads the value,
+ * its unit and its column year from the cell (`readCell`). A row whose cell
+ * does not read goes to review (`valueCheck: "not_found"`). A total read from
+ * a cell is a target when the document keeps a line item of the target year
+ * (R20); a total without a cell is checked in the page's Markdown as on the
+ * Markdown path (R21). A candidate page without a table (`isCandidatePage`)
+ * is read with the Markdown page prompt and the stage 1 checks, so totals
+ * printed only in prose are found (R31); its rows join the same page
+ * selection. Page selection, the provenance checks and the GPC references are
+ * those of the Markdown path; `markdown`, the OCR Markdown of the same job,
+ * feeds the provenance checks. PDF import jobs call it only when
+ * `GHGI_STRUCTURED_EXTRACTION` is on (see `PdfOcrService`).
+ *
+ * @throws LLMError with BAD_REQUEST if the Markdown, a page's text or a
+ *   table's cells look like prompt-injection, and "Inventory not found for
+ *   the target year" when the year filter drops every row (as the Markdown path)
+ */
+export async function extractInventoryFromStructured(
+  doc: StructuredDocument,
+  markdown: string,
+  options?: ExtractOptions,
+): Promise<ExtractionResult> {
+  rejectPromptInjection(markdown);
+  const targetYear = options?.targetYear;
+  const year =
+    targetYear != null && Number.isInteger(targetYear) ? targetYear : undefined;
+  const yearInstruction = yearInstructionFor(targetYear);
+  const currentYear = new Date().getUTCFullYear();
+  const bundles = buildTableBundles(doc, currentYear);
+  const style = detectNumberStyle(markdown);
+  const scaleEvidence = new Map(
+    bundles.map((bundle) => [
+      bundle.tableId,
+      tableScaleEvidence(doc, bundles, bundle),
+    ]),
+  );
+  const hasScaleEvidence = (bundle: TableBundle) =>
+    scaleEvidence.get(bundle.tableId) ?? true;
+  const markdownPages = splitDocumentPages(markdown);
+  const markdownByPage = new Map(markdownPages.map((p) => [p.page, p.text]));
+  const inheritedScales = inheritedPageScales(markdownPages);
+  const tablePages = new Set(bundles.map((bundle) => bundle.page));
+  type StructuredPage =
+    | { page: number; kind: "tables"; prompt: string }
+    | { page: number; kind: "prose"; text: string };
+  // Pages with tables get the cells prompt; candidate pages without a table
+  // get the Markdown page prompt, so totals printed only in prose exist
+  // (R31, Masterton).
+  const pages: StructuredPage[] = [
+    ...[...tablePages].map((page): StructuredPage => ({
+      page,
+      kind: "tables",
+      prompt: structuredPagePrompt(doc, bundles, page),
+    })),
+    ...markdownPages
+      .filter((p) => !tablePages.has(p.page) && isCandidatePage(p.text))
+      .map((p): StructuredPage => ({
+        page: p.page,
+        kind: "prose",
+        text: p.text,
+      })),
+  ].sort((a, b) => a.page - b.page);
+  // Defense in depth: the Markdown check above reads only the first 400
+  // characters of the document, and each check reads only the start of its
+  // text. So every piece that goes into a prompt is checked on its own,
+  // before any call: each text block outside the tables of a table page, the
+  // Markdown of each prose page, and each table's caption, headings, unit
+  // notes and cells (I4).
+  for (const page of pages) {
+    if (page.kind === "prose") rejectPromptInjection(page.text);
+  }
+  const tablePageBlocks = doc.document.pages
+    .filter((p) => tablePages.has(p.page_index + 1))
+    .flatMap((p) => p.blocks)
+    .filter((block) => block.related_table_id == null);
+  for (const block of tablePageBlocks) rejectPromptInjection(block.content);
+  for (const bundle of bundles) {
+    for (const text of [
+      ...(bundle.caption ? [bundle.caption] : []),
+      ...bundle.headings,
+      ...bundle.unitNotes,
+      ...bundle.grid.flat().map((cell) => cell.text),
+    ]) {
+      rejectPromptInjection(text);
+    }
+  }
+  logger.info(
+    {
+      pageCount: pages.length,
+      prosePageCount: pages.filter((p) => p.kind === "prose").length,
+      tableCount: bundles.length,
+    },
+    "Extraction from structured tables page by page",
+  );
+  if (pages.length === 0) {
+    return withProvenance(
+      checkExtractionResult(
+        {
+          rows: [],
+          summary: { ...EMPTY_RESULT.summary, targetYear: year ?? null },
+        },
+        0,
+        targetYear,
+      ),
+      markdown,
+    );
+  }
+  const schemaState: SchemaState = { useSchema: true };
+  const onProgress = options?.onChunkProgress;
+  const progressTotal = pages.length;
+  const phase = await extractPages(
+    pages,
+    async (item) => {
+      const { page } = item;
+      if (item.kind === "prose") {
+        // As the Markdown path reads a page, with its stage 1 checks (R21).
+        return finalizeRows(
+          normalizeExtractedRows(
+            await extractSegment(
+              item.text,
+              yearInstruction,
+              false,
+              schemaState,
+              pageNumberStyle(item.text, style),
+            ),
+          ).map((row) => ({ ...row, page })),
+          year,
+          {
+            deferYearAssumption: true,
+            source: { text: item.text, kind: "page" },
+            inheritedScales: inheritedScales.get(page) ?? [],
+            currentYear,
+            fallbackNumberStyle: style,
+          },
+        );
+      }
+      const raw = await callExtractionModel(
+        yearInstruction + item.prompt,
+        false,
+        schemaState,
+        STRUCTURED_PROMPT,
+      );
+      const rows = normalizeRows(raw, style).map((row, index) =>
+        readRowCells(
+          { ...row, ...cellFields(raw[index]), page },
+          bundles,
+          style,
+          currentYear,
+          hasScaleEvidence,
+        ),
+      );
+      return finalizeRows(normalizeExtractedRows(rows), year, {
+        deferYearAssumption: true,
+        readFromCells: true,
+        currentYear,
+        totalsPageText: markdownByPage.get(page),
+        inheritedScales: inheritedScales.get(page) ?? [],
+        fallbackNumberStyle: style,
+      });
+    },
+    onProgress
+      ? async (completed) => {
+          await Promise.resolve(onProgress(completed, progressTotal));
+        }
+      : undefined,
+  );
+  const perPage = withTableTargets(phase.perPage, year);
+  const selected = selectPagePhase({ ...phase, perPage }, year);
+  if (onProgress) {
+    await Promise.resolve(onProgress(progressTotal, progressTotal));
+  }
+  return withProvenance(
+    checkExtractionResult(selected, extractedRowCount(perPage), targetYear),
+    markdown,
   );
 }
 
@@ -972,6 +1634,7 @@ async function extractByChunks(
   progress?: { offset: number; total: number },
 ): Promise<ExtractedRow[]> {
   const onProgress = options?.onChunkProgress;
+  const style = detectNumberStyle(documentContent);
   let allRows: ExtractedRow[];
 
   if (documentContent.length <= CHUNK_THRESHOLD) {
@@ -985,6 +1648,7 @@ async function extractByChunks(
       yearInstruction,
       false,
       schemaState,
+      style,
     );
     if (progress && onProgress) {
       await Promise.resolve(onProgress(progress.offset + 1, progress.total));
@@ -1001,7 +1665,7 @@ async function extractByChunks(
       chunks,
       concurrency,
       async (chunk) =>
-        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState),
+        extractSegmentWithRetry(chunk, segmentPrefix, true, schemaState, style),
       async (completedCount, total) => {
         if (onProgress) {
           await Promise.resolve(
@@ -1033,17 +1697,22 @@ async function extractSegmentWithRetry(
   promptPrefix: string,
   isSegment: boolean,
   schemaState: SchemaState,
+  style?: NumberStyle,
 ): Promise<ExtractedRow[]> {
-  return extractSegment(content, promptPrefix, isSegment, schemaState).catch(
-    (error) => {
-      if (!(error instanceof ExtractionResponseError)) throw error;
-      logger.info(
-        { isSegment, err: error },
-        "Extraction answer unusable; retrying once",
-      );
-      return extractSegment(content, promptPrefix, isSegment, schemaState);
-    },
-  );
+  return extractSegment(
+    content,
+    promptPrefix,
+    isSegment,
+    schemaState,
+    style,
+  ).catch((error) => {
+    if (!(error instanceof ExtractionResponseError)) throw error;
+    logger.info(
+      { isSegment, err: error },
+      "Extraction answer unusable; retrying once",
+    );
+    return extractSegment(content, promptPrefix, isSegment, schemaState, style);
+  });
 }
 
 /** Log and reject empty results the same way for the page and chunk paths. */
@@ -1068,13 +1737,11 @@ function checkExtractionResult(
     );
     if (
       (summary.droppedRows.other_year ?? 0) +
+        (summary.droppedRows.caption_year ?? 0) +
         (summary.droppedRows.missing_year ?? 0) >
       0
     ) {
-      throw new LLMError(
-        "Inventory not found for the target year",
-        LLMErrorCode.BAD_REQUEST,
-      );
+      throw new LLMError(TARGET_YEAR_NOT_FOUND, LLMErrorCode.BAD_REQUEST);
     }
   }
 
@@ -1157,6 +1824,22 @@ export function mergeAndDedupeRows(
   return out;
 }
 
+/** System prompt and strict response schema of one extraction call. */
+type ExtractionPrompt = {
+  system: string;
+  schema: { name: string; schema: Record<string, unknown> };
+};
+
+const MARKDOWN_PROMPT: ExtractionPrompt = {
+  system: SYSTEM_PROMPT,
+  schema: EXTRACTION_RESPONSE_SCHEMA,
+};
+
+const STRUCTURED_PROMPT: ExtractionPrompt = {
+  system: STRUCTURED_SYSTEM_PROMPT,
+  schema: STRUCTURED_EXTRACTION_RESPONSE_SCHEMA,
+};
+
 /**
  * Run one LLM extraction on a single document or segment. Returns normalized rows only.
  */
@@ -1165,21 +1848,36 @@ async function extractSegment(
   prefix: string,
   isSegment: boolean,
   state: SchemaState,
+  style: NumberStyle = detectNumberStyle(content),
 ): Promise<ExtractedRow[]> {
   const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
+  return normalizeRows(
+    await callExtractionModel(userContent, isSegment, state, MARKDOWN_PROMPT),
+    style,
+  );
+}
 
+/**
+ * One extraction call: the strict schema first, jsonMode once a provider
+ * rejects it (shared `state`); a cut-off answer throws ExtractionResponseError.
+ * Returns the parsed row objects, not yet normalized.
+ */
+async function callExtractionModel(
+  userContent: string,
+  isSegment: boolean,
+  state: SchemaState,
+  prompt: ExtractionPrompt,
+): Promise<Record<string, unknown>[]> {
   const client = createLLMClient();
   const call = async (structured: boolean): Promise<string> => {
     const started = Date.now();
     const { content, model, usage, finishReason } = await client.complete({
       use: "pdf_extraction",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: prompt.system },
         { role: "user", content: userContent },
       ],
-      ...(structured
-        ? { jsonSchema: EXTRACTION_RESPONSE_SCHEMA }
-        : { jsonMode: true }),
+      ...(structured ? { jsonSchema: prompt.schema } : { jsonMode: true }),
       // Covers reasoning tokens too. Kept as a guard: a runaway answer can hit it
       // (CC-1191: one page reached 16k tokens, its retry finished at about 5k).
       maxTokens: 16000,
@@ -1233,8 +1931,7 @@ async function extractSegment(
   );
   logger.debug({ extractionResponse: truncated }, "Extraction LLM output");
 
-  const parsed = parseExtractionResponse(responseContent);
-  return normalizeRows(parsed);
+  return parseExtractionResponse(responseContent);
 }
 
 /**
@@ -1469,11 +2166,6 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   );
 }
 
-/** Strip commas and spaces used as thousands separators so "48,000" and "48 000" parse correctly. */
-function normalizeNumberString(s: string): string {
-  return String(s).replace(/,/g, "").replace(/\s+/g, "").trim();
-}
-
 /** Treat "-", "N/A", empty as missing (model sometimes outputs these instead of null). */
 function isPlaceholderOrEmpty(s: string): boolean {
   const t = s.trim().toLowerCase();
@@ -1489,7 +2181,15 @@ function normalizeScopeString(s: string): "1" | "2" | "3" | null {
   return null;
 }
 
-function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
+function normalizeRows(
+  raw: Record<string, unknown>[],
+  style: NumberStyle,
+): ExtractedRow[] {
+  const logAmbiguous = (value: string) =>
+    logger.info(
+      { value },
+      "Ambiguous 3-digit group parsed with number style unknown",
+    );
   return raw.map((row) => {
     const out: ExtractedRow = {
       year: null,
@@ -1516,7 +2216,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.totalCO2e === "number" && Number.isFinite(row.totalCO2e)) {
       out.totalCO2e = row.totalCO2e;
     } else if (typeof row.totalCO2e === "string") {
-      const n = parseFloat(normalizeNumberString(row.totalCO2e));
+      const n = parseNumberString(row.totalCO2e, style, logAmbiguous);
       if (Number.isFinite(n)) out.totalCO2e = n;
     }
     if (row.refSource === "document" || row.refSource === "inferred") {
@@ -1556,19 +2256,19 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
     if (typeof row.co2 === "number" && Number.isFinite(row.co2)) {
       out.co2 = row.co2;
     } else if (typeof row.co2 === "string") {
-      const n = parseFloat(normalizeNumberString(row.co2));
+      const n = parseNumberString(row.co2, style, logAmbiguous);
       if (Number.isFinite(n)) out.co2 = n;
     }
     if (typeof row.ch4 === "number" && Number.isFinite(row.ch4)) {
       out.ch4 = row.ch4;
     } else if (typeof row.ch4 === "string") {
-      const n = parseFloat(normalizeNumberString(row.ch4));
+      const n = parseNumberString(row.ch4, style, logAmbiguous);
       if (Number.isFinite(n)) out.ch4 = n;
     }
     if (typeof row.n2o === "number" && Number.isFinite(row.n2o)) {
       out.n2o = row.n2o;
     } else if (typeof row.n2o === "string") {
-      const n = parseFloat(normalizeNumberString(row.n2o));
+      const n = parseNumberString(row.n2o, style, logAmbiguous);
       if (Number.isFinite(n)) out.n2o = n;
     }
     if (typeof row.source === "string" && !isPlaceholderOrEmpty(row.source))
@@ -1607,7 +2307,7 @@ function normalizeRows(raw: Record<string, unknown>[]): ExtractedRow[] {
       typeof row.activityAmount === "string" &&
       !isPlaceholderOrEmpty(row.activityAmount)
     ) {
-      const n = parseFloat(normalizeNumberString(row.activityAmount));
+      const n = parseNumberString(row.activityAmount, style, logAmbiguous);
       if (Number.isFinite(n)) out.activityAmount = n;
     }
     return out;
@@ -1825,40 +2525,277 @@ function repeatKey(row: ExtractedRow): string {
 }
 
 /**
- * Turn LLM rows into importable rows plus a reconciliation summary:
- * - subtotal and total rows leave the rows and go to reportedTotals;
- * - units are converted to tonnes, rows with an unknown unit are dropped;
- * - with a target year, rows of another year or without a year are dropped when
- *   any row names a year; only when no row names a year is the target year assumed;
- * - rows repeating the same year, reference, scope and activity are dropped.
+ * The text the model read: one page, or the whole document on the chunk path.
+ * A page allows the scales its unit captions justify (`pageScaleEvidence`),
+ * plus `FinalizeOptions.inheritedScales`, in the in-text checks. A document
+ * allows its line items the scales its caption lines justify
+ * (`pageScaleEvidence` over the whole text, R24) and its totals exact
+ * matches only.
  */
+export type FinalizeSource = { text: string; kind: "page" | "document" };
+
 export type FinalizeOptions = {
   /**
    * Keep year-less rows as they are when no row names a year, instead of assigning
    * the target year. Page selection decides later, with every page in view.
    */
   deferYearAssumption?: boolean;
+  /**
+   * Source text of the rows. When set, each reported total records whether its
+   * value is printed there (`inText`; on a page also `page` and `onTableLine`),
+   * and a line item whose raw value is not printed there gets
+   * `valueCheck: "not_found"`.
+   */
+  source?: FinalizeSource;
+  /** Year after which a caption year is not evidence. Defaults to the current UTC year. */
+  currentYear?: number;
+  /**
+   * The document's number style (`detectNumberStyle` of the whole text), used
+   * for a page whose own style is `unknown`: a page whose numbers all have one
+   * group (`245.300`) is otherwise read with a decimal dot.
+   */
+  fallbackNumberStyle?: NumberStyle;
+  /**
+   * Scales a page inherits from a table continued from previous pages
+   * (`inheritedPageScales`), added to its own `pageScaleEvidence` in the
+   * in-text checks. A non-empty list also makes the page a kt/Mt/kg page for
+   * unit-less rows (`unitCheck: "missing"`). Ignored without a page source.
+   */
+  inheritedScales?: readonly Scale[];
+  /**
+   * Structured path (no `source`): the values were read from table cells. A
+   * total read from its cell is printed (`inText`) and records that cell and
+   * its page; `rowsNearby` is set after all pages. A total without a cell
+   * gets the page checks of `source` against `totalsPageText` (R21).
+   */
+  readFromCells?: boolean;
+  /**
+   * Structured path: the page's OCR Markdown, for totals without a cell
+   * (R21). They get the page checks of a `source` page: `inText` with the
+   * page's scales (and `inheritedScales`), `page` and `onTableLine`, and
+   * dropped when unit-less on a kt, Mt or kg page. Without it such a total
+   * is `inText: false`. Line items are not checked against it.
+   */
+  totalsPageText?: string;
 };
 
+/**
+ * Turn LLM rows into importable rows plus a reconciliation summary:
+ * - subtotal and total rows leave the rows and go to reportedTotals;
+ * - units are converted to tonnes, rows with an unknown unit are dropped;
+ *   unit-less rows on a kt/Mt/kg page (its own captions, or a table continued
+ *   from the previous page) are kept and marked (`unitCheck`), and unit-less
+ *   totals there are dropped; rows that arrive marked `unitCheck: "missing"`
+ *   (structured path) are treated the same;
+ * - with a source, line items whose value is not printed there are kept and
+ *   marked (`valueCheck`);
+ * - with a target year, rows of another year or without a year are dropped when
+ *   any row names a year; only when no row names a year is the target year assumed;
+ * - rows repeating the same year, reference, scope and activity are dropped.
+ */
 export function finalizeExtractedRows(
-  rows: ExtractedRow[],
+  inputRows: ExtractedRow[],
   targetYear?: number,
   options?: FinalizeOptions,
 ): ExtractionResult {
+  return finalizeRows(inputRows, targetYear, options).result;
+}
+
+/**
+ * The number style of a page: its own (`detectNumberStyle`), or `fallback`
+ * (the document's) when the page has no evidence. A Spanish small-city page
+ * printing only `245.300` is otherwise read with a decimal dot.
+ */
+export function pageNumberStyle(
+  text: string,
+  fallback?: NumberStyle,
+): NumberStyle {
+  const style = detectNumberStyle(text);
+  return style === "unknown" ? (fallback ?? style) : style;
+}
+
+/** A page's own scale evidence plus the scales it inherits (`inheritedScales`). */
+function pageScales(text: string, options?: FinalizeOptions): Scale[] {
+  const scales = pageScaleEvidence(text);
+  for (const scale of options?.inheritedScales ?? []) {
+    if (!scales.includes(scale)) scales.push(scale);
+  }
+  return scales;
+}
+
+/**
+ * finalizeExtractedRows, plus `evidenceDropped`: true when page evidence removed
+ * or marked rows: a caption year relabeled at least one row or total, or a row
+ * without a unit was found on a kt, Mt or kg page. The chunk path cannot see that
+ * evidence, so such a page must not be re-extracted by chunks.
+ */
+function finalizeRows(
+  inputRows: ExtractedRow[],
+  targetYear?: number,
+  options?: FinalizeOptions,
+): { result: ExtractionResult; evidenceDropped: boolean } {
+  let rows = inputRows;
+  let evidenceDropped = false;
+  // Rows a caption year moved to another year, counted as caption_year drops.
+  const captionRelabeled = new Set<ExtractedRow>();
+  // A page with no number-style evidence of its own (every number has one
+  // group, `245.300`) is read with the document's style.
+  const styleOf = (text: string): NumberStyle =>
+    pageNumberStyle(text, options?.fallbackNumberStyle);
+  // Year evidence from the page's table captions: when they name only other
+  // years, rows without a year belong to that table's year; the year filter
+  // then drops them. A row the model labeled with the target year keeps it and
+  // is held for review (`yearCheck`), since the caption wording ("Variación
+  // respecto a 2015", a report-year heading) may not be the table's year.
+  // Totals of either kind stop being targets. Runs before hidden row totals are
+  // found so those inherit the year.
+  if (options?.source?.kind === "page" && targetYear != null) {
+    const evidence = yearEvidence(
+      options.source.text,
+      targetYear,
+      options.currentYear ?? new Date().getUTCFullYear(),
+    );
+    if (evidence.kind === "other") {
+      const relabel = evidence.years[0];
+      // A table continued from the previous page sits above the other year's
+      // caption: a row whose value is printed there keeps its year.
+      const leadScales = pageScales(options.source.text, options);
+      const leadNumbers = numbersInText(
+        evidence.leadText,
+        styleOf(options.source.text),
+      );
+      rows = rows.map((row) => {
+        if (row.year != null && row.year !== targetYear) return row;
+        if (
+          row.totalCO2e != null &&
+          leadNumbers.length > 0 &&
+          isValueInNumbers(row.totalCO2e, leadNumbers, leadScales)
+        ) {
+          return row;
+        }
+        evidenceDropped = true;
+        if (row.year === targetYear) {
+          return { ...row, yearCheck: "caption_other" as const };
+        }
+        const moved = { ...row, year: relabel };
+        captionRelabeled.add(moved);
+        return moved;
+      });
+    }
+  }
   const droppedRows: ExtractionSummary["droppedRows"] = {};
   const drop = (reason: DroppedRowReason) => {
     droppedRows[reason] = (droppedRows[reason] ?? 0) + 1;
   };
   const reportedTotals: ReportedTotal[] = [];
   const converted: ExtractedRow[] = [];
+  const source = options?.source;
+  // The text totals are checked in: the source, or on the structured path
+  // the page text for totals without a cell (R21).
+  const totalsSource: FinalizeSource | undefined =
+    source ??
+    (options?.readFromCells && options.totalsPageText != null
+      ? { text: options.totalsPageText, kind: "page" }
+      : undefined);
+  // Every number printed in the source, read once for all the in-text checks.
+  const sourceStyle = totalsSource ? styleOf(totalsSource.text) : "unknown";
+  const sourceNumbers = totalsSource
+    ? numbersInText(totalsSource.text, sourceStyle)
+    : [];
+  // Numbers printed on Markdown table lines of a page, for `onTableLine`.
+  const tableNumbers =
+    totalsSource?.kind === "page"
+      ? numbersOnTableLines(totalsSource.text, sourceStyle)
+      : [];
+  // Numbers in table body cells, for short scaled line-item matches.
+  const cellNumbers =
+    source?.kind === "page"
+      ? numbersInTableCells(source.text, sourceStyle)
+      : [];
+  // Scales the page's captions justify, or a previous page's for a continued
+  // table; a chunk has no page and allows none.
+  const sourceScales =
+    totalsSource?.kind === "page" ? pageScales(totalsSource.text, options) : [];
+  // Line items on the chunk path may also use the scales the document's
+  // caption lines justify (R24); its totals stay exact matches.
+  const lineItemScales =
+    source?.kind === "document" ? pageScaleEvidence(source.text) : sourceScales;
+  // Raw totalCO2e (before the unit multiplier) of each converted row, for the
+  // in-text check of hidden row totals.
+  const rawValues = new Map<ExtractedRow, number | null>();
+  const inText = (
+    raw: number | null | undefined,
+    label: string,
+    value: number,
+    page: number | null | undefined,
+  ): Pick<ReportedTotal, "inText" | "page" | "onTableLine"> => {
+    if (!totalsSource || raw == null) return {};
+    const found = isValueInNumbers(raw, sourceNumbers, sourceScales);
+    if (!found) {
+      logger.warn(
+        { label, value, page: page ?? null },
+        "Reported total not found in source text",
+      );
+    }
+    if (totalsSource.kind !== "page") return { inText: found };
+    return {
+      inText: found,
+      page: page ?? null,
+      onTableLine: isValueInNumbers(raw, tableNumbers, sourceScales),
+    };
+  };
+
+  // On a page whose captions name kt, Mt, Gg or kg, a row without a unit may
+  // be in that unit, not tonnes. Line items are kept as tonnes and marked
+  // `unitCheck: "missing"` for review; totals are dropped, since a total in an
+  // unknown unit confirms nothing. A page continuing a kt, Mt or kg table
+  // (`inheritedScales`) counts the same.
+  const pageUnitUnclear =
+    totalsSource?.kind === "page" &&
+    (namesLargeUnit(totalsSource.text) ||
+      namesSmallUnit(totalsSource.text) ||
+      (options?.inheritedScales?.length ?? 0) > 0);
+  // The structured path marks its own line items (`unitCheck`); the page
+  // text there judges only totals without a cell.
+  const unitUnclear = source != null && pageUnitUnclear;
+
+  // Structured path: a total is printed when it was read from its cell.
+  const totalSource = (
+    row: ExtractedRow,
+    raw: number | null | undefined,
+    label: string,
+    value: number,
+  ): Pick<ReportedTotal, "inText" | "page" | "onTableLine" | "sourceCell"> => {
+    if (!options?.readFromCells) return inText(raw, label, value, row.page);
+    if (!row.sourceCell) {
+      return totalsSource
+        ? inText(raw, label, value, row.page)
+        : { inText: false, page: row.page ?? null };
+    }
+    return {
+      inText: true,
+      page: row.sourceCell.page,
+      sourceCell: row.sourceCell,
+    };
+  };
 
   for (const row of rows) {
+    // A notation-only row (NE, NO, IE, C) has no amount to convert: keep it.
+    const hasAmount = [row.totalCO2e, row.co2, row.ch4, row.n2o].some(
+      (v) => v != null,
+    );
+    // A blank unit converts like a missing one (multiplier 1), so mark it too.
+    const unitMissing =
+      ((unitUnclear && !row.unit?.trim()) || row.unitCheck === "missing") &&
+      hasAmount;
+    if (unitMissing) evidenceDropped = true;
     const multiplier = tonnesMultiplier(row.unit);
     if (multiplier == null) {
       drop("unsupported_unit");
       continue;
     }
     const scaled: ExtractedRow = { ...row };
+    if (captionRelabeled.has(row)) captionRelabeled.add(scaled);
     if (multiplier !== 1) {
       scaled.totalCO2e = scaleOrNull(row.totalCO2e, multiplier) ?? null;
       if (row.co2 != null) scaled.co2 = row.co2 * multiplier;
@@ -1883,27 +2820,64 @@ export function finalizeExtractedRows(
         : row.rowType;
 
     if (rowType === "subtotal" || rowType === "total") {
+      // A structured total without a cell, unit-less on a kt/Mt/kg page:
+      // the stage 1 rule (R4, R21).
+      const cellLessUnclear =
+        options?.readFromCells &&
+        !row.sourceCell &&
+        pageUnitUnclear &&
+        !row.unit?.trim() &&
+        hasAmount;
+      if (unitMissing || cellLessUnclear) {
+        drop("unsupported_unit");
+        continue;
+      }
+      // A total of a table whose caption names another year confirms nothing.
+      if (row.yearCheck === "caption_other") {
+        drop("caption_year");
+        continue;
+      }
       drop("subtotal_or_total");
       if (
         scaled.totalCO2e != null &&
         reportedTotals.length < MAX_REPORTED_TOTALS
       ) {
+        const label =
+          scaled.category?.trim() ||
+          scaled.subsector?.trim() ||
+          scaled.sector?.trim() ||
+          rowType;
         reportedTotals.push({
-          label:
-            scaled.category?.trim() ||
-            scaled.subsector?.trim() ||
-            scaled.sector?.trim() ||
-            rowType,
+          label,
           value: scaled.totalCO2e,
           year: scaled.year,
           scope: scaled.scope ?? null,
           sector: scaled.sector,
           subsector: scaled.subsector,
           level: rowType,
+          ...totalSource(row, row.totalCO2e, label, scaled.totalCO2e),
         });
       }
       continue;
     }
+    if (unitMissing) scaled.unitCheck = "missing";
+    // Each line item's raw value must be printed in its source text, with the
+    // scales the page's captions allow; otherwise it is kept for review. With
+    // that evidence a short figure on a table line counts too (`| 80.3 |` kt
+    // is 80,300 t).
+    if (
+      source &&
+      row.totalCO2e != null &&
+      !isLineItemValueInNumbers(
+        row.totalCO2e,
+        sourceNumbers,
+        cellNumbers,
+        lineItemScales,
+      )
+    ) {
+      scaled.valueCheck = "not_found";
+    }
+    rawValues.set(scaled, row.totalCO2e ?? null);
     converted.push(scaled);
   }
 
@@ -1916,10 +2890,15 @@ export function finalizeExtractedRows(
       for (const row of converted) {
         if (row.year === targetYear) yearFiltered.push(row);
         else if (row.year == null) drop("missing_year");
+        else if (captionRelabeled.has(row)) drop("caption_year");
         else drop("other_year");
       }
     } else if (!options?.deferYearAssumption) {
-      yearFiltered = converted.map((row) => ({ ...row, year: targetYear }));
+      yearFiltered = converted.map((row) => {
+        const copy = { ...row, year: targetYear };
+        rawValues.set(copy, rawValues.get(row) ?? null);
+        return copy;
+      });
       yearAssumed = yearFiltered.length > 0;
     }
   }
@@ -1930,15 +2909,23 @@ export function finalizeExtractedRows(
   const hiddenTotals = findHiddenRowTotals(yearFiltered);
   for (const row of hiddenTotals) {
     drop("subtotal_or_total");
+    // Like a printed total without a unit, a sum of unit-less rows on such a
+    // page confirms nothing: it is no target.
+    if (row.unitCheck === "missing" || row.yearCheck === "caption_other") {
+      continue;
+    }
     if (reportedTotals.length < MAX_REPORTED_TOTALS) {
+      const label = row.category?.trim() || row.subsector?.trim() || "subtotal";
+      const value = row.totalCO2e as number;
       reportedTotals.push({
-        label: row.category?.trim() || row.subsector?.trim() || "subtotal",
-        value: row.totalCO2e as number,
+        label,
+        value,
         year: row.year,
         scope: null,
         sector: row.sector,
         subsector: row.subsector,
         level: "subtotal",
+        ...totalSource(row, rawValues.get(row), label, value),
       });
     }
   }
@@ -1968,13 +2955,16 @@ export function finalizeExtractedRows(
   const importedSum = sumImported(finalRows);
 
   return {
-    rows: finalRows,
-    summary: {
-      reportedTotals,
-      droppedRows,
-      importedSum,
-      yearAssumed,
-      targetYear: targetYear ?? null,
+    result: {
+      rows: finalRows,
+      summary: {
+        reportedTotals,
+        droppedRows,
+        importedSum,
+        yearAssumed,
+        targetYear: targetYear ?? null,
+      },
     },
+    evidenceDropped,
   };
 }

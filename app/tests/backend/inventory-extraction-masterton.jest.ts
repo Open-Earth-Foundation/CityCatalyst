@@ -13,7 +13,12 @@ type Row = Record<string, unknown>;
 type Answers = Record<string, { rows: Row[] }[]>;
 const fixture = JSON.parse(
   readFileSync("tests/fixtures/masterton-2021-22-page-responses.json", "utf8"),
-) as { targetYear: number; candidatePages: number[]; responses: Answers };
+) as {
+  targetYear: number;
+  candidatePages: number[];
+  pageText: Record<string, string>;
+  responses: Answers;
+};
 
 let answers: Answers = {};
 
@@ -41,9 +46,11 @@ const GROSS = 785873;
 const REMOVALS = -811512;
 const NET = -25639;
 
-/** The candidate pages of the report, each with enough numbers to stay a candidate. */
+/** The candidate pages of the report, with the real Mistral OCR text of each page. */
 const document = fixture.candidatePages
-  .map((n) => `<!-- page: ${n} -->\nPAGE-${n} ${"1,234 ".repeat(10)}`)
+  .map((n) =>
+    [`<!-- page: ${n} -->`, `PAGE-${n}`, fixture.pageText[n]].join("\n"),
+  )
   .join("\n\n");
 
 type Edit = (page: string, rows: Row[]) => Row[];
@@ -86,6 +93,15 @@ describe("CC-1161 Masterton 2021/22 replay", () => {
       removals: REMOVALS,
       net: NET,
     });
+    // CC-1163 check 1: the gross, forestry and net totals are printed on the pages.
+    const printed = summary.reportedTotals.filter((total) =>
+      [GROSS, REMOVALS, NET].includes(Math.round(total.value)),
+    );
+    expect(printed.length).toBeGreaterThan(0);
+    expect(new Set(printed.map((total) => Math.round(total.value)))).toEqual(
+      new Set([GROSS, REMOVALS, NET]),
+    );
+    for (const total of printed) expect(total.inText).toBe(true);
   });
 
   it("a. with the V.2 rows on page 16 it imports the net total, without a warning", async () => {

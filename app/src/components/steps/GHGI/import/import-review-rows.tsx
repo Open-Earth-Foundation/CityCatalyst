@@ -18,6 +18,12 @@ interface ImportReviewRowsProps {
   onDecide: (rowIndex: number, decision: ImportRowDecision | null) => void;
 }
 
+/** Extraction could not confirm the row on its page: keep or skip only. */
+const isUnconfirmed = (row: ImportRowReview) =>
+  row.issue === "value-unconfirmed" ||
+  row.issue === "unit-unconfirmed" ||
+  row.issue === "year-unconfirmed";
+
 /** A value in tonnes CO2e, formatted in the UI language. */
 function formatTonnes(lng: string, value: number): string {
   return `${value.toLocaleString(lng)} tCO2e`;
@@ -203,6 +209,13 @@ export default function ImportReviewRows({
               })}
             </Text>
           )}
+          {isUnconfirmed(row) && (
+            <Text fontSize="body.sm" color="sentiment.warningDefault">
+              {row.page != null
+                ? t(`import-row-issue-${row.issue}`, { page: row.page })
+                : t(`import-row-issue-${row.issue}-no-page`)}
+            </Text>
+          )}
           <SourceContext t={t} row={row} />
           <HStack gap="8px" mt={3} flexWrap="wrap">
             <Button
@@ -218,34 +231,36 @@ export default function ImportReviewRows({
             >
               {t("import-review-keep")}
             </Button>
-            <NativeSelect.Root size="sm" w="auto">
-              <NativeSelect.Field
-                aria-label={t("import-review-reclassify")}
-                value={row.decision === "reclassify" ? row.chosenRefNo : ""}
-                onChange={(event) =>
-                  onDecide(
-                    row.rowIndex,
-                    event.target.value
-                      ? {
-                          ...seen(row, fileId),
-                          reviewDecision: "reclassify",
-                          gpcRefNo: event.target.value,
-                        }
-                      : null,
-                  )
-                }
-              >
-                <option value="">{t("import-review-reclassify")}</option>
-                {row.referenceOptions
-                  .filter((reference) => reference !== row.suggestedRefNo)
-                  .map((reference) => (
-                    <option key={reference} value={reference}>
-                      {reference}
-                    </option>
-                  ))}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
+            {!isUnconfirmed(row) && (
+              <NativeSelect.Root size="sm" w="auto">
+                <NativeSelect.Field
+                  aria-label={t("import-review-reclassify")}
+                  value={row.decision === "reclassify" ? row.chosenRefNo : ""}
+                  onChange={(event) =>
+                    onDecide(
+                      row.rowIndex,
+                      event.target.value
+                        ? {
+                            ...seen(row, fileId),
+                            reviewDecision: "reclassify",
+                            gpcRefNo: event.target.value,
+                          }
+                        : null,
+                    )
+                  }
+                >
+                  <option value="">{t("import-review-reclassify")}</option>
+                  {row.referenceOptions
+                    .filter((reference) => reference !== row.suggestedRefNo)
+                    .map((reference) => (
+                      <option key={reference} value={reference}>
+                        {reference}
+                      </option>
+                    ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            )}
             {row.issue === "reference-conflict" && (
               <NativeSelect.Root size="sm" w="auto">
                 <NativeSelect.Field

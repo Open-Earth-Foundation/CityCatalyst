@@ -4,6 +4,8 @@
  * shown on the review screen. No server imports: the browser uses this file too.
  */
 
+import type { SourceCell } from "@/util/GHGI/cell-values";
+
 /** A total or subtotal found in the document. Not imported; used to reconcile the imported sum. */
 export type ReportedTotal = {
   label: string;
@@ -13,11 +15,35 @@ export type ReportedTotal = {
   sector: string | null;
   subsector: string | null;
   level: "subtotal" | "total";
+  /**
+   * False when the value is not printed in the source text the model read: the
+   * model invented or computed it, and it is no reconciliation target. Missing on
+   * summaries stored before this check and when no source text was given.
+   */
+  inText?: boolean;
+  /** Page the total was read from, when extraction ran page by page. */
+  page?: number | null;
+  /**
+   * True when the value is printed on a Markdown table line (a line with `|`) of
+   * its source text. Missing when no page source was given.
+   */
+  onTableLine?: boolean;
+  /**
+   * False when no kept line item of the target year is near the total: on the
+   * Markdown page path, on its page, on the page before, or, for a total on a
+   * table line, on any page; on the structured path, in its cell's table or a
+   * table of that table's continuation chain. It is then no target. Set only
+   * on the page paths.
+   */
+  rowsNearby?: boolean;
+  /** The table cell the total was read from (structured path only). */
+  sourceCell?: SourceCell;
 };
 
 export type DroppedRowReason =
   | "subtotal_or_total"
   | "other_year"
+  | "caption_year"
   | "missing_year"
   | "unsupported_unit"
   | "duplicate"
@@ -187,6 +213,8 @@ function netAndRemovalsByValue(
  * against 785,873) and would raise the share every other total is held to. For the
  * same reason a negative total is a grand total only when the document has no
  * positive one.
+ *
+ * A total with no line item nearby (`rowsNearby === false`) is no target.
  */
 export function reconciliationTargets(
   totals: ReportedTotal[] | null | undefined,
@@ -196,6 +224,10 @@ export function reconciliationTargets(
     (total) =>
       !total.scope &&
       Number.isFinite(total.value) &&
+      // A total not printed in the source text (model arithmetic) is no target.
+      total.inText !== false &&
+      // A total far from any line item (prose or a profile figure) is no target.
+      total.rowsNearby !== false &&
       // A total of another year (a 2016 comparison) is no target.
       (total.year == null || targetYear == null || total.year === targetYear),
   );
@@ -309,6 +341,7 @@ export function reconcileExtraction(
 /** Drop reasons worth showing. Subtotals and totals are expected to be left out. */
 export const REPORTED_DROP_REASONS: DroppedRowReason[] = [
   "other_year",
+  "caption_year",
   "missing_year",
   "unsupported_unit",
   "duplicate",

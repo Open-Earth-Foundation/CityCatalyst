@@ -1,7 +1,8 @@
 /**
- * The static system prompt of the PDF inventory extraction, with the GPC tables it
- * is built from. Kept apart from InventoryExtractionService so other code (the
- * PDF benchmark hashes it) does not load the whole service.
+ * The static system prompts of the PDF inventory extraction (Markdown and
+ * structured), with the GPC tables they are built from. Kept apart from
+ * InventoryExtractionService so other code (the PDF benchmark hashes the
+ * Markdown prompt) does not load the whole service.
  */
 
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
@@ -112,14 +113,11 @@ const SUBSECTOR_DICTIONARY_TEXT = Object.entries(SUBSECTOR_VARIANT_TO_CANONICAL)
   .join("; ");
 
 // Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
-export const SYSTEM_PROMPT = `<role>
-You are an extractor of GHG inventory line items from city emissions reports. You output only valid JSON with no commentary.
-</role>
+/** Prompt text shared by the Markdown and the structured extraction prompts. */
+const ROLE_TEXT = `You are an extractor of GHG inventory line items from city emissions reports. You output only valid JSON with no commentary.`;
 
-<task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
-
-Row types (critical): set "rowType" on every row.
+/** Row types, scope columns, notation keys, table choice, year columns, granularity. */
+const TASK_RULES = `Row types (critical): set "rowType" on every row.
 - "line_item": a measured value for one activity, subsector or GPC reference. Only these rows are imported.
 - "subtotal": a sum of several line items (sector subtotal, "SUB-TOTAL", "(All II emissions)", a subsector total when the table also lists its activities).
 - "total": a grand total of the inventory (TOTAL row, BASIC, BASIC+, BASIC+ S3, "Total GHG emissions").
@@ -144,22 +142,16 @@ Granularity (critical):
 - If the report has activity-level data (breakdown by fuel type, building type, category, or similar within a subsector): extract one row per activity with totalCO2e for that activity. Do not collapse to a single sector or subsector total when activity breakdown exists.
 - If the report has only subsector-level data (no activity breakdown): extract one row per subsector with totalCO2e for that subsector; set category to a label like "Subsector total" or the subsector name.
 - If the report has only sector-level totals (no subsector or activity breakdown): then output one row per sector with that sector total.
-- Never output only the whole-sector total when the table actually shows subsector or activity breakdown—always extract each subsector and each activity row with its own totalCO2e.
-</task>
+- Never output only the whole-sector total when the table actually shows subsector or activity breakdown—always extract each subsector and each activity row with its own totalCO2e.`;
 
-<input>
-- documentText (string): Full report text, or a segment of a longer report. Prefer full-coverage emissions summaries (comprehensive inventory); when the report has none, use its per-sector tables once each. Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore single-total summaries, per-capita tables and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
-</input>
-
-<output>
-Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
-- year (integer | null): year the value belongs to. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year. Use the year of the table or column even when it is not the requested year (the system drops other years). Null only when the document gives no year at all.
+/** Output fields before the value fields. */
+const OUTPUT_FIELDS_HEAD = `- year (integer | null): year the value belongs to. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year. Use the year of the table or column even when it is not the requested year (the system drops other years). Null only when the document gives no year at all.
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
-- category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
-- totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
-- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
-- rowType (string): "line_item", "subtotal" or "total" (see Row types).
+- category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.`;
+
+/** Output fields after the value fields. */
+const OUTPUT_FIELDS_TAIL = `- rowType (string): "line_item", "subtotal" or "total" (see Row types).
 - notationKey (string | null): "NO", "NE", "IE" or "C" when the cell has that notation instead of a number; else null.
 - scope (string | null): "1", "2", or "3" when present in document; else null.
 - gpcRefNo (string | null): one reference from the GPC references below. Copy it when the document gives it; otherwise choose the reference whose sub-sector and scope match the row. Use null only when none fits. For waste, the digit is the direction, not only the scope: III.x.2 is waste generated inside the city and treated outside; III.x.3 is waste generated outside the city and treated inside. Use III.x.3 only when the document says the waste comes from outside the city. Use VI.1 only when the document itself reports the row as other scope 3 emissions, never for a scope 3 row you cannot place. Dung and urine left on pasture ("manure on pasture", "unmanaged manure") are V.3 (direct N2O from managed soils), not V.1: V.1 is only enteric fermentation and managed manure. Never invent a reference or a sub-sector name.
@@ -171,13 +163,12 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - activityAmount (number | null): consumption/quantity value when table has such column.
 - activityUnit (string | null): e.g. liters, kWh, GJ from "Units" or header.
 - activityType (string | null): fuel/activity name when present.
-- activityDataSource, activityDataQuality (string | null): when present.
+- activityDataSource, activityDataQuality (string | null): when present.`;
 
-Numbers: Output all numeric fields (totalCO2e, co2, ch4, n2o, activityAmount) as JSON numbers. Strip thousand separators (commas or spaces in "48,000" or "48 000" → 48000). Use a decimal point for decimals (e.g. 1.5); if the source uses a comma as decimal separator (e.g. "1,5"), convert to 1.5. Do not output numbers as strings or with commas/spaces inside them.
-Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.
-</output>
+const NUMBERS_TEXT = `Numbers: Output all numeric fields (totalCO2e, co2, ch4, n2o, activityAmount) as JSON numbers. Strip thousand separators (commas or spaces in "48,000" or "48 000" → 48000). Use a decimal point for decimals (e.g. 1.5); if the source uses a comma as decimal separator (e.g. "1,5"), convert to 1.5. Do not output numbers as strings or with commas/spaces inside them.
+Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.`;
 
-<taxonomy>
+const TAXONOMY_TEXT = `<taxonomy>
 Sector → Subsector hierarchy (use only these pairs):
 ${HIERARCHY_TEXT}
 
@@ -185,7 +176,34 @@ GPC references (use only these for gpcRefNo):
 ${REFERENCE_TEXT}
 
 Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"}. Subsector: ${SUBSECTOR_DICTIONARY_TEXT || "(none)"}.
-</taxonomy>
+</taxonomy>`;
+
+// Structured prompt per prompt-schema-authoring: <role>, <task>, <input>, <output>, <example_output>
+export const SYSTEM_PROMPT = `<role>
+${ROLE_TEXT}
+</role>
+
+<task>
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Output totalCO2e in metric tonnes CO2e: when the column header, row label or table title states the unit, convert (e.g. 48 in a "kt CO2e" or "thousand tonnes" column → 48000) and set "unit" to "t". When you keep a number unconverted, set "unit" to the unit of that number as you output it (e.g. "kt"). Never mark a number as kt or Mt unless the document says so. Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the document has multiple. Also output subtotal and total rows, but mark them with rowType so they are not counted as data.
+
+${TASK_RULES}
+</task>
+
+<input>
+- documentText (string): Full report text, or a segment of a longer report. Prefer full-coverage emissions summaries (comprehensive inventory); when the report has none, use its per-sector tables once each. Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore single-total summaries, per-capita tables and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
+</input>
+
+<output>
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
+${OUTPUT_FIELDS_HEAD}
+- totalCO2e (number | null): emissions for this row only, in tonnes CO2e when the document states the unit (see unit)—per activity when activity data exists, per subsector when only subsector data exists. Null for a notation key. Do not put the whole sector total on every row; each row gets the value for that activity, subsector or scope cell.
+- unit (string | null): unit of the totalCO2e number you output: "t" after converting to tonnes, or the unit of an unconverted number ("kt", "Mt"); null when the document does not say.
+${OUTPUT_FIELDS_TAIL}
+
+${NUMBERS_TEXT}
+</output>
+
+${TAXONOMY_TEXT}
 
 <example_output>
 {"rows": [
@@ -198,3 +216,48 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
   {"year": 2020, "sector": "Agriculture Forestry And Other Land Use Afolu", "subsector": "Emissions From Aggregate Sources And Non Co2 Emission Sources On Land Within The City Boundary", "category": "Fertiliser on land", "totalCO2e": 15000, "unit": "tCO2e", "activityClass": "other", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "V.3", "source": "Table 11"}
 ]}
 </example_output>`;
+
+/**
+ * Prompt of the structured path: one page's table bundles with a reference on
+ * every cell. The model names cells and copies their text; code reads the
+ * value (`readCell`). Same structure as SYSTEM_PROMPT.
+ */
+export const STRUCTURED_SYSTEM_PROMPT = `<role>
+${ROLE_TEXT}
+</role>
+
+<task>
+Extract emissions from the tables of one page of a city emissions report, at the most granular level the tables provide. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Every table cell is written with its reference in square brackets, e.g. "[t3:r5:c2] 1,234.5". For every row you output, put the reference of the cell that holds its emissions value in "valueCell" and copy that cell's number exactly as printed into "totalCO2eText": the same digits, separators, sign and parentheses, without the unit. Never compute, add, convert or round a value: code reads the number and its unit from the cell. A row whose value is not printed in one table cell (a value you calculated, or one from a chart or from the page text) gets valueCell and totalCO2eText null. When the table has gas columns (CO2, CH4, N2O), put the row's gas cells in co2Cell, ch4Cell and n2oCell. A table with a "Continues: <id>" line is the next part of table <id> from the previous page and has its columns. Extract scope as "1", "2", or "3" when the document indicates it. Output a separate row for every line item (every activity or subsector)—never a single aggregated row when the table has multiple. Also output subtotal and total rows, with their cells, but mark them with rowType so they are not counted as data.
+
+${TASK_RULES}
+</task>
+
+<input>
+- tables (string): the page's tables. Each starts with a line "Table <id> (page <n>)", then "Caption:", "Heading:", "Units:", "Years:", "Continues:" and "Columns of <id>:" lines when present, then one line per table row with each cell written "[<reference>] <text>" and cells separated by " | ".
+- pageText (string): the page text outside the tables (headings, notes, prose), for context only. A value printed only here has no cell.
+</input>
+
+<output>
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical tables produce many rows (do not collapse to a single row). Each object in "rows" has:
+${OUTPUT_FIELDS_HEAD}
+- valueCell (string | null): reference of the cell that holds this row's emissions value (e.g. "t3:r5:c2"), copied from the tables. Null when the value is not printed in a table cell. For a notation key, the reference of the cell that holds it.
+- totalCO2eText (string | null): the number in valueCell exactly as printed (e.g. "1,234.5", "(811)", "−603"), without the unit. Null for a notation key and when valueCell is null.
+- totalCO2e (number | null): the same number as a JSON number, as printed, not converted. Null for a notation key.
+- unit (string | null): the unit the table prints for that number (e.g. "kt CO2e", "t CO2e"); null when the table does not say.
+${OUTPUT_FIELDS_TAIL}
+- co2Cell, ch4Cell, n2oCell (string | null): references of the row's CO2, CH4 and N2O cells when the table has gas columns; else null.
+
+${NUMBERS_TEXT}
+</output>
+
+${TAXONOMY_TEXT}
+
+<example_output>
+{"rows": [
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "valueCell": "t1:r2:c4", "totalCO2eText": "125,000", "totalCO2e": 125000, "unit": "t CO2e", "co2Cell": "t1:r2:c2", "ch4Cell": "t1:r2:c3", "n2oCell": null, "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "I.1.1", "refSource": "document", "directionEvidence": null, "co2": 124100, "ch4": 900, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Subtotal", "valueCell": "t1:r4:c4", "totalCO2eText": "167,000", "totalCO2e": 167000, "unit": "t CO2e", "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": null, "rowType": "subtotal", "notationKey": null, "scope": null, "gpcRefNo": null, "refSource": null, "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": null, "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Waste", "subsector": "Solid Waste Disposal", "category": "Solid waste", "valueCell": "t2:r1:c1", "totalCO2eText": null, "totalCO2e": null, "unit": null, "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": "other", "rowType": "line_item", "notationKey": "NO", "scope": "1", "gpcRefNo": "III.1.1", "refSource": "inferred", "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Table 6", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": null, "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "valueCell": null, "totalCO2eText": null, "totalCO2e": 89000, "unit": "t CO2e", "co2Cell": null, "ch4Cell": null, "n2oCell": null, "activityClass": "fuel_combustion", "rowType": "line_item", "notationKey": null, "scope": "1", "gpcRefNo": "II.1.1", "refSource": "inferred", "directionEvidence": null, "co2": null, "ch4": null, "n2o": null, "source": "Figure 3", "methodology": null, "activityAmount": null, "activityUnit": null, "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null}
+]}
+</example_output>`;
+

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-25T18:13:44.524333+00:00",
+  "request_id": "e5a40517-7ca9-471d-a066-e61c510567f1",
+  "request_kind": "prioritization",
+  "event_index": 1,
+  "step_name": "fetch_city",
+  "event_type": "fetch_city.completed",
+  "payload": {
+    "locode": "CL PAO",
+    "city_name": "Paillaco",
+    "region_name": "Los Ríos",
+    "source": "city_attributes_api",
+    "source_metadata": {
+      "mock_file_path": null,
+      "upstream_url": "https://ccglobal.openearth.dev/api/v0/city_attributes/CL%20PAO",
+      "upstream_endpoint": "GET /api/v0/city_attributes/{locode}",
+      "requested_locode": "CL PAO",
+      "http_status_code": 200,
+      "upstream_generated_at_utc": "2026-05-25T18:13:44.662183+00:00"
+    },
+    "elapsed_seconds": 0.7531404159963131
+  }
+}

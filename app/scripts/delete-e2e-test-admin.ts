@@ -19,7 +19,6 @@ async function deleteUserDependents(userId: string, transaction: Transaction) {
   await models.CityUser.destroy({ where: { userId }, transaction });
   await models.ProjectInvite.destroy({ where: { userId }, transaction });
   await models.OrganizationInvite.destroy({ where: { userId }, transaction });
-  await models.OAuthClientAuthz.destroy({ where: { userId }, transaction });
   await models.CityInvite.destroy({ where: { invitingUserId: userId }, transaction });
   await models.CityInvite.destroy({ where: { userId }, transaction });
   await models.HighImpactActionRanking.destroy({ where: { userId }, transaction });

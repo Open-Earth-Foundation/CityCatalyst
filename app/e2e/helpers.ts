@@ -13,22 +13,12 @@ export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible({ timeout: 10000 });
 }
 
-/** Wait until the auth form is hydrated and inputs are interactive. */
+/** @deprecated Credential auth forms were removed in CC-1283. */
 export async function waitForAuthFormReady(
   page: Page,
-  options: { expectEnabled?: boolean } = {},
+  _options: { expectEnabled?: boolean } = {},
 ) {
-  const { expectEnabled = true } = options;
-  await expect(page.locator('input[name="email"]')).toBeVisible();
-  await expect(page.locator("form").first()).toHaveAttribute("novalidate", "");
-  const submitButton = page.getByRole("button", {
-    name: /^(LOG IN|Create Account)$/i,
-  });
-  await expect(submitButton).toBeVisible();
-  if (expectEnabled) {
-    await expect(submitButton).toBeEnabled();
-  }
-  await expect(submitButton).toHaveAttribute("formnovalidate", "");
+  await expect(page.getByTestId("identity-login-button")).toBeVisible();
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
@@ -141,26 +131,14 @@ export async function openAddEmissionModal(
   return modal;
 }
 
+/** @deprecated Registration moved to core-identity-service (CC-1283). */
 export async function signup(
-  request: APIRequestContext,
-  email: string,
-  password: string = "Test123",
-  confirmPassword: string = "Test123",
-  name: string = "Test Account",
-  acceptTerms: boolean = true,
-) {
-  const result = await request.post("/api/v1/auth/register/", {
-    data: {
-      email,
-      password,
-      confirmPassword,
-      name,
-      acceptTerms,
-      preferredLanguage: "en",
-    },
-  });
-  expect(result.ok()).toBeTruthy();
-  return await result.json();
+  _request: APIRequestContext,
+  ..._args: unknown[]
+): Promise<never> {
+  throw new Error(
+    "signup() removed: register users via core-identity-service, not CityCatalyst",
+  );
 }
 
 export async function createInventory(

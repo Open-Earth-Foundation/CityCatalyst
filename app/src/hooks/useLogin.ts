@@ -2,19 +2,11 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { logger } from "@/services/logger";
-import { trackEvent, identifyUser } from "@/lib/analytics";
-
-export type LoginData = {
-  email: string;
-  password: string;
-  securityToken?: string;
-};
+import { trackEvent } from "@/lib/analytics";
 
 export type UseLoginReturn = {
-  login: (
-    data: LoginData,
-    callbackUrl?: string,
-  ) => Promise<{ success: boolean; error?: string }>;
+  /** Starts the OIDC authorize redirect to core-identity-service. */
+  loginWithIdentity: (callbackUrl?: string) => Promise<void>;
   isLoading: boolean;
   error: string;
   clearError: () => void;
@@ -26,52 +18,25 @@ export const useLogin = (): UseLoginReturn => {
   const { lng } = useParams();
   const clearError = () => setError("");
 
-  const login = async (
-    data: LoginData,
-    callbackUrl?: string,
-  ): Promise<{ success: boolean; error?: string }> => {
+  const loginWithIdentity = async (callbackUrl?: string): Promise<void> => {
     setIsLoading(true);
     setError("");
-
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-        securityToken: data.securityToken,
+      trackEvent("user_logged_in", { method: "identity" });
+      await signIn("identity", {
         callbackUrl: callbackUrl || `/${lng}/cities`,
       });
-
-      if (result?.error) {
-        logger.error({ err: result.error }, "Sign in failure:");
-        const errorMessage =
-          result.error === "rate-limited"
-            ? "too-many-login-attempts"
-            : "invalid-email-or-password";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-
-      if (result?.ok) {
-        // Track successful login
-        trackEvent("user_logged_in", { method: "credentials" });
-        identifyUser(data.email);
-
-        // Full page redirect after successful login
-        window.location.href = callbackUrl || `/${lng}/cities`;
-        return { success: true };
-      }
-
-      return { success: false, error: "Unknown error occurred" };
     } catch (err) {
-      logger.error({ err }, "Failed to sign in:");
-      const errorMessage = "An unexpected error occurred";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    } finally {
+      logger.error({ err }, "Failed to start identity sign-in:");
+      setError("An unexpected error occurred");
       setIsLoading(false);
     }
   };
 
-  return { login, isLoading, error, clearError };
+  return {
+    loginWithIdentity,
+    isLoading,
+    error,
+    clearError,
+  };
 };

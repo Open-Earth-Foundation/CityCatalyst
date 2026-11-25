@@ -1,0 +1,1455 @@
+{
+  "paths": {
+    "/api/v1/auth/2fa/check": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "check2FA",
+        "summary": "Check if second factor authentication is enabled for a given email address",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nQueries the user record for a given email address and returns if second factor authentication is enabled for it. Does not need an active session so it can be used on the login screen.",
+        "responses": {
+          "200": {
+            "description": "Successfully queried user 2FA status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/2fa/disable": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "disable2FA",
+        "summary": "Disable the second factor authentication for the currently signed in user",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nRemoves the 2FA secret and disables it (can be used to reset the secret to use another app)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password"
+                ],
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "User password for verifying identity before disabling 2FA"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully disabled the second factor authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid password, 2FA setup hasn't been set up or invalid token. Use route /v1/auth/2fa/setup first."
+          },
+          "401": {
+            "description": "User is not authenticated or lacks valid session"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/2fa/setup": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "setup2FA",
+        "summary": "Create a second factor authentication secret",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nCreates a 2FA secret for the currently signed in user, stores it to the user record and returns a data URL for displaying a QR code to the user.",
+        "responses": {
+          "200": {
+            "description": "Successfully created 2FA secret and QR code data URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "qrCodeDataUrl": {
+                          "type": "string",
+                          "description": "Data URL that can be used as the src for an image to display the QR code for adding the two factor key to an authenticator app"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user data, e.g. missing email address"
+          },
+          "401": {
+            "description": "User is not authenticated or lacks valid session"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/2fa/verify": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "verify2FA",
+        "summary": "Verify a second factor code from the authenticator app to enable 2FA auth and generate recovery codes",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nVerifies the 2FA code in the request against the user's stored 2FA secret and enabled two factor authentication if it's valid. Also generates recovery codes, stores their hashes for the current user and returns the raw recovery codes (only once).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "2FA code coming from authenticator app, to be verified to complete 2FA setup"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully enabled two factor authentication for the user and generated recovery codes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "recoveryCodes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user data, 2FA setup hasn't been initialized or invalid token. Use route /v1/auth/2fa/setup first. If user already has 2FA fully configured, use route /v1/auth/2fa/disable first."
+          },
+          "401": {
+            "description": "User is not authenticated or lacks valid session"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/code": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthCode",
+        "summary": "Issue a short‑lived OAuth authorization code for the current user.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nValidates the OAuth client and CSRF token, then issues an opaque authorization code bound to the client, redirect URI, PKCE challenge, scope and user. The code is valid for 60 seconds, can be used once, and must be exchanged for tokens at `/api/v1/token`. Only its hash is stored. Requires an authenticated user session and the OAUTH_ENABLED feature flag. Use this endpoint as part of the OAuth 2.0 Authorization Code flow, or the OpenID Connect flow when the scope includes `openid`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "clientId",
+                  "redirectUri",
+                  "codeChallenge",
+                  "scope",
+                  "csrfToken"
+                ],
+                "properties": {
+                  "clientId": {
+                    "type": "string",
+                    "description": "OAuth client identifier registered in the system"
+                  },
+                  "redirectUri": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The callback URL where the authorization code will be sent"
+                  },
+                  "codeChallenge": {
+                    "type": "string",
+                    "description": "PKCE code challenge for enhanced security (base64url encoded SHA256 hash, 43 characters)"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "Space-separated list of OAuth scopes requested by the client. Allowed values are `openid`, `read` and `write`."
+                  },
+                  "nonce": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Value from the OpenID Connect authentication request. It is returned unchanged in the id_token."
+                  },
+                  "csrfToken": {
+                    "type": "string",
+                    "description": "CSRF protection token obtained from the session"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code wrapped in a data object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "description": "Opaque authorization code, valid for 60 seconds and single use"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "code": "Qm9ndXNDb2RlRXhhbXBsZUZvckRvY3NPbmx5MDEyMzQ1Njc"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body, unknown scope, invalid client ID, redirect URI mismatch, or CSRF token validation failure."
+          },
+          "401": {
+            "description": "User is not authenticated or lacks valid session."
+          },
+          "500": {
+            "description": "OAuth feature not enabled or internal server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/forgot": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthForgot",
+        "summary": "Request a password reset email for a user account.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nGenerates a short‑lived JWT reset token (valid for 1 hour) and sends a password reset email if the user exists. For security, this endpoint always returns 200 regardless of whether the email exists to prevent account enumeration. Requires proper email configuration and RESET_TOKEN_SECRET environment variable.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email address of the account to reset password for"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset request acknowledged. Check email if account exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "example": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid email format or validation error."
+          },
+          "500": {
+            "description": "Configuration error, email service unavailable, or internal server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthPassword",
+        "summary": "Set a new password using a valid reset token.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nVerifies the provided reset token and updates the user’s password. No authentication is required for this flow, only a valid token. Returns 200 with an empty object on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "newPassword",
+                  "resetToken"
+                ],
+                "properties": {
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "resetToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empty body on success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "example": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Configuration error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthRegister",
+        "summary": "Create a new user account and send a welcome email.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nRegisters a user with name, email, password, and preferred language and optionally associates them to an inventory’s city. Public endpoint; no prior authentication required. Returns a minimal user object on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "confirmPassword",
+                  "acceptTerms",
+                  "preferredLanguage"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Full name of the user",
+                    "minLength": 4
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Valid email address for account creation and notifications"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Must be at least 4 characters with at least one lowercase letter, one uppercase letter, and one number",
+                    "minLength": 4
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "Must match the password field exactly"
+                  },
+                  "acceptTerms": {
+                    "type": "boolean",
+                    "description": "Must be true to accept the terms and conditions"
+                  },
+                  "inventory": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Optional inventory ID to associate the user with a city's inventory"
+                  },
+                  "preferredLanguage": {
+                    "type": "string",
+                    "enum": [
+                      "en",
+                      "es",
+                      "pt",
+                      "de",
+                      "fr"
+                    ],
+                    "description": "User's preferred language for the application"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Minimal user object wrapped in user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Unique identifier for the user"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Full name of the user"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "User's email address"
+                        },
+                        "role": {
+                          "type": "string",
+                          "description": "User's role in the system"
+                        },
+                        "preferredLanguage": {
+                          "type": "string",
+                          "description": "User's preferred language setting"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "user": {
+                        "userId": "7c0c4b9a-7b60-4f63-b4cc-7b4bcae6a111",
+                        "name": "Jane Doe",
+                        "email": "jane@example.com",
+                        "role": "user",
+                        "preferredLanguage": "en"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email could not be sent or invalid input."
+          },
+          "422": {
+            "description": "Validation error - invalid or missing required fields."
+          },
+          "500": {
+            "description": "Internal server error during user creation or email processing."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/update-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthUpdatePassword",
+        "summary": "Change the current user’s password.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nValidates the current password and sets a new one for the authenticated user. Requires a signed‑in session; non‑authenticated requests fail with 401/404. Returns a success flag indicating if the update persisted.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "currentPassword",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "description": "User's current password for verification",
+                    "minLength": 8,
+                    "maxLength": 64
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "description": "New password to set (must be at least 4 characters with one lowercase letter, one uppercase letter, and one number)",
+                    "minLength": 8,
+                    "maxLength": 64
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates whether the password update was successful"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Current password is incorrect or new password doesn't meet complexity requirements."
+          },
+          "401": {
+            "description": "User is not authenticated or session has expired."
+          },
+          "404": {
+            "description": "User not found or session expired."
+          },
+          "422": {
+            "description": "Validation error - invalid password format or missing required fields."
+          },
+          "500": {
+            "description": "Internal server error during password update."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/auth/verify": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "getAuthVerify",
+        "summary": "Create a verification token for the current user.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nIssues a JWT verification token (valid for 1 hour) for the authenticated user. The token is used to verify the user's identity without exposing sensitive session data. Requires an authenticated session with a valid email. Use the returned token with the POST route to verify passwords without requiring re-authentication.",
+        "responses": {
+          "200": {
+            "description": "Token wrapped in a JSON object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verificationToken": {
+                      "type": "string",
+                      "description": "JWT verification token valid for 1 hour"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "verificationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User email missing in session or invalid session state."
+          },
+          "401": {
+            "description": "User is not authenticated."
+          },
+          "404": {
+            "description": "User not found in database."
+          },
+          "500": {
+            "description": "Configuration error or missing VERIFICATION_TOKEN_SECRET environment variable."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      },
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postAuthVerify",
+        "summary": "Check if a password matches the user referenced by a token.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nVerifies the supplied password against the user identified by the JWT verification token. This endpoint doesn't require authentication - the token serves as proof of identity. Useful for password verification in scenarios where you want to avoid exposing session cookies or API keys. Returns true if the password matches the user's stored password hash.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password",
+                  "token"
+                ],
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Password to verify against the user identified by the token",
+                    "minLength": 4
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "JWT verification token obtained from the GET endpoint"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password verification result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comparePassword": {
+                      "type": "boolean",
+                      "description": "True if the provided password matches the user's stored password"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "comparePassword": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired JWT verification token."
+          },
+          "404": {
+            "description": "User referenced by token not found in database."
+          },
+          "422": {
+            "description": "Validation error - invalid password format or missing required fields."
+          },
+          "500": {
+            "description": "Configuration error or missing VERIFICATION_TOKEN_SECRET environment variable."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/client": {
+      "get": {
+        "tags": [
+          "oauth",
+          "clients"
+        ],
+        "operationId": "getClients",
+        "summary": "List registered OAuth clients with localized names.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nReturns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data: Client[] '}'.",
+        "responses": {
+          "200": {
+            "description": "Clients array wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "clientId": {
+                            "type": "string",
+                            "description": "Unique identifier for the OAuth client"
+                          },
+                          "redirectUri": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Registered redirect URI for the OAuth flow"
+                          },
+                          "name": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Localized client names by language code"
+                          },
+                          "description": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Localized client descriptions by language code"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": [
+                        {
+                          "clientId": "abc123",
+                          "redirectUri": "https://app.example.com/callback",
+                          "name": {
+                            "en": "Example App"
+                          },
+                          "description": {
+                            "en": "Demo client"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      },
+      "post": {
+        "tags": [
+          "oauth",
+          "clients"
+        ],
+        "operationId": "postClient",
+        "summary": "Create a new OAuth client with localized metadata.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nCreates a client id with redirect URI and localized name/description entries. Requires a signed‑in session and OAUTH_ENABLED. Returns the created client in { data } and sets a Location header to the new resource.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "redirectUri",
+                  "name",
+                  "description"
+                ],
+                "properties": {
+                  "redirectUri": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Valid URL to redirect back to after OAuth flow",
+                    "maxLength": 256
+                  },
+                  "name": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Localized names by language code (e.g., {\"en\": \"My App\"})"
+                  },
+                  "description": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Localized descriptions by language code"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created client wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "clientId": {
+                          "type": "string",
+                          "description": "Generated unique identifier for the OAuth client"
+                        },
+                        "redirectUri": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Registered redirect URI for the OAuth flow"
+                        },
+                        "name": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "Localized client names by language code"
+                        },
+                        "description": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "Localized client descriptions by language code"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "clientId": "def456",
+                        "redirectUri": "https://app.example.com/callback",
+                        "name": {
+                          "en": "New App"
+                        },
+                        "description": {
+                          "en": "Client description"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/client/{client}": {
+      "get": {
+        "tags": [
+          "oauth",
+          "clients"
+        ],
+        "operationId": "getClient",
+        "summary": "Get a single OAuth client by ID with localized metadata.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nFetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data '}'.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "OAuth client ID to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client wrapped in data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "clientId": {
+                          "type": "string",
+                          "description": "Unique identifier for the OAuth client"
+                        },
+                        "redirectUri": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Registered redirect URI for the OAuth flow"
+                        },
+                        "name": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "Localized client names by language code"
+                        },
+                        "description": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "Localized client descriptions by language code"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "data": {
+                        "clientId": "abc123",
+                        "redirectUri": "https://app.example.com/callback",
+                        "name": {
+                          "en": "Example App"
+                        },
+                        "description": {
+                          "en": "Demo client"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "404": {
+            "description": "Client not found."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      },
+      "delete": {
+        "tags": [
+          "oauth",
+          "clients"
+        ],
+        "operationId": "deleteClient",
+        "summary": "Delete an OAuth client by ID.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nPermanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "OAuth client ID to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Client deleted."
+          },
+          "401": {
+            "description": "Must be logged in."
+          },
+          "404": {
+            "description": "Client not found."
+          },
+          "500": {
+            "description": "OAuth not enabled or server error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/oauth/metadata": {
+      "get": {
+        "tags": [
+          "oauth"
+        ],
+        "operationId": "getOauthMetadata",
+        "deprecated": true,
+        "x-sunset": "2027-05-23",
+        "summary": "Advertise OAuth 2.0 Authorization Server metadata (RFC 8414). Deprecated, use /.well-known/openid-configuration.",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nDeprecated. Use `/.well-known/openid-configuration` (OpenID Connect Discovery) or `/.well-known/oauth-authorization-server` (RFC 8414). They return the same document. This path stays until the sunset date, `2027-09-30`, because it is part of the frozen API contract. Responses carry `Deprecation` and `Sunset` headers.\n\nPublic endpoint that returns the discovery document for OAuth clients, including issuer, authorization endpoint, token endpoint, userinfo endpoint, JWKS location, supported scopes, response types, grant types, and PKCE methods. Requires the OAUTH_ENABLED feature flag; otherwise returns a 500 configuration error.\n",
+        "responses": {
+          "200": {
+            "description": "Metadata document with required fields.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "issuer": {
+                      "type": "string"
+                    },
+                    "authorization_endpoint": {
+                      "type": "string"
+                    },
+                    "token_endpoint": {
+                      "type": "string"
+                    },
+                    "userinfo_endpoint": {
+                      "type": "string",
+                      "description": "OpenID Connect UserInfo endpoint"
+                    },
+                    "jwks_uri": {
+                      "type": "string",
+                      "description": "Where the public keys that verify tokens are published"
+                    },
+                    "scopes_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "OAuth scope identifiers supported by the authorization server",
+                        "example": "read"
+                      },
+                      "description": "List of OAuth 2.0 scopes supported by the authorization server"
+                    },
+                    "response_types_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "OAuth response type identifier",
+                        "example": "code"
+                      },
+                      "description": "OAuth 2.0 response types supported by the authorization server"
+                    },
+                    "grant_types_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "OAuth grant type identifier",
+                        "example": "authorization_code"
+                      },
+                      "description": "OAuth 2.0 grant types supported by the authorization server"
+                    },
+                    "subject_types_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "public"
+                      }
+                    },
+                    "id_token_signing_alg_values_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "RS256"
+                      }
+                    },
+                    "token_endpoint_auth_methods_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "none"
+                      }
+                    },
+                    "claims_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "service_documentation": {
+                      "type": "string",
+                      "description": "URL to the authorization server's documentation",
+                      "example": "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API"
+                    },
+                    "ui_locales_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Language tag for supported UI locales",
+                        "example": "en"
+                      },
+                      "description": "Languages supported for the user interface"
+                    },
+                    "code_challenge_methods_supported": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "PKCE code challenge method",
+                        "example": "S256"
+                      },
+                      "description": "PKCE code challenge methods supported by the authorization server"
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "issuer": "https://api.citycatalyst.example",
+                      "authorization_endpoint": "https://api.citycatalyst.example/authorize/",
+                      "token_endpoint": "https://api.citycatalyst.example/api/v1/token/",
+                      "userinfo_endpoint": "https://api.citycatalyst.example/api/v1/oauth/userinfo/",
+                      "jwks_uri": "https://api.citycatalyst.example/.well-known/jwks.json/",
+                      "scopes_supported": [
+                        "openid",
+                        "read",
+                        "write"
+                      ],
+                      "response_types_supported": [
+                        "code"
+                      ],
+                      "grant_types_supported": [
+                        "authorization_code",
+                        "refresh_token"
+                      ],
+                      "subject_types_supported": [
+                        "public"
+                      ],
+                      "id_token_signing_alg_values_supported": [
+                        "RS256"
+                      ],
+                      "token_endpoint_auth_methods_supported": [
+                        "none"
+                      ],
+                      "service_documentation": "https://github.com/Open-Earth-Foundation/CityCatalyst/wiki/CityCatalyst-Backend-API",
+                      "ui_locales_supported": [
+                        "en",
+                        "de",
+                        "es",
+                        "pt"
+                      ],
+                      "code_challenge_methods_supported": [
+                        "S256"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "OAuth not enabled or configuration error."
+          }
+        }
+      }
+    },
+    "/api/v1/token": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "postToken",
+        "summary": "Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nAccepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. When the code was issued for the `openid` scope, the response also contains an `id_token` (OpenID Connect). Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, that the code is unexpired and unused, and the PKCE S256 challenge. A code is spent by its first exchange attempt, even a failed one.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "grant_type",
+                  "code",
+                  "redirect_uri",
+                  "client_id",
+                  "code_verifier"
+                ],
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "authorization_code"
+                    ]
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "client_id": {
+                    "type": "string"
+                  },
+                  "code_verifier": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens issued successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "integer"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string"
+                    },
+                    "id_token": {
+                      "type": "string",
+                      "description": "Signed JWT (RS256) that identifies the user. Present only when the scope includes `openid`. Valid for 15 minutes. Carries `nonce` when one was sent with the authorization request."
+                    }
+                  }
+                },
+                "examples": {
+                  "example": {
+                    "value": {
+                      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "token_type": "Bearer",
+                      "expires_in": 604800,
+                      "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "scope": "openid read write",
+                      "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters or verification failed (e.g., client/redirect mismatch, expired/invalid code, PKCE failure, reused code)."
+          },
+          "415": {
+            "description": "Unsupported content type."
+          },
+          "500": {
+            "description": "OAuth not enabled or configuration error."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/user/clients": {
+      "get": {
+        "tags": [
+          "user",
+          "clients"
+        ],
+        "operationId": "getUserClients",
+        "summary": "List OAuth client authorizations for current user",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nRetrieves all OAuth client authorizations for the current user. Returns a list of authorized clients with their metadata, scopes, and internationalized names and descriptions. Requires authentication and OAuth feature flag to be enabled.",
+        "responses": {
+          "200": {
+            "description": "Client authorizations returned."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    },
+    "/api/v1/user/clients/{client}": {
+      "get": {
+        "tags": [
+          "user",
+          "clients"
+        ],
+        "operationId": "getUserClientsClient",
+        "summary": "Get OAuth client authorization for current user",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nRetrieves OAuth client authorization information for the current user and a specific client. Returns authorization details including client metadata, scopes, and internationalized client names and descriptions. Requires authentication and OAuth feature flag to be enabled.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client authorization returned."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "404": {
+            "description": "Authorization not found."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      },
+      "delete": {
+        "tags": [
+          "user",
+          "clients"
+        ],
+        "operationId": "deleteUserClientsClient",
+        "summary": "Revoke OAuth client authorization for current user",
+        "description": "Moved to core-identity-service (CC-1283). Returns 410 until sunset 2027-05-23.\n\nRevokes OAuth client authorization for the current user and a specific client. Permanently removes the authorization, preventing the client from accessing the user's resources. Requires authentication and OAuth feature flag to be enabled.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Authorization revoked."
+          },
+          "401": {
+            "description": "Not signed in."
+          },
+          "404": {
+            "description": "Authorization not found."
+          },
+          "500": {
+            "description": "OAuth not enabled."
+          }
+        },
+        "deprecated": true,
+        "x-sunset": "2027-05-23"
+      }
+    }
+  }
+}

@@ -285,31 +285,7 @@ import {
   UnrankedActionSelectionCreationAttributes,
 } from "./UnrankedActionSelection";
 
-import {
-  OAuthClient as _OAuthClient,
-  OAuthClientAttributes,
-  OAuthClientCreationAttributes,
-  OAuthClientOptionalAttributes,
-} from "./OAuthClient";
-import {
-  OAuthClientI18N as _OAuthClientI18N,
-  OAuthClientI18NAttributes,
-  OAuthClientI18NCreationAttributes,
-  OAuthClientI18NOptionalAttributes,
-} from "./OAuthClientI18N";
 
-import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
-import {
-  OAuthClientAuthzAttributes,
-  OAuthClientAuthzCreationAttributes,
-  OAuthClientAuthzOptionalAttributes,
-} from "./OAuthClientAuthz";
-import {
-  AuthorizationCode as _AuthorizationCode,
-  AuthorizationCodeAttributes,
-  AuthorizationCodeCreationAttributes,
-  AuthorizationCodeOptionalAttributes,
-} from "./AuthorizationCode";
 import {
   PersonalAccessToken as _PersonalAccessToken,
   PersonalAccessTokenAttributes,
@@ -392,10 +368,6 @@ export {
   _UnrankedActionSelection as UnrankedActionSelection,
   _Module as Module,
   _ProjectModules as ProjectModules,
-  _OAuthClient as OAuthClient,
-  _OAuthClientI18N as OAuthClientI18N,
-  _OAuthClientAuthz as OAuthClientAuthz,
-  _AuthorizationCode as AuthorizationCode,
   _PersonalAccessToken as PersonalAccessToken,
   _ConsentRecord as ConsentRecord,
   _RetentionActionLog as RetentionActionLog,
@@ -526,18 +498,6 @@ export type {
   ModuleCreationAttributes,
   ProjectModulesAttributes,
   ProjectModulesCreationAttributes,
-  OAuthClientAttributes,
-  OAuthClientCreationAttributes,
-  OAuthClientOptionalAttributes,
-  OAuthClientI18NAttributes,
-  OAuthClientI18NCreationAttributes,
-  OAuthClientI18NOptionalAttributes,
-  OAuthClientAuthzAttributes,
-  OAuthClientAuthzCreationAttributes,
-  OAuthClientAuthzOptionalAttributes,
-  AuthorizationCodeAttributes,
-  AuthorizationCodeCreationAttributes,
-  AuthorizationCodeOptionalAttributes,
   PersonalAccessTokenAttributes,
   PersonalAccessTokenCreationAttributes,
   PersonalAccessTokenOptionalAttributes,
@@ -617,10 +577,6 @@ export function initModels(sequelize: Sequelize) {
     _UnrankedActionSelection.initModel(sequelize);
   const Module = _Module.initModel(sequelize);
   const ProjectModules = _ProjectModules.initModel(sequelize);
-  const OAuthClient = _OAuthClient.initModel(sequelize);
-  const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
-  const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
-  const AuthorizationCode = _AuthorizationCode.initModel(sequelize);
   const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
   const ConsentRecord = _ConsentRecord.initModel(sequelize);
   const RetentionActionLog = _RetentionActionLog.initModel(sequelize);
@@ -1367,22 +1323,6 @@ export function initModels(sequelize: Sequelize) {
     as: "unrankedActionSelections",
     foreignKey: "inventoryId",
   });
-  OAuthClient.hasMany(OAuthClientI18N, { as: "i18n", foreignKey: "clientId" });
-
-  OAuthClientAuthz.belongsTo(OAuthClient, {
-    as: "client",
-    foreignKey: "clientId",
-    targetKey: "clientId",
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  });
-  OAuthClientAuthz.belongsTo(User, {
-    as: "user",
-    foreignKey: "userId",
-    targetKey: "userId",
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  });
 
   // PersonalAccessToken associations
   PersonalAccessToken.belongsTo(User, {
@@ -1679,10 +1619,6 @@ export function initModels(sequelize: Sequelize) {
     UnrankedActionSelection: UnrankedActionSelectionModel,
     Module: Module,
     ProjectModules: ProjectModules,
-    OAuthClient: OAuthClient,
-    OAuthClientI18N: OAuthClientI18N,
-    OAuthClientAuthz: OAuthClientAuthz,
-    AuthorizationCode: AuthorizationCode,
     PersonalAccessToken: PersonalAccessToken,
     ConsentRecord: ConsentRecord,
     RetentionActionLog: RetentionActionLog,

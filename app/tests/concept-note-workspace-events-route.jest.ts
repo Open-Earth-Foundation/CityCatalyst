@@ -32,9 +32,7 @@ jest.unstable_mockModule("@/lib/auth/access-token-validator", () => ({
   validatePAT: jest.fn(),
 }));
 jest.unstable_mockModule("@/models", () => ({ db: { initialized: true } }));
-for (const name of ["OAuthClientAuthz", "OAuthClient", "Organization"]) {
-  jest.unstable_mockModule(`@/models/${name}`, () => ({ [name]: {} }));
-}
+jest.unstable_mockModule("@/models/Organization", () => ({ Organization: {} }));
 jest.unstable_mockModule("@/lib/highlight", () => ({ H: null }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { error: jest.fn(), warn: jest.fn(), info: jest.fn() },

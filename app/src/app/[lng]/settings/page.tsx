@@ -20,8 +20,6 @@ import ProjectSettings from "./project/index";
 import MyTokensTab from "@/app/[lng]/settings/my-tokens-tab";
 import { api } from "@/services/api";
 import { Roles } from "@/util/types";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
-import MyAppsTab from "@/app/[lng]/settings/my-apps-tab";
 import { FiArrowLeft, FiX } from "react-icons/fi";
 import { BiInfoCircle } from "react-icons/bi";
 
@@ -250,28 +248,6 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                   </Text>
                 </Tabs.Trigger>
               )}
-              {isAdmin && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
-                <Tabs.Trigger
-                  value="my-apps"
-                  _selected={{
-                    borderColor: "content.link",
-                    borderBottomWidth: "2px",
-                    boxShadow: "none",
-                    fontWeight: "bold",
-                    borderRadius: "0",
-                    color: "content.link",
-                    backgroundColor: "background.backgroundLight",
-                  }}
-                >
-                  <Text
-                    fontSize="title.md"
-                    fontStyle="normal"
-                    lineHeight="24"
-                  >
-                    {t("apps")}
-                  </Text>
-                </Tabs.Trigger>
-              )}
             </Tabs.List>
             <Tabs.Content value="account">
               <AccountSettingsTab t={t} />
@@ -287,9 +263,6 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               <ProjectSettings lng={lng} />
             </Tabs.Content>
             {isAdmin && <MyTokensTab lng={lng} />}
-            {isAdmin && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
-              <MyAppsTab lng={lng} />
-            )}
           </Tabs.Root>
         </Box>
       </Box>

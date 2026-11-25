@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { LANGUAGES, UpdateUserPayload, UserInfoResponse } from "@/util/types";
-import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { Field } from "@/components/ui/field";
 import { NumberFormatEnum } from "@/util/enums";
 import {

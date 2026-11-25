@@ -6,6 +6,11 @@ export enum FeatureFlags {
   ACCOUNT_SETTINGS_ENABLED = "ACCOUNT_SETTINGS_ENABLED",
   UPLOAD_OWN_DATA_ENABLED = "UPLOAD_OWN_DATA_ENABLED",
   OAUTH_ENABLED = "OAUTH_ENABLED",
+  /**
+   * CityCatalyst logs in through core-identity-service (OIDC RP).
+   * After CC-1283 credentials login is gone; keep this flag on in every env.
+   */
+  IDENTITY_SERVICE_LOGIN = "IDENTITY_SERVICE_LOGIN",
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
   CCRA_MODULE = "CCRA_MODULE",
   CA_SERVICE_INTEGRATION = "CA_SERVICE_INTEGRATION",

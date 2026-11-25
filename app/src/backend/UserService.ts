@@ -795,7 +795,6 @@ export default class UserService {
         name: orgAdmin.user.name ?? null,
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.ORG_ADMIN,
-        twoFactorEnabled: orgAdmin.user.twoFactorEnabled ?? false,
       }));
 
     users.push(
@@ -846,7 +845,6 @@ export default class UserService {
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.COLLABORATOR,
         cityId: cityUser.cityId as string,
-        twoFactorEnabled: cityUser.user.twoFactorEnabled ?? false,
       }));
 
     const cityInvites = cities.flatMap((city) =>

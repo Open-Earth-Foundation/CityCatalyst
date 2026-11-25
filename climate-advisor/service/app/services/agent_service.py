@@ -9,7 +9,7 @@ management.
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union
 from urllib.parse import urlparse
 from uuid import UUID
 
@@ -17,9 +17,12 @@ import openai
 from agents import (
     Agent,
     FunctionTool,
+    FunctionToolResult,
     ModelSettings,
     OpenAIChatCompletionsModel,
     OpenAIResponsesModel,
+    RunContextWrapper,
+    ToolsToFinalOutputResult,
 )
 from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -43,7 +46,10 @@ from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.concept_note_edit_tools import build_concept_note_edit_tools
 from app.tools.concept_note_gap_tools import build_concept_note_gap_tools
-from app.tools.concept_note_question import concept_note_ask_question
+from app.tools.concept_note_question import (
+    concept_note_ask_question,
+    is_question_output,
+)
 from app.tools.concept_note_help_tools import build_concept_note_help_tools
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.concept_note_visual_tools import concept_note_render_visual
@@ -61,6 +67,20 @@ from app.utils.conversation_observability import traced_conversation_tool
 from app.utils.request_token_refresh import RequestTokenRefreshContext
 
 logger = logging.getLogger(__name__)
+
+
+def stop_at_valid_question(
+    _context: RunContextWrapper[Any], results: list[FunctionToolResult]
+) -> ToolsToFinalOutputResult:
+    """End the turn on a shown card; let the model repair rejected card arguments."""
+    for result in results:
+        if result.tool.name == "concept_note_ask_question" and is_question_output(
+            result.output
+        ):
+            return ToolsToFinalOutputResult(
+                is_final_output=True, final_output=result.output
+            )
+    return ToolsToFinalOutputResult(is_final_output=False)
 
 
 class AgentService:
@@ -83,6 +103,7 @@ class AgentService:
         concept_note_run_id: Optional[Union[str, UUID]] = None,
         concept_note_edit_request: EditProposalRequest | None = None,
         concept_note_edit_history: list[dict[str, str]] | None = None,
+        concept_note_question_cards: list[dict[str, Any]] | None = None,
         concept_note_ui_locale: str | None = None,
         native_input_catalog_service: Optional[NativeInputCatalogService] = None,
         native_input_catalog_context: Optional[ActiveRequestContext] = None,
@@ -98,6 +119,7 @@ class AgentService:
             city_id: Active city ID, used by pre-draft Stationary Energy tools
             concept_note_edit_request: Optional CNB edit proposal request
             concept_note_edit_history: Bounded recent CNB edit messages
+            concept_note_question_cards: Recent suggested-answer cards and answers
             concept_note_ui_locale: Active frontend language for CNB help labels
             native_input_catalog_service: Optional request-scoped Core coordinator
                 used by runtime NativeInputCatalog tools
@@ -127,6 +149,7 @@ class AgentService:
         )
         self.concept_note_edit_request = concept_note_edit_request
         self.concept_note_edit_history = list(concept_note_edit_history or [])
+        self.concept_note_question_cards = list(concept_note_question_cards or [])
         self.concept_note_ui_locale = concept_note_ui_locale
         self._stationary_energy_surface = bool(
             stationary_energy_surface or self.stationary_energy_draft_run_id
@@ -504,6 +527,7 @@ class AgentService:
                             token_ref=self._token_ref,
                             request=self.concept_note_edit_request,
                             recent_messages=self.concept_note_edit_history,
+                            question_cards=self.concept_note_question_cards,
                             request_token_refresh_context=self.request_token_refresh_context,
                         )
                     )
@@ -542,7 +566,7 @@ class AgentService:
         agent = Agent(
             name="Climate Advisor",
             tool_use_behavior=(
-                {"stop_at_tool_names": ["concept_note_ask_question"]}
+                stop_at_valid_question
                 if self._has_concept_note_context
                 else "run_llm_again"
             ),
@@ -552,7 +576,12 @@ class AgentService:
                 openai_client=self.client,
             ),
             model_settings=(
-                cnb_model_settings(reasoning_effort, temperature=agent_temperature)
+                cnb_model_settings(
+                    reasoning_effort,
+                    temperature=agent_temperature,
+                    # Every CNB chat call starts with the same long system prompt.
+                    prompt_cache_key="cnb_chat",
+                )
                 if self._has_concept_note_context
                 else ModelSettings(
                     temperature=agent_temperature,

@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/popover";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteDraftChapter, ConceptNoteGap } from "@/util/types";
-import { missingInformationRanges } from "./draft-markdown";
-import { markerLabel } from "./missing-information";
+import {
+  informationMarkerKey,
+  missingInformationRanges,
+} from "./draft-markdown";
 
 export interface ChapterGapRow {
   id: string;
@@ -25,24 +27,27 @@ export interface ChapterGapRow {
   whyAsking?: string;
   severity: "critical" | "noncritical";
   gap: ConceptNoteGap | null;
+  /** The marker exactly as written in the chapter, when the row has one. */
+  marker?: string;
 }
 
-function questionText(value: string): string {
-  return value
-    .replace(/^information needed:\s*/i, "")
-    .trim()
-    .toLowerCase();
-}
+/** A caveat gap holds an accepted estimate that still needs confirming. */
+export const isEstimate = (row: ChapterGapRow) => row.gap?.state === "caveat";
 
-/** Open gaps plus unrecorded markers, in document order, titled by their heading. */
+/**
+ * Open gaps plus unrecorded markers, in document order, titled by their
+ * heading. Estimates have no marker left, so they follow the open gaps.
+ */
 export function chapterGapRows(
   chapter: ConceptNoteDraftChapter,
 ): ChapterGapRow[] {
   const markdown = chapter.body_markdown ?? "";
   const markers = missingInformationRanges(markdown);
-  const keys = markers.map((marker) => questionText(marker.message));
+  // Same key as Climate Advisor, so a record pairs with its marker however
+  // either one is formatted.
+  const keys = markers.map((marker) => informationMarkerKey(marker.message));
   const rows: ChapterGapRow[] = chapter.gaps
-    .filter((gap) => gap.state === "open" || gap.state === "processing")
+    .filter((gap) => ["open", "processing", "caveat"].includes(gap.state))
     .map((gap) => ({
       id: gap.gap_id,
       question: gap.question,
@@ -50,12 +55,14 @@ export function chapterGapRows(
       severity: gap.severity,
       gap,
     }));
-  // Resolved gaps keep their markers out; legacy markers get their own row.
+  // Resolved gaps keep their markers out; unrecorded markers get their own row.
   for (const { message } of markers) {
-    const key = questionText(message);
+    const key = informationMarkerKey(message);
+    // An empty key (punctuation only) gets no record, so it gets no row.
     if (
+      key &&
       ![...chapter.gaps, ...rows].some(
-        (item) => questionText(item.question) === key,
+        (item) => informationMarkerKey(item.question) === key,
       )
     )
       rows.push({
@@ -66,26 +73,28 @@ export function chapterGapRows(
       });
   }
   const position = (row: ChapterGapRow) => {
-    const index = keys.indexOf(questionText(row.question));
+    // Estimates have no marker; they always follow the open gaps.
+    if (isEstimate(row)) return keys.length + 1;
+    const index = keys.indexOf(informationMarkerKey(row.question));
     return index < 0 ? keys.length : index;
   };
   for (const row of rows) {
     const marker = markers[position(row)];
-    if (marker)
-      row.title = markdown
-        .slice(0, marker.start)
-        .match(/^#{1,6}\s+(.+)$/gm)
-        ?.at(-1)
-        ?.replace(/^#{1,6}\s+/, "")
-        .trim();
+    if (!marker) continue;
+    row.marker = markdown.slice(marker.start, marker.end);
+    row.title = markdown
+      .slice(0, marker.start)
+      .match(/^#{1,6}\s+(.+)$/gm)
+      ?.at(-1)
+      ?.replace(/^#{1,6}\s+/, "")
+      .trim();
   }
   return rows.sort((a, b) => position(a) - position(b));
 }
 
 export function gapRowForMessage(rows: ChapterGapRow[], message: string) {
-  return rows.find(
-    (row) => questionText(row.question) === questionText(message),
-  );
+  const key = informationMarkerKey(message);
+  return rows.find((row) => informationMarkerKey(row.question) === key);
 }
 
 interface ChapterGapsPanelProps {
@@ -108,6 +117,22 @@ const severityColor = (row: ChapterGapRow) =>
 const severityBorder = (row: ChapterGapRow) =>
   row.severity === "critical" ? "sentiment.warningDefault" : "gray.medium";
 
+/**
+ * Scroll shadows: a thin shade at an edge only while more content is hidden
+ * past it (the "local" covers hide it otherwise), so a scrolling region never
+ * looks complete when it is cut off. Content that fits looks unchanged.
+ */
+const scrollShadows = {
+  background:
+    "linear-gradient({colors.base.light} 30%, transparent) center top, " +
+    "linear-gradient(transparent, {colors.base.light} 70%) center bottom, " +
+    "linear-gradient({colors.border.neutral}, transparent) center top, " +
+    "linear-gradient(transparent, {colors.border.neutral}) center bottom",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "100% 24px, 100% 24px, 100% 10px, 100% 10px",
+  backgroundAttachment: "local, local, scroll, scroll",
+};
+
 function GapDetails({
   lng,
   row,
@@ -120,8 +145,15 @@ function GapDetails({
   onAnswer?: () => void;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
+  const estimate = isEstimate(row) ? row.gap?.resolution?.answer : undefined;
   return (
-    <Box data-testid="concept-note-chapter-gap" data-severity={row.severity}>
+    <Flex
+      direction="column"
+      minH={0}
+      data-testid="concept-note-chapter-gap"
+      data-severity={row.severity}
+      data-state={row.gap?.state}
+    >
       <PopoverTitle
         fontFamily="heading"
         fontSize="body.sm"
@@ -140,44 +172,118 @@ function GapDetails({
           {t("gap-number", { number })}
         </chakra.span>
         {" · "}
-        {t(severityKey(row))}
+        {t(isEstimate(row) ? "gap-state-caveat" : severityKey(row))}
       </Text>
-      <Text mt={3} fontSize="body.sm" lineHeight="22px" color="content.primary">
-        {row.question}
-      </Text>
-      {row.whyAsking && (
-        <Box mt={4} pt={3} borderTop="1px solid" borderColor="border.neutral">
-          <Text fontSize="body.sm" fontWeight="semibold">
-            {t("gap-why-needed")}
-          </Text>
-          <Text mt={1} fontSize="label.sm" color="content.tertiary">
-            {t("gap-clima-rationale")}
-          </Text>
-          <Text
-            mt={1}
-            fontSize="body.sm"
-            lineHeight="22px"
-            color="content.secondary"
+      {/* Only the long text scrolls, so "Answer in chat" stays in view below it. */}
+      <Box
+        mt={3}
+        minH={0}
+        overflowY="auto"
+        css={scrollShadows}
+        data-testid="concept-note-chapter-gap-text"
+      >
+        <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
+          {row.question}
+        </Text>
+        {estimate && (
+          <Box
+            mt={3}
+            px={3}
+            py={2}
+            bg="sentiment.warningOverlay"
+            borderLeft="3px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            data-testid="concept-note-gap-estimate"
           >
-            {row.whyAsking}
-          </Text>
-        </Box>
-      )}
-      {onAnswer && (
+            <Text fontSize="label.sm" fontWeight="semibold">
+              {t("gap-current-estimate")}
+            </Text>
+            <Text fontSize="body.sm" color="content.secondary">
+              {estimate}
+            </Text>
+          </Box>
+        )}
+        {row.gap?.answered_so_far && (
+          <Box
+            mt={4}
+            pt={3}
+            borderTop="1px solid"
+            borderColor="border.neutral"
+            data-testid="concept-note-gap-answered-so-far"
+          >
+            <Text fontSize="body.sm" fontWeight="semibold">
+              {t("gap-answered-so-far")}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.tertiary">
+              {t("gap-answered-so-far-hint")}
+            </Text>
+            <Text
+              mt={1}
+              fontSize="body.sm"
+              lineHeight="22px"
+              color="content.secondary"
+              whiteSpace="pre-wrap"
+              overflowWrap="anywhere"
+            >
+              {row.gap.answered_so_far}
+            </Text>
+          </Box>
+        )}
+        {row.whyAsking && (
+          <Box mt={4} pt={3} borderTop="1px solid" borderColor="border.neutral">
+            <Text fontSize="body.sm" fontWeight="semibold">
+              {t("gap-why-needed")}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.tertiary">
+              {t("gap-clima-rationale")}
+            </Text>
+            <Text
+              mt={1}
+              fontSize="body.sm"
+              lineHeight="22px"
+              color="content.secondary"
+            >
+              {row.whyAsking}
+            </Text>
+          </Box>
+        )}
+      </Box>
+      {/* An unrecorded marker has no gap record to answer against. */}
+      {onAnswer && row.gap && (
         <Button
           mt={4}
           w="full"
           size="sm"
           variant="outline"
+          flexShrink={0}
           data-testid="concept-note-chapter-gap-answer"
           onClick={onAnswer}
         >
           <Icon as={LuMessageSquare} />
-          {t("gap-answer-in-chat")}
+          {t(isEstimate(row) ? "gap-confirm-in-chat" : "gap-answer-in-chat")}
         </Button>
       )}
-    </Box>
+    </Flex>
   );
+}
+
+/** Width of both gap popovers; phones get the viewport minus 32 px. */
+const POPOVER_WIDTH = 360;
+
+/**
+ * Wide screens open a marker's details to its left, as before. Phones have
+ * room on neither side of the marker, so there the details open below it
+ * (flipping above when needed) and slide inside the viewport.
+ */
+export function markerPlacement(
+  marker: HTMLElement,
+): "left-start" | "bottom-end" {
+  const width = Math.min(POPOVER_WIDTH, window.innerWidth - 32);
+  // 12 px offset from the marker plus zag's default 8 px viewport padding.
+  return marker.getBoundingClientRect().left >= width + 20
+    ? "left-start"
+    : "bottom-end";
 }
 
 /** Shared frame for the inline-marker and chapter-list popovers. */
@@ -197,10 +303,12 @@ function GapPopoverContent({
   const { t } = useTranslation(lng, "concept-notes");
   return (
     <PopoverContent
-      w="360px"
+      w={`${POPOVER_WIDTH}px`}
       maxW="calc(100vw - 32px)"
-      maxH="min(520px, 75dvh)"
-      overflowY="auto"
+      // zag measures the room on the side the popover opened on; the popover
+      // never grows past it, and its body scrolls inside (see GapDetails).
+      maxH="min(520px, var(--available-height, 75dvh))"
+      overflow="hidden"
       borderStyle="solid"
       borderWidth={borderWidth}
       borderColor={borderColor}
@@ -212,7 +320,9 @@ function GapPopoverContent({
         aria-label={t("gap-close")}
         color="content.secondary"
       />
-      <PopoverBody p={4}>{children}</PopoverBody>
+      <PopoverBody p={4} display="flex" flexDirection="column" minH={0}>
+        {children}
+      </PopoverBody>
     </PopoverContent>
   );
 }
@@ -237,6 +347,9 @@ export function ChapterGapMarker({
 }: GapDetailProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<"left-start" | "bottom-end">(
+    "left-start",
+  );
   const answering = useRef(false);
   const critical = row.severity === "critical";
   return (
@@ -253,8 +366,10 @@ export function ChapterGapMarker({
         onOpenChange={(details) => setOpen(details.open)}
         finalFocusEl={answerFormFocus(answering)}
         positioning={{
-          placement: "left-start",
+          placement,
           flip: true,
+          // On a phone neither side fits; let it cover the marker, not the screen edge.
+          overlap: true,
           offset: { mainAxis: 12 },
         }}
       >
@@ -264,11 +379,16 @@ export function ChapterGapMarker({
             data-testid="concept-note-gap-marker"
             data-gap-id={row.id}
             data-severity={row.severity}
+            // React escapes attributes; i18next escaping would leak &#39; etc. into the label.
             aria-label={t("gap-marker-label", {
               number,
               severity: t(severityKey(row)),
               question: row.question,
+              interpolation: { escapeValue: false },
             })}
+            onClick={(event) =>
+              setPlacement(markerPlacement(event.currentTarget))
+            }
             display="inline-flex"
             alignItems="center"
             justifyContent="center"
@@ -340,7 +460,9 @@ export function ChapterGapsPanel({
   const answering = useRef(false);
   const selected = rows.find((row) => row.id === selectedId);
   if (!rows.length) return null;
-  const required = rows.filter((row) => row.severity === "critical").length;
+  // Estimates stay listed, but they are not open gaps.
+  const openRows = rows.filter((row) => !isEstimate(row));
+  const required = openRows.filter((row) => row.severity === "critical").length;
   return (
     <Flex
       data-testid="concept-note-chapter-gaps"
@@ -349,12 +471,24 @@ export function ChapterGapsPanel({
       gap={2}
       flexWrap="wrap"
     >
-      <Text fontSize="label.sm" fontWeight="semibold" color="content.primary">
-        {t("chapter-open-gaps", { count: rows.length })}
-      </Text>
-      <Text fontSize="label.sm" color="content.tertiary">
-        {t("gap-counts", { required, optional: rows.length - required })}
-      </Text>
+      {/* The chapter header already counts estimates ("chapter-caveats"). */}
+      {openRows.length > 0 && (
+        <>
+          <Text
+            fontSize="label.sm"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {t("chapter-open-gaps", { count: openRows.length })}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("gap-counts", {
+              required,
+              optional: openRows.length - required,
+            })}
+          </Text>
+        </>
+      )}
       <PopoverRoot
         lazyMount
         open={open}
@@ -378,6 +512,7 @@ export function ChapterGapsPanel({
             letterSpacing="normal"
             aria-label={t("gap-view-all-for-chapter", {
               chapter: chapter.title,
+              interpolation: { escapeValue: false },
             })}
             data-testid="concept-note-chapter-gaps-toggle"
           >
@@ -398,6 +533,7 @@ export function ChapterGapsPanel({
                 color="content.link"
                 textTransform="none"
                 letterSpacing="normal"
+                alignSelf="start"
                 mb={3}
                 autoFocus
                 data-testid="concept-note-gap-back"
@@ -427,9 +563,17 @@ export function ChapterGapsPanel({
           ) : (
             <>
               <PopoverTitle fontSize="body.sm" fontWeight="semibold" pr={6}>
-                {t("chapter-open-gaps", { count: rows.length })}
+                {t("chapter-open-gaps", { count: openRows.length })}
               </PopoverTitle>
-              <Box as="ol" listStyleType="none" mt={3}>
+              {/* The list scrolls inside the popover when the chapter has many gaps. */}
+              <Box
+                as="ol"
+                listStyleType="none"
+                mt={3}
+                minH={0}
+                overflowY="auto"
+                css={scrollShadows}
+              >
                 {rows.map((row, index) => (
                   <Box
                     as="li"
@@ -453,6 +597,8 @@ export function ChapterGapsPanel({
                       _focusVisible={{
                         outline: "2px solid",
                         outlineColor: "content.link",
+                        // Inset, so the scrolling list does not clip the ring.
+                        outlineOffset: "-2px",
                       }}
                     >
                       <Text
@@ -462,16 +608,38 @@ export function ChapterGapsPanel({
                       >
                         {index + 1}
                       </Text>
+                      {/* The question tells gaps under one heading apart; the heading says where it is. */}
                       <Box flex={1} minW={0}>
-                        <Text fontSize="body.sm" lineClamp={2}>
-                          {row.title || markerLabel(row.question)}
+                        <Text
+                          fontSize="body.sm"
+                          lineClamp={2}
+                          data-testid="concept-note-gap-list-question"
+                        >
+                          {row.question}
                         </Text>
                         <Text
                           mt={1}
                           fontSize="label.sm"
-                          color="content.tertiary"
+                          color={
+                            isEstimate(row)
+                              ? "sentiment.warningFg"
+                              : "content.tertiary"
+                          }
+                          lineClamp={1}
                         >
-                          {t(severityKey(row))}
+                          {t(
+                            isEstimate(row)
+                              ? "gap-state-caveat"
+                              : severityKey(row),
+                          )}
+                          {row.gap?.answered_so_far &&
+                            ` · ${t("gap-answered-so-far")}`}
+                          {row.title && (
+                            <>
+                              {" · "}
+                              {row.title}
+                            </>
+                          )}
                         </Text>
                       </Box>
                       <Icon

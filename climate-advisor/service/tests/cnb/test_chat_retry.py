@@ -175,3 +175,43 @@ async def test_plain_repeat_questions_are_still_saved(chat_api):
         ("user", "Again?"),
         ("user", "Again?"),
     ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("thread_present", [False, True])
+async def test_explicit_card_reply_requires_an_existing_cnb_thread(chat_api, thread_present):
+    client, factory, thread_id = chat_api
+    question_id = uuid4()
+    async with factory() as session, session.begin():
+        session.add(Message(
+            message_id=question_id, thread_id=thread_id, user_id="owner",
+            text="Which format?", role=MessageRole.ASSISTANT,
+            tools_used=[{"name": "concept_note_ask_question", "result_json": {
+                "message": "Which format?", "options": ["Months", "Quarters"],
+            }}],
+        ))
+    body = {"user_id": "owner", "content": "Quarters", "context": {
+        "concept_note_question_message_id": str(question_id),
+    }}
+    if thread_present:
+        body["thread_id"] = str(thread_id)
+    response = await client.post("/v1/messages", json=body, headers=AUTH_HEADERS)
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "concept_note_question_stale"
+    assert await _stored(factory, thread_id) == [("assistant", "Which format?")]
+    messages.StreamingHandler.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("turn", ["draft_overview", "resume"])
+async def test_explicit_card_reply_cannot_bypass_check_with_hidden_turn_options(chat_api, turn):
+    client, factory, thread_id = chat_api
+    options = ({"concept_note_turn": turn} if turn == "draft_overview"
+               else {"stationary_energy_resume_after_draft_start": True})
+    response = await client.post("/v1/messages", headers=AUTH_HEADERS, json={
+        "user_id": "owner", "thread_id": str(thread_id), "content": "Quarters",
+        "context": {"concept_note_question_message_id": str(uuid4())}, "options": options,
+    })
+    assert response.status_code == 409
+    assert await _stored(factory, thread_id) == []
+    messages.StreamingHandler.assert_not_called()

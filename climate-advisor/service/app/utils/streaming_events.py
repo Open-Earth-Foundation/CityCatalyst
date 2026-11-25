@@ -5,17 +5,25 @@ from __future__ import annotations
 import json
 import logging
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, AsyncIterator, Optional
+from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator, Optional
 from uuid import uuid4
 
+from app.services.cnb.question_reply import QUESTION_CHOICE_SOURCES
 from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.utils.cnb_progress import emit_cnb_reasoning
-from app.utils.concept_note_context import omit_visual_html
+from app.utils.concept_note_context import (
+    RENDER_VISUAL_TOOL_NAME,
+    omit_visual_html,
+)
 from app.utils.mlflow_logging import finish_tool_observation, start_tool_observation
 from app.utils.sse import format_sse
-from app.tools.concept_note_question import ConceptNoteQuestion
+from app.tools.concept_note_question import (
+    ConceptNoteQuestion,
+    saved_question,
+    saved_question_invocation,
+)
 
 if TYPE_CHECKING:
     # The orchestrator imports these helpers; avoid a runtime import cycle.
@@ -247,6 +255,12 @@ async def handle_tool_output(
     invocation["result"] = str(output_value) if output_value is not None else ""
     if parsed_output is not None:
         invocation["result_json"] = parsed_output
+    # A rejected visual keeps its error but never its HTML: the saved row and
+    # the done event must not carry markup that failed the checks.
+    if invocation.get("name") == RENDER_VISUAL_TOOL_NAME and not (
+        parsed_output and parsed_output.get("success") is True
+    ):
+        invocation["arguments"] = omit_visual_html(invocation).get("arguments")
 
     # Close the request-local TOOL observation after the model-facing result is stored.
     try:
@@ -259,20 +273,19 @@ async def handle_tool_output(
     except Exception:
         logger.warning("MLflow tool observation finish failed call_id=%s", call_id)
 
+    # A pending server card replaces the model's question; finalization publishes it.
+    if (
+        invocation.get("name") == "concept_note_ask_question"
+        and getattr(handler, "card_presentation", None) is not None
+    ):
+        return
+
     # Handle token refresh and errors
     if parsed_output is not None:
         if invocation.get("name") == "concept_note_ask_question":
             question = ConceptNoteQuestion.model_validate(parsed_output)
-            content = ("\n\n" if handler.assistant_tokens else "") + question.message
-            handler.assistant_tokens.append(content)
-            yield format_sse(
-                {"index": handler.token_index, "content": content}, event="message"
-            ).encode("utf-8")
-            handler.token_index += 1
-            yield format_sse(
-                {"name": "concept_note_ask_question", **question.model_dump()},
-                event="tool_result",
-            ).encode("utf-8")
+            for event_bytes in question_events(handler, question):
+                yield event_bytes
         async for event_bytes in handle_tool_result_metadata(handler, parsed_output):
             yield event_bytes
         stationary_energy_payload = build_stationary_energy_tool_result_payload(
@@ -293,6 +306,65 @@ async def handle_tool_output(
         },
         event="tool_result",
     ).encode("utf-8")
+
+
+def question_events(
+    handler: StreamingHandler, question: ConceptNoteQuestion
+) -> Iterator[bytes]:
+    """Publish one question card as its prose message and public card event."""
+    content = ("\n\n" if handler.assistant_tokens else "") + question.message
+    handler.assistant_tokens.append(content)
+    yield format_sse(
+        {"index": handler.token_index, "content": content}, event="message"
+    ).encode("utf-8")
+    handler.token_index += 1
+    yield format_sse(
+        {
+            "name": "concept_note_ask_question",
+            **question.model_dump(include={"message", "options", "on_answer"}),
+        },
+        event="tool_result",
+    ).encode("utf-8")
+
+
+def finalize_card_presentation(handler: StreamingHandler) -> Iterator[bytes]:
+    """Publish the one server-selected card for this turn and store its provenance."""
+    presentation = getattr(handler, "card_presentation", None)
+    if presentation is None or handler.streaming_error:
+        return
+    expected = presentation.question
+    model_card = saved_question(handler.tool_invocations)
+    model_invocation = saved_question_invocation(handler.tool_invocations)
+    # The model may publish its own wording only for the same single confirmation.
+    keep_model = (
+        model_card is not None
+        and model_invocation is not None
+        and expected.on_answer == "propose_edit"
+        and model_card.on_answer == "propose_edit"
+        and model_card.options == expected.options
+    )
+    if keep_model:
+        question = model_card
+        invocation = model_invocation
+    else:
+        question = expected
+        invocation = {
+            "id": str(uuid4()),
+            "name": "concept_note_ask_question",
+            "status": "success",
+            "result_json": expected.model_dump(),
+        }
+    invocation[QUESTION_CHOICE_SOURCES] = [
+        dict(source) for source in presentation.sources
+    ]
+    handler.tool_invocations[:] = [
+        item
+        for item in handler.tool_invocations
+        if item.get("name") != "concept_note_ask_question"
+    ]
+    handler.tool_invocations.append(invocation)
+    handler.card_presentation = None
+    yield from question_events(handler, question)
 
 
 async def handle_tool_result_metadata(

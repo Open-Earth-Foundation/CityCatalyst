@@ -25,6 +25,10 @@ class Thread(Base):
         nullable=True,
         comment="Owning Concept Note run; NULL for general Climate Advisor chats",
     )
+    reply_turn_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True), nullable=True)
+    reply_turn_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     context: Mapped[Optional[dict]] = mapped_column(JSONBCompat(), nullable=True)
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(

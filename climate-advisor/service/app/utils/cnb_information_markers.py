@@ -1,13 +1,20 @@
-"""Parse and compare Concept Note missing-information markers."""
+"""Parse and compare Concept Note missing-information markers.
+
+The app mirrors ``INFORMATION_NEEDED_PATTERN`` and ``information_marker_key`` in
+``app/src/components/ConceptNoteWorkspace/draft-markdown.ts`` so both sides pair
+the same marker with the same gap record. Change them together.
+"""
 
 from __future__ import annotations
 
 import re
 from collections import Counter
 
+# A marker may wrap over several lines; it ends at the first closing bracket.
 INFORMATION_NEEDED_PATTERN = re.compile(
     r"\[Information needed:\s*([^\]]+)\]", re.IGNORECASE
 )
+_MARKER_PREFIX = re.compile(r"^\s*\[?\s*information needed:", re.IGNORECASE)
 
 
 def information_needed_markers(markdown: str) -> list[str]:
@@ -29,11 +36,28 @@ def removed_information_markers(before: str, after: str) -> list[str]:
 
 
 def information_marker_key(value: str) -> str:
-    """Normalize a marker or structured-gap question for exact semantic matching."""
-    match = INFORMATION_NEEDED_PATTERN.fullmatch(value.strip())
-    question = match.group(1) if match else value
-    question = re.sub(r"^[`*_~\s]+|[`*_~\s]+$", "", question)
-    return " ".join(re.findall(r"\w+", question.casefold()))
+    """Normalize a marker or gap question so formatting never splits a pair.
+
+    Drops the marker wrapper or an "Information needed:" prefix, then keeps only
+    the lowercased runs of letters and digits. Markdown emphasis, straight or
+    curly quotes and apostrophes, punctuation, spacing and line breaks are
+    ignored, so "[Information needed: **Who signs?**]" pairs with "Who signs".
+    """
+    question = _MARKER_PREFIX.sub("", value)
+    return " ".join(re.findall(r"[^\W_]+", question.lower()))
+
+
+def find_information_marker(markdown: str, question: str) -> int:
+    """Return where the marker pairing with ``question`` starts, or -1."""
+    key = information_marker_key(question)
+    return next(
+        (
+            match.start()
+            for match in INFORMATION_NEEDED_PATTERN.finditer(markdown)
+            if information_marker_key(match.group(0)) == key
+        ),
+        -1,
+    )
 
 
 def marker_replacement_text(value: str) -> str:

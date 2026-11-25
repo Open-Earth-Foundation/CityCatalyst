@@ -85,7 +85,8 @@ generation:
       max_gap_queries: 40
     cnb_edits:
       max_prompt_tokens: 50000
-      max_concurrency: 5
+      # One review wave for proposals touching up to 12 chapters.
+      max_concurrency: 12
       max_agent_turns: 12
       max_review_repairs: 2
       max_searches: 100

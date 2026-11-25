@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import logging
+from contextlib import aclosing
+from collections.abc import AsyncGenerator
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -43,7 +46,7 @@ async def stream_agent_events(
     agent: Any,
     payload: MessageCreateRequest,
     conversation_history: List[Dict[str, str]],
-) -> AsyncIterator[bytes]:
+) -> AsyncGenerator[bytes, None]:
     """Stream events from the agent."""
     # Use structured history when available; otherwise send the raw user text.
     runner_input: Any = (
@@ -95,12 +98,29 @@ async def stream_agent_events(
     trace_context_attempted_after_start = False
 
     # Convert SDK stream events into the app's SSE event contract.
-    async for chunk in result.stream_events():
-        if not trace_context_updated and not trace_context_attempted_after_start:
-            trace_context_attempted_after_start = True
-            trace_context_updated = update_mlflow_trace_context(handler, payload)
-        async for event_bytes in process_chunk(handler, chunk):
-            yield event_bytes
+    async with aclosing(result.stream_events()) as events:
+        try:
+            async for chunk in events:
+                if not trace_context_updated and not trace_context_attempted_after_start:
+                    trace_context_attempted_after_start = True
+                    trace_context_updated = update_mlflow_trace_context(handler, payload)
+                async for event_bytes in process_chunk(handler, chunk):
+                    yield event_bytes
+        except (asyncio.CancelledError, GeneratorExit):
+            if not result.is_complete:
+                result.cancel()
+            raise
+
+    # Cached input shows whether the long system prompt hits the provider cache.
+    usage = getattr(getattr(result, "context_wrapper", None), "usage", None)
+    if usage is not None:
+        logger.info(
+            "Agent run usage requests=%s input_tokens=%s cached_tokens=%s output_tokens=%s",
+            usage.requests,
+            usage.input_tokens,
+            usage.input_tokens_details.cached_tokens,
+            usage.output_tokens,
+        )
 
 
 def build_stream_run_config(

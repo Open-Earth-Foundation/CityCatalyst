@@ -19,6 +19,8 @@ export interface SSEErrorDetails {
   status?: number;
   /** Whether the server accepted the request and began streaming. */
   streamStarted: boolean;
+  /** Accepted stream lost before the client received a terminal event. */
+  interrupted?: boolean;
 }
 
 export interface SSEStreamOptions {
@@ -26,7 +28,7 @@ export interface SSEStreamOptions {
   onToolResult?: (tool: ToolResultPayload) => void;
   onProgress?: (progress: unknown) => void;
   onReasoning?: (reasoning: unknown) => void;
-  onComplete?: () => void;
+  onComplete?: (data?: SSEDataRecord) => void;
   onError?: (error: string, code?: string, details?: SSEErrorDetails) => void;
   onWarning?: (warning: string) => void;
   /**
@@ -185,7 +187,7 @@ export function useSSEStream(
               event.data.ok === true &&
               options.onComplete
             ) {
-              options.onComplete();
+              options.onComplete(event.data);
             } else if (
               (!isRecord(event.data) || event.data.ok !== true) &&
               options.onError &&
@@ -357,7 +359,11 @@ export function useSSEStream(
           options.onError?.(
             "The response stream stalled",
             STREAM_STALLED_CODE,
-            { status, streamStarted },
+            {
+              status,
+              streamStarted,
+              ...(streamStarted && { interrupted: true }),
+            },
           );
           // Not an AbortError: callers must not treat a stall as a user cancel.
           throw Object.assign(new Error("The response stream stalled"), {
@@ -374,7 +380,11 @@ export function useSSEStream(
                 typeof error.code === "string"
                 ? error.code
                 : undefined,
-              { status: streamStarted ? undefined : status, streamStarted },
+              {
+                status: streamStarted ? undefined : status,
+                streamStarted,
+                ...(streamStarted && { interrupted: true }),
+              },
             );
           }
         }

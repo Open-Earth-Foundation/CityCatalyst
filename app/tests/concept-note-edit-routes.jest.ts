@@ -78,6 +78,13 @@ const confirm =
   await import("@/app/api/v1/concept-notes/[runId]/chapters/[chapterId]/confirm/route");
 const startChat =
   await import("@/app/api/v1/concept-notes/[runId]/chat/threads/route");
+const gapAnswers =
+  await import("@/app/api/v1/concept-notes/[runId]/gaps/[gapId]/answers/route");
+const gapAnswersBody = {
+  gap_version: 2,
+  answers: "1. Amount?\nEUR 2 million",
+  expected_previous: null,
+};
 const { editErrorCode } = await import("@/services/concept-note-edit-api");
 
 const proposalBody = {
@@ -118,7 +125,16 @@ const routes = [
     handler: collection.POST,
     method: "POST",
     suffix: "/edit-proposals",
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: targetId,
+        gap_id: key,
+        gap_version: 2,
+        answer_complete: true,
+      },
+    },
   },
   {
     name: "read",
@@ -146,7 +162,16 @@ const routes = [
     handler: refine.POST,
     method: "POST",
     suffix: `/edit-proposals/${targetId}/refine`,
-    body: proposalBody,
+    body: {
+      ...proposalBody,
+      scope: {
+        kind: "auto",
+        focused_chapter_id: null,
+        gap_id: null,
+        gap_version: null,
+        answer_complete: false,
+      },
+    },
   },
   {
     name: "confirm",
@@ -154,6 +179,13 @@ const routes = [
     method: "POST",
     suffix: `/chapters/${targetId}/confirm`,
     body: confirmBody,
+  },
+  {
+    name: "gap-answers",
+    handler: gapAnswers.POST,
+    method: "POST",
+    suffix: `/gaps/${targetId}/answers`,
+    body: gapAnswersBody,
   },
   {
     name: "start-chat",
@@ -200,6 +232,7 @@ function request(
         runId,
         proposalId: targetId,
         chapterId: targetId,
+        gapId: targetId,
         ...options.params,
       }),
     },
@@ -269,12 +302,17 @@ describe.each(routes)("$name route boundary", (route) => {
 
 test.each(
   routes.filter((route) =>
-    ["read", "apply", "reject", "refine", "confirm"].includes(route.name),
+    ["read", "apply", "reject", "refine", "confirm", "gap-answers"].includes(
+      route.name,
+    ),
   ),
 )("$name rejects an invalid target UUID", async (route) => {
   expect(
-    (await request(route, { params: { proposalId: "bad", chapterId: "bad" } }))
-      .status,
+    (
+      await request(route, {
+        params: { proposalId: "bad", chapterId: "bad", gapId: "bad" },
+      })
+    ).status,
   ).toBe(400);
   expect(upstream).not.toHaveBeenCalled();
 });
@@ -296,6 +334,9 @@ test.each([
   ["confirm", { ...confirmBody, expected_revision: 0 }],
   ["confirm", { ...confirmBody, expected_revision: 1.5 }],
   ["confirm", { ...confirmBody, idempotency_key: "bad" }],
+  ["gap-answers", { answers: "x" }],
+  ["gap-answers", { ...gapAnswersBody, gap_version: 0 }],
+  ["gap-answers", { ...gapAnswersBody, user_id: "attacker" }],
 ] as const)("%s rejects invalid body %j", async (name, body) => {
   expect(
     (

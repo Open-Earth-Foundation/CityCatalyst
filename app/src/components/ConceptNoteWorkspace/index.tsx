@@ -39,6 +39,7 @@ import {
 import { StatusBadge } from "@/components/ConceptNoteDashboard/status-badge";
 import { ConceptNoteChatPanel } from "@/components/ConceptNoteWorkspace/chat-panel";
 import type { GapAnswerRequest } from "@/components/ConceptNoteWorkspace/gap-answer-form";
+import type { ChapterGapRow } from "@/components/ConceptNoteWorkspace/chapter-gaps-panel";
 import { NextStepBanner } from "@/components/ConceptNoteWorkspace/next-step-banner";
 import { ContextTab } from "@/components/ConceptNoteWorkspace/context-tab";
 import { FundingSelectionDialog } from "@/components/ConceptNoteWorkspace/funding-selection-dialog";
@@ -62,6 +63,7 @@ import {
   WorkspaceLoadingState,
   WorkspaceUnavailableState,
 } from "@/components/ConceptNoteWorkspace/workspace-states";
+import { ConceptNoteCollaboratorPreview } from "@/components/ConceptNoteWorkspace/collaborator-preview";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -173,6 +175,7 @@ export function ConceptNoteWorkspace({
     run,
     runFailed,
     runLoading,
+    runNotOwned,
     saveManualPopulation,
     selectInventory,
     startDrafting,
@@ -348,6 +351,19 @@ export function ConceptNoteWorkspace({
     draftSyncedFor.current = reviewIdentity;
     void refetchDraft();
   }, [draftBehind, reviewIdentity, refetchDraft]);
+  // A form answer fails when its gap was answered or changed elsewhere; reload the
+  // gaps once so reopening the form shows the current version, not the same error.
+  const gapChangedId = edits.proposals.find(
+    (proposal) =>
+      proposal.error_code === "gap_changed" ||
+      proposal.error_code === "stale_gap",
+  )?.proposal_id;
+  const gapSyncedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gapChangedId || gapSyncedFor.current === gapChangedId) return;
+    gapSyncedFor.current = gapChangedId;
+    void refetchDraft();
+  }, [gapChangedId, refetchDraft]);
   const firstReviewChapterId = reviewChanges[0]?.chapter_id;
   const firstReviewChangeId = reviewChanges[0]?.change_id;
   useEffect(() => {
@@ -405,8 +421,27 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  /** Open the gap form for a record-backed row; an unrecorded marker has no form. */
+  function answerGap(
+    chapter: ConceptNoteDraftChapter,
+    row: ChapterGapRow,
+  ): void {
+    if (!row.gap) return;
+    setGapAnswer({
+      chapterId: chapter.chapter_id,
+      chapterTitle: chapter.title,
+      row,
+    });
+  }
+
   if (runLoading) {
     return <WorkspaceLoadingState />;
+  }
+
+  if (!run && runNotOwned) {
+    return (
+      <ConceptNoteCollaboratorPreview cityId={cityId} lng={lng} runId={runId} />
+    );
   }
 
   if (!run || run.city_id !== cityId) {
@@ -523,12 +558,15 @@ export function ConceptNoteWorkspace({
               composerRequest={composerRequest}
               gapAnswer={gapAnswer}
               onCloseGap={() => setGapAnswer(null)}
+              uploads={uploads}
               onAddGapSource={() => {
                 setTab("context");
                 setUploadPickerRequest((value) => value + 1);
               }}
               draftOverviewPending={Boolean(draft?.overview_pending)}
               onDraftOverviewComplete={() => void refetchDraft()}
+              onGapAnswersSaved={() => void refetchDraft()}
+              onRefreshDraft={() => void refetchDraft()}
               lng={lng}
               onOpenContext={() => {
                 setTab("context");
@@ -755,13 +793,7 @@ export function ConceptNoteWorkspace({
                   focusFindingKey={reviewFindingKey}
                   highlightStartDrafting={highlightStartDrafting}
                   nextStep={nextStepBanner}
-                  onAnswerGap={(chapter, row) =>
-                    setGapAnswer({
-                      chapterId: chapter.chapter_id,
-                      chapterTitle: chapter.title,
-                      row,
-                    })
-                  }
+                  onAnswerGap={(chapter, row) => answerGap(chapter, row)}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}

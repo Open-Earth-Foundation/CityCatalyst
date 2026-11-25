@@ -1,20 +1,57 @@
 """Contracts for a focused, read-only set of gap-filling questions."""
 
+import logging
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PositiveInt,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
+
+from app.utils.cnb_gap_edit import MAX_GAP_QUESTION_CHARS
+
+logger = logging.getLogger(__name__)
+
+MAX_QUESTIONS = 4
 
 
 class GapQuestionRequest(BaseModel):
-    """Identify the chapter and gap; question also supports legacy inline markers."""
+    """Identify the chapter and gap; question supports legacy inline markers only.
+
+    A bound gap's persisted question is authoritative, so a supplied question is
+    ignored and may be omitted.
+    """
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     chapter_id: UUID
     gap_id: UUID | None = None
-    question: str = Field(min_length=1, max_length=2000)
+    question: str | None = Field(default=None, max_length=2000)
     language: str = Field(default="en", pattern=r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
+
+    @model_validator(mode="after")
+    def require_question_for_legacy_marker(self) -> "GapQuestionRequest":
+        """Only an unbound inline marker has no persisted question to read."""
+        if self.gap_id is None and not self.question:
+            raise ValueError("question is required when gap_id is omitted")
+        return self
+
+
+class GapAnswersRequest(BaseModel):
+    """Every answer given so far for one gap version; empty text clears them."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    gap_version: PositiveInt
+    answers: str = Field(default="", max_length=8000)
+    # The saved answers the form last saw; a save against other text is rejected.
+    expected_previous: str | None = Field(max_length=8000)
 
 
 class GapSubQuestion(BaseModel):
@@ -22,12 +59,22 @@ class GapSubQuestion(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    question: str = Field(min_length=1, max_length=160)
+    # The prompt asks for 160; a narrowed gap returns its exact remaining question,
+    # which may be as long as the persisted marker question.
+    question: str = Field(min_length=1, max_length=MAX_GAP_QUESTION_CHARS)
+    # The prompt asks for five (eight for a checklist); the margin keeps one
+    # longer list from failing the set.
     options: list[
         Annotated[
             str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)
         ]
-    ] = Field(max_length=5)
+    ] = Field(max_length=8)
+    # A document type or office that usually holds the answer, never a citation.
+    where_to_find: str = Field(default="", max_length=200)
+    # The UI shows its own "still correct" and "changed, enter the value" choices.
+    confirms: bool = False
+    # Several options can apply together, so the UI lets the user select each one.
+    multiple: bool = False
 
     @field_validator("options")
     @classmethod
@@ -36,8 +83,18 @@ class GapSubQuestion(BaseModel):
         if len(value) == 1 or len({option.casefold() for option in value}) != len(
             value
         ):
-            raise ValueError("Use no options or two to five distinct options")
+            raise ValueError("Use no options or at least two distinct options")
         return value
+
+    @model_validator(mode="after")
+    def validate_confirmation(self) -> "GapSubQuestion":
+        """A confirmation's choices come from the UI, so it carries none."""
+        if self.confirms and self.options:
+            raise ValueError("A confirmation question has no options")
+        # Several answers need options to select; free text already allows them.
+        if self.multiple and not self.options:
+            self.multiple = False
+        return self
 
 
 class GapQuestionOutput(BaseModel):
@@ -46,4 +103,21 @@ class GapQuestionOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     why_asking: str = Field(min_length=1, max_length=240)
-    questions: list[GapSubQuestion] = Field(min_length=1, max_length=4)
+    # Empty when earlier answers already cover every part; the UI then sends
+    # them again as a complete answer.
+    questions: list[GapSubQuestion] = Field(max_length=MAX_QUESTIONS)
+
+    @field_validator("questions", mode="before")
+    @classmethod
+    def keep_first_questions(cls, value: object) -> object:
+        """Trim an over-long set instead of failing it.
+
+        One confirmation per source value can push the model past the limit; a
+        dropped part stays open and is asked again once these are answered.
+        """
+        if isinstance(value, list) and len(value) > MAX_QUESTIONS:
+            logger.info(
+                "Trimmed gap questions from %d to %d", len(value), MAX_QUESTIONS
+            )
+            return value[:MAX_QUESTIONS]
+        return value

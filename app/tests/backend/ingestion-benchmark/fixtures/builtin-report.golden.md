@@ -23,6 +23,7 @@
 - Wrong totals that carried a warning: n/a
 - Precision 50%, value accuracy 80%, classification accuracy 90% (means over 1 case scored row by row, scored attempts only)
 - Notation keys recovered: 1 of 4; cases that stored a distractor value: 0
+- Rows stored without scope (subsector ref, scope null): 0 (data quality, not scored)
 
 ## Guardrails
 
@@ -45,9 +46,9 @@ No failed attempts.
 
 Recall counts failed attempts as 0. Precision, accuracies and distractors stored are means over the scored attempts; notation keys are those of the first scored attempt. Runtime is summed over the attempts.
 
-| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| A | validated | n/a | 0/1 | 50% | 50% | 80% | 90% | 1/4 | 0 | no | 0 | none | n/a | 0k / 0k | ocr n/a, extraction n/a, import n/a | n/a |
+| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Unscoped rows | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A | validated | n/a | 0/1 | 50% | 50% | 80% | 90% | 1/4 | 0 | n/a | no | 0 | none | n/a | 0k / 0k | ocr n/a, extraction n/a, import n/a | n/a |
 
 Estimated cost of this run: n/a
 

@@ -229,6 +229,29 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072
 - Never commit a real key. Tests create a throwaway key in memory
   (`setupOAuthSigningKey` in `tests/helpers.ts`).
 
+### Verifying access tokens (issuer, audience and keys)
+
+The API checks every OAuth access token for its signature, RS256, token type (`at+jwt`),
+issuer, audience and expiry. This needs no database. Three optional settings control it
+(`src/lib/auth/oauth-config.ts`). With none set, the API behaves as it always has: it
+verifies with the public half of `OAUTH_SIGNING_KEY` and expects `HOST` as issuer and audience.
+
+| Variable | Meaning | Default |
+| --- | --- | --- |
+| `OAUTH_JWKS_URI` | Fetch the verification keys from this URL (an authorization server that runs elsewhere). Keys are cached for an hour, and a token with an unknown `kid` refetches (at most every 30 seconds), so key rotation needs no restart. | Unset: use the local key |
+| `OAUTH_ISSUER` | The `iss` of issued tokens, and the `iss` the API requires. | `HOST` |
+| `OAUTH_AUDIENCE` | The `aud` of issued tokens, and the `aud` the API requires. Names the API, not the host a request arrived on. | `HOST` |
+
+- Answers: an invalid token is a **401**. If the key server cannot be reached the API
+  answers **503**, so clients keep their token and retry. Keys that are already cached keep
+  working during an outage.
+- After the signature checks, the API still looks up that the user authorized the app
+  (`isGrantActive`, `src/backend/oauth/grants.ts`) and loads the user row for the role.
+  Revoking an app therefore takes effect on the next request. A token for a user who no
+  longer exists is a 401.
+- Changing `OAUTH_ISSUER` or `OAUTH_AUDIENCE` on a running system invalidates the tokens
+  already issued, so users and apps must authorize again.
+
 ### OpenID Connect
 
 The OAuth server also acts as an OpenID Connect provider (code flow with PKCE S256,

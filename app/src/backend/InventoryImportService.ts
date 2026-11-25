@@ -558,9 +558,15 @@ export default class InventoryImportService {
 
               // One value has one omitFromTotal: rows that disagree are held
               // in the review (merge-total-inclusion-mixed), never merged.
+              // The reference rule applies to both sides, so a value stored
+              // unflagged before that rule still merges with its new rows.
+              const rowOmittedFromTotal = isRowOmittedFromTotal(row);
               if (
                 existingValue?.co2eq != null &&
-                existingValue.omitFromTotal !== isRowOmittedFromTotal(row)
+                isRowOmittedFromTotal({
+                  gpcRefNo: row.gpcRefNo,
+                  omitFromTotal: existingValue.omitFromTotal,
+                }) !== rowOmittedFromTotal
               ) {
                 throw new Error(
                   `${row.gpcRefNo} has rows counted in the total and rows left out of it; they cannot be merged into one value`,
@@ -578,9 +584,10 @@ export default class InventoryImportService {
                 inventoryValue = await existingValue.update(
                   {
                     co2eq: accumulatedCo2eq,
-                    // Merged rows agree on the flag (checked above); a
-                    // notation key stored first takes the row's flag.
-                    omitFromTotal: row.omitFromTotal === true,
+                    // Merged rows agree on the flag (checked above); this
+                    // also corrects a stale stored flag, and a notation key
+                    // stored first takes the row's flag.
+                    omitFromTotal: rowOmittedFromTotal,
                     co2eqYears: 100, // Default value
                     unavailableReason: null,
                     unavailableExplanation: null,
@@ -611,7 +618,7 @@ export default class InventoryImportService {
                     subCategoryId: row.subcategoryId ?? undefined,
                     co2eq: co2eqBigInt,
                     co2eqYears: 100, // Default value
-                    omitFromTotal: row.omitFromTotal === true,
+                    omitFromTotal: rowOmittedFromTotal,
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
                     ...(options?.sourceDocumentId

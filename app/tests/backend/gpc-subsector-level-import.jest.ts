@@ -39,6 +39,10 @@ import {
   teardownTests,
   testUserID,
 } from "../helpers";
+import {
+  includeHeldRows,
+  type RunContext,
+} from "../../scripts/pdf-benchmark/run-case";
 
 const PREFIX = "XX_CC1311_";
 
@@ -465,6 +469,44 @@ describe("subsector-level GPC references", () => {
         InventoryTypeEnum.GPC_BASIC_PLUS,
       );
       expect(preview.rows).toEqual([]);
+    });
+
+    it("the PDF benchmark leaves rows that disagree on the total to a user", async () => {
+      // Mirco's review example: I.3.1 = 100 t counted and 20 t left out.
+      const { inventoryId } = await importRows([row("II.1.1", 5)]);
+      const file = await db.models.ImportedInventoryFile.create({
+        ...(await pdfWaitingForApproval(inventoryId)).toJSON(),
+        id: randomUUID(),
+        mappingConfiguration: {
+          rows: [row("I.3.1", 100), row("I.3.1", 20, true)],
+        },
+      });
+      const held = await includeHeldRows(
+        { db } as unknown as RunContext,
+        file.id,
+      );
+      expect(held.decisions).toEqual({});
+      expect(held.included).toBe(0);
+      expect(held.conflicts).toEqual([
+        { gpcRefNo: "I.3.1", counted: 1, leftOut: 1 },
+      ]);
+
+      // Without a decision approve refuses and the stored value stays as it was.
+      const response = await approveImport(
+        mockRequest({ importedFileId: file.id, replaceExisting: true }),
+        {
+          params: Promise.resolve({
+            city: city.cityId,
+            inventory: inventoryId,
+          }),
+        },
+      );
+      await expectStatusCode(response, 409);
+      expect((await response.json()).error.code).toBe("import-rows-pending");
+      const refs = (await stored(inventoryId)).map(
+        (v) => v.gpcReferenceNumber,
+      );
+      expect(refs).toEqual(["II.1.1"]);
     });
 
     it("approve with replaceExisting saves both incoming rows", async () => {

@@ -258,6 +258,25 @@ describe("gateAgainstBaseline", () => {
     },
   );
 
+  it.each([false, true])(
+    "error: needs_review fails the attempt as the rows' own failure, not the runner's (pipeline run %s)",
+    (pipelineRun) => {
+      const current = verdict({
+        failureModes: { ...verdict().failureModes, scored: 2, needs_review: 1 },
+      });
+      const g = gateAgainstBaseline(
+        current,
+        compared(verdict()),
+        null,
+        undefined,
+        pipelineRun,
+      );
+      expect(g.verdict).toBe("error");
+      expect(g.reasons.join(" ")).toContain("1 attempt(s) failed");
+      expect(g.reasons.join(" ")).not.toContain("in the runner");
+    },
+  );
+
   it("ok: the same model failure as in the baseline", () => {
     const modes = verdict().failureModes;
     const zeroRows = verdict({

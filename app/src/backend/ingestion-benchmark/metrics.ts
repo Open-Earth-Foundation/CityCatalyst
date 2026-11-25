@@ -25,6 +25,7 @@ const FAILURE_MODES: FailureMode[] = [
   "extraction_error",
   "truncated",
   "zero_rows",
+  "needs_review",
   "approve_error",
   "readback_error",
   "setup_error",

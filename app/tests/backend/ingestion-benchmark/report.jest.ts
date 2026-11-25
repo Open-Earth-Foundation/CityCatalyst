@@ -377,6 +377,23 @@ describe("report", () => {
     );
   });
 
+  it("notes an attempt that needs review with its reason", () => {
+    const s = summary([result("C-019", 0.5)]);
+    s.results[0].runs[0] = {
+      ...s.results[0].runs[0],
+      failureMode: "needs_review",
+      ok: false,
+      message:
+        "needs review: rows of one reference disagree on whether they count in the total: I.3.1 (1 counted, 1 left out of the total).",
+      stored: undefined,
+      score: undefined,
+    };
+    const report = render(s);
+    expect(report).toContain(
+      "- C-019 attempt 1: needs review: rows of one reference disagree on whether they count in the total: I.3.1 (1 counted, 1 left out of the total).",
+    );
+  });
+
   it("legacy tolerance cases are listed in notes", () => {
     const legacy = result("C-007", 0.5);
     legacy.runs[0].score = score({ toleranceSource: "legacy" });

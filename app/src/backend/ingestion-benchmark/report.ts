@@ -88,6 +88,8 @@ export type FailureMode =
   | "extraction_error"
   | "truncated"
   | "zero_rows"
+  /** Rows of one reference disagree on total inclusion; the runner leaves that to a user. */
+  | "needs_review"
   | "approve_error"
   | "readback_error"
   | "setup_error";
@@ -961,6 +963,11 @@ export function renderReport(
   const unknownTables = summary.results
     .filter((result) => result.textTables === null && !result.totalOnly)
     .map((result) => result.id);
+  const needsReview = summary.results.flatMap((result) =>
+    result.runs
+      .filter((run) => run.failureMode === "needs_review")
+      .map((run) => `${result.id} attempt ${run.run}: ${run.message ?? ""}`),
+  );
   const heldRows = summary.results
     .map((result) => ({
       id: result.id,
@@ -999,6 +1006,7 @@ export function renderReport(
           `- Not recorded in the baseline: ${summary.baselineNotRecorded.map((c) => `${c.id} (${c.modes.join(", ")})`).join(", ")}`,
         ]
       : []),
+    ...needsReview.map((text) => `- ${text}`),
     ...(heldRows.length
       ? [
           `- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,

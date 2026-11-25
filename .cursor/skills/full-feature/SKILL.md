@@ -1,9 +1,15 @@
 ---
 name: full-feature
-description: End-to-end feature development workflow for CityCatalyst covering database, API, frontend, and tests. Use when the user asks to build a complete feature, implement a full user story, or create an end-to-end functionality.
+description: End-to-end vertical slice for CityCatalyst — DB migration, model, validation, API route, RTK endpoint, components, page, i18n, tests. Use when shipping a new user-facing capability that touches every layer. For backend-only work, use `create-api-endpoint`. For UI-only work against existing APIs, use `create-component` + `add-rtk-endpoint`.
 ---
 
 # Full Feature Development
+
+> **When to use this skill:** you're building a new vertical capability that needs all of (DB schema, backend logic, API surface, RTK consumer, UI components, page, i18n, tests). Think "Widget Management" greenfield, not "fix this one route".
+> **When NOT to use this skill:**
+> - Backend-only API addition → `create-api-endpoint`.
+> - New UI against an existing API → `create-component` (+ `add-rtk-endpoint` if missing).
+> - Schema-only migration → `create-migration`.
 
 ## Overview
 

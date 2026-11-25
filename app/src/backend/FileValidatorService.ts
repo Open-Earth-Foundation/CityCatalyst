@@ -709,6 +709,7 @@ export default class FileValidatorService {
         terms: [
           "emission factor - unit",
           "emission factor unit",
+          "ef - unit",
           "ef unit",
           "ef_unit",
         ],
@@ -718,6 +719,7 @@ export default class FileValidatorService {
         terms: [
           "emission factor - co2",
           "emission factor co2",
+          "ef - co2",
           "ef co2",
           "ef_co2",
         ],
@@ -727,6 +729,8 @@ export default class FileValidatorService {
         terms: [
           "emission factor - ch4",
           "emission factor ch4",
+          "ef - ch4",
+          "ef- ch4",
           "ef ch4",
           "ef_ch4",
         ],
@@ -736,6 +740,7 @@ export default class FileValidatorService {
         terms: [
           "emission factor - n2o",
           "emission factor n2o",
+          "ef - n2o",
           "ef n2o",
           "ef_n2o",
         ],
@@ -745,6 +750,7 @@ export default class FileValidatorService {
         terms: [
           "emission factor - total co2e",
           "emission factor total co2e",
+          "ef - total co2e",
           "ef total co2e",
           "ef_total co2e",
         ],

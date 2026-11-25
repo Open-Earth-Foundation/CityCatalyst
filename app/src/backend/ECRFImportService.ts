@@ -577,6 +577,7 @@ export default class ECRFImportService {
           : this.findHeader(headers, [
               "emission factor - unit",
               "emission factor unit",
+              "ef - unit",
               "ef unit",
               "ef_unit",
             ]);
@@ -590,19 +591,38 @@ export default class ECRFImportService {
         row,
         headers,
         detectedColumns.emissionFactorCO2,
-        ["emission factor - co2", "emission factor co2", "ef co2", "ef_co2"],
+        [
+          "emission factor - co2",
+          "emission factor co2",
+          "ef - co2",
+          "ef co2",
+          "ef_co2",
+        ],
       );
       const emissionFactorCH4 = this.extractEmissionFactorValue(
         row,
         headers,
         detectedColumns.emissionFactorCH4,
-        ["emission factor - ch4", "emission factor ch4", "ef ch4", "ef_ch4"],
+        [
+          "emission factor - ch4",
+          "emission factor ch4",
+          "ef - ch4",
+          "ef- ch4",
+          "ef ch4",
+          "ef_ch4",
+        ],
       );
       const emissionFactorN2O = this.extractEmissionFactorValue(
         row,
         headers,
         detectedColumns.emissionFactorN2O,
-        ["emission factor - n2o", "emission factor n2o", "ef n2o", "ef_n2o"],
+        [
+          "emission factor - n2o",
+          "emission factor n2o",
+          "ef - n2o",
+          "ef n2o",
+          "ef_n2o",
+        ],
       );
       const emissionFactorTotalCO2e = this.extractEmissionFactorValue(
         row,
@@ -611,6 +631,7 @@ export default class ECRFImportService {
         [
           "emission factor - total co2e",
           "emission factor total co2e",
+          "ef - total co2e",
           "ef total co2e",
           "ef_total co2e",
         ],

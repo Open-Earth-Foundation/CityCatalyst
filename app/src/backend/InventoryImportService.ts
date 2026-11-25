@@ -834,6 +834,17 @@ export default class InventoryImportService {
                   // Set activity title for metadata (used for display) - MUST match the key used in activityData
                   metadata.activityTitle = activityTitle;
 
+                  // File labels for eCRF export (do not replace with schema defaults).
+                  if (row.activityType?.trim()) {
+                    metadata.ecrfActivityType = row.activityType.trim();
+                  }
+                  if (row.methodology?.trim()) {
+                    metadata.ecrfMethodology = row.methodology.trim();
+                  }
+                  if (row.activityUnit?.trim()) {
+                    metadata.ecrfActivityUnit = row.activityUnit.trim();
+                  }
+
                   // Store data source in metadata as sourceExplanation (for export/other purposes)
                   if (dataSource) {
                     metadata.sourceExplanation = dataSource;

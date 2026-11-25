@@ -176,4 +176,77 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     expect(i12Notation).not.toBe("NE");
     expect(i12Notation).not.toMatch(/\{\{/);
   });
+
+  function sheet3RowByGpc(sheet: Excel.Worksheet | undefined, gpc: string) {
+    let found: Excel.Row | undefined;
+    sheet?.eachRow((row) => {
+      if (row.getCell(2).value === gpc) found = row;
+    });
+    return found;
+  }
+
+  it("writes eCRF/CIRIS gas amounts as tCO2e without applying GWP (CC-1329)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      baseInventory([
+        {
+          co2eq: 1000000n,
+          activityData: {
+            "activity-value": 10,
+            co2_amount: 900,
+            ch4_amount: 1,
+            n2o_amount: 5069,
+          },
+          metadata: {
+            activityTitle: "activity-value",
+            dataQuality: "low",
+            ecrfActivityType: "Natural gas",
+            ecrfMethodology: "Fuel sales survey",
+            emissionFactorUnit: "tCO2e/Therm",
+            emissionFactorCO2: 69.3,
+          },
+          gasValues: [
+            { gas: "N2O", gasAmount: 5_069_000n, emissionsFactor: null },
+          ],
+        },
+      ]),
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const row = sheet3RowByGpc(workbook.getWorksheet(3), "I.1.1");
+    expect(row?.getCell(25).value).toBe(900);
+    expect(row?.getCell(26).value).toBe(1);
+    expect(row?.getCell(27).value).toBe(5069);
+    expect(row?.getCell(27).value).not.toBe(5069 * 265);
+    expect(row?.getCell(6).value).toBe("Natural gas");
+    expect(row?.getCell(10).value).toBe("Fuel sales survey");
+    expect(row?.getCell(13).value).toBe("tCO2e/Therm");
+    expect(row?.getCell(14).value).toBe(69.3);
+  });
+
+  it("still applies AR5 GWP when only native GasValue kg amounts exist", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      baseInventory([
+        {
+          co2eq: 500000n,
+          activityData: { "activity-value": 1 },
+          metadata: { activityTitle: "activity-value", dataQuality: "low" },
+          gasValues: [
+            { gas: "CH4", gasAmount: 1000n, emissionsFactor: null },
+            { gas: "N2O", gasAmount: 1000n, emissionsFactor: null },
+          ],
+        },
+      ]),
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const row = sheet3RowByGpc(workbook.getWorksheet(3), "I.1.1");
+    expect(row?.getCell(26).value).toBe(28);
+    expect(row?.getCell(27).value).toBe(265);
+  });
 });

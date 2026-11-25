@@ -79,6 +79,36 @@ describe("CC-1217 CIRIS Path A helpers", () => {
     expect(parsed.primarySheet?.headers.length ?? 0).toBeGreaterThan(20);
   }, 60000);
 
+  it("binds CIRIS EF - columns and I.2.2 N2O as tCO2e (CC-1329)", async () => {
+    const buffer = fs.readFileSync(fixture("A3-04_Boston_2023_CIRIS_slim.xlsx"));
+    const file = new File([new Uint8Array(buffer)], "boston-ciris.xlsx", {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const validation = await FileValidatorService.validateFileStructure(file);
+    expect(validation.detectedColumns?.emissionFactorUnit).toBeDefined();
+    expect(validation.detectedColumns?.emissionFactorCO2).toBeDefined();
+    expect(validation.detectedColumns?.emissionFactorCH4).toBeDefined();
+    expect(validation.detectedColumns?.emissionFactorN2O).toBeDefined();
+
+    const parsed = await FileParserService.parseXLSX(buffer);
+    const sheet = parsed.primarySheet;
+    expect(sheet).toBeDefined();
+    const gpcHeader = sheet!.headers.find((h) => /gpc ref/i.test(h));
+    const n2oHeader = sheet!.headers.find((h) => /ghgs.*n2o/i.test(h));
+    expect(gpcHeader).toBeDefined();
+    expect(n2oHeader).toBeDefined();
+    let n2o = 0;
+    for (const row of sheet!.rows) {
+      const gpc = String(row[gpcHeader!] ?? "").trim();
+      if (gpc !== "I.2.2") continue;
+      const raw = row[n2oHeader!];
+      const value =
+        typeof raw === "number" ? raw : Number(String(raw).replace(/,/g, ""));
+      if (Number.isFinite(value)) n2o += value;
+    }
+    expect(Math.round(n2o)).toBe(5069);
+  }, 60000);
+
   it("parses Nairobi CIRIS slim eCRF_3 without forcing Light sheet", async () => {
     const buffer = fs.readFileSync(fixture("A3-05_Nairobi_2023_CIRIS_slim.xlsx"));
     const parsed = await FileParserService.parseXLSX(buffer);

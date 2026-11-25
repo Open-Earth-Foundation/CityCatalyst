@@ -59,6 +59,37 @@ const compared = (baseline: CaseVerdict): Comparison => ({
 });
 
 describe("gateAgainstBaseline", () => {
+  it("pipeline run: an approve_error is the pipeline's failure, not the runner's", () => {
+    const failed = verdict({
+      attemptsPassed: 2,
+      casePasses: false,
+      failureModes: { ...verdict().failureModes, scored: 2, approve_error: 1 },
+    });
+    const noBaseline: Comparison = {
+      id: "C-001",
+      status: "no baseline",
+      baseline: null,
+      rescored: false,
+    };
+    const g = gateAgainstBaseline(failed, noBaseline, null, 3, true);
+    expect(g.verdict).toBe("error");
+    expect(g.reasons.join(" ")).not.toContain("in the runner");
+    // The built-in path still calls it a runner failure.
+    const builtIn = gateAgainstBaseline(failed, noBaseline, null, 3);
+    expect(builtIn.reasons.join(" ")).toContain("failed in the runner");
+    // Readback errors stay the runner's even for a pipeline run.
+    const readback = gateAgainstBaseline(
+      verdict({
+        failureModes: { ...verdict().failureModes, readback_error: 1 },
+      }),
+      noBaseline,
+      null,
+      3,
+      true,
+    );
+    expect(readback.reasons.join(" ")).toContain("failed in the runner");
+  });
+
   it("is ok when nothing changed", () => {
     const g = gateAgainstBaseline(verdict(), compared(verdict()), null);
     expect(g.verdict).toBe("ok");

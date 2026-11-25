@@ -4,9 +4,8 @@
  */
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {
+  caseCostUsd,
   caseMetrics,
-  caseUsage,
-  costUsd,
   type Block,
   type CaseResult,
   type FailureMode,
@@ -139,7 +138,8 @@ export function caseVerdict(
     attemptsPassed,
     casePasses:
       runs.length === REQUIRED_ATTEMPTS && attemptsPassed === REQUIRED_ATTEMPTS,
-    exploratory: runs.length !== REQUIRED_ATTEMPTS,
+    exploratory:
+      runs.length !== REQUIRED_ATTEMPTS || runs.some((run) => run.pipeline),
     recallFailedAsZero: hasRows ? mean(runs.map(recallOf)) : null,
     attemptRecalls: hasRows ? runs.map(recallOf) : null,
     attemptTotalFactors: runs.map((run) => {
@@ -185,7 +185,7 @@ export function caseVerdict(
       (run) => run.warnings.length > 0,
     ).length,
     failureModes,
-    costUsd: costUsd(caseUsage(result), prices),
+    costUsd: caseCostUsd(result, prices),
     seconds: runs.reduce((sum, run) => sum + run.stageMs.total, 0) / 1000,
   };
 }

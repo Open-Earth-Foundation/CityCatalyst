@@ -40,6 +40,45 @@ const count = (list: unknown, earlier: unknown): number | undefined =>
       ? earlier
       : undefined;
 
+/**
+ * What a run entry may keep of a precomputed pipeline's attempt: the mapped
+ * counts and totals the report shows, the parent-reference rows approve
+ * dropped (pipeline output) and the variant score, redacted like any score.
+ * An envelope's own `benchmark` and `repair` blocks (they can carry expected
+ * values) are never part of it, so a field outside this list is dropped.
+ */
+const PIPELINE_ATTEMPT_FIELDS = [
+  "executionStatus",
+  "rowsInEnvelope",
+  "unknownRowRoles",
+  "droppedRows",
+  "rowRoles",
+  "scopeBasis",
+  "totalInclusion",
+  "reported",
+  "costUsd",
+  "costSource",
+  "usage",
+  "lostRows",
+  "sourcePdf",
+  "parentRefRows",
+  "parentRefOverlap",
+  "variantScore",
+] as const;
+
+const onlyPipelineFields = (pipeline: Json): Json =>
+  Object.fromEntries(
+    Object.entries(pipeline)
+      .filter(([field]) =>
+        (PIPELINE_ATTEMPT_FIELDS as readonly string[]).includes(field),
+      )
+      .map(([field, value]) =>
+        field === "variantScore" && value
+          ? [field, redactScore(value as FileScore)]
+          : [field, value],
+      ),
+  );
+
 const without = (record: Json, fields: readonly string[]): Json =>
   Object.fromEntries(
     Object.entries(record).filter(([field]) => !fields.includes(field)),
@@ -73,9 +112,15 @@ export function publishableSummary<T extends object>(summary: T): T {
         ? {
             runs: (result.runs as Json[]).map((run) => {
               const rest = without(run, LEGACY_RUN_FIELDS);
-              return run.score
-                ? { ...rest, score: redactScore(run.score as FileScore) }
+              const safe = rest.pipeline
+                ? {
+                    ...rest,
+                    pipeline: onlyPipelineFields(rest.pipeline as Json),
+                  }
                 : rest;
+              return run.score
+                ? { ...safe, score: redactScore(run.score as FileScore) }
+                : safe;
             }),
           }
         : {}),

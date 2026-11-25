@@ -85,3 +85,48 @@ describe("parseArgs --all", () => {
     expect(parseArgs(["--cases", "C-004"]).all).toBe(false);
   });
 });
+
+describe("parseArgs --pipeline", () => {
+  it("parses --pipeline precomputed with --rows-dir", () => {
+    expect(
+      parseArgs([
+        "--cases",
+        "C-015",
+        "--pipeline",
+        "precomputed",
+        "--rows-dir",
+        "/x",
+      ]),
+    ).toMatchObject({ pipeline: "precomputed", rowsDir: "/x" });
+  });
+
+  it("rejects an unknown pipeline", () => {
+    expect(() => parseArgs(["--pipeline", "reducto"])).toThrow(
+      "--pipeline must be precomputed",
+    );
+  });
+
+  it("rejects --rows-dir without --pipeline precomputed", () => {
+    expect(() => parseArgs(["--rows-dir", "/x"])).toThrow(
+      "--rows-dir needs --pipeline precomputed",
+    );
+  });
+
+  it("needs --rows-dir", () => {
+    expect(() => parseArgs(["--pipeline", "precomputed"])).toThrow(
+      "--pipeline precomputed needs --rows-dir",
+    );
+  });
+
+  it("cannot update the baseline", () => {
+    expect(() =>
+      parseArgs([
+        "--pipeline",
+        "precomputed",
+        "--rows-dir",
+        "/x",
+        "--update-baseline",
+      ]),
+    ).toThrow("--update-baseline cannot be used with --pipeline");
+  });
+});

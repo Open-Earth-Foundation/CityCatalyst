@@ -203,80 +203,136 @@ export default function ImportReviewRows({
               })}
             </Text>
           )}
+          {row.issue === "gpc-subsector-scope-combined" && (
+            <Text fontSize="body.sm" color="sentiment.warningDefault">
+              {row.scopeText
+                ? t("import-row-issue-gpc-subsector-scope-combined", {
+                    scopeText: row.scopeText,
+                  })
+                : t("import-row-issue-gpc-subsector-total-unstated")}
+            </Text>
+          )}
+          {row.issue === "merge-total-inclusion-mixed" && (
+            <Text fontSize="body.sm" color="sentiment.warningDefault">
+              {t("import-row-issue-merge-total-inclusion-mixed", {
+                reference: row.suggestedRefNo,
+              })}
+            </Text>
+          )}
           <SourceContext t={t} row={row} />
           <HStack gap="8px" mt={3} flexWrap="wrap">
-            <Button
-              size="sm"
-              variant={row.decision === "keep" ? "solid" : "outline"}
-              disabled={row.issue === "reference-conflict"}
-              onClick={() =>
-                onDecide(row.rowIndex, {
-                  ...seen(row, fileId),
-                  reviewDecision: "keep",
-                })
-              }
-            >
-              {t("import-review-keep")}
-            </Button>
-            <NativeSelect.Root size="sm" w="auto">
-              <NativeSelect.Field
-                aria-label={t("import-review-reclassify")}
-                value={row.decision === "reclassify" ? row.chosenRefNo : ""}
-                onChange={(event) =>
-                  onDecide(
-                    row.rowIndex,
-                    event.target.value
-                      ? {
-                          ...seen(row, fileId),
-                          reviewDecision: "reclassify",
-                          gpcRefNo: event.target.value,
-                        }
-                      : null,
-                  )
-                }
-              >
-                <option value="">{t("import-review-reclassify")}</option>
-                {row.referenceOptions
-                  .filter((reference) => reference !== row.suggestedRefNo)
-                  .map((reference) => (
-                    <option key={reference} value={reference}>
-                      {reference}
-                    </option>
-                  ))}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
-            {row.issue === "reference-conflict" && (
-              <NativeSelect.Root size="sm" w="auto">
-                <NativeSelect.Field
-                  aria-label={t("import-review-change-scope")}
-                  value={
-                    row.decision === "correct-scope"
-                      ? (row.finalScope ?? "")
-                      : ""
-                  }
-                  onChange={(event) =>
-                    onDecide(
-                      row.rowIndex,
-                      event.target.value
-                        ? {
-                            ...seen(row, fileId),
-                            reviewDecision: "correct-scope",
-                            scope: event.target.value,
-                          }
-                        : null,
-                    )
+            {row.issue === "merge-total-inclusion-mixed" ? (
+              // One stored value has one total flag: the rows must agree.
+              (["keep", "omit"] as const).map((choice) => (
+                <Button
+                  key={choice}
+                  size="sm"
+                  variant={row.decision === choice ? "solid" : "outline"}
+                  onClick={() =>
+                    onDecide(row.rowIndex, {
+                      ...seen(row, fileId),
+                      reviewDecision: choice,
+                    })
                   }
                 >
-                  <option value="">{t("import-review-change-scope")}</option>
-                  {["1", "2", "3"].map((scope) => (
-                    <option key={scope} value={scope}>
-                      {scope}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-                <NativeSelect.Indicator />
-              </NativeSelect.Root>
+                  {t(`import-review-merge-${choice}`)}
+                </Button>
+              ))
+            ) : row.issue === "gpc-subsector-scope-combined" ? (
+              // GPC Box 4.1: does all of the value belong in the totals?
+              (["keep", "omit", "unsure"] as const).map((choice) => (
+                <Button
+                  key={choice}
+                  size="sm"
+                  variant={row.decision === choice ? "solid" : "outline"}
+                  onClick={() =>
+                    onDecide(row.rowIndex, {
+                      ...seen(row, fileId),
+                      reviewDecision: choice,
+                    })
+                  }
+                >
+                  {t(`import-review-total-${choice}`)}
+                </Button>
+              ))
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  variant={row.decision === "keep" ? "solid" : "outline"}
+                  disabled={row.issue === "reference-conflict"}
+                  onClick={() =>
+                    onDecide(row.rowIndex, {
+                      ...seen(row, fileId),
+                      reviewDecision: "keep",
+                    })
+                  }
+                >
+                  {t("import-review-keep")}
+                </Button>
+                <NativeSelect.Root size="sm" w="auto">
+                  <NativeSelect.Field
+                    aria-label={t("import-review-reclassify")}
+                    value={row.decision === "reclassify" ? row.chosenRefNo : ""}
+                    onChange={(event) =>
+                      onDecide(
+                        row.rowIndex,
+                        event.target.value
+                          ? {
+                              ...seen(row, fileId),
+                              reviewDecision: "reclassify",
+                              gpcRefNo: event.target.value,
+                            }
+                          : null,
+                      )
+                    }
+                  >
+                    <option value="">{t("import-review-reclassify")}</option>
+                    {row.referenceOptions
+                      .filter((reference) => reference !== row.suggestedRefNo)
+                      .map((reference) => (
+                        <option key={reference} value={reference}>
+                          {reference}
+                        </option>
+                      ))}
+                  </NativeSelect.Field>
+                  <NativeSelect.Indicator />
+                </NativeSelect.Root>
+                {row.issue === "reference-conflict" && (
+                  <NativeSelect.Root size="sm" w="auto">
+                    <NativeSelect.Field
+                      aria-label={t("import-review-change-scope")}
+                      value={
+                        row.decision === "correct-scope"
+                          ? (row.finalScope ?? "")
+                          : ""
+                      }
+                      onChange={(event) =>
+                        onDecide(
+                          row.rowIndex,
+                          event.target.value
+                            ? {
+                                ...seen(row, fileId),
+                                reviewDecision: "correct-scope",
+                                scope: event.target.value,
+                              }
+                            : null,
+                        )
+                      }
+                    >
+                      <option value="">
+                        {t("import-review-change-scope")}
+                      </option>
+                      {["1", "2", "3"].map((scope) => (
+                        <option key={scope} value={scope}>
+                          {scope}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
+                )}
+              </>
             )}
             <Button
               size="sm"

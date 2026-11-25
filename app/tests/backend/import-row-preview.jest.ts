@@ -178,6 +178,41 @@ describe("previewImportRows", () => {
     expect(preview).toMatchObject({ importedRows: 1, rows: [] });
   });
 
+  // CC-1311: GPC Table 2.1, BASIC needs the scope split, so the user sees it.
+  it("flags an imported subsector row not split by scope", async () => {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+
+    const preview = await previewImportRows(
+      importResult([
+        row(0, {
+          gpcRefNo: "I.1",
+          subcategoryId: null,
+          scopeId: "",
+          totalCO2e: 500,
+        }),
+        row(1, {
+          gpcRefNo: "IV.1",
+          sectorId: "sector-IV",
+          subsectorId: "subsector-IV.1",
+          subcategoryId: null,
+          totalCO2e: 50,
+        }),
+      ]),
+      InventoryTypeEnum.GPC_BASIC_PLUS,
+    );
+
+    expect(preview.importedRows).toBe(2);
+    expect(
+      preview.rows.map(({ gpcRefNo, status, issue }) => [
+        gpcRefNo,
+        status,
+        issue,
+      ]),
+    ).toEqual([["I.1", "imported", "gpc-subsector-total-at-risk"]]);
+  });
+
   it("falls back to Excel row index+2 when there is no file row number", async () => {
     jest
       .spyOn(InventoryProgressService, "getSortedInventoryStructure")
@@ -695,11 +730,7 @@ describe("scope notes", () => {
 
   it("gives a notation-key row with a total of 0 no value", async () => {
     const result = await notes([
-      noted(
-        "I.1.1",
-        { finalScope: "1" },
-        { totalCO2e: 0, notationKey: "NO" },
-      ),
+      noted("I.1.1", { finalScope: "1" }, { totalCO2e: 0, notationKey: "NO" }),
     ]);
     expect(result.inferredScopeRows?.[0]).toMatchObject({
       gpcRefNo: "I.1.1",
@@ -934,5 +965,153 @@ describe("decisions on held rows (applyReviewedRows)", () => {
     );
     expect(result.rows[0].gpcRefNo).toBe("I.1.1");
     expect(findPendingRows(result)).toHaveLength(1);
+  });
+});
+
+// CC-1311, GPC Box 4.1 p. 40: an unsplit subsector total may hide parts the
+// totals treat differently (scope 3 T&D losses, I.4.4, III.x.3).
+describe("unsplit subsector total at risk", () => {
+  function unsplit(
+    ref: string,
+    review: Record<string, unknown> = {},
+  ): ECRFRowData {
+    return row(0, {
+      gpcRefNo: ref,
+      subcategoryId: null,
+      scopeId: "",
+      totalCO2e: 500,
+      review: {
+        sector: null,
+        subsector: null,
+        category: "Residential buildings",
+        scope: null,
+        refSource: "inferred",
+        directionEvidence: null,
+        directionEvidenceFound: null,
+        page: 1,
+        source: null,
+        decision: null,
+        suggestedRefNo: ref,
+        decisionToken: "tok",
+        ...review,
+      } as ECRFRowData["review"],
+    });
+  }
+  const result = (rows: ECRFRowData[]): ECRFImportResult => ({
+    ...importResult(rows),
+    requiresReferenceReview: true,
+  });
+  const outcome = async (r: ECRFImportResult) =>
+    (await previewImportRows(r, InventoryTypeEnum.GPC_BASIC_PLUS)).rows.map(
+      ({ gpcRefNo, status, issue }) => [gpcRefNo, status, issue],
+    );
+
+  beforeEach(() => {
+    jest
+      .spyOn(InventoryProgressService, "getSortedInventoryStructure")
+      .mockResolvedValue(STRUCTURE);
+    jest
+      .spyOn(InventoryProgressService, "findReferencesOutsideInventoryType")
+      .mockResolvedValue([]);
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockImplementation(
+      async () =>
+        ({
+          sectorId: "s",
+          subsectorId: "ss",
+          subcategoryId: null,
+          scopeId: null,
+        }) as never,
+    );
+  });
+
+  it.each(["I.3", "III.1"])(
+    "warns on unsplit %s and counts it",
+    async (ref) => {
+      const r = result([unsplit(ref)]);
+      expect(findPendingRows(r)).toHaveLength(0);
+      expect(await outcome(r)).toEqual([
+        [ref, "imported", "gpc-subsector-total-at-risk"],
+      ]);
+    },
+  );
+
+  it("does not warn on sector II without scope text", async () => {
+    expect(await outcome(result([unsplit("II.1")]))).toEqual([
+      ["II.1", "imported", "subsector-not-split-by-scope"],
+    ]);
+  });
+
+  it.each([
+    ["scope text", { scope: "Scope 1, 2 & 3" }],
+    ["scope text in the label", { category: "Residential (Scopes 1-3)" }],
+    ["combined scope basis", { scopeBasis: "combined" }],
+    ["unclear total inclusion", { totalInclusion: "unclear" }],
+  ])("asks on %s and holds the row", async (_name, review) => {
+    const r = result([unsplit("I.3", review)]);
+    const pending = findPendingRows(r);
+    expect(pending.map((p) => p.issue)).toEqual([
+      "gpc-subsector-scope-combined",
+    ]);
+    expect(await outcome(r)).toEqual([
+      ["I.3", "pending", "gpc-subsector-scope-combined"],
+    ]);
+  });
+
+  it.each([
+    [{ scope: "Scope 1, 2 & 3" }, "Scope 1, 2 & 3"],
+    [{ category: "Residential (Scopes 1-3)" }, "Residential (Scopes 1-3)"],
+    [{ totalInclusion: "unclear" }, null],
+    [{ scopeBasis: "combined" }, null],
+  ])("quotes only real scope text (%o)", (review, scopeText) => {
+    const [held] = findPendingRows(result([unsplit("I.3", review)]));
+    expect(held.scopeText ?? null).toBe(scopeText);
+  });
+
+  it("asks on sector II with scope text", () => {
+    expect(
+      findPendingRows(result([unsplit("II.1", { scope: "Scope 1 + 2" })])),
+    ).toHaveLength(1);
+  });
+
+  it("never flags a scoped child row", async () => {
+    const r = result([
+      row(0, {
+        gpcRefNo: "I.1.1",
+        totalCO2e: 5,
+        review: {
+          ...unsplit("I.1.1").review!,
+          scope: "Scope 1, 2 & 3",
+          scopeBasis: "combined",
+        },
+      }),
+    ]);
+    expect(findPendingRows(r).map((p) => p.issue)).not.toContain(
+      "gpc-subsector-scope-combined",
+    );
+    expect(await outcome(r)).toEqual([]);
+  });
+
+  const decide = (reviewDecision: string) => ({
+    "0": {
+      decisionFileId: "file",
+      decisionToken: "tok",
+      decisionRef: "I.3",
+      decisionScope: "Scope 1, 2 & 3",
+      decisionValue: 500,
+      reviewDecision,
+    },
+  });
+
+  it.each([
+    ["keep", false, "subsector-not-split-by-scope", "imported"],
+    ["omit", true, "reported-apart-from-total", "not-counted"],
+    ["unsure", false, "gpc-subsector-total-at-risk", "imported"],
+  ])("applies %s", async (decision, omitted, issue, status) => {
+    const r = result([unsplit("I.3", { scope: "Scope 1, 2 & 3" })]);
+    await applyReviewedRows(r, decide(decision), "file");
+    expect(findPendingRows(r)).toHaveLength(0);
+    expect(r.rows[0].omitFromTotal === true).toBe(omitted);
+    expect(r.rows[0].review?.decision).toBe(decision);
+    expect(await outcome(r)).toEqual([["I.3", status, issue]]);
   });
 });

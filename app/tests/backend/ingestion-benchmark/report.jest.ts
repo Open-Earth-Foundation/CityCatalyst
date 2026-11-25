@@ -237,6 +237,22 @@ describe("spec 5.4 metrics", () => {
   });
 });
 
+describe("rows stored without scope", () => {
+  it("shows the count per case and per block", () => {
+    const a = result("A", 0.5);
+    const b = result("B", 0.5);
+    const verdicts = [
+      { ...verdict(a), unscopedRows: 2 },
+      { ...verdict(b), unscopedRows: 1 },
+    ];
+    const report = renderReport(summary([a, b]), verdicts, [block({})], []);
+    expect(report).toContain("| Distractors stored | Unscoped rows |");
+    expect(report).toContain(
+      "- Rows stored without scope (subsector ref, scope null): 3",
+    );
+  });
+});
+
 describe("usage and cost", () => {
   const withUsage = (id: string, pages: number | null): CaseResult => ({
     ...result(id, 0.5),
@@ -358,6 +374,23 @@ describe("report", () => {
     );
     expect(report).toContain(
       "- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): C-018 (4)",
+    );
+  });
+
+  it("notes an attempt that needs review with its reason", () => {
+    const s = summary([result("C-019", 0.5)]);
+    s.results[0].runs[0] = {
+      ...s.results[0].runs[0],
+      failureMode: "needs_review",
+      ok: false,
+      message:
+        "needs review: rows of one reference disagree on whether they count in the total: I.3.1 (1 counted, 1 left out of the total).",
+      stored: undefined,
+      score: undefined,
+    };
+    const report = render(s);
+    expect(report).toContain(
+      "- C-019 attempt 1: needs review: rows of one reference disagree on whether they count in the total: I.3.1 (1 counted, 1 left out of the total).",
     );
   });
 

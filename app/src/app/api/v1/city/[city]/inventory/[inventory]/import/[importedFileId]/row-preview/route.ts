@@ -155,7 +155,7 @@
  *                             nullable: true
  *                           status:
  *                             type: string
- *                             enum: [skipped, not-counted]
+ *                             enum: [skipped, not-counted, pending, imported]
  *                           issue:
  *                             type: string
  *                             enum:
@@ -172,6 +172,23 @@
  *                               - excluded-reference-unconfirmed
  *                               - reference-conflict
  *                               - skipped-in-review
+ *                               - gpc-parent-superseded
+ *                               - gpc-parent-gap
+ *                               - subsector-not-split-by-scope
+ *                               - gpc-subsector-total-at-risk
+ *                               - gpc-subsector-scope-combined
+ *                               - merge-total-inclusion-mixed
+ *                           tonnes:
+ *                             type: number
+ *                             nullable: true
+ *                           parentSuperseded:
+ *                             type: object
+ *                             description: Subsector total replaced by its child rows; set for gpc-parent-superseded and gpc-parent-gap.
+ *                             properties:
+ *                               parentValue: { type: number, nullable: true }
+ *                               childrenSum: { type: number, nullable: true }
+ *                               childrenCount: { type: integer }
+ *                               gap: { type: number, nullable: true }
  *       400:
  *         description: File is not waiting for approval.
  *       401:

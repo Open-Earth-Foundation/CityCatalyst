@@ -6,7 +6,10 @@
  * equal within the file tolerance and the GPC ref and scope are equal; rows the
  * source does not split are compared as sums; several key rows with the same
  * ref and scope are compared as one sum; "not in total" values must be stored
- * but stay out of the total; notation keys are scored only when marked.
+ * but stay out of the total; notation keys are scored only when marked, and
+ * a scope given in the key is compared for them as for value rows.
+ * Since scorer 3 (PDF profile), a key wildcard such as `I.3.x` with no tail
+ * also matches a stored subsector-level row `I.3`; scope is still compared.
  *
  * The app stores one InventoryValue per GPC reference and scope, so a "stored
  * row" here is one stored (ref, scope) group, not one extracted line item.
@@ -41,7 +44,7 @@ export type StoredValue = {
  * metrics). Raise it on every change to them: a baseline entry recorded with
  * another version is rescored from its run folder, so both sides use the same rules.
  */
-export const SCORER_VERSION = "2";
+export const SCORER_VERSION = "3";
 
 export type FileScore = {
   keyValueRows: number;
@@ -77,6 +80,12 @@ export type FileScore = {
   }[];
   unexpectedStored: { gpc: string; scope: string | null; valueT: number }[];
   missingRows: { description: string; gpc: string; value: number | null }[];
+  /**
+   * Data quality, reported only: stored value groups at a subsector ref (I.3,
+   * IV.1, ...) with no scope. GPC BASIC requires the scope split, so each is a
+   * gap even when it scores as correct. Absent on scores before scorer 3.
+   */
+  unscopedRows?: number;
 };
 
 const REF_PATTERN = /\b(?:VI|IV|V|III|II|I)(?:\.(?:\d+|x))+/g;
@@ -96,6 +105,8 @@ export function parseRefs(gpc: string): ParsedRefs {
 
 /** A subsector-level ref such as "I.1": its stored refs are "I.1.1", "I.1.2", ... */
 const SUBSECTOR_REF = /^(?:I|II|III)\.\d+$/;
+/** Any subsector-level ref, for the unscoped-rows count. */
+const UNSCOPED_SUBSECTOR_REF = /^(?:I|II|III|IV|V)\.\d+$/;
 
 function refMatches(
   pattern: string,
@@ -108,6 +119,15 @@ function refMatches(
   if (!pattern.includes(".x")) return pattern === ref;
   const prefix = pattern.slice(0, pattern.indexOf(".x") + 1);
   const tail = pattern.slice(pattern.indexOf(".x") + 2);
+  // Scorer 3: a key wildcard I.3.x (no tail) also matches a stored subsector-level I.3.
+  if (
+    parentRefMatchesChildren &&
+    !tail &&
+    SUBSECTOR_REF.test(prefix.slice(0, -1)) &&
+    ref === prefix.slice(0, -1)
+  ) {
+    return true;
+  }
   if (!ref.startsWith(prefix)) return false;
   if (!tail) return true;
   return ref.endsWith(tail);
@@ -343,7 +363,8 @@ export function scoreFile(
   const adjustedDiff =
     file.expectedTotal !== null ? adjustedTotal - file.expectedTotal : null;
 
-  // Notation keys: scored keys only; the wildcard and multi-ref patterns apply.
+  // Notation keys: scored keys only; the wildcard and multi-ref patterns apply,
+  // and a scope given in the key is kept, as for the value rows.
   const notationRows = file.rows.filter(
     (row) =>
       row.rowType === "Notation key" &&
@@ -355,11 +376,13 @@ export function scoreFile(
     const canonical = toCanonical(row.notation);
     const patterns = parseRefs(row.gpc);
     const all = [...patterns.refs, ...patterns.alternates];
+    const rowScope = normalizeScope(row.scope);
     const hit = stored.some(
       (item) =>
         !!item.notation &&
         item.notation === canonical &&
-        all.some((pattern) => matchesRef(pattern, item.gpc)),
+        all.some((pattern) => matchesRef(pattern, item.gpc)) &&
+        (rowScope === "" || normalizeScope(item.scope) === rowScope),
     );
     if (hit) notationRecovered += 1;
   }
@@ -419,5 +442,11 @@ export function scoreFile(
     distractorsStored,
     unexpectedStored: rows ? unexpectedStored : [],
     missingRows: rows ? missingRows : [],
+    // Total-only files are not scored by row, so they report no unscoped rows.
+    unscopedRows: rows
+      ? [...groups.values()].filter(
+          (g) => g.scope === "" && UNSCOPED_SUBSECTOR_REF.test(g.gpc),
+        ).length
+      : 0,
   };
 }

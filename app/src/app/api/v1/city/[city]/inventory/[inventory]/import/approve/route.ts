@@ -45,7 +45,8 @@
  *                 description: |
  *                   Required when the inventory already has data. All existing values (manual data, connected
  *                   third-party data and notation keys) are replaced by the file. The replaced data is kept in
- *                   the inventory's version history and can be restored from there.
+ *                   the inventory's version history and can be restored from there. Since the stored values are
+ *                   deleted, the file is checked only against itself.
  *     responses:
  *       202:
  *         description: Import started; poll GET import status until completion.

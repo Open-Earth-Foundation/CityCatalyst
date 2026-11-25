@@ -52,6 +52,19 @@ export function isOmittedGPCReference(
   );
 }
 
+/**
+ * A sector I-III subsector reference (`I.3`): its value has no scope split
+ * (GPC Table 2.1, CC-1311). Sectors IV-V are reported per subsector anyway.
+ */
+export function isUnsplitSubsectorRef(
+  gpcReferenceNumber?: string | null,
+): boolean {
+  return (
+    gpcReferenceNumber != null &&
+    /^(I|II|III)\.\d+$/.test(gpcReferenceNumber)
+  );
+}
+
 /** True when a sector breakdown has nothing to show, counted or omitted. */
 export function isBreakdownEmpty(
   breakdown?: {

@@ -1,5 +1,9 @@
 import { db } from "@/models";
-import { type ECRFImportResult, type ECRFRowData } from "./ECRFImportService";
+import {
+  isRowOmittedFromTotal,
+  type ECRFImportResult,
+  type ECRFRowData,
+} from "./ECRFImportService";
 import VersionHistoryService from "./VersionHistoryService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
@@ -445,7 +449,9 @@ export default class InventoryImportService {
       if (!row.errors?.length) continue;
       skippedRows++;
       for (const message of row.errors) {
-        warnings.push(`Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${message}`);
+        warnings.push(
+          `Row ${excelRowNumber(row.rowIndex, row.sourceRowNumber)}: ${message}`,
+        );
       }
     }
 
@@ -550,6 +556,22 @@ export default class InventoryImportService {
                 ? "direct-measure"
                 : resolvedMethodology;
 
+              // One value has one omitFromTotal: rows that disagree are held
+              // in the review (merge-total-inclusion-mixed), never merged.
+              // The reference rule applies to both sides, so a value stored
+              // unflagged before that rule still merges with its new rows.
+              const rowOmittedFromTotal = isRowOmittedFromTotal(row);
+              if (
+                existingValue?.co2eq != null &&
+                isRowOmittedFromTotal({
+                  gpcRefNo: row.gpcRefNo,
+                  omitFromTotal: existingValue.omitFromTotal,
+                }) !== rowOmittedFromTotal
+              ) {
+                throw new Error(
+                  `${row.gpcRefNo} has rows counted in the total and rows left out of it; they cannot be merged into one value`,
+                );
+              }
               let inventoryValue;
               if (existingValue) {
                 // Accumulate co2eq when multiple rows share the same GPC reference
@@ -562,6 +584,10 @@ export default class InventoryImportService {
                 inventoryValue = await existingValue.update(
                   {
                     co2eq: accumulatedCo2eq,
+                    // Merged rows agree on the flag (checked above); this
+                    // also corrects a stale stored flag, and a notation key
+                    // stored first takes the row's flag.
+                    omitFromTotal: rowOmittedFromTotal,
                     co2eqYears: 100, // Default value
                     unavailableReason: null,
                     unavailableExplanation: null,
@@ -592,13 +618,11 @@ export default class InventoryImportService {
                     subCategoryId: row.subcategoryId ?? undefined,
                     co2eq: co2eqBigInt,
                     co2eqYears: 100, // Default value
+                    omitFromTotal: rowOmittedFromTotal,
                     inputMethodology: finalMethodology,
                     lastUpdated: new Date(),
                     ...(options?.sourceDocumentId
-                      ? withIncomingSourceDocument(
-                          {},
-                          options.sourceDocumentId,
-                        )
+                      ? withIncomingSourceDocument({}, options.sourceDocumentId)
                       : {}),
                   },
                   { transaction: rowTransaction },

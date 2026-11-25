@@ -25,6 +25,7 @@ const FAILURE_MODES: FailureMode[] = [
   "extraction_error",
   "truncated",
   "zero_rows",
+  "needs_review",
   "approve_error",
   "readback_error",
   "setup_error",
@@ -95,6 +96,8 @@ export type CaseVerdict = {
   notationRecovered: number;
   /** Distractor values stored, mean per scored attempt. */
   distractorsStored: number | null;
+  /** Subsector rows stored without scope, mean per scored attempt (data quality, not scored). */
+  unscopedRows?: number | null;
   totalWithinToleranceAll: boolean | null;
   tenXAttempts: number;
   wrongTotalAttempts: number;
@@ -171,6 +174,7 @@ export function caseVerdict(
     notationScored: metrics.notationScored,
     notationRecovered: metrics.notationRecovered,
     distractorsStored: metrics.distractorsStored,
+    unscopedRows: metrics.unscopedRows,
     totalWithinToleranceAll:
       withTotal.length === 0
         ? null

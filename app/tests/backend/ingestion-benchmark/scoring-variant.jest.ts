@@ -73,9 +73,9 @@ describe("scoringReference (Mirco's rule from comparison-bridge.ts)", () => {
 });
 
 describe("what the .x form matches in the scorer", () => {
-  it("I.1.x matches a key row written as the wildcard I.1.x, which a stored I.1 does not", () => {
+  it("I.1.x matches a key row written as the wildcard I.1.x, and so does a stored I.1 (scorer 3)", () => {
     const key = keyFile([keyRow({ gpc: "I.1.x", value: 100 })], null);
-    expect(scoreFile(key, [value("I.1", null, 100)]).matchedRows).toBe(0);
+    expect(scoreFile(key, [value("I.1", null, 100)]).matchedRows).toBe(1);
     expect(scoreFile(key, [value("I.1.x", null, 100)]).matchedRows).toBe(1);
   });
 
@@ -95,6 +95,15 @@ describe("what the .x form matches in the scorer", () => {
 });
 
 describe("scoreWithVariant", () => {
+  it("gives the standard score when approve stored the subsector row", () => {
+    const key = keyFile([keyRow({ gpc: "I.1.x", value: 100 })], 100);
+    const { standard, parentRefs } = scoreWithVariant(key, [
+      value("I.1", null, 100),
+    ]);
+    expect(standard.rowRecall).toBe(1);
+    expect(parentRefs.rowRecall).toBe(standard.rowRecall);
+  });
+
   const key = keyFile(
     [
       keyRow({ gpc: "I.1.1", scope: "1", value: 100 }),

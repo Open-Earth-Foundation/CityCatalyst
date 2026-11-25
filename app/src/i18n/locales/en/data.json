@@ -1122,6 +1122,7 @@
   "gpc_basic": "GPC Basic",
   "gpc_basic_plus": "GPC Basic+",
   "explanation-institutional-missing": "Institutional emissions are included in commercial emissions record",
+  "ecrf-included-elsewhere-unsplit": "Included in {{ref}}: {{tonnes}} t CO2e, not split by scope in the source",
   "residential-buildings-distribution-losses-direct-measure-methodology-description": "Direct metering or monitoring of emissions in distribution losses",
   "commercial-buildings-distribution-losses-direct-measure-methodology-description": "Direct metering or monitoring of emissions in distribution losses for commercial buildings",
   "manufacturing-industries-distribution-losses-direct-measure-methodology-description": "Direct metering or monitoring of emissions in distribution losses for manufacturing industries",

@@ -69,4 +69,32 @@ describe("ByScopeView", () => {
   it("shows no heading without omitted rows", () => {
     expect(render()).not.toContain("omitted-from-total-heading");
   });
+
+  // CC-1311: GPC Table 2.1, a subsector value not split by scope is IE, not 0.
+  it("shows IE with a note for a subsector value not split by scope", () => {
+    const tRef = ((key: string, opts?: { ref?: string }) =>
+      opts?.ref ? `${key}:${opts.ref}` : key) as never;
+    const html = renderToStaticMarkup(
+      <ChakraProvider value={defaultSystem}>
+        <ByScopeView
+          data={[
+            {
+              ...row("Energy industries", 500_000, 100),
+              scopes: {},
+              unsplitReferences: ["I.4"],
+            },
+          ]}
+          grossTotalEmissions={new Decimal(500_000)}
+          tData={tRef}
+          tDashboard={tRef}
+          sectorName="stationary-energy"
+          inventoryType={InventoryTypeEnum.GPC_BASIC}
+          inventoryId="inventory"
+        />
+      </ChakraProvider>,
+    );
+    expect(html.match(/>IE</g)).toHaveLength(2);
+    expect(html).toContain(">included-elsewhere-unsplit:I.4<");
+    expect(html).not.toContain("title=");
+  });
 });

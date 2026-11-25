@@ -1,5 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
-import { heldRowDecisions } from "@/backend/ingestion-benchmark/held-rows";
+import {
+  heldRowDecisions,
+  needsReviewMessage,
+  totalInclusionConflicts,
+} from "@/backend/ingestion-benchmark/held-rows";
 import type { ImportRowReview } from "@/util/types";
 
 const review = (partial: Partial<ImportRowReview>): ImportRowReview =>
@@ -74,11 +78,67 @@ describe("heldRowDecisions", () => {
     expect(decisions).toEqual({});
   });
 
+  it("sends no decision for rows that disagree on total inclusion", () => {
+    // Mirco's I.3.1: 100 t counted and 20 t left out. Keep would count both.
+    const { decisions, included, unresolved } = heldRowDecisions(
+      [
+        review({
+          rowIndex: 0,
+          issue: "merge-total-inclusion-mixed",
+          suggestedRefNo: "I.3.1",
+          value: 100,
+        }),
+        review({
+          rowIndex: 1,
+          issue: "merge-total-inclusion-mixed",
+          suggestedRefNo: "I.3.1",
+          value: 20,
+        }),
+      ],
+      "file-1",
+    );
+    expect(decisions).toEqual({});
+    expect(included).toBe(0);
+    expect(unresolved).toBe(0);
+  });
+
   it("returns nothing when no row is held", () => {
     expect(heldRowDecisions([], "file-1")).toEqual({
       decisions: {},
       included: 0,
       unresolved: 0,
     });
+  });
+});
+
+describe("totalInclusionConflicts", () => {
+  it("counts the counted and left-out rows per reference", () => {
+    expect(
+      totalInclusionConflicts([
+        { gpcRefNo: "I.3.1", leftOut: false },
+        { gpcRefNo: "I.3.1", leftOut: true },
+        { gpcRefNo: "II.1.1", leftOut: true },
+        { gpcRefNo: "II.1.1", leftOut: false },
+        { gpcRefNo: "II.1.1", leftOut: false },
+      ]),
+    ).toEqual([
+      { gpcRefNo: "I.3.1", counted: 1, leftOut: 1 },
+      { gpcRefNo: "II.1.1", counted: 2, leftOut: 1 },
+    ]);
+  });
+
+  it("returns nothing without mixed rows", () => {
+    expect(totalInclusionConflicts([])).toEqual([]);
+  });
+});
+
+describe("needsReviewMessage", () => {
+  it("says why the rows were not imported, naming the reference but no value", () => {
+    const message = needsReviewMessage([
+      { gpcRefNo: "I.3.1", counted: 1, leftOut: 1 },
+    ]);
+    expect(message).toBe(
+      "needs review: rows of one reference disagree on whether they count in the total: I.3.1 (1 counted, 1 left out of the total). The runner does not choose, so nothing is imported and the attempt is not scored.",
+    );
   });
 });

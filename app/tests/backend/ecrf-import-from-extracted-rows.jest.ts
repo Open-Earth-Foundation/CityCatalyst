@@ -220,4 +220,117 @@ describe("manual override of a row with an inferred scope", () => {
     const { preview } = await previewOf(out as typeof inferred);
     expect(preview.inferredScopeRows).toHaveLength(1);
   });
+  describe("CC-1311 subsector-level rows", () => {
+    const mockSubsectorCatalogue = () =>
+      jest
+        .spyOn(ECRFImportService, "lookupGPCReference")
+        .mockImplementation(async (gpcRefNo: string) => ({
+          sectorId: "sector-i",
+          subsectorId: gpcRefNo.split(".").slice(0, 2).join("."),
+          subcategoryId:
+            gpcRefNo.split(".").length > 2 ? `sub-${gpcRefNo}` : null,
+          scopeId: gpcRefNo.split(".").length > 2 ? "scope-1-id" : null,
+        }));
+    const row = (gpcRefNo: string, totalCO2e: number) => ({
+      year: 2021,
+      sector: "Stationary Energy",
+      subsector: "Manufacturing industries and construction",
+      gpcRefNo,
+      totalCO2e,
+    });
+
+    it("imports an unsplit subsector row", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+      ]);
+      expect(result.rows).toHaveLength(1);
+      expect(result.rows[0]).toMatchObject({
+        gpcRefNo: "I.3",
+        subsectorId: "I.3",
+        subcategoryId: null,
+        scopeId: "",
+        totalCO2e: 500,
+      });
+      expect(result.rows[0].errors).toBeUndefined();
+    });
+
+    it("drops the parent when children are present", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        row("I.3.1", 300),
+        row("I.3.2", 200),
+      ]);
+      const parent = result.rows.find((r) => r.gpcRefNo === "I.3")!;
+      expect(parent.issue).toBe("gpc-parent-superseded");
+      expect(parent.errors?.length).toBe(1);
+      expect(parent.parentSuperseded).toEqual({
+        parentValue: 500,
+        childrenSum: 500,
+        childrenCount: 2,
+        gap: 0,
+      });
+      expect(
+        result.rows.filter((r) => !r.errors).map((r) => r.gpcRefNo),
+      ).toEqual(["I.3.1", "I.3.2"]);
+    });
+
+    it("flags a gap above tolerance with its own issue", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        row("I.3.1", 300),
+      ]);
+      const parent = result.rows.find((r) => r.gpcRefNo === "I.3")!;
+      expect(parent.issue).toBe("gpc-parent-gap");
+      expect(parent.parentSuperseded?.gap).toBe(200);
+    });
+
+    it("an excluded child does not replace an included parent", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        { ...row("I.3.1", 300), omitFromTotal: true },
+      ]);
+      const parent = result.rows.find((r) => r.gpcRefNo === "I.3")!;
+      expect(parent.issue).toBeUndefined();
+      expect(parent.errors).toBeUndefined();
+    });
+
+    it("carries omitFromTotal", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        { ...row("I.3.1", 300), omitFromTotal: true },
+        row("I.3.2", 200),
+      ]);
+      expect(result.rows.map((r) => r.omitFromTotal)).toEqual([
+        true,
+        undefined,
+      ]);
+    });
+
+    it("shows superseded parents and excluded rows in the preview", async () => {
+      mockSubsectorCatalogue();
+      const result = await ECRFImportService.fromExtractedRows([
+        row("I.3", 500),
+        row("I.3.1", 300),
+        { ...row("I.4.1", 50), omitFromTotal: true },
+      ]);
+      const preview = await previewImportRows(result, undefined);
+      const byRef = Object.fromEntries(
+        preview.rows.map((r) => [r.gpcRefNo, r]),
+      );
+      expect(byRef["I.3"]).toMatchObject({
+        status: "skipped",
+        issue: "gpc-parent-gap",
+        parentSuperseded: { parentValue: 500, childrenSum: 300, gap: 200 },
+      });
+      expect(byRef["I.4.1"]).toMatchObject({
+        status: "not-counted",
+        issue: "reported-apart-from-total",
+        tonnes: 50,
+      });
+    });
+  });
 });

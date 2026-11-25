@@ -20,6 +20,10 @@ jest.unstable_mockModule("@/backend/ECRFImportService", () => ({
     fromExtractedRows: jest.fn(),
     processECRFFile: jest.fn(),
   },
+  supersedeParentsWithChildren: jest.fn(),
+  markMixedTotalInclusion: jest.fn(),
+  mixedTotalInclusionRows: jest.fn(() => []),
+  isRowOmittedFromTotal: jest.fn(),
 }));
 
 const { buildImportResult } = await import("@/backend/ImportResultBuilder");

@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
+import { needsReviewMessage } from "@/backend/ingestion-benchmark/held-rows";
 import {
   mapEnvelope,
   type MappedEnvelope,
@@ -306,8 +307,17 @@ export async function runPrecomputedAttempt(
     stage = "approve";
     const importStarted = Date.now();
     const held = await includeHeldRows(ctx, importedFileId);
-    heldRowsIncluded = held.included;
     lostRows = lostRowsByIssue(held.importRows);
+    // Which of the rows count is the pipeline's input to settle, not the
+    // runner's. Not approved, so no held row was included.
+    if (held.conflicts.length) {
+      return finish({
+        ...base(),
+        failureMode: "needs_review",
+        message: needsReviewMessage(held.conflicts),
+      });
+    }
+    heldRowsIncluded = held.included;
     const done = await approveImport(ctx, ids, importedFileId, held);
     stageMs.import = Date.now() - importStarted;
     lostRows = reconcileLostRows(

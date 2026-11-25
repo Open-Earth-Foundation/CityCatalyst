@@ -9,6 +9,8 @@ import {
   scoreFile,
   type StoredValue,
 } from "@/backend/ingestion-benchmark/score";
+import { STRUCTURED_PROFILE } from "@/backend/ingestion-benchmark/profiles";
+import { toCanonical } from "@/util/notation-keys";
 
 function row(partial: Partial<KeyRow>): KeyRow {
   return {
@@ -392,5 +394,165 @@ describe("scoreFile review cases (CC-1124)", () => {
     );
     const score = scoreFile(key, [stored("I.1.1", "1", 100)]);
     expect(score.valueAccuracy).toBe(1);
+  });
+});
+
+describe("scoreFile subsector-level stored rows (scorer 3)", () => {
+  const unscoped = (
+    gpc: string,
+    valueT: number,
+    extra: Partial<StoredValue> = {},
+  ) => ({
+    ...stored(gpc, "", valueT, extra),
+    scope: null,
+  });
+  const wildcard = (extra: Partial<KeyRow> = {}) =>
+    row({
+      gpc: "I.3.x (all scopes)",
+      scope: "",
+      ambiguous: true,
+      value: 100,
+      ...extra,
+    });
+  const key = (rows: KeyRow[]) => keyFile(rows, { expectedTotal: 100 });
+
+  it("matches a stored subsector row to the key wildcard of that subsector", () => {
+    const score = scoreFile(key([wildcard()]), [unscoped("I.3", 100)]);
+    expect(score.rowRecall).toBe(1);
+    expect(score.rowPrecision).toBe(1);
+    expect(score.unexpectedStored).toEqual([]);
+  });
+
+  it("keeps the key scope", () => {
+    const score = scoreFile(key([wildcard({ scope: "1" })]), [
+      unscoped("I.3", 100),
+    ]);
+    expect(score.rowRecall).toBe(0);
+  });
+
+  it("does not match a stored subsector row to scoped child key rows", () => {
+    const score = scoreFile(
+      key([
+        row({ gpc: "I.3.1", scope: "1", value: 60 }),
+        row({ row: 2, gpc: "I.3.2", scope: "2", value: 40 }),
+      ]),
+      [unscoped("I.3", 100)],
+    );
+    expect(score.rowRecall).toBe(0);
+    expect(score.rowPrecision).toBe(0);
+    expect(score.subsectorRecall).toBe(1);
+  });
+
+  it("does not credit a subsector row stored with its children", () => {
+    const score = scoreFile(key([wildcard()]), [
+      unscoped("I.3", 100),
+      stored("I.3.1", "1", 60),
+    ]);
+    expect(score.rowRecall).toBe(0);
+  });
+
+  it("does not match another subsector", () => {
+    expect(scoreFile(key([wildcard()]), [unscoped("I.1", 100)]).rowRecall).toBe(
+      0,
+    );
+    expect(
+      scoreFile(key([wildcard()]), [unscoped("II.3", 100)]).rowRecall,
+    ).toBe(0);
+  });
+
+  it("leaves IV and V subsectors to exact matching", () => {
+    const score = scoreFile(
+      key([row({ gpc: "IV.1.x", scope: "", ambiguous: true, value: 100 })]),
+      [unscoped("IV.1", 100)],
+    );
+    expect(score.rowRecall).toBe(0);
+  });
+
+  it("recovers a notation key stored at subsector level", () => {
+    const score = scoreFile(
+      key([
+        row({
+          gpc: "I.3.x",
+          rowType: "Notation key",
+          notation: "NE",
+          value: null,
+        }),
+      ]),
+      [unscoped("I.3", 0, { notation: toCanonical("NE") })],
+    );
+    expect(score.notationScored).toBe(1);
+    expect(score.notationRecovered).toBe(1);
+  });
+
+  describe("notation key scope", () => {
+    const notationKey = (scope: string) =>
+      key([
+        row({
+          gpc: "I.3.x",
+          scope,
+          rowType: "Notation key",
+          notation: "NE",
+          value: null,
+        }),
+      ]);
+    const ne = { notation: toCanonical("NE") };
+    const recovered = (scope: string, storedRows: StoredValue[]) =>
+      scoreFile(notationKey(scope), storedRows).notationRecovered;
+
+    it("does not recover a scoped key from an unscoped subsector row", () => {
+      expect(recovered("1", [unscoped("I.3", 0, ne)])).toBe(0);
+    });
+
+    it("recovers an unscoped key from an unscoped subsector row", () => {
+      expect(recovered("", [unscoped("I.3", 0, ne)])).toBe(1);
+    });
+
+    it("recovers a scoped key from a child row with the same scope", () => {
+      expect(recovered("1", [stored("I.3.1", "1", 0, ne)])).toBe(1);
+    });
+
+    it("does not recover a scoped key from a child row with another scope", () => {
+      expect(recovered("1", [stored("I.3.1", "2", 0, ne)])).toBe(0);
+    });
+
+    it("compares normalized scopes", () => {
+      expect(recovered("1", [stored("I.3.1", "1.0", 0, ne)])).toBe(1);
+      expect(recovered("1.0", [stored("I.3.1", " 1 ", 0, ne)])).toBe(1);
+    });
+  });
+
+  it("keeps the structured profile strict", () => {
+    const score = scoreFile(
+      key([wildcard()]),
+      [unscoped("I.3", 100)],
+      STRUCTURED_PROFILE,
+    );
+    expect(score.matchedRows).toBe(0);
+  });
+
+  it("counts subsector rows stored without scope, without changing the score", () => {
+    const rows = [
+      unscoped("I.3", 100),
+      unscoped("II.1", 5),
+      stored("I.3.1", "1", 60),
+      stored("I.1", "1", 7),
+    ];
+    const score = scoreFile(key([wildcard()]), rows);
+    expect(score.unscopedRows).toBe(2);
+    expect(scoreFile(key([wildcard()]), rows.slice(0, 1)).unscopedRows).toBe(1);
+  });
+
+  it("does not count unscoped rows for a file scored on the total only", () => {
+    const score = scoreFile(
+      keyFile([wildcard()], { expectedTotal: 100, nonGpc: true }),
+      [unscoped("I.3", 100)],
+    );
+    expect(score.unscopedRows).toBe(0);
+  });
+
+  it("matches a stored scoped subsector row to an unscoped key wildcard", () => {
+    const score = scoreFile(key([wildcard()]), [stored("I.3", "1", 100)]);
+    expect(score.rowRecall).toBe(1);
+    expect(score.unscopedRows).toBe(0);
   });
 });

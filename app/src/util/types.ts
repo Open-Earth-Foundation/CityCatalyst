@@ -472,6 +472,8 @@ export interface ActivityDataByScope {
   /** FILE_IMPORT_SOURCE_TYPE for sources created from an imported file's data source column */
   datasource_source_type: string | null;
   activities?: ActivityValue[];
+  /** GPC refs of subsector values not split by scope; shown as IE in scope columns (CC-1311). */
+  unsplitReferences?: string[];
 }
 
 /** A stored value left out of BASIC/BASIC+ totals: percentage is always null */
@@ -1043,7 +1045,13 @@ export type ImportRowIssue =
   | "direction-unconfirmed"
   | "excluded-reference-unconfirmed"
   | "reference-conflict"
-  | "skipped-in-review";
+  | "skipped-in-review"
+  | "gpc-parent-superseded"
+  | "gpc-parent-gap"
+  | "subsector-not-split-by-scope"
+  | "gpc-subsector-total-at-risk"
+  | "gpc-subsector-scope-combined"
+  | "merge-total-inclusion-mixed";
 
 export interface ImportRowOutcome {
   /** Row number in the uploaded file, or the extracted row number for PDF/AI imports. */
@@ -1053,10 +1061,20 @@ export interface ImportRowOutcome {
   sourceLabel: string | null;
   /** Notation key as written in the file, for unknown-notation-key rows. */
   notationKey: string | null;
-  status: "skipped" | "not-counted" | "pending";
+  status: "skipped" | "not-counted" | "pending" | "imported";
   issue: ImportRowIssue;
   /** Tonnes CO2e left out of the total, for omitted-from-total and reported-apart rows. */
   tonnes?: number | null;
+  /** Subsector total replaced by its child rows (CC-1311). */
+  parentSuperseded?: ParentSupersededDetail;
+}
+
+/** A subsector-level value dropped because its child rows came in the same import. */
+export interface ParentSupersededDetail {
+  parentValue: number | null;
+  childrenSum: number | null;
+  childrenCount: number;
+  gap: number | null;
 }
 
 /** Where a row's scope comes from. */
@@ -1130,7 +1148,10 @@ export interface ImportRowReview {
   quoteFound: boolean | null;
   page: number | null;
   source: string | null;
-  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  decision:
+    "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure" | null;
+  /** Row text naming several scopes, for gpc-subsector-scope-combined; null when only pipeline flags raised it. */
+  scopeText?: string | null;
   finalScope?: string | null;
   decisionToken?: string;
   finalCatalogueScope?: number | null;

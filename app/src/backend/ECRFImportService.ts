@@ -12,7 +12,10 @@ import { inferInventoryYearFromSheets } from "@/util/infer-inventory-year";
 import { toCanonical } from "@/util/notation-keys";
 import { type ParsedFileData } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
-import type { ImportRowIssue } from "@/util/types";
+import type { ImportRowIssue, ParentSupersededDetail } from "@/util/types";
+import { supersedeParentRows } from "./import/parent-child-rows";
+import { resolveImportedTotalCO2e } from "./InventoryImportService";
+import { isOmittedGPCReference } from "@/util/GHGI/reported-totals";
 import type { ActivityClass } from "@/util/GHGI/activity-class-rules";
 import { excelRowNumber } from "@/util/excel-row-number";
 
@@ -40,6 +43,96 @@ function isBlankParsedRow(
   return !Object.values(row).some(
     (value) => value != null && String(value).trim() !== "",
   );
+}
+
+/**
+ * CC-1311: keep the child rows (`I.3.x`) and drop a subsector-level row
+ * (`I.3`) of the same subsector, so the amount is not counted twice. The gap
+ * is reported on the dropped row, never stored. Safe to run again after review
+ * decisions change references: earlier results are cleared first.
+ */
+export function supersedeParentsWithChildren(
+  rows: ECRFRowData[],
+  warnings: string[],
+): void {
+  for (const row of rows) {
+    if (!row.parentSuperseded) continue;
+    // Drop the warning of the earlier run too, so a re-run never repeats it.
+    const stale = warnings.indexOf(parentGapWarning(row, row.parentSuperseded));
+    if (stale !== -1) warnings.splice(stale, 1);
+    delete row.parentSuperseded;
+    delete row.issue;
+    delete row.errors;
+  }
+  const candidates = rows
+    .map((row, index) => ({ row, index }))
+    // An excluded child must not replace a parent that counts in the total.
+    .filter(
+      ({ row }) =>
+        !row.errors?.length &&
+        row.subsectorId &&
+        !(row.omitFromTotal && row.subcategoryId !== null),
+    );
+  const superseded = supersedeParentRows(
+    candidates.map(({ row, index }) => ({
+      index,
+      subsectorId: row.subsectorId,
+      subcategoryId: row.subcategoryId,
+      co2eq: resolveImportedTotalCO2e(row) ?? null,
+      notationKey: row.notationKey ?? null,
+    })),
+  );
+  for (const { index, severity, ...detail } of superseded) {
+    const row = rows[index];
+    row.issue =
+      severity === "warning" ? "gpc-parent-gap" : "gpc-parent-superseded";
+    row.parentSuperseded = detail;
+    row.errors = [
+      `Replaced by ${detail.childrenCount} child rows of the same subsector`,
+    ];
+    if (severity === "warning") warnings.push(parentGapWarning(row, detail));
+  }
+}
+
+/** Stored apart from the total; omitted references always are (InventoryValue hook). */
+export function isRowOmittedFromTotal(
+  row: Pick<ECRFRowData, "gpcRefNo" | "omitFromTotal">,
+): boolean {
+  return row.omitFromTotal === true || isOmittedGPCReference(row.gpcRefNo);
+}
+
+/**
+ * Valued rows of one reference that disagree on omitFromTotal. Rows of one
+ * reference merge into one stored value (unique per inventory and reference)
+ * with one flag, so merging them would count an excluded amount or hide a
+ * counted one. The import review holds them until they agree.
+ */
+export function mixedTotalInclusionRows(rows: ECRFRowData[]): ECRFRowData[] {
+  const groups = new Map<string, ECRFRowData[]>();
+  for (const row of rows) {
+    if (row.errors?.length || !row.gpcRefNo) continue;
+    if (!hasSignedNumericValue(resolveImportedTotalCO2e(row))) continue;
+    groups.set(row.gpcRefNo, [...(groups.get(row.gpcRefNo) ?? []), row]);
+  }
+  return [...groups.values()].flatMap((group) =>
+    new Set(group.map(isRowOmittedFromTotal)).size > 1 ? group : [],
+  );
+}
+
+/**
+ * Marks those rows for the review. The mark outlives the decisions that make
+ * the rows agree, so they stay listed and the decisions can be changed.
+ */
+export function markMixedTotalInclusion(rows: ECRFRowData[]): void {
+  for (const row of mixedTotalInclusionRows(rows))
+    if (row.review) row.review.mixedTotalInclusion = true;
+}
+
+function parentGapWarning(
+  row: ECRFRowData,
+  detail: ParentSupersededDetail,
+): string {
+  return `Row ${row.sourceRowNumber ?? row.rowIndex + 1}: ${row.gpcRefNo} = ${detail.parentValue} t replaced by child rows summing ${detail.childrenSum} t (gap ${detail.gap} t)`;
 }
 
 export interface ECRFRowData {
@@ -75,6 +168,10 @@ export interface ECRFRowData {
   sourceLabel?: string;
   /** Why the row is rejected; set together with `errors`. */
   issue?: ImportRowIssue;
+  /** Stored but left out of the inventory total. */
+  omitFromTotal?: boolean;
+  /** Set when a subsector-level row is replaced by its child rows. */
+  parentSuperseded?: ParentSupersededDetail;
   errors?: string[];
   warnings?: string[];
   /** What the import review needs; extracted rows only. */
@@ -92,7 +189,14 @@ export interface ECRFRowReviewData {
   directionEvidenceFound: boolean | null;
   page: number | null;
   source: string | null;
-  decision: "keep" | "reclassify" | "correct-scope" | "skip" | null;
+  decision:
+    "keep" | "reclassify" | "correct-scope" | "skip" | "omit" | "unsure" | null;
+  /** External pipelines only: how the scope was set (`combined` = several scopes in one value). */
+  scopeBasis?: string | null;
+  /** External pipelines only: whether the source counts the row in its total. */
+  totalInclusion?: string | null;
+  /** Another row of the same reference disagrees on omitFromTotal. */
+  mixedTotalInclusion?: boolean;
   finalScope?: string | null;
   decisionToken?: string;
   catalogueScope?: number | null;
@@ -642,7 +746,7 @@ export default class ECRFImportService {
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
-        scopeId: gpcMapping.scopeId,
+        scopeId: gpcMapping.scopeId ?? "",
         review: {
           sector: hasSectorColumn
             ? (row[headers[detectedColumns.sector!]]?.toString() ?? null)
@@ -652,11 +756,11 @@ export default class ECRFImportService {
             : null,
           category: activityType ?? null,
           scope: statedScope || null,
-          catalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+          catalogueScope: catalogueScopes.has(gpcMapping.scopeId ?? "")
+            ? (catalogueScopes.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
-          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId ?? "")
+            ? (catalogueScopes.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
           refSource: statedReference
             ? ("document" as const)
@@ -694,6 +798,8 @@ export default class ECRFImportService {
       });
     }
 
+    supersedeParentsWithChildren(rows, warnings);
+    markMixedTotalInclusion(rows);
     const validRows = rows.filter((r) => !r.errors || r.errors.length === 0);
     if (validRows.length === 0) {
       errors.push("No valid rows found in file");
@@ -726,13 +832,15 @@ export default class ECRFImportService {
   /**
    * Look up GPC reference number in database
    * For sectors I-III: looks up SubCategory by referenceNumber
-   * For sectors IV-V (IPPU and AFOLU): looks up SubSector by referenceNumber (no subcategories)
+   * Otherwise looks up SubSector by referenceNumber: sectors IV-V (no
+   * subcategories), and sectors I-III reported at subsector level
    */
   public static async lookupGPCReference(gpcRefNo: string): Promise<{
     sectorId: string;
     subsectorId: string;
     subcategoryId: string | null;
-    scopeId: string;
+    // Null for a subsector of sectors I-III reported without a scope split.
+    scopeId: string | null;
   } | null> {
     // First try to find SubCategory (for sectors I-III)
     const subcategory = await db.models.SubCategory.findOne({
@@ -800,17 +908,14 @@ export default class ECRFImportService {
       return null;
     }
 
-    // Scope is on SubSector for sectors IV-V
-    const scopeId = subsector.scopeId;
-    if (!scopeId) {
-      return null;
-    }
-
+    // Sectors IV-V keep their scope on the subsector. A subsector of sectors
+    // I-III has none: the value is stored at subsector level, and approve never
+    // invents a scope for it (CC-1311).
     return {
       sectorId: sector.sectorId,
       subsectorId: subsector.subsectorId,
-      subcategoryId: null, // Sectors IV-V don't have subcategories
-      scopeId,
+      subcategoryId: null,
+      scopeId: subsector.scopeId ?? null,
     };
   }
 
@@ -927,7 +1032,7 @@ export default class ECRFImportService {
       const resolvedScopeId =
         scopeFromFile && scopeByName.has(scopeFromFile)
           ? scopeByName.get(scopeFromFile)!
-          : gpcMapping.scopeId;
+          : (gpcMapping.scopeId ?? "");
 
       const num = (v: number | null | undefined): number | undefined =>
         v != null && Number.isFinite(v) ? Number(v) : undefined;
@@ -960,11 +1065,11 @@ export default class ECRFImportService {
           finalScope: scopeById.has(resolvedScopeId)
             ? String(scopeById.get(resolvedScopeId))
             : null,
-          catalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+          catalogueScope: scopeById.has(gpcMapping.scopeId ?? "")
+            ? (scopeById.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
-          finalCatalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
+          finalCatalogueScope: scopeById.has(gpcMapping.scopeId ?? "")
+            ? (scopeById.get(gpcMapping.scopeId ?? "") ?? null)
             : undefined,
           refSource: row.refSource ?? null,
           directionEvidence: row.directionEvidence ?? null,
@@ -978,6 +1083,10 @@ export default class ECRFImportService {
             : {}),
           scopeSource: row.scopeSource ?? null,
           originalScope: row.originalScope ?? null,
+          ...(row.scopeBasis != null && { scopeBasis: row.scopeBasis }),
+          ...(row.totalInclusion != null && {
+            totalInclusion: row.totalInclusion,
+          }),
         },
         co2: num(row.co2),
         ch4: num(row.ch4),
@@ -1012,8 +1121,12 @@ export default class ECRFImportService {
         emissionFactorCH4: num(row.emissionFactorCH4),
         emissionFactorN2O: num(row.emissionFactorN2O),
         emissionFactorTotalCO2e: num(row.emissionFactorTotalCO2e),
+        ...(row.omitFromTotal === true ? { omitFromTotal: true } : {}),
       });
     }
+
+    supersedeParentsWithChildren(rows, warnings);
+    markMixedTotalInclusion(rows);
 
     return {
       rows,

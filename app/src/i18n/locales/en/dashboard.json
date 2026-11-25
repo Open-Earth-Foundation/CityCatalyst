@@ -110,6 +110,7 @@
   "removal": "Removal",
   "removals-not-countable-footnote": "* Sub-sectors with removals are not countable as emissions",
   "omitted-from-total-heading": "Stored, but not counted in BASIC/BASIC+ totals",
+  "included-elsewhere-unsplit": "Included in {{ref}}, not split by scope in the source",
   "other-scope-3": "Other Scope 3",
   "other-scope-3-not-in-total": "Reported separately. These amounts are not in the BASIC or BASIC+ total.",
   "gpc-reference": "GPC reference",

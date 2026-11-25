@@ -18,7 +18,10 @@ import type { ECRFRowData } from "@/backend/ECRFImportService";
 import type { KeyFile } from "@/backend/ingestion-benchmark/answer-keys";
 import {
   heldRowDecisions,
+  needsReviewMessage,
+  totalInclusionConflicts,
   type HeldRowDecisions,
+  type TotalInclusionConflict,
 } from "@/backend/ingestion-benchmark/held-rows";
 import type {
   FailureMode,
@@ -375,22 +378,43 @@ async function ingestItemWarnings(
 
 /**
  * Include decisions for the rows the review would hold back, built the way the
- * review screen sends them, and the import rows they were built from.
+ * review screen sends them, the import rows they were built from, and the
+ * references whose rows disagree on total inclusion (left to a user).
  */
 export async function includeHeldRows(
   ctx: RunContext,
   importedFileId: string,
-): Promise<HeldRowDecisions & { importRows: ECRFRowData[] }> {
+): Promise<
+  HeldRowDecisions & {
+    importRows: ECRFRowData[];
+    conflicts: TotalInclusionConflict[];
+  }
+> {
   const { buildImportResult } = await import("@/backend/ImportResultBuilder");
   const { findPendingRows } = await import("@/backend/ImportRowPreviewService");
+  const { isRowOmittedFromTotal, mixedTotalInclusionRows } = await import(
+    "@/backend/ECRFImportService"
+  );
   const file =
     await ctx.db.models.ImportedInventoryFile.findByPk(importedFileId);
   if (!file)
-    return { decisions: {}, included: 0, unresolved: 0, importRows: [] };
+    return {
+      decisions: {},
+      included: 0,
+      unresolved: 0,
+      importRows: [],
+      conflicts: [],
+    };
   const { importResult } = await buildImportResult(file);
   return {
     ...heldRowDecisions(findPendingRows(importResult), importedFileId),
     importRows: importResult.rows,
+    conflicts: totalInclusionConflicts(
+      mixedTotalInclusionRows(importResult.rows).map((row) => ({
+        gpcRefNo: row.gpcRefNo,
+        leftOut: isRowOmittedFromTotal(row),
+      })),
+    ),
   };
 }
 
@@ -635,8 +659,17 @@ export async function runAttempt(
     stage = "approve";
     const importStarted = Date.now();
     // Held rows block approval until they have a decision. The benchmark
-    // measures what the model extracted, so every held row is included.
+    // measures what the model extracted, so every held row is included,
+    // except rows whose choice would decide which amounts count.
     const held = await includeHeldRows(ctx, importedFileId);
+    // Not approved, so no held row was included.
+    if (held.conflicts.length) {
+      return finish({
+        ...withHeld(),
+        failureMode: "needs_review",
+        message: needsReviewMessage(held.conflicts),
+      });
+    }
     heldRowsIncluded = held.included;
     const done = await approveImport(ctx, ids, importedFileId, held);
     stageMs.import = Date.now() - importStarted;

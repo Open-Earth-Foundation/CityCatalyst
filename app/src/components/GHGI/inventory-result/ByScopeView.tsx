@@ -14,7 +14,7 @@ import {
   SECTORS,
 } from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
-import { BodyMedium } from "@/components/package/Texts/Body";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
 import { LuChevronDown } from "react-icons/lu";
 
@@ -80,6 +80,35 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     setExpandedSubsectors(newExpanded);
   };
 
+  // GPC Table 2.1: a value not split by scope is IE in each scope, not 0.
+  const renderScopeCell = (
+    scope: number,
+    value: Decimal | undefined,
+    unsplitReferences: string[] = [],
+  ) => (
+    <Table.Cell key={scope}>
+      {value === undefined && unsplitReferences.length > 0 ? (
+        <>
+          <BodyMedium color="content.secondary">IE</BodyMedium>
+          {/* Visible text, not a tooltip, so touch and screen readers get it. */}
+          <BodySmall>
+            {tDashboard("included-elsewhere-unsplit", {
+              ref: unsplitReferences.join(", "),
+            })}
+          </BodySmall>
+        </>
+      ) : (
+        <BodyMedium color="content.secondary">
+          {formatEmissionsOrRemoval(
+            value || 0,
+            numberFormat,
+            tDashboard("removed"),
+          )}
+        </BodyMedium>
+      )}
+    </Table.Cell>
+  );
+
   const renderActivityRow = (
     item: ActivityDataByScope,
     key: string,
@@ -113,17 +142,9 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
               : `${item.percentage}%`}
         </BodyMedium>
       </Table.Cell>
-      {scopes.map((s) => (
-        <Table.Cell key={s}>
-          <BodyMedium color="content.secondary">
-            {formatEmissionsOrRemoval(
-              item.scopes[s] || 0,
-              numberFormat,
-              tDashboard("removed"),
-            )}
-          </BodyMedium>
-        </Table.Cell>
-      ))}
+      {scopes.map((s) =>
+        renderScopeCell(s, item.scopes[s], item.unsplitReferences),
+      )}
       <Table.Cell>
         {item.datasource_name &&
         item.datasource_source_type === FILE_IMPORT_SOURCE_TYPE ? (
@@ -177,11 +198,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       ? null
       : grossTotalEmissions.lessThanOrEqualTo(0)
         ? 0
-        : totalEmissions
-            .times(100)
-            .div(grossTotalEmissions)
-            .round()
-            .toNumber();
+        : totalEmissions.times(100).div(grossTotalEmissions).round().toNumber();
     const uniqueSources = [
       ...new Set(activities.map((item) => item.datasource_name)),
     ];
@@ -219,20 +236,19 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
                 : `${formatNumber(totalPercentage, numberFormat, 1)}%`}
             </BodyMedium>
           </Table.Cell>
-          {scopes.map((s) => (
-            <Table.Cell key={s}>
-              <BodyMedium color="content.secondary">
-                {formatEmissionsOrRemoval(
-                  activities.reduce(
-                    (sum, item) => sum.plus(new Decimal(item.scopes[s] || 0)),
+          {scopes.map((s) => {
+            const scoped = activities.filter((item) => item.scopes[s]);
+            return renderScopeCell(
+              s,
+              scoped.length > 0
+                ? scoped.reduce(
+                    (sum, item) => sum.plus(new Decimal(item.scopes[s])),
                     new Decimal(0),
-                  ),
-                  numberFormat,
-                  tDashboard("removed"),
-                )}
-              </BodyMedium>
-            </Table.Cell>
-          ))}
+                  )
+                : undefined,
+              activities.flatMap((item) => item.unsplitReferences ?? []),
+            );
+          })}
           <Table.Cell>
             <BodyMedium color="content.secondary">{sourceDisplay}</BodyMedium>
           </Table.Cell>

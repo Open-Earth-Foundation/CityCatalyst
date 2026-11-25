@@ -1,4 +1,11 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -24,6 +31,21 @@ import {
   runPrecomputedAttempt,
 } from "../../../scripts/pdf-benchmark/precomputed-attempt";
 import type { RunContext } from "../../../scripts/pdf-benchmark/run-case";
+
+// The import result approve reads, without a database: the rows the runner
+// stored on the file, in order. Loaded lazily by includeHeldRows.
+jest.unstable_mockModule("@/backend/ImportResultBuilder", () => ({
+  buildImportResult: async (file: {
+    mappingConfiguration: { rows: object[] };
+  }) => ({
+    importResult: {
+      rows: file.mappingConfiguration.rows.map((row, rowIndex) => ({
+        ...row,
+        rowIndex,
+      })),
+    },
+  }),
+}));
 
 const row = (over: Partial<EnvelopeRow> = {}): EnvelopeRow => ({
   source_label: "Synthetic label",
@@ -126,7 +148,12 @@ function fakeContext(
   fileStatus: string = ImportStatusEnum.PENDING_AI_EXTRACTION,
 ) {
   const file = fakeFileModel(fileStatus);
-  const seen = { cityCreates: 0, uploads: 0, cityIdsAtUpload: [] as string[] };
+  const seen = {
+    cityCreates: 0,
+    uploads: 0,
+    approvals: 0,
+    cityIdsAtUpload: [] as string[],
+  };
   const ctx = {
     db: {
       models: {
@@ -150,6 +177,18 @@ function fakeContext(
           seen.uploads++;
           seen.cityIdsAtUpload = [...ctx.cityIds];
           return Response.json({ data: { id: "file-1" } }, { status: 202 });
+        },
+      },
+      status: {
+        GET: async () =>
+          Response.json({ data: { importStatus: file.state.importStatus } }),
+      },
+      // Fails the import at once, so a test can see approve was reached.
+      approve: {
+        POST: async () => {
+          seen.approvals++;
+          file.state.importStatus = ImportStatusEnum.FAILED;
+          return Response.json({}, { status: 202 });
         },
       },
     },
@@ -350,6 +389,51 @@ describe("runPrecomputedAttempt", () => {
     const run = await runPrecomputedAttempt(ctx, entry, key, 1, rows, {});
     expect(seen.uploads).toBe(1);
     expect(run.pipeline?.sourcePdf).toBe("unverified");
+  });
+
+  describe("rows of one reference that disagree on the total", () => {
+    // Mirco's review example: I.3.1 = 100 t counted and 20 t explicitly left out.
+    const mixed = [
+      row({ gpc_ref: "I.3.1", emissions_tco2e: 100 }),
+      row({ gpc_ref: "I.3.1", emissions_tco2e: 20, total_inclusion: "excluded" }),
+    ];
+
+    it("end as needs_review before approve, with the reason and no score", async () => {
+      const { ctx, seen } = fakeContext();
+      const run = await runPrecomputedAttempt(
+        ctx,
+        entry,
+        key,
+        1,
+        rowsDirOf(() => envelope(mixed)),
+        {},
+      );
+      expect(run.failureMode).toBe("needs_review");
+      expect(run.ok).toBe(false);
+      expect(run.message).toContain(
+        "I.3.1 (1 counted, 1 left out of the total)",
+      );
+      expect(run.heldRowsIncluded).toBe(0);
+      expect(run.score).toBeUndefined();
+      expect(run.stored).toBeUndefined();
+      expect(seen.approvals).toBe(0);
+    });
+
+    it("go to approve once they agree", async () => {
+      const { ctx, seen } = fakeContext();
+      const run = await runPrecomputedAttempt(
+        ctx,
+        entry,
+        key,
+        1,
+        rowsDirOf(() =>
+          envelope([mixed[0], { ...mixed[1], total_inclusion: "included" }]),
+        ),
+        {},
+      );
+      expect(seen.approvals).toBe(1);
+      expect(run.failureMode).toBe("approve_error");
+    });
   });
 
   it("registers its test city before the upload", async () => {

@@ -110,18 +110,33 @@ describe("mapEnvelope", () => {
     expect(result.attempt.unknownRowRoles).toEqual({ mystery: 2 });
   });
 
-  it("maps excluded rows as included and counts them as not carried", () => {
+  it("maps excluded rows to omitFromTotal", () => {
     const result = ok(envelope([row({ total_inclusion: "excluded" }), row()]));
     expect(result.rows).toHaveLength(2);
-    expect(result.attempt.droppedRows.excludedNotCarried).toBe(1);
+    expect(result.rows.map((r) => r.omitFromTotal)).toEqual([true, undefined]);
     expect(result.attempt.totalInclusion).toEqual({ excluded: 1, included: 1 });
+  });
+
+  it("does not count excludedNotCarried", () => {
+    const result = ok(envelope([row({ total_inclusion: "excluded" })]));
+    expect(result.attempt.droppedRows).toEqual({});
   });
 
   it("maps unclear rows as included and tallies them", () => {
     const result = ok(envelope([row({ total_inclusion: "unclear" })]));
     expect(result.rows).toHaveLength(1);
     expect(result.attempt.totalInclusion.unclear).toBe(1);
-    expect(result.attempt.droppedRows.excludedNotCarried ?? 0).toBe(0);
+    expect(result.rows[0].omitFromTotal).toBeUndefined();
+  });
+
+  it("carries scope basis and total inclusion for the total-at-risk ask", () => {
+    const result = ok(
+      envelope([row({ total_inclusion: "unclear", scope_basis: "combined" })]),
+    );
+    expect(result.rows[0]).toMatchObject({
+      totalInclusion: "unclear",
+      scopeBasis: "combined",
+    });
   });
 
   it("tallies row roles and scope basis and copies reported totals", () => {

@@ -275,6 +275,45 @@ describe("GPC references left out of BASIC/BASIC+ totals", () => {
       expect(BigInt(created!.co2eq as unknown as string)).toBe(5n * TONNE);
     });
 
+    // CC-1311 review: the stored flag predates the reference rule, so the
+    // rule decides both sides before the merge check.
+    it("re-import adds 3 t to a stored III.1.3 of 2 t left unflagged", async () => {
+      const { inventoryId } = await newInventory();
+      const stored = await addValue(inventoryId, "III.1.3", 2n * TONNE);
+      await clearFlag(stored.id);
+
+      const second = await InventoryImportService.importECRFData(
+        inventoryId,
+        importFile("III.1.3", 3),
+        testUserID,
+      );
+
+      expect(second.errors).toEqual([]);
+      await stored.reload();
+      expect(BigInt(stored.co2eq as unknown as string)).toBe(5n * TONNE);
+      expect(stored.omitFromTotal).toBe(true);
+    });
+
+    it("re-import still refuses a counted row on a value left out of the total", async () => {
+      const { inventoryId } = await newInventory();
+      const stored = await addValue(inventoryId, "III.1.1", 2n * TONNE, {
+        omitFromTotal: true,
+      });
+
+      const second = await InventoryImportService.importECRFData(
+        inventoryId,
+        importFile("III.1.1", 3),
+        testUserID,
+      );
+
+      expect(second.errors.join(" ")).toContain(
+        "III.1.1 has rows counted in the total and rows left out of it",
+      );
+      await stored.reload();
+      expect(BigInt(stored.co2eq as unknown as string)).toBe(2n * TONNE);
+      expect(stored.omitFromTotal).toBe(true);
+    });
+
     it("import leaves an included neighbor in totals", async () => {
       const { inventoryId } = await newInventory();
       await InventoryImportService.importECRFData(

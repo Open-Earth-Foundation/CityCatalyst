@@ -4,7 +4,10 @@ import {
   isOmittedGPCReference,
 } from "@/util/GHGI/reported-totals";
 import { hasLossOrConsumptionLabel } from "@/util/GHGI/activity-class-rules";
-import type { ECRFImportResult } from "@/backend/ECRFImportService";
+import {
+  mixedTotalInclusionRows,
+  type ECRFImportResult,
+} from "@/backend/ECRFImportService";
 import {
   importRowSkipReason,
   resolveImportedTotalCO2e,
@@ -86,11 +89,57 @@ function isExcludedReferenceUnconfirmed(row: ImportRow): boolean {
   );
 }
 
+/** A sector I-III subsector value (`I.3`) with no scope split, GPC Table 2.1. */
+function isUnsplitSubsectorRow(row: ImportRow): boolean {
+  return row.subcategoryId == null && /^(I|II|III)\.\d+$/.test(row.gpcRefNo);
+}
+
+/** Several scopes in one label: "Scope 1, 2 & 3", "Scopes 1-3", "Scope 1 + 2". */
+const COMBINED_SCOPE_TEXT = /\bscopes?\s*\d\s*(?:,|&|\+|-|–|and|to)\s*\d/i;
+
+/**
+ * An unsplit subsector value that may include parts the totals treat
+ * differently (scope 3 T&D losses, I.4.4, III.x.3; GPC Box 4.1). The user
+ * decides before it counts.
+ */
+function isSubsectorScopeCombined(row: ImportRow): boolean {
+  const review = row.review;
+  if (!review || !isUnsplitSubsectorRow(row)) return false;
+  return (
+    review.scopeBasis === "combined" ||
+    review.totalInclusion === "unclear" ||
+    combinedScopeText(row) != null
+  );
+}
+
+/** The row text that names several scopes, or null. */
+function combinedScopeText(row: ImportRow): string | null {
+  const review = row.review;
+  return (
+    [review?.scope, review?.category, review?.subsector, review?.activityType]
+      .map((text) => text?.trim())
+      .find((text) => text && COMBINED_SCOPE_TEXT.test(text)) ?? null
+  );
+}
+
+/** The issue listed for an imported unsplit subsector row, or null. */
+function unsplitIssue(row: ImportRow): ImportRowIssue | null {
+  if (!isUnsplitSubsectorRow(row)) return null;
+  const decision = row.review?.decision;
+  if (decision === "unsure") return "gpc-subsector-total-at-risk";
+  // Box 4.1 items live in sectors I and III; sector II warns only via the ask.
+  if (decision !== "keep" && /^(I|III)\./.test(row.gpcRefNo))
+    return "gpc-subsector-total-at-risk";
+  return "subsector-not-split-by-scope";
+}
+
 export function reviewIssue(row: ImportRow): ImportRowIssue | null {
   const ref = row.review?.suggestedRefNo ?? row.gpcRefNo;
   if (conflictingScope({ ...row, gpcRefNo: ref }) != null)
     return "reference-conflict";
   if (finalPairConflict(row)) return "reference-conflict";
+  if (isSubsectorScopeCombined(row)) return "gpc-subsector-scope-combined";
+  if (row.review?.mixedTotalInclusion) return "merge-total-inclusion-mixed";
   if (row.review?.refSource === "document") return null;
   if (isExcludedReferenceUnconfirmed(row))
     return "excluded-reference-unconfirmed";
@@ -180,6 +229,9 @@ function toReview(row: ImportRow, issue: ImportRowIssue): ImportRowReview {
     page: review.page,
     source: review.source,
     decision: review.decision,
+    ...(issue === "gpc-subsector-scope-combined" && {
+      scopeText: combinedScopeText(row),
+    }),
     referenceOptions: Array.from(
       new Set([
         ...siblingReferences(suggestedRefNo),
@@ -211,7 +263,12 @@ export function findReviewRows(
 export function findPendingRows(
   importResult: ECRFImportResult,
 ): ImportRowReview[] {
+  // Rows that would merge with a different omitFromTotal wait, whatever was decided.
+  const mixed = new Set(
+    mixedTotalInclusionRows(importResult.rows).map((row) => row.rowIndex),
+  );
   return findReviewRows(importResult).filter((row) => {
+    if (mixed.has(row.rowIndex)) return true;
     if (!row.decision) return true;
     if (row.decision === "skip") return false;
     const finalScope = scopeFromLabel(row.finalScope);
@@ -253,6 +310,9 @@ export async function previewImportRows(
         ...outcome,
         status: "skipped",
         issue: row.issue ?? "invalid-row",
+        ...(row.parentSuperseded
+          ? { parentSuperseded: row.parentSuperseded }
+          : {}),
       });
       continue;
     }
@@ -288,11 +348,11 @@ export async function previewImportRows(
     // A wrong III.x.3 drops an amount from the total, so reviewers must see it.
     const issue = isImportedWasteRef(row.gpcRefNo)
       ? "omitted-from-total"
-      : isOmittedGPCReference(row.gpcRefNo)
+      : isOmittedGPCReference(row.gpcRefNo) || row.omitFromTotal
         ? "reported-apart-from-total"
         : outsideReferences.has(row.gpcRefNo)
           ? "outside-inventory-type"
-          : null;
+          : unsplitIssue(row);
     if (issue) {
       const leftOutOfTotal =
         issue === "omitted-from-total" || issue === "reported-apart-from-total";
@@ -305,7 +365,12 @@ export async function previewImportRows(
         gpcRefNo: row.gpcRefNo,
         sourceLabel: null,
         notationKey: row.notationKey ?? null,
-        status: "not-counted",
+        // An unsplit subsector row counts in the total; it is listed so the user sees it.
+        status:
+          issue === "subsector-not-split-by-scope" ||
+          issue === "gpc-subsector-total-at-risk"
+            ? "imported"
+            : "not-counted",
         issue,
         tonnes,
       });

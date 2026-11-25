@@ -543,7 +543,8 @@ export const getEmissionsBreakdownBatch = async (
               return sum.plus(bigIntToDecimal(item.co2eq || 0n));
             }
           }, new Decimal(0));
-          scopes[scopeName] = scopeEmissions;
+          // A value with no scope (unsplit I.3) is in the total, in no scope column.
+          if (scopeItems[0].scope_name) scopes[scopeName] = scopeEmissions;
           totalSubSectorEmissions =
             totalSubSectorEmissions.plus(scopeEmissions);
           return scopeEmissions;
@@ -553,6 +554,14 @@ export const getEmissionsBreakdownBatch = async (
         const activities = scopeValues.flatMap(
           (scopeValue) => scopeValue.activities,
         );
+
+        const unsplitReferences = [
+          ...new Set(
+            scopeValues
+              .filter((v) => !v.scope_name && v.gpc_reference_number)
+              .map((v) => v.gpc_reference_number!),
+          ),
+        ];
 
         const percentage = calculatePercentage(
           totalSubSectorEmissions,
@@ -568,6 +577,7 @@ export const getEmissionsBreakdownBatch = async (
           datasource_name: scopeValues[0].datasource_name,
           datasource_source_type: scopeValues[0].datasource_source_type,
           activities,
+          ...(unsplitReferences.length > 0 && { unsplitReferences }),
         };
       },
     );

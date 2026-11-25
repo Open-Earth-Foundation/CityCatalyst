@@ -88,6 +88,8 @@ export type FailureMode =
   | "extraction_error"
   | "truncated"
   | "zero_rows"
+  /** Rows of one reference disagree on total inclusion; the runner leaves that to a user. */
+  | "needs_review"
   | "approve_error"
   | "readback_error"
   | "setup_error";
@@ -313,6 +315,8 @@ export type CaseMetrics = {
   notationScored: number;
   /** Distractor values stored, mean per scored attempt. */
   distractorsStored: number | null;
+  /** Subsector rows stored without scope, mean per scored attempt. */
+  unscopedRows: number | null;
   totalWithinTolerance: boolean | null;
   stableTotal: boolean;
   seconds: number | null;
@@ -369,6 +373,9 @@ export function caseMetrics(result: CaseResult): CaseMetrics {
     notationScored: first?.notationScored ?? 0,
     distractorsStored: mean(
       scores.map((score) => (score ? distractorCount(score) : null)),
+    ),
+    unscopedRows: mean(
+      scores.map((score) => (score ? (score.unscopedRows ?? 0) : null)),
     ),
     totalWithinTolerance: allWithinTolerance(scores),
     stableTotal: result.stableTotal,
@@ -877,6 +884,7 @@ export function renderReport(
       `- Wrong totals that carried a warning: ${pct(block.warningShare)}`,
       `- Precision ${pct(rows.rowPrecision)}, value accuracy ${pct(rows.valueAccuracy)}, classification accuracy ${pct(rows.classificationAccuracy)} (means over ${rows.scored} case${rows.scored === 1 ? "" : "s"} scored row by row, scored attempts only)`,
       `- Notation keys recovered: ${sum((v) => v.notationRecovered)} of ${sum((v) => v.notationScored)}; cases that stored a distractor value: ${inBlock.filter((v) => (v.distractorsStored ?? 0) > 0).length}`,
+      `- Rows stored without scope (subsector ref, scope null): ${decimal(sum((v) => v.unscopedRows ?? 0))} (data quality, not scored)`,
       "",
     );
   }
@@ -932,8 +940,8 @@ export function renderReport(
     "",
     "Recall counts failed attempts as 0. Precision, accuracies and distractors stored are means over the scored attempts; notation keys are those of the first scored attempt. Runtime is summed over the attempts.",
     "",
-    "| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Case | Block | Verdict | Attempts passed | Recall | Precision | Value acc. | Class. acc. | Notation keys | Distractors stored | Unscoped rows | Total within tolerance | 10x | Failure modes | Cost | Tokens in / out | Runtime by stage | Tolerance source |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const result of summary.results) {
     const v = verdictById.get(result.id);
@@ -944,7 +952,7 @@ export function renderReport(
           ? "yes"
           : "no";
     lines.push(
-      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${caseTokensText(result)} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
+      `| ${cell(result.id)} | ${result.block} | ${gateById.get(result.id)?.verdict ?? "n/a"} | ${v ? `${v.attemptsPassed}/${v.attempts}` : "n/a"} | ${pct(v?.recallFailedAsZero ?? null)} | ${pct(v?.rowPrecision ?? null)} | ${pct(v?.valueAccuracy ?? null)} | ${pct(v?.classificationAccuracy ?? null)} | ${v ? `${v.notationRecovered}/${v.notationScored}` : "n/a"} | ${decimal(v?.distractorsStored ?? null)} | ${decimal(v?.unscopedRows ?? null)} | ${within} | ${v?.tenXAttempts ?? "n/a"} | ${failureModesText(v)} | ${money(v?.costUsd ?? null)} | ${caseTokensText(result)} | ${stageSeconds(result)} | ${toleranceSourceOf(result)} |`,
     );
   }
 
@@ -955,6 +963,11 @@ export function renderReport(
   const unknownTables = summary.results
     .filter((result) => result.textTables === null && !result.totalOnly)
     .map((result) => result.id);
+  const needsReview = summary.results.flatMap((result) =>
+    result.runs
+      .filter((run) => run.failureMode === "needs_review")
+      .map((run) => `${result.id} attempt ${run.run}: ${run.message ?? ""}`),
+  );
   const heldRows = summary.results
     .map((result) => ({
       id: result.id,
@@ -993,6 +1006,7 @@ export function renderReport(
           `- Not recorded in the baseline: ${summary.baselineNotRecorded.map((c) => `${c.id} (${c.modes.join(", ")})`).join(", ")}`,
         ]
       : []),
+    ...needsReview.map((text) => `- ${text}`),
     ...(heldRows.length
       ? [
           `- Held rows included automatically at approve, whatever their issue (scores measure extraction, not a reviewed import): ${heldRows.map((c) => `${c.id} (${c.rows})`).join(", ")}`,

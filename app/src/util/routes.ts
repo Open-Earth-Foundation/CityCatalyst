@@ -37,3 +37,17 @@ export const getDashboardPath = (
 ) => {
   return getCityHomePath(lng, cityId) + "/dashboard";
 };
+
+/**
+ * Build the URL for the current page in another language, keeping the
+ * query string and hash (e.g. `callbackUrl` on the login page).
+ */
+export const getLocalizedPath = (
+  pathname: string,
+  language: string,
+  search = "",
+  hash = "",
+) => {
+  const localizedPath = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, `/${language}`);
+  return `${localizedPath}${search}${hash}`;
+};

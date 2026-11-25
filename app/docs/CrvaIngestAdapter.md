@@ -34,13 +34,15 @@ Each value has `fieldId`, `value`, `source` (file, page, quote), `origin: "ai_dr
 
 Figures, maps and charts are listed in `bundle.figures` with page and caption, for human review.
 
+The adapter's `A2.4a` corresponds to field `A2.4` in the CC-1227 answer keys. The eval harness maps it.
+
 ## Does not cover
 
 - Maps to GeoJSON, and reading values from images, colours or icons.
 - Ratings: probability, frequency, intensity, magnitude and degree. The scale is pending C40.
 - `OEF` and `Manual` fields, B2, C2, E2, and every other field not listed above.
 - Saving to a database, an upload route, a review UI and durable drafts (CC-956).
-- PDFs over 20 MiB. Seattle and Buenos Aires do not run in v0.
+- PDFs over 20 MiB. The plugin rejects them in v0. The eval harness splits them by page range (parts of at most 15 MiB, pages mapped back to the original); see [`../scripts/crva-eval/README.md`](../scripts/crva-eval/README.md).
 
 Code does not enforce the ratings and figures scope. The prompt excludes them and a stray `probability` key is removed, but free text can still hold a rating, and a value can quote a figure caption. Runs 4 and 5 had neither. The reviewer checks this.
 
@@ -86,18 +88,64 @@ Other limits seen on Madrid:
 - B1.2a has overlapping hazards, and one value cites the table of contents.
 - Madrid has no projection tables and its sources are old, so it tests warnings better than coverage.
 
+## Buenos Aires and Seattle results (CC-1285)
+
+Five runs per city, 2026-11-17, against the CC-1227 gold keys. Both PDFs are scans over 20 MiB, so the eval harness split them into 3 parts. Adapter code from `d9ce767`, with no plugin changes. Extraction used `gpt-5.6-luna` (role `crva_extraction`, no temperature set). The judge was `gpt-5.6-sol`. Scoring used the harness at commit `73370ee` of the CC-1285 branch.
+
+| Measure                                                       | Buenos Aires 2020      | Seattle 2023           |
+| ------------------------------------------------------------- | ---------------------- | ---------------------- |
+| PDF                                                           | 185 pages, 41.2 MiB    | 137 pages, 34.7 MiB    |
+| Gold rows with a status (in the 12 v0 fields)                 | 273 (113)              | 502 (322)              |
+| Values kept per run                                           | 270 to 305             | 284 to 335             |
+| Values dropped by validation (quote check and invalid values) | 1.0% to 3.8%           | 2.1% to 3.4%           |
+| Minutes per run                                               | 4.7 to 5.5             | 4.4 to 4.6             |
+| Tokens per run (prompt / completion)                          | about 566,000 / 73,000 | about 374,000 / 67,000 |
+| v0 gold rows found, accepted rule                             | 23.9% to 31.9%         | 15.8% to 23.3%         |
+| v0 gold rows found, full detail                               | 14.2% to 21.2%         | 4.3% to 9.3%           |
+| Model values right, accepted rule                             | 17.3% to 21.0%         | 18.7% to 26.1%         |
+| Model values right, full detail                               | 8.9% to 11.5%          | 4.4% to 9.2%           |
+| Model values that repeat one already on the same gold row     | 62 to 69               | 50 to 81               |
+| v0 gold rows with the same status in all 5 runs               | 55.8%                  | 58.7%                  |
+
+The accepted rule is Magdalena's ruling of 2026-11-17: a shorter answer is right when it keeps the meaning and every number, percentage, year and unit of the gold. An answer that drops a number or percentage is not right. "Full detail" needs everything in the gold value.
+
+How far to trust these numbers:
+
+- The judge is an LLM. With an earlier version of its prompt, judging the same run twice gave the same verdict for 98.9% of gold rows and 90.7% of model values, with the same headline. This was not measured again for the final prompt.
+- A Claude review of 40 sampled rows from Buenos Aires run 1 (none from Seattle) agreed with the judge on right versus not right for 35 of them (87.5%). Where they differed, the judge was stricter. So the accepted-rule numbers are a lower bound.
+- The judge's labels for wrong values (Hallucination, Misattribution, gold gap) agree less well, so treat the error breakdown as indicative.
+- "Model values right" compares each value with the gold. A value that repeats one already on the same gold row is graded like any other value.
+- "Model values right" is a stricter test than the Madrid hand review. The Madrid hand review only checked that the quote supports the value, so the two are not comparable.
+
+Where the losses are, from Buenos Aires run 5 and Seattle run 1:
+
+- Omission. A1.2a (sources) causes most of it: 28 of 54 omitted v0 gold rows in Buenos Aires, and 155 of 192 in Seattle. The gold lists the reference list and Seattle's Appendix A, one row per source. The adapter mostly returns in-text citations, and sometimes the report itself.
+- Values in the wrong field: 112 in Buenos Aires, 102 in Seattle. D1.1a and D1.2a take hazard and impact statements, which belong in B1.2a and C2.2a. C1 (observed impacts) takes potential impacts, which the gold puts in C2.
+- Detail lost: Partial values with a missing figure (7 in Buenos Aires, 14 in Seattle) or an incomplete or merged list (17 and 42).
+- The 34 fields outside v0 hold 160 Buenos Aires and 180 Seattle gold rows. They count as Omission by design.
+
+Run-to-run variation is large: only about 56% to 59% of v0 gold rows keep the same status in all five runs. No temperature or seed is set for extraction.
+
 ## Proposed thresholds
 
-These are proposals, because the output format is still being defined. They come from one document, and n = 21 for the hand review is too small to separate 71% from 80%.
+These are proposals, because the output format is still being defined. The Madrid figures come from one document, and n = 21 for the hand review is too small to separate 71% from 80%.
 
-| Measure                              | Proposal          | Madrid                  |
-| ------------------------------------ | ----------------- | ----------------------- |
-| Values dropped by the quote check    | Under 5%          | 1.2% in run 5           |
-| Required v0 fields with a value      | At least 10 of 12 | 12 of 12 in runs 1 to 5 |
-| Sampled values usable by hand review | At least 80%      | 71% in run 1, fails     |
+| Measure                                   | Proposal          | Madrid                  | Buenos Aires and Seattle                             |
+| ----------------------------------------- | ----------------- | ----------------------- | ---------------------------------------------------- |
+| Values dropped by validation              | Under 5%          | 1.2% in run 5           | 1.0% to 3.8%, passes                                 |
+| Required v0 fields with a value           | At least 10 of 12 | 12 of 12 in runs 1 to 5 | 12 of 12 in every run, passes                        |
+| Sampled values usable by hand review      | At least 80%      | 71% in run 1, fails     | Not measured: replaced by the judge                  |
+| Share correct in v0 fields, accepted rule | At least 80%      | Not measured            | 11.2% to 13.4% (BA), 11.5% to 17.1% (Seattle), fails |
 
 The quote check removes every unverified value, so a "verified share" measure would always read 100%. Every value in a draft has a quote on its page by construction.
 
 ## Running locally
 
-No run script is committed. A local run needs an `IngestRunner` with `MemoryIngestStore`. The plugin sends the item bytes as a `data:` URL by default, because Mistral cannot fetch the `madrid.es` link (error 3310).
+The eval harness in `app/scripts/crva-eval/` runs the adapter on a PDF and scores the result against a gold `.xlsx`. From `app/`:
+
+```
+npx tsx scripts/crva-eval/run-adapter.ts --pdf <path-to-pdf> --city <slug> --runs 1
+npx tsx scripts/crva-eval/score-run.ts --gold <path-to-gold.xlsx> --run reports/crva-eval/<city>/<timestamp>/run-1.json --city <slug>
+```
+
+Options, environment variables and outputs are in [`../scripts/crva-eval/README.md`](../scripts/crva-eval/README.md). The plugin sends the item bytes as a `data:` URL by default, because Mistral cannot fetch the `madrid.es` link (error 3310).

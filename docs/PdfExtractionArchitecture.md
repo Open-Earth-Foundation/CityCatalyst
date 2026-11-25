@@ -17,7 +17,7 @@
 
 - The agentic pipeline runs **beside** the current OCR pipeline. It does not replace it.
 - Structured inputs (eCRF, CSV, XLSX) keep the current path: their cells are read, not inferred.
-- Unstructured PDFs go to **one** agentic service. Each document type gets an **adapter**: a JSON schema and a prompt. This is the same pattern as HIAP: a shared core with adapters for inputs and outputs.
+- Unstructured PDFs go to **one** agentic service. Each document type gets an **adapter**: a JSON schema and a prompt. The core is shared; adapters shape its inputs and outputs.
 - Every value extracted from a PDF carries its **provenance**: value, unit, document, page and verbatim quote. Code checks the quote and the number against the source before a person sees the value.
 
 Nothing in this document is built yet. The agentic extractor exists as a standalone service in
@@ -127,7 +127,7 @@ Sources: current flow in `app/src/backend/PdfOcrService.ts` and `app/src/backend
 
 ## The agentic service
 
-Proposal: one deployed service that any module calls over HTTP. It knows how to read a PDF with an agent and return values with their source. It knows nothing about inventories, CRVA fields or concept notes: that knowledge arrives as an adapter. This is the HIAP pattern: a shared core with adapters for inputs and outputs.
+Proposal: one deployed service that any module calls over HTTP. It knows how to read a PDF with an agent and return values with their source. It knows nothing about inventories, CRVA fields or concept notes: that knowledge arrives as an adapter. The core is shared, and adapters shape what goes in and what comes out.
 
 ### Responsibilities
 

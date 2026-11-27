@@ -266,10 +266,9 @@ export default function ReviewConfirmStep({
           )}
         </HStack>
       </VStack>
-      {cityContext?.population != null && cityContext.landAreaKm2 != null && (
+      {cityContext?.landAreaKm2 != null && (
         <Text fontSize="body.sm" color="content.secondary" mb={4}>
           {t("import-ciris-city-data", {
-            population: cityContext.population.toLocaleString(lng),
             area: cityContext.landAreaKm2.toLocaleString(lng),
           })}
         </Text>

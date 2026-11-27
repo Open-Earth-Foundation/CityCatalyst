@@ -227,7 +227,7 @@
   "import-ciris-report-mismatch": "The eCRF_3 rows add up to {{imported}} tCO2e. The CIRIS Report tab shows {{reported}} tCO2e. {{sectorDetail}}Check the file before you confirm.",
   "import-ciris-report-mismatch-sectors": "The difference is in {{sectors}}. ",
   "import-total-to-import": "Total to import",
-  "import-ciris-city-data": "eCRF_1 lists a population of {{population}} and a land area of {{area}} km². Those values will be stored for the city.",
+  "import-ciris-city-data": "eCRF_1 lists a land area of {{area}} km². Population is taken from the city's population step, not from this file.",
   "import-dropped-rows-title": "Rows left out while reading the document",
   "import-dropped-reason-other_year": "From another year: {{count}}",
   "import-dropped-reason-missing_year": "Without a year: {{count}}",

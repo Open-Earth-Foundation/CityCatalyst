@@ -402,6 +402,7 @@ export default class ECRFDownloadService {
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
           notation_key:
             toShort(inventoryValue.unavailableReason) ?? undefined,
+          explanation: inventoryValue.unavailableExplanation ?? undefined,
           activityValues: [
             {
               activity_type: null,
@@ -551,6 +552,7 @@ export default class ECRFDownloadService {
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
           notation_key:
             toShort(inventoryValue.unavailableReason) ?? undefined,
+          explanation: inventoryValue.unavailableExplanation ?? undefined,
           input_methodology: t(inventoryValue.inputMethodology ?? ""),
           activityValues: activityRows,
         };
@@ -586,6 +588,10 @@ export default class ECRFDownloadService {
       this.markRowAsNotEstimated(row, {
         notation: dataSection.notation_key,
         inventoryYear,
+        explanation:
+          typeof dataSection.explanation === "string"
+            ? dataSection.explanation
+            : undefined,
       });
       return;
     }
@@ -648,7 +654,11 @@ export default class ECRFDownloadService {
 
   private static markRowAsNotEstimated(
     row: Excel.Row,
-    options?: { notation?: string; inventoryYear?: number },
+    options?: {
+      notation?: string;
+      inventoryYear?: number;
+      explanation?: string;
+    },
   ) {
     this.writeInventoryYear(row, options?.inventoryYear);
     row.eachCell((cell) => {
@@ -664,6 +674,12 @@ export default class ECRFDownloadService {
             options?.inventoryYear != null
           ) {
             cell.value = options.inventoryYear;
+          } else if (
+            (fieldName === "methodology" || fieldName === "explanation") &&
+            options?.explanation
+          ) {
+            // CIRIS NE/NO justification (e.g. II.5.3 "not required for BASIC").
+            cell.value = options.explanation;
           } else {
             cell.value = "";
           }

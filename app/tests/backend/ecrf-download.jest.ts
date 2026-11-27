@@ -159,6 +159,40 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     expect(i11?.getCell(28).value).toBe("");
   });
 
+  it("writes CIRIS notation justification on eCRF_3 (CC-1329)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      {
+        ...baseInventory([]),
+        inventoryValues: [
+          {
+            id: "iv-ii53",
+            gpcReferenceNumber: "II.5.3",
+            co2eq: 0n,
+            inputMethodology: "direct-measure",
+            dataSource: null,
+            unavailableReason: "not-estimated",
+            unavailableExplanation: "not required for BASIC",
+            activityValues: [],
+          },
+        ],
+      } as unknown as InventoryWithInventoryValuesAndActivityValues,
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const sheet3 = workbook.getWorksheet(3);
+    let found: Excel.Row | undefined;
+    sheet3?.eachRow((row) => {
+      if (row.getCell(2).value === "II.5.3") found = row;
+    });
+    expect(found?.getCell(7).value).toBe("NE");
+    expect(String(found?.getCell(10).value ?? "")).toContain(
+      "not required for BASIC",
+    );
+  });
+
   it("does not invent NE for GPC refs the inventory never reported (CC-1153)", async () => {
     const buffer = await ECRFDownloadService.downloadECRF(baseInventory([]));
     const workbook = new Excel.Workbook();

@@ -727,8 +727,9 @@ export default class ECRFDownloadService {
         .div(1000)
         .toNumber();
     }
-    if (hasSignedNumericValue(input.activityTonnes)) {
-      return Number(input.activityTonnes);
+    const tonnes = this.metaNumber(input.activityTonnes);
+    if (hasSignedNumericValue(tonnes)) {
+      return tonnes;
     }
     return null;
   }

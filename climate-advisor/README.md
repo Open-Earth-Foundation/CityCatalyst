@@ -907,6 +907,12 @@ The applicant can confirm a directly supported answer. A relevant component
 remains available as context. For a narrative field, complementary items from the same source
 can appear together. Each item keeps its supporting quotations and locations.
 A reviewer can expand the evidence for an individual item in the workspace.
+When a quotation depends on an adjacent table header, list introduction or
+sentence, the workspace can show the surrounding words with the cited phrase
+in bold. Both come from the same original page or Markdown block. The optional
+`quote_context` is added on the next source read, including cached reads. The
+original quote and location identify the proposal across reads and preserve
+the applicant's review decision.
 Alternative answers and different source files remain separately reviewable.
 Rereading a source preserves the applicant's prior decisions.
 

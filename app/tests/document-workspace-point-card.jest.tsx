@@ -174,12 +174,14 @@ it("keeps each narrative item next to its own supporting quotation and page", as
       {
         ...quote,
         quote: "Pierwszy cytat",
+        quote_context: "Lp. 1 — Pierwszy cytat (zakres prac)",
         page_number: 12,
         component_values: ["Retrofit the roof."],
       },
       {
         ...quote,
         quote: "Drugi cytat",
+        quote_context: "Unrelated passage from a different row",
         page_number: 18,
         component_values: ["Install meters."],
       },
@@ -197,6 +199,9 @@ it("keeps each narrative item next to its own supporting quotation and page", as
         ?.textContent?.includes("validation-check-evidence"),
   );
   expect(evidence).toBeDefined();
+  expect(evidence?.textContent).toContain("Lp. 1 — Pierwszy cytat (zakres prac)");
+  expect(evidence?.querySelector("blockquote strong")?.textContent).toBe("Pierwszy cytat");
+  expect(evidence?.textContent).not.toContain("Unrelated passage");
   const first = evidence!.querySelector("blockquote")!.parentElement!;
   expect(first.textContent).toContain("Retrofit the roof.");
   expect(first.textContent).toContain("Pierwszy cytat");

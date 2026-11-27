@@ -1191,7 +1191,7 @@ class DocumentWorkspaceService:
                         {
                             k: v
                             for k, v in document.items()
-                            if k != "reading_fingerprint"
+                            if k not in {"reading_fingerprint", "citation_context_version"}
                         }
                         for document in need.documents
                     ],

@@ -19,6 +19,7 @@ class DocumentPointCitation(Contract):
 
     source_label: str
     quote: str
+    quote_context: str | None = None
     page_number: int | None = None
     source_anchor: str | None = None
     component_values: list[str] | None = None

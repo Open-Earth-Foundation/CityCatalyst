@@ -1,0 +1,687 @@
+{
+  "reference_pr": 3430,
+  "reference_commit": "f243854ed661e0f6f64d8237917b6b83052bef13",
+  "method": "34 mandatory chapter facts mapped to blank-form fields before examining candidate outputs. 23 mapped facts measure positive-only coverage. Eligible packets were anonymized and scored by an independent agent for both answer meaning and locatable evidence. A candidate may contain several complementary pieces from the same field. No negative field key or official field judgments exist for these three forms.",
+  "runs": {
+    "v4": "Historical registered-field provider reading.",
+    "release-transfer-local": "Product registered-field path with stored primary readings and a local qwen3:8b review stand-in for previously unseen review requests. One invalid local review used the product fallback."
+  },
+  "fixtures_sha256": {
+    "harbor-point-heat-resilience": {
+      "drafting_input.json": "daf68c6353dc67990803628dba26fe35ef97fd0f8e152c64e0a7af841d50ae44",
+      "golden.json": "732c395e5e8abf8ad58cd37e75d52cd3c282ca4f19236ec8438fb41f7f46d71a",
+      "reference_draft.json": "dbdde5ca0e6712e64ad69b88f3809715b00f43bfb4faa5253dd2431be8800175",
+      "source.md": "4faf0fac07bed82faa19bea4eac44fc87251ae886be51fc29597ebcdc865e829"
+    },
+    "krakow-flood-drainage-plan": {
+      "drafting_input.json": "f8cbf7815818e6705bc3b0532414c65e48e2933b67cfec82c80ec37d15aaac52",
+      "golden.json": "0246c4cfc8ced826e92de8a4d82829f01e9136c89dd5eeff8072d1796ffbd994",
+      "reference_draft.json": "2771b16ca8d101d40c72a5c836409011375ea1c31d3ce5d37437d1f46f04e7cb",
+      "source.md": "a16e64a0882acbed32a56da652e165fc2b96b3a51663ef99f7096ef078253f3d"
+    },
+    "richfield-flood-risk": {
+      "drafting_input.json": "5ec77050a8f5aadac8b2eeb2d6b369ef510d67f9616403530a50c58b0fc2abfc",
+      "golden.json": "f0f836aad3f2c923466b4d880941cfcb8fd4c5f019ff522ff05b0fc66bde60fd",
+      "reference_draft.json": "c4ae0f4fa8c8d9b88e3f831ff20e834be13c2f62a37064d74c88b2a58877fb74",
+      "source.md": "57e7f85449319becc67ee4e3b613b57c4a8c828bb12ad3d05c400af0348b84dc"
+    }
+  },
+  "required_pairs": [
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "population",
+      "chapter_ref": "climate_context",
+      "fields": [],
+      "reason": "The fact gives total city population, while the form asks for exposed population and does not directly request total population.",
+      "runs": {}
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "extreme-heat-days",
+      "chapter_ref": "climate_context",
+      "fields": [
+        "climate hazards and trends",
+        "baseline conditions"
+      ],
+      "reason": "Observed extreme-heat frequency and its historical comparison directly describe both the hazard trend and the baseline.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "Both relevant fields convey 23 days above 35 C in 2025 versus 9 days annually in 1991-2020, with matching quoted evidence.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "2d4658108765f3be05e3f64c1e5c44e9b561d800e7e0ba99d488c53bb1d41495"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "Both relevant fields convey 23 days above 35 C in 2025 versus 9 days annually in 1991-2020, with matching quoted evidence.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "2d4658108765f3be05e3f64c1e5c44e9b561d800e7e0ba99d488c53bb1d41495"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "flooded-intersections",
+      "chapter_ref": "climate_context",
+      "fields": [
+        "exposed population and assets",
+        "baseline conditions"
+      ],
+      "reason": "The affected intersections identify exposed assets and quantify baseline flooding for a specified rainfall event.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The baseline and exposure answers both state that street flooding affects 37 intersections in a 10-year rainfall event, supported verbatim by their quotations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "2cfae983cfda4f2f365bb650a793740edd7a65549def854566eae372d6eccf6b"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The baseline and exposure answers both state that street flooding affects 37 intersections in a 10-year rainfall event, supported verbatim by their quotations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "2cfae983cfda4f2f365bb650a793740edd7a65549def854566eae372d6eccf6b"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "cool-corridors",
+      "chapter_ref": "project_components",
+      "fields": [
+        "components and activities",
+        "quantified outputs and locations"
+      ],
+      "reason": "Tree planting is an activity and the stated tree count, corridor count and neighbourhoods are quantified outputs and locations.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The components answer conveys planting 4,800 street trees along 12 cool corridors in Eastside and Millbrook, with direct quoted support for quantities, activity and locations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "a1d1e775b23974e31eab2466f0c8bb3f95932a120f7e6eae7eaa7e245b31de2f"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The components answer conveys planting 4,800 street trees along 12 cool corridors in Eastside and Millbrook, with direct quoted support for quantities, activity and locations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "a1d1e775b23974e31eab2466f0c8bb3f95932a120f7e6eae7eaa7e245b31de2f"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "green-stormwater-infrastructure",
+      "chapter_ref": "project_components",
+      "fields": [
+        "components and activities",
+        "quantified outputs and locations"
+      ],
+      "reason": "Bioretention construction and schoolyard conversion describe activities with explicit counts and area outputs.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The relevant answers convey building 85 bioretention cells and converting 3.2 hectares of asphalt schoolyards to permeable green play areas, directly supported by their quotations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "4dbeae8fe226605622c0b00db2671fd79906d7b6030b713189e699d15eb3fb76"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The relevant answers convey building 85 bioretention cells and converting 3.2 hectares of asphalt schoolyards to permeable green play areas, directly supported by their quotations.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "4dbeae8fe226605622c0b00db2671fd79906d7b6030b713189e699d15eb3fb76"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "programme-financing",
+      "chapter_ref": "financing",
+      "fields": [
+        "co-financing"
+      ],
+      "reason": "The golden evidence explicitly identifies the city's USD 7.9 million capital-budget contribution, but does not identify a GCF-specific request or component breakdown.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "The answer gives the USD 26.5 million total and USD 7.9 million city contribution but never conveys that USD 18.6 million is sought from external grants. That fact appears only in the quotation.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "f2d46a40fc7f62e07e091b78f1bd7c29d155ee72b08d9fe2dbd25c148a08621f"
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "The answer gives the USD 26.5 million total and USD 7.9 million city contribution but never conveys that USD 18.6 million is sought from external grants. That fact appears only in the quotation.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "f2d46a40fc7f62e07e091b78f1bd7c29d155ee72b08d9fe2dbd25c148a08621f"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "programme-financing",
+      "chapter_ref": "project_summary",
+      "fields": [
+        "total cost and GCF funding requested"
+      ],
+      "reason": "This field explicitly asks for total cost, although the general external-grant amount does not establish the GCF request.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "lead-agency",
+      "chapter_ref": "implementation",
+      "fields": [
+        "implementing entities and partner roles"
+      ],
+      "reason": "The fact names the implementing offices and identifies their delivery leadership role.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The answer assigns municipal plan delivery leadership to the Office of Climate Resilience with Public Works, exactly as quoted.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "dd46db08a2f853dab8019c15ebb05e1893dc6f081239b169f22268dea2308185"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The answer assigns municipal plan delivery leadership to the Office of Climate Resilience with Public Works, exactly as quoted.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "dd46db08a2f853dab8019c15ebb05e1893dc6f081239b169f22268dea2308185"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "delivery-period",
+      "chapter_ref": "project_summary",
+      "fields": [
+        "project duration"
+      ],
+      "reason": "The 2027–2032 delivery period directly answers the requested project duration.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "canopy-target",
+      "chapter_ref": "expected_results",
+      "fields": [
+        "expected results",
+        "indicators with baselines and targets"
+      ],
+      "reason": "The 25 percent canopy target by 2032 is both an expected adaptation result and an indicator target.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The indicators answer names both neighbourhoods, the 25% canopy target and 2032; its quotation supports all three.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "5621bae3ec56e0e3c89df97e2d3ed34af9bb2bc9cef0387d4c12ee2a1a5b2bc9"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The indicators answer alone conveys the 25% target for Eastside and Millbrook by 2032, and its quotation names both neighbourhoods and the target.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "6b81c720d6f99bb8530c031e4dd8d1a8dcdf909a9ec0c083a50262b098cb6973"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "partners",
+      "chapter_ref": "implementation",
+      "fields": [
+        "implementing entities and partner roles"
+      ],
+      "reason": "The fact explicitly assigns delivery, hosting and co-design roles to named partners.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The answer conveys all three named partner roles, including the Alliance's route co-design with residents, and the quotation supports each.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "87c3b05186b5ecd0354f2cbe829009e4e93b13aa1ef32a19f31f3da4dedb7050"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The answer conveys all three named partner roles, including the Alliance's route co-design with residents, and the quotation supports each.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "87c3b05186b5ecd0354f2cbe829009e4e93b13aa1ef32a19f31f3da4dedb7050"
+        }
+      }
+    },
+    {
+      "case": "harbor-point-heat-resilience",
+      "fact_id": "monitoring",
+      "chapter_ref": "implementation",
+      "fields": [
+        "monitoring and reporting"
+      ],
+      "reason": "The responsible office, annual report and tracked indicators directly describe monitoring and reporting.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The monitoring answer identifies the responsible office, annual reporting and all three indicators, supported by the quoted sentences.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "c21ba9bf933c12632e72af3ca10a00f2c7d36a9d0e1828d77d474f23b5043535"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The monitoring answer identifies the responsible office, annual reporting and all three indicators, supported by the quoted sentences.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "c21ba9bf933c12632e72af3ca10a00f2c7d36a9d0e1828d77d474f23b5043535"
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "plan-horizon",
+      "chapter_ref": "zadania",
+      "fields": [
+        "harmonogram realizacji"
+      ],
+      "reason": "The plan's 2023–2035 implementation horizon supplies the overall timeframe requested by the schedule field.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The schedule answer explicitly gives the citywide plan horizon as 2023-2035, supported by the quoted Polish horizon entry.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "208ba0937a1968c30b8edb04b75fd5f28f98ff520f47d6d7be491497baa00860"
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "coordinator",
+      "chapter_ref": "wnioskodawca",
+      "fields": [
+        "jednostki realizujące"
+      ],
+      "reason": "The coordinating City Office department and KEGW are explicitly identified as delivery bodies.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The answer correctly conveys the coordinating City Hall department and KEGW's lead role in municipal tasks with other units; the Polish quotation supports both roles.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "0f8810e8e5767038e5612d418bc276c47ac9ce706e04bd4332b893045d0cd52d"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The answer correctly conveys the coordinating City Hall department and KEGW's lead role in municipal tasks with other units; the Polish quotation supports both roles.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "0f8810e8e5767038e5612d418bc276c47ac9ce706e04bd4332b893045d0cd52d"
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "three-threat-levels",
+      "chapter_ref": "uzasadnienie",
+      "fields": [
+        "diagnoza problemu"
+      ],
+      "reason": "The Vistula flood threat and flooding behind closed gates directly explain the diagnosed problem.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The diagnosis conveys the Vistula flood mechanism and inland flooding where closed levee gates block urban streams without pumping stations. The Polish quotation substantiates the principal Vistula threat and closure during its floods.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "4aed417b6774ceeae919c1276378b4e5744c13a9d26502cabdeab0fc40accd8d"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The diagnosis conveys Vistula flooding and inland flooding caused by closed levee gates preventing urban streams from draining without pumps. The Polish quotation supports the flood hierarchy and the gate-closure mechanism during Vistula floods.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "160db8d4146fd818f0d06d0573cfcd45f76bd3e2095b84e2169751950361b813"
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "specific-objectives",
+      "chapter_ref": "uzasadnienie",
+      "fields": [],
+      "reason": "This chapter has no objectives field, and listing plan objectives alone does not establish a proposed project's strategic alignment.",
+      "runs": {}
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "small-retention-programme",
+      "chapter_ref": "zadania",
+      "fields": [
+        "zadania projektu",
+        "harmonogram realizacji"
+      ],
+      "reason": "The named retention programme and its implementer describe a task, while 2023–2030 directly supplies its schedule.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "monitoring-indicator",
+      "chapter_ref": "wskazniki",
+      "fields": [
+        "wskaźniki produktu"
+      ],
+      "reason": "The fact explicitly defines an output indicator and its baseline and objective-specific targets.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "financing-risk",
+      "chapter_ref": "ryzyka",
+      "fields": [
+        "ryzyka projektu"
+      ],
+      "reason": "Insufficient drainage-system financing is explicitly identified as an implementation risk.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The risk answer identifies insufficient funding of Krakow's municipal drainage system as a serious citywide risk, directly supported by the Polish quotation.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "ff24b692e53b6fc073b76478128447afee7f81612f3a58c81f883481dccee3b7"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The risk answer identifies insufficient municipal drainage funding as a serious citywide risk, with direct Polish quoted support.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "1d6cf5c2fdbf1f363ebc888b527b46f4eabd826d9d1ebc104464ef8d0c569f04"
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "total-cost-city",
+      "chapter_ref": "budzet",
+      "fields": [
+        "koszt całkowity projektu"
+      ],
+      "reason": "The aggregate implementation estimate directly provides the total cost requested by this field.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "cost-is-estimate",
+      "chapter_ref": "budzet",
+      "fields": [],
+      "reason": "The form requests cost and funding amounts but does not directly ask for estimate maturity or a cost-verification requirement.",
+      "runs": {}
+    },
+    {
+      "case": "krakow-flood-drainage-plan",
+      "fact_id": "financing-sources",
+      "chapter_ref": "budzet",
+      "fields": [
+        "wkład własny"
+      ],
+      "reason": "The city-budget source directly identifies own financing, while possible external funds do not establish requested co-financing.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "No field-matched candidate had a complete set of reference locations.",
+          "all_reference_locations": false,
+          "contains_reference_words": false
+        }
+      }
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "prioritization-criteria",
+      "chapter_ref": "project_analysis",
+      "fields": [],
+      "reason": "The chapter asks about alternatives and their effects but does not directly request criteria used to prioritize flood-risk areas.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "flood-risk-area-count",
+      "chapter_ref": "flood_damages",
+      "fields": [],
+      "reason": "The number of areas evaluated describes study coverage rather than flood damage or inundation evidence for those areas.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "selected-areas-and-concepts",
+      "chapter_ref": "project_activities",
+      "fields": [],
+      "reason": "Counts of studied areas and evaluated concepts do not identify the application-selected activities or their implementation quantities.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "selected-sites",
+      "chapter_ref": "project_description",
+      "fields": [],
+      "reason": "The fact identifies study locations without establishing the proposed immediate-phase project or later phases requested by this chapter.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "selected-sites",
+      "chapter_ref": "project_activities",
+      "fields": [],
+      "reason": "Names of studied sites do not directly specify selected activity types or activity quantities.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "concept-level-costs",
+      "chapter_ref": "project_financing",
+      "fields": [],
+      "reason": "The financing field requests a budget and financing capability but does not directly ask for the design maturity of study concepts and model results.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "cost-basis",
+      "chapter_ref": "project_financing",
+      "fields": [],
+      "reason": "No field explicitly requests the estimate price year or accuracy range.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "concept-cost-figures",
+      "chapter_ref": "project_financing",
+      "fields": [
+        "financing plan and local financial capability"
+      ],
+      "reason": "The chapter explicitly requests a budget, for which the studied concept cost estimates supply candidate amounts without establishing selected-project financing.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "Complementary financing answers convey both cost endpoints and their locations, including Wilson Pond Concept C; both are supported by their respective quoted tables.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "b9fbada13e012b7476ef369a0a676e3b9ae13b6d7c82e1accfcc1a79faeba925"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "Complementary answers in the same financing field give USD 1,540,000 at Woodlawn Terrace and USD 17,333,000 for Wilson Pond Concept C; the two quoted tables support both endpoints.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "60a296a5c10682667302614094a5cefc6fbc9ef021049fbbd5caf9a82438955e"
+        }
+      }
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "wilson-pond-damages",
+      "chapter_ref": "flood_damages",
+      "fields": [
+        "flood damages and inundation evidence"
+      ],
+      "reason": "The rainfall event affecting the lowest Wilson Pond structures directly describes flooding severity and inundation evidence.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The answer identifies Wilson Pond and states that the lowest structures are exposed in the modeled 2-year, 24-hour storm; the quotation supports that threshold.",
+          "all_reference_locations": true,
+          "contains_reference_words": false,
+          "adjudication_input_sha256": "8ef25f4c403ea173e0af1ca3f7cfda69020482cba8c2763b80886f251af417f3"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The answer identifies Wilson Pond and states that the lowest structures are exposed in the modeled 2-year, 24-hour storm; the quotation supports that threshold.",
+          "all_reference_locations": true,
+          "contains_reference_words": false,
+          "adjudication_input_sha256": "8ef25f4c403ea173e0af1ca3f7cfda69020482cba8c2763b80886f251af417f3"
+        }
+      }
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "alternatives-not-pursued",
+      "chapter_ref": "project_analysis",
+      "fields": [
+        "alternatives and effectiveness"
+      ],
+      "reason": "Rejected surface and underground storage options and their feasibility constraints directly answer the alternatives field.",
+      "runs": {
+        "v4": {
+          "matched": true,
+          "reason": "The alternatives answer identifies Wilson Pond and both exclusions: surface storage for limited space and no property acquisition, and underground storage for shallow groundwater. The quotation substantiates the reasons.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "23658554e106f836aea50b8ebf78c58436a9a397ca4af06f314aa876c61b8a65"
+        },
+        "release-transfer-local": {
+          "matched": true,
+          "reason": "The alternatives answer identifies Wilson Pond and both exclusions: surface storage for limited space and no property acquisition, and underground storage for shallow groundwater. The quotation substantiates the reasons.",
+          "all_reference_locations": true,
+          "contains_reference_words": true,
+          "adjudication_input_sha256": "23658554e106f836aea50b8ebf78c58436a9a397ca4af06f314aa876c61b8a65"
+        }
+      }
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "social-vulnerability",
+      "chapter_ref": "flood_damages",
+      "fields": [],
+      "reason": "This chapter requests flood damages and disaster declarations, with no field directly asking about social vulnerability.",
+      "runs": {}
+    },
+    {
+      "case": "richfield-flood-risk",
+      "fact_id": "woodlawn-cost-range",
+      "chapter_ref": "project_financing",
+      "fields": [
+        "financing plan and local financial capability"
+      ],
+      "reason": "The base and upper construction estimates are budget figures directly relevant to the requested financing plan, although the percentage discrepancy is not separately requested.",
+      "runs": {
+        "v4": {
+          "matched": false,
+          "reason": "The answer reports only Woodlawn Terrace point estimates. It does not convey Concept A's USD 2,695,000 upper estimate or that this exceeds the stated +50% range, and the quotation omits the range note.",
+          "all_reference_locations": true,
+          "contains_reference_words": false,
+          "adjudication_input_sha256": "d4d92307a9a0ab52fb16e4d55011a882cb866ce7b3d14665dabb353afb5e9aff"
+        },
+        "release-transfer-local": {
+          "matched": false,
+          "reason": "The answer reports only Woodlawn Terrace point estimates. It does not convey Concept A's USD 2,695,000 upper estimate or that this exceeds the stated +50% range, and the quotation omits the range note.",
+          "all_reference_locations": true,
+          "contains_reference_words": false,
+          "adjudication_input_sha256": "d4d92307a9a0ab52fb16e4d55011a882cb866ce7b3d14665dabb353afb5e9aff"
+        }
+      }
+    }
+  ]
+}

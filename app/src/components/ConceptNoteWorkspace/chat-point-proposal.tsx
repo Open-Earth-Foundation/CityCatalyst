@@ -6,6 +6,7 @@ import { useTranslation } from "@/i18n/client";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type { ChatPointProposal } from "./chat-utils";
 import { pointValueText } from "./point-state";
+import { SourceQuotation } from "./source-quotation";
 import { ReviewButton as Button } from "./review-button";
 import { documentWorkspaceErrorKind } from "./workspace-errors";
 
@@ -61,7 +62,9 @@ export function ChatPointProposalCard({
           borderColor="border.neutral"
           pl={2}
         >
-          <Text fontSize="body.sm">{cite.quote}</Text>
+          <Text fontSize="body.sm">
+            <SourceQuotation citation={cite} />
+          </Text>
           <Text color="content.secondary" fontSize="body.sm">
             {cite.source_label}
             {cite.page_number != null &&

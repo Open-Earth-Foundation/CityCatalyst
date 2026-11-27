@@ -15,6 +15,7 @@ import { useTranslation } from "@/i18n/client";
 import type { DocumentWorkspace, DocumentPointQuestion } from "@/util/document-workspace";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 import { DocumentPointCard } from "./document-point-card";
+import { SourceQuotation } from "./source-quotation";
 import { chapterDisplayTitle } from "./chapter-title";
 import {
   currentPointCandidate,
@@ -467,7 +468,7 @@ export function WorkspaceOverview({
                                 mt={2}
                               >
                                 <Text fontSize="body.sm" lineHeight={1.6}>
-                                  {citation.quote}
+                                  <SourceQuotation citation={citation} />
                                 </Text>
                                 <Text
                                   mt={1}

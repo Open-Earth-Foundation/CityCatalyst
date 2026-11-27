@@ -4,6 +4,7 @@ import { Box, Text, VStack, type TextProps } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 import { useTranslation } from "@/i18n/client";
 import type { DocumentPointCitation } from "@/util/document-workspace";
+import { SourceQuotation } from "./source-quotation";
 
 function NarrativeSummary({ children }: { children: ReactNode }) {
   return (
@@ -131,7 +132,7 @@ export function NarrativeCitations({
                   pl={3}
                 >
                   <Text fontSize="body.sm" whiteSpace="pre-wrap">
-                    {source.quote}
+                    <SourceQuotation citation={source} />
                   </Text>
                   <Text fontSize="body.sm" color="content.secondary">
                     {source.source_label}

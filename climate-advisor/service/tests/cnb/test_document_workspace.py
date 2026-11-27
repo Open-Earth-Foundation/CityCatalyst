@@ -306,7 +306,11 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
             filename="source.md",
             source_format="markdown",
         ),
-        units=[],
+        units=[
+            SourcePage(
+                1, "| Basis | Total |\n| --- | --- |\n| Official city record | 8 |"
+            )
+        ],
     )
     quote = [
         {
@@ -316,7 +320,7 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
         }
     ]
     findings = {
-        "applicant.name": {("full", "Krosno"): quote},
+        "applicant.name": {("full", "Krosno"): quote, ("full", "Another city"): quote},
         "applicant.country": {("partial", "A neighbouring authority"): quote},
     }
     reader = AsyncMock(return_value=findings)
@@ -336,25 +340,51 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
     )
     first = await service.load(run)
     city = next(p for p in first.points if p.key == "applicant.name")
+    accepted_id = next(c.candidate_id for c in city.candidates if c.value == "Krosno")
     choice = await service.command(
         run,
         city.key,
         DocumentPointCommand(
             command="confirm_candidate",
-            candidate_id=city.candidates[0].candidate_id,
+            candidate_id=accepted_id,
             expected_version=city.version,
             idempotency_key="yes",
         ),
         user_id="owner",
     )
     assert choice.point.value == "Krosno"
+    # Simulate an older, already-classified file without presentation context.
+    async with factory() as session, session.begin():
+        needs = await session.scalars(select(DocumentNeed))
+        for need in needs:
+            need.documents = [
+                {k: v for k, v in doc.items() if k != "citation_context_version"}
+                for doc in need.documents
+            ]
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    enriched_city = next(
+        p for p in (await service.load(run)).points if p.key == city.key
+    )
+    assert enriched_city.version == choice.point.version
+    assert {c.candidate_id for c in enriched_city.candidates} == {
+        c.candidate_id for c in city.candidates
+    }
+    assert {(c.value, c.status) for c in enriched_city.candidates} == {
+        ("Krosno", "accepted"),
+        ("Another city", "dismissed"),
+    }
+    assert all(
+        c.citations[0].quote_context == source.units[0].text
+        for c in enriched_city.candidates
+    )
+    assert reader.await_count == 1
     # A pre-review reader hashed its discovery order. An equivalent reread
     # must retain the exact candidate the applicant already confirmed.
     second_citation = {**quote[0], "page_number": 2}
     async with factory() as session, session.begin():
-        previous = await session.get(
-            DocumentCandidate, UUID(city.candidates[0].candidate_id)
-        )
+        previous = await session.get(DocumentCandidate, UUID(accepted_id))
         previous.citations = [second_citation, quote[0]]
         previous.fingerprint = fingerprint(
             [previous.value, previous.citations, previous.source_identity, "full"]
@@ -370,11 +400,16 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
         service, run, source, points, settings=settings, client=None, runner=None
     )
     second = await service.load(run)
-    (still_accepted,) = next(
+    final_candidates = next(
         p for p in second.points if p.key == "applicant.name"
     ).candidates
+    still_accepted = next(c for c in final_candidates if c.value == "Krosno")
     assert still_accepted.status == "accepted"
-    assert still_accepted.candidate_id == city.candidates[0].candidate_id
+    assert still_accepted.candidate_id == accepted_id
+    assert (
+        next(c for c in final_candidates if c.value == "Another city").status
+        == "dismissed"
+    )
     country = next(p for p in second.points if p.key == "applicant.country")
     assert (
         country.evidence_status == "missing"

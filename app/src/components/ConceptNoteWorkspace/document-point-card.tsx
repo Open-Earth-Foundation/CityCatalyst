@@ -34,6 +34,7 @@ import {
 } from "./point-state";
 import { EvidenceRequest } from "./evidence-request";
 import { NarrativeCitations, NarrativeValue } from "./narrative-citations";
+import { SourceQuotation } from "./source-quotation";
 
 export function DocumentPointCard({
   point: incomingPoint,
@@ -239,7 +240,7 @@ export function DocumentPointCard({
                 pl={3}
               >
                 <Text fontSize="body.sm" lineHeight={1.6}>
-                  {citation.quote}
+                  <SourceQuotation citation={citation} />
                 </Text>
                 <Text fontSize="body.sm" mt={1} color="content.tertiary">
                   {citation.source_label}
@@ -300,7 +301,9 @@ export function DocumentPointCard({
               <NarrativeCitations citations={candidate.citations} lng={lng}>
                 {candidate.citations.map((citation, index) => (
                   <Box key={index} mt={1}>
-                    <Text fontSize="body.sm">{citation.quote}</Text>
+                    <Text fontSize="body.sm">
+                      <SourceQuotation citation={citation} />
+                    </Text>
                     <Text fontSize="body.sm" color="content.tertiary">
                       {citation.source_label}
                       {citation.page_number !== null
@@ -339,7 +342,9 @@ export function DocumentPointCard({
               >
                 {candidate.citations.map((cite, index) => (
                   <Box mt={2} key={index}>
-                    <Text fontSize="body.sm">{cite.quote}</Text>
+                    <Text fontSize="body.sm">
+                      <SourceQuotation citation={cite} />
+                    </Text>
                     <Text color="content.secondary" fontSize="body.sm">
                       {cite.source_label}
                       {cite.page_number != null &&
@@ -382,7 +387,7 @@ export function DocumentPointCard({
                 pl={3}
               >
                 <Text as="blockquote" fontSize="body.sm" whiteSpace="pre-wrap">
-                  {citation.quote}
+                  <SourceQuotation citation={citation} />
                 </Text>
                 <Text mt={1} fontSize="label.sm" color="content.tertiary">
                   {citation.source_label}
@@ -560,7 +565,9 @@ export function DocumentPointCard({
                           borderLeft="2px solid"
                           borderColor="border.neutral"
                         >
-                          <Text fontSize="body.sm">{cite.quote}</Text>
+                          <Text fontSize="body.sm">
+                            <SourceQuotation citation={cite} />
+                          </Text>
                           <Text color="content.secondary" fontSize="body.sm">
                             {cite.source_label}
                             {cite.page_number != null &&

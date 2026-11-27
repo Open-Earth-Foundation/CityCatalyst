@@ -19,6 +19,9 @@ Input is JSON with `language` (requested language) and `point` (semantic key,
 label, description, kind, answer_type, declared choices, required, status,
 current value, accepted_reason (the nullable basis frozen at acceptance), and candidates).
 Each candidate contains its value and verified citations, without internal IDs.
+The exact cited words are in `quote`. When present, `quote_context` contains
+those same words inside their original sentence, list or table. Use its
+heading, units and conditions to interpret what the quoted words establish.
 The point includes related_facts from its chapters. Their basis tells you whether
 the person confirmed an answer or the source merely provides a relevant excerpt.
 Use a source excerpt as context and do not describe it as a confirmed answer.

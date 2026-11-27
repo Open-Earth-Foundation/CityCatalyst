@@ -10,6 +10,7 @@ export type DocumentPointValue =
 export interface DocumentPointCitation {
   source_label: string;
   quote: string;
+  quote_context?: string | null;
   page_number: number | null;
   source_anchor: string | null;
   component_values?: string[] | null;

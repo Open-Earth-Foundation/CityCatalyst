@@ -34,6 +34,11 @@ from app.services.document_workspace.evidence_review import (
 )
 from app.services.document_workspace.field_search import search_field_findings
 from app.services.document_workspace.narrative_synthesis import synthesize_narratives
+from app.services.document_workspace.quotation_context import (
+    CONTEXT_VERSION,
+    citation_enricher,
+    copy_citation_context,
+)
 from app.services.document_workspace.reader_contract import (
     REQUIREMENTS_PER_READ,
     point_partition_tokens,
@@ -303,7 +308,7 @@ async def read_setup_source(points, source, *, settings, client, runner, scope=N
         runner=runner,
         invoke=run_agent,
     )
-    return await synthesize_narratives(
+    assembled = await synthesize_narratives(
         reviewed,
         [requirement_fields(p) for p in points],
         scope=scope or {},
@@ -314,6 +319,16 @@ async def read_setup_source(points, source, *, settings, client, runner, scope=N
         semaphore=semaphore,
         invoke=run_agent,
     )
+    return await asyncio.to_thread(enrich_findings, assembled, original_units)
+
+
+def enrich_findings(findings, original_units):
+    """Only the finished proposals gain presentation context; review inputs stay stable."""
+    enrich = citation_enricher(original_units)
+    return {
+        key: {answer: enrich(citations) for answer, citations in answers.items()}
+        for key, answers in findings.items()
+    }
 
 
 def ordered_point_definitions(points, pinned_snapshot):
@@ -369,9 +384,12 @@ def source_text_fingerprint(units):
 
 
 def candidate_signature(value, citations, identity, support):
-    return fingerprint(
-        [value, sorted(citations, key=citation_order), identity, support]
-    )
+    core = _core_citations(citations)
+    return fingerprint([value, sorted(core, key=citation_order), identity, support])
+
+
+def _core_citations(citations):
+    return [{k: v for k, v in c.items() if k != "quote_context"} for c in citations]
 
 
 def compatible_candidates(previous, identity):
@@ -385,13 +403,49 @@ def compatible_candidates(previous, identity):
         compatible.setdefault(old.fingerprint, old)
         for support in ("full", "partial"):
             if (
-                fingerprint([old.value, old.citations, identity, support])
+                fingerprint(
+                    [old.value, _core_citations(old.citations), identity, support]
+                )
                 == old.fingerprint
             ):
                 key = candidate_signature(old.value, old.citations, identity, support)
                 compatible.setdefault(key, old)
                 break
     return compatible
+
+
+async def _refresh_citation_context(session, state, need, doc, identity, points, units):
+    """Enrich a cached reading once, preserving candidate IDs and human dispositions."""
+    if doc.get("citation_context_version") == CONTEXT_VERSION:
+        return
+    candidates = [
+        candidate
+        for candidate in await session.scalars(
+            select(DocumentCandidate).where(
+                DocumentCandidate.point_id.in_([p.point_id for p in points]),
+                DocumentCandidate.source_identity["upload_id"].as_string()
+                == identity["upload_id"],
+            )
+        )
+        if candidate.source_identity == identity
+    ]
+    stored = [c.citations for c in candidates]
+
+    def refresh():
+        enrich = citation_enricher({source_unit_anchor(u): u.text for u in units})
+        return [enrich(citations) for citations in stored]
+
+    updated = await asyncio.to_thread(refresh)
+    if updated != stored:
+        for candidate, citations in zip(candidates, updated, strict=True):
+            candidate.citations = citations
+        state.revision += 1
+    need.documents = [
+        {**d, "citation_context_version": CONTEXT_VERSION}
+        if d["upload_id"] == doc["upload_id"]
+        else d
+        for d in need.documents
+    ]
 
 
 async def read_and_store_setup_source(
@@ -409,7 +463,7 @@ async def read_and_store_setup_source(
             )
             profile = ((bundle or {}).get("cc_context") or {}).get("city") or {}
             city = {k: profile[k] for k in ("name", "country") if profile.get(k)}
-    async with service.session_factory() as session:
+    async with service.session_factory() as session, session.begin():
         state = await service._state(session, run.run_id)
         pin = state.setup_fingerprint
         snapshot = await session.scalar(
@@ -448,10 +502,20 @@ async def read_and_store_setup_source(
             ]
         )
         upload_id = str(source.source.upload_id)
-        if need and any(
-            doc.get("reading_fingerprint") == digest and doc["upload_id"] == upload_id
-            for doc in need.documents
-        ):
+        identity = {"upload_id": upload_id, "sha256": source.source.sha256}
+        ready = next(
+            (
+                doc
+                for doc in (need.documents if need else [])
+                if doc.get("reading_fingerprint") == digest
+                and doc["upload_id"] == upload_id
+            ),
+            None,
+        )
+        if ready:
+            await _refresh_citation_context(
+                session, state, need, ready, identity, points, source.units
+            )
             return
     found = await read_setup_source(
         definitions,
@@ -461,7 +525,9 @@ async def read_and_store_setup_source(
         client=client,
         runner=runner,
     )
-    identity = {"upload_id": upload_id, "sha256": source.source.sha256}
+    enrich_previous = citation_enricher(
+        {source_unit_anchor(u): u.text for u in source.units}
+    )
     async with service.session_factory() as session, session.begin():
         state = await service._state(session, run.run_id)
         if state.setup_fingerprint != pin:
@@ -509,6 +575,9 @@ async def read_and_store_setup_source(
                 existing = compatible.get(candidate_hash)
                 if existing:
                     seen.add(existing.fingerprint)
+                    enriched = copy_citation_context(existing.citations, citations)
+                    if existing.citations != enriched:
+                        existing.citations = enriched
                     if existing.status == "superseded":
                         existing.status = status
                         changed = True
@@ -525,7 +594,12 @@ async def read_and_store_setup_source(
                 )
                 changed = True
             for old_hash, old in previous.items():
-                if old_hash not in seen and old.status in {"context", "pending"}:
+                if old_hash in seen:
+                    continue
+                # OCR may have changed independently of the underlying PDF. Keep the
+                # original decision and core; only exact context at this locator survives.
+                old.citations = await asyncio.to_thread(enrich_previous, old.citations)
+                if old.status in {"context", "pending"}:
                     old.status = "superseded"
                     changed = True
             if changed:
@@ -547,6 +621,7 @@ async def read_and_store_setup_source(
                 "source_format": source.source.source_format,
                 "ready": True,
                 "reading_fingerprint": digest,
+                "citation_context_version": CONTEXT_VERSION,
             }
         ]
         state.revision += 1

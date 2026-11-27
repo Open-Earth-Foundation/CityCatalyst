@@ -677,12 +677,28 @@ export default class ECRFImportService {
         );
       }
 
+      const statedScopeNumber = scopeFromLabel(statedScope);
+      let scopeId = gpcMapping.scopeId;
+      if (gpcMapping.usedSibling && statedScopeNumber != null) {
+        for (const [id, scopeNumber] of catalogueScopes) {
+          if (scopeNumber === statedScopeNumber) {
+            scopeId = id;
+            break;
+          }
+        }
+      }
+      const catalogueScope = gpcMapping.usedSibling
+        ? undefined
+        : catalogueScopes.has(gpcMapping.scopeId)
+          ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
+          : undefined;
+
       rows.push({
         gpcRefNo,
         sectorId: gpcMapping.sectorId,
         subsectorId: gpcMapping.subsectorId,
         subcategoryId: gpcMapping.subcategoryId,
-        scopeId: gpcMapping.scopeId,
+        scopeId,
         review: {
           sector: hasSectorColumn
             ? (row[headers[detectedColumns.sector!]]?.toString() ?? null)
@@ -691,13 +707,9 @@ export default class ECRFImportService {
             ? (row[headers[detectedColumns.subsector!]]?.toString() ?? null)
             : null,
           category: activityType ?? null,
-          scope: statedScope || null,
-          catalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
-            : undefined,
-          finalCatalogueScope: catalogueScopes.has(gpcMapping.scopeId)
-            ? (catalogueScopes.get(gpcMapping.scopeId) ?? null)
-            : undefined,
+          scope: statedScope?.trim() || null,
+          catalogueScope,
+          finalCatalogueScope: catalogueScope,
           refSource: statedReference
             ? ("document" as const)
             : ("inferred" as const),
@@ -866,6 +878,7 @@ export default class ECRFImportService {
     subsectorId: string;
     subcategoryId: string | null;
     scopeId: string;
+    usedSibling?: boolean;
   } | null> {
     const direct = await this.lookupGPCReference(gpcRefNo);
     if (direct) return direct;
@@ -876,8 +889,9 @@ export default class ECRFImportService {
       const sibling = `${parts[0]}.${parts[1]}.${suffix}`;
       const mapped = await this.lookupGPCReference(sibling);
       if (mapped) {
-        // Keep the file's GPC ref on the row; do not attach a sibling subcategory.
-        return { ...mapped, subcategoryId: null };
+        // Keep the file's GPC ref on the row; do not attach a sibling subcategory
+        // or treat the sibling's scope as this reference's catalogue scope.
+        return { ...mapped, subcategoryId: null, usedSibling: true };
       }
     }
     return null;
@@ -1029,12 +1043,16 @@ export default class ECRFImportService {
           finalScope: scopeById.has(resolvedScopeId)
             ? String(scopeById.get(resolvedScopeId))
             : null,
-          catalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
-            : undefined,
-          finalCatalogueScope: scopeById.has(gpcMapping.scopeId)
-            ? (scopeById.get(gpcMapping.scopeId) ?? null)
-            : undefined,
+          catalogueScope: gpcMapping.usedSibling
+            ? undefined
+            : scopeById.has(gpcMapping.scopeId)
+              ? (scopeById.get(gpcMapping.scopeId) ?? null)
+              : undefined,
+          finalCatalogueScope: gpcMapping.usedSibling
+            ? undefined
+            : scopeById.has(gpcMapping.scopeId)
+              ? (scopeById.get(gpcMapping.scopeId) ?? null)
+              : undefined,
           refSource: row.refSource ?? null,
           directionEvidence: row.directionEvidence ?? null,
           directionEvidenceFound: row.directionEvidenceFound ?? null,

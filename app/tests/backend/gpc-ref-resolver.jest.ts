@@ -15,6 +15,19 @@ describe("scopeFromLabel", () => {
   });
 });
 
+describe("resolveGpcRefNo fugitive transboundary", () => {
+  it("maps CIRIS fugitive outside the city to I.7.3, not I.7.1", () => {
+    expect(
+      resolveGpcRefNo(
+        "Stationary Energy",
+        "Fugitive emissions",
+        undefined,
+        "Outside city boundary",
+      ),
+    ).toBe("I.7.3");
+  });
+});
+
 describe("resolveGpcRefNo scope", () => {
   it("stores indirect grid electricity as scope 2", () => {
     expect(

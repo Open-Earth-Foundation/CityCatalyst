@@ -181,7 +181,15 @@ export function resolveGpcRefNo(
 
   if (scope != null) {
     const scoped = matches.filter((row) => row.scope === scope);
-    if (scoped.length === 0) return null;
+    if (scoped.length === 0) {
+      // CIRIS "outside city boundary" is scope 3. Fugitive (I.7 / I.8) has no
+      // catalogue .3; keep a distinct ref so NE does not land on I.7.1 / I.8.1.
+      if (scope === 3) {
+        const parts = matches[0].gpcRefNo.split(".");
+        if (parts.length >= 2) return `${parts[0]}.${parts[1]}.3`;
+      }
+      return null;
+    }
     matches = scoped;
   }
 

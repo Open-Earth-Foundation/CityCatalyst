@@ -80,10 +80,13 @@ export async function applyReviewedRows(
       typeof decision.scope === "string"
         ? decision.scope
         : review.scope;
-    const mapping = await ECRFImportService.lookupGPCReference(chosenRef);
+    const mapping =
+      await ECRFImportService.lookupGPCReferenceOrSibling(chosenRef);
     if (!mapping) continue;
     const catalogueScope = await db.models.Scope.findByPk(mapping.scopeId);
-    const expected = scopeFromLabel(catalogueScope?.scopeName) ?? null;
+    const expected = mapping.usedSibling
+      ? (taxonomyScope(chosenRef) ?? null)
+      : (scopeFromLabel(catalogueScope?.scopeName) ?? null);
     // A held excluded row has no scope conflict to correct, so a reclassify
     // takes the target reference's own scope.
     const normalizedScope =

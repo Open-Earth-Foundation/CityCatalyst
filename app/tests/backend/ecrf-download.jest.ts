@@ -238,9 +238,7 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
             emissionFactorUnit: "tCO2e/Therm",
             emissionFactorCO2: 69.3,
           },
-          gasValues: [
-            { gas: "N2O", gasAmount: 5_069_000n, emissionsFactor: null },
-          ],
+          gasValues: [],
         },
       ]),
     );
@@ -282,5 +280,50 @@ describe("ECRFDownloadService.downloadECRF (CC-1017)", () => {
     const row = sheet3RowByGpc(workbook.getWorksheet(3), "I.1.1");
     expect(row?.getCell(26).value).toBe(28);
     expect(row?.getCell(27).value).toBe(265);
+  });
+
+  it("applies AR5 GWP for manual Direct Measure CH4 (10,000 kg → 280 tCO2e)", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      baseInventory([
+        {
+          co2eq: 280000n,
+          activityData: { "activity-value": 1 },
+          metadata: { activityTitle: "activity-value", dataQuality: "low" },
+          gasValues: [
+            { gas: "CH4", gasAmount: 10_000n, emissionsFactor: null },
+          ],
+        },
+      ]),
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const row = sheet3RowByGpc(workbook.getWorksheet(3), "I.1.1");
+    expect(row?.getCell(26).value).toBe(280);
+  });
+
+  it("prefers GasValue kg × GWP over activityData tonnes when both exist", async () => {
+    const buffer = await ECRFDownloadService.downloadECRF(
+      baseInventory([
+        {
+          co2eq: 280000n,
+          activityData: { "activity-value": 1, ch4_amount: 10 },
+          metadata: { activityTitle: "activity-value", dataQuality: "low" },
+          gasValues: [
+            { gas: "CH4", gasAmount: 10_000n, emissionsFactor: null },
+          ],
+        },
+      ]),
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
+    const row = sheet3RowByGpc(workbook.getWorksheet(3), "I.1.1");
+    expect(row?.getCell(26).value).toBe(280);
+    expect(row?.getCell(26).value).not.toBe(10);
   });
 });

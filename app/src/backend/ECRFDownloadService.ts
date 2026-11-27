@@ -462,9 +462,9 @@ export default class ECRFDownloadService {
             const activityData = activityValue.activityData ?? {};
             const metadata = activityValue.metadata ?? {};
 
-            // Template columns are "GHGs (metric tonnes CO2e)". eCRF/CIRIS
-            // already store those tonnes on activityData — do not apply GWP.
-            // Native GasValue.gasAmount is kg of gas; apply AR5 GWP only then.
+            // Template columns are "GHGs (metric tonnes CO2e)". Native
+            // GasValue.gasAmount is kg of gas (apply AR5 GWP). CIRIS/eCRF
+            // tonnes live on activityData when there is no GasValue.
             const ghg_co2 = this.ghgColumnTonnesCO2e({
               activityTonnes: activityData.co2_amount,
               gasAmountKg: this.toNullableBigInt(co2_gas?.gasAmount),
@@ -714,21 +714,23 @@ export default class ECRFDownloadService {
   }
 
   /**
-   * eCRF_3 GHG cells are metric tonnes CO2e. CIRIS/eCRF import already stored
-   * those tonnes on activityData; GasValue.gasAmount is kg of the gas.
+   * eCRF_3 GHG cells are metric tonnes CO2e. Prefer GasValue kg × GWP
+   * (manual Direct Measure). Fall back to activityData tonnes (CIRIS/eCRF).
    */
   private static ghgColumnTonnesCO2e(input: {
     activityTonnes: unknown;
     gasAmountKg: bigint | null;
     gwp: bigint;
   }): number | null {
+    if (input.gasAmountKg != null) {
+      return bigIntToDecimal(input.gasAmountKg * input.gwp)
+        .div(1000)
+        .toNumber();
+    }
     if (hasSignedNumericValue(input.activityTonnes)) {
       return Number(input.activityTonnes);
     }
-    if (input.gasAmountKg == null) return null;
-    return bigIntToDecimal(input.gasAmountKg * input.gwp)
-      .div(1000)
-      .toNumber();
+    return null;
   }
 
   private static metaNumber(value: unknown): number | null {

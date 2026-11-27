@@ -1,10 +1,12 @@
 /**
- * CC-950 v1: run Path A (exact eCRF + near-eCRF) files through GhgiIngestPlugin
- * and score stored InventoryValues against the product answer-key workbook.
+ * Path A: run exact eCRF, near-eCRF, and CIRIS (xlsx/xlsm with eCRF_3)
+ * through GhgiIngestPlugin and score stored InventoryValues.
  *
- * Does not use the Excel/CSV export. CIRIS is out of scope until CC-1217.
+ * CIRIS with eCRF_3 is Path A (CC-1217 / CC-1329). Packs without eCRF_3
+ * are not scored. Does not use the Excel/CSV product export.
  *
  *   npx tsx scripts/ghgi-path-a-backtest.ts --files ./ingestion-script-files
+ *   npx tsx scripts/ghgi-path-a-backtest.ts --files "<CIRIS folder>"
  */
 import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
@@ -44,7 +46,7 @@ const RECALL_BAR = 0.99;
 const PRECISION_BAR = 0.99;
 const CLASS_BAR = 0.98;
 
-type Family = "exact-ecrf" | "near-ecrf";
+type Family = "exact-ecrf" | "near-ecrf" | "ciris";
 
 interface AnswerKeyRow {
   city: string;
@@ -122,12 +124,16 @@ function withinTol(actual: number, expected: number): boolean {
 }
 
 function familyOf(fileName: string): Family {
+  if (/ciris/i.test(fileName)) return "ciris";
   return /^ecrf-inventory/i.test(fileName) ? "exact-ecrf" : "near-ecrf";
 }
 
 function isInventoryXlsx(file: string): boolean {
+  if (file.startsWith("~$")) return false;
   const s = slug(file);
-  return s.endsWith("xlsx") && !s.startsWith("answer_keys");
+  return (
+    (s.endsWith("xlsx") || s.endsWith("xlsm")) && !s.startsWith("answer_keys")
+  );
 }
 
 /** e.g. Banana_CRFFormat_2022_20261106.xlsx → { city, year } */
@@ -167,6 +173,11 @@ function keyFromSource(
 
 async function loadAnswerKeys(dir: string): Promise<AnswerKeyRow[]> {
   const keyPath = path.join(dir, "Answer_Keys_and_Results_eCRF_DP4C.xlsx");
+  try {
+    await access(keyPath, fsConstants.R_OK);
+  } catch {
+    return [];
+  }
   const wb = new Excel.Workbook();
   await wb.xlsx.readFile(keyPath);
   const sheet = wb.getWorksheet("Answer key");
@@ -412,7 +423,9 @@ async function scoreStored(
       "exact-ecrf uses DPC Mexico totals as control; export file may differ",
     );
   }
-  if (!key.fromWorkbook) {
+  if (family === "ciris") {
+    flags.push("CIRIS; scored against eCRF_3 (no workbook key row)");
+  } else if (!key.fromWorkbook) {
     flags.push("no workbook key row; scored against the source file");
   }
   if (totalsMatchExclEnergy === false && totalsMatchFile === true) {
@@ -464,10 +477,10 @@ function pct(n: number | null): string {
 
 function renderReport(results: CaseResult[], missing: string[]): string {
   const lines = [
-    "# GHGI Path A backtest (CC-950 v1)",
+    "# GHGI Path A backtest (eCRF, near-eCRF, CIRIS)",
     "",
     `Ran ${results.length} file(s). Rows are scored as stored GPC refs (import sums eCRF_3 lines that share a ref).`,
-    "CIRIS is not in this folder and is skipped until CC-1217.",
+    "CIRIS with eCRF_3 is Path A (CC-1217). Packs without eCRF_3 are not scored.",
     "",
     "| City | Family | Path | Status | Recall | Precision | Value acc | Class | Stored t | Excl. energy t | Pass | Flags |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -585,8 +598,11 @@ async function main() {
   for (const file of names) {
     if (!isInventoryXlsx(file) || used.has(file)) continue;
     const parsed = parseCrfFormatName(file);
-    const city = parsed?.city ?? file.replace(/\.xlsx$/i, "");
-    const year = parsed?.year ?? new Date().getFullYear();
+    const city = parsed?.city ?? file.replace(/\.(xlsx|xlsm)$/i, "");
+    const yearMatch = file.match(/\b(20\d{2})\b/);
+    const year =
+      parsed?.year ??
+      (yearMatch ? Number(yearMatch[1]) : new Date().getFullYear());
     results.push(
       await runCase({
         filesDir,

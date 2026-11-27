@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/native-select";
 import { useTranslation } from "@/i18n/client";
 import { ContextStatusBadge } from "./context-status-badge";
+import { EvidenceRequest } from "./evidence-request";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type { DocumentWorkspace } from "@/util/document-workspace";
 
@@ -108,20 +109,33 @@ export function WorkspaceSources({
                 }
               />
             </Box>
-            {need.guidance && (
-              <Box as="details" mt={2}>
-                <Text
-                  as="summary"
-                  cursor="pointer"
-                  fontSize="body.sm"
-                  color="content.link"
-                >
-                  {t("workspace-evidence-guidance")}
-                </Text>
-                <Text mt={2} fontSize="body.sm" lineHeight={1.6}>
-                  {need.guidance}
-                </Text>
-              </Box>
+            {need.status !== "available" ? (
+              <EvidenceRequest
+                need={need}
+                points={workspace.points.filter(
+                  (p) =>
+                    need.point_keys.includes(p.key) &&
+                    p.work_group !== "covered",
+                )}
+                runId={runId}
+                lng={lng}
+              />
+            ) : (
+              need.guidance && (
+                <Box as="details" mt={2}>
+                  <Text
+                    as="summary"
+                    cursor="pointer"
+                    fontSize="body.sm"
+                    color="content.link"
+                  >
+                    {t("workspace-evidence-guidance")}
+                  </Text>
+                  <Text mt={2} fontSize="body.sm" lineHeight={1.6}>
+                    {need.guidance}
+                  </Text>
+                </Box>
+              )
             )}
             {need.documents.map((document) => (
               <Text key={document.upload_id} mt={2} fontSize="body.sm">

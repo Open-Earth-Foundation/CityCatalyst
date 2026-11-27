@@ -225,7 +225,8 @@ async def analyze_document(
     try:
         # Partition and map the complete source under the configured reader limit.
         prompt = settings.llm.prompts.get_prompt("cnb_source_document_mapping")
-        partitions = partition_source_pages(
+        partitions = await asyncio.to_thread(
+            partition_source_pages,
             pages,
             prompt=prompt,
             model=reader_model.name,
@@ -368,7 +369,8 @@ async def extract_chapter_evidence(
         context_tokens = count_prompt_tokens(
             [context], model=reader_model.name, fallback_encoding=tokenizer_encoding
         ).tokens
-        partitions = partition_source_pages(
+        partitions = await asyncio.to_thread(
+            partition_source_pages,
             pages,
             prompt=prompt,
             model=reader_model.name,
@@ -526,7 +528,8 @@ async def query_document(
     try:
         # Partition and search the entire source for the bounded question.
         prompt = settings.llm.prompts.get_prompt("cnb_source_question_reading")
-        partitions = partition_source_pages(
+        partitions = await asyncio.to_thread(
+            partition_source_pages,
             pages,
             prompt=prompt,
             model=reader_model.name,
@@ -950,40 +953,48 @@ def partition_source_pages(
             )
         segments.extend(page_segments)
 
-    partitions: list[list[SourceSegment]] = []
-    current: list[SourceSegment] = []
-    for segment in segments:
-        candidate = [*current, segment]
-        input_text = render_partition(
-            candidate,
-            source_label=source_label,
-            question=question,
-        )
-        if (
-            prompt_token_count(
-                prompt,
-                input_text,
-                model=model,
-                fallback_encoding=fallback_encoding,
-            )
-            <= max_tokens
-        ):
-            current = candidate
-            continue
-        if not current:
-            raise SourceAnalysisError(
-                "source_partition_too_large",
-                f"Source segment {segment.segment_id} exceeds the token limit",
-            )
-        partitions.append(current)
-        current = [segment]
-    if current:
-        partitions.append(current)
-    if not partitions:
+    if not segments:
         raise SourceAnalysisError(
             "empty_source_document",
             "Source document did not contain any analyzable units",
         )
+
+    def fits(start: int, end: int) -> bool:
+        """Check the exact serialized request with the configured model tokenizer."""
+        text = render_partition(
+            segments[start:end], source_label=source_label, question=question
+        )
+        return prompt_token_count(
+            prompt, text, model=model, fallback_encoding=fallback_encoding
+        ) <= max_tokens
+
+    # Each additional JSON section adds its own heading or page and text. Locate the
+    # first full partition without re-encoding every progressively longer prefix.
+    partitions: list[list[SourceSegment]] = []
+    start = 0
+    while start < len(segments):
+        end = start + 1
+        if not fits(start, end):
+            raise SourceAnalysisError(
+                "source_partition_too_large",
+                f"Source segment {segments[start].segment_id} exceeds the token limit",
+            )
+        while end < len(segments):
+            probe = min(len(segments), start + 2 * (end - start))
+            if fits(start, probe):
+                end = probe
+                continue
+            # The last passing boundary is end. Probe only complete source sections.
+            high = probe
+            while end + 1 < high:
+                middle = (end + high) // 2
+                if fits(start, middle):
+                    end = middle
+                else:
+                    high = middle
+            break
+        partitions.append(segments[start:end])
+        start = end
     return partitions
 
 
@@ -1000,14 +1011,17 @@ def split_page(
     """Split one oversized source unit at paragraph boundaries, then offsets."""
 
     def fits_budget(segment: SourceSegment) -> bool:
+        text = render_partition(
+            [segment], source_label=source_label, question=question
+        )
+        # A byte-pair token consumes at least one UTF-8 byte. Most individual
+        # Markdown paragraphs are short enough to guarantee a fit without encoding.
+        if len(prompt.encode("utf-8")) + 1 + len(text.encode("utf-8")) <= max_tokens:
+            return True
         return (
             prompt_token_count(
                 prompt,
-                render_partition(
-                    [segment],
-                    source_label=source_label,
-                    question=question,
-                ),
+                text,
                 model=model,
                 fallback_encoding=fallback_encoding,
             )

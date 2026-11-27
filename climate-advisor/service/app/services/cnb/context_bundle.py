@@ -20,6 +20,7 @@ from app.models.cnb.context_bundle import (
     ChapterExcerpts,
     SelectedSource,
     SourceDocumentText,
+    SourceExcerpt,
     SourceTextContext,
 )
 from app.models.db.concept_note import ConceptNoteRun
@@ -57,6 +58,7 @@ from app.services.cnb.source_analysis import (
     gather_all_or_raise,
     render_source_text,
     source_analysis_contract_version,
+    source_unit_page,
     verify_source_artifact,
 )
 from app.services.cnb.source_impact_review import RevalidationSource
@@ -77,6 +79,8 @@ from app.services.concept_note_city_context import (
     load_ghgi_context,
     load_hiap_context,
 )
+from app.services.document_workspace.catalogue import setup_template_id
+from app.services.document_workspace.requirements import fingerprint as workspace_fingerprint
 from app.utils.conversation_observability import (
     async_workflow_trace,
     finish_workflow_trace,
@@ -183,9 +187,9 @@ class ContextBundleService:
                 # Reuse unchanged source analyses and run the LLM only for new inputs.
                 if active.uploads:
                     analysis_settings = get_settings()
-                    contract_version = source_analysis_contract_version(
-                        analysis_settings
-                    )
+                    template = await self._load_template(run_id)
+                    point_contract = _point_source_contract(template, analysis_settings)
+                    contract_version = point_contract or source_analysis_contract_version(analysis_settings)
                     reader_limit = asyncio.Semaphore(
                         analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
                     )
@@ -240,6 +244,7 @@ class ContextBundleService:
                                     analysis_settings=analysis_settings,
                                     reader_limit=reader_limit,
                                     contract_version=contract_version,
+                                    point_setup=point_contract is not None,
                                 )
                                 for upload in uploads_to_analyze
                             )
@@ -259,8 +264,7 @@ class ContextBundleService:
                         token=token,
                         cc_client=cc_client,
                     )
-                    template = await self._load_template(run_id)
-                    if template is not None and units_by_upload is not None:
+                    if template is not None and units_by_upload is not None and not point_contract:
                         selected_sources = await self._attach_chapter_evidence(
                             sources=selected_sources,
                             units_by_upload=units_by_upload,
@@ -268,7 +272,8 @@ class ContextBundleService:
                             settings=analysis_settings,
                             reader_limit=reader_limit,
                         )
-                    source_text = _source_text(
+                    source_text = await asyncio.to_thread(
+                        _source_text,
                         uploads=active.uploads,
                         units_by_upload=units_by_upload,
                         selected_sources=selected_sources,
@@ -379,6 +384,7 @@ class ContextBundleService:
         analysis_settings: Settings,
         reader_limit: asyncio.Semaphore,
         contract_version: str,
+        point_setup: bool = False,
     ) -> RevalidationSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
         source_units = await self._load_source_units(
@@ -391,17 +397,21 @@ class ContextBundleService:
             token=token,
             cc_client=cc_client,
         )
-        # Analyze only the verified source units under the shared reader limit.
-        analysis = await self.analyze_document_fn(
-            upload_id=upload.upload_id,
-            filename=upload.filename,
-            source_label=upload.source_label,
-            sha256=upload.markdown_sha256,
-            source_format=upload.source_format,
-            pages=source_units,
-            settings=analysis_settings,
-            reader_limit=reader_limit,
-        )
+        if point_setup:
+            # The durable point reader consumes these exact verified units. Publish
+            # the source for chat immediately, so legacy chapter mapping cannot block it.
+            analysis = _verified_point_source(upload, source_units)
+        else:
+            analysis = await self.analyze_document_fn(
+                upload_id=upload.upload_id,
+                filename=upload.filename,
+                source_label=upload.source_label,
+                sha256=upload.markdown_sha256,
+                source_format=upload.source_format,
+                pages=source_units,
+                settings=analysis_settings,
+                reader_limit=reader_limit,
+            )
         return RevalidationSource(
             source=analysis.model_copy(
                 update={
@@ -648,6 +658,8 @@ class ContextBundleService:
         sources = await load_selected_sources(
             session_factory=self.session_factory, user_id=user_id, run_id=run_id
         )
+        if point_contract := _point_source_contract(template, get_settings()):
+            return any(source.analysis_contract_version != point_contract for source in sources)
         fingerprint = chapter_evidence_fingerprint(
             get_settings(), template_chapter_requirements(template)
         )
@@ -1027,6 +1039,62 @@ class ContextBundleService:
             error_reason=error_reason,
             error_details=error_details,
         )
+
+
+def _point_source_contract(
+    template: ApplicationContextTemplate | None, settings: Settings
+) -> str | None:
+    """Separate pinned point-reader caches from generic document and chapter mappings."""
+    if (
+        template is None
+        or not template.document_type
+        or template.id != setup_template_id(template.document_type)
+    ):
+        return None
+    return workspace_fingerprint(
+        [
+            "registered-point-source-v1",
+            template.model_dump(mode="json"),
+            settings.llm.prompts.get_prompt("document_setup_reading"),
+            settings.llm.prompts.get_prompt("document_setup_search"),
+            settings.llm.models.cnb_source_reader.model_dump(mode="json"),
+        ]
+    )
+
+
+def _verified_point_source(
+    upload: ConceptNoteUploadSnapshot, units: Sequence[SourceUnit]
+) -> SelectedSource:
+    """Register the verified source with a real opening excerpt while points are read."""
+    label = upload.source_label or upload.filename
+    excerpts = []
+    for unit in units:
+        text = unit.text.strip()
+        if text and not (text.startswith("#") and "\n" not in text):
+            page = source_unit_page(unit)
+            excerpts.append(
+                SourceExcerpt(
+                    text=text[:650],
+                    page=page,
+                    anchor=None if page is not None else unit.anchor,
+                )
+            )
+            break
+    summary = f"Source available for lookup: {label}."
+    if excerpts:
+        summary += f" Opening excerpt: {excerpts[0].text}"
+    return SelectedSource(
+        upload_id=upload.upload_id,
+        filename=upload.filename,
+        source_label=label,
+        sha256=upload.markdown_sha256,
+        source_format=upload.source_format,
+        page_count=len(units) if upload.source_format == "pdf" else None,
+        block_count=len(units) if upload.source_format == "markdown" else None,
+        summary=summary,
+        key_excerpts=excerpts,
+        topics=[],
+    )
 
 
 def _source_text(

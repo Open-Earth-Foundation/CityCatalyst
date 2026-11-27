@@ -67,6 +67,7 @@ class WorkspaceChapterSnapshot:
     validation: WorkspaceValidationSnapshot | None = None
     source_provenance: dict[str, Any] | None = None
     confirmed_source_provenance: dict[str, Any] | None = None
+    point_passages: dict[str, dict[str, str]] = field(default_factory=dict)
 
 
 async def _snapshot_chapters(
@@ -133,6 +134,11 @@ async def _snapshot_chapters(
             validated_revision_numbers=validated_revision_numbers,
             template_fingerprint=template_fingerprint,
             source_provenance=revision_provenance(revisions.get(chapter.chapter_id)),
+            point_passages=(revisions[chapter.chapter_id].patch_summary or {}).get(
+                "point_passages", {}
+            )
+            if chapter.chapter_id in revisions
+            else {},
             canonical_points=canonical_points,
             source_authority=source_authority,
         )
@@ -189,6 +195,7 @@ def _chapter_snapshot(
     validated_revision_numbers: dict[UUID, int],
     template_fingerprint: str | None,
     source_provenance: dict[str, Any],
+    point_passages: dict[str, dict[str, str]],
     canonical_points: list[dict[str, Any]],
     source_authority: ValidationSourceAuthority,
 ) -> WorkspaceChapterSnapshot:
@@ -256,6 +263,7 @@ def _chapter_snapshot(
         revision_id=detached.revision_id,
         validation=validation_snapshot,
         source_provenance=source_provenance,
+        point_passages=point_passages,
         confirmed_source_provenance=revision_provenance(confirmed)
         if confirmed
         else None,

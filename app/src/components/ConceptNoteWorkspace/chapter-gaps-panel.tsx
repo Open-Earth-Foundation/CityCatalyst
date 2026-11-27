@@ -240,6 +240,7 @@ export function ChapterGapMarker({
   const [open, setOpen] = useState(false);
   const answering = useRef(false);
   const critical = row.severity === "critical";
+  const formField = Boolean(row.gap && chapter.point_passages?.[row.gap.field_key]);
   const trigger = (
     <chakra.button
       type="button"
@@ -256,7 +257,8 @@ export function ChapterGapMarker({
       alignItems="center"
       justifyContent="center"
       flexShrink={0}
-      w="30px"
+      w={formField ? "auto" : "30px"}
+      px={formField ? 3 : 0}
       h="30px"
       borderRadius="full"
       border="1px solid"
@@ -278,15 +280,15 @@ export function ChapterGapMarker({
         outlineOffset: "2px",
       }}
     >
-      {number}
+      {formField ? t("point-draft-answer-needed") : number}
     </chakra.button>
   );
   return (
     <chakra.span
-      float="right"
-      clear="right"
-      ml={2}
-      mr={{ base: 0, md: "-40px" }}
+      float={formField ? undefined : "right"}
+      clear={formField ? undefined : "right"}
+      ml={formField ? 0 : 2}
+      mr={formField ? 0 : { base: 0, md: "-40px" }}
       mb={1}
     >
       {directAnswer ? (

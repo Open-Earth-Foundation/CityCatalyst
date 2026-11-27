@@ -187,6 +187,9 @@ class ConceptNoteDraftChapterResponse(BaseModel):
     status: ConceptNoteChapterStatus
     required: bool
     user_locked: bool
+    point_passages: dict[str, str] = Field(
+        default_factory=dict, description="Point key to passage heading."
+    )
     body_markdown: str | None = None
     gaps: list[ConceptNoteGapResponse] = Field(default_factory=list)
     open_gap_count: int = Field(default=0, ge=0)

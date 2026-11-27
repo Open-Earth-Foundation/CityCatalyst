@@ -3,13 +3,10 @@
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid4
-
-from fastapi import HTTPException
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
@@ -38,6 +35,7 @@ from app.models.document_workspace.contracts import (
     DocumentSetupRequest,
     DocumentWorkspace,
     DocumentWorkspacePoint,
+    GeneratedPointQuestion,
 )
 from app.persistence.concept_notes.orphan_gaps import recover_orphan_information_gaps
 from app.persistence.concept_notes.source_provenance import (
@@ -56,6 +54,11 @@ from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     calculate_application_template_fingerprint,
 )
+from app.services.document_workspace.catalogue import (
+    setup_catalogue,
+    template_from_setup,
+)
+from app.services.document_workspace.city_candidates import sync_city_candidates
 from app.services.document_workspace.requirements import (
     fingerprint,
     template_definitions,
@@ -65,8 +68,12 @@ from app.services.document_workspace.source_sync import (
     queue_ready_source_sync,
     schedule_source_sync,
 )
+from app.utils.city_point_source import city_citation_for_display
 from app.utils.cnb_information_markers import information_needed_markers
 from app.utils.document_point_values import accepted_point_reason
+from fastapi import HTTPException
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 ACCEPTED = {"answered", "assumption", "not_applicable"}
@@ -112,15 +119,54 @@ class DocumentWorkspaceService:
             state = await self._state(session, run.run_id)
             if state.setup is None and template is not None:
                 await self._materialize(session, state, template, user_id=run.user_id)
+            await sync_city_candidates(
+                self, session, self._validation_sources.current, state
+            )
             return await self._project(session, state)
 
     async def save_setup(
         self, run: ConceptNoteRun, payload: DocumentSetupRequest
     ) -> DocumentWorkspace:
-        """Explicitly reconcile the currently selected immutable template snapshot."""
-        template = await ConceptNoteApplicationContextService(
-            session_factory=self.session_factory
-        ).load_template_for_run(run)
+        """Pin a catalogue record or reconcile the selected Builder template."""
+        catalogue = setup_catalogue()
+        setup = catalogue.get(payload.document_type)
+        if not setup and payload.document_type != "concept_note":
+            raise HTTPException(422, "Unknown document setup")
+        if setup:
+            template = template_from_setup(setup)
+            workflow_factory = self.workflow_session_factory or self.session_factory
+            async with (
+                workflow_factory() as workflow,
+                workflow.begin(),
+                self.using_workflow_session(workflow),
+            ):
+                current_run = await workflow.get(
+                    ConceptNoteRun, run.run_id, with_for_update=True
+                )
+                if current_run is None or current_run.user_id != run.user_id:
+                    raise HTTPException(404, "Document no longer available")
+                result = await self._save_setup(run, payload, template, setup)
+                # A replay can repair a failed cross-store handoff. Never replace a
+                # newer projection with an old request's historical result.
+                async with self.session_factory() as reference:
+                    state = await reference.get(DocumentWorkspaceState, run.run_id)
+                    if state.setup_fingerprint == result.setup.fingerprint:
+                        current_run.context_summary = {
+                            **(current_run.context_summary or {}),
+                            "point_setup_template": template.model_dump(mode="json"),
+                        }
+        else:
+            template = await ConceptNoteApplicationContextService(
+                session_factory=self.session_factory
+            ).load_template_for_run(run)
+            result = await self._save_setup(run, payload, template, None)
+        if await queue_ready_source_sync(
+            run, self.workflow_session_factory or get_session_factory()
+        ):
+            schedule_source_sync(run.run_id)
+        return result
+
+    async def _save_setup(self, run, payload, template, setup) -> DocumentWorkspace:
         if template is None:
             raise HTTPException(
                 422, "Select a document template before completing setup"
@@ -130,6 +176,7 @@ class DocumentWorkspaceService:
                 "operation": "setup",
                 "payload": payload.model_dump(mode="json"),
                 "template": template.model_dump(mode="json"),
+                **({"setup": setup} if setup else {}),
             }
         )
         async with (
@@ -148,7 +195,12 @@ class DocumentWorkspaceService:
                     raise HTTPException(
                         409, "Workspace changed. Reload before changing setup."
                     )
-                await self._materialize(session, state, template, user_id=run.user_id)
+                await self._materialize(
+                    session, state, template, user_id=run.user_id, setup=setup
+                )
+                await sync_city_candidates(
+                    self, session, self._validation_sources.current, state
+                )
                 if await recover_orphan_information_gaps(session, run.run_id):
                     state.revision += 1
                 result = await self._project(session, state)
@@ -160,12 +212,6 @@ class DocumentWorkspaceService:
                         result=result.model_dump(mode="json"),
                     )
                 )
-        # Queue after the CNB commit so workers observe the reconciled setup.
-        # Replay also repairs a prior CA-queue failure after that commit.
-        if await queue_ready_source_sync(
-            run, self.workflow_session_factory or get_session_factory()
-        ):
-            schedule_source_sync(run.run_id)
         return result
 
     async def reconcile_template(
@@ -235,17 +281,47 @@ class DocumentWorkspaceService:
         template: ApplicationContextTemplate,
         *,
         user_id: str,
+        setup: dict[str, Any] | None = None,
     ) -> None:
         """Reconcile only exact compatible keys; retain retired records/history."""
+        if setup is None and state.setup and state.setup.get("catalogue_version"):
+            pinned = await session.scalar(
+                select(DocumentSetupSnapshot).where(
+                    DocumentSetupSnapshot.run_id == state.run_id,
+                    DocumentSetupSnapshot.version == state.setup_version,
+                )
+            )
+            if (
+                pinned
+                and ApplicationContextTemplate.model_validate(pinned.snapshot)
+                == template
+            ):
+                return
         definitions = template_definitions(template)
         setup_hash = fingerprint(
             {
                 "template": calculate_application_template_fingerprint(template),
                 "requirements": definitions,
+                **({"document_setup": setup} if setup else {}),
             }
         )
         if state.setup_fingerprint == setup_hash:
             return
+        if setup:
+            existing = set(
+                await session.scalars(
+                    select(ConceptNoteChapter.template_section_id).where(
+                        ConceptNoteChapter.run_id == state.run_id,
+                        ConceptNoteChapter.status != "deleted",
+                    )
+                )
+            )
+            incoming = {chapter["chapter_ref"] for chapter in template.chapter_schema}
+            if existing and not existing.issubset(incoming):
+                raise HTTPException(
+                    409,
+                    "This draft already has different chapters. Start a new document for this setup.",
+                )
         points = {
             point.semantic_key: point
             for point in await session.scalars(
@@ -282,7 +358,7 @@ class DocumentWorkspaceService:
                             point.disposition in ACCEPTED
                             and point.disposition != "not_applicable"
                         ):
-                            validate_value(definition, point.value)
+                            validate_value(definition, point.value, human_decision=True)
                             if any(
                                 previous.get(name) != definition.get(name)
                                 for name in ("answer_type", "kind", "unit")
@@ -370,7 +446,18 @@ class DocumentWorkspaceService:
                 select(DocumentNeed).where(DocumentNeed.run_id == state.run_id)
             )
         }
-        groups: dict[str, dict[str, Any]] = {}
+        groups: dict[str, dict[str, Any]] = {
+            category["key"]: {
+                "key": category["key"],
+                "label": category["label"],
+                "description": category["label"],
+                "guidance": category["guidance"],
+                "holder": category["holder"],
+                "point_keys": [],
+                "required": False,
+            }
+            for category in (setup or {}).get("file_categories", [])
+        }
         for definition in definitions:
             raw = definition.get("evidence_need") or {
                 "key": definition["key"],
@@ -403,6 +490,10 @@ class DocumentWorkspaceService:
         for key, definition in groups.items():
             if key in needs:
                 needs[key].definition, needs[key].active = definition, True
+                if setup:
+                    # A file finishes reading against one version of the setup.
+                    # Reusing a category does not establish that new points were read.
+                    needs[key].documents = []
             else:
                 session.add(
                     DocumentNeed(
@@ -418,7 +509,8 @@ class DocumentWorkspaceService:
         state.setup_fingerprint = setup_hash
         state.setup = {
             "name": template.name,
-            "document_type": "concept_note",
+            "document_type": setup["document_type"] if setup else "concept_note",
+            **({"catalogue_version": setup["version"]} if setup else {}),
             "version": state.setup_version,
             "fingerprint": setup_hash,
             "ready": bool(definitions),
@@ -428,7 +520,10 @@ class DocumentWorkspaceService:
                 run_id=state.run_id,
                 version=state.setup_version,
                 fingerprint=setup_hash,
-                snapshot=template.model_dump(mode="json"),
+                snapshot={
+                    **template.model_dump(mode="json"),
+                    **({"document_setup": setup} if setup else {}),
+                },
             )
         )
         await session.flush()
@@ -561,7 +656,9 @@ class DocumentWorkspaceService:
                 point.value = (
                     None
                     if payload.command == "not_applicable"
-                    else validate_value(point.definition, value)
+                    else validate_value(
+                        point.definition, value, human_decision=candidate is None
+                    )
                 )
                 point.disposition = {
                     "assume": "assumption",
@@ -604,7 +701,12 @@ class DocumentWorkspaceService:
                     "note": payload.note,
                 }
             point.version += 1
-            if accepted:
+            draft_changed = accepted or (
+                (state.setup or {}).get("document_type") not in {None, "concept_note"}
+                and point.disposition == "missing"
+                and payload.command in {"park", "resume"}
+            )
+            if draft_changed:
                 point.accepted_version = point.version
             state.revision += 1
             self._history(
@@ -618,7 +720,7 @@ class DocumentWorkspaceService:
                 },
             )
             job = None
-            if accepted:
+            if draft_changed:
                 # A persisted proposal is bound to the canonical input vector as
                 # well as chapter text. New accepted facts invalidate that plan.
                 pending_jobs = list(
@@ -788,6 +890,20 @@ class DocumentWorkspaceService:
             )
         )
         active_chapter_refs = {chapter.template_section_id for chapter in chapters}
+        latest_revisions = {}
+        drafted_refs = set()
+        for chapter in chapters:
+            latest = await session.scalar(
+                select(ConceptNoteChapterRevision)
+                .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
+                .order_by(ConceptNoteChapterRevision.revision_number.desc())
+                .limit(1)
+            )
+            latest_revisions[chapter.chapter_id] = latest
+            if latest and latest.body_markdown.strip():
+                drafted_refs.add(chapter.template_section_id)
+        registered = bool((state.setup or {}).get("catalogue_version"))
+        tracked_refs = drafted_refs if registered else active_chapter_refs
         validation_sources = (
             await load_validation_source_snapshot(
                 self.workflow_session_factory,
@@ -830,17 +946,17 @@ class DocumentWorkspaceService:
                     blockers.append(
                         f"Required chapter is missing: {required_chapter.title}"
                     )
+        revisions = defaultdict(dict)
+        for entry in await session.scalars(
+            select(DocumentPointRevision)
+            .join(DocumentPoint)
+            .where(DocumentPoint.run_id == state.run_id, DocumentPoint.active.is_(True))
+            .order_by(DocumentPointRevision.version)
+        ):
+            revisions[entry.point_id][entry.version] = entry
         for row in rows:
-            accepted = (
-                await session.scalar(
-                    select(DocumentPointRevision).where(
-                        DocumentPointRevision.point_id == row.point_id,
-                        DocumentPointRevision.version == row.accepted_version,
-                    )
-                )
-                if row.accepted_version > 0
-                else None
-            )
+            history = revisions[row.point_id]
+            accepted = history.get(row.accepted_version)
             choices = [
                 candidate
                 for candidate in candidates
@@ -863,12 +979,16 @@ class DocumentWorkspaceService:
                     else row.disposition
                 )
             )
-            freshness = "missing" if row.disposition not in ACCEPTED else "current"
+            refs = set(row.definition["chapter_refs"])
+            has_text = not registered or bool(refs and refs <= drafted_refs)
+            freshness = (
+                "current" if row.disposition in ACCEPTED and has_text else "missing"
+            )
             stale = any(
                 dependency.applied_version < row.accepted_version
                 for dependency in dependencies
                 if dependency.point_id == row.point_id
-                and dependency.chapter_ref in active_chapter_refs
+                and dependency.chapter_ref in tracked_refs
             )
             latest_job = next(
                 (
@@ -879,7 +999,7 @@ class DocumentWorkspaceService:
                 ),
                 None,
             )
-            if row.disposition in ACCEPTED and stale:
+            if row.disposition in ACCEPTED and has_text and stale:
                 freshness = {
                     "queued": "updating",
                     "running": "updating",
@@ -903,6 +1023,43 @@ class DocumentWorkspaceService:
                     )
                 },
                 version=row.version,
+                answer_status=row.disposition,
+                evidence_status=(
+                    "conflict"
+                    if conflict
+                    else "confirmed"
+                    if accepted and accepted.snapshot.get("candidate_id")
+                    else "found"
+                    if pending
+                    else "partial"
+                    if any(c.status == "context" for c in choices)
+                    else "missing"
+                ),
+                work_group=(
+                    "waiting"
+                    if (row.task or {}).get("status") in {"parked", "waiting"}
+                    else "conflict"
+                    if conflict
+                    else "covered"
+                    if row.disposition in ACCEPTED
+                    else "confirmation"
+                    if pending
+                    else "decision"
+                    if row.definition["kind"] == "decision"
+                    else "evidence"
+                ),
+                history=[
+                    {
+                        "version": entry.version,
+                        "actor": entry.actor_user_id,
+                        "operation": entry.operation,
+                        "value": entry.snapshot.get("value"),
+                        "reason": entry.snapshot.get("reason"),
+                        "at": entry.created_at,
+                    }
+                    for entry in history.values()
+                ],
+                usual_document=row.definition.get("usual_document"),
                 choices=row.definition.get("choices", []),
                 status=status,
                 value=row.value,
@@ -917,7 +1074,14 @@ class DocumentWorkspaceService:
                     {
                         "candidate_id": str(candidate.candidate_id),
                         "value": candidate.value,
-                        "citations": candidate.citations,
+                        "citations": [
+                            city_citation_for_display(
+                                citation, candidate.source_identity.get("field", "")
+                            )
+                            if candidate.source_identity.get("kind") == "city_context"
+                            else citation
+                            for citation in candidate.citations
+                        ],
                         "status": candidate.status,
                     }
                     for candidate in choices
@@ -934,12 +1098,7 @@ class DocumentWorkspaceService:
                 blockers.append(f"Dependent text is {freshness}: {point.label}")
         chapter_versions = []
         for chapter in chapters:
-            latest = await session.scalar(
-                select(ConceptNoteChapterRevision)
-                .where(ConceptNoteChapterRevision.chapter_id == chapter.chapter_id)
-                .order_by(ConceptNoteChapterRevision.revision_number.desc())
-                .limit(1)
-            )
+            latest = latest_revisions[chapter.chapter_id]
             chapter_versions.append(
                 {
                     "chapter": str(chapter.chapter_id),
@@ -1028,7 +1187,14 @@ class DocumentWorkspaceService:
                     "need_id": str(need.need_id),
                     **need.definition,
                     "status": status,
-                    "documents": need.documents,
+                    "documents": [
+                        {
+                            k: v
+                            for k, v in document.items()
+                            if k != "reading_fingerprint"
+                        }
+                        for document in need.documents
+                    ],
                 }
             )
         required = [point for point in points if point.required]
@@ -1036,6 +1202,18 @@ class DocumentWorkspaceService:
         return DocumentWorkspace(
             revision=state.revision,
             setup=state.setup,
+            available_setups=[
+                {
+                    "document_type": setup["document_type"],
+                    "name": setup["name"],
+                    "version": setup["version"],
+                    "chapter_count": len(setup["chapters"]),
+                    "point_count": sum(
+                        len(chapter["required_fields"]) for chapter in setup["chapters"]
+                    ),
+                }
+                for setup in setup_catalogue().values()
+            ],
             points=points,
             needs=needs,
             overview={
@@ -1053,8 +1231,20 @@ class DocumentWorkspaceService:
                         "label": point.label,
                         "reason": point.status.replace("_", " "),
                     }
-                    for point in sorted(points, key=lambda item: not item.required)
-                    if point.status not in ACCEPTED
+                    for point in sorted(
+                        (
+                            item
+                            for item in points
+                            if item.work_group not in {"covered", "waiting"}
+                        ),
+                        key=lambda item: (
+                            ("conflict", "confirmation", "evidence", "decision").index(
+                                item.work_group
+                            ),
+                            not item.required,
+                            item.label,
+                        ),
+                    )
                 ][:3],
             },
             export_eligibility={
@@ -1090,32 +1280,76 @@ class DocumentWorkspaceService:
                 "status",
             },
         )
-        async with self.session_factory() as session:
-            definition = await session.scalar(
-                select(DocumentPoint.definition).where(
-                    DocumentPoint.point_id == UUID(point.point_id)
-                )
-            )
-        context["choices"] = definition.get("choices", [])
+        context["choices"] = point.choices
         context["candidates"] = [
             {
+                "support": "context only"
+                if candidate.status == "context"
+                else "proposed answer",
                 "value": candidate.value,
                 "citations": [
-                    citation.model_dump(mode="json") for citation in candidate.citations
+                    citation.model_dump(mode="json")
+                    for citation in candidate.citations[:2]
                 ],
             }
             for candidate in point.candidates
-            if candidate.status == "pending"
-        ]
+            if candidate.status in {"pending", "context"}
+        ][:8]
+        related = []
+        for item in workspace.points:
+            if item.key == point.key or not set(item.chapter_refs).intersection(
+                point.chapter_refs
+            ):
+                continue
+            match = next(
+                (
+                    c
+                    for c in item.candidates
+                    if c.candidate_id == item.accepted_candidate_id
+                ),
+                None,
+            )
+            accepted = item.status == "answered" and item.value is not None
+            if not accepted:
+                if item.status == "conflict":
+                    continue
+                match = next(
+                    (
+                        c
+                        for c in item.candidates
+                        if c.status in {"pending", "context"} and c.citations
+                    ),
+                    None,
+                )
+                if not match:
+                    continue
+            related.append(
+                {
+                    "key": item.key,
+                    "label": item.label,
+                    "value": item.value if accepted else match.value,
+                    "basis": "confirmed" if accepted else "source_excerpt",
+                    "citations": [c.model_dump() for c in match.citations[:2]]
+                    if match
+                    else [],
+                }
+            )
+        related.sort(
+            key=lambda fact: (fact["basis"] != "confirmed", not fact["citations"])
+        )
+        context["related_facts"] = related[:6]
         output = await generate_suggestion(
             get_settings(),
             {"language": language, "point": context},
             "document_point_question",
-            DocumentPointQuestion,
+            GeneratedPointQuestion,
+            structured_output=True,
         )
         if output is None:
             raise HTTPException(503, "Point question service unavailable")
-        return output
+        return DocumentPointQuestion(
+            **output.model_dump(exclude={"related_facts"}), related_facts=related[:6]
+        )
 
     async def export(
         self,

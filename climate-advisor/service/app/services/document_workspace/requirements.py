@@ -134,6 +134,9 @@ def _add_definition(
         "chapter_refs": chapter_refs,
         "evidence_need": field.get("evidence_need"),
     }
+    for attribute in ("city_field", "usual_document"):
+        if field.get(attribute):
+            definition[attribute] = field[attribute]
     if definition["kind"] not in {"fact", "decision"}:
         raise HTTPException(422, "Unsupported template point kind")
     existing = definitions.get(key)
@@ -156,7 +159,9 @@ def _add_definition(
         definitions[key] = definition
 
 
-def validate_value(definition: dict[str, Any], value: Any) -> Any:
+def validate_value(
+    definition: dict[str, Any], value: Any, *, human_decision: bool = False
+) -> Any:
     """Accept the declared scalar schema with no string-to-number coercion."""
     answer_type = definition["answer_type"]
     if answer_type == "number":
@@ -184,6 +189,10 @@ def validate_value(definition: dict[str, Any], value: Any) -> Any:
                 raise ValueError("Use ISO date")
         except ValueError as exc:
             raise HTTPException(422, "Answer must be an ISO date (YYYY-MM-DD)") from exc
-    if answer_type == "choice" and value not in definition.get("choices", []):
+    if (
+        answer_type == "choice"
+        and value not in definition.get("choices", [])
+        and not (human_decision and definition.get("kind") == "decision")
+    ):
         raise HTTPException(422, "Answer is not an allowed choice")
     return value

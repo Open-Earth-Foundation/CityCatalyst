@@ -1340,6 +1340,7 @@ export interface ConceptNoteApplicationContext {
   } | null;
   template: {
     id: string;
+    document_type?: string | null;
     name: string;
     output_format: string | null;
     chapter_schema: ConceptNoteTemplateChapter[];
@@ -1550,6 +1551,7 @@ export interface ValidateConceptNoteChapterRequest {
 }
 
 export interface ConceptNoteDraftChapter {
+  point_passages?: Record<string, string>;
   description?: string;
   chapter_id: string;
   template_section_id: string | null;

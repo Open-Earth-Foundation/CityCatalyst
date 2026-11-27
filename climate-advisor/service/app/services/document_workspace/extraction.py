@@ -52,7 +52,7 @@ async def extract_source_candidates(
     """
     service = service or DocumentWorkspaceService()
     settings = settings or get_settings()
-    await service.load(run)
+    workspace = await service.load(run)
     async with service.session_factory() as session:
         points = list(
             await session.scalars(
@@ -66,6 +66,21 @@ async def extract_source_candidates(
     client, owns_client = resolve_analysis_client(settings, client)
     try:
         for source in sources:
+            if workspace.setup and workspace.setup.catalogue_version:
+                from app.services.document_workspace.setup_reading import (
+                    read_and_store_setup_source,
+                )
+
+                await read_and_store_setup_source(
+                    service,
+                    run,
+                    source,
+                    points,
+                    settings=settings,
+                    client=client,
+                    runner=runner,
+                )
+                continue
             unit_text = {source_unit_anchor(unit): unit.text for unit in source.units}
             for point in points:
                 reading_hash = fingerprint(

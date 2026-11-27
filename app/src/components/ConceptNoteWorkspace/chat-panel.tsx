@@ -41,6 +41,7 @@ import {
   useConceptNoteChatThreads,
 } from "./chat-threads";
 import { ChatProgress } from "./chat-progress";
+import { ChatPointProposalCard } from "./chat-point-proposal";
 import { DraftingProgressCard } from "./drafting-progress-card";
 import { ChatWelcome, type ChatWelcomeStage } from "./chat-welcome";
 import { GapAnswerForm, type GapAnswerRequest } from "./gap-answer-form";
@@ -487,7 +488,7 @@ export function ConceptNoteChatPanel({
             {t("concept-note-copilot")}
           </Text>
         </Box>
-        <HStack
+        {threadId && <HStack
           gap={1.5}
           flexShrink={0}
           whiteSpace="nowrap"
@@ -509,7 +510,7 @@ export function ConceptNoteChatPanel({
           <Text fontSize="label.sm">
             {t(CONNECTION_BADGE[connection].label)}
           </Text>
-        </HStack>
+        </HStack>}
         <ChatThreadSwitcher
           controller={chatThreads}
           disabled={threadSwitchDisabled}
@@ -659,6 +660,14 @@ export function ConceptNoteChatPanel({
                     )}
                   </Box>
                 )}
+                {message.pointProposals?.map((proposal) => (
+                  <ChatPointProposalCard
+                    key={proposal.command.idempotency_key}
+                    proposal={proposal}
+                    runId={runId}
+                    lng={lng}
+                  />
+                ))}
                 {message.visuals?.map((visual, index) => (
                   <ChatVisualFrame
                     key={index}
@@ -671,7 +680,7 @@ export function ConceptNoteChatPanel({
               </Fragment>
             ))}
 
-            {draft && (
+            {draft && (draft.status === "running" || threadId) && (
               <DraftingProgressCard
                 draft={draft}
                 lng={lng}
@@ -814,9 +823,10 @@ export function ConceptNoteChatPanel({
             </Text>
           )}
           {!threadId && (
-            <Text mt={2} fontSize="label.sm" color="content.tertiary">
-              {t("chat-thread-unavailable")}
-            </Text>
+            <HStack mt={2} gap={2} flexWrap="wrap">
+              <Text fontSize="body.sm" color="content.secondary">{t("workspace-no-chat-yet")}</Text>
+              <Button type="button" size="sm" variant="outline" loading={chatThreads.busy} onClick={() => void chatThreads.startChat()}>{t("workspace-start-chat")}</Button>
+            </HStack>
           )}
         </chakra.form>
       )}

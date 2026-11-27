@@ -1,0 +1,31 @@
+{
+  "purpose": "Post-run diagnosis of alternative citations. Official scores are unchanged.",
+  "model": "openai/gpt-6.1-sol",
+  "rows": {
+    "applicant.political_representative": {
+      "key": "applicant.political_representative",
+      "matches": true,
+      "reason": "The citations identify the office of Mayor of Krosno without naming the officeholder, matching the key’s limited support."
+    },
+    "stakeholders.groups": {
+      "key": "stakeholders.groups",
+      "matches": true,
+      "reason": "The citations identify local-plan stakeholder groups including youth, seniors, NGOs, entrepreneurs and city authorities, without establishing investment-specific roles."
+    },
+    "sectors.other": {
+      "key": "sectors.other",
+      "matches": false,
+      "reason": "Cycling infrastructure, safety management and green-city activities do not establish the conventional energy sectors listed in Table 64."
+    },
+    "measures.description": {
+      "key": "measures.description",
+      "matches": false,
+      "reason": "SMS notifications and a list of potential technologies do not establish the planned modernisation, lighting, heating-network and boiler-replacement measures in the key."
+    },
+    "plan.key_measures": {
+      "key": "plan.key_measures",
+      "matches": false,
+      "reason": "The Smart Grid proposal does not match the specific Table 64 measures, capacities, costs and implementation dates in the key."
+    }
+  }
+}

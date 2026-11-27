@@ -47,6 +47,7 @@ import {
   remarkMissingInformation,
 } from "./draft-markdown";
 import { markerLabel } from "./missing-information";
+import { chapterDisplayTitle } from "./chapter-title";
 import {
   ChapterGapsPanel,
   ChapterGapMarker,
@@ -57,7 +58,7 @@ import {
 import {
   getChapterDisplayStatus,
   isChapterValidationCurrent,
-  type ChapterDisplayStatus,
+  chapterTone,
 } from "./chapter-validation";
 import type { DraftFocusController } from "./use-draft-focus";
 import { ValidationEvidence } from "./validation-evidence";
@@ -218,12 +219,47 @@ const ChapterGapContext = createContext<{
   lng: string;
   rows: ChapterGapRow[];
   canonicalPointKeys?: string[];
+  onOpenPoint?: (key: string) => void;
   onAnswerGap?: (chapter: ConceptNoteDraftChapter, row: ChapterGapRow) => void;
 } | null>(null);
 
 // Module-level component types keep open gap popovers mounted across renders.
 const previewMarkdownComponents = {
   ...markdownComponents,
+  h4: function PointHeading({
+    children,
+    node,
+  }: React.ComponentPropsWithoutRef<"h4"> & {
+    node?: {
+      position?: { start: { offset?: number }; end: { offset?: number } };
+    };
+  }) {
+    const context = useContext(ChapterGapContext)!;
+    const { t } = useTranslation(context.lng, "concept-notes");
+    const raw = context.chapter.body_markdown?.slice(
+      node?.position?.start.offset,
+      node?.position?.end.offset,
+    );
+    const key = Object.entries(context.chapter.point_passages ?? {}).find(
+      ([, heading]) => heading === raw,
+    )?.[0];
+    return (
+      <Flex align="baseline" gap={2} mt={4}>
+        <chakra.h4 fontWeight="semibold">{children}</chakra.h4>
+        {key && context.onOpenPoint && (
+          <chakra.button
+            type="button"
+            color="content.link"
+            fontSize="label.sm"
+            textDecoration="underline"
+            onClick={() => context.onOpenPoint?.(key)}
+          >
+            {t("point-draft-view-point")}
+          </chakra.button>
+        )}
+      </Flex>
+    );
+  },
   a: function PreviewLink(props: React.ComponentPropsWithoutRef<"a">) {
     const gaps = useContext(ChapterGapContext)!;
     const message =
@@ -251,23 +287,8 @@ const previewMarkdownComponents = {
 // shorter than the preview while the drafting progress card is showing.
 const DOCUMENT_MIN_HEIGHT = "360px";
 
-export function chapterTone(status: ChapterDisplayStatus): string {
-  switch (status) {
-    case "ready":
-      return "sentiment.positiveDefault";
-    case "draft":
-      return "content.link";
-    case "needs_review":
-    case "stale":
-      return "sentiment.warningDefault";
-    case "incomplete":
-      return "sentiment.negativeDefault";
-    default:
-      return "content.tertiary";
-  }
-}
-
 export interface DraftInlineReviewProps {
+  onOpenPoint?: (key: string) => void;
   isConfirmingChapter: boolean;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => void;
   editFocus?: {
@@ -318,6 +339,7 @@ export function DraftDocumentPanel({
   isConfirmingChapter,
   onConfirmChapter,
   onAnswerGap,
+  onOpenPoint,
   canonicalPointKeys,
   selectionRunId,
   selectionDisabled = false,
@@ -406,7 +428,7 @@ export function DraftDocumentPanel({
               >
                 {chapters.map((chapter) => (
                   <option key={chapter.chapter_id} value={chapter.chapter_id}>
-                    {chapter.position + 1}. {chapter.title}
+                    {chapterDisplayTitle(chapter.title, chapter.position)}
                   </option>
                 ))}
               </NativeSelectField>
@@ -535,7 +557,10 @@ export function DraftDocumentPanel({
                       aria-label={t("jump-to-chapter", {
                         chapter: chapter.title,
                       })}
-                      title={`${chapter.position + 1} ${chapter.title}`}
+                      title={chapterDisplayTitle(
+                        chapter.title,
+                        chapter.position,
+                      )}
                       display="flex"
                       alignItems="center"
                       justifyContent="flex-start"
@@ -579,7 +604,7 @@ export function DraftDocumentPanel({
                         textTransform="none"
                         whiteSpace="nowrap"
                       >
-                        {chapter.position + 1} {chapter.title}
+                        {chapterDisplayTitle(chapter.title, chapter.position)}
                       </Text>
                       {gapCount > 0 && (
                         <Text
@@ -685,7 +710,7 @@ export function DraftDocumentPanel({
                       lineHeight="28px"
                       color="content.primary"
                     >
-                      {chapter.position + 1} · {chapter.title}
+                      {chapterDisplayTitle(chapter.title, chapter.position)}
                     </Text>
                     <HStack mt={1} gap={2} flexWrap="wrap">
                       <Text fontSize="body.sm" color="content.tertiary">
@@ -857,6 +882,7 @@ export function DraftDocumentPanel({
                               lng,
                               rows: gapRows.get(chapter.chapter_id)!,
                               onAnswerGap,
+                              onOpenPoint,
                               canonicalPointKeys,
                             }}
                           >

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, StrictFloat, StrictInt
@@ -28,7 +29,7 @@ class DocumentPointCandidate(Contract):
     candidate_id: str
     value: JsonValue
     citations: list[DocumentPointCitation]
-    status: Literal["pending", "accepted", "dismissed"]
+    status: Literal["pending", "accepted", "dismissed", "context", "superseded"]
 
 
 class DocumentPointTask(Contract):
@@ -38,6 +39,17 @@ class DocumentPointTask(Contract):
     waiting_for: str | None = None
     requested_information: str | None = None
     note: str | None = None
+
+
+class PointHistoryEntry(Contract):
+    """A recorded change to this point, in the order it was saved."""
+
+    version: int
+    actor: str
+    operation: str
+    value: JsonValue
+    at: datetime
+    reason: str | None = None
 
 
 class DocumentWorkspacePoint(Contract):
@@ -66,6 +78,17 @@ class DocumentWorkspacePoint(Contract):
     accepted_reason: str | None = None
     unit: str | None = None
     accepted_candidate_id: str | None = None
+    answer_status: Literal["missing", "answered", "assumption", "not_applicable"] = (
+        "missing"
+    )
+    evidence_status: Literal["missing", "partial", "found", "confirmed", "conflict"] = (
+        "missing"
+    )
+    work_group: Literal[
+        "confirmation", "conflict", "evidence", "decision", "waiting", "covered"
+    ] = "evidence"
+    history: list[PointHistoryEntry] = Field(default_factory=list)
+    usual_document: str | None = None
     chapter_refs: list[str]
     candidates: list[DocumentPointCandidate]
     task: DocumentPointTask | None = None
@@ -95,6 +118,7 @@ class DocumentWorkspaceNeed(Contract):
     status: Literal["available", "missing", "later", "waiting", "unavailable"]
     point_keys: list[str]
     guidance: str
+    holder: str | None = None
     documents: list[DocumentNeedDocument]
 
 
@@ -106,6 +130,17 @@ class DocumentWorkspaceSetup(Contract):
     version: int
     fingerprint: str
     ready: bool
+    catalogue_version: int | None = None
+
+
+class SetupOption(Contract):
+    """One available pilot setup without the full chapter schema."""
+
+    document_type: str
+    name: str
+    version: int
+    chapter_count: int
+    point_count: int
 
 
 class DocumentNextStep(Contract):
@@ -141,6 +176,7 @@ class DocumentWorkspace(Contract):
 
     revision: int
     setup: DocumentWorkspaceSetup | None
+    available_setups: list[SetupOption] = Field(default_factory=list)
     points: list[DocumentWorkspacePoint]
     needs: list[DocumentWorkspaceNeed]
     overview: DocumentWorkspaceOverview
@@ -190,9 +226,10 @@ class DocumentPointSubquestion(Contract):
 
     question: str = Field(min_length=1, max_length=2000)
     options: list[str] = Field(default_factory=list, max_length=8)
+    implications: list[str] = Field(default_factory=list, max_length=8)
 
 
-class DocumentPointQuestion(Contract):
+class GeneratedPointQuestion(Contract):
     """Read-only configured question output."""
 
     pattern: Literal[
@@ -202,12 +239,30 @@ class DocumentPointQuestion(Contract):
     questions: list[DocumentPointSubquestion] = Field(min_length=1, max_length=6)
 
 
+class RelatedPointFact(Contract):
+    """An accepted point read directly from the same document."""
+
+    key: str
+    label: str
+    value: str | StrictInt | StrictFloat
+    citations: list[DocumentPointCitation]
+    basis: Literal["confirmed", "source_excerpt"] = "confirmed"
+
+
+class DocumentPointQuestion(GeneratedPointQuestion):
+    """Generated guidance alongside verified facts supplied only by the server."""
+
+    related_facts: list[RelatedPointFact] = Field(default_factory=list)
+
+
 class DocumentSetupRequest(Contract):
     """Reconcile the authorized run's currently selected template explicitly."""
 
     expected_revision: int = Field(ge=0)
     idempotency_key: str = Field(min_length=1, max_length=200)
-    document_type: Literal["concept_note"] = "concept_note"
+    document_type: str = Field(
+        default="concept_note", pattern=r"^[a-z][a-z0-9_-]{0,63}$"
+    )
 
 
 class DocumentExportRequest(Contract):

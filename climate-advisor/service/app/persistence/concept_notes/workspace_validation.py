@@ -152,7 +152,7 @@ async def has_current_ready_validation(
 
 
 async def _load_validation_points(
-    session: AsyncSession, run_id: UUID
+    session: AsyncSession, run_id: UUID, *, for_passages: bool = False
 ) -> list[dict[str, Any]]:
     """Capture current policy and immutable accepted reasons for freshness checks."""
     rows = (
@@ -216,6 +216,14 @@ async def _load_validation_points(
                 "value": snapshot.get("value", point.value) if accepted_state else None,
                 "reason": accepted_point_reason(snapshot) if accepted_state else None,
                 "source_provenance": provenance,
+                **(
+                    {
+                        "task": point.task,
+                        "citations": candidate.citations if candidate else [],
+                    }
+                    if for_passages
+                    else {}
+                ),
             }
         )
     return result

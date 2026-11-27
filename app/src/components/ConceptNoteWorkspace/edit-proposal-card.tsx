@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { chapterDisplayTitle } from "./chapter-title";
 import {
   Box,
   chakra,
@@ -206,7 +207,7 @@ export function EditProposalCard({
                         : proposal.structure!.after
                       ).map((chapter, index) => (
                         <Box key={chapter.chapter_id} py={2}>
-                          <Text>{`${index + 1}. ${chapter.title}`}</Text>
+                          <Text>{chapterDisplayTitle(chapter.title, index)}</Text>
                           <Text fontSize="label.sm" whiteSpace="pre-wrap">
                             {chapter.description}
                           </Text>

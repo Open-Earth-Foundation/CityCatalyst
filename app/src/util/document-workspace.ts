@@ -18,7 +18,7 @@ export interface DocumentPointCandidate {
   candidate_id: string;
   value: DocumentPointValue;
   citations: DocumentPointCitation[];
-  status: "pending" | "accepted" | "dismissed";
+  status: "pending" | "accepted" | "dismissed" | "context" | "superseded";
 }
 
 export interface DocumentPointTask {
@@ -55,6 +55,24 @@ export interface DocumentWorkspacePoint {
   accepted_reason?: string | null;
   /** Candidate bound to the current accepted revision; null denotes a human answer. */
   accepted_candidate_id?: string | null;
+  answer_status?: "missing" | "answered" | "assumption" | "not_applicable";
+  evidence_status?: "missing" | "partial" | "found" | "confirmed" | "conflict";
+  work_group?:
+    | "confirmation"
+    | "conflict"
+    | "evidence"
+    | "decision"
+    | "waiting"
+    | "covered";
+  history?: {
+    version: number;
+    actor: string;
+    operation: string;
+    value: DocumentPointValue;
+    at: string;
+    reason?: string | null;
+  }[];
+  usual_document?: string | null;
   chapter_refs: string[];
   candidates: DocumentPointCandidate[];
   task: DocumentPointTask | null;
@@ -71,6 +89,7 @@ export interface DocumentWorkspaceNeed {
   status: "available" | "missing" | "later" | "waiting" | "unavailable";
   point_keys: string[];
   guidance: string;
+  holder?: string | null;
   documents: {
     upload_id: string;
     source_label: string;
@@ -88,7 +107,15 @@ export interface DocumentWorkspace {
     version: number;
     fingerprint: string;
     ready: boolean;
+    catalogue_version?: number | null;
   } | null;
+  available_setups?: {
+    document_type: string;
+    name: string;
+    version: number;
+    chapter_count: number;
+    point_count: number;
+  }[];
   points: DocumentWorkspacePoint[];
   needs: DocumentWorkspaceNeed[];
   overview: {
@@ -142,5 +169,12 @@ export interface DocumentPointQuestion {
     | "compare"
     | "decision";
   why_asking: string;
-  questions: { question: string; options: string[] }[];
+  questions: { question: string; options: string[]; implications?: string[] }[];
+  related_facts?: {
+    key: string;
+    label: string;
+    value: DocumentPointValue;
+    citations: DocumentPointCitation[];
+    basis?: "confirmed" | "source_excerpt";
+  }[];
 }

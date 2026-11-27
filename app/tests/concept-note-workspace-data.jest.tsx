@@ -29,6 +29,13 @@ const t = (key: string, values?: { population: string; year: number }) =>
     ? `${values.population} residents · ${values.year}`
     : key;
 const originalFetch = globalThis.fetch;
+jest.unstable_mockModule("@/services/document-workspace-api", () => ({
+  documentWorkspaceApi: {
+    useCommandDocumentPointMutation: () => [jest.fn(), {}],
+    useGetWorkspaceDocumentsQuery: () => ({}),
+    useAttachWorkspaceDocumentMutation: () => [jest.fn(), {}],
+  },
+}));
 const stopStream = jest.fn();
 const startStream = jest.fn(async () => undefined);
 let streamOptions: { onError?: (message: string, code?: string) => void };

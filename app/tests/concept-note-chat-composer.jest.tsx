@@ -33,6 +33,11 @@ const t = (key: string, values?: Record<string, unknown>) =>
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({ t }),
 }));
+jest.unstable_mockModule("@/services/document-workspace-api", () => ({
+  documentWorkspaceApi: {
+    useCommandDocumentPointMutation: () => [jest.fn(), {}],
+  },
+}));
 jest.unstable_mockModule(
   "@/components/ConceptNoteWorkspace/use-concept-note-chat",
   () => ({

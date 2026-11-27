@@ -31,6 +31,12 @@ async def settle_point_review(
         await session.get(ConceptNoteEditProposal, UUID(value))
         for value in job.payload.get("proposal_ids", [])
     ]
+    if job.payload.get("passage_update") and any(
+        p and p.status == "rejected" for p in proposals
+    ):
+        job.status = "declined"
+        state.revision += 1
+        return
     if not proposals or any(
         proposal is None
         or proposal.status in {"rejected", "failed", "stale", "partially_applied"}
@@ -54,6 +60,10 @@ async def settle_point_review(
         if set(point.definition["chapter_refs"]).intersection(
             job.payload["chapter_refs"]
         )
+        and (
+            not job.payload.get("passage_update")
+            or point.semantic_key == job.payload["point_key"]
+        )
     } != job.payload.get("point_versions", {}):
         job.status = "superseded"
         return
@@ -64,7 +74,9 @@ async def settle_point_review(
             DocumentDependency.chapter_ref.in_(job.payload["chapter_refs"]),
         )
     ):
-        dependency.applied_version = by_id[dependency.point_id].accepted_version
+        point = by_id[dependency.point_id]
+        if point.semantic_key in job.payload.get("point_versions", {}):
+            dependency.applied_version = point.accepted_version
     job.status = "complete"
     state.revision += 1
 

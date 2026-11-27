@@ -1,0 +1,741 @@
+{
+  "document_type": "eucf",
+  "version": 1,
+  "name": "European City Facility · Grant application",
+  "file_categories": [
+    {
+      "key": "municipal_profile",
+      "label": "Municipal profile and official statistics",
+      "holder": "Municipal statistics or registry office",
+      "guidance": "Ask for the legal identity, statistical codes, source year and a citation.",
+      "keywords": [
+        "city profile",
+        "official statistics",
+        "registry",
+        "statystyka",
+        "rejestr"
+      ]
+    },
+    {
+      "key": "climate_plan",
+      "label": "Adopted energy or climate plan",
+      "holder": "Climate and energy office",
+      "guidance": "Ask for the adopted plan and resolution, baseline year and the page that identifies each target.",
+      "keywords": [
+        "low emission plan",
+        "gospodarki niskoemisyjnej",
+        "secap",
+        "emissions inventory",
+        "plan energetyczny"
+      ]
+    },
+    {
+      "key": "development_plan",
+      "label": "Local development strategy",
+      "holder": "Strategy and development office",
+      "guidance": "Ask for the adopted local development strategy, including projects, consultation and implementation priorities.",
+      "keywords": [
+        "local development plan",
+        "plan rozwoju lokalnego",
+        "strategia rozwoju"
+      ]
+    },
+    {
+      "key": "governance",
+      "label": "Governance and team records",
+      "holder": "City secretary or project coordinator",
+      "guidance": "Ask for the team appointment, a signed mandate and the roles of each participating department.",
+      "keywords": [
+        "institutional development plan",
+        "plan rozwoju instytucjonalnego",
+        "appointment",
+        "powołanie",
+        "project team"
+      ]
+    },
+    {
+      "key": "consultation",
+      "label": "Consultation and partnership records",
+      "holder": "Public consultation office",
+      "guidance": "Ask for the date, participating groups and findings from the relevant consultation.",
+      "keywords": [
+        "consultation",
+        "konsultacje",
+        "partnership"
+      ]
+    },
+    {
+      "key": "annex_d",
+      "label": "Annex D · Energy impact",
+      "holder": "Municipal energy manager",
+      "guidance": "Ask for the calculation workbook, annual savings and production in GWh, assumptions and source year.",
+      "keywords": [
+        "annex d",
+        "załącznik d",
+        "energy savings calculation"
+      ]
+    },
+    {
+      "key": "annex_e",
+      "label": "Annex E · Investment cost",
+      "holder": "Finance and investment office",
+      "guidance": "Ask for the itemised cost estimate, currency, price year, investment total and calculation basis.",
+      "keywords": [
+        "annex e",
+        "załącznik e",
+        "investment size",
+        "cost estimate"
+      ]
+    },
+    {
+      "key": "support",
+      "label": "Political support and council decisions",
+      "holder": "Mayor’s office or council secretariat",
+      "guidance": "Ask for the signed letter or dated resolution naming the authorised representative.",
+      "keywords": [
+        "letter of support",
+        "list poparcia",
+        "uchwała"
+      ]
+    },
+    {
+      "key": "project_brief",
+      "label": "Project decisions and delivery plan",
+      "holder": "Grant coordinator and project team",
+      "guidance": "Ask for the team's approved decision, responsible person and dated supporting note.",
+      "keywords": [
+        "project brief",
+        "delivery plan",
+        "investment concept",
+        "koncepcja inwestycyjna"
+      ]
+    },
+    {
+      "key": "other",
+      "label": "Other documents",
+      "holder": "Grant coordinator",
+      "guidance": "Check what this document supports before requesting additional evidence.",
+      "keywords": []
+    }
+  ],
+  "chapters": [
+    {
+      "chapter_ref": "identification",
+      "title": "1. Identification of the applicant",
+      "required": true,
+      "description": "General information about the applicant: name, type, codes, population and contacts. Not scored, checked for eligibility.",
+      "required_fields": [
+        {
+          "key": "applicant.name",
+          "label": "Name of the municipality",
+          "description": "Official name of the municipality or local authority applying.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Any official city document",
+          "category": "municipal_profile",
+          "city_field": "city.name",
+          "required": true
+        },
+        {
+          "key": "applicant.type",
+          "label": "Type of applicant",
+          "description": "Whether the applicant is a single municipality, a grouping, or a local public entity aggregating municipalities.",
+          "kind": "decision",
+          "answer_type": "choice",
+          "choices": [
+            "Single municipality or local authority",
+            "Grouping of municipalities or local authorities",
+            "Local public entity aggregating municipalities"
+          ],
+          "category": "municipal_profile",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "applicant.country",
+          "label": "Country",
+          "description": "Country of the applicant.",
+          "kind": "fact",
+          "answer_type": "text",
+          "category": "municipal_profile",
+          "city_field": "city.country",
+          "required": true
+        },
+        {
+          "key": "applicant.nuts3_code",
+          "label": "NUTS 3 code",
+          "description": "Code of the NUTS 3 region the municipality belongs to.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Eurostat LAU-NUTS table",
+          "category": "municipal_profile",
+          "required": true
+        },
+        {
+          "key": "applicant.lau_code",
+          "label": "LAU code",
+          "description": "Local administrative unit code of the municipality.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Eurostat LAU-NUTS table",
+          "category": "municipal_profile",
+          "required": true
+        },
+        {
+          "key": "applicant.population",
+          "label": "Total population",
+          "description": "Total number of residents, as an absolute number.",
+          "kind": "fact",
+          "answer_type": "number",
+          "evidence_need": "Official statistics or a city report, with the year",
+          "unit": "residents",
+          "minimum": 1,
+          "category": "municipal_profile",
+          "city_field": "city.population",
+          "required": true
+        },
+        {
+          "key": "applicant.contact_person",
+          "label": "Contact person",
+          "description": "Name, role and contact details of the person responsible for the application.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Provided by the city team",
+          "category": "governance",
+          "required": true
+        },
+        {
+          "key": "applicant.political_representative",
+          "label": "Mayor or political representative",
+          "description": "Who signs the letter of support (Annex B).",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Signed letter of support",
+          "category": "support",
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "concept_title",
+      "title": "2.1 Title of the proposed investment concept",
+      "required": true,
+      "description": "A short title for the investment concept.",
+      "required_fields": [
+        {
+          "key": "concept.title",
+          "label": "Title of the investment concept",
+          "description": "Title of the proposed investment concept.",
+          "kind": "decision",
+          "answer_type": "text",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "grant_allocation",
+      "title": "2.2 Allocation of grant amount",
+      "required": true,
+      "description": "How the EUR 60,000 grant will be split. For monitoring only, not scored.",
+      "required_fields": [
+        {
+          "key": "grant.allocation",
+          "label": "Allocation of the grant",
+          "description": "How the grant is split between in-house staff, external experts or sub-contractors, and other positions. More than one may apply.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "activities",
+      "title": "2.3 Activities funded by grant amount",
+      "required": true,
+      "description": "The missing components for developing the investment concept and the activities the grant will pay for. For monitoring only, not scored.",
+      "required_fields": [
+        {
+          "key": "activities.long_term_goal",
+          "label": "Long-term goal the concept serves",
+          "description": "The city's energy and climate goal and target year that the investment concept works towards.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Adopted strategy or council resolution",
+          "category": "development_plan",
+          "required": true
+        },
+        {
+          "key": "activities.missing_components",
+          "label": "Missing components",
+          "description": "What is missing today to develop the investment concept and how the grant fills the gap.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "activities.funded_list",
+          "label": "Activities to be funded",
+          "description": "The studies and analyses the grant will fund, for example technical, legal, financial, social or market studies.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "governance",
+      "title": "2.4 Governance for investment concept development",
+      "required": true,
+      "description": "Internal organisation for developing the concept: structure, roles, how decisions are taken, and whether outside experts are needed. Scored as criterion B1.",
+      "required_fields": [
+        {
+          "key": "governance.lead_decision_maker",
+          "label": "Who supervises and takes final decisions",
+          "description": "The person with final decision-making power for the project.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Appointment order or organisational regulation",
+          "category": "governance",
+          "required": true
+        },
+        {
+          "key": "governance.team_manager",
+          "label": "Who manages the project team",
+          "description": "The person in charge of the investment concept development day to day.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Appointment order",
+          "category": "governance",
+          "required": true
+        },
+        {
+          "key": "governance.project_team",
+          "label": "Project team and departments",
+          "description": "Departments and competences in the project team.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Formal appointment of the project team",
+          "category": "governance",
+          "required": true
+        },
+        {
+          "key": "governance.roles_tasks",
+          "label": "Roles and tasks of each actor",
+          "description": "Specific tasks and responsibilities of the people and bodies involved.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "governance",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "governance.decision_process",
+          "label": "How decisions are taken",
+          "description": "The decision-making process: who proposes, who decides, how the team schedules and tracks work.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "governance",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "governance.municipal_companies",
+          "label": "Municipal companies involved",
+          "description": "Municipal companies taking part and who represents them.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "City ownership records or company documents",
+          "category": "governance",
+          "required": true
+        },
+        {
+          "key": "governance.external_experts",
+          "label": "Need for external experts",
+          "description": "Whether internal capacity is enough and in which fields outside experts will be engaged.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "governance",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "stakeholders",
+      "title": "2.5 Engagement of stakeholders",
+      "required": true,
+      "description": "The most relevant external stakeholders, their needs, and the activities and communication tools to engage them, with timing and objectives. Scored as criterion B2.",
+      "required_fields": [
+        {
+          "key": "stakeholders.groups",
+          "label": "Stakeholder groups",
+          "description": "The external stakeholder groups most relevant to the investment project.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Consultation records or a strategy document",
+          "category": "consultation",
+          "required": true
+        },
+        {
+          "key": "stakeholders.needs_expectations",
+          "label": "Needs and expectations",
+          "description": "What each group needs and expects from the project.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "evidence_need": "Consultation or survey results",
+          "category": "consultation",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "stakeholders.activities",
+          "label": "Engagement activities",
+          "description": "Activities planned to involve the stakeholders while the concept is developed.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "consultation",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "stakeholders.timing_objectives",
+          "label": "Timing and objective of each activity",
+          "description": "When each activity happens and what it is meant to achieve.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "consultation",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "stakeholders.communication_channels",
+          "label": "Communication channels",
+          "description": "Channels used to reach the different groups.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "City communication channels in use",
+          "category": "consultation",
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "sectors",
+      "title": "3.1 Investment sector(s) targeted",
+      "required": true,
+      "description": "The sectors targeted by the investment project, and the main one.",
+      "required_fields": [
+        {
+          "key": "sectors.main",
+          "label": "Main sector",
+          "description": "The main sector targeted by the investment project.",
+          "kind": "decision",
+          "answer_type": "choice",
+          "choices": [
+            "Public buildings",
+            "Residential buildings",
+            "Building integrated renewables",
+            "District heating",
+            "Smart grids",
+            "Sustainable urban mobility",
+            "Innovative energy infrastructure",
+            "Public lighting",
+            "Other sector"
+          ],
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "sectors.other",
+          "label": "Other sectors targeted",
+          "description": "All other sectors the project covers.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "measures",
+      "title": "3.2 Intended measures",
+      "required": true,
+      "description": "The technology measures to be financed. Measures excluded by the European Investment Bank energy lending policy are not eligible.",
+      "required_fields": [
+        {
+          "key": "measures.description",
+          "label": "Technology measures",
+          "description": "The intended technology measures to be financed.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "evidence_need": "Climate or energy plan measures list",
+          "category": "climate_plan",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "measures.phases",
+          "label": "Phases and years",
+          "description": "The stages of implementation and their years.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "project_brief",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "measures.plan_alignment",
+          "label": "Link to the adopted plan",
+          "description": "Which adopted plan the measures come from and how they relate to it.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "SEAP, SECAP or plan of similar ambition",
+          "category": "climate_plan",
+          "required": true
+        },
+        {
+          "key": "measures.eib_eligibility",
+          "label": "Eligibility under the EIB energy lending policy",
+          "description": "Confirmation that none of the measures is excluded.",
+          "kind": "decision",
+          "answer_type": "choice",
+          "choices": [
+            "Confirmed",
+            "Not confirmed"
+          ],
+          "category": "climate_plan",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "investment_size",
+      "title": "3.3 Expected size of investment",
+      "required": true,
+      "description": "Approximate total investment in sustainable energy, in euro, with the calculation in Annex E. Scored as criterion A1.",
+      "required_fields": [
+        {
+          "key": "investment.total_eur",
+          "label": "Total investment size",
+          "description": "Approximate total investment in sustainable energy for the project. This is not the EUR 60,000 grant.",
+          "kind": "fact",
+          "answer_type": "number",
+          "evidence_need": "Annex E calculation",
+          "unit": "EUR",
+          "minimum": 0,
+          "category": "annex_e",
+          "required": true
+        },
+        {
+          "key": "investment.by_sector",
+          "label": "Investment by sector",
+          "description": "Investment per sector as in Annex E.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Annex E calculation",
+          "category": "annex_e",
+          "required": true
+        },
+        {
+          "key": "investment.calculation_basis",
+          "label": "Basis of the estimate",
+          "description": "Parameters and unit costs used for the estimate.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Cost estimates, plans or comparable projects",
+          "category": "annex_e",
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "impacts",
+      "title": "3.4 Expected impacts",
+      "required": true,
+      "description": "Expected energy savings and renewable energy production in GWh per year, with the calculation in Annex D. Savings must be higher than renewable production. Scored as criterion A2.",
+      "required_fields": [
+        {
+          "key": "impacts.energy_savings_gwh",
+          "label": "Expected energy savings",
+          "description": "Approximate energy savings generated by the project.",
+          "kind": "fact",
+          "answer_type": "number",
+          "evidence_need": "Annex D calculation",
+          "unit": "GWh/y",
+          "minimum": 0,
+          "category": "annex_d",
+          "required": true
+        },
+        {
+          "key": "impacts.renewable_production_gwh",
+          "label": "Expected renewable energy production",
+          "description": "Approximate renewable energy production generated by the project.",
+          "kind": "fact",
+          "answer_type": "number",
+          "evidence_need": "Annex D calculation",
+          "unit": "GWh/y",
+          "minimum": 0,
+          "category": "annex_d",
+          "required": true
+        },
+        {
+          "key": "impacts.savings_exceed_renewables",
+          "label": "Savings higher than renewable production",
+          "description": "Eligibility rule: renewable production may not be more than 50% of the total impact.",
+          "kind": "fact",
+          "answer_type": "choice",
+          "choices": [
+            "Yes",
+            "No"
+          ],
+          "category": "annex_d",
+          "required": true
+        },
+        {
+          "key": "impacts.baseline_energy",
+          "label": "Baseline energy use",
+          "description": "The city's energy consumption used as the baseline, with its year.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Emissions or energy inventory",
+          "category": "climate_plan",
+          "required": true
+        },
+        {
+          "key": "impacts.co2_avoided",
+          "label": "Avoided CO2 emissions",
+          "description": "Expected CO2 reduction, if available.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Annex D or the plan",
+          "required": false,
+          "category": "annex_d"
+        },
+        {
+          "key": "impacts.other",
+          "label": "Other expected impacts",
+          "description": "Further impacts such as jobs created, if available.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "required": false,
+          "category": "annex_d",
+          "allow_assumption": true,
+          "allow_not_applicable": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "replication",
+      "title": "3.5 Potential for replication and/or up-scaling",
+      "required": true,
+      "description": "How the project could be replicated elsewhere or scaled up in its region. Part of criterion B3.",
+      "required_fields": [
+        {
+          "key": "replication.how",
+          "label": "How the project can be replicated or scaled",
+          "description": "What makes the project replicable or scalable.",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "category": "development_plan",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "required": true
+        },
+        {
+          "key": "replication.networks",
+          "label": "Networks and partners for sharing",
+          "description": "Networks, associations and partners through which the experience will be shared.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Memberships and partnerships of the city",
+          "category": "consultation",
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "plan_summary",
+      "title": "Annex A.2 Summary of the climate and energy plan",
+      "required": true,
+      "description": "Summary, in English, of the SEAP, SECAP or plan of similar ambition submitted as Annex A.1.",
+      "required_fields": [
+        {
+          "key": "plan.name_and_adoption",
+          "label": "Plan name and adoption",
+          "description": "Name of the plan, the adopting council resolution and its date.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "Council resolution",
+          "category": "support",
+          "required": true
+        },
+        {
+          "key": "plan.target",
+          "label": "Emission reduction target",
+          "description": "The plan's CO2 reduction target and target year.",
+          "kind": "fact",
+          "answer_type": "text",
+          "evidence_need": "The plan",
+          "category": "climate_plan",
+          "required": true
+        },
+        {
+          "key": "plan.baseline_emissions",
+          "label": "Baseline emissions",
+          "description": "Baseline year and total emissions in the plan.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "Emissions inventory in the plan",
+          "category": "climate_plan",
+          "required": true
+        },
+        {
+          "key": "plan.key_measures",
+          "label": "Key measures of the plan",
+          "description": "The main measures in the plan.",
+          "kind": "fact",
+          "answer_type": "multiline",
+          "evidence_need": "The plan",
+          "category": "climate_plan",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "kind": "share_limit",
+      "left": "impacts.renewable_production_gwh",
+      "right": "impacts.energy_savings_gwh",
+      "answer": "impacts.savings_exceed_renewables",
+      "label": "Renewable production must not exceed half of total energy impact"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import {
   type DraftInlineReviewProps,
 } from "@/components/ConceptNoteWorkspace/draft-document-panel";
 import { DraftSetupPanel } from "@/components/ConceptNoteWorkspace/draft-setup-panel";
+import type { PointDraftStage } from "./point-draft-stage";
 import type { ReactNode } from "react";
 import { useDraftFocus } from "@/components/ConceptNoteWorkspace/use-draft-focus";
 
@@ -29,6 +30,7 @@ interface DraftTabProps extends DraftInlineReviewProps {
   bundle: ConceptNoteBundleProgress;
   contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
+  pointDraftStage?: PointDraftStage;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   focusChapterId: string | null;

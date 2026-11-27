@@ -374,6 +374,7 @@ it("opens the canonical point from a successful scoped question tool result", as
     expect((received.mock.calls[0][0] as CustomEvent).detail).toEqual({
       runId: "run",
       pointKey: "project.cost",
+      question: {pattern: "short_form", why_asking: "Budget", questions: []},
     });
     await act(async () =>
       streamOptions.onToolResult?.({
@@ -386,4 +387,19 @@ it("opens the canonical point from a successful scoped question tool result", as
   } finally {
     window.removeEventListener("document-workspace:open-point", received);
   }
+});
+
+it("keeps a repeated streamed point change as one reviewable suggestion", async () => {
+  await act(async () => chat.sendMessage("Park the investment estimate for finance."));
+  const proposal = {
+    point_key: "investment.total_eur", label: "Total investment size", candidate_value: null,
+    citations: [], command: {command: "park", expected_version: 3, idempotency_key: "test-proposal",
+      waiting_for: "Finance office", requested_information: "Please provide Annex E."},
+  };
+  await act(async () => {
+    for (let i = 0; i < 2; i++) {
+      streamOptions.onToolResult?.({action: "document_workspace.prepare", success: true, data: proposal});
+    }
+  });
+  expect(chat.messages.at(-1)?.pointProposals).toEqual([proposal]);
 });

@@ -114,7 +114,7 @@ async def test_portuguese_ui_gets_portuguese_navigation_labels():
     assert result["ui_locale"] == "pt"
     assert '"Visualização do rascunho"' in guide
     assert '"Os seus arquivos" → "Carregar arquivo"' in guide
-    assert '"Exportar PDF"' in guide
+    assert '"Rascunho de trabalho · PDF"' in guide
     assert '"Draft preview"' not in guide
     assert '"Upload file"' not in guide
 
@@ -125,7 +125,7 @@ async def test_english_and_unsupported_locales_keep_english_labels(ui_locale):
     assert result["ui_locale"] == "en"
     assert '"Draft preview"' in result["guide"]
     assert '"Your files" → "Upload file"' in result["guide"]
-    assert '"Export PDF" / "Export DOCX"' in result["guide"]
+    assert '"Working draft · PDF" / "Working draft · DOCX"' in result["guide"]
 
 
 def test_locale_tags_normalize_to_supported_languages():

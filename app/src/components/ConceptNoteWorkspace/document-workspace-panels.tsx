@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   chakra,
   Box,
@@ -7,13 +7,15 @@ import {
   Heading,
   HStack,
   Text,
+  Input,
   VStack,
 } from "@chakra-ui/react";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
-import type { DocumentWorkspace } from "@/util/document-workspace";
+import type { DocumentWorkspace, DocumentPointQuestion } from "@/util/document-workspace";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 import { DocumentPointCard } from "./document-point-card";
+import { chapterDisplayTitle } from "./chapter-title";
 import {
   currentPointCandidate,
   pointGroup,
@@ -22,6 +24,10 @@ import {
 } from "./point-state";
 import { chapterGapRows, type ChapterGapRow } from "./chapter-gaps-panel";
 import styles from "./workspace.module.css";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
 interface PanelProps {
   workspace: DocumentWorkspace;
   lng: string;
@@ -46,7 +52,7 @@ export function WorkspaceOverview({
   chapters: ConceptNoteDraftChapter[];
   onOpenDraft: () => void;
   onOpenSetup?: () => void;
-  onSyncSetup?: () => void;
+  onSyncSetup?: (documentType?: string) => void;
   onOpenExport?: () => void;
   hasTemplate?: boolean;
   setupSaving?: boolean;
@@ -57,6 +63,11 @@ export function WorkspaceOverview({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const { overview } = workspace;
+  const [selectedSetup, setSelectedSetup] = useState("");
+  const availableSetups = workspace.available_setups ?? [];
+  const chosenSetup = availableSetups.find(
+    (setup) => setup.document_type === selectedSetup,
+  );
   const covered = workspace.points.filter((point) =>
     ["answered", "assumption", "not_applicable"].includes(point.status),
   );
@@ -74,6 +85,45 @@ export function WorkspaceOverview({
     )
     .filter((point) => point !== undefined)
     .slice(0, 3);
+  const setupPicker = availableSetups.length > 0 && (
+    <VStack align="stretch" gap={2} w="full">
+      <chakra.label htmlFor="workspace-programme" fontWeight="medium">
+        {t("workspace-programme")}
+      </chakra.label>
+      <NativeSelectRoot>
+        <NativeSelectField
+          id="workspace-programme"
+          value={selectedSetup}
+          onChange={(event) => setSelectedSetup(event.target.value)}
+        >
+          <option value="">{t("workspace-select-programme")}</option>
+          {availableSetups.map((setup) => (
+            <option key={setup.document_type} value={setup.document_type}>
+              {setup.name}
+            </option>
+          ))}
+        </NativeSelectField>
+      </NativeSelectRoot>
+      {chosenSetup && (
+        <Text fontSize="body.sm" color="content.secondary">
+          {t("workspace-programme-summary", {
+            version: chosenSetup.version,
+            chapters: chosenSetup.chapter_count,
+            points: chosenSetup.point_count,
+          })}
+        </Text>
+      )}
+      <Button
+        alignSelf="start"
+        size="sm"
+        disabled={!chosenSetup}
+        loading={setupSaving}
+        onClick={() => onSyncSetup?.(selectedSetup)}
+      >
+        {t("workspace-use-programme")}
+      </Button>
+    </VStack>
+  );
   if (!workspace.setup?.ready)
     return (
       <VStack
@@ -98,14 +148,21 @@ export function WorkspaceOverview({
           )}
         </Text>
         <HStack flexWrap="wrap">
+          {setupPicker}
           {hasTemplate && (
-            <Button size="sm" loading={setupSaving} onClick={onSyncSetup}>
+            <Button
+              size="sm"
+              loading={setupSaving}
+              onClick={() => onSyncSetup?.()}
+            >
               {t("workspace-initialize")}
             </Button>
           )}
           <Button
             size="sm"
-            variant={hasTemplate ? "outline" : "solid"}
+            variant={
+              hasTemplate || availableSetups.length ? "outline" : "solid"
+            }
             onClick={onOpenSetup}
           >
             {t(
@@ -137,23 +194,44 @@ export function WorkspaceOverview({
             {t("workspace-overview-tab")}
           </Heading>
           <Text mt={1} fontSize="body.sm" color="content.secondary">
-            {workspace.setup.name}
+            {workspace.setup.name} ·{" "}
+            {t("workspace-pinned-version", {
+              version: workspace.setup.version,
+            })}
           </Text>
         </Box>
         <HStack gap={2} flexWrap="wrap">
-          <Button size="xs" variant="plain" onClick={onOpenSetup}>
-            {t("workspace-change-template")}
-          </Button>
+          {workspace.setup.document_type === "concept_note" && (
+            <Button size="xs" variant="plain" onClick={onOpenSetup}>
+              {t("workspace-change-template")}
+            </Button>
+          )}
           <Button
             size="xs"
             variant="plain"
             loading={setupSaving}
-            onClick={onSyncSetup}
+            onClick={() => onSyncSetup?.(workspace.setup?.document_type)}
           >
             {t("workspace-sync-setup")}
           </Button>
         </HStack>
       </Flex>
+      {availableSetups.length > 0 &&
+        workspace.setup.document_type === "concept_note" && (
+          <Box as="details">
+            <Text
+              as="summary"
+              cursor="pointer"
+              color="content.link"
+              fontSize="body.sm"
+            >
+              {t("workspace-switch-programme")}
+            </Text>
+            <Box mt={3} maxW="32rem">
+              {setupPicker}
+            </Box>
+          </Box>
+        )}
       {setupError && (
         <Text role="alert" fontSize="body.sm" color="sentiment.negativeDefault">
           {t("workspace-setup-error")}
@@ -500,7 +578,7 @@ export function WorkspaceOverview({
                   borderColor="border.neutral"
                 >
                   <Text fontSize="body.md" fontWeight="medium">
-                    {index + 1}. {chapter.title}
+                    {chapterDisplayTitle(chapter.title, index)}
                   </Text>
                   <Text mt={1} fontSize="body.sm" color="content.secondary">
                     {t(
@@ -527,12 +605,14 @@ export function WorkspaceTodos({
   lng,
   onSelectPoint,
   selectedKey,
+  guidedQuestion,
   runId,
   onAddSource,
   onOpenContext,
   sourceBusy,
 }: PanelProps & {
   selectedKey: string | null;
+  guidedQuestion?: DocumentPointQuestion;
   runId: string;
   onAddSource: () => void;
   onOpenContext?: () => void;
@@ -540,8 +620,19 @@ export function WorkspaceTodos({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const detail = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState("");
+  const query = filter.trim().toLocaleLowerCase(lng);
+  const visiblePoints = workspace.points.filter(
+    (point) =>
+      !query ||
+      point.label.toLocaleLowerCase(lng).includes(query) ||
+      point.key.toLowerCase().includes(query),
+  );
   const selected =
     workspace.points.find((point) => point.key === selectedKey) ??
+    workspace.points.find(
+      (point) => point.point_id === workspace.overview.next_steps[0]?.point_id,
+    ) ??
     workspace.points.find((point) => pointGroup(point) !== "covered") ??
     workspace.points[0];
   if (!selected)
@@ -568,8 +659,21 @@ export function WorkspaceTodos({
         align="stretch"
         gap={4}
       >
+        <Input
+          type="search"
+          size="sm"
+          value={filter}
+          aria-label={t("workspace-find-point")}
+          placeholder={t("workspace-find-point")}
+          onChange={(event) => setFilter(event.target.value)}
+        />
+        {!visiblePoints.length && (
+          <Text role="status" fontSize="body.sm">
+            {t("workspace-no-matching-points")}
+          </Text>
+        )}
         {pointGroups.map((group) => {
-          const points = workspace.points.filter(
+          const points = visiblePoints.filter(
             (point) => pointGroup(point) === group,
           );
           if (!points.length) return null;
@@ -620,16 +724,20 @@ export function WorkspaceTodos({
                           ? "workspace-required"
                           : "workspace-optional",
                       )}
+                      {point.task?.status === "parked" && ` · ${t("workspace-parked-label")}`}
+                      {point.task?.status === "waiting" && point.task.waiting_for && ` · ${point.task.waiting_for}`}
                     </Text>
                   </Box>
                 </Button>
               ))}
             </VStack>
           );
-          return group === "covered" ? (
+          return (
             <chakra.details
               key={group}
-              open={pointGroup(selected) === "covered" ? true : undefined}
+              open={
+                Boolean(query) || pointGroup(selected) === group || undefined
+              }
             >
               <Text
                 as="summary"
@@ -643,24 +751,17 @@ export function WorkspaceTodos({
               </Text>
               {content}
             </chakra.details>
-          ) : (
-            <Box key={group}>
-              <Heading
-                as="h2"
-                fontSize="body.sm"
-                color="content.secondary"
-                mb={1}
-              >
-                {t(`workspace-group-${group}`, { count: points.length })}
-              </Heading>
-              {content}
-            </Box>
           );
         })}
       </VStack>
       <Box
         ref={detail}
         tabIndex={-1}
+        className={
+          query && !visiblePoints.some((point) => point.key === selected.key)
+            ? styles.filteredDetail
+            : undefined
+        }
         minW={0}
         _focusVisible={{
           outline: "2px solid",
@@ -671,6 +772,12 @@ export function WorkspaceTodos({
         <DocumentPointCard
           key={selected.point_id}
           point={selected}
+          guidedQuestion={guidedQuestion}
+          needs={workspace.needs.filter(
+            (need) =>
+              need.point_keys.includes(selected.key) &&
+              (need.status !== "available" || pointGroup(selected) === "evidence" || pointGroup(selected) === "waiting"),
+          )}
           runId={runId}
           lng={lng}
           onAddSource={onAddSource}

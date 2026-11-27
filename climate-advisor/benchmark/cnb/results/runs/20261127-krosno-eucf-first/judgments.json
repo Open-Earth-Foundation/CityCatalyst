@@ -1,0 +1,31 @@
+{
+  "inputs_sha256": "66143704c996f5d3410ae2549dfc39f808c64d782366bc04a48a097b03530fcc",
+  "model": "openai/gpt-6.1-sol",
+  "rows": {
+    "applicant.name": {
+      "key": "applicant.name",
+      "matches": true,
+      "reason": "The citation explicitly identifies Gmina Miasto Krosno as the entity leading the action."
+    },
+    "applicant.country": {
+      "key": "applicant.country",
+      "matches": true,
+      "reason": "The cited Polish text places Krosno in south-eastern Poland."
+    },
+    "applicant.population": {
+      "key": "applicant.population",
+      "matches": true,
+      "reason": "The citation gives exactly 46,291 residents at the end of 2019, matching the reference."
+    },
+    "governance.team_manager": {
+      "key": "governance.team_manager",
+      "matches": false,
+      "reason": "The citation describes departmental coordination of the plan, not direct supervision of project teams by the Second Deputy Mayor."
+    },
+    "stakeholders.groups": {
+      "key": "stakeholders.groups",
+      "matches": false,
+      "reason": "The citation identifies groups permitted to nominate candidates, not the stakeholder groups directly involved in preparing the plan."
+    }
+  }
+}

@@ -202,6 +202,9 @@ async def save_structure(
                         change_type="edit_text",
                         body_markdown=body,
                         patch_summary={
+                            "point_passages": (latest.patch_summary or {}).get(
+                                "point_passages", {}
+                            ),
                             PROVENANCE_KEY: merge_provenance(
                                 revision_provenance(latest),
                                 source_provenance

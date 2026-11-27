@@ -58,6 +58,9 @@ class ConceptNoteApplicationContextService:
                 else await self._load_included_sources(run.run_id)
             ),
         )
+        if pinned := _point_setup_template(run):
+            response.template = pinned
+            return response
         custom = custom_template(run)
         if custom is not None:
             response.template = custom_template_response(custom)
@@ -116,6 +119,8 @@ class ConceptNoteApplicationContextService:
         run: ConceptNoteRun,
     ) -> ApplicationContextTemplate | None:
         """Return the custom template, or load the selected reference template."""
+        if pinned := _point_setup_template(run):
+            return pinned
         custom = custom_template(run)
         if custom is not None:
             return custom_template_response(custom)
@@ -212,6 +217,12 @@ def included_sources_from_bundle(
         ccra=context.ccra is not None,
         hiap=context.hiap is not None,
     )
+
+
+def _point_setup_template(run: ConceptNoteRun) -> ApplicationContextTemplate | None:
+    """Read the immutable setup's chapter projection saved on the workflow run."""
+    template = (getattr(run, "context_summary", None) or {}).get("point_setup_template")
+    return ApplicationContextTemplate.model_validate(template) if template else None
 
 
 def custom_template(run: ConceptNoteRun) -> StoredCustomTemplate | None:

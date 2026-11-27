@@ -33,7 +33,7 @@ export const documentWorkspaceApi = api
           runId: string;
           expected_revision: number;
           idempotency_key: string;
-          document_type?: "concept_note";
+          document_type?: string;
         }
       >({
         query: ({ runId, ...body }) => ({

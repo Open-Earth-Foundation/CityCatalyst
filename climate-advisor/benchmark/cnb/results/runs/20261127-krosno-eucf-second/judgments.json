@@ -1,0 +1,96 @@
+{
+  "inputs_sha256": "385e0cacedb5faa72a40d17cbda218d4dcb74354319da87e213de9c6d985f2b4",
+  "model": "openai/gpt-6.1-sol",
+  "rows": {
+    "applicant.name": {
+      "key": "applicant.name",
+      "matches": true,
+      "reason": "The cited quotation identifies Gmina Miasto Krosno as the implementing legal entity."
+    },
+    "applicant.country": {
+      "key": "applicant.country",
+      "matches": true,
+      "reason": "The cited text explicitly locates Krosno in south-eastern Poland."
+    },
+    "applicant.population": {
+      "key": "applicant.population",
+      "matches": true,
+      "reason": "The citation states exactly 46,291 residents at the end of 2019, matching the reference."
+    },
+    "activities.long_term_goal": {
+      "key": "activities.long_term_goal",
+      "matches": true,
+      "reason": "The citation supports the same limited target of at least a 20% CO2 reduction by 2020, without claiming climate neutrality."
+    },
+    "activities.missing_components": {
+      "key": "activities.missing_components",
+      "matches": true,
+      "reason": "The citation confirms the same limited deficit—a missing climate adaptation plan—without asserting a grant-specific gap."
+    },
+    "governance.lead_decision_maker": {
+      "key": "governance.lead_decision_maker",
+      "matches": true,
+      "reason": "The quotation identifies the Prezydent as managing City Hall, matching the key’s limited general leadership claim."
+    },
+    "governance.team_manager": {
+      "key": "governance.team_manager",
+      "matches": false,
+      "reason": "The citation assigns plan coordination to a department but does not establish direct supervision of project teams by the Second Deputy Mayor."
+    },
+    "governance.project_team": {
+      "key": "governance.project_team",
+      "matches": true,
+      "reason": "The citation confirms cross-departmental task teams for strategic work without identifying an EUCF project team."
+    },
+    "governance.roles_tasks": {
+      "key": "governance.roles_tasks",
+      "matches": true,
+      "reason": "The quotation states that each project-team member receives specific tasks and each team has a coordinator, matching the general rule in the key."
+    },
+    "governance.decision_process": {
+      "key": "governance.decision_process",
+      "matches": true,
+      "reason": "The citation matches the key’s bottom-up monitoring flow from project teams through the coordinating department to city leadership and advisory bodies."
+    },
+    "governance.municipal_companies": {
+      "key": "governance.municipal_companies",
+      "matches": true,
+      "reason": "The quotation identifies MPGK–Krośnieński Holding Komunalny’s Heat Energy Division as Krosno’s main heat supplier without establishing a representative or grant-project role."
+    },
+    "governance.external_experts": {
+      "key": "governance.external_experts",
+      "matches": true,
+      "reason": "The quotation supports the limited claim that Association of Polish Cities experts advise the development-plan process, not an energy investment concept."
+    },
+    "stakeholders.activities": {
+      "key": "stakeholders.activities",
+      "matches": true,
+      "reason": "The quotation describes open meetings and accessible working groups for stakeholder involvement, without identifying energy-concept activities."
+    },
+    "stakeholders.communication_channels": {
+      "key": "stakeholders.communication_channels",
+      "matches": true,
+      "reason": "The cited passages identify Krosno.pl, both named Facebook profiles, and supporting local media including Krosno24.pl."
+    },
+    "measures.plan_alignment": {
+      "key": "measures.plan_alignment",
+      "matches": true,
+      "reason": "The quotation confirms building energy efficiency and renewable energy as development-plan priorities, without linking specific proposed investments to them."
+    },
+    "impacts.baseline_energy": {
+      "key": "impacts.baseline_energy",
+      "matches": false,
+      "reason": "The cited heading gives only the year and unit, not the claimed municipal-building consumption of 6,016.80 MWh."
+    },
+    "plan.name_and_adoption": {
+      "key": "plan.name_and_adoption",
+      "matches": true,
+      "reason": "The title confirms the 2019 update covering Krosno and six municipalities, consistent with the key’s limited support and missing adoption details."
+    },
+    "plan.target": {
+      "key": "plan.target",
+      "matches": true,
+      "reason": "The cited words explicitly state a minimum 20% reduction in CO2 emissions by 2020."
+    }
+  }
+}

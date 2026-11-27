@@ -66,6 +66,7 @@ import { DraftTab } from "@/components/ConceptNoteWorkspace/draft-tab";
 import { ExportDialog } from "@/components/ConceptNoteWorkspace/export-dialog";
 import { ReviewButton } from "@/components/ConceptNoteWorkspace/review-button";
 import { StructureTab } from "@/components/ConceptNoteWorkspace/structure-tab";
+import type { DocumentPointQuestion } from "@/util/document-workspace";
 import { useConceptNoteEdits } from "@/components/ConceptNoteWorkspace/use-concept-note-edits";
 import {
   DocumentReviewToolbar,
@@ -76,6 +77,7 @@ import {
 } from "@/components/ConceptNoteWorkspace/document-review";
 import { useInlineReviewDecisions } from "@/components/ConceptNoteWorkspace/use-inline-review-decisions";
 import { useConceptNoteWorkspaceData } from "@/components/ConceptNoteWorkspace/use-concept-note-workspace-data";
+import { pointDraftStage } from "@/components/ConceptNoteWorkspace/point-draft-stage";
 import { useFunderImport } from "@/components/ConceptNoteWorkspace/use-funder-import";
 import {
   WorkspaceLoadingState,
@@ -130,6 +132,10 @@ export function ConceptNoteWorkspace({
   const [gapAnswer, setGapAnswer] = useState<GapAnswerRequest | null>(null);
   const [uploadPickerRequest, setUploadPickerRequest] = useState(0);
   const [selectedPointKey, setSelectedPointKey] = useState<string | null>(null);
+  const [chatQuestion, setChatQuestion] = useState<{
+    key: string;
+    question: DocumentPointQuestion;
+  } | null>(null);
   const [workspaceInitialized, setWorkspaceInitialized] = useState(false);
   const workspaceQuery = documentWorkspaceApi.useGetDocumentWorkspaceQuery(
     runId,
@@ -147,6 +153,7 @@ export function ConceptNoteWorkspace({
   const [saveSetup, setupState] =
     documentWorkspaceApi.useSaveDocumentSetupMutation();
   const openPoint = useCallback((key: string) => {
+    setChatQuestion(null);
     setMobilePane("workspace");
     setSelectedPointKey(key);
     setGapAnswer(null);
@@ -159,10 +166,18 @@ export function ConceptNoteWorkspace({
   }
   useEffect(() => {
     function open(event: Event) {
-      const detail = (event as CustomEvent<{ runId: string; pointKey: string }>)
-        .detail;
-      if (detail?.runId === runId && detail.pointKey)
+      const detail = (
+        event as CustomEvent<{
+          runId: string;
+          pointKey: string;
+          question?: DocumentPointQuestion;
+        }>
+      ).detail;
+      if (detail?.runId === runId && detail.pointKey) {
         openPoint(detail.pointKey);
+        if (detail.question && Array.isArray(detail.question.questions))
+          setChatQuestion({ key: detail.pointKey, question: detail.question });
+      }
     }
     function changed(event: Event) {
       if ((event as CustomEvent<{ runId: string }>).detail?.runId === runId)
@@ -313,10 +328,24 @@ export function ConceptNoteWorkspace({
   const draftHasContent = Boolean(
     draft?.chapters.some((chapter) => Boolean(chapter.body_markdown)),
   );
+  const isPointApplication = Boolean(
+    applicationContext?.template?.document_type,
+  );
+  const grantDraftStage = pointDraftStage(
+    isPointApplication,
+    workspace?.needs.some((need) => need.documents.some((file) => file.ready)),
+    uploads,
+  );
+  const waitingForFirstFile = Boolean(
+    grantDraftStage && grantDraftStage !== "ready",
+  );
   // Transition detection during render (React's "derived from previous
   // props" pattern) keeps guidance changes out of effect bodies.
   const sourcesReadyForDrafting =
-    contextStatus.state === "ready" &&
+    (isPointApplication
+      ? grantDraftStage === "ready"
+      : contextStatus.state === "ready") &&
+    !waitingForFirstFile &&
     draft?.status === "not_started" &&
     !draftHasContent;
   const [seenSourcesReady, setSeenSourcesReady] = useState(
@@ -348,9 +377,10 @@ export function ConceptNoteWorkspace({
   const visibleNextStep =
     ((nextStep === "start-drafting" || nextStep === "choose-funding") &&
       (isDraftRunning ||
+        waitingForFirstFile ||
         draftStatusValue === "complete" ||
         draftHasContent ||
-        contextStatus.blocked ||
+        (!isPointApplication && contextStatus.blocked) ||
         applicationContextLoading ||
         applicationContextFailed)) ||
     (nextStep === "start-drafting" && !hasApplicationTemplate)
@@ -373,13 +403,22 @@ export function ConceptNoteWorkspace({
   const nextStepBanner =
     visibleNextStep === "start-drafting" ? (
       <NextStepBanner
-        title={t("next-step-funding-saved-title")}
-        description={t("next-step-funding-saved", {
-          count: templateChapterCount,
-          template:
-            applicationContext?.template?.name ??
-            t("drafting-requirement-template"),
-        })}
+        title={t(
+          isPointApplication
+            ? "point-draft-ready-title"
+            : "next-step-funding-saved-title",
+        )}
+        description={t(
+          isPointApplication
+            ? "point-draft-ready-description"
+            : "next-step-funding-saved",
+          {
+            count: templateChapterCount,
+            template:
+              applicationContext?.template?.name ??
+              t("drafting-requirement-template"),
+          },
+        )}
         // The setup panel's highlighted Start drafting stays the only button.
         dismissLabel={t("next-step-dismiss")}
         onDismiss={() => setNextStep(null)}
@@ -923,11 +962,11 @@ export function ConceptNoteWorkspace({
                       reviewPending={Boolean(reviewProposal)}
                       onViewChanges={viewChanges}
                       onOpenExport={() => setExportOpen(true)}
-                      onSyncSetup={() => {
+                      onSyncSetup={(documentType = "concept_note") => {
                         if (workspaceRefreshing || setupState.isLoading) return;
                         void saveSetup({
                           runId,
-                          document_type: "concept_note",
+                          document_type: documentType,
                           expected_revision: workspace.revision,
                           idempotency_key: crypto.randomUUID(),
                         });
@@ -942,6 +981,11 @@ export function ConceptNoteWorkspace({
                       lng={lng}
                       runId={runId}
                       selectedKey={selectedPointKey}
+                      guidedQuestion={
+                        chatQuestion?.key === selectedPointKey
+                          ? chatQuestion?.question
+                          : undefined
+                      }
                       onSelectPoint={openPoint}
                       onAddSource={addPointSource}
                       onOpenContext={() => setTab("context")}
@@ -1044,6 +1088,7 @@ export function ConceptNoteWorkspace({
                     bundle={bundle}
                     contextStatus={contextStatus}
                     canStartDrafting={canStartDrafting}
+                    pointDraftStage={grantDraftStage}
                     draft={draft ?? null}
                     draftError={
                       draftStartError ??
@@ -1056,6 +1101,7 @@ export function ConceptNoteWorkspace({
                     highlightStartDrafting={highlightStartDrafting}
                     nextStep={nextStepBanner}
                     onAnswerGap={openDraftGap}
+                    onOpenPoint={openPoint}
                     applicationContextFailed={applicationContextFailed}
                     applicationContextLoading={applicationContextLoading}
                     isDraftRunning={isDraftRunning}

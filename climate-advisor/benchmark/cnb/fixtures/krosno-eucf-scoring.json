@@ -1,0 +1,18 @@
+{
+  "document_type": "eucf",
+  "answer_key_revision": "0c84065a",
+  "approved_by": "Piotr Nowakowski",
+  "approved_at": "2026-11-27",
+  "approval_scope": "Scoring thresholds and exclusion of the 11 disputed points from the primary score. The JVP answer key remains a draft pending Polish-language review.",
+  "thresholds": {"sorting": 0.9, "precision": 0.9, "recall": 0.8},
+  "file_categories": {
+    "Krosno-low-emission-plan-2019-update.pdf": "climate_plan",
+    "Krosno-local-development-plan-submitted.pdf": "development_plan",
+    "Krosno-institutional-development-plan-submitted.pdf": "governance"
+  },
+  "held_for_review": [
+    "applicant.type", "applicant.nuts3_code", "applicant.lau_code", "applicant.population",
+    "stakeholders.needs_expectations", "sectors.main", "measures.plan_alignment",
+    "impacts.renewable_production_gwh", "impacts.baseline_energy", "plan.target", "plan.baseline_emissions"
+  ]
+}

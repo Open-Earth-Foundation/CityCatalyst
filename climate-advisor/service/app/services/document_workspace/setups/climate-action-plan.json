@@ -1,0 +1,91 @@
+{
+  "document_type": "climate-action-plan",
+  "version": 1,
+  "name": "Climate action plan · Outline",
+  "file_categories": [
+    {
+      "key": "climate_plan",
+      "label": "Adopted energy or climate plan",
+      "holder": "Climate and energy office",
+      "guidance": "Ask for the adopted plan and resolution, baseline year and the page that identifies each target.",
+      "keywords": [
+        "low emission plan",
+        "gospodarki niskoemisyjnej",
+        "secap",
+        "emissions inventory",
+        "plan energetyczny"
+      ]
+    },
+    {
+      "key": "municipal_profile",
+      "label": "Municipal profile and official statistics",
+      "holder": "Municipal statistics or registry office",
+      "guidance": "Ask for the legal identity, statistical codes, source year and a citation.",
+      "keywords": [
+        "city profile",
+        "official statistics",
+        "registry",
+        "statystyka",
+        "rejestr"
+      ]
+    },
+    {
+      "key": "other",
+      "label": "Other documents",
+      "holder": "Grant coordinator",
+      "guidance": "Check what this document supports before requesting additional evidence.",
+      "keywords": []
+    }
+  ],
+  "chapters": [
+    {
+      "chapter_ref": "baseline",
+      "title": "Municipal baseline",
+      "required": true,
+      "description": "Identify the municipality and the emissions baseline used in the plan.",
+      "required_fields": [
+        {
+          "key": "applicant.name",
+          "label": "Name of the municipality",
+          "description": "Official name of the municipality.",
+          "kind": "fact",
+          "answer_type": "text",
+          "category": "municipal_profile",
+          "city_field": "city.name",
+          "required": true
+        },
+        {
+          "key": "plan.baseline_year",
+          "label": "Baseline year",
+          "description": "Year of the adopted greenhouse gas emissions baseline.",
+          "kind": "fact",
+          "answer_type": "number",
+          "minimum": 1900,
+          "maximum": 2100,
+          "category": "climate_plan",
+          "required": true
+        }
+      ]
+    },
+    {
+      "chapter_ref": "action",
+      "title": "Priority action",
+      "description": "Choose an action and document who will own it.",
+      "required": true,
+      "required_fields": [
+        {
+          "key": "plan.priority_action",
+          "label": "Priority climate action",
+          "description": "Which action has the municipality chosen to prioritise?",
+          "kind": "decision",
+          "answer_type": "multiline",
+          "allow_assumption": true,
+          "allow_not_applicable": true,
+          "category": "climate_plan",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "rules": []
+}

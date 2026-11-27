@@ -14,6 +14,8 @@ export const pointGroups = [
 export type PointGroup = (typeof pointGroups)[number];
 
 export function pointGroup(point: DocumentWorkspacePoint): PointGroup {
+  if (point.work_group) return point.work_group;
+  // Cached workspaces from before the server returned groups.
   if (point.task?.status === "parked" || point.task?.status === "waiting")
     return "waiting";
   if (["answered", "assumption", "not_applicable"].includes(point.status))
@@ -66,7 +68,10 @@ export function pointDisplayValue(
     const number = new Intl.NumberFormat(lng, {
       maximumFractionDigits: 20,
     }).format(value);
-    return point.unit ? `${point.unit} ${number}` : number;
+    if (!point.unit) return number;
+    return ["EUR", "USD", "PLN", "GBP", "BRL"].includes(point.unit)
+      ? `${point.unit} ${number}`
+      : `${number} ${point.unit}`;
   }
   if (
     point.answer_type === "date" &&

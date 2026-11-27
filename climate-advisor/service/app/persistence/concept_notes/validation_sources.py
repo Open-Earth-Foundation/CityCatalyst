@@ -11,10 +11,6 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.db.concept_note import (
     ConceptNoteContextBundle,
@@ -23,6 +19,9 @@ from app.models.db.concept_note import (
 )
 from app.persistence.concept_notes.context_bundle import normalize_bundle
 from app.persistence.concept_notes.source_provenance import merge_provenance
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 class ValidationSourceSessions:
@@ -74,6 +73,8 @@ class ValidationSourceSnapshot:
     selected: dict[str, Any] = field(default_factory=dict)
     documents: dict[str, Any] = field(default_factory=dict)
     uploads: dict[str, dict[str, Any]] = field(default_factory=dict)
+    city_context: dict[str, Any] = field(default_factory=dict)
+    run_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -151,6 +152,8 @@ async def _read_validation_source_snapshot(
     return ValidationSourceSnapshot(
         status="loaded",
         owner_id=owner_id,
+        run_id=str(run_id),
+        city_context=bundle.cc_context.model_dump(mode="json"),
         mode=bundle.source_text.mode if bundle.source_text else None,
         selected={str(source.upload_id): source for source in bundle.selected_sources},
         documents={
@@ -190,10 +193,31 @@ def resolve_validation_source_authority(
         return unavailable("source_free")
     if snapshot.status != "loaded":
         return unavailable(snapshot.status)
-    if snapshot.mode != "full_text":
-        return unavailable("summary" if snapshot.mode == "summary" else "missing_text")
     documents = []
     for identity in identities:
+        if identity.get("kind") == "city_context":
+            from app.utils.city_point_source import city_field_evidence
+
+            fact = city_field_evidence(snapshot.city_context, identity["field"])
+            if (
+                identity["run_id"] != snapshot.run_id
+                or not fact
+                or fact["sha256"] != identity["sha256"]
+            ):
+                return unavailable("digest_mismatch")
+            documents.append(
+                {
+                    "source_label": "CityCatalyst · City profile",
+                    "filename": "City profile",
+                    "text": fact["quote"],
+                    "source_format": "markdown",
+                }
+            )
+            continue
+        if snapshot.mode != "full_text":
+            return unavailable(
+                "summary" if snapshot.mode == "summary" else "missing_text"
+            )
         upload_id = identity["upload_id"]
         source = snapshot.selected.get(upload_id)
         document = snapshot.documents.get(upload_id)

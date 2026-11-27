@@ -178,11 +178,23 @@ describe("document workspace bridge", () => {
     );
   });
 
-  it("rejects an unsupported document methodology before forwarding setup", async () => {
+  it("forwards a registered setup selected in the workspace", async () => {
+    const body = {
+      document_type: "eucf",
+      expected_revision: 0,
+      idempotency_key: runId,
+    };
+    await forwardDocumentWorkspace(request(body), context, "setup");
+    expect(upstream).toHaveBeenCalledWith(
+      expect.objectContaining({ method: "PUT", body }),
+    );
+  });
+
+  it("rejects malformed setup identifiers before forwarding setup", async () => {
     await expect(
       forwardDocumentWorkspace(
         request({
-          document_type: "climate_action_plan",
+          document_type: "../climate-action-plan",
           expected_revision: 2,
           idempotency_key: idempotencyKey,
         }),

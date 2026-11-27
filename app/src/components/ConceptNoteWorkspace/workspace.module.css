@@ -31,10 +31,28 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
 }
-@container workspace (min-width: 760px) {
-  .todo {
-    grid-template-columns: minmax(170px, 28%) minmax(0, 1fr);
+.todo > nav {
+  max-block-size: min(40dvh, 22rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+@container workspace (width < 600px) {
+  .filteredDetail {
+    display: none;
   }
+}
+@container workspace (min-width: 600px) {
+  .todo {
+    grid-template-columns: minmax(170px, 30%) minmax(0, 1fr);
+  }
+  .todo > nav {
+    position: sticky;
+    inset-block-start: 0;
+    max-block-size: calc(100dvh - 18rem);
+  }
+}
+@container workspace (min-width: 760px) {
   .overviewColumns {
     grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
   }

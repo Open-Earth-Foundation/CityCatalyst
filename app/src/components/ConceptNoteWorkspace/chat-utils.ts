@@ -1,3 +1,49 @@
+import type {
+  DocumentPointCitation,
+  DocumentPointCommand,
+  DocumentPointValue,
+} from "@/util/document-workspace";
+
+export interface ChatPointProposal {
+  point_key: string;
+  label: string;
+  command: DocumentPointCommand;
+  candidate_value: DocumentPointValue;
+  citations: DocumentPointCitation[];
+}
+
+export function readChatPointProposal(
+  result: Record<string, unknown>,
+): ChatPointProposal | undefined {
+  if (
+    result.action !== "document_workspace.prepare" ||
+    result.success !== true ||
+    !isRecord(result.data)
+  )
+    return;
+  const data = result.data;
+  if (
+    typeof data.point_key !== "string" ||
+    typeof data.label !== "string" ||
+    !isRecord(data.command) ||
+    typeof data.command.idempotency_key !== "string" ||
+    typeof data.command.expected_version !== "number" ||
+    ![
+      "answer",
+      "correct",
+      "assume",
+      "not_applicable",
+      "park",
+      "resume",
+      "confirm_candidate",
+      "dismiss_candidate",
+    ].includes(String(data.command.command)) ||
+    !Array.isArray(data.citations)
+  )
+    return;
+  return data as unknown as ChatPointProposal;
+}
+
 export interface ConceptNoteChatVisual {
   title: string;
   html: string;
@@ -9,6 +55,7 @@ export interface ConceptNoteChatMessage {
   text: string;
   visuals?: ConceptNoteChatVisual[];
   choices?: string[];
+  pointProposals?: ChatPointProposal[];
 }
 
 /** The same bounded tool contract is used by the stream and saved history. */

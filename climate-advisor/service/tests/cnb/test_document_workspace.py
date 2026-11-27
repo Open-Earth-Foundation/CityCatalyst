@@ -9,10 +9,6 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID, uuid4
 
 import pytest
-from fastapi import HTTPException
-from sqlalchemy import DefaultClause, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-
 from app.config.settings import get_settings
 from app.db.base import Base
 from app.db.cnb import CnbBase
@@ -33,7 +29,7 @@ from app.models.db.cnb_workspace import (
     ConceptNoteGap,
     ConceptNoteGapResolution,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
 from app.models.db.document_workspace import (
     DocumentCandidate,
     DocumentDependency,
@@ -50,6 +46,7 @@ from app.models.db.document_workspace import (
 from app.models.document_workspace.contracts import (
     DocumentExportRequest,
     DocumentPointCommand,
+    DocumentSetupRequest,
 )
 from app.persistence.concept_notes.workspace import ConceptNoteWorkspaceRepository
 from app.services.cnb.source_analysis import SourcePage
@@ -61,6 +58,9 @@ from app.services.document_workspace.jobs import (
     run_update_job,
 )
 from app.services.document_workspace.service import DocumentWorkspaceService
+from fastapi import HTTPException
+from sqlalchemy import DefaultClause, select, text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 RUN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 TEMPLATE_ID = UUID("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
@@ -138,7 +138,11 @@ async def workspace(tmp_path):
             )
             await connection.run_sync(
                 lambda sync: Base.metadata.create_all(
-                    sync, tables=[ConceptNoteRun.__table__]
+                    sync,
+                    tables=[
+                        ConceptNoteRun.__table__,
+                        ConceptNoteContextBundle.__table__,
+                    ],
                 )
             )
     finally:
@@ -182,6 +186,185 @@ async def answer(service, run, value=125000, **kwargs):
         ),
         user_id="owner",
     )
+
+
+async def test_registered_setup_pins_the_form_and_keeps_the_value_shared_with_another_document_type(
+    workspace, monkeypatch
+):
+    service, run, factory = workspace
+    sync = AsyncMock(return_value=False)
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.queue_ready_source_sync", sync
+    )
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.get_session_factory", lambda: factory
+    )
+    async with factory() as session, session.begin():
+        session.add(
+            ConceptNoteContextBundle(
+                run_id=run.run_id,
+                context_bundle={"cc_context": {"city": {"name": "Krosno"}}},
+            )
+        )
+    view = await service.load(run)
+    request = DocumentSetupRequest(
+        document_type="eucf",
+        expected_revision=view.revision,
+        idempotency_key="pin-eucf",
+    )
+    grant = await service.save_setup(run, request)
+    assert (
+        len(grant.points) == 46
+        and grant.setup.document_type == "eucf"
+        and grant.setup.catalogue_version == 1
+    )
+    assert len(grant.needs) == 10 and grant.overview.required_covered == 0
+    city = next(point for point in grant.points if point.key == "applicant.name")
+    assert city.status == "needs_confirmation" and city.value is None
+    (candidate,) = city.candidates
+    assert candidate.citations[0].source_label.startswith("CityCatalyst")
+    assert candidate.citations[0].quote == "Municipality: Krosno"
+    assert candidate.citations[0].source_anchor is None
+    answer = await service.command(
+        run,
+        city.key,
+        DocumentPointCommand(
+            command="confirm_candidate",
+            candidate_id=candidate.candidate_id,
+            idempotency_key="human-yes",
+            expected_version=city.version,
+        ),
+        user_id="owner",
+    )
+    assert answer.point.value == "Krosno" and answer.point.history[-1].actor == "owner"
+    assert answer.point.freshness == "missing"
+    assert (
+        answer.point.answer_status == "answered"
+        and answer.point.evidence_status == "confirmed"
+    )
+    replay = await service.save_setup(run, request)
+    assert replay.revision == grant.revision
+    plan = await service.save_setup(
+        run,
+        DocumentSetupRequest(
+            document_type="climate-action-plan",
+            expected_revision=answer.workspace_revision,
+            idempotency_key="pin-plan",
+        ),
+    )
+    assert len(plan.points) == 3 and plan.setup.document_type == "climate-action-plan"
+    assert next(p for p in plan.points if p.key == "applicant.name").value == "Krosno"
+    async with factory() as session:
+        stored = await session.get(ConceptNoteRun, run.run_id)
+        assert (
+            len(stored.context_summary["point_setup_template"]["chapter_schema"]) == 2
+        )
+    await service.save_setup(run, request)
+    async with factory() as session:
+        stored = await session.get(ConceptNoteRun, run.run_id)
+        assert (
+            len(stored.context_summary["point_setup_template"]["chapter_schema"]) == 2
+        )
+
+
+async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_choice(
+    workspace, monkeypatch
+):
+    from app.services.document_workspace.setup_reading import (
+        read_and_store_setup_source,
+    )
+
+    service, run, factory = workspace
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.queue_ready_source_sync",
+        AsyncMock(return_value=False),
+    )
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.get_session_factory", lambda: factory
+    )
+    starting = await service.load(run)
+    await service.save_setup(
+        run,
+        DocumentSetupRequest(
+            document_type="eucf",
+            expected_revision=starting.revision,
+            idempotency_key="pin",
+        ),
+    )
+    async with factory() as session:
+        points = list(
+            await session.scalars(
+                select(DocumentPoint).where(DocumentPoint.active.is_(True))
+            )
+        )
+    source = SimpleNamespace(
+        source=SimpleNamespace(
+            upload_id=uuid4(),
+            sha256="f" * 64,
+            source_label="Grant record",
+            filename="source.md",
+            source_format="markdown",
+        ),
+        units=[],
+    )
+    quote = [
+        {
+            "source_label": "Grant record",
+            "page_number": 1,
+            "quote": "Official city record",
+        }
+    ]
+    findings = {
+        "applicant.name": {("full", "Krosno"): quote},
+        "applicant.country": {("partial", "A neighbouring authority"): quote},
+    }
+    reader = AsyncMock(return_value=findings)
+    monkeypatch.setattr(
+        "app.services.document_workspace.setup_reading.read_setup_source", reader
+    )
+    version = "one"
+    settings = SimpleNamespace(
+        llm=SimpleNamespace(
+            prompts=SimpleNamespace(get_prompt=lambda name: version),
+            models=get_settings().llm.models,
+        )
+    )
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    first = await service.load(run)
+    city = next(p for p in first.points if p.key == "applicant.name")
+    choice = await service.command(
+        run,
+        city.key,
+        DocumentPointCommand(
+            command="confirm_candidate",
+            candidate_id=city.candidates[0].candidate_id,
+            expected_version=city.version,
+            idempotency_key="yes",
+        ),
+        user_id="owner",
+    )
+    assert choice.point.value == "Krosno"
+    version = "two"
+    reader.return_value = {}
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    second = await service.load(run)
+    assert (
+        next(p for p in second.points if p.key == "applicant.name").candidates[0].status
+        == "accepted"
+    )
+    country = next(p for p in second.points if p.key == "applicant.country")
+    assert (
+        country.evidence_status == "missing"
+        and country.candidates[0].status == "superseded"
+    )
+    assert reader.await_count == 2
 
 
 async def add_chapters(factory, *, protected=False):

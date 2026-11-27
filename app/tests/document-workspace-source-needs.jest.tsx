@@ -14,6 +14,7 @@ jest.unstable_mockModule("@/services/document-workspace-api", () => ({
   documentWorkspaceApi: {
     useGetWorkspaceDocumentsQuery: () => ({}),
     useAttachWorkspaceDocumentMutation: () => [jest.fn(), {}],
+    useCommandDocumentPointMutation: () => [jest.fn(), {}],
   },
 }));
 it("shows required evidence first, hides repeated descriptions and explains point links", async () => {

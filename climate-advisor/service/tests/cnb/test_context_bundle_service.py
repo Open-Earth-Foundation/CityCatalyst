@@ -6,7 +6,7 @@ import json
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -26,6 +26,7 @@ from app.services.cnb.context_bundle import (
     run_context_bundle_reconciler,
 )
 from app.services.cnb.application_context import template_chapter_requirements
+from app.services.document_workspace.catalogue import setup_catalogue, template_from_setup
 from app.services.concept_note_city_context import ConceptNoteCityContextDataError
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
@@ -103,6 +104,7 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("registered_setup", [False, True])
 @pytest.mark.parametrize(
     ("source_format", "filename", "markdown", "page_count"),
     [
@@ -116,6 +118,7 @@ async def test_source_build_completes_with_null_optional_sources(
     filename,
     markdown,
     page_count,
+    registered_setup,
 ) -> None:
     digest = hashlib.sha256(markdown.encode()).hexdigest()
     run_id = uuid4()
@@ -179,11 +182,19 @@ async def test_source_build_completes_with_null_optional_sources(
         "app.services.cnb.context_bundle.fail_build",
         fail_build,
     )
+    analysis = AsyncMock(side_effect=fake_analyze_document)
+    setup = template_from_setup(setup_catalogue()["eucf"]) if registered_setup else None
+    chapter_reader = AsyncMock(side_effect=AssertionError("Unexpected chapter reader"))
+    schedule = Mock()
+    monkeypatch.setattr("app.services.cnb.context_bundle.schedule_source_revalidation", schedule)
     service = ContextBundleService(
         None,  # type: ignore[arg-type]
-        analyze_document_fn=fake_analyze_document,
+        analyze_document_fn=analysis,
         verify_source_artifact_fn=fake_verify_source_artifact,
         cc_client_factory=lambda: client,
+        load_template_fn=AsyncMock(return_value=setup),
+        extract_chapter_evidence_fn=chapter_reader,
+        revalidate_fn=AsyncMock() if registered_setup else None,
     )
     assert (
         await service.build(
@@ -205,6 +216,20 @@ async def test_source_build_completes_with_null_optional_sources(
     }
     assert [item.upload_id for item in completed["selected_sources"]] == [upload_id]
     assert completed["selected_sources"][0].source_format == source_format
+    if registered_setup:
+        analysis.assert_not_awaited()
+        chapter_reader.assert_not_awaited()
+        source = completed["selected_sources"][0]
+        assert source.sha256 == digest
+        assert source.key_excerpts[0].text in markdown
+        assert completed["source_text"].mode == "full_text"
+        assert completed["revalidation_upload_ids"] == [upload_id]
+        schedule.assert_called_once()
+        queued = schedule.call_args.kwargs["preloaded"][upload_id]
+        assert queued.source == source
+        assert queued.units[0].text.strip() == "City evidence"
+    else:
+        analysis.assert_awaited_once()
     client.close.assert_awaited_once_with()
 
 

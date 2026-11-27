@@ -509,6 +509,10 @@ class ConceptNoteEditRepository:
                         and all(change.kind == "wording" for change in changes),
                         patch_summary={
                             "proposal_id": str(proposal_id),
+                            "point_passages": row.scope.get(
+                                "point_passages",
+                                (latest.patch_summary or {}).get("point_passages", {}),
+                            ),
                             PROVENANCE_KEY: merge_provenance(
                                 row.scope.get(PROVENANCE_KEY)
                             ),
@@ -719,6 +723,7 @@ async def append_revision(
         change_type="edit_text",
         body_markdown=body,
         patch_summary={
+            "point_passages": (latest.patch_summary or {}).get("point_passages", {}),
             **patch_summary,
             PROVENANCE_KEY: merge_provenance(
                 revision_provenance(latest),
@@ -901,6 +906,7 @@ def to_response(row: ConceptNoteEditProposal) -> EditProposalResponse:
                 not in {
                     PROVENANCE_KEY,
                     GENERATED_GAPS_KEY,
+                    "point_passages",
                     SELECTION_WINDOW_KEY,
                     SELECTION_FORMATTING_KEY,
                 }

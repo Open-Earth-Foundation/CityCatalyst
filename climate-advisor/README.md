@@ -123,6 +123,11 @@ deterministic template/chapter scope. Templates without recognized requirements
 remain incomplete and cannot authorize a final export.
 Draft gaps retain the exact bounded canonical key, including its separators, so
 accepting that point can resolve the corresponding marker without a second answer.
+For a registered application, the draft endpoint requires a pinned setup and a
+fully read file. It renders accepted fields in form order, including their source
+references, and marks open or parked fields. Updating an accepted value revises
+only its passage. A passage the officer edited or marked Ready needs an explicit
+review decision. Chapter validation also evaluates the pinned EUCF energy rule.
 The aggregate string-field list on legacy/custom templates does not create a
 second point for an identical chapter requirement. Separate chapter requirements
 still stay separate unless they explicitly share a semantic key.
@@ -982,6 +987,11 @@ language, or client-side fallback behavior. The boundary is:
   [workspace funding-selection contract](../docs/ConceptNoteBuilderArchitecture.md#funding-selection-in-the-workspace)
   for compatible-template checks, draft review invalidation, serialized edit
   registration/application, and focused tests
+- The document workspace can also pin a versioned EUCF application or climate
+  action plan setup independently of funding selection. Clima reads each point
+  and can prepare an answer for explicit user confirmation. See the
+  [JVP document workspace](../docs/JVPAgenticImplementation.md) for the point
+  commands and draft workflow.
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings

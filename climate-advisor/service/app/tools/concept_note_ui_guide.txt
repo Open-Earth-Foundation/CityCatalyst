@@ -41,6 +41,8 @@ Points exist before prose. A working draft can be generated with unknowns,
 but do not tell the person to draft merely to discover required points.
 Use document_workspace_points for canonical requirements and current export
 readiness. document_workspace_question opens one exact returned semantic key.
+document_workspace_prepare puts a change in the conversation. The applicant
+reviews the specific point, action and evidence and chooses Save to application.
 Candidates and model recommendations do not count as accepted answers.
 
 EDIT_FLOW: request a prose replacement in left chat → send → proposed edit

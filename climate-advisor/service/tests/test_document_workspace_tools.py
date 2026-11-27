@@ -23,7 +23,7 @@ def tools(monkeypatch):
 
     @asynccontextmanager
     async def session_factory():
-        yield object()
+        yield SimpleNamespace(close=AsyncMock())
 
     def run_service(session, *, cc_client):
         return SimpleNamespace(get_authorized_run=authorize)
@@ -155,6 +155,26 @@ async def test_unknown_point_cannot_open_another_resource(tools):
     )
     assert result["error_code"] == "point_not_found"
     tools.shared.question.assert_not_awaited()
+
+
+async def test_typed_answer_prepares_versioned_save_without_mutating_the_point(tools):
+    point = SimpleNamespace(
+        key="concept.title", label="Concept title", answer_type="text", version=4
+    )
+    tools.workspace.points = [point]
+    result = await invoke(
+        tools.registered["document_workspace_prepare"],
+        {
+            "point_key": point.key,
+            "action": "answer",
+            "value": "Krosno clean heat",
+        },
+    )
+    assert result["action"] == "document_workspace.prepare"
+    assert result["data"]["command"]["value"] == "Krosno clean heat"
+    assert result["data"]["command"]["expected_version"] == 4
+    assert result["data"]["command"]["idempotency_key"]
+    tools.shared.command.assert_not_awaited()
 
 
 async def test_factory_failure_is_recoverable_without_exception_details(

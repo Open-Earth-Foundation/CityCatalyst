@@ -90,6 +90,8 @@ async def generate_suggestion(
     payload: dict[str, Any],
     prompt_name: str,
     output_type: type[SuggestionOutput],
+    *,
+    structured_output: bool = False,
 ) -> SuggestionOutput | None:
     """Generate validated, read-only guidance; provider failures return no result."""
     model = settings.llm.models.cnb_chat_suggestions
@@ -102,10 +104,12 @@ async def generate_suggestion(
             settings, missing_api_key_message="Suggestion model is unavailable"
         )
         async with (
-            asyncio.timeout(20),
+            asyncio.timeout(60 if structured_output else 20),
             AsyncOpenAI(**{**options.kwargs, "max_retries": 0}) as client,
         ):
-            response = await client.chat.completions.create(
+            completions = client.chat.completions
+            request = completions.parse if structured_output else completions.create
+            response = await request(
                 model=model.name,
                 messages=[
                     {
@@ -117,10 +121,14 @@ async def generate_suggestion(
                         "content": json.dumps(payload, ensure_ascii=False),
                     },
                 ],
-                response_format={"type": "json_object"},
+                response_format=output_type
+                if structured_output
+                else {"type": "json_object"},
                 extra_body={"reasoning": {"effort": model.reasoning_effort}},
                 max_completion_tokens=4096,
             )
+        if structured_output:
+            return response.choices[0].message.parsed
         return output_type.model_validate_json(
             response.choices[0].message.content or ""
         )

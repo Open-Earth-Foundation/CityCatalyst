@@ -12,11 +12,6 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, RunConfig, Runner
-from openai import AsyncOpenAI
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.config import Settings, get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_application_context import (
@@ -58,6 +53,7 @@ from app.persistence.concept_notes.workspace_validation import (
 )
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
+    _point_setup_template,
     calculate_application_template_fingerprint,
     included_sources_from_bundle,
 )
@@ -67,6 +63,10 @@ from app.services.cnb.source_analysis import SourceAnalysisError, query_document
 from app.services.cnb.source_impact_review import (
     ConceptNoteSourceImpactReviewer,
     RevalidationSource,
+)
+from app.services.document_workspace.point_draft import (
+    draft_from_points,
+    point_draft_readiness,
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
@@ -80,6 +80,11 @@ from app.utils.conversation_observability import (
     finish_workflow_trace,
 )
 from app.utils.prompt_budget import count_prompt_tokens
+from openai import AsyncOpenAI
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.config import Settings, get_settings
 
 logger = logging.getLogger(__name__)
 ChapterGenerator = Callable[[dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]]
@@ -178,9 +183,18 @@ class ConceptNoteChapterDraftService:
             template, template_chapters = _require_template(application_context)
             from app.services.document_workspace.service import DocumentWorkspaceService
 
-            await DocumentWorkspaceService(
-                self._cnb_session_factory
-            ).reconcile_template(current_run, template)
+            if template.document_type:
+                registered, ready = await point_draft_readiness(
+                    self._cnb_session_factory, run.run_id
+                )
+                if not registered or not ready:
+                    raise ChapterDraftingError(
+                        "Read at least one file against the pinned setup before starting the draft."
+                    )
+            else:
+                await DocumentWorkspaceService(
+                    self._cnb_session_factory
+                ).reconcile_template(current_run, template)
             template_fingerprint = calculate_application_template_fingerprint(template)
             await self._workspace.ensure_template_chapters(
                 run_id=run.run_id,
@@ -221,10 +235,17 @@ class ConceptNoteChapterDraftService:
                 },
             ) as span:
                 finish_workflow_trace(span, {"status": "superseded"})
-                run_context, included_sources = await self._load_run_context(
-                    run_id,
-                    user_id,
-                )
+                if _point_setup_template(run) is not None:
+                    # The form writer only consumes accepted points. Raw file
+                    # content stays in the source reader and review workflows.
+                    run_context, included_sources = (
+                        {},
+                        ApplicationContextIncludedSources(),
+                    )
+                else:
+                    run_context, included_sources = await self._load_run_context(
+                        run_id, user_id
+                    )
                 application_context = await self._application_context.load_for_run(
                     run,
                     included_sources=included_sources,
@@ -235,6 +256,12 @@ class ConceptNoteChapterDraftService:
                 )
                 template_by_ref = {
                     chapter.chapter_ref: chapter for chapter in template_chapters
+                }
+                registered = bool(template.document_type)
+                sections = {
+                    s["chapter_ref"]: s
+                    for s in template.chapter_schema
+                    if s.get("chapter_ref")
                 }
                 while await self._lease_is_active(run_id, user_id, build_id):
                     chapters = await self._workspace.list_chapters(
@@ -274,23 +301,37 @@ class ConceptNoteChapterDraftService:
                     )
 
                     run_context["document_workspace_points"] = await point_context(
-                        DocumentWorkspaceService(self._cnb_session_factory), run_id
+                        DocumentWorkspaceService(self._cnb_session_factory),
+                        run_id,
+                        for_passages=registered,
                     )
-                    source_provenance = generation_provenance(
-                        run_context, chapters, current=current
-                    )
-                    generated = await self._generate_chapter(
-                        build_chapter_input(
-                            application_context=application_context,
-                            run_context=run_context,
-                            current=current,
-                            template_chapter=template_by_ref.get(
-                                current.chapter_ref or ""
-                            ),
-                            chapters=chapters,
+                    passages = None
+                    if registered:
+                        compiled = draft_from_points(
+                            run_context["document_workspace_points"],
+                            sections[current.chapter_ref],
                         )
-                    )
-                    generated = _sanitize_generated_output(generated, run_context)
+                        generated, passages, source_provenance = (
+                            compiled.output,
+                            compiled.passages,
+                            compiled.provenance,
+                        )
+                    else:
+                        source_provenance = generation_provenance(
+                            run_context, chapters, current=current
+                        )
+                        generated = await self._generate_chapter(
+                            build_chapter_input(
+                                application_context=application_context,
+                                run_context=run_context,
+                                current=current,
+                                template_chapter=template_by_ref.get(
+                                    current.chapter_ref or ""
+                                ),
+                                chapters=chapters,
+                            )
+                        )
+                        generated = _sanitize_generated_output(generated, run_context)
 
                     # A newer start/resume request supersedes this worker.
                     if not await self._lease_is_active(run_id, user_id, build_id):
@@ -304,6 +345,9 @@ class ConceptNoteChapterDraftService:
                             for point in run_context["document_workspace_points"]
                         },
                         source_provenance=source_provenance,
+                        **(
+                            {"point_passages": passages} if passages is not None else {}
+                        ),
                     )
                     refreshed = await self._workspace.list_chapters(
                         run_id=run_id,
@@ -368,7 +412,9 @@ class ConceptNoteChapterDraftService:
         try:
             run = await self._load_owned_run(run_id, user_id)
             chapters = await self._workspace.list_chapters(run_id=run_id)
-            # Drafting reads every source when it starts, so undrafted notes are done.
+            # Registered fields update through human point decisions alone.
+            if any(chapter.point_passages for chapter in chapters):
+                return True
             if all(chapter.revision_number is None for chapter in chapters):
                 return True
 
@@ -1094,7 +1140,14 @@ def build_chapter_input(
                 {
                     key: value
                     for key, value in point.items()
-                    if key not in {"version", "chapter_refs", "source_provenance"}
+                    if key
+                    not in {
+                        "version",
+                        "chapter_refs",
+                        "source_provenance",
+                        "task",
+                        "citations",
+                    }
                 }
                 for point in run_context.get("document_workspace_points", [])
                 if current.chapter_ref in point.get("chapter_refs", [])
@@ -1166,6 +1219,10 @@ def _build_state_response(
                 status=chapter.status,
                 required=chapter.required,
                 user_locked=chapter.user_locked,
+                point_passages={
+                    key: passage["heading"]
+                    for key, passage in chapter.point_passages.items()
+                },
                 body_markdown=chapter.body_markdown,
                 gaps=[_gap_response(gap) for gap in chapter.gaps],
                 open_gap_count=sum(

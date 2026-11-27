@@ -28,7 +28,10 @@ const setupRequest = z
   .object({
     expected_revision: version,
     idempotency_key: z.string().uuid(),
-    document_type: z.literal("concept_note").default("concept_note"),
+    document_type: z
+      .string()
+      .regex(/^[a-z][a-z0-9_-]{0,63}$/)
+      .default("concept_note"),
   })
   .strict();
 const commandRequest = z

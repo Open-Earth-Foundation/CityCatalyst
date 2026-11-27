@@ -73,6 +73,22 @@ export function getChapterReviewErrorKind(
   return "generic";
 }
 
+export function chapterTone(status: ChapterDisplayStatus): string {
+  switch (status) {
+    case "ready":
+      return "sentiment.positiveDefault";
+    case "draft":
+      return "content.link";
+    case "needs_review":
+    case "stale":
+      return "sentiment.warningDefault";
+    case "incomplete":
+      return "sentiment.negativeDefault";
+    default:
+      return "content.tertiary";
+  }
+}
+
 export function getChapterDisplayStatus(
   chapter: ConceptNoteDraftChapter,
 ): ChapterDisplayStatus {

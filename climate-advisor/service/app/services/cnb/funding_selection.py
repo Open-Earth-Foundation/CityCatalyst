@@ -267,6 +267,10 @@ async def save_funding_selection(
 
     # Publish current funding context for Clima and subsequent chapter generation.
     run.funder_id, run.selected_funding_opportunity_id = requested
+    if "point_setup_template" in (run.context_summary or {}):
+        run.context_summary = {
+            k: v for k, v in run.context_summary.items() if k != "point_setup_template"
+        }
     run.custom_template = (
         own_template.model_dump(mode="json") if own_template is not None else None
     )
@@ -323,6 +327,7 @@ async def save_funding_selection(
     # An explicit funding/template change also reconciles canonical points;
     # compatible values survive and removed requirements remain in history.
     from app.services.document_workspace.service import DocumentWorkspaceService
+
     if next_template is not None:
         await DocumentWorkspaceService(factory).reconcile_template(run, next_template)
     else:

@@ -18,6 +18,7 @@ import {
   readConceptNoteThreadMessages,
   readConceptNoteToolVisual,
   readConceptNoteChoices,
+  readChatPointProposal,
 } from "./chat-utils";
 
 // The service replaces this content with its own hidden overview trigger.
@@ -146,6 +147,23 @@ export function useConceptNoteChat({
     onToolResult: (result) => {
       const choices = readConceptNoteChoices(result);
       const assistantId = assistantMessageIdRef.current;
+      const proposal = readChatPointProposal(result);
+      if (proposal && assistantId) {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId &&
+            !message.pointProposals?.some(
+              (p) =>
+                p.command.idempotency_key === proposal.command.idempotency_key,
+            )
+              ? {
+                  ...message,
+                  pointProposals: [...(message.pointProposals ?? []), proposal],
+                }
+              : message,
+          ),
+        );
+      }
       if (choices && assistantId) {
         setMessages((current) =>
           current.map((message) =>
@@ -164,7 +182,7 @@ export function useConceptNoteChat({
       ) {
         window.dispatchEvent(
           new CustomEvent("document-workspace:open-point", {
-            detail: { runId, pointKey: data.point_key },
+            detail: { runId, pointKey: data.point_key, question: "question" in data ? data.question : undefined },
           }),
         );
       }

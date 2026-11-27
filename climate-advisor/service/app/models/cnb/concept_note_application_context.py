@@ -25,6 +25,9 @@ class ApplicationContextTemplate(BaseModel):
 
     id: UUID
     name: str = Field(min_length=1)
+    document_type: str | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     output_format: str | None = None
     chapter_schema: list[dict[str, Any]] = Field(default_factory=list)
     required_fields: list[str] = Field(default_factory=list)

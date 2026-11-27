@@ -1,0 +1,694 @@
+{
+  "case": "Krosno, European City Facility application 03PL000622X, submitted 17 December 2021",
+  "created_at": "2026-11-27T08:06:15.357399+00:00",
+  "decision": "BELOW THRESHOLDS",
+  "answer_key_status": "Draft. Built by Claude from the extracted text of the files in the manifest; every quote was re-checked against its page by script. Not yet reviewed by a Polish speaker.",
+  "workspace_revision": 7,
+  "workspace_sha256": "e2f89835488674b14ac29d2cdd7a9233c2fb08457837c26c487b30f21e8f2090",
+  "setup_fingerprint": "5a15fe7a0db96bb06a5bc29e2906b1cb22f2245d5435d11db2e7d73f3d08ab81",
+  "answer_key_sha256": "60e3d57f7034af38f4ed3191d425154d3c557942e7c3c2fcb2d7b2fa085f4d4a",
+  "policy_sha256": "b2fd6c102e6ca0e84876919baab4b470d04fa137419044d5f26ac8d29a3aa1af",
+  "policy": {
+    "document_type": "eucf",
+    "answer_key_revision": "0c84065a",
+    "approved_by": "Piotr Nowakowski",
+    "approved_at": "2026-11-27",
+    "approval_scope": "Scoring thresholds and exclusion of the 11 disputed points from the primary score. The JVP answer key remains a draft pending Polish-language review.",
+    "thresholds": {
+      "sorting": 0.9,
+      "precision": 0.9,
+      "recall": 0.8
+    },
+    "file_categories": {
+      "Krosno-low-emission-plan-2019-update.pdf": "climate_plan",
+      "Krosno-local-development-plan-submitted.pdf": "development_plan",
+      "Krosno-institutional-development-plan-submitted.pdf": "governance"
+    },
+    "held_for_review": [
+      "applicant.type",
+      "applicant.nuts3_code",
+      "applicant.lau_code",
+      "applicant.population",
+      "stakeholders.needs_expectations",
+      "sectors.main",
+      "measures.plan_alignment",
+      "impacts.renewable_production_gwh",
+      "impacts.baseline_energy",
+      "plan.target",
+      "plan.baseline_emissions"
+    ]
+  },
+  "metrics": {
+    "Scorable points": {
+      "points": 35,
+      "counts": {
+        "right": 13,
+        "missing correctly": 8,
+        "wrong": 12,
+        "missed": 2
+      },
+      "sorting_files": 3,
+      "correctly_sorted_files": 3,
+      "reported_findings": 25,
+      "expected_findings": 22,
+      "points_with_competing_values": 3,
+      "sorting": 1.0,
+      "precision": 0.52,
+      "recall": 0.5909090909090909
+    },
+    "Held for Polish review": {
+      "points": 11,
+      "counts": {
+        "wrong": 4,
+        "missing correctly": 3,
+        "right": 3,
+        "missed": 1
+      },
+      "sorting_files": 3,
+      "correctly_sorted_files": 3,
+      "reported_findings": 7,
+      "expected_findings": 8,
+      "points_with_competing_values": 2,
+      "sorting": 1.0,
+      "precision": 0.42857142857142855,
+      "recall": 0.375
+    },
+    "All points": {
+      "points": 46,
+      "counts": {
+        "right": 16,
+        "wrong": 16,
+        "missing correctly": 11,
+        "missed": 3
+      },
+      "sorting_files": 3,
+      "correctly_sorted_files": 3,
+      "reported_findings": 32,
+      "expected_findings": 30,
+      "points_with_competing_values": 5,
+      "sorting": 1.0,
+      "precision": 0.5,
+      "recall": 0.5333333333333333
+    }
+  },
+  "sorting": [
+    {
+      "file": "Krosno-low-emission-plan-2019-update.pdf",
+      "expected": "climate_plan",
+      "actual": [
+        "climate_plan"
+      ],
+      "correct": true
+    },
+    {
+      "file": "Krosno-local-development-plan-submitted.pdf",
+      "expected": "development_plan",
+      "actual": [
+        "development_plan"
+      ],
+      "correct": true
+    },
+    {
+      "file": "Krosno-institutional-development-plan-submitted.pdf",
+      "expected": "governance",
+      "actual": [
+        "governance"
+      ],
+      "correct": true
+    }
+  ],
+  "points": [
+    {
+      "key": "applicant.name",
+      "point": "Name of the municipality",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 4,
+      "reason": "The cited quotation identifies Gmina Miasto Krosno as the implementing legal entity.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 218
+    },
+    {
+      "key": "applicant.type",
+      "point": "Type of applicant",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "wrong",
+      "held": true,
+      "distinct_proposed_values": 1,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 5
+    },
+    {
+      "key": "applicant.country",
+      "point": "Country",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 1,
+      "reason": "The cited text explicitly locates Krosno in south-eastern Poland.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 5
+    },
+    {
+      "key": "applicant.nuts3_code",
+      "point": "NUTS 3 code",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 5
+    },
+    {
+      "key": "applicant.lau_code",
+      "point": "LAU code",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "applicant.population",
+      "point": "Total population",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "right",
+      "held": true,
+      "distinct_proposed_values": 3,
+      "reason": "The citation states exactly 46,291 residents at the end of 2019, matching the reference.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 7
+    },
+    {
+      "key": "applicant.contact_person",
+      "point": "Contact person",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 55
+    },
+    {
+      "key": "applicant.political_representative",
+      "point": "Mayor or political representative",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 7
+    },
+    {
+      "key": "concept.title",
+      "point": "Title of the investment concept",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "grant.allocation",
+      "point": "Allocation of the grant",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 151
+    },
+    {
+      "key": "activities.long_term_goal",
+      "point": "Long-term goal the concept serves",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The citation supports the same limited target of at least a 20% CO2 reduction by 2020, without claiming climate neutrality.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 138
+    },
+    {
+      "key": "activities.missing_components",
+      "point": "Missing components",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The citation confirms the same limited deficit—a missing climate adaptation plan—without asserting a grant-specific gap.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 134
+    },
+    {
+      "key": "activities.funded_list",
+      "point": "Activities to be funded",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "governance.lead_decision_maker",
+      "point": "Who supervises and takes final decisions",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation identifies the Prezydent as managing City Hall, matching the key’s limited general leadership claim.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 7
+    },
+    {
+      "key": "governance.team_manager",
+      "point": "Who manages the project team",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The citation assigns plan coordination to a department but does not establish direct supervision of project teams by the Second Deputy Mayor.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 264
+    },
+    {
+      "key": "governance.project_team",
+      "point": "Project team and departments",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The citation confirms cross-departmental task teams for strategic work without identifying an EUCF project team.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 66
+    },
+    {
+      "key": "governance.roles_tasks",
+      "point": "Roles and tasks of each actor",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation states that each project-team member receives specific tasks and each team has a coordinator, matching the general rule in the key.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 264
+    },
+    {
+      "key": "governance.decision_process",
+      "point": "How decisions are taken",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The citation matches the key’s bottom-up monitoring flow from project teams through the coordinating department to city leadership and advisory bodies.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 267
+    },
+    {
+      "key": "governance.municipal_companies",
+      "point": "Municipal companies involved",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation identifies MPGK–Krośnieński Holding Komunalny’s Heat Energy Division as Krosno’s main heat supplier without establishing a representative or grant-project role.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 81
+    },
+    {
+      "key": "governance.external_experts",
+      "point": "Need for external experts",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation supports the limited claim that Association of Polish Cities experts advise the development-plan process, not an energy investment concept.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 264
+    },
+    {
+      "key": "stakeholders.groups",
+      "point": "Stakeholder groups",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 222
+    },
+    {
+      "key": "stakeholders.needs_expectations",
+      "point": "Needs and expectations",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 134
+    },
+    {
+      "key": "stakeholders.activities",
+      "point": "Engagement activities",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation describes open meetings and accessible working groups for stakeholder involvement, without identifying energy-concept activities.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 125
+    },
+    {
+      "key": "stakeholders.timing_objectives",
+      "point": "Timing and objective of each activity",
+      "expected": "not_found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 225
+    },
+    {
+      "key": "stakeholders.communication_channels",
+      "point": "Communication channels",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 15,
+      "reason": "The cited passages identify Krosno.pl, both named Facebook profiles, and supporting local media including Krosno24.pl.",
+      "file": "Krosno-institutional-development-plan-submitted.txt",
+      "page": 219
+    },
+    {
+      "key": "sectors.main",
+      "point": "Main sector",
+      "expected": "partly",
+      "observed": "not_found",
+      "outcome": "missed",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 124
+    },
+    {
+      "key": "sectors.other",
+      "point": "Other sectors targeted",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 140
+    },
+    {
+      "key": "measures.description",
+      "point": "Technology measures",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 144
+    },
+    {
+      "key": "measures.phases",
+      "point": "Phases and years",
+      "expected": "not_found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 141
+    },
+    {
+      "key": "measures.plan_alignment",
+      "point": "Link to the adopted plan",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "The quotation confirms building energy efficiency and renewable energy as development-plan priorities, without linking specific proposed investments to them.",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 186
+    },
+    {
+      "key": "measures.eib_eligibility",
+      "point": "Eligibility under the EIB energy lending policy",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "investment.total_eur",
+      "point": "Total investment size",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 140
+    },
+    {
+      "key": "investment.by_sector",
+      "point": "Investment by sector",
+      "expected": "partly",
+      "observed": "not_found",
+      "outcome": "missed",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 144
+    },
+    {
+      "key": "investment.calculation_basis",
+      "point": "Basis of the estimate",
+      "expected": "partly",
+      "observed": "not_found",
+      "outcome": "missed",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 141
+    },
+    {
+      "key": "impacts.energy_savings_gwh",
+      "point": "Expected energy savings",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 136
+    },
+    {
+      "key": "impacts.renewable_production_gwh",
+      "point": "Expected renewable energy production",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 91
+    },
+    {
+      "key": "impacts.savings_exceed_renewables",
+      "point": "Savings higher than renewable production",
+      "expected": "not_found",
+      "observed": "not_found",
+      "outcome": "missing correctly",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "impacts.baseline_energy",
+      "point": "Baseline energy use",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "The cited heading gives only the year and unit, not the claimed municipal-building consumption of 6,016.80 MWh.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 128
+    },
+    {
+      "key": "impacts.co2_avoided",
+      "point": "Avoided CO2 emissions",
+      "expected": "not_found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 99
+    },
+    {
+      "key": "impacts.other",
+      "point": "Other expected impacts",
+      "expected": "not_found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 88
+    },
+    {
+      "key": "replication.how",
+      "point": "How the project can be replicated or scaled",
+      "expected": "not_found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": null,
+      "page": null
+    },
+    {
+      "key": "replication.networks",
+      "point": "Networks and partners for sharing",
+      "expected": "partly",
+      "observed": "found",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 3,
+      "reason": "",
+      "file": "Krosno-local-development-plan-submitted.txt",
+      "page": 4
+    },
+    {
+      "key": "plan.name_and_adoption",
+      "point": "Plan name and adoption",
+      "expected": "partly",
+      "observed": "partly",
+      "outcome": "right",
+      "held": false,
+      "distinct_proposed_values": 0,
+      "reason": "The title confirms the 2019 update covering Krosno and six municipalities, consistent with the key’s limited support and missing adoption details.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 1
+    },
+    {
+      "key": "plan.target",
+      "point": "Emission reduction target",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "right",
+      "held": true,
+      "distinct_proposed_values": 2,
+      "reason": "The cited words explicitly state a minimum 20% reduction in CO2 emissions by 2020.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 138
+    },
+    {
+      "key": "plan.baseline_emissions",
+      "point": "Baseline emissions",
+      "expected": "found",
+      "observed": "partly",
+      "outcome": "wrong",
+      "held": true,
+      "distinct_proposed_values": 0,
+      "reason": "",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 128
+    },
+    {
+      "key": "plan.key_measures",
+      "point": "Key measures of the plan",
+      "expected": "found",
+      "observed": "found",
+      "outcome": "wrong",
+      "held": false,
+      "distinct_proposed_values": 1,
+      "reason": "No matching citation from the reference file within one page.",
+      "file": "Krosno-low-emission-plan-2019-update.txt",
+      "page": 140
+    }
+  ],
+  "chapter_gold": {
+    "run": "20261014-232449-five-fixes",
+    "fixtures": [
+      {
+        "fixture": "harbor-point-heat-resilience",
+        "coverage": 1.0,
+        "support": 0.9642857142857143
+      },
+      {
+        "fixture": "krakow-flood-drainage-plan",
+        "coverage": 0.5,
+        "support": 0.6153846153846154
+      },
+      {
+        "fixture": "richfield-flood-risk",
+        "coverage": 0.75,
+        "support": 0.9242424242424242
+      }
+    ]
+  }
+}

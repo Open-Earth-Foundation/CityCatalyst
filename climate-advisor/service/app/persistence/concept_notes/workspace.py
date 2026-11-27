@@ -159,6 +159,7 @@ class ConceptNoteWorkspaceRepository:
         missing_information: list[ConceptNoteDraftGapOutput],
         point_versions: dict[str, int] | None = None,
         source_provenance: dict[str, Any] | None = None,
+        point_passages: dict[str, dict[str, str]] | None = None,
     ) -> bool:
         """Persist the first agent revision unless the chapter is already drafted."""
         async with self._session_factory() as session, session.begin():
@@ -209,6 +210,11 @@ class ConceptNoteWorkspaceRepository:
                     body_markdown=body_markdown,
                     patch_summary={
                         PROVENANCE_KEY: merge_provenance(source_provenance),
+                        **(
+                            {"point_passages": point_passages}
+                            if point_passages is not None
+                            else {}
+                        ),
                         "gap_field_keys": [
                             item.field_key for item in missing_information
                         ],

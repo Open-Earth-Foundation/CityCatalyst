@@ -1,0 +1,66 @@
+{
+  "purpose": "Post-run diagnosis of alternative citations. Official scores are unchanged.",
+  "model": "openai/gpt-6.1-sol",
+  "rows": {
+    "activities.missing_components": {
+      "key": "activities.missing_components",
+      "matches": false,
+      "reason": "The citation concerns a missing participation model, not the climate, building-efficiency and renewables deficits identified in the key."
+    },
+    "governance.lead_decision_maker": {
+      "key": "governance.lead_decision_maker",
+      "matches": true,
+      "reason": "The Krosno citation assigns Plan implementation to the city's mayor, matching the limited claim of plan-level rather than grant-project oversight."
+    },
+    "governance.project_team": {
+      "key": "governance.project_team",
+      "matches": true,
+      "reason": "The third citation provides for cross-unit project teams, matching the general team arrangements without identifying an EUCF-specific team."
+    },
+    "governance.roles_tasks": {
+      "key": "governance.roles_tasks",
+      "matches": false,
+      "reason": "Assigning thematic groups to strategic goals does not establish individual project-member tasks and a coordinator as described in the key."
+    },
+    "governance.decision_process": {
+      "key": "governance.decision_process",
+      "matches": false,
+      "reason": "Residents prioritising Plan objectives does not establish the reporting hierarchy, risk analysis or project-governance procedures described in the key."
+    },
+    "governance.municipal_companies": {
+      "key": "governance.municipal_companies",
+      "matches": false,
+      "reason": "The citations mention municipal companies generically but do not establish the named companies or MPGK’s heat-supplier role."
+    },
+    "governance.external_experts": {
+      "key": "governance.external_experts",
+      "matches": false,
+      "reason": "The citation concerns staff training and project-management software, not internal expertise or Association of Polish Cities advisers."
+    },
+    "stakeholders.activities": {
+      "key": "stakeholders.activities",
+      "matches": true,
+      "reason": "The citation supports the same limited claim of development-plan stakeholder activities, including workshops, surveys and focus groups, rather than energy-concept engagement."
+    },
+    "stakeholders.communication_channels": {
+      "key": "stakeholders.communication_channels",
+      "matches": false,
+      "reason": "The citation lists generic channel types but does not identify Krosno.pl or the two named Facebook profiles."
+    },
+    "measures.description": {
+      "key": "measures.description",
+      "matches": false,
+      "reason": "The citation describes a separate RDF waste-to-energy project, not the conventional energy measures identified in the key."
+    },
+    "replication.networks": {
+      "key": "replication.networks",
+      "matches": false,
+      "reason": "The citation concerns cooperation with Rzeszów and Gdynia, not Association of Polish Cities advisers or joint low-emission planning and transport with six municipalities."
+    },
+    "plan.key_measures": {
+      "key": "plan.key_measures",
+      "matches": false,
+      "reason": "The citations describe general policy measures or other municipalities, not Table 64’s specific Krosno investments with matching costs, capacities and implementation dates."
+    }
+  }
+}

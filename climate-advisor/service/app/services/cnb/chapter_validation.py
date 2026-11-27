@@ -806,7 +806,7 @@ def _merge_findings(
     """Normalize policy-sensitive findings and remove batch duplicates."""
     # Persisted gaps are authoritative and appear once even if the model also
     # recognizes the same omission in chapter text.
-    merged = _deterministic_gap_findings(request)
+    merged = [*_deterministic_gap_findings(request), *_point_rule_findings(request)]
     for finding in completeness.findings:
         severity = finding.severity
         if finding.category in {"missing_information", "template_constraint"}:
@@ -857,6 +857,58 @@ def _normalized_text(value: str) -> str:
         .casefold()
         .split()
     )
+
+
+def _point_rule_findings(
+    request: ChapterValidationRequest,
+) -> list[ChapterValidationFinding]:
+    """Check the pinned section's quantitative rules against accepted numbers."""
+    if not request.template:
+        return []
+    target = next(
+        c for c in request.chapters if c.chapter_id == request.target_chapter_id
+    )
+    schema = next(
+        (
+            s
+            for s in request.template.chapter_schema
+            if s.get("chapter_ref") == target.template_section_id
+        ),
+        {},
+    )
+    accepted = {
+        point.key: point.value
+        for point in request.canonical_points
+        if point.status == "answered"
+    }
+    findings = []
+    for rule in schema.get("point_rules", []):
+        if rule.get("kind") != "share_limit":
+            continue
+        renewable, savings = accepted.get(rule["left"]), accepted.get(rule["right"])
+        if type(renewable) not in (int, float) or type(savings) not in (int, float):
+            continue
+        meets_limit = renewable <= savings
+        answer = accepted.get(rule["answer"])
+        if meets_limit and answer in (None, "Yes"):
+            continue
+        message = (
+            f"{rule['label']}. Accepted values are {renewable:g} GWh/y renewable production and "
+            f"{savings:g} GWh/y energy savings."
+        )
+        if answer is not None and answer != ("Yes" if meets_limit else "No"):
+            message += f" The recorded answer “{answer}” conflicts with these amounts."
+        findings.append(
+            ChapterValidationFinding(
+                phase="consistency",
+                category="logic_error",
+                severity="blocking",
+                message=message,
+                suggested_action="Recheck the two accepted energy figures and the eligibility answer.",
+                involved_chapter_ids=[request.target_chapter_id],
+            )
+        )
+    return findings
 
 
 def _deterministic_gap_findings(

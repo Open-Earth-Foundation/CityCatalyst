@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from typing import Any
+from uuid import UUID
 
-from fastapi import HTTPException
-
+from app.db.session import get_session_factory
+from app.models.db.concept_note import ConceptNoteContextBundle
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
+from app.utils.city_point_source import city_field_evidence
 from app.utils.citycatalyst_auth import extract_bearer_token
+from fastapi import HTTPException
 
 
 def document_source_validator(
@@ -25,6 +28,23 @@ def document_source_validator(
         try:
             checked: set[tuple[str, str]] = set()
             for source in sources:
+                if source.get("kind") == "city_context":
+                    async with get_session_factory()() as session:
+                        bundle = await session.get(
+                            ConceptNoteContextBundle, UUID(source["run_id"])
+                        )
+                        current = city_field_evidence(
+                            (bundle.context_bundle if bundle else {}).get(
+                                "cc_context", {}
+                            ),
+                            source["field"],
+                        )
+                    if not current or current["sha256"] != source["sha256"]:
+                        raise HTTPException(
+                            409,
+                            "The CityCatalyst field changed. Review the current city profile.",
+                        )
+                    continue
                 identity = (
                     str(source.get("upload_id") or ""),
                     str(source.get("sha256") or ""),

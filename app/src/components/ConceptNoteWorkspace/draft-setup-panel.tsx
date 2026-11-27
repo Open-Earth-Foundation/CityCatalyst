@@ -9,6 +9,7 @@ import {
 import type { ConceptNoteContextPresentation } from "@/components/ConceptNoteWorkspace/context-status";
 
 import { ReviewButton as Button } from "./review-button";
+import type { PointDraftStage } from "./point-draft-stage";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
@@ -18,7 +19,7 @@ import type {
 
 import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
 
-import { chapterTone } from "@/components/ConceptNoteWorkspace/draft-document-panel";
+import { chapterTone } from "./chapter-validation";
 
 interface DraftSetupPanelProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -27,6 +28,7 @@ interface DraftSetupPanelProps {
   bundle: ConceptNoteBundleProgress;
   contextStatus: ConceptNoteContextPresentation;
   canStartDrafting: boolean;
+  pointDraftStage?: PointDraftStage;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   isDraftRunning: boolean;
@@ -64,8 +66,10 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
     draft && (draft.status !== "not_started" || hasDraftContent),
   );
   const showDraftSetup = !draftStarted || draft?.status === "failed";
-  const isBuilding = props.contextStatus.busy;
-  const isFailed = props.contextStatus.state === "failed";
+  const grantStage = props.pointDraftStage;
+  const waitingForFirstFile = Boolean(grantStage && grantStage !== "ready");
+  const isBuilding = !grantStage && props.contextStatus.busy;
+  const isFailed = !grantStage && props.contextStatus.state === "failed";
   const status = props.contextStatus;
   // A template comes from a programme or is the note's own, so with one
   // neither a funder nor a programme is still missing.
@@ -122,13 +126,17 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
           direction={{ base: "column", xl: "row" }}
           gap={4}
           border="1px solid"
-          borderColor={status.color}
+          borderColor={grantStage ? "border.neutral" : status.color}
           borderRadius="rounded"
-          bg={status.surface}
+          bg={grantStage ? "background.neutral" : status.surface}
           p={4}
         >
           <Flex align="start" gap={3} flex={1}>
-            <Icon as={status.icon} mt={0.5} color={status.color} />
+            <Icon
+              as={grantStage ? LuDatabase : status.icon}
+              mt={0.5}
+              color={grantStage ? "content.link" : status.color}
+            />
             <Box>
               <Text
                 fontFamily="heading"
@@ -136,15 +144,20 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
                 fontWeight="semibold"
                 color="content.primary"
               >
-                {status.title}
+                {grantStage
+                  ? t(`point-draft-stage-${grantStage}`)
+                  : status.title}
               </Text>
               <Text
                 mt={1}
+                id={waitingForFirstFile ? "drafting-blocked-reason" : undefined}
                 fontSize="label.sm"
                 lineHeight="20px"
                 color="content.secondary"
               >
-                {status.description}
+                {grantStage
+                  ? t(`point-draft-help-${grantStage}`)
+                  : status.description}
               </Text>
             </Box>
           </Flex>
@@ -168,14 +181,18 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
                   onClick={props.onOpenContext}
                 >
                   <Icon as={LuDatabase} />
-                  {t("review-context")}
+                  {t(
+                    waitingForFirstFile
+                      ? "point-draft-open-files"
+                      : "review-context",
+                  )}
                 </Button>
                 <Button
                   size="sm"
                   variant="solid"
                   data-testid="concept-note-start-drafting"
                   aria-describedby={
-                    isBuilding
+                    isBuilding || waitingForFirstFile
                       ? "drafting-blocked-reason"
                       : setupBlocked
                         ? "drafting-setup-reason"
@@ -183,6 +200,7 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
                   }
                   disabled={
                     isBuilding ||
+                    waitingForFirstFile ||
                     !props.canStartDrafting ||
                     props.isDraftRunning ||
                     draft?.status === "complete"
@@ -345,7 +363,7 @@ export function DraftSetupPanel(props: DraftSetupPanelProps) {
               {t(draftStatusKey(draft?.status ?? "not_started"))}
             </Text>
           </HStack>
-          {!draftStarted && !props.draftError && (
+          {!draftStarted && !waitingForFirstFile && !props.draftError && (
             <Text mt={3} fontSize="body.sm" color="content.tertiary">
               {t("draft-empty-state")}
             </Text>

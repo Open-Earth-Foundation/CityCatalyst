@@ -22,6 +22,8 @@ import { useTranslation } from "@/i18n/client";
 import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type {
   DocumentPointCommand,
+  DocumentPointQuestion,
+  DocumentWorkspaceNeed,
   DocumentWorkspacePoint,
 } from "@/util/document-workspace";
 import {
@@ -30,6 +32,7 @@ import {
   pointValueText,
   pointDisplayValue,
 } from "./point-state";
+import { EvidenceRequest } from "./evidence-request";
 
 export function DocumentPointCard({
   point: incomingPoint,
@@ -40,6 +43,8 @@ export function DocumentPointCard({
   onOpenPoint,
   sourceBusy = false,
   onOpenContext,
+  needs = [],
+  guidedQuestion,
 }: {
   point: DocumentWorkspacePoint;
   runId: string;
@@ -49,6 +54,8 @@ export function DocumentPointCard({
   onOpenPoint?: () => void;
   sourceBusy?: boolean;
   onOpenContext?: () => void;
+  needs?: DocumentWorkspaceNeed[];
+  guidedQuestion?: DocumentPointQuestion;
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const [command, commandState] =
@@ -64,6 +71,7 @@ export function DocumentPointCard({
       : incomingPoint;
   const [ask, questionState] =
     documentWorkspaceApi.useGetDocumentPointQuestionMutation();
+  const guidance = questionState.data ?? guidedQuestion;
   const [answer, setAnswer] = useState(pointValueText(point.value));
   const incomingValue = pointValueText(point.value);
   const [baseValue, setBaseValue] = useState(incomingValue);
@@ -78,6 +86,7 @@ export function DocumentPointCard({
     point.task?.requested_information ?? "",
   );
   const [parkOpen, setParkOpen] = useState(false);
+  const [showAllCandidates, setShowAllCandidates] = useState(false);
   const [saved, setSaved] = useState(false);
   const options = [...new Set(point.choices ?? [])];
   const errorKind = documentWorkspaceErrorKind(commandState.error);
@@ -112,6 +121,8 @@ export function DocumentPointCard({
         setEditing(false);
       }
       setSaved(true);
+      if (payload.command === "park" || payload.command === "resume")
+        setParkOpen(false);
     } catch {
       /* RTK mutation state renders the actionable error. */
     }
@@ -138,8 +149,16 @@ export function DocumentPointCard({
   const pending = point.candidates.filter(
     (candidate) => candidate.status === "pending",
   );
+  const relatedEvidence = point.candidates.filter(
+    (candidate) => candidate.status === "context",
+  );
+  const visibleCandidates = compact
+    ? pending.slice(0, 1)
+    : showAllCandidates
+      ? pending
+      : pending.slice(0, 2);
   const value =
-    point.answer_type === "choice"
+    point.answer_type === "choice" && point.kind !== "decision"
       ? options.includes(answer)
         ? answer
         : null
@@ -171,6 +190,11 @@ export function DocumentPointCard({
           </Text>
         )}
         <HStack gap={3} mt={2} flexWrap="wrap">
+          {point.task?.status === "parked" && (
+            <Text fontSize="label.sm" fontWeight="semibold">
+              {t("workspace-parked-label")}
+            </Text>
+          )}
           <Text fontSize="label.sm" color="content.link">
             {t(`workspace-point-status-${point.status}`)}
           </Text>
@@ -268,6 +292,10 @@ export function DocumentPointCard({
                   <Text fontSize="body.sm">{citation.quote}</Text>
                   <Text fontSize="body.sm" color="content.tertiary">
                     {citation.source_label}
+                    {citation.page_number !== null
+                      ? ` · ${t("workspace-page", { page: citation.page_number })}`
+                      : citation.source_anchor &&
+                        ` · ${citation.source_anchor}`}
                   </Text>
                 </Box>
               ))}
@@ -275,7 +303,38 @@ export function DocumentPointCard({
           ))}
         </Box>
       )}
-      {pending.slice(0, compact ? 1 : undefined).map((candidate) => (
+      {!compact && relatedEvidence.length > 0 && (
+        <Box as="details">
+          <Text
+            as="summary"
+            cursor="pointer"
+            fontSize="body.sm"
+            color="content.link"
+          >
+            {t("workspace-partial-evidence")} ({relatedEvidence.length})
+          </Text>
+          {relatedEvidence.map((candidate) => (
+            <Box
+              key={candidate.candidate_id}
+              borderLeft="3px solid"
+              borderColor="border.neutral"
+              pl={3}
+            >
+              {candidate.citations.map((cite, index) => (
+                <Box mt={2} key={index}>
+                  <Text fontSize="body.sm">{cite.quote}</Text>
+                  <Text color="content.secondary" fontSize="body.sm">
+                    {cite.source_label}
+                    {cite.page_number != null &&
+                      ` · ${t("workspace-page", { page: cite.page_number })}`}
+                  </Text>
+                </Box>
+              ))}
+            </Box>
+          ))}
+        </Box>
+      )}
+      {visibleCandidates.map((candidate) => (
         <VStack
           key={candidate.candidate_id}
           align="stretch"
@@ -308,7 +367,9 @@ export function DocumentPointCard({
                 {citation.page_number !== null
                   ? ` · ${t("workspace-page", { page: citation.page_number })}`
                   : ""}
-                {citation.source_anchor ? ` · ${citation.source_anchor}` : ""}
+                {citation.source_anchor && citation.page_number === null
+                  ? ` · ${citation.source_anchor}`
+                  : ""}
               </Text>
             </Box>
           ))}
@@ -351,6 +412,21 @@ export function DocumentPointCard({
           )}
         </VStack>
       ))}
+      {!compact && pending.length > 2 && (
+        <Button
+          size="sm"
+          variant="plain"
+          alignSelf="start"
+          onClick={() => setShowAllCandidates(!showAllCandidates)}
+        >
+          {t(
+            showAllCandidates
+              ? "workspace-fewer-candidates"
+              : "workspace-more-candidates",
+            { count: pending.length - 2 },
+          )}
+        </Button>
+      )}
       {compact ? (
         <Button size="sm" variant="outline" onClick={onOpenPoint}>
           {t("workspace-open-point")}
@@ -383,40 +459,96 @@ export function DocumentPointCard({
               {t("workspace-question-error")}
             </Text>
           )}
-          {questionState.data && (
-            <Box bg="background.alternativeLight" p={3} borderRadius="rounded">
-              <Text fontSize="body.sm">{questionState.data.why_asking}</Text>
-              {questionState.data.questions
-                .slice(0, 4)
-                .map((question, index) => (
-                  <Box key={index} mt={2}>
-                    <Text fontWeight="medium">{question.question}</Text>
-                    <HStack mt={2} flexWrap="wrap">
-                      {question.options.slice(0, 6).map((option) => (
-                        <Button
-                          key={option}
-                          size="sm"
-                          variant="outline"
-                          whiteSpace="normal"
-                          h="auto"
-                          minH="32px"
-                          py={2}
-                          aria-pressed={answer === option}
-                          disabled={
-                            point.answer_type === "choice" &&
-                            !options.includes(option)
-                          }
-                          onClick={() => {
-                            setEditing(true);
-                            setAnswer(option);
-                          }}
+          {guidance && (
+            <Box
+              bg="background.alternativeLight"
+              p={3}
+              borderRadius="rounded"
+              aria-live="polite"
+            >
+              <Text fontSize="body.sm">{guidance.why_asking}</Text>
+              {guidance.questions.slice(0, 4).map((question, index) => (
+                <Box key={index} mt={2}>
+                  <Text fontWeight="medium">{question.question}</Text>
+                  <HStack mt={2} flexWrap="wrap">
+                    {question.options.map((option, optionIndex) => (
+                      <Button
+                        key={option}
+                        size="sm"
+                        variant="outline"
+                        whiteSpace="normal"
+                        h="auto"
+                        minH="32px"
+                        py={2}
+                        aria-pressed={answer === option}
+                        disabled={
+                          point.answer_type === "choice" &&
+                          point.kind !== "decision" &&
+                          !options.includes(option)
+                        }
+                        onClick={() => {
+                          setEditing(true);
+                          setAnswer(option);
+                        }}
+                      >
+                        <Box textAlign="start">
+                          <Text fontWeight="semibold">{option}</Text>
+                          {question.implications?.[optionIndex] && (
+                            <Text
+                              mt={1}
+                              fontSize="body.sm"
+                              color="content.secondary"
+                            >
+                              {question.implications[optionIndex]}
+                            </Text>
+                          )}
+                        </Box>
+                      </Button>
+                    ))}
+                  </HStack>
+                </Box>
+              ))}
+              {Boolean(guidance.related_facts?.length) && (
+                <Box
+                  mt={3}
+                  borderTop="1px solid"
+                  borderColor="border.neutral"
+                  pt={3}
+                >
+                  <Heading as="h3" fontSize="body.sm">
+                    {t("workspace-facts-for-decision")}
+                  </Heading>
+                  {guidance.related_facts?.map((fact) => (
+                    <Box key={fact.key} mt={2}>
+                      {fact.basis === "source_excerpt" && (
+                        <Text fontSize="label.sm" color="content.secondary">
+                          {t("workspace-check-source-excerpt")}
+                        </Text>
+                      )}
+                      <Text fontSize="body.sm">
+                        <strong>{fact.label}</strong> ·{" "}
+                        {pointValueText(fact.value)}
+                      </Text>
+                      {fact.citations.map((cite, index) => (
+                        <Box
+                          key={index}
+                          mt={1}
+                          pl={3}
+                          borderLeft="2px solid"
+                          borderColor="border.neutral"
                         >
-                          {option}
-                        </Button>
+                          <Text fontSize="body.sm">{cite.quote}</Text>
+                          <Text color="content.secondary" fontSize="body.sm">
+                            {cite.source_label}
+                            {cite.page_number != null &&
+                              ` · ${t("workspace-page", { page: cite.page_number })}`}
+                          </Text>
+                        </Box>
                       ))}
-                    </HStack>
-                  </Box>
-                ))}
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </Box>
           )}
           {(!accepted || editing) && (
@@ -440,10 +572,13 @@ export function DocumentPointCard({
                   )}
                   required={!accepted}
                   disabled={
-                    point.answer_type === "choice" && options.length === 0
+                    point.answer_type === "choice" &&
+                    point.kind !== "decision" &&
+                    options.length === 0
                   }
                 >
-                  {point.answer_type === "choice" ? (
+                  {point.answer_type === "choice" &&
+                  point.kind !== "decision" ? (
                     <NativeSelectRoot disabled={options.length === 0}>
                       <NativeSelectField
                         value={options.includes(answer) ? answer : ""}
@@ -486,15 +621,17 @@ export function DocumentPointCard({
                     />
                   )}
                 </Field>
-                {point.answer_type === "choice" && options.length === 0 && (
-                  <Text
-                    role="alert"
-                    fontSize="body.sm"
-                    color="content.secondary"
-                  >
-                    {t("workspace-choices-unavailable")}
-                  </Text>
-                )}
+                {point.answer_type === "choice" &&
+                  point.kind !== "decision" &&
+                  options.length === 0 && (
+                    <Text
+                      role="alert"
+                      fontSize="body.sm"
+                      color="content.secondary"
+                    >
+                      {t("workspace-choices-unavailable")}
+                    </Text>
+                  )}
                 <Field
                   label={t("workspace-reason")}
                   helperText={t("workspace-reason-help")}
@@ -514,7 +651,7 @@ export function DocumentPointCard({
                   >
                     {t("workspace-save-answer")}
                   </Button>
-                  {point.allow_assumption && (
+                  {(point.kind === "decision" || point.allow_assumption) && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -530,7 +667,8 @@ export function DocumentPointCard({
                       {t("workspace-save-assumption")}
                     </Button>
                   )}
-                  {point.allow_not_applicable && (
+                  {(point.kind === "decision" ||
+                    point.allow_not_applicable) && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -592,6 +730,52 @@ export function DocumentPointCard({
               </Button>
             ) : null}
           </HStack>
+          {needs.map((need) => (
+            <EvidenceRequest
+              key={need.key}
+              need={need}
+              points={[point]}
+              runId={runId}
+              lng={lng}
+            />
+          ))}
+          {Boolean(point.history?.length) && (
+            <Box as="details">
+              <Text
+                as="summary"
+                cursor="pointer"
+                color="content.link"
+                fontSize="body.sm"
+              >
+                {t("workspace-point-history", { count: point.history?.length })}
+              </Text>
+              {[...(point.history ?? [])].reverse().map((entry) => (
+                <Box
+                  key={entry.version}
+                  mt={2}
+                  pl={3}
+                  borderLeft="2px solid"
+                  borderColor="border.neutral"
+                >
+                  <Text fontSize="body.sm" fontWeight="medium">
+                    {t(`workspace-operation-${entry.operation}`, {
+                      defaultValue: entry.operation.replaceAll("_", " "),
+                    })}
+                    {entry.value != null && ` · ${pointValueText(entry.value)}`}
+                  </Text>
+                  <Text color="content.secondary" fontSize="body.sm">
+                    {/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(entry.actor)
+                      ? t("workspace-owner")
+                      : entry.actor}{" "}
+                    · {new Date(entry.at).toLocaleString(lng)}
+                  </Text>
+                  {entry.reason && (
+                    <Text fontSize="body.sm">{entry.reason}</Text>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
           {point.task?.waiting_for && (
             <Text fontSize="body.sm">
               {t("workspace-waiting-for-value", {

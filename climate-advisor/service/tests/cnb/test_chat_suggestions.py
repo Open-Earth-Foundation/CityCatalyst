@@ -11,9 +11,11 @@ from app.models.cnb.chat_suggestions import ChatSuggestionsRequest
 from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.message import Message, MessageRole
+from app.models.document_workspace.contracts import GeneratedPointQuestion
 from app.services.cnb.chat_suggestions import (
     build_suggestion_context,
     generate_chat_suggestions,
+    generate_suggestion,
 )
 from fastapi import HTTPException
 
@@ -110,6 +112,46 @@ async def test_generation_validates_output_and_uses_luna_medium(
     assert kwargs["extra_body"]["reasoning"]["effort"] == "medium"
     assert constructor.call_args.kwargs["max_retries"] == 0
     client.__aexit__.assert_awaited_once()
+
+
+async def test_grant_decisions_constrain_the_provider_to_the_question_schema(
+    monkeypatch,
+):
+    settings = Settings(llm=_load_llm_config(), openrouter_api_key="test-key")
+    point = GeneratedPointQuestion(
+        pattern="decision",
+        why_asking="The assessor needs to understand how the work will be staffed.",
+        questions=[
+            {
+                "question": "Who will prepare the feasibility study?",
+                "options": ["City staff", "External expert"],
+                "implications": [
+                    "Explain staff capacity.",
+                    "Explain the procurement timetable.",
+                ],
+            }
+        ],
+    )
+    client = AsyncMock()
+    client.__aenter__.return_value = client
+    client.chat.completions.parse.return_value = SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(parsed=point))]
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.chat_suggestions.AsyncOpenAI", Mock(return_value=client)
+    )
+    result = await generate_suggestion(
+        settings,
+        {"language": "en"},
+        "document_point_question",
+        GeneratedPointQuestion,
+        structured_output=True,
+    )
+    assert result == point
+    assert (
+        client.chat.completions.parse.await_args.kwargs["response_format"]
+        is GeneratedPointQuestion
+    )
 
 
 async def test_provider_timeout_falls_back(monkeypatch):

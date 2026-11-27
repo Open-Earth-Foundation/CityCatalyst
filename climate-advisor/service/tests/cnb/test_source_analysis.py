@@ -274,6 +274,28 @@ def test_oversized_page_partition_preserves_text_within_token_budget() -> None:
     )
 
 
+def test_many_markdown_blocks_keep_greedy_boundaries_and_all_evidence() -> None:
+    """Grouping small Polish blocks must honor the same exact reader token limit."""
+    blocks = [
+        SourceBlock(anchor=f"page-{index}", text=f"Informacje miasta Krosna {index}. " * 3)
+        for index in range(1, 201)
+    ]
+    tokenizer = {"model": "test", "fallback_encoding": "o200k_base"}
+    context = {"question": "Which figures can the city confirm?", "source_label": "Plan"}
+    prompt = "Read the Polish evidence."
+    limit = 700
+    partitions = partition_source_pages(
+        blocks, prompt=prompt, max_tokens=limit, **tokenizer, **context
+    )
+    assert [s.text for part in partitions for s in part] == [b.text for b in blocks]
+    assert len(partitions) > 2
+    for index, part in enumerate(partitions):
+        assert prompt_token_count(prompt, render_partition(part, **context), **tokenizer) <= limit
+        if index + 1 < len(partitions):
+            extra = [*part, partitions[index + 1][0]]
+            assert prompt_token_count(prompt, render_partition(extra, **context), **tokenizer) > limit
+
+
 def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
     markdown = "<!-- page: 1 -->\nOne\n<!-- page: 2 -->\nTwo"
     digest = hashlib.sha256(markdown.encode()).hexdigest()

@@ -207,11 +207,14 @@ async def test_workspace_authorization_always_releases_core_client(
             get_authorized_run=authorize, cc_client=SimpleNamespace(close=close)
         ),
     )
+    workflow_session = SimpleNamespace(close=AsyncMock())
     if authorized:
         assert (
-            await _authorized_run(object(), run.run_id, "owner", "Bearer token") is run
+            await _authorized_run(workflow_session, run.run_id, "owner", "Bearer token")
+            is run
         )
+        workflow_session.close.assert_awaited_once()
     else:
         with pytest.raises(HTTPException):
-            await _authorized_run(object(), run.run_id, "owner", "Bearer token")
+            await _authorized_run(workflow_session, run.run_id, "owner", "Bearer token")
     close.assert_awaited_once()

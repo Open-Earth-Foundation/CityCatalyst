@@ -29,12 +29,26 @@ def merge_provenance(*snapshots: dict[str, Any] | None) -> dict[str, Any]:
             continue
         for source in sources:
             try:
-                upload_id = str(UUID(str(source["upload_id"])))
                 digest = source["sha256"]
                 if not isinstance(digest, str) or not re.fullmatch(
                     r"[0-9a-f]{64}", digest
                 ):
                     raise ValueError("Invalid source digest")
+                if source.get("kind") == "city_context":
+                    run_id = str(UUID(source["run_id"]))
+                    field = source["field"]
+                    if not isinstance(field, str) or not re.fullmatch(
+                        r"[a-z_]+\.[a-z_]+", field
+                    ):
+                        raise ValueError("Invalid city field")
+                    identities[(run_id + "/" + field, digest)] = {
+                        "kind": "city_context",
+                        "run_id": run_id,
+                        "field": field,
+                        "sha256": digest,
+                    }
+                    continue
+                upload_id = str(UUID(str(source["upload_id"])))
             except (KeyError, TypeError, ValueError):
                 complete = False
                 continue

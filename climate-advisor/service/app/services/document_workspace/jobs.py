@@ -9,9 +9,6 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import or_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.config.settings import get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.concept_note_edits import EditChange
@@ -19,10 +16,8 @@ from app.models.db.cnb_edit import ConceptNoteEditProposal
 from app.models.db.cnb_workspace import ConceptNoteChapter, ConceptNoteChapterRevision
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.document_workspace import (
-    DocumentCandidate,
     DocumentDependency,
     DocumentPoint,
-    DocumentPointRevision,
     DocumentUpdateJob,
 )
 from app.persistence.concept_notes.gaps import (
@@ -36,74 +31,50 @@ from app.persistence.concept_notes.proposal_gaps import GENERATED_GAPS_KEY
 from app.persistence.concept_notes.source_provenance import (
     PROVENANCE_KEY,
     generation_provenance,
-    merge_provenance,
-    sources_provenance,
 )
 from app.persistence.concept_notes.workspace import _require_marker_parity
+from app.persistence.concept_notes.workspace_validation import _load_validation_points
+from app.services.document_workspace.point_draft import (
+    point_draft_readiness,
+    revise_point_passage,
+)
 from app.services.document_workspace.requirements import fingerprint
 from app.services.document_workspace.service import ACCEPTED, DocumentWorkspaceService
-from app.utils.document_point_values import accepted_point_reason
+from sqlalchemy import or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 LEASE_DURATION = timedelta(minutes=15)
 
 
 async def point_context(
-    service: DocumentWorkspaceService, run_id: UUID
+    service: DocumentWorkspaceService, run_id: UUID, *, for_passages: bool = False
 ) -> list[dict[str, Any]]:
-    """Return accepted values and declared unknowns without database identifiers."""
+    """Use the same batched accepted-answer snapshot as chapter validation."""
+    fields = {
+        "key",
+        "label",
+        "description",
+        "chapter_refs",
+        "required",
+        "status",
+        "value",
+        "reason",
+        PROVENANCE_KEY,
+    }
+    if for_passages:
+        fields.update({"unit", "task", "citations"})
     async with service.session_factory() as session:
-        rows = await session.scalars(
-            select(DocumentPoint)
-            .where(DocumentPoint.run_id == run_id, DocumentPoint.active.is_(True))
-            .order_by(DocumentPoint.semantic_key)
+        points = await _load_validation_points(
+            session, run_id, for_passages=for_passages
         )
-        context = [
-            {
-                "key": point.semantic_key,
-                "label": point.definition["label"],
-                "description": point.definition["description"],
-                "chapter_refs": point.definition["chapter_refs"],
-                "required": point.definition["required"],
-                "version": point.accepted_version,
-                "status": point.disposition,
-                "value": point.value if point.disposition in ACCEPTED else None,
-                "reason": None,
-            }
-            for point in rows
-        ]
-        for point in context:
-            provenance = sources_provenance([])
-            if point["status"] in ACCEPTED:
-                row = await session.scalar(
-                    select(DocumentPoint).where(
-                        DocumentPoint.run_id == run_id,
-                        DocumentPoint.semantic_key == point["key"],
-                    )
-                )
-                accepted = await session.scalar(
-                    select(DocumentPointRevision).where(
-                        DocumentPointRevision.point_id == row.point_id,
-                        DocumentPointRevision.version == point["version"],
-                    )
-                )
-                candidate_id = (
-                    accepted.snapshot.get("candidate_id") if accepted else None
-                )
-                point["reason"] = accepted_point_reason(
-                    accepted.snapshot if accepted else None
-                )
-                if accepted is None:
-                    provenance = merge_provenance(None)
-                if candidate_id:
-                    candidate = await session.get(DocumentCandidate, UUID(candidate_id))
-                    provenance = (
-                        sources_provenance([candidate.source_identity])
-                        if candidate
-                        else merge_provenance(None)
-                    )
-            point[PROVENANCE_KEY] = provenance
-        return context
+    return [
+        {
+            **{key: value for key, value in point.items() if key in fields},
+            "version": point["accepted_version"],
+        }
+        for point in points
+    ]
 
 
 async def claim_job(service: DocumentWorkspaceService) -> tuple[UUID, UUID] | None:
@@ -210,22 +181,27 @@ async def run_update_job(
         draft_service = draft_service or ConceptNoteChapterDraftService(
             ca_session_factory, cnb_session_factory=service.session_factory
         )
-        run_context, included = await draft_service._load_run_context(
-            run.run_id, run.user_id
-        )
-        context = await point_context(service, run.run_id)
+        registered, _ = await point_draft_readiness(service.session_factory, run.run_id)
+        if not registered:
+            run_context, included = await draft_service._load_run_context(
+                run.run_id, run.user_id
+            )
+        context = await point_context(service, run.run_id, for_passages=registered)
+        key = job.payload["point_key"]
         vector = {
             point["key"]: point["version"]
             for point in context
             if set(point["chapter_refs"]).intersection(job.payload["chapter_refs"])
+            and (not registered or point["key"] == key)
         }
         if vector.get(job.payload["point_key"]) != job.payload["point_version"]:
             await _finish_superseded(service, job_id, lease_token)
             return
-        run_context["document_workspace_points"] = context
-        application = await draft_service._application_context.load_for_run(
-            run, included_sources=included
-        )
+        if not registered:
+            run_context["document_workspace_points"] = context
+            application = await draft_service._application_context.load_for_run(
+                run, included_sources=included
+            )
         chapters = await draft_service._workspace.list_chapters(run_id=run.run_id)
         targets = [
             chapter
@@ -260,22 +236,28 @@ async def run_update_job(
                 )
                 if not renewed.rowcount:
                     return
-            source_provenance = generation_provenance(
-                run_context, chapters, current=chapter
-            )
-            generated = await draft_service._generate_chapter(
-                build_chapter_input(
-                    application_context=application,
-                    run_context=run_context,
-                    current=chapter,
-                    template_chapter=None,
-                    chapters=chapters,
+            passage = None
+            if registered:
+                point = next(p for p in context if p["key"] == key)
+                passage = revise_point_passage(chapter, point)
+                generated, source_provenance = passage.output, passage.provenance
+            else:
+                source_provenance = generation_provenance(
+                    run_context, chapters, current=chapter
                 )
-            )
+                generated = await draft_service._generate_chapter(
+                    build_chapter_input(
+                        application_context=application,
+                        run_context=run_context,
+                        current=chapter,
+                        template_chapter=None,
+                        chapters=chapters,
+                    )
+                )
             _require_marker_parity(
                 generated.body_markdown, generated.missing_information
             )
-            outputs.append((chapter, generated, source_provenance))
+            outputs.append((chapter, generated, source_provenance, passage))
         async with service.session_factory() as session, session.begin():
             state = await service._state(session, run.run_id)
             current_job = await session.get(
@@ -301,6 +283,7 @@ async def run_update_job(
                 if set(point.definition["chapter_refs"]).intersection(
                     job.payload["chapter_refs"]
                 )
+                and (not registered or point.semantic_key == key)
             } != vector:
                 own_point = next(
                     (
@@ -326,7 +309,7 @@ async def run_update_job(
             # Acquire every chapter before writing any result. A concurrent edit
             # invalidates the entire generated vector instead of partial apply.
             locked = []
-            for before, generated, source_provenance in outputs:
+            for before, generated, source_provenance, passage in outputs:
                 chapter = await session.get(
                     ConceptNoteChapter, before.chapter_id, with_for_update=True
                 )
@@ -343,15 +326,16 @@ async def run_update_job(
                     != (before.revision_number or 0)
                 ):
                     raise ValueError("Dependent chapter changed during generation")
-                locked.append((chapter, latest, generated, source_provenance))
+                locked.append((chapter, latest, generated, source_provenance, passage))
             proposals = []
             pending_refs = []
-            for chapter, latest, generated, source_provenance in locked:
+            for chapter, latest, generated, source_provenance, passage in locked:
                 existing = await _chapter_gaps(session, chapter.chapter_id)
                 accepted_keys = {
                     point.semantic_key
                     for point in points
                     if point.disposition in ACCEPTED
+                    and (not registered or point.semantic_key == key)
                 }
                 answered = {
                     gap.gap_id for gap in existing if gap.field_key in accepted_keys
@@ -359,7 +343,7 @@ async def run_update_job(
                 dropped = _dropped_unanswered_gaps(
                     existing, generated.missing_information, answered
                 )
-                if dropped:
+                if dropped and not registered:
                     generated = _restore_dropped_gaps(generated, dropped)
                     _require_marker_parity(
                         generated.body_markdown, generated.missing_information
@@ -376,17 +360,22 @@ async def run_update_job(
                     chapter.user_locked
                     or chapter.status == "ready"
                     or chapter.confirmed_revision_id is not None
-                    or manual is not None
+                    or (passage.needs_review if passage else manual is not None)
                 )
                 if protected and generated.body_markdown != latest.body_markdown:
+                    start, before, after = (
+                        passage.change
+                        if passage
+                        else (0, latest.body_markdown, generated.body_markdown)
+                    )
                     change = EditChange(
                         change_id=uuid4(),
                         chapter_id=chapter.chapter_id,
                         chapter_title=chapter.title,
                         base_revision=latest.revision_number,
-                        start=0,
-                        before=latest.body_markdown,
-                        after=generated.body_markdown,
+                        start=start,
+                        before=before,
+                        after=after,
                         kind="factual",
                         group_id="canonical_points",
                         user_input_quote=json.dumps(
@@ -397,6 +386,7 @@ async def run_update_job(
                                     if key != PROVENANCE_KEY
                                 }
                                 for point in context
+                                if not registered or point["key"] == key
                             ],
                             ensure_ascii=False,
                         )[:8000],
@@ -409,9 +399,12 @@ async def run_update_job(
                         request_fingerprint=fingerprint(
                             {"job": str(job_id), "chapter": str(chapter.chapter_id)}
                         ),
-                        instruction="Update this chapter to the accepted canonical document point values.",
+                        instruction=f"Update the passage for {point['label']}."
+                        if registered
+                        else "Update this chapter to the accepted canonical document point values.",
                         scope={
                             PROVENANCE_KEY: source_provenance,
+                            **({"point_passages": passage.passages} if passage else {}),
                             GENERATED_GAPS_KEY: {
                                 str(chapter.chapter_id): [
                                     gap.model_dump(mode="json")
@@ -443,6 +436,11 @@ async def run_update_job(
                     if (
                         latest is None
                         or generated.body_markdown != latest.body_markdown
+                        or (
+                            passage
+                            and source_provenance
+                            != (latest.patch_summary or {}).get(PROVENANCE_KEY)
+                        )
                     ):
                         session.add(
                             ConceptNoteChapterRevision(
@@ -456,6 +454,11 @@ async def run_update_job(
                                 body_markdown=generated.body_markdown,
                                 patch_summary={
                                     PROVENANCE_KEY: source_provenance,
+                                    **(
+                                        {"point_passages": passage.passages}
+                                        if passage
+                                        else {}
+                                    ),
                                     "document_point_versions": vector,
                                     "update_job_id": str(job_id),
                                 },
@@ -479,11 +482,13 @@ async def run_update_job(
                         for point in points
                         if point.point_id == dependency.point_id
                     )
-                    dependency.applied_version = point.accepted_version
+                    if point.semantic_key in vector:
+                        dependency.applied_version = point.accepted_version
             current_job.payload = {
                 **current_job.payload,
                 "proposal_ids": proposals,
                 "point_versions": vector,
+                "passage_update": registered,
             }
             current_job.status = "pending_review" if proposals else "complete"
             current_job.lease_token, current_job.lease_until = None, None
@@ -524,7 +529,7 @@ async def _finish_already_applied(
     still generate; current dependencies must not redraft subsequent user edits.
     """
     async with service.session_factory() as session, session.begin():
-        await service._state(session, claimed.run_id)
+        state = await service._state(session, claimed.run_id)
         job = await session.get(DocumentUpdateJob, claimed.job_id, with_for_update=True)
         if job is None or job.status != "running" or job.lease_token != token:
             return True
@@ -546,6 +551,8 @@ async def _finish_already_applied(
             (point.point_id, ref): point.accepted_version
             for point in points
             for ref in targets.intersection(point.definition["chapter_refs"])
+            if (state.setup or {}).get("document_type") in {None, "concept_note"}
+            or point.semantic_key == job.payload["point_key"]
         }
         dependencies = list(
             await session.scalars(
@@ -560,6 +567,7 @@ async def _finish_already_applied(
         applied = {
             (dependency.point_id, dependency.chapter_ref): dependency.applied_version
             for dependency in dependencies
+            if (dependency.point_id, dependency.chapter_ref) in expected
         }
         if not expected or applied != expected:
             return False

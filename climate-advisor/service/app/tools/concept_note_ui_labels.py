@@ -67,8 +67,8 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "review_decision": "Decide & export",
         "export_anyway": "Export anyway",
         "continue_export": "Continue to export",
-        "export_pdf": "Export PDF",
-        "export_docx": "Export DOCX",
+        "export_pdf": "Working draft · PDF",
+        "export_docx": "Working draft · DOCX",
     },
     "de": {
         "chat_input": "Fragen Sie Clima nach diesem Konzeptpapier",
@@ -94,8 +94,8 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "review_decision": "Entscheiden & exportieren",
         "export_anyway": "Trotzdem exportieren",
         "continue_export": "Weiter zum Export",
-        "export_pdf": "Export PDF",
-        "export_docx": "Export DOCX",
+        "export_pdf": "Arbeitsentwurf · PDF",
+        "export_docx": "Arbeitsentwurf · DOCX",
     },
     "es": {
         "chat_input": "Pregunta a Clima sobre esta nota conceptual",
@@ -121,8 +121,8 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "review_decision": "Decidir y exportar",
         "export_anyway": "Exportar de todos modos",
         "continue_export": "Continuar con la exportación",
-        "export_pdf": "Exportar PDF",
-        "export_docx": "Exportar DOCX",
+        "export_pdf": "Borrador de trabajo · PDF",
+        "export_docx": "Borrador de trabajo · DOCX",
     },
     "fr": {
         "chat_input": "Demander à Clima à propos de cette note conceptuelle",
@@ -148,8 +148,8 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "review_decision": "Décider & exporter",
         "export_anyway": "Exporter quand même",
         "continue_export": "Continuer l'exportation",
-        "export_pdf": "Exporter PDF",
-        "export_docx": "Exporter DOCX",
+        "export_pdf": "Brouillon de travail · PDF",
+        "export_docx": "Brouillon de travail · DOCX",
     },
     "pt": {
         "chat_input": "Pergunte ao Clima sobre esta nota conceitual",
@@ -175,8 +175,8 @@ UI_LABELS: dict[str, dict[str, str]] = {
         "review_decision": "Decidir & exportar",
         "export_anyway": "Exportar mesmo assim",
         "continue_export": "Continue a exportar",
-        "export_pdf": "Exportar PDF",
-        "export_docx": "Exportar DOCX",
+        "export_pdf": "Rascunho de trabalho · PDF",
+        "export_docx": "Rascunho de trabalho · DOCX",
     },
 }
 

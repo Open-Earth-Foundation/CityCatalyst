@@ -38,13 +38,16 @@ owners of reusable source files. The CNB document adapter lists and attaches
 existing city-visible documents with both source and target authorization. It
 does not create a parallel file store or widen source visibility.
 
-The first functional implementation uses stable chapter dependencies for safe
-background updates. Accepted point revisions and durable update jobs commit
-together. Manual or Ready text receives a review proposal. Passage granularity
-requires stable editor block identities and is not inferred from Markdown
-offsets. Working export remains available with caveats; final export is checked
-server-side against the same revision snapshot, required points, conflicts,
-freshness and required review.
+Registered applications render their pinned form in field order after one file
+has finished reading. Each field uses the accepted value and includes its source
+or city-team decision. Parked work, assumptions and missing values remain visible.
+Each draft revision stores point keys, field headings and content digests. The
+point-update worker changes the corresponding passage and fences the write against
+the current document revision. An edited field, an ambiguous heading or a Ready
+chapter results in a review proposal. Chapter review also checks the EUCF energy
+impact limit against accepted values. Legacy concept-note templates keep their
+chapter drafting workflow. Final export checks the revision, required points,
+conflicts, freshness and required reviews.
 
 Run ownership remains private in this first draft, while explicitly shared city
 sources can be reused. City-wide draft collaboration requires a coordinated
@@ -54,19 +57,21 @@ maps and the multi-step Deep decision remain the later PRD scope.
 
 ## Supported first draft
 
-The supported document type is **Concept note**, using a programme template or
-the existing reviewed custom-template workflow. A CAP methodology adapter is
-not implemented, and unsupported document types return 422. No sample points or
-prototype figures are shipped as project facts. Existing templates with string
-requirements work immediately; explicit semantic keys, typed fields and evidence
-needs in a reviewed template enable richer sharing and guidance.
+Overview lets the owner pin a versioned document setup. The European City
+Facility setup follows the 46 points of the Krosno application. A smaller
+climate action plan setup exercises the same engine. Both define sections,
+point keys, answer types and evidence needs. The existing Builder template
+workflow remains available for concept notes. Krosno's submitted answers are
+evaluation material and are not initial answers.
 
 The default screen is Overview. Context groups evidence needs and provides the
 existing upload flow plus a paginated picker of reusable city-visible documents.
 To do and chat render the same point card: the person can confirm or dismiss
-evidence, answer, correct, park/resume, or record a permitted exception. Choice
-controls use declared template options without needing a model call. Clima's
-read-only tools find/open that card; opening a question never saves an answer.
+evidence, answer, correct, park or reopen work. Decision questions support
+the applicant's own words, assumptions and exceptions. The server groups work
+and supplies citations for related evidence. Each missing evidence group has an
+editable request note and a named follow-up. Clima can prepare a versioned
+point change from the conversation. The user must save it before it takes effect.
 Draft markers with an exact canonical field key open the same point. Legacy
 narrative findings keep their existing review path.
 
@@ -80,8 +85,8 @@ previously accepted value can remain visible until the next checked operation.
 
 Arbitrary structured CC fields are not heuristically converted into accepted
 template points. Existing authorized CC context remains available to Clima and
-drafting. Source reading produces candidates and the person decides what to
-accept. Passage-level updates, team assignment/notifications, CAP methodology,
+legacy concept-note drafting. Source reading produces candidates and the person
+decides what to accept. Team assignment/notifications, CAP methodology,
 voice, maps and Deep decision require subsequent adapters or product work.
 
 ## Running and checking

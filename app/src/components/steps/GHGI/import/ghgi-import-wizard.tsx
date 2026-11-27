@@ -1210,6 +1210,7 @@ export default function GhgiImportWizard({
                       )}
                       <ReviewConfirmStep
                         t={t}
+                        lng={lng}
                         cityId={cityId}
                         cityName={inventory?.city?.name}
                         inventoryId={inventoryId}

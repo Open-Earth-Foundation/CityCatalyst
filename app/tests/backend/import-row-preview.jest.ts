@@ -12,11 +12,16 @@ import ECRFImportService, {
   type ECRFImportResult,
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
-import { importRowSkipReason } from "@/backend/InventoryImportService";
+import {
+  importRowSkipReason,
+  shouldSkipInferredNotationOverwrite,
+} from "@/backend/InventoryImportService";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import {
   findPendingRows,
+  findReviewRows,
   previewImportRows,
+  reviewIssue,
 } from "@/backend/ImportRowPreviewService";
 import { applyReviewedRows } from "@/backend/ImportResultBuilder";
 import type { Sector } from "@/models/Sector";
@@ -96,6 +101,18 @@ describe("importRowSkipReason", () => {
       "no-value-or-notation-key",
     );
     expect(importRowSkipReason(row(0))).toBe("no-value-or-notation-key");
+  });
+});
+
+describe("shouldSkipInferredNotationOverwrite", () => {
+  it("keeps a stated NO/IE when a later inferred NE lands on the same GPC", () => {
+    expect(
+      shouldSkipInferredNotationOverwrite("no-occurrance", "inferred"),
+    ).toBe(true);
+    expect(
+      shouldSkipInferredNotationOverwrite("no-occurrance", "document"),
+    ).toBe(false);
+    expect(shouldSkipInferredNotationOverwrite(null, "inferred")).toBe(false);
   });
 });
 
@@ -408,6 +425,306 @@ describe("ECRFImportService.processECRFFile", () => {
     expect(
       result.rows.every((row) => row.issue !== "no-value-or-notation-key"),
     ).toBe(true);
+  });
+
+  it("skips CIRIS template rows with sector labels but no GPC, emissions, or notation", async () => {
+    jest.spyOn(ECRFImportService, "lookupGPCReference").mockResolvedValue({
+      sectorId: "sector-I",
+      subsectorId: "subsector-I.1",
+      subcategoryId: "subcategory-I.1.1",
+      scopeId: "scope-1",
+    } as Awaited<ReturnType<typeof ECRFImportService.lookupGPCReference>>);
+
+    const headers = [
+      "GPC ref. no.",
+      "CRF - Sector",
+      "CRF - Sub-sector",
+      "Fuel type or activity",
+      "Notation key",
+      "GHGs (metric tonnes CO2e) - Total CO2e",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "eCRF_3",
+          headers,
+          rows: [
+            {
+              "GPC ref. no.": "I.1.1",
+              "CRF - Sector": "Stationary Energy",
+              "CRF - Sub-sector": "Residential buildings",
+              "Fuel type or activity": "Natural gas",
+              "Notation key": null,
+              "GHGs (metric tonnes CO2e) - Total CO2e": 12,
+            },
+            {
+              "GPC ref. no.": null,
+              "CRF - Sector": "Stationary Energy",
+              "CRF - Sub-sector": "Please select",
+              "Fuel type or activity": "{{Activity}}",
+              "Notation key": null,
+              "GHGs (metric tonnes CO2e) - Total CO2e": null,
+            },
+          ],
+          rowNumbers: [10, 2721],
+          rowCount: 3,
+          columnCount: headers.length,
+        },
+      },
+      {
+        gpcRefNo: 0,
+        sector: 1,
+        subsector: 2,
+        activityType: 3,
+        notationKey: 4,
+        totalCO2e: 5,
+      },
+    );
+
+    expect(result.rowsSkippedEmptyEmissions).toBe(1);
+    expect(result.rows.map((row) => row.gpcRefNo)).toEqual(["I.1.1"]);
+    expect(result.rows.some((row) => row.issue === "missing-gpc-reference")).toBe(
+      false,
+    );
+  });
+
+  it("infers Generation of grid-supplied energy as I.4.4, not I.4.1", async () => {
+    jest
+      .spyOn(ECRFImportService, "lookupGPCReference")
+      .mockImplementation(async (gpcRefNo: string) => ({
+        sectorId: "sector-I",
+        subsectorId: "subsector-I.4",
+        subcategoryId: `sub-${gpcRefNo}`,
+        scopeId: "scope-1",
+      }));
+
+    const headers = [
+      "GPC ref. no.",
+      "CRF - Sector",
+      "CRF - Sub-sector",
+      "Fuel type or activity",
+      "Scope",
+      "Notation key",
+      "GHGs (metric tonnes CO2e) - Total CO2e",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "eCRF_3",
+          headers,
+          rows: [
+            {
+              "GPC ref. no.": null,
+              "CRF - Sector": "Stationary Energy",
+              "CRF - Sub-sector": "Energy industries",
+              "Fuel type or activity": "Generation of grid-supplied energy",
+              Scope: "Direct emissions",
+              "Notation key": "NE",
+              "GHGs (metric tonnes CO2e) - Total CO2e": null,
+            },
+          ],
+          rowNumbers: [40],
+          rowCount: 2,
+          columnCount: headers.length,
+        },
+      },
+      {
+        gpcRefNo: 0,
+        sector: 1,
+        subsector: 2,
+        activityType: 3,
+        scope: 4,
+        notationKey: 5,
+        totalCO2e: 6,
+      },
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].gpcRefNo).toBe("I.4.4");
+    expect(result.rows[0].review?.refSource).toBe("inferred");
+    expect(result.rows[0].notationKey).toBe("NE");
+  });
+
+  it("stores II.5.3 with sibling sector IDs and no sibling subcategory", async () => {
+    jest
+      .spyOn(ECRFImportService, "lookupGPCReference")
+      .mockImplementation(async (gpcRefNo: string) => {
+        if (gpcRefNo === "II.5.3") return null;
+        return {
+          sectorId: "sector-II",
+          subsectorId: "subsector-II.5",
+          subcategoryId: `sub-${gpcRefNo}`,
+          scopeId: "scope-1",
+        };
+      });
+
+    const headers = [
+      "GPC ref. no.",
+      "Notation key",
+      "Description of method(s) used or explanation for using notation key(s)",
+      "GHGs (metric tonnes CO2e) - Total CO2e",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "eCRF_3",
+          headers,
+          rows: [
+            {
+              "GPC ref. no.": "II.5.3",
+              "Notation key": "NE",
+              "Description of method(s) used or explanation for using notation key(s)":
+                "Not in BASIC",
+              "GHGs (metric tonnes CO2e) - Total CO2e": null,
+            },
+          ],
+          rowNumbers: [80],
+          rowCount: 2,
+          columnCount: headers.length,
+        },
+      },
+      { gpcRefNo: 0, notationKey: 1, totalCO2e: 3 },
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]).toMatchObject({
+      gpcRefNo: "II.5.3",
+      sectorId: "sector-II",
+      subsectorId: "subsector-II.5",
+      subcategoryId: null,
+      notationKey: "NE",
+      notationExplanation: "Not in BASIC",
+    });
+  });
+
+  it("does not hold II.5.3 NE with outside city boundary as a scope conflict", async () => {
+    jest.spyOn(db.models.Scope, "findAll").mockResolvedValue([
+      { scopeId: "scope-1", scopeName: "1" },
+      { scopeId: "scope-3", scopeName: "3" },
+    ] as never);
+    jest
+      .spyOn(ECRFImportService, "lookupGPCReference")
+      .mockImplementation(async (gpcRefNo: string) => {
+        if (gpcRefNo === "II.5.3") return null;
+        return {
+          sectorId: "sector-II",
+          subsectorId: "subsector-II.5",
+          subcategoryId: `sub-${gpcRefNo}`,
+          scopeId: "scope-1",
+        };
+      });
+
+    const headers = [
+      "GPC ref. no.",
+      "Scope",
+      "Notation key",
+      "GHGs (metric tonnes CO2e) - Total CO2e",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "eCRF_3",
+          headers,
+          rows: [
+            {
+              "GPC ref. no.": "II.5.3",
+              Scope: "Outside city boundary",
+              "Notation key": "NE",
+              "GHGs (metric tonnes CO2e) - Total CO2e": null,
+            },
+          ],
+          rowNumbers: [80],
+          rowCount: 2,
+          columnCount: headers.length,
+        },
+      },
+      { gpcRefNo: 0, scope: 1, notationKey: 2, totalCO2e: 3 },
+    );
+
+    expect(result.rows[0]).toMatchObject({
+      gpcRefNo: "II.5.3",
+      scopeId: "scope-3",
+      notationKey: "NE",
+    });
+    expect(result.rows[0].review?.catalogueScope).toBeUndefined();
+    expect(reviewIssue(result.rows[0])).toBeNull();
+    expect(findReviewRows(result)).toEqual([]);
+  });
+
+  it("imports CIRIS fugitive outside-boundary NE as I.7.3 without a scope conflict", async () => {
+    jest.spyOn(db.models.Scope, "findAll").mockResolvedValue([
+      { scopeId: "scope-1", scopeName: "1" },
+      { scopeId: "scope-3", scopeName: "3" },
+    ] as never);
+    jest
+      .spyOn(ECRFImportService, "lookupGPCReference")
+      .mockImplementation(async (gpcRefNo: string) => {
+        if (gpcRefNo === "I.7.3") return null;
+        return {
+          sectorId: "sector-I",
+          subsectorId: "subsector-I.7",
+          subcategoryId: `sub-${gpcRefNo}`,
+          scopeId: "scope-1",
+        };
+      });
+
+    const headers = [
+      "GPC ref. no.",
+      "CRF - Sector",
+      "CRF - Sub-sector",
+      "Scope",
+      "Notation key",
+      "GHGs (metric tonnes CO2e) - Total CO2e",
+    ];
+    const result = await ECRFImportService.processECRFFile(
+      {
+        fileType: "xlsx",
+        sheets: [],
+        primarySheet: {
+          name: "eCRF_3",
+          headers,
+          rows: [
+            {
+              "GPC ref. no.": null,
+              "CRF - Sector": "Stationary Energy",
+              "CRF - Sub-sector": "Fugitive emissions",
+              Scope: "Outside city boundary",
+              "Notation key": "NE",
+              "GHGs (metric tonnes CO2e) - Total CO2e": null,
+            },
+          ],
+          rowNumbers: [1079],
+          rowCount: 2,
+          columnCount: headers.length,
+        },
+      },
+      {
+        gpcRefNo: 0,
+        sector: 1,
+        subsector: 2,
+        scope: 3,
+        notationKey: 4,
+        totalCO2e: 5,
+      },
+    );
+
+    expect(result.rows[0]).toMatchObject({
+      gpcRefNo: "I.7.3",
+      subcategoryId: null,
+      scopeId: "scope-3",
+      notationKey: "NE",
+    });
+    expect(result.rows[0].errors).toBeUndefined();
+    expect(result.rows[0].review?.catalogueScope).toBeUndefined();
+    expect(reviewIssue(result.rows[0])).toBeNull();
   });
 });
 

@@ -28,6 +28,10 @@ export type ExtractionSummary = {
   droppedRows: Partial<Record<DroppedRowReason, number>>;
   /** Sum of imported totalCO2e in tonnes, without rows left out of inventory totals (I.4.4). */
   importedSum: number;
+  /** CIRIS Path A reconciliation (not a PDF extraction). */
+  source?: "ciris";
+  /** Sector labels where eCRF_3 and the CIRIS Report disagree. */
+  differingSectors?: string[];
   /** True when no row had a year and every row was assigned the target year. */
   yearAssumed: boolean;
   /** Inventory year the extraction ran for. Missing on summaries stored before this field. */

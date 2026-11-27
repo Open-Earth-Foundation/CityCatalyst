@@ -405,6 +405,21 @@ async function runApproveImportInBackground(args: {
             transaction,
           },
         );
+        const cityContext = (
+          importedFile.mappingConfiguration as {
+            cityContext?: {
+              population?: number;
+              populationYear?: number;
+              landAreaKm2?: number;
+            };
+          } | null
+        )?.cityContext;
+        if (cityContext?.landAreaKm2 != null) {
+          await db.models.City.update(
+            { area: Math.round(cityContext.landAreaKm2) },
+            { where: { cityId }, transaction },
+          );
+        }
         if (importSummary.errors.length > 0) {
           throw new Error(
             `Could not import all rows: ${importSummary.errors.join("; ")}`,

@@ -3,7 +3,30 @@ import {
   resolveGpcRefFromLabels,
   refForScope,
   resolveGpcRefNo,
+  scopeFromLabel,
 } from "@/util/GHGI/gpc-ref-resolver";
+
+describe("scopeFromLabel", () => {
+  it("reads CIRIS outside city boundary as scope 3", () => {
+    expect(scopeFromLabel("Outside city boundary")).toBe(3);
+    expect(scopeFromLabel("Emissions occurring outside the city boundary")).toBe(
+      3,
+    );
+  });
+});
+
+describe("resolveGpcRefNo fugitive transboundary", () => {
+  it("maps CIRIS fugitive outside the city to I.7.3, not I.7.1", () => {
+    expect(
+      resolveGpcRefNo(
+        "Stationary Energy",
+        "Fugitive emissions",
+        undefined,
+        "Outside city boundary",
+      ),
+    ).toBe("I.7.3");
+  });
+});
 
 describe("resolveGpcRefNo scope", () => {
   it("stores indirect grid electricity as scope 2", () => {
@@ -118,6 +141,14 @@ describe("resolveGpcRefNo for PDF extraction rows (CC-1008)", () => {
         "Energy Industries",
         "Energy generation supplied to the grid",
         "1",
+      ),
+    ).toBe("I.4.4");
+    expect(
+      resolveGpcRefNo(
+        "Stationary Energy",
+        "Energy industries",
+        "Generation of grid-supplied energy",
+        "Direct emissions",
       ),
     ).toBe("I.4.4");
     expect(

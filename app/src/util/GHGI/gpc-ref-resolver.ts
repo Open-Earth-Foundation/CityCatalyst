@@ -89,6 +89,10 @@ export function scopeFromLabel(scopeLabel?: string | null): number | undefined {
   if (scopeLabel == null) return undefined;
   const label = scopeLabel.trim().toLowerCase();
   if (!label) return undefined;
+  // CIRIS uses this instead of "Scope 3"; check before "direct"/"indirect".
+  if (/outside\s+(the\s+)?city\s+boundary/i.test(label)) {
+    return 3;
+  }
   if (label === "2" || label === "scope 2" || label.includes("indirect")) {
     return 2;
   }
@@ -102,6 +106,19 @@ export function scopeFromLabel(scopeLabel?: string | null): number | undefined {
 /** CRF sector label for generation supplied to the grid, not a GPC sector name. */
 function isEnergyGenerationSector(sector: string): boolean {
   return /energy\s*generation/i.test(sector);
+}
+
+/** CIRIS/eCRF activity label for I.4.4, including "Generation of grid-supplied energy". */
+export function isGridSuppliedEnergyActivity(
+  activity?: string | null,
+): boolean {
+  if (!activity) return false;
+  const label = activity.trim();
+  return (
+    /supplied\s+to\s+(the\s+)?grid/i.test(label) ||
+    /grid[- ]supplied/i.test(label) ||
+    /generation of grid/i.test(label)
+  );
 }
 
 /**
@@ -138,9 +155,7 @@ export function resolveGpcRefNo(
   const scope = scopeFromLabel(scopeLabel);
   // "Energy generation" is I.4.4 (supplied to the grid). I.4.1 is only auxiliary
   // fuel use at the plant, so a scope-1 filter would store generation in the wrong row.
-  const suppliedToGrid =
-    fuelTypeOrActivity != null &&
-    /supplied\s+to\s+(the\s+)?grid/i.test(fuelTypeOrActivity);
+  const suppliedToGrid = isGridSuppliedEnergyActivity(fuelTypeOrActivity);
   if (isEnergyGenerationSector(sector) || suppliedToGrid) {
     if (scope === 2) return "I.4.2";
     if (scope === 3) return "I.4.3";
@@ -166,7 +181,15 @@ export function resolveGpcRefNo(
 
   if (scope != null) {
     const scoped = matches.filter((row) => row.scope === scope);
-    if (scoped.length === 0) return null;
+    if (scoped.length === 0) {
+      // CIRIS "outside city boundary" is scope 3. Fugitive (I.7 / I.8) has no
+      // catalogue .3; keep a distinct ref so NE does not land on I.7.1 / I.8.1.
+      if (scope === 3) {
+        const parts = matches[0].gpcRefNo.split(".");
+        if (parts.length >= 2) return `${parts[0]}.${parts[1]}.3`;
+      }
+      return null;
+    }
     matches = scoped;
   }
 

@@ -16,6 +16,7 @@ import CityBoundaryService, {
 } from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
 import { toShort } from "@/util/notation-keys";
+import { hasSignedNumericValue } from "@/util/parse-numeric-cell";
 import fs from "fs";
 import path from "path";
 
@@ -401,6 +402,7 @@ export default class ECRFDownloadService {
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
           notation_key:
             toShort(inventoryValue.unavailableReason) ?? undefined,
+          explanation: inventoryValue.unavailableExplanation ?? undefined,
           activityValues: [
             {
               activity_type: null,
@@ -457,52 +459,64 @@ export default class ECRFDownloadService {
             const emission_n2o =
               n2o_gas?.emissionsFactor?.emissionsPerActivity ?? null;
 
-            let ghg_co2_kg = this.toNullableBigInt(co2_gas?.gasAmount);
-            let ghg_ch4_kg = this.toNullableBigInt(ch4_gas?.gasAmount);
-            let ghg_n2o_kg = this.toNullableBigInt(n2o_gas?.gasAmount);
-
-            // Fallback: eCRF import stores tonnes on activityData without
-            // attaching GasValue rows to the activity.
             const activityData = activityValue.activityData ?? {};
-            if (ghg_co2_kg == null) {
-              ghg_co2_kg = this.tonnesFieldToKg(activityData.co2_amount);
-            }
-            if (ghg_ch4_kg == null) {
-              ghg_ch4_kg = this.tonnesFieldToKg(activityData.ch4_amount);
-            }
-            if (ghg_n2o_kg == null) {
-              ghg_n2o_kg = this.tonnesFieldToKg(activityData.n2o_amount);
-            }
+            const metadata = activityValue.metadata ?? {};
 
-            // Template columns are "GHGs (metric tonnes CO2e)" — convert kg → t.
+            // Template columns are "GHGs (metric tonnes CO2e)". Native
+            // GasValue.gasAmount is kg of gas (apply AR5 GWP). CIRIS/eCRF
+            // tonnes live on activityData when there is no GasValue.
+            const ghg_co2 = this.ghgColumnTonnesCO2e({
+              activityTonnes: activityData.co2_amount,
+              gasAmountKg: this.toNullableBigInt(co2_gas?.gasAmount),
+              gwp: 1n,
+            });
+            const ghg_ch4 = this.ghgColumnTonnesCO2e({
+              activityTonnes: activityData.ch4_amount,
+              gasAmountKg: this.toNullableBigInt(ch4_gas?.gasAmount),
+              gwp: 28n,
+            });
+            const ghg_n2o = this.ghgColumnTonnesCO2e({
+              activityTonnes: activityData.n2o_amount,
+              gasAmountKg: this.toNullableBigInt(n2o_gas?.gasAmount),
+              gwp: 265n,
+            });
+
+            const fileActivityType =
+              typeof metadata.ecrfActivityType === "string"
+                ? metadata.ecrfActivityType
+                : "";
+            const fileMethodology =
+              typeof metadata.ecrfMethodology === "string"
+                ? metadata.ecrfMethodology
+                : "";
+            const fileActivityUnit =
+              typeof metadata.ecrfActivityUnit === "string"
+                ? metadata.ecrfActivityUnit
+                : "";
+
             return {
-              ghg_co2:
-                ghg_co2_kg != null
-                  ? bigIntToDecimal(ghg_co2_kg).div(1000).toNumber()
-                  : null,
-              // AR5 GWP factors (same as pre-fix export behaviour)
-              ghg_ch4:
-                ghg_ch4_kg != null
-                  ? bigIntToDecimal(ghg_ch4_kg * 28n).div(1000).toNumber()
-                  : null,
-              ghg_n2o:
-                ghg_n2o_kg != null
-                  ? bigIntToDecimal(ghg_n2o_kg * 265n).div(1000).toNumber()
-                  : null,
-              activity_type: t(
-                String(activityValue.activityData?.[activityKey] ?? ""),
-              ),
-              emission_factor_unit: null,
-              emission_co2,
-              emission_ch4,
-              emission_n2o,
+              ghg_co2,
+              ghg_ch4,
+              ghg_n2o,
+              activity_type:
+                fileActivityType ||
+                t(String(activityData[activityKey] ?? "")),
+              emission_factor_unit:
+                metadata.emissionFactorUnit ?? null,
+              emission_co2:
+                this.metaNumber(metadata.emissionFactorCO2) ?? emission_co2,
+              emission_ch4:
+                this.metaNumber(metadata.emissionFactorCH4) ?? emission_ch4,
+              emission_n2o:
+                this.metaNumber(metadata.emissionFactorN2O) ?? emission_n2o,
               activity_amount: activityAmount,
               emission_factor_source:
                 activityValue.metadata?.emissionFactorName,
               emission_factor_description:
                 activityValue.metadata?.emissionFactorTypeReference,
-              activity_unit: activityUnit,
-              methodology: t(methodologyDescription ?? ""),
+              activity_unit: fileActivityUnit || activityUnit,
+              methodology:
+                fileMethodology || t(methodologyDescription ?? ""),
               activity_data_quality: dataQuality,
               activity_data_source: dataSource,
               total_co2e: toDecimal(activityValue.co2eq as bigint)
@@ -538,6 +552,7 @@ export default class ECRFDownloadService {
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
           notation_key:
             toShort(inventoryValue.unavailableReason) ?? undefined,
+          explanation: inventoryValue.unavailableExplanation ?? undefined,
           input_methodology: t(inventoryValue.inputMethodology ?? ""),
           activityValues: activityRows,
         };
@@ -573,6 +588,10 @@ export default class ECRFDownloadService {
       this.markRowAsNotEstimated(row, {
         notation: dataSection.notation_key,
         inventoryYear,
+        explanation:
+          typeof dataSection.explanation === "string"
+            ? dataSection.explanation
+            : undefined,
       });
       return;
     }
@@ -635,7 +654,11 @@ export default class ECRFDownloadService {
 
   private static markRowAsNotEstimated(
     row: Excel.Row,
-    options?: { notation?: string; inventoryYear?: number },
+    options?: {
+      notation?: string;
+      inventoryYear?: number;
+      explanation?: string;
+    },
   ) {
     this.writeInventoryYear(row, options?.inventoryYear);
     row.eachCell((cell) => {
@@ -651,6 +674,12 @@ export default class ECRFDownloadService {
             options?.inventoryYear != null
           ) {
             cell.value = options.inventoryYear;
+          } else if (
+            (fieldName === "methodology" || fieldName === "explanation") &&
+            options?.explanation
+          ) {
+            // CIRIS NE/NO justification (e.g. II.5.3 "not required for BASIC").
+            cell.value = options.explanation;
           } else {
             cell.value = "";
           }
@@ -684,21 +713,41 @@ export default class ECRFDownloadService {
     });
   }
 
+  /**
+   * eCRF_3 GHG cells are metric tonnes CO2e. Prefer GasValue kg × GWP
+   * (manual Direct Measure). Fall back to activityData tonnes (CIRIS/eCRF).
+   */
+  private static ghgColumnTonnesCO2e(input: {
+    activityTonnes: unknown;
+    gasAmountKg: bigint | null;
+    gwp: bigint;
+  }): number | null {
+    if (input.gasAmountKg != null) {
+      return bigIntToDecimal(input.gasAmountKg * input.gwp)
+        .div(1000)
+        .toNumber();
+    }
+    const tonnes = this.metaNumber(input.activityTonnes);
+    if (hasSignedNumericValue(tonnes)) {
+      return tonnes;
+    }
+    return null;
+  }
+
+  private static metaNumber(value: unknown): number | null {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() !== "") {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+    return null;
+  }
+
   /** Safe BigInt for optional gas amounts — never throw on null/undefined. */
   private static toNullableBigInt(value: unknown): bigint | null {
     if (value == null || value === "") return null;
     try {
       return BigInt(value as bigint | number | string);
-    } catch {
-      return null;
-    }
-  }
-
-  /** Convert activityData tonne fields (eCRF import) to kg bigint. */
-  private static tonnesFieldToKg(value: unknown): bigint | null {
-    if (typeof value !== "number" || Number.isNaN(value)) return null;
-    try {
-      return BigInt(new Decimal(value).mul(1000).trunc().toString());
     } catch {
       return null;
     }

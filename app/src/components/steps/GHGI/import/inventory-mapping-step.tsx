@@ -25,13 +25,6 @@ const MANDATORY_KEYS = new Set([
   "activityAmount",
 ]);
 
-const EMISSION_FACTOR_KEYS = new Set([
-  "emissionFactorCO2",
-  "emissionFactorCH4",
-  "emissionFactorN2O",
-  "emissionFactorTotalCO2e",
-]);
-
 interface InventoryMappingStepProps {
   t: TFunction;
   lng: string;
@@ -75,19 +68,9 @@ export default function InventoryMappingStep({
   };
 
   const formatExampleValue = (col: ColumnInfo): string | null => {
-    if (!col.exampleValue) return null;
-    if (EMISSION_FACTOR_KEYS.has(getKeyForLabel(col.interpretedAs))) {
-      const num = parseFloat(col.exampleValue);
-      if (!isNaN(num)) {
-        const tonnes = num / 1000;
-        const formatted =
-          tonnes < 0.0001
-            ? tonnes.toExponential(2)
-            : parseFloat(tonnes.toFixed(4)).toString();
-        return `${formatted} mtCO₂e`;
-      }
-    }
-    return col.exampleValue;
+    // Show the file cell as-is. EF columns are already in the file unit
+    // (e.g. tCO2e/TJ), not kg that we convert to mtCO₂e.
+    return col.exampleValue || null;
   };
 
   const getEffectiveKey = (col: ColumnInfo): string => {

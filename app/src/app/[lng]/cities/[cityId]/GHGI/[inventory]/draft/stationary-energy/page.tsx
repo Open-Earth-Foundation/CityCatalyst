@@ -6,7 +6,7 @@ import { StationaryEnergyDecisionPage } from "@/components/StationaryEnergyDraft
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
 export const instant = false;
 
-export default function CityStationaryEnergyDraftPage() {
-  requireStationaryEnergyAgenticPageEnabled();
+export default async function CityStationaryEnergyDraftPage() {
+  await requireStationaryEnergyAgenticPageEnabled();
   return <StationaryEnergyDecisionPage />;
 }

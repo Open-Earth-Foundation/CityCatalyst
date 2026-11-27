@@ -6,7 +6,7 @@ import { LegacyStationaryEnergyDraftRoute } from "@/components/StationaryEnergyD
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
 export const instant = false;
 
-export default function Page() {
-  requireStationaryEnergyAgenticPageEnabled();
+export default async function Page() {
+  await requireStationaryEnergyAgenticPageEnabled();
   return <LegacyStationaryEnergyDraftRoute />;
 }

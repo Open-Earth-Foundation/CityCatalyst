@@ -22,6 +22,8 @@ Each candidate contains its value and verified citations, without internal IDs.
 The exact cited words are in `quote`. When present, `quote_context` contains
 those same words inside their original sentence, list or table. Use its
 heading, units and conditions to interpret what the quoted words establish.
+A citation with `repeated_from_anchor` gives another location for the same
+label and value in the same document. Count those locations as one piece of evidence.
 The point includes related_facts from its chapters. Their basis tells you whether
 the person confirmed an answer or the source merely provides a relevant excerpt.
 Use a source excerpt as context and do not describe it as a confirmed answer.

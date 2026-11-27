@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import re
+from collections.abc import Callable
 from hashlib import sha256
 
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
@@ -17,6 +18,7 @@ from app.models.db.document_workspace import (
     DocumentSetupSnapshot,
 )
 from app.services.cnb.source_analysis import (
+    SourceUnit,
     partition_source_pages,
     prompt_token_count,
     render_partition,
@@ -49,6 +51,10 @@ from app.services.document_workspace.requirements import (
     fingerprint,
     template_definitions,
     validate_value,
+)
+from app.services.document_workspace.scalar_sources import (
+    SCALAR_SOURCES_VERSION,
+    scalar_source_enricher,
 )
 from app.services.document_workspace.targeted_search import (
     SourceSearchPlan,
@@ -85,7 +91,9 @@ def file_category(categories, filename, title_text):
     return "other"
 
 
-async def read_setup_source(points, source, *, settings, client, runner, scope=None):
+async def read_setup_source(
+    points, source, *, settings, client, runner, scope=None, scalar_enricher=None
+):
     """Return verified full and contextual evidence using bounded, complete partitions."""
     if not points:
         return {}
@@ -319,7 +327,35 @@ async def read_setup_source(points, source, *, settings, client, runner, scope=N
         semaphore=semaphore,
         invoke=run_agent,
     )
-    return await asyncio.to_thread(enrich_findings, assembled, original_units)
+    return await asyncio.to_thread(
+        enrich_source_findings,
+        assembled,
+        points,
+        source.units,
+        source.source.source_label,
+        scalar_enricher,
+    )
+
+
+def enrich_source_findings(
+    findings: dict,
+    definitions: list[dict],
+    units: list[SourceUnit],
+    source_label: str,
+    scalar_enricher: Callable[[dict, object, list[dict], str | None], list[dict]]
+    | None = None,
+) -> dict:
+    """Recover exact scalar repeats, then attach context without another model call."""
+    scalar = scalar_enricher or scalar_source_enricher(units, source_label, definitions)
+    by_key = {point["key"]: point for point in definitions}
+    recovered = {
+        key: {
+            (support, value): scalar(by_key.get(key, {}), value, citations, support)
+            for (support, value), citations in answers.items()
+        }
+        for key, answers in findings.items()
+    }
+    return enrich_findings(recovered, {source_unit_anchor(u): u.text for u in units})
 
 
 def enrich_findings(findings, original_units):
@@ -389,7 +425,27 @@ def candidate_signature(value, citations, identity, support):
 
 
 def _core_citations(citations):
-    return [{k: v for k, v in c.items() if k != "quote_context"} for c in citations]
+    return [
+        {
+            k: v
+            for k, v in c.items()
+            if k not in {"quote_context", "repeated_from_anchor"}
+        }
+        for c in citations
+        if not c.get("repeated_from_anchor")
+    ]
+
+
+def candidate_support(candidate: DocumentCandidate, identity: dict) -> str | None:
+    """Recover reviewed support from its unchanged canonical or legacy fingerprint."""
+    core = _core_citations(candidate.citations)
+    for support in ("full", "partial"):
+        if candidate.fingerprint in {
+            fingerprint([candidate.value, core, identity, support]),
+            candidate_signature(candidate.value, core, identity, support),
+        }:
+            return support
+    return None
 
 
 def compatible_candidates(previous, identity):
@@ -415,8 +471,11 @@ def compatible_candidates(previous, identity):
 
 
 async def _refresh_citation_context(session, state, need, doc, identity, points, units):
-    """Enrich a cached reading once, preserving candidate IDs and human dispositions."""
-    if doc.get("citation_context_version") == CONTEXT_VERSION:
+    """Backfill source-derived evidence once, preserving IDs and human dispositions."""
+    if (
+        doc.get("citation_context_version") == CONTEXT_VERSION
+        and doc.get("scalar_sources_version") == SCALAR_SOURCES_VERSION
+    ):
         return
     candidates = [
         candidate
@@ -433,7 +492,21 @@ async def _refresh_citation_context(session, state, need, doc, identity, points,
 
     def refresh():
         enrich = citation_enricher({source_unit_anchor(u): u.text for u in units})
-        return [enrich(citations) for citations in stored]
+        definitions = {p.point_id: p.definition for p in points}
+        scalar = scalar_source_enricher(
+            units, doc["source_label"], list(definitions.values())
+        )
+        return [
+            enrich(
+                scalar(
+                    definitions[c.point_id],
+                    c.value,
+                    citations,
+                    candidate_support(c, identity),
+                )
+            )
+            for c, citations in zip(candidates, stored, strict=True)
+        ]
 
     updated = await asyncio.to_thread(refresh)
     if updated != stored:
@@ -441,7 +514,11 @@ async def _refresh_citation_context(session, state, need, doc, identity, points,
             candidate.citations = citations
         state.revision += 1
     need.documents = [
-        {**d, "citation_context_version": CONTEXT_VERSION}
+        {
+            **d,
+            "citation_context_version": CONTEXT_VERSION,
+            "scalar_sources_version": SCALAR_SOURCES_VERSION,
+        }
         if d["upload_id"] == doc["upload_id"]
         else d
         for d in need.documents
@@ -517,6 +594,9 @@ async def read_and_store_setup_source(
                 session, state, need, ready, identity, points, source.units
             )
             return
+    scalar = await asyncio.to_thread(
+        scalar_source_enricher, source.units, source.source.source_label, definitions
+    )
     found = await read_setup_source(
         definitions,
         source,
@@ -524,6 +604,7 @@ async def read_and_store_setup_source(
         settings=settings,
         client=client,
         runner=runner,
+        scalar_enricher=scalar,
     )
     enrich_previous = citation_enricher(
         {source_unit_anchor(u): u.text for u in source.units}
@@ -575,7 +656,14 @@ async def read_and_store_setup_source(
                 existing = compatible.get(candidate_hash)
                 if existing:
                     seen.add(existing.fingerprint)
-                    enriched = copy_citation_context(existing.citations, citations)
+                    enriched = enrich_previous(
+                        scalar(
+                            current.definition,
+                            existing.value,
+                            copy_citation_context(existing.citations, citations),
+                            support,
+                        )
+                    )
                     if existing.citations != enriched:
                         existing.citations = enriched
                     if existing.status == "superseded":
@@ -598,7 +686,14 @@ async def read_and_store_setup_source(
                     continue
                 # OCR may have changed independently of the underlying PDF. Keep the
                 # original decision and core; only exact context at this locator survives.
-                old.citations = await asyncio.to_thread(enrich_previous, old.citations)
+                old.citations = enrich_previous(
+                    scalar(
+                        current.definition,
+                        old.value,
+                        old.citations,
+                        candidate_support(old, identity),
+                    )
+                )
                 if old.status in {"context", "pending"}:
                     old.status = "superseded"
                     changed = True
@@ -622,6 +717,7 @@ async def read_and_store_setup_source(
                 "ready": True,
                 "reading_fingerprint": digest,
                 "citation_context_version": CONTEXT_VERSION,
+                "scalar_sources_version": SCALAR_SOURCES_VERSION,
             }
         ]
         state.revision += 1

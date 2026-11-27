@@ -913,6 +913,12 @@ in bold. Both come from the same original page or Markdown block. The optional
 `quote_context` is added on the next source read, including cached reads. The
 original quote and location identify the proposal across reads and preserve
 the applicant's review decision.
+For short text fields explicitly linked to the city profile, a fully reviewed
+complete label/value line can retain up to 24 identical locations in the same
+source. Added locations carry `repeated_from_anchor` and are derived evidence,
+not additional independent confirmations. Numeric facts, substrings, translated
+aliases and ambiguous heading/footer lines are excluded. Cached reads backfill
+these locations without changing candidate IDs or review decisions.
 Alternative answers and different source files remain separately reviewable.
 Rereading a source preserves the applicant's prior decisions.
 

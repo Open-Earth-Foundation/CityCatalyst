@@ -267,6 +267,142 @@ async def test_registered_setup_pins_the_form_and_keeps_the_value_shared_with_an
         )
 
 
+async def test_scalar_repeat_backfill_preserves_human_ids_source_identity_and_ocr_changes(
+    workspace, monkeypatch
+):
+    from app.services.document_workspace.setup_reading import (
+        read_and_store_setup_source,
+    )
+
+    service, run, factory = workspace
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.queue_ready_source_sync",
+        AsyncMock(return_value=False),
+    )
+    monkeypatch.setattr(
+        "app.services.document_workspace.service.get_session_factory", lambda: factory
+    )
+    await service.save_setup(
+        run,
+        DocumentSetupRequest(
+            document_type="eucf",
+            expected_revision=(await service.load(run)).revision,
+            idempotency_key="scalar-pin",
+        ),
+    )
+    async with factory() as session:
+        points = list(
+            await session.scalars(
+                select(DocumentPoint).where(DocumentPoint.active.is_(True))
+            )
+        )
+    line = "Municipality: Amber"
+    other = "Municipality: Azure"
+    source = SimpleNamespace(
+        source=SimpleNamespace(
+            upload_id=uuid4(),
+            sha256="a" * 64,
+            source_label="Register",
+            filename="register.md",
+            source_format="markdown",
+        ),
+        units=[
+            SourcePage(n, f"Official register\n{row}\nSupporting records.")
+            for n, row in ((1, line), (2, line), (3, other), (4, other))
+        ],
+    )
+    quote = lambda row, page: {
+        "source_label": "Register",
+        "quote": row,
+        "page_number": page,
+    }
+    reader = AsyncMock(
+        return_value={
+            "applicant.name": {
+                ("full", "Amber"): [quote(line, 1)],
+                ("full", "Azure"): [quote(other, 3)],
+            }
+        }
+    )
+    monkeypatch.setattr(
+        "app.services.document_workspace.setup_reading.read_setup_source", reader
+    )
+    settings = get_settings()
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    city = next(
+        p for p in (await service.load(run)).points if p.key == "applicant.name"
+    )
+    accepted_id = next(c.candidate_id for c in city.candidates if c.value == "Amber")
+    await service.command(
+        run,
+        city.key,
+        DocumentPointCommand(
+            command="confirm_candidate",
+            candidate_id=accepted_id,
+            expected_version=city.version,
+            idempotency_key="scalar-confirm",
+        ),
+        user_id="owner",
+    )
+    async with factory() as session, session.begin():
+        candidates = list(await session.scalars(select(DocumentCandidate)))
+        originals = {c.candidate_id: (c.fingerprint, c.status) for c in candidates}
+        for c in candidates:
+            c.citations = [q for q in c.citations if not q.get("repeated_from_anchor")]
+        for need in await session.scalars(select(DocumentNeed)):
+            need.documents = [
+                {k: v for k, v in d.items() if k != "scalar_sources_version"}
+                for d in need.documents
+            ]
+        foreign = DocumentCandidate(
+            point_id=candidates[0].point_id,
+            fingerprint="foreign-sha",
+            value="Amber",
+            status="dismissed",
+            citations=[quote(line, 1)],
+            source_identity={
+                "upload_id": str(source.source.upload_id),
+                "sha256": "different",
+            },
+        )
+        session.add(foreign)
+        await session.flush()
+        foreign_id = foreign.candidate_id
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    async with factory() as session:
+        for candidate_id, expected in originals.items():
+            c = await session.get(DocumentCandidate, candidate_id)
+            assert (c.fingerprint, c.status) == expected
+            assert len(c.citations) == 2 and c.citations[1]["repeated_from_anchor"]
+        assert (await session.get(DocumentCandidate, foreign_id)).citations == [
+            quote(line, 1)
+        ]
+    revision = (await service.load(run)).revision
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    assert (await service.load(run)).revision == revision
+    assert reader.await_count == 1
+    # The PDF hash is unchanged but different OCR invalidates cached locations.
+    source.units[1] = SourcePage(
+        2, "Official register\nMunicipality: Cedar\nSupporting records."
+    )
+    await read_and_store_setup_source(
+        service, run, source, points, settings=settings, client=None, runner=None
+    )
+    async with factory() as session:
+        accepted = await session.get(DocumentCandidate, UUID(accepted_id))
+        assert accepted.status == "accepted" and len(accepted.citations) == 1
+        assert set(originals).issubset(
+            {c.candidate_id for c in await session.scalars(select(DocumentCandidate))}
+        )
+    assert reader.await_count == 2
+
+
 async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_choice(
     workspace, monkeypatch
 ):

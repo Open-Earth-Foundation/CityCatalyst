@@ -5,6 +5,10 @@ import type { ReactNode } from "react";
 import { useTranslation } from "@/i18n/client";
 import type { DocumentPointCitation } from "@/util/document-workspace";
 import { SourceQuotation } from "./source-quotation";
+import {
+  groupSourceCitations,
+  type GroupedSourceCitation,
+} from "./source-citations";
 
 function NarrativeSummary({ children }: { children: ReactNode }) {
   return (
@@ -90,8 +94,9 @@ export function NarrativeCitations({
   const { t } = useTranslation(lng, "concept-notes");
   if (!citations.some((cite) => cite.component_values?.length))
     return <>{children}</>;
-  const byValue = new Map<string, DocumentPointCitation[]>();
-  for (const cite of citations) {
+  const groupedCitations = groupSourceCitations(citations);
+  const byValue = new Map<string, GroupedSourceCitation[]>();
+  for (const cite of groupedCitations) {
     for (const value of cite.component_values?.length
       ? cite.component_values
       : [""]) {
@@ -112,7 +117,7 @@ export function NarrativeCitations({
       )}
       <Box as="details" mt={1}>
         <NarrativeSummary>
-          {t("validation-check-evidence")} ({citations.length})
+          {t("validation-check-evidence")} ({groupedCitations.length})
         </NarrativeSummary>
         <VStack mt={2} align="stretch" gap={3}>
           {Array.from(byValue, ([value, sources]) => (
@@ -132,7 +137,7 @@ export function NarrativeCitations({
                   pl={3}
                 >
                   <Text fontSize="body.sm" whiteSpace="pre-wrap">
-                    <SourceQuotation citation={source} />
+                    <SourceQuotation citation={source} lng={lng} />
                   </Text>
                   <Text fontSize="body.sm" color="content.secondary">
                     {source.source_label}

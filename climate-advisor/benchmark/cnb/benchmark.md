@@ -25,6 +25,12 @@ Open `report.html` for point rows and the historical per-chapter gold-set result
 
 The unit of scoring is one form point. A correct cited candidate earns credit for finding the point even when the reader also offers another value. The report separately counts points with competing full values that need a person to choose between them.
 
+For a no-cost screening run, keep the original pre-human snapshot as `workspace.json` alongside each prior run's `scores.json` and `judgments.json`. The command below verifies their fingerprints and reports the minimum and maximum number of correct fields consistent with those judgments. Use runs from the same source corpus and evaluator instructions. New evidence or contradictory judgments can leave a range. The official grading command above remains the way to obtain a fresh semantic assessment.
+
+```text
+python -m benchmark.cnb.scripts.point_score_bounds --workspace candidate.json --answer-key answer-key.json --policy benchmark/cnb/fixtures/krosno-eucf-scoring.json --prior-run output/first-reading --prior-run output/second-reading --judge-model openai/gpt-6.1-sol
+```
+
 The first official Krosno run correctly filed all three documents. On the 35 primary points, precision was 2/22 and recall was 2/22 (9.1% each). On the eleven disputed points, precision was 1/5 and recall was 1/8. Both primary point metrics fell below the pilot thresholds. [First pilot report](results/runs/20261127-krosno-eucf-first/report.html) · [Score and input fingerprints](results/runs/20261127-krosno-eucf-first/scores.json).
 
 The revised reader used the current municipality and bilingual search terms for each group of requirements. In a fresh workspace, it classified 3/3 files correctly. Primary precision rose to 13/25 (52.0%) and recall to 13/22 (59.1%). Among the eleven disputed points, precision was 3/7 and recall was 3/8. Both runs used the same answer key, page tolerance and thresholds. The second run also fell below the point-finding thresholds. [Second pilot report](results/runs/20261127-krosno-eucf-second/report.html) · [Score and input fingerprints](results/runs/20261127-krosno-eucf-second/scores.json).

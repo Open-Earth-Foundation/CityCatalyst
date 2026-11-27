@@ -1,0 +1,656 @@
+{
+  "reference_pr": {
+    "number": 3430,
+    "commit": "f243854ed661e0f6f64d8237917b6b83052bef13"
+  },
+  "decision": "BELOW THRESHOLDS",
+  "headline_thresholds": {
+    "sorting": 0.9,
+    "precision": 0.9,
+    "recall": 0.8
+  },
+  "product": {
+    "method": "Ordinary registered source reader, original source data and recorded provider responses. Any new request would fail this run.",
+    "sources": [
+      {
+        "source": "Krosno-institutional-development-plan-submitted.md",
+        "source_sha256": "5cdbe3940608ffd090259d636610bcfb66015f60c116f4ef65e919ed8f134060",
+        "candidates": 36,
+        "core_citations": 138,
+        "additional_locations": [
+          {
+            "field": "applicant.name",
+            "page": 217,
+            "seed": "page-1/page-216/block-04a7ce9be833",
+            "source_anchor": "page-1/page-217/block-2e5dafccbb60"
+          },
+          {
+            "field": "applicant.name",
+            "page": 218,
+            "seed": "page-1/page-216/block-04a7ce9be833",
+            "source_anchor": "page-1/page-218/block-836c613b271b"
+          }
+        ]
+      },
+      {
+        "source": "Krosno-local-development-plan-submitted.md",
+        "source_sha256": "cb097def8edf9bc7ffd73a6479ccd513235fd4a8bff8e219f42d16018c9b9b8e",
+        "candidates": 49,
+        "core_citations": 150,
+        "additional_locations": [
+          {
+            "field": "applicant.name",
+            "page": 246,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-246/block-1e749c376a68"
+          },
+          {
+            "field": "applicant.name",
+            "page": 247,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-247/block-5d12e0f4c58a"
+          },
+          {
+            "field": "applicant.name",
+            "page": 248,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-248/block-9d58832130d9"
+          },
+          {
+            "field": "applicant.name",
+            "page": 249,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-249/block-b3c28c085b91"
+          },
+          {
+            "field": "applicant.name",
+            "page": 249,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-249/block-bb5bd9a8ed91"
+          },
+          {
+            "field": "applicant.name",
+            "page": 250,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-250/block-c9dfde94ddb0"
+          },
+          {
+            "field": "applicant.name",
+            "page": 251,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-251/block-4be604cbc833"
+          },
+          {
+            "field": "applicant.name",
+            "page": 252,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-252/block-f467f5957061"
+          },
+          {
+            "field": "applicant.name",
+            "page": 254,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-254/block-5afabb17825c"
+          },
+          {
+            "field": "applicant.name",
+            "page": 255,
+            "seed": "page-1/page-253/block-bb5c6b5a3a9c",
+            "source_anchor": "page-1/page-255/block-77916edf7de2"
+          }
+        ]
+      },
+      {
+        "source": "Krosno-low-emission-plan-2019-update.md",
+        "source_sha256": "c4acdb3cc68dd01d00c13a4fcf5f389e668ed7829ec88ceaa6fbfcc87554b63c",
+        "candidates": 35,
+        "core_citations": 113,
+        "additional_locations": []
+      }
+    ],
+    "prior": {
+      "Scorable points": {
+        "correct": 14,
+        "reported": 23,
+        "expected": 22,
+        "correctly_sorted": 3,
+        "files": 3
+      },
+      "Held for Polish review": {
+        "correct": 3,
+        "reported": 7,
+        "expected": 8,
+        "correctly_sorted": 3,
+        "files": 3
+      },
+      "All points": {
+        "correct": 17,
+        "reported": 30,
+        "expected": 30,
+        "correctly_sorted": 3,
+        "files": 3
+      }
+    },
+    "current": {
+      "Scorable points": {
+        "correct": 15,
+        "reported": 23,
+        "expected": 22,
+        "correctly_sorted": 3,
+        "files": 3
+      },
+      "Held for Polish review": {
+        "correct": 3,
+        "reported": 7,
+        "expected": 8,
+        "correctly_sorted": 3,
+        "files": 3
+      },
+      "All points": {
+        "correct": 18,
+        "reported": 30,
+        "expected": 30,
+        "correctly_sorted": 3,
+        "files": 3
+      }
+    },
+    "workspace_sha256": "c832e4a8159cc3b125afbc1717515b5195a4f7be31c99573c270a4d1de9b51b9",
+    "answer_key_sha256": "60e3d57f7034af38f4ed3191d425154d3c557942e7c3c2fcb2d7b2fa085f4d4a",
+    "policy_sha256": "b2fd6c102e6ca0e84876919baab4b470d04fa137419044d5f26ac8d29a3aa1af",
+    "judge_model": "openai/gpt-6.1-sol",
+    "ordered_semantic_packet_sha256": "03ba007c5908ac4d3368afa3476318551db72bce5c2ff4f998376086250401e4",
+    "original_batch_hashes": {
+      "v6": "b340009367e3a341d0328b64b0f365129778712399a99819b5082ce90589b498",
+      "v7": "865b959ab18285fe8285a93a8b0e01ec91373c3060988b97709776c021b29e42",
+      "v3": "b627c4e50c61cd4349f827b19abd8428eb2a4f231c1e035f3916f0b6d11b8dd8",
+      "v4": "8ce937b0048892563b202739060c9d477399d5e50c0ca2f935d506a5dc533e6b",
+      "v5": "f68702e1999e91f116e4792de396d99b8044290f30a49ddf32e96878b929ff13"
+    },
+    "per_field_exact_matches": [
+      {
+        "field": "applicant.name",
+        "semantic_input_sha256": "0f2696a5b4d4d878eec49f9a00d0380c6a18183a160987451bc155e1defe23b0",
+        "matches": true,
+        "prior_runs": [
+          "v6",
+          "v7"
+        ]
+      },
+      {
+        "field": "applicant.country",
+        "semantic_input_sha256": "0c24a04b1c592f9682d4172ba611175a2da3f184818460f01cfa399da3a1338b",
+        "matches": true,
+        "prior_runs": [
+          "v3",
+          "v4",
+          "v5",
+          "v6",
+          "v7"
+        ]
+      },
+      {
+        "field": "applicant.population",
+        "semantic_input_sha256": "66fef340c7497d04d3a4fee33cb4be3a7c27ddd4e48448cb0a82c83641abdf87",
+        "matches": true,
+        "prior_runs": [
+          "v3",
+          "v4",
+          "v5",
+          "v6",
+          "v7"
+        ]
+      },
+      {
+        "field": "applicant.political_representative",
+        "semantic_input_sha256": "7c70d9e76561b38e030a4da8530a3f043cb56760cc02ee1a8d2f76baf18066c3",
+        "matches": true,
+        "prior_runs": [
+          "v4",
+          "v5"
+        ]
+      },
+      {
+        "field": "activities.long_term_goal",
+        "semantic_input_sha256": "641b0c4ce31ce2348c2614c1b8cb7145080a5753e38fc2595ee482ec51415a70",
+        "matches": true,
+        "prior_runs": [
+          "v4",
+          "v5",
+          "v7"
+        ]
+      },
+      {
+        "field": "governance.project_team",
+        "semantic_input_sha256": "904ceb7d3f0a45f6093092f8fd711704917b9e4b260a3d1a0360f21ba7453f95",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "governance.roles_tasks",
+        "semantic_input_sha256": "4d5104e24d1b9fe9305e653b1ed4c1c7a03d3c5f364d320dca47521c2b3ae717",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "governance.decision_process",
+        "semantic_input_sha256": "42db3605693c95df838e3a4154b557d3a5e5b76ea0c460f93fc9a4466c1068b0",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "governance.municipal_companies",
+        "semantic_input_sha256": "ae7009a16cd11404fe760953f12a4bcc2227d0897446bc693b9ccc024e992fd4",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "governance.external_experts",
+        "semantic_input_sha256": "3d11fa16dc1d3bc0acde20fe7fd71c43795d1a6a0fbfcb13890a8faa81077920",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "stakeholders.groups",
+        "semantic_input_sha256": "71cfc3b5cb4c873a8c681e005b20d3521d71c5a5409dfa4e9a5a6c11fc7be6b7",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "stakeholders.activities",
+        "semantic_input_sha256": "7eb3471988de6d2026b2129fdd5ec8e1f142c6aad0f46dfd146bd2a1c77c0537",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "measures.description",
+        "semantic_input_sha256": "76118ceb04a1a3bfb4249d48e3f778380987d6a3b3783e0f7d39d9e7a6d6c4f5",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "investment.by_sector",
+        "semantic_input_sha256": "1595332ef172eed55a2e33bdac4148f306a608aa86beb80e38bacb850adab9b6",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "investment.calculation_basis",
+        "semantic_input_sha256": "c8238e0ad40dfa07a6ec990063f0511a1ce10c598a3fe81255855a92f78ee5f0",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "impacts.baseline_energy",
+        "semantic_input_sha256": "1f8f6c6f8bf516e66d19ff158fc7f4e7489c2b30ea84780dab95fa1414b548e4",
+        "matches": true,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "replication.networks",
+        "semantic_input_sha256": "50a4f848e6736d2f7a48c012d6369c7e2a1473e74f44dbf96466eccb4aa3ae65",
+        "matches": false,
+        "prior_runs": [
+          "v5"
+        ]
+      },
+      {
+        "field": "plan.name_and_adoption",
+        "semantic_input_sha256": "2018409bd189159124e94435a1715a06acda05a24950762f2044ed046cb1ec18",
+        "matches": true,
+        "prior_runs": [
+          "v4",
+          "v5"
+        ]
+      },
+      {
+        "field": "plan.target",
+        "semantic_input_sha256": "4bebdd0e14a8e27847aa80f098a204e9aebfe2e4a999cb1737477cc32dc7fe43",
+        "matches": true,
+        "prior_runs": [
+          "v4",
+          "v5",
+          "v6"
+        ]
+      },
+      {
+        "field": "plan.key_measures",
+        "semantic_input_sha256": "62f6b22c89f186d429588d44b648ef4b03b1817784c7b4d2e4782f31c1b5c04f",
+        "matches": false,
+        "prior_runs": [
+          "v5"
+        ]
+      }
+    ],
+    "external_unchanged": [
+      {
+        "case": "harbor-point-heat-resilience",
+        "definitions": 20,
+        "linked_fields": [],
+        "units": 31,
+        "rows": 36,
+        "structurally_equal": true,
+        "byte_equal": true,
+        "before_sha256": "a3358dfee77edc1bab04de377192761df90517d495ec03caa6e8ad8cde7e2f92",
+        "after_sha256": "a3358dfee77edc1bab04de377192761df90517d495ec03caa6e8ad8cde7e2f92"
+      },
+      {
+        "case": "krakow-flood-drainage-plan",
+        "definitions": 18,
+        "linked_fields": [],
+        "units": 30,
+        "rows": 37,
+        "structurally_equal": true,
+        "byte_equal": true,
+        "before_sha256": "dd282554ac6389458466f32e9870b39bd196e4970c37f422e336ab692376225f",
+        "after_sha256": "dd282554ac6389458466f32e9870b39bd196e4970c37f422e336ab692376225f"
+      },
+      {
+        "case": "richfield-flood-risk",
+        "definitions": 24,
+        "linked_fields": [],
+        "units": 55,
+        "rows": 51,
+        "structurally_equal": true,
+        "byte_equal": true,
+        "before_sha256": "82a44ea8b19df4044b846db4216d4327fe76cfb1c1e480db80f22e07ebcf4c6a",
+        "after_sha256": "82a44ea8b19df4044b846db4216d4327fe76cfb1c1e480db80f22e07ebcf4c6a"
+      }
+    ]
+  },
+  "secondary_experiments": {
+    "historic_v3_provider_cache_replay": [
+      {
+        "file": "Krosno-institutional-development-plan-submitted.json",
+        "rows": 113,
+        "file_sha256": "be0ddf8fdbd9a144e3826eed968edf5c963c56c973856751f5cb08ba8207468a",
+        "file_exact": true,
+        "row_sha256": "1d10492b12f04ca5243ca138aadc0a8d0dd367f77f67fbeb1ef3ed1ffb006bc7",
+        "cache_hits": 85,
+        "cache_misses": 0
+      },
+      {
+        "file": "Krosno-local-development-plan-submitted.json",
+        "rows": 166,
+        "file_sha256": "d544f062601d3713499a20dfe0a4d7c51a2d2091cc655548479fd6c7ad426acd",
+        "file_exact": true,
+        "row_sha256": "bb9321379cec3b423ab7442c3f87b4cad98b9f38deaab7d5329c41a4c594c31b",
+        "cache_hits": 94,
+        "cache_misses": 0
+      },
+      {
+        "file": "Krosno-low-emission-plan-2019-update.json",
+        "rows": 163,
+        "file_sha256": "3966c75b7715c55478380a217264ae2803d7d411b2a05edfa0904827ebdd794c",
+        "file_exact": true,
+        "row_sha256": "12f6d24633b91dbc772d5ce8aeaeec0d94b968b12a6468c0f585e855ccbaf65d",
+        "cache_hits": 127,
+        "cache_misses": 0
+      }
+    ],
+    "v3_v4_raw_candidates": 867,
+    "krosno": {
+      "paired-union": {
+        "primary": {
+          "lower": 18,
+          "upper": 18,
+          "expected": 22,
+          "reported": 28,
+          "contradictions": 0
+        },
+        "held": {
+          "lower": 2,
+          "upper": 2,
+          "expected": 8,
+          "reported": 7,
+          "contradictions": 0
+        }
+      },
+      "paired-agree": {
+        "primary": {
+          "lower": 14,
+          "upper": 14,
+          "expected": 22,
+          "reported": 20,
+          "contradictions": 0
+        },
+        "held": {
+          "lower": 2,
+          "upper": 2,
+          "expected": 8,
+          "reported": 6,
+          "contradictions": 0
+        }
+      },
+      "paired-admit-independent": {
+        "primary": {
+          "lower": 11,
+          "upper": 11,
+          "expected": 22,
+          "reported": 14,
+          "contradictions": 0
+        },
+        "held": {
+          "lower": 2,
+          "upper": 2,
+          "expected": 8,
+          "reported": 7,
+          "contradictions": 0
+        }
+      },
+      "paired-admit-local-witness": {
+        "primary": {
+          "lower": 16,
+          "upper": 16,
+          "expected": 22,
+          "reported": 26,
+          "contradictions": 0
+        },
+        "held": {
+          "lower": 2,
+          "upper": 2,
+          "expected": 8,
+          "reported": 7,
+          "contradictions": 0
+        }
+      },
+      "matched-v2": {
+        "primary": {
+          "correct": 17,
+          "reported": 28,
+          "expected": 22,
+          "correctly_sorted": 3,
+          "files": 3
+        },
+        "held": {
+          "correct": 3,
+          "reported": 7,
+          "expected": 8,
+          "correctly_sorted": 3,
+          "files": 3
+        }
+      },
+      "corrected-five": {
+        "primary": {
+          "correct": 17,
+          "reported": 28,
+          "expected": 22,
+          "correctly_sorted": 3,
+          "files": 3
+        },
+        "held": {
+          "correct": 2,
+          "reported": 7,
+          "expected": 8,
+          "correctly_sorted": 3,
+          "files": 3
+        }
+      },
+      "blind-panel": {
+        "primary": {
+          "correct": 6,
+          "reported": 13,
+          "expected": 22,
+          "correctly_sorted": 3,
+          "files": 3
+        },
+        "held": {
+          "correct": 2,
+          "reported": 5,
+          "expected": 8,
+          "correctly_sorted": 3,
+          "files": 3
+        }
+      }
+    },
+    "external_positive_fact_coverage": {
+      "v3": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 4,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "v4": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 3,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "portfolio-holdout-native": {
+        "harbor-point-heat-resilience": {
+          "covered": 4,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 2,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 2,
+          "expected": 4
+        }
+      },
+      "portfolio-holdout-local": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 4,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "paired-union": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 4,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "paired-agree": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 2,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "paired-admit-local-witness": {
+        "harbor-point-heat-resilience": {
+          "covered": 8,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 4,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 3,
+          "expected": 4
+        }
+      },
+      "paired-admit-independent": {
+        "harbor-point-heat-resilience": {
+          "covered": 6,
+          "expected": 11
+        },
+        "krakow-flood-drainage-plan": {
+          "covered": 3,
+          "expected": 8
+        },
+        "richfield-flood-risk": {
+          "covered": 2,
+          "expected": 4
+        }
+      }
+    },
+    "external_case_count": 3,
+    "limitations": [
+      "External field coverage uses 23 required positive fact/section pairs mapped to explicit fields. It cannot estimate precision.",
+      "Krosno estimates reuse recorded verdicts on identical inputs or logical implications under its one-correct-candidate rule. These are not newly sampled judgments.",
+      "The first local routing trial loaded an unrelated historical JSON file before rejecting it on schema. No result or reference from that file entered the router. Reported runs used an explicit file allowlist and fixed ordering.",
+      "Early routing attempts exceeded the local inference context. Reported local selection uses complete packets within a checked 32k window.",
+      "The 11 provisional Krosno fields are excluded from primary metrics."
+    ]
+  },
+  "spend": {
+    "followup_paid_provider_calls": 0,
+    "followup_provider_usd": 0,
+    "total_metered_usd": 67.03592853,
+    "user_limit_usd": 80.0
+  }
+}

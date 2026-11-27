@@ -35,6 +35,7 @@ import {
 import { EvidenceRequest } from "./evidence-request";
 import { NarrativeCitations, NarrativeValue } from "./narrative-citations";
 import { SourceQuotation } from "./source-quotation";
+import { groupSourceCitations } from "./source-citations";
 
 export function DocumentPointCard({
   point: incomingPoint,
@@ -230,7 +231,7 @@ export function DocumentPointCard({
             }
           />
           <NarrativeCitations citations={acceptedCitations} lng={lng}>
-            {acceptedCitations.map((citation, index) => (
+            {groupSourceCitations(acceptedCitations).map((citation, index) => (
               <Box
                 key={index}
                 as="blockquote"
@@ -240,7 +241,7 @@ export function DocumentPointCard({
                 pl={3}
               >
                 <Text fontSize="body.sm" lineHeight={1.6}>
-                  <SourceQuotation citation={citation} />
+                  <SourceQuotation citation={citation} lng={lng} />
                 </Text>
                 <Text fontSize="body.sm" mt={1} color="content.tertiary">
                   {citation.source_label}
@@ -299,20 +300,22 @@ export function DocumentPointCard({
                 value={pointDisplayValue(point, lng, candidate.value)}
               />
               <NarrativeCitations citations={candidate.citations} lng={lng}>
-                {candidate.citations.map((citation, index) => (
-                  <Box key={index} mt={1}>
-                    <Text fontSize="body.sm">
-                      <SourceQuotation citation={citation} />
-                    </Text>
-                    <Text fontSize="body.sm" color="content.tertiary">
-                      {citation.source_label}
-                      {citation.page_number !== null
-                        ? ` · ${t("workspace-page", { page: citation.page_number })}`
-                        : citation.source_anchor &&
-                          ` · ${citation.source_anchor}`}
-                    </Text>
-                  </Box>
-                ))}
+                {groupSourceCitations(candidate.citations).map(
+                  (citation, index) => (
+                    <Box key={index} mt={1}>
+                      <Text fontSize="body.sm">
+                        <SourceQuotation citation={citation} lng={lng} />
+                      </Text>
+                      <Text fontSize="body.sm" color="content.tertiary">
+                        {citation.source_label}
+                        {citation.page_number !== null
+                          ? ` · ${t("workspace-page", { page: citation.page_number })}`
+                          : citation.source_anchor &&
+                            ` · ${citation.source_anchor}`}
+                      </Text>
+                    </Box>
+                  ),
+                )}
               </NarrativeCitations>
             </Box>
           ))}
@@ -340,18 +343,20 @@ export function DocumentPointCard({
                 lng={lng}
                 preview={pointDisplayValue(point, lng, candidate.value)}
               >
-                {candidate.citations.map((cite, index) => (
-                  <Box mt={2} key={index}>
-                    <Text fontSize="body.sm">
-                      <SourceQuotation citation={cite} />
-                    </Text>
-                    <Text color="content.secondary" fontSize="body.sm">
-                      {cite.source_label}
-                      {cite.page_number != null &&
-                        ` · ${t("workspace-page", { page: cite.page_number })}`}
-                    </Text>
-                  </Box>
-                ))}
+                {groupSourceCitations(candidate.citations).map(
+                  (cite, index) => (
+                    <Box mt={2} key={index}>
+                      <Text fontSize="body.sm">
+                        <SourceQuotation citation={cite} lng={lng} />
+                      </Text>
+                      <Text color="content.secondary" fontSize="body.sm">
+                        {cite.source_label}
+                        {cite.page_number != null &&
+                          ` · ${t("workspace-page", { page: cite.page_number })}`}
+                      </Text>
+                    </Box>
+                  ),
+                )}
               </NarrativeCitations>
             </Box>
           ))}
@@ -379,27 +384,33 @@ export function DocumentPointCard({
             value={pointDisplayValue(point, lng, candidate.value)}
           />
           <NarrativeCitations citations={candidate.citations} lng={lng}>
-            {candidate.citations.map((citation, index) => (
-              <Box
-                key={index}
-                borderLeft="3px solid"
-                borderColor="content.link"
-                pl={3}
-              >
-                <Text as="blockquote" fontSize="body.sm" whiteSpace="pre-wrap">
-                  <SourceQuotation citation={citation} />
-                </Text>
-                <Text mt={1} fontSize="label.sm" color="content.tertiary">
-                  {citation.source_label}
-                  {citation.page_number !== null
-                    ? ` · ${t("workspace-page", { page: citation.page_number })}`
-                    : ""}
-                  {citation.source_anchor && citation.page_number === null
-                    ? ` · ${citation.source_anchor}`
-                    : ""}
-                </Text>
-              </Box>
-            ))}
+            {groupSourceCitations(candidate.citations).map(
+              (citation, index) => (
+                <Box
+                  key={index}
+                  borderLeft="3px solid"
+                  borderColor="content.link"
+                  pl={3}
+                >
+                  <Text
+                    as="blockquote"
+                    fontSize="body.sm"
+                    whiteSpace="pre-wrap"
+                  >
+                    <SourceQuotation citation={citation} lng={lng} />
+                  </Text>
+                  <Text mt={1} fontSize="label.sm" color="content.tertiary">
+                    {citation.source_label}
+                    {citation.page_number !== null
+                      ? ` · ${t("workspace-page", { page: citation.page_number })}`
+                      : ""}
+                    {citation.source_anchor && citation.page_number === null
+                      ? ` · ${citation.source_anchor}`
+                      : ""}
+                  </Text>
+                </Box>
+              ),
+            )}
           </NarrativeCitations>
           {candidate.status === "pending" && (
             <HStack flexWrap="wrap">
@@ -557,24 +568,26 @@ export function DocumentPointCard({
                         <strong>{fact.label}</strong> ·{" "}
                         {pointValueText(fact.value)}
                       </Text>
-                      {fact.citations.map((cite, index) => (
-                        <Box
-                          key={index}
-                          mt={1}
-                          pl={3}
-                          borderLeft="2px solid"
-                          borderColor="border.neutral"
-                        >
-                          <Text fontSize="body.sm">
-                            <SourceQuotation citation={cite} />
-                          </Text>
-                          <Text color="content.secondary" fontSize="body.sm">
-                            {cite.source_label}
-                            {cite.page_number != null &&
-                              ` · ${t("workspace-page", { page: cite.page_number })}`}
-                          </Text>
-                        </Box>
-                      ))}
+                      {groupSourceCitations(fact.citations).map(
+                        (cite, index) => (
+                          <Box
+                            key={index}
+                            mt={1}
+                            pl={3}
+                            borderLeft="2px solid"
+                            borderColor="border.neutral"
+                          >
+                            <Text fontSize="body.sm">
+                              <SourceQuotation citation={cite} lng={lng} />
+                            </Text>
+                            <Text color="content.secondary" fontSize="body.sm">
+                              {cite.source_label}
+                              {cite.page_number != null &&
+                                ` · ${t("workspace-page", { page: cite.page_number })}`}
+                            </Text>
+                          </Box>
+                        ),
+                      )}
                     </Box>
                   ))}
                 </Box>

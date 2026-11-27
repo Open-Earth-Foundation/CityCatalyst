@@ -12,10 +12,14 @@ import {
 } from "@chakra-ui/react";
 import { ReviewButton as Button } from "./review-button";
 import { useTranslation } from "@/i18n/client";
-import type { DocumentWorkspace, DocumentPointQuestion } from "@/util/document-workspace";
+import type {
+  DocumentWorkspace,
+  DocumentPointQuestion,
+} from "@/util/document-workspace";
 import type { ConceptNoteDraftChapter } from "@/util/types";
 import { DocumentPointCard } from "./document-point-card";
 import { SourceQuotation } from "./source-quotation";
+import { groupSourceCitations } from "./source-citations";
 import { chapterDisplayTitle } from "./chapter-title";
 import {
   currentPointCandidate,
@@ -402,8 +406,9 @@ export function WorkspaceOverview({
                   )
                   .slice(0, 6)
                   .map((point) => {
-                    const citations =
-                      currentPointCandidate(point)?.citations ?? [];
+                    const citations = groupSourceCitations(
+                      currentPointCandidate(point)?.citations ?? [],
+                    );
                     return (
                       <Box
                         key={point.key}
@@ -468,7 +473,10 @@ export function WorkspaceOverview({
                                 mt={2}
                               >
                                 <Text fontSize="body.sm" lineHeight={1.6}>
-                                  <SourceQuotation citation={citation} />
+                                  <SourceQuotation
+                                    citation={citation}
+                                    lng={lng}
+                                  />
                                 </Text>
                                 <Text
                                   mt={1}
@@ -725,8 +733,11 @@ export function WorkspaceTodos({
                           ? "workspace-required"
                           : "workspace-optional",
                       )}
-                      {point.task?.status === "parked" && ` · ${t("workspace-parked-label")}`}
-                      {point.task?.status === "waiting" && point.task.waiting_for && ` · ${point.task.waiting_for}`}
+                      {point.task?.status === "parked" &&
+                        ` · ${t("workspace-parked-label")}`}
+                      {point.task?.status === "waiting" &&
+                        point.task.waiting_for &&
+                        ` · ${point.task.waiting_for}`}
                     </Text>
                   </Box>
                 </Button>
@@ -777,7 +788,9 @@ export function WorkspaceTodos({
           needs={workspace.needs.filter(
             (need) =>
               need.point_keys.includes(selected.key) &&
-              (need.status !== "available" || pointGroup(selected) === "evidence" || pointGroup(selected) === "waiting"),
+              (need.status !== "available" ||
+                pointGroup(selected) === "evidence" ||
+                pointGroup(selected) === "waiting"),
           )}
           runId={runId}
           lng={lng}

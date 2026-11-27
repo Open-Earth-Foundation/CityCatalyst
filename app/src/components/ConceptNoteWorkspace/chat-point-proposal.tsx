@@ -7,6 +7,7 @@ import { documentWorkspaceApi } from "@/services/document-workspace-api";
 import type { ChatPointProposal } from "./chat-utils";
 import { pointValueText } from "./point-state";
 import { SourceQuotation } from "./source-quotation";
+import { groupSourceCitations } from "./source-citations";
 import { ReviewButton as Button } from "./review-button";
 import { documentWorkspaceErrorKind } from "./workspace-errors";
 
@@ -55,7 +56,7 @@ export function ChatPointProposalCard({
       {command.requested_information && (
         <Text fontSize="body.sm">{command.requested_information}</Text>
       )}
-      {proposal.citations.map((cite, index) => (
+      {groupSourceCitations(proposal.citations).map((cite, index) => (
         <Box
           key={index}
           borderLeft="2px solid"
@@ -63,7 +64,7 @@ export function ChatPointProposalCard({
           pl={2}
         >
           <Text fontSize="body.sm">
-            <SourceQuotation citation={cite} />
+            <SourceQuotation citation={cite} lng={lng} />
           </Text>
           <Text color="content.secondary" fontSize="body.sm">
             {cite.source_label}

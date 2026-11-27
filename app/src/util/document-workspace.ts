@@ -13,6 +13,7 @@ export interface DocumentPointCitation {
   quote_context?: string | null;
   page_number: number | null;
   source_anchor: string | null;
+  repeated_from_anchor?: string | null;
   component_values?: string[] | null;
   component_support?: "full" | "partial" | null;
 }

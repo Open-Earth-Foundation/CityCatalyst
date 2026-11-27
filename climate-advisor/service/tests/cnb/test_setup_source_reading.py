@@ -95,6 +95,65 @@ async def test_verified_native_markdown_keeps_the_physical_page_and_excludes_inv
     assert "Krosno" in run.await_args.kwargs["input_text"]
 
 
+async def test_normal_reader_keeps_profile_metadata_for_complete_local_name_repeats(
+    monkeypatch,
+):
+    line = "Podmiot realizujący działanie: Gmina Miasto Brzozów"
+    results = SourceFindings(
+        findings=[
+            {
+                "key": "authority",
+                "support": "full",
+                "applies_to": "applicant",
+                "section": 0,
+                "value": "Gmina Miasto Brzozów",
+                "quote": line,
+            }
+        ]
+    )
+    reviewed = ReviewedEvidence(
+        selections=[{"key": "authority", "direct": [0], "components": []}]
+    )
+    invoke = AsyncMock(side_effect=[results, reviewed])
+    monkeypatch.setattr(
+        "app.services.document_workspace.setup_reading.run_agent", invoke
+    )
+    source = SimpleNamespace(
+        source=SimpleNamespace(source_label="Official plan"),
+        units=[
+            SourceBlock(
+                "page-1/page-4/block-a",
+                f"Official register\n{line}\n{line}\nNext records.",
+            ),
+            SourceBlock(
+                "page-1/page-6/block-b", f"Official register\n{line}\nNext records."
+            ),
+        ],
+    )
+    found = await read_setup_source(
+        [
+            {
+                "key": "authority",
+                "kind": "fact",
+                "answer_type": "text",
+                "city_field": "city.name",
+                "label": "Municipality",
+                "description": "Official local authority name",
+            }
+        ],
+        source,
+        scope={"municipality": {"name": "Brzozów"}},
+        settings=get_settings(),
+        client=None,
+        runner=None,
+    )
+    citations = found["authority"][("full", "Gmina Miasto Brzozów")]
+    assert [c["page_number"] for c in citations] == [4, 6]
+    assert not citations[0].get("repeated_from_anchor")
+    assert citations[1]["repeated_from_anchor"] == "page-1/page-4/block-a"
+    assert invoke.await_count == 2
+
+
 def test_bilingual_terms_retrieve_the_original_table_from_a_long_polish_source():
     segments = [
         SourceSegment(str(i), i, "Spis zadań i opis budżetu.") for i in range(1, 30)

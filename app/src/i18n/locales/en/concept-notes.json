@@ -1185,5 +1185,8 @@
   "selection-format-instruction": "Format the selected text",
   "selection-scope-hint": "Clima can change this selection and the sentence immediately before and after it. Review and accept the proposal before the document changes.",
   "selection-request-error": "The change could not be completed. If the document changed, select the text again; otherwise try again. Your instruction is preserved. Review any pending proposal before continuing.",
-  "selection-keyboard-hint": "Select draft text to format it or ask for changes. Press Alt+F10 to focus the selection toolbar."
+  "selection-keyboard-hint": "Select draft text to format it or ask for changes. Press Alt+F10 to focus the selection toolbar.",
+  "workspace-same-wording-pages_one": "Same wording on page {{pages}}",
+  "workspace-same-wording-pages_other": "Same wording on pages {{pages}}",
+  "workspace-same-wording-locations": "Same wording at {{locations}}"
 }

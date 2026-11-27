@@ -12,6 +12,8 @@ import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type {
+  DocumentPointCitation,
+  DocumentPointQuestion,
   DocumentWorkspace,
   DocumentWorkspacePoint,
 } from "@/util/document-workspace";
@@ -19,13 +21,23 @@ import type {
 const save = jest.fn<(payload: unknown) => void>();
 const ask = jest.fn();
 const addSource = jest.fn();
-let questionData:
-  | { why_asking: string; questions: { question: string; options: string[] }[] }
-  | undefined;
+let questionData: DocumentPointQuestion | undefined;
 let commandError: { status: number; data?: { title: string } } | undefined;
 const reload = jest.fn<() => Promise<void>>();
 jest.unstable_mockModule("@/i18n/client", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (
+      key: string,
+      options?: { pages?: string; locations?: string; count?: number },
+    ) =>
+      key === "workspace-same-wording-pages"
+        ? `Same wording on ${options?.count === 1 ? "page" : "pages"} ${options?.pages}`
+        : key === "workspace-same-wording-locations"
+          ? `Same wording at ${options?.locations}`
+          : key === "workspace-sources-count"
+            ? `${key} (${options?.count})`
+            : key,
+  }),
 }));
 jest.unstable_mockModule("@/services/document-workspace-api", () => ({
   documentWorkspaceApi: {
@@ -49,6 +61,7 @@ jest.unstable_mockModule("@/services/document-workspace-api", () => ({
 }));
 let DocumentPointCard: typeof import("@/components/ConceptNoteWorkspace/document-point-card").DocumentPointCard;
 let WorkspaceOverview: typeof import("@/components/ConceptNoteWorkspace/document-workspace-panels").WorkspaceOverview;
+let ChatPointProposalCard: typeof import("@/components/ConceptNoteWorkspace/chat-point-proposal").ChatPointProposalCard;
 let root: Root;
 let container: HTMLDivElement;
 const point: DocumentWorkspacePoint = {
@@ -92,6 +105,8 @@ beforeAll(async () => {
     await import("@/components/ConceptNoteWorkspace/document-point-card"));
   ({ WorkspaceOverview } =
     await import("@/components/ConceptNoteWorkspace/document-workspace-panels"));
+  ({ ChatPointProposalCard } =
+    await import("@/components/ConceptNoteWorkspace/chat-point-proposal"));
 });
 afterAll(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = false;
@@ -131,6 +146,199 @@ const button = (text: string) =>
   [...container.querySelectorAll("button")].find(
     (element) => element.textContent === text,
   )!;
+
+const originalCitation: DocumentPointCitation = {
+  source_label: "Budget.pdf",
+  quote: "Approved budget: EUR 100",
+  quote_context: "Decision 1 — Approved budget: EUR 100 (2026)",
+  page_number: 1,
+  source_anchor: "budget-line",
+};
+function repeatedCitations(): DocumentPointCitation[] {
+  return [
+    originalCitation,
+    ...[10, 4, 6, 4].map((page_number) => ({
+      ...originalCitation,
+      page_number,
+      source_anchor: `page-${page_number}`,
+      repeated_from_anchor: "budget-line",
+    })),
+  ];
+}
+function expectGroupedQuotation() {
+  expect(
+    [...container.querySelectorAll("strong")].filter(
+      (element) => element.textContent === originalCitation.quote,
+    ),
+  ).toHaveLength(1);
+  expect(container.textContent).toContain(originalCitation.quote_context);
+  expect(container.textContent).toContain("Same wording on pages 4, 6, 10");
+}
+
+it.each(["pending", "accepted", "earlier", "context"] as const)(
+  "groups derived locations in the %s card without repeating its quotation",
+  async (status) => {
+    const candidate = {
+      ...point.candidates[0],
+      status: status === "earlier" ? ("accepted" as const) : status,
+      citations: repeatedCitations(),
+    };
+    await render({
+      ...point,
+      status: status === "accepted" ? "answered" : point.status,
+      value: status === "accepted" ? 100 : null,
+      candidates: [candidate],
+    });
+    expectGroupedQuotation();
+  },
+);
+
+it("retains orphan, foreign-document and mismatched-quote citations as visible evidence", async () => {
+  await render({
+    ...point,
+    candidates: [
+      {
+        ...point.candidates[0],
+        citations: [
+          ...repeatedCitations(),
+          {
+            ...originalCitation,
+            page_number: 20,
+            repeated_from_anchor: "missing-line",
+          },
+          {
+            ...originalCitation,
+            source_label: "Other.pdf",
+            page_number: 21,
+            repeated_from_anchor: "budget-line",
+          },
+          {
+            ...originalCitation,
+            quote: "Approved budget: EUR 200",
+            page_number: 22,
+            repeated_from_anchor: "budget-line",
+          },
+          {
+            ...originalCitation,
+            page_number: 23,
+            repeated_from_anchor: "page-1",
+          },
+        ],
+      },
+    ],
+  });
+  expect(container.querySelectorAll("blockquote")).toHaveLength(5);
+  expect(container.textContent).toContain("Other.pdf");
+  expect(container.textContent).toContain("Approved budget: EUR 200");
+  expect(container.textContent).toContain("Same wording on pages 4, 6, 10");
+});
+
+it("counts one narrative source with derived locations and preserves ordinary item associations", async () => {
+  await render({
+    ...point,
+    candidates: [
+      {
+        ...point.candidates[0],
+        citations: repeatedCitations().map((citation) => ({
+          ...citation,
+          component_values: ["Roof", "Meters"],
+        })),
+      },
+    ],
+  });
+  expect(container.querySelector("summary")?.textContent).toBe(
+    "validation-check-evidence (1)",
+  );
+  expect(container.querySelectorAll("blockquote")).toHaveLength(2);
+  expect(
+    [...container.querySelectorAll("blockquote")].every((quote) =>
+      quote.textContent?.includes("Same wording on pages 4, 6, 10"),
+    ),
+  ).toBe(true);
+});
+
+it("groups guidance citations using the page fallback anchor", async () => {
+  questionData = {
+    pattern: "decision",
+    why_asking: "Review the budget",
+    questions: [],
+    related_facts: [
+      {
+        key: "budget",
+        label: "Budget",
+        value: 100,
+        citations: repeatedCitations().map((citation, index) => ({
+          ...citation,
+          source_anchor: index === 0 ? null : citation.source_anchor,
+          repeated_from_anchor: index === 0 ? null : "page-1",
+        })),
+      },
+    ],
+  };
+  await render({ ...point, candidates: [] });
+  expectGroupedQuotation();
+});
+
+it("groups repeated source locations in chat proposals", async () => {
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <ChatPointProposalCard
+          runId="run-1"
+          lng="en"
+          proposal={{
+            point_key: point.key,
+            label: point.label,
+            candidate_value: 100,
+            citations: repeatedCitations(),
+            command: {
+              command: "answer",
+              value: 100,
+              expected_version: 7,
+              idempotency_key: "chat-budget",
+            },
+          }}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  expectGroupedQuotation();
+});
+
+it("shows one secondary page once and preserves anchor-only and unlocated evidence", async () => {
+  await render({
+    ...point,
+    candidates: [
+      {
+        ...point.candidates[0],
+        citations: [
+          ...repeatedCitations().slice(0, 2),
+          {
+            ...originalCitation,
+            page_number: 10,
+            repeated_from_anchor: "budget-line",
+          },
+          {
+            ...originalCitation,
+            page_number: null,
+            source_anchor: "annex",
+            repeated_from_anchor: "budget-line",
+          },
+          {
+            ...originalCitation,
+            page_number: null,
+            source_anchor: null,
+            repeated_from_anchor: "budget-line",
+          },
+        ],
+      },
+    ],
+  });
+  expect(container.textContent).toContain("Same wording on page 10");
+  expect(container.textContent).not.toContain("Same wording on pages");
+  expect(container.textContent).toContain("Same wording at annex");
+  expect(container.querySelectorAll("blockquote")).toHaveLength(2);
+});
 async function type(
   element: HTMLInputElement | HTMLTextAreaElement,
   value: string,
@@ -199,8 +407,12 @@ it("keeps each narrative item next to its own supporting quotation and page", as
         ?.textContent?.includes("validation-check-evidence"),
   );
   expect(evidence).toBeDefined();
-  expect(evidence?.textContent).toContain("Lp. 1 — Pierwszy cytat (zakres prac)");
-  expect(evidence?.querySelector("blockquote strong")?.textContent).toBe("Pierwszy cytat");
+  expect(evidence?.textContent).toContain(
+    "Lp. 1 — Pierwszy cytat (zakres prac)",
+  );
+  expect(evidence?.querySelector("blockquote strong")?.textContent).toBe(
+    "Pierwszy cytat",
+  );
   expect(evidence?.textContent).not.toContain("Unrelated passage");
   const first = evidence!.querySelector("blockquote")!.parentElement!;
   expect(first.textContent).toContain("Retrofit the roof.");
@@ -342,6 +554,7 @@ it("does not save undeclared choice values or invent options when the schema is 
 
 it("renders model options as draft input without accepting a value automatically", async () => {
   questionData = {
+    pattern: "quick_pick",
     why_asking: "Choose a starting estimate",
     questions: [
       { question: "Which budget estimate?", options: ["100", "250"] },
@@ -368,6 +581,7 @@ it("renders model options as draft input without accepting a value automatically
 
 it("keeps model suggestions outside declared choices disabled", async () => {
   questionData = {
+    pattern: "quick_pick",
     why_asking: "Compare delivery models",
     questions: [
       { question: "Which option?", options: ["Allowed", "Invented"] },
@@ -441,6 +655,56 @@ it("shows an accepted waiting point in Overview without claiming nothing is wait
   expect(container.textContent).toContain("Updated approval");
   expect(container.textContent).not.toContain("workspace-nothing-waiting");
   expect(container.textContent).toContain("workspace-known-facts");
+});
+
+it("counts and renders grouped original sources in the overview panel", async () => {
+  const acceptedPoint: DocumentWorkspacePoint = {
+    ...point,
+    status: "answered",
+    value: 100,
+    candidates: [
+      {
+        ...point.candidates[0],
+        status: "accepted",
+        citations: repeatedCitations(),
+      },
+    ],
+  };
+  const workspace = {
+    revision: 1,
+    points: [acceptedPoint],
+    needs: [],
+    setup: { ready: true },
+    overview: {
+      required_total: 1,
+      required_covered: 1,
+      optional_total: 0,
+      optional_covered: 0,
+      waiting_count: 0,
+      next_steps: [],
+    },
+    export_eligibility: {
+      working: true,
+      final: false,
+      blockers: [],
+      workspace_revision: 1,
+    },
+  } as DocumentWorkspace;
+  await act(async () =>
+    root.render(
+      <ChakraProvider value={defaultSystem}>
+        <WorkspaceOverview
+          workspace={workspace}
+          lng="en"
+          chapters={[]}
+          onSelectPoint={() => {}}
+          onOpenDraft={() => {}}
+        />
+      </ChakraProvider>,
+    ),
+  );
+  expectGroupedQuotation();
+  expect(container.textContent).toContain("workspace-sources-count (1)");
 });
 
 it.each(["not_applicable", "assumption", "answered"] as const)(

@@ -1,0 +1,1 @@
+{"provenance":"Public Auckland report executive summary, physical page 6: rounded gross total in kt CO2e. Spot-check tolerance is half the printed kilotonne.","checks":[{"path":"/reporting_year","value":2021},{"path":"/reported_total_tco2e","value":10757000,"tolerance":500}]}

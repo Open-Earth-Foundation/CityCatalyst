@@ -1,0 +1,9 @@
+{"provenance":"Repository OCR fixture v2 chart-ground-truth.md; plotted-value tolerances allow modest visual estimation.","checks":[
+  {"path":"/highest_sector_2020","value":"Transport"},
+  {"path":"/transport_2020_ktco2e","value":48,"tolerance":1},
+  {"path":"/first_transport_below_35_year","value":2024},
+  {"path":"/target_ktco2e","value":50,"tolerance":0.1},
+  {"path":"/combined_2025_ktco2e","value":65,"tolerance":2},
+  {"path":"/smallest_reduction_sector","value":"Waste"},
+  {"path":"/smallest_reduction_ktco2e","value":4,"tolerance":1}
+]}

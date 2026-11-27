@@ -1,0 +1,1 @@
+{"provenance":"Public Toronto report Table 5, physical page 25, 2020 total in tCO2e. Explicit source total, separate from 1990 baseline.","checks":[{"path":"/reporting_year","value":2020},{"path":"/reported_total_tco2e","value":13953616,"tolerance":0.5}]}

@@ -244,20 +244,40 @@ const previewMarkdownComponents = {
       ([, heading]) => heading === raw,
     )?.[0];
     return (
-      <Flex align="baseline" gap={2} mt={4}>
-        <chakra.h4 fontWeight="semibold">{children}</chakra.h4>
-        {key && context.onOpenPoint && (
+      <chakra.h4 mt={4} fontWeight="semibold">
+        {key && context.onOpenPoint ? (
           <chakra.button
             type="button"
-            color="content.link"
-            fontSize="label.sm"
-            textDecoration="underline"
+            title={t("point-draft-view-point")}
+            display="inline-flex"
+            alignItems="center"
+            gap={1}
+            maxW="full"
+            minH="32px"
+            borderRadius="sm"
+            textAlign="start"
+            cursor="pointer"
+            _hover={{ color: "content.link" }}
+            _focusVisible={{
+              outline: "2px solid",
+              outlineColor: "content.link",
+              outlineOffset: "2px",
+            }}
             onClick={() => context.onOpenPoint?.(key)}
           >
-            {t("point-draft-view-point")}
+            <chakra.span>{children}</chakra.span>
+            <Icon
+              as={LuChevronRight}
+              aria-hidden="true"
+              boxSize={4}
+              flexShrink={0}
+              color="content.tertiary"
+            />
           </chakra.button>
+        ) : (
+          children
         )}
-      </Flex>
+      </chakra.h4>
     );
   },
   a: function PreviewLink(props: React.ComponentPropsWithoutRef<"a">) {

@@ -9,8 +9,6 @@ from typing import Any
 
 from agents import Agent, OpenAIChatCompletionsModel, RunConfig, Runner
 from agents.exceptions import MaxTurnsExceeded
-from openai import AsyncOpenAI
-
 from app.config.settings import Settings
 from app.models.cnb.concept_note_edits import (
     ChapterEditReview,
@@ -32,9 +30,11 @@ from app.utils.cnb_progress import emit_cnb_progress, run_with_cnb_reasoning
 from app.utils.cnb_selection import selection_window
 from app.utils.concept_note_context import (
     chapter_excerpts_for,
+    fit_quotation_groups,
     omit_context_identifiers,
 )
 from app.utils.prompt_budget import count_prompt_tokens
+from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -185,17 +185,19 @@ class ConceptNoteEditPlanner:
             )
             for attempt in range(budget.cnb_edits.max_review_repairs + 1):
                 session.plan = None
-                if (
-                    count_prompt_tokens(
-                        [
-                            prompt,
-                            payload,
-                            [item["chapter"] for item in chapter_inputs.values()],
-                        ],
-                        model=model.name,
-                        fallback_encoding=budget.tokenizer_encoding,
-                    ).tokens
-                    > budget.cnb_edits.max_prompt_tokens
+                planning_chapters = [
+                    item["chapter"] for item in chapter_inputs.values()
+                ]
+                if not fit_quotation_groups(
+                    [chapter["source_excerpts"] for chapter in planning_chapters],
+                    lambda: (
+                        count_prompt_tokens(
+                            [prompt, payload, planning_chapters],
+                            model=model.name,
+                            fallback_encoding=budget.tokenizer_encoding,
+                        ).tokens
+                    ),
+                    budget.cnb_edits.max_prompt_tokens,
                 ):
                     raise EditOperationError(
                         "context_limit",
@@ -275,20 +277,30 @@ class ConceptNoteEditPlanner:
                     nonlocal completed
                     async with limit:
                         changes = chapter_changes[chapter.chapter_id]
+                        planner_chapter = chapter_inputs[chapter.position]["chapter"]
                         review_payload = {
                             **chapter_inputs[chapter.position],
+                            "chapter": {
+                                **planner_chapter,
+                                "source_excerpts": list(
+                                    planner_chapter["source_excerpts"]
+                                ),
+                            },
                             "changes": [
                                 change.model_dump(exclude={"chapter_id"})
                                 for change in changes
                             ],
                         }
-                        if (
-                            count_prompt_tokens(
-                                [reviewer.instructions, review_payload],
-                                model=model.name,
-                                fallback_encoding=budget.tokenizer_encoding,
-                            ).tokens
-                            > budget.cnb_edits.max_prompt_tokens
+                        if not fit_quotation_groups(
+                            [review_payload["chapter"]["source_excerpts"]],
+                            lambda: (
+                                count_prompt_tokens(
+                                    [reviewer.instructions, review_payload],
+                                    model=model.name,
+                                    fallback_encoding=budget.tokenizer_encoding,
+                                ).tokens
+                            ),
+                            budget.cnb_edits.max_prompt_tokens,
                         ):
                             raise EditOperationError(
                                 "context_limit",

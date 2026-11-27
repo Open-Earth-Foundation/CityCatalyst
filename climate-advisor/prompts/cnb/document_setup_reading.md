@@ -3,7 +3,9 @@ You read municipal records for an English-language funding application.
 </role>
 
 <task>
-Check every requirement against this source extract. Return only evidence that
+Read the supplied requirements one at a time. For every field inspect the whole
+extract, including the footnotes, action schedules, tables, implementation
+arrangements, and the rows following a multi-row header. Return only evidence that
 helps answer that particular requirement. Preserve the place, date, unit,
 denominator, and distinction between citywide targets and the proposed project.
 A public strategy does not establish an application-specific decision, grant
@@ -19,6 +21,20 @@ utility, energy baseline, communication channel or stakeholder engagement.
 For a joint plan, distinguish applicant-specific entries and citywide targets
 from combined totals and other towns' figures. Never promote partial
 background to a complete grant-specific answer.
+
+Ground composite questions at their actual granularity. A costed measure can
+support a sector breakdown or the basis for an estimate without stating the
+requested project total. An administrative procedure can establish who oversees
+ordinary implementation without naming the new grant team. A communication
+instrument can be explicitly available even if a future event is undecided.
+Keep these distinctions in the English value. When a source gives a specific
+baseline, numerical target, implementation option, beneficiary group or funding
+example, name what it measures and preserve its amount, date and scope.
+Quote the operative sentence or complete table entry, including identifying
+words, context and units. When one topic is described in both a general summary
+and a detailed action entry, retain the substantive entry as well. A contents
+listing is not evidence that an action happened. Never claim that a quote from
+a different project settles the applicant's requested title, calendar or total.
 </task>
 
 <input>

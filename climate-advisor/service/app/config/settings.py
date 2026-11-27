@@ -137,6 +137,8 @@ class ModelsConfig(BaseModel):
     funding_research: ResearchModelConfig
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
+    cnb_point_reader: ResearchModelConfig | None = None
+    cnb_point_embedding_model: str | None = None
     cnb_source_synthesizer: ResearchModelConfig
     cnb_golden_set_judge: ResearchModelConfig | None = None
     cnb_chapter_drafter: ResearchModelConfig | None = None
@@ -162,10 +164,13 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
 class CnbSourcePromptBudgetConfig(BaseModel):
     """Limits for source-preserving Concept Note analysis."""
 
+    independent_field_search_enabled: bool = False
+
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_chapter_excerpts: int = Field(default=8, ge=1, le=20)
+    max_chapter_excerpt_tokens: int = Field(default=24000, ge=0)
     max_topics: int = Field(default=12, ge=1, le=30)
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
     # Above this whole-request size, agents fall back to summaries and quotations.
@@ -239,6 +244,9 @@ class PromptsConfig(BaseModel):
     document_point_extraction: str = "prompts/cnb/document_point_extraction.md"
     document_setup_reading: str = "prompts/cnb/document_setup_reading.md"
     document_setup_search: str = "prompts/cnb/document_setup_search.md"
+    document_evidence_review: str = "prompts/cnb/document_evidence_review.md"
+    document_field_search: str = "prompts/cnb/document_field_search.md"
+    document_narrative_synthesis: str = "prompts/cnb/document_narrative_synthesis.md"
     document_point_question: str = "prompts/cnb/document_point_question.md"
 
     core: str

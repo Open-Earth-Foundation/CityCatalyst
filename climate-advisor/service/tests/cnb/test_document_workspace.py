@@ -270,6 +270,7 @@ async def test_registered_setup_pins_the_form_and_keeps_the_value_shared_with_an
 async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_choice(
     workspace, monkeypatch
 ):
+    from app.services.document_workspace.requirements import fingerprint
     from app.services.document_workspace.setup_reading import (
         read_and_store_setup_source,
     )
@@ -326,6 +327,7 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
     settings = SimpleNamespace(
         llm=SimpleNamespace(
             prompts=SimpleNamespace(get_prompt=lambda name: version),
+            generation=get_settings().llm.generation,
             models=get_settings().llm.models,
         )
     )
@@ -346,8 +348,21 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
         user_id="owner",
     )
     assert choice.point.value == "Krosno"
+    # A pre-review reader hashed its discovery order. An equivalent reread
+    # must retain the exact candidate the applicant already confirmed.
+    second_citation = {**quote[0], "page_number": 2}
+    async with factory() as session, session.begin():
+        previous = await session.get(
+            DocumentCandidate, UUID(city.candidates[0].candidate_id)
+        )
+        previous.citations = [second_citation, quote[0]]
+        previous.fingerprint = fingerprint(
+            [previous.value, previous.citations, previous.source_identity, "full"]
+        )
     version = "two"
-    reader.return_value = {}
+    reader.return_value = {
+        "applicant.name": {("full", "Krosno"): [quote[0], second_citation]}
+    }
     await read_and_store_setup_source(
         service, run, source, points, settings=settings, client=None, runner=None
     )
@@ -355,10 +370,11 @@ async def test_registered_reader_retires_old_suggestions_and_preserves_a_human_c
         service, run, source, points, settings=settings, client=None, runner=None
     )
     second = await service.load(run)
-    assert (
-        next(p for p in second.points if p.key == "applicant.name").candidates[0].status
-        == "accepted"
-    )
+    (still_accepted,) = next(
+        p for p in second.points if p.key == "applicant.name"
+    ).candidates
+    assert still_accepted.status == "accepted"
+    assert still_accepted.candidate_id == city.candidates[0].candidate_id
     country = next(p for p in second.points if p.key == "applicant.country")
     assert (
         country.evidence_status == "missing"

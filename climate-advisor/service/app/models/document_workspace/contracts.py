@@ -21,6 +21,8 @@ class DocumentPointCitation(Contract):
     quote: str
     page_number: int | None = None
     source_anchor: str | None = None
+    component_values: list[str] | None = None
+    component_support: Literal["full", "partial"] | None = None
 
 
 class DocumentPointCandidate(Contract):

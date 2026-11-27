@@ -12,6 +12,8 @@ export interface DocumentPointCitation {
   quote: string;
   page_number: number | null;
   source_anchor: string | null;
+  component_values?: string[] | null;
+  component_support?: "full" | "partial" | null;
 }
 
 export interface DocumentPointCandidate {

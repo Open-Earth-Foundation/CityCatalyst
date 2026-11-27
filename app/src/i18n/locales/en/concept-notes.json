@@ -1,4 +1,6 @@
 {
+  "workspace-narrative-more-sections": "More sections ({{count}})",
+  "workspace-narrative-partial-support": "Partial support",
   "chat-choices-label": "Suggested answers",
   "chat-choices-or": "Or:",
   "chat-choices-custom": "Write your own answer…",

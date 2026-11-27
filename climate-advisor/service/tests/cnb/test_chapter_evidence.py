@@ -22,13 +22,21 @@ from app.models.cnb.source_prompt import (
 from app.persistence.concept_notes.workspace_snapshots import WorkspaceChapterSnapshot
 from app.routes import concept_note_runs as runs_routes
 from app.services.cnb.application_context import template_chapter_requirements
-from app.services.cnb.chapter_drafting import fit_context_window
+from app.services.cnb.chapter_drafting import (
+    ChapterDraftingContextLimitError,
+    fit_context_window,
+)
 from app.services.cnb.edit_planner import build_planner_input
 from app.services.cnb.source_analysis import (
+    SourceAnalysisError,
+    SourceBlock,
     SourcePage,
+    _chapter_quote,
     chapter_evidence_fingerprint,
     extract_chapter_evidence,
 )
+from app.utils.concept_note_context import fit_quotation_groups
+from app.utils.prompt_budget import count_prompt_tokens
 from openai import AsyncOpenAI
 
 from app.config import get_settings
@@ -117,8 +125,13 @@ async def test_every_page_is_read_with_the_chapter_requirements(settings):
     result = await extract(settings, runner)
 
     assert len(runner.reader_inputs) > 1  # several partitions
-    assert all(payload["chapters"] == CHAPTERS for payload in runner.reader_inputs)
-    assert sorted(s["page"] for p in runner.reader_inputs for s in p["sections"]) == [1, 2, 3, 4]
+    discovery = [p for p in runner.reader_inputs if p["chapters"] == CHAPTERS]
+    assert {s["page"] for p in discovery for s in p["sections"]} == {1, 2, 3, 4}
+    focused = [p for p in runner.reader_inputs if len(p["chapters"]) == 1]
+    assert sorted(p["chapters"][0]["chapter_ref"] for p in focused) == [
+        "budget",
+        "scope",
+    ]
     by_chapter = {item.chapter_ref: item.excerpts for item in result}
     # Invented text and unknown chapters are dropped; duplicates collapse.
     assert [(e.text, e.page) for e in by_chapter["scope"]] == [(PLACE, 1)]
@@ -126,14 +139,235 @@ async def test_every_page_is_read_with_the_chapter_requirements(settings):
     assert runner.selector_inputs == []  # every chapter is within its quota
 
 
+async def test_short_document_retains_joint_discovery_and_focuses_sparse_chapters(
+    settings,
+):
+    runner = ChapterRunner()
+    settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens = 12000
+    result = await extract(settings, runner)
+    assert runner.reader_inputs[0]["chapters"] == CHAPTERS
+    assert sorted(
+        p["chapters"][0]["chapter_ref"] for p in runner.reader_inputs[1:]
+    ) == ["budget", "scope"]
+    assert all(
+        [s["page"] for s in p["sections"]] == [1, 2, 3, 4] for p in runner.reader_inputs
+    )
+    assert [(c.chapter_ref, [e.text for e in c.excerpts]) for c in result] == [
+        ("scope", [PLACE]),
+        ("budget", [COST, COST]),
+    ]
+
+
+async def test_verified_quotes_survive_reordered_checklist_and_route_to_each_relevant_chapter(
+    settings,
+):
+    records = [f"Depot {index:02} has a wave-height sensor." for index in range(12)]
+
+    class ReorderedChecklist:
+        async def run(self, agent, input_text):
+            payload = json.loads(input_text)
+            assert agent.output_type.output_type is ChapterEvidenceReading
+            passages = [
+                ChapterTaggedExcerpt(text=s["text"], chapter_refs=["scope", "budget"])
+                for s in reversed(payload["sections"])
+            ]
+            return SimpleNamespace(
+                final_output=ChapterEvidenceReading(
+                    sections=[ChapterSectionEvidence(excerpts=passages)]
+                )
+            )
+
+    async with AsyncOpenAI(api_key="test") as client:
+        result = await extract_chapter_evidence(
+            source_label="Coastal survey",
+            source_format="pdf",
+            chapters=CHAPTERS,
+            pages=[SourcePage(i + 1, text) for i, text in enumerate(records)],
+            settings=settings,
+            client=client,
+            runner=ReorderedChecklist(),
+        )
+    for chapter in result:
+        assert [(e.page, e.text) for e in chapter.excerpts] == list(
+            enumerate(records, 1)
+        )
+    assert [c.chapter_ref for c in result] == ["scope", "budget"]
+
+
+def test_table_preserves_physical_labels_and_both_measurements_from_normalized_reader_quote():
+    table = "Indicator     Baseline 2017     Target 2028\nFlow (m³/h)   4.2               6.5"
+    section = "The following measures were adopted.\n" + table + "\nEnd of table."
+    assert _chapter_quote(section, "Flow (m³/h) 4.2 6.5") == table
+    assert _chapter_quote(section, "Flow (m³/h) 4.2 8.5") is None
+    assert (
+        _chapter_quote(section, "The following measures were adopted.")
+        == section.splitlines()[0]
+    )
+
+
+async def test_selector_does_not_guess_between_identical_quotes_under_one_readable_heading(
+    settings,
+):
+    class AmbiguousRunner(ChapterRunner):
+        async def run(self, agent, input_text):
+            if agent.output_type.output_type is ChapterEvidenceSelection:
+                return SimpleNamespace(
+                    final_output=ChapterEvidenceSelection(
+                        chapters=[
+                            ChapterExcerptChoice(
+                                chapter_ref="scope",
+                                excerpts=[
+                                    ReadableExcerpt(text=PLACE, heading="location")
+                                ],
+                            )
+                        ]
+                    )
+                )
+            return await super().run(agent, input_text)
+
+    settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpt_tokens = (
+        count_prompt_tokens(
+            [PLACE],
+            model=settings.llm.models.cnb_source_reader.name,
+            fallback_encoding=settings.llm.generation.prompt_budget.tokenizer_encoding,
+        ).tokens
+    )
+    async with AsyncOpenAI(api_key="test") as client:
+        result = await extract_chapter_evidence(
+            source_label="Plan",
+            source_format="markdown",
+            chapters=CHAPTERS[:1],
+            pages=[
+                SourceBlock("location/block-ab12", PLACE),
+                SourceBlock("location/block-cd34", PLACE),
+            ],
+            settings=settings,
+            client=client,
+            runner=AmbiguousRunner(),
+        )
+    assert result == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [[], [SourcePage(number=1, text="  \n")], [SourcePage(number=1, text=PLACE)]],
+)
+async def test_empty_source_or_empty_partitioning_is_a_controlled_source_error(
+    settings, monkeypatch, source
+):
+    monkeypatch.setattr(
+        "app.services.cnb.source_analysis.partition_source_pages", lambda *a, **kw: []
+    )
+    runner = ChapterRunner()
+    async with AsyncOpenAI(api_key="test") as client:
+        with pytest.raises(SourceAnalysisError) as error:
+            await extract_chapter_evidence(
+                source_label="Plan",
+                source_format="pdf",
+                chapters=CHAPTERS,
+                pages=source,
+                settings=settings,
+                client=client,
+                runner=runner,
+            )
+    assert error.value.code == "empty_source_document"
+    assert runner.reader_inputs == []
+
+
+async def test_oversized_chapter_request_stops_before_a_provider_call(settings):
+    runner = ChapterRunner()
+    chapters = [{**CHAPTERS[0], "required_fields": ["scope " * 3000]}]
+    async with AsyncOpenAI(api_key="test") as client:
+        with pytest.raises(SourceAnalysisError) as error:
+            await extract_chapter_evidence(
+                source_label="Plan",
+                source_format="pdf",
+                pages=pages(),
+                chapters=chapters,
+                settings=settings,
+                client=client,
+                runner=runner,
+            )
+    assert error.value.code == "source_partition_too_large"
+    assert runner.reader_inputs == []
+
+
+async def test_large_template_uses_configured_input_capacity_above_the_source_window(
+    settings,
+):
+    runner = ChapterRunner()
+    settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens = 16000
+    chapter = {**CHAPTERS[0], "description": "municipal scope " * 4500}
+    async with AsyncOpenAI(api_key="test") as client:
+        result = await extract_chapter_evidence(
+            source_label="Plan",
+            source_format="pdf",
+            pages=[SourcePage(1, PLACE)],
+            chapters=[chapter],
+            settings=settings,
+            client=client,
+            runner=runner,
+        )
+    assert result[0].excerpts[0].text == PLACE
+    assert runner.reader_inputs[0]["chapters"] == [chapter]
+
+
+def test_summary_only_draft_compacts_300_real_locations_without_modifying_stored_quotes(
+    settings,
+):
+    quotes = [
+        {"text": f"Source statement for location {i}. " * 12, "page": i}
+        for i in range(1, 301)
+    ]
+    payload = {
+        "run_context": {
+            "source_text": {"mode": "summary"},
+            "context_bundle": {"selected_sources": [{"chapter_excerpts": quotes}]},
+        },
+        "chapter": {"title": "Funding"},
+        "source_documents": [],
+    }
+    settings.llm.generation.prompt_budget.cnb_sources.context_window_tokens = 4500
+    fitted = fit_context_window(payload, settings)
+    retained = fitted["run_context"]["context_bundle"]["selected_sources"][0][
+        "chapter_excerpts"
+    ]
+    assert 0 < len(retained) < 300
+    assert len(quotes) == 300
+    assert all(q == quotes[q["page"] - 1] for q in retained)
+    assert fit_context_window(fitted, settings) is fitted
+    settings.llm.generation.prompt_budget.cnb_sources.context_window_tokens = 1
+    with pytest.raises(ChapterDraftingContextLimitError):
+        fit_context_window(payload, settings)
+    assert len(quotes) == 300
+
+
+def test_model_quote_budget_shares_capacity_across_groups_without_discarding_other_edit_content():
+    groups = [[{"text": str(i)} for i in range(6)] for _ in range(2)]
+    assert fit_quotation_groups(groups, lambda: 3 + sum(map(len, groups)), limit=7)
+    assert [len(group) for group in groups] == [2, 2]
+    assert not fit_quotation_groups(groups, lambda: 8 + sum(map(len, groups)), limit=7)
+    assert groups == [[], []]
+
+
 async def test_overfull_chapters_keep_the_selectors_choice(settings):
-    settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpts = 1
+    token_limit = max(
+        count_prompt_tokens(
+            [quote],
+            model=settings.llm.models.cnb_source_reader.name,
+            fallback_encoding=settings.llm.generation.prompt_budget.tokenizer_encoding,
+        ).tokens
+        for quote in [COST, PLACE]
+    )
+    settings.llm.generation.prompt_budget.cnb_sources.max_chapter_excerpt_tokens = (
+        token_limit
+    )
     runner = ChapterRunner()
     result = await extract(settings, runner)
 
     [selection] = runner.selector_inputs
     assert [c["chapter_ref"] for c in selection["candidates"]] == ["budget"]
-    assert selection["limits"] == {"max_excerpts_per_chapter": 1}
+    assert selection["limits"] == {"max_excerpt_tokens_per_chapter": token_limit}
     by_chapter = {item.chapter_ref: item.excerpts for item in result}
     assert [(e.text, e.page) for e in by_chapter["budget"]] == [(COST, 3)]
     assert [(e.text, e.page) for e in by_chapter["scope"]] == [(PLACE, 1)]

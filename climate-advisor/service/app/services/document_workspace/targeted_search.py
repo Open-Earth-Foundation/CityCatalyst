@@ -27,26 +27,53 @@ def _tokens(text):
 
 
 def targeted_passages(partitions, requirements, plan):
-    """Rank exact source segments by rarity and term coverage without gold data."""
+    """Retrieve both a field's specific phrases and its alternative local terminology."""
     segments = list(chain.from_iterable(partitions))
     postings = defaultdict(dict)
-    for index, segment in enumerate(segments):
-        for term, count in Counter(_tokens(segment.text)).items():
+    tokens = [_tokens(segment.text) for segment in segments]
+    token_text = [" " + " ".join(words) + " " for words in tokens]
+    for index, words in enumerate(tokens):
+        for term, count in Counter(words).items():
             postings[term][index] = count
+    mean_length = sum(map(len, tokens)) / max(len(segments), 1) or 1
+    rarity = {
+        term: math.log1p((len(segments) - len(hits) + 0.5) / (len(hits) + 0.5))
+        for term, hits in postings.items()
+    }
+
+    def rank(phrases):
+        queries = dict.fromkeys(tuple(_tokens(phrase)) for phrase in phrases)
+        relevance = Counter()
+        alternatives = []
+        for query in queries:
+            scores = Counter()
+            for term in dict.fromkeys(query):
+                for index, count in postings.get(term, {}).items():
+                    length = 0.75 + 0.25 * len(tokens[index]) / mean_length
+                    scores[index] += rarity[term] * count / (count + 1.2 * length)
+            if len(query) > 1:
+                # A complete administrative phrase is stronger than a page
+                # containing its common words in unrelated paragraphs.
+                phrase = " " + " ".join(query) + " "
+                for index in scores:
+                    if phrase in token_text[index]:
+                        scores[index] *= 2
+            if scores:
+                alternatives.append(scores.most_common(1)[0][0])
+                relevance.update(scores)
+        # A rare synonym can lead to the relevant table even when a general
+        # discussion matches more terms. Keep room for both routes.
+        anchors = [index for index, _ in relevance.most_common(4)]
+        anchors.extend(alternatives)
+        return list(dict.fromkeys(anchors))[:9]
+
     query_by_key = {query.key: query.terms for query in plan.queries}
     ranked = []
     for point in requirements:
-        terms = set(_tokens(" ".join(query_by_key.get(point["key"], []))))
-        scores = Counter()
-        for term in terms:
-            hits = postings.get(term, {})
-            importance = math.log1p(len(segments) / (1 + len(hits)))
-            for index, count in hits.items():
-                scores[index] += importance * (1 + 0.3 * min(count - 1, 3))
         # Short Markdown blocks preserve the original locator. Bring the
         # adjacent block along to retain headings, table units and dates.
         selected = set()
-        for index, _ in scores.most_common(4):
+        for index in rank(query_by_key.get(point["key"], [])):
             selected.add(index)
             if len(segments[index].text) < 300 and index + 1 < len(segments):
                 selected.add(index + 1)

@@ -171,7 +171,7 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     )
 
     assert source.topics == ["drainage"]
-    assert source.key_excerpts[0].text == "Drainage upgrades"
+    assert source.key_excerpts[0].text == "Drainage upgrades protect district 1."
     assert result.found is True
     assert result.excerpts[0].text == "Drainage upgrades"
     assert result.units_processed == result.units_total == 6

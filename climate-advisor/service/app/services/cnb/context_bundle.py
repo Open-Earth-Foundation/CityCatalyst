@@ -80,6 +80,7 @@ from app.services.concept_note_city_context import (
     load_hiap_context,
 )
 from app.services.document_workspace.catalogue import setup_template_id
+from app.services.document_workspace.reader_contract import point_reader_contract
 from app.services.document_workspace.requirements import fingerprint as workspace_fingerprint
 from app.utils.conversation_observability import (
     async_workflow_trace,
@@ -1053,11 +1054,8 @@ def _point_source_contract(
         return None
     return workspace_fingerprint(
         [
-            "registered-point-source-v1",
             template.model_dump(mode="json"),
-            settings.llm.prompts.get_prompt("document_setup_reading"),
-            settings.llm.prompts.get_prompt("document_setup_search"),
-            settings.llm.models.cnb_source_reader.model_dump(mode="json"),
+            point_reader_contract(settings),
         ]
     )
 

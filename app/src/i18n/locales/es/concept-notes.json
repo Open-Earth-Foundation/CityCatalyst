@@ -1,4 +1,6 @@
 {
+  "workspace-narrative-more-sections": "Más secciones ({{count}})",
+  "workspace-narrative-partial-support": "Respaldo parcial",
   "wiring-eyebrow": "Creador de Notas Conceptuales · cableado local",
   "wiring-description": "Cree una ejecución, convierta un PDF y verifique la entrega duradera al Constructor de Notas Conceptuales.",
   "default-note-name": "Nota conceptual",

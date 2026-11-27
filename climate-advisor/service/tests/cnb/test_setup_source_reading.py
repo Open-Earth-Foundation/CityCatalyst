@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 
 from app.config.settings import get_settings
 from app.services.cnb.source_analysis import SourceBlock, SourceSegment
+from app.services.document_workspace.evidence_review import ReviewedEvidence
 from app.services.document_workspace.setup_reading import (
     SourceFindings,
     read_setup_source,
@@ -54,7 +55,10 @@ async def test_verified_native_markdown_keeps_the_physical_page_and_excludes_inv
             },
         ]
     )
-    run = AsyncMock(return_value=results)
+    reviewed = ReviewedEvidence(
+        selections=[{"key": "people", "direct": [], "components": [0]}]
+    )
+    run = AsyncMock(side_effect=[results, reviewed])
     monkeypatch.setattr("app.services.document_workspace.setup_reading.run_agent", run)
     source = SimpleNamespace(
         source=SimpleNamespace(source_label="Development plan"),
@@ -87,7 +91,7 @@ async def test_verified_native_markdown_keeps_the_physical_page_and_excludes_inv
         and citation["source_anchor"] == "page-1/page-7/block-abc"
     )
     assert citation["quote"] == "46   291\nmieszkańców"
-    assert '"index": 0' in run.await_args.kwargs["input_text"]
+    assert '"index": 0' in run.await_args_list[0].kwargs["input_text"]
     assert "Krosno" in run.await_args.kwargs["input_text"]
 
 

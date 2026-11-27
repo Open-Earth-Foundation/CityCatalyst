@@ -886,15 +886,34 @@ Above the window, or when a source cannot be re-read, `source_text.mode` is
 `concept_note_sources_query` as before.
 
 Each selected source keeps up to `max_key_excerpts` (8) quotations for the whole
-document and, once an application template is selected, up to
-`max_chapter_excerpts` (8) quotations per template chapter, chosen for that
-chapter's required fields by one chapter-evidence reading of the complete source
-(plus one selection call for chapters with more candidates). The drafter
+document. Once an application template is selected, the reader also routes
+verified quotations to each relevant chapter. A focused reread fills sparse
+chapters. A chapter can retain up to 300 quotations within
+`max_chapter_excerpt_tokens` (24,000 tokens by default). When a chapter exceeds
+these limits, selection gives priority to substantive evidence and distributes
+the remaining space across source locations. Numeric table excerpts retain
+their original labels and units when they fit in a contiguous excerpt. The drafter
 receives only the current chapter's quotations, and the edit planner and
 reviewer read them in each chapter's `source_excerpts`. Chapter quotations
 carry a fingerprint of the template requirements and settings; a funding change
 or a workspace open with a different template rebuilds them, reusing the
 unchanged document analysis.
+
+For registered application forms, `cnb_point_reader` reads the source against
+small groups of requirements in form order. A source-language search locates
+additional passages in long documents. Each quotation is verified against its
+original page or Markdown block and reviewed for the specific requirement.
+The applicant can confirm a directly supported answer. A relevant component
+remains available as context. For a narrative field, complementary items from the same source
+can appear together. Each item keeps its supporting quotations and locations.
+A reviewer can expand the evidence for an individual item in the workspace.
+Alternative answers and different source files remain separately reviewable.
+Rereading a source preserves the applicant's prior decisions.
+
+The optional `generation.prompt_budget.cnb_sources.independent_field_search_enabled`
+setting enables an additional per-field search on long sources. It defaults
+to `false`. When enabled, `models.cnb_point_embedding_model` augments lexical
+ranking with embeddings when the configured provider supports them.
 
 The edit planner and semantic reviewer receive allowlisted source evidence with
 the same one-based `source_index` values. Their `source_refs` contain those indices

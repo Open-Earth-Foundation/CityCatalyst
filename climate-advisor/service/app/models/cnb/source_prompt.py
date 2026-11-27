@@ -36,14 +36,14 @@ class ChapterTaggedExcerpt(BaseModel):
 
 
 class ChapterSectionEvidence(BaseModel):
-    """Chapter evidence for the section at the same position in the input array."""
+    """Chapter evidence discovered while reading one source section."""
 
     model_config = ConfigDict(extra="forbid")
-    excerpts: list[ChapterTaggedExcerpt] = Field(default_factory=list, max_length=20)
+    excerpts: list[ChapterTaggedExcerpt] = Field(default_factory=list, max_length=100)
 
 
 class ChapterEvidenceReading(BaseModel):
-    """Chapter-tagged evidence with an entry for every supplied section, in order."""
+    """A chapter checklist whose quotations are independently located in source text."""
 
     model_config = ConfigDict(extra="forbid")
     sections: list[ChapterSectionEvidence]
@@ -63,7 +63,7 @@ class ChapterExcerptChoice(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     chapter_ref: str = Field(min_length=1, max_length=255)
-    excerpts: list[ReadableExcerpt] = Field(default_factory=list, max_length=20)
+    excerpts: list[ReadableExcerpt] = Field(default_factory=list, max_length=300)
 
 
 class ChapterEvidenceSelection(BaseModel):

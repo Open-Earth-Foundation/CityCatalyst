@@ -32,17 +32,22 @@ def template_definitions(template: ApplicationContextTemplate) -> list[dict[str,
     """
     definitions: dict[str, dict[str, Any]] = {}
     normalized = template_chapter_requirements(template)
-    raw_by_ref = {
-        str(item.get("chapter_ref", "")): item for item in template.chapter_schema
-    }
     chapter_string_fields: set[str] = set()
-    for chapter in normalized:
+    # Normalize by position so older sections with a generated or trimmed
+    # reference retain the fields that belonged to them.
+    for chapter, raw in zip(normalized, template.chapter_schema, strict=True):
         chapter_ref = chapter["chapter_ref"]
-        fields = raw_by_ref.get(chapter_ref, {}).get("required_fields", [])
-        for field in fields:
+        for field in raw.get("required_fields") or []:
             if isinstance(field, str):
                 chapter_string_fields.add(field)
-            _add_definition(definitions, template, chapter_ref, field, [chapter_ref])
+            _add_definition(
+                definitions,
+                template,
+                chapter_ref,
+                field,
+                [chapter_ref],
+                chapter=chapter,
+            )
     # Template-wide requirements affect every chapter; ambiguous labels still
     # have their own deterministic template scope rather than a fuzzy merge.
     for field in template.required_fields:
@@ -66,6 +71,8 @@ def _add_definition(
     scope: str,
     field: str | dict[str, Any],
     chapter_refs: list[str],
+    *,
+    chapter: dict[str, Any] | None = None,
 ) -> None:
     """Normalize one trusted template field and verify repeated explicit keys."""
     field = field if isinstance(field, dict) else {"label": str(field)}
@@ -140,6 +147,15 @@ def _add_definition(
     if definition["kind"] not in {"fact", "decision"}:
         raise HTTPException(422, "Unsupported template point kind")
     existing = definitions.get(key)
+    # A section describes the subject the evidence must support. Copy only
+    # authored instructions, never sibling fields, defaults or example answers.
+    if chapter:
+        section = {"chapter_ref": scope, "title": chapter["title"]}
+        if chapter.get("description"):
+            section["description"] = chapter["description"]
+        if existing and definition["description"] != existing["description"]:
+            section["field_description"] = definition["description"]
+        definition["section_context"] = [section]
     if existing:
         # Sharing a key requires identical value and exception policies.
         policy_fields = (
@@ -155,6 +171,9 @@ def _add_definition(
             raise HTTPException(422, f"Incompatible shared point definition: {key}")
         existing["required"] = existing["required"] or definition["required"]
         existing["chapter_refs"] = sorted(set(existing["chapter_refs"] + chapter_refs))
+        for section in definition.get("section_context", []):
+            if section not in existing["section_context"]:
+                existing["section_context"].append(section)
     else:
         definitions[key] = definition
 

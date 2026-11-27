@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Callable
+from itertools import zip_longest
 from typing import Any
 
 
@@ -69,6 +71,50 @@ def omit_context_identifiers(value: Any) -> Any:
 
 
 SOURCE_DOCUMENTS_MESSAGE_HEADER = "CONCEPT_NOTE_SOURCE_DOCUMENTS"
+
+
+def fit_quotation_groups(
+    groups: list[list[dict[str, Any]]], measure: Callable[[], int], limit: int
+) -> bool:
+    """Fit model-facing quotations across sources while keeping the original records intact.
+
+    Each list belongs to a new request payload. Keep its complete quotations and
+    their source order, distributing capacity across the supplied groups.
+    """
+    if measure() <= limit:
+        return True
+    originals = [list(group) for group in groups]
+    order = [
+        entry
+        for turn in zip_longest(
+            *(
+                [(group_index, i) for i in range(len(group))]
+                for group_index, group in enumerate(originals)
+            )
+        )
+        for entry in turn
+        if entry is not None
+    ]
+
+    def keep(count: int) -> None:
+        for group in groups:
+            group.clear()
+        for group_index, i in order[:count]:
+            groups[group_index].append(originals[group_index][i])
+
+    keep(0)
+    if not order or measure() > limit:
+        return False
+    low, high = 0, len(order)
+    while low + 1 < high:
+        count = (low + high) // 2
+        keep(count)
+        if measure() <= limit:
+            low = count
+        else:
+            high = count
+    keep(low)
+    return True
 
 
 def chapter_excerpts_for(source: dict[str, Any], chapter_ref: str | None) -> list[dict[str, Any]]:

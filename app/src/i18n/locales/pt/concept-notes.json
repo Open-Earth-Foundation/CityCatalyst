@@ -1,4 +1,6 @@
 {
+  "workspace-narrative-more-sections": "Mais secções ({{count}})",
+  "workspace-narrative-partial-support": "Apoio parcial",
   "wiring-eyebrow": "Construtor de Nota Conceitual · fiação local",
   "wiring-description": "Crie uma execução, converta um PDF e verifique a entrega durável ao Construtor de Notas Conceituais.",
   "default-note-name": "Nota conceitual",

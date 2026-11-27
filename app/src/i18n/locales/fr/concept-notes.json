@@ -1,4 +1,6 @@
 {
+  "workspace-narrative-more-sections": "Autres sections ({{count}})",
+  "workspace-narrative-partial-support": "Justification partielle",
   "wiring-eyebrow": "Constructeur de Note Conceptuelle · câblage local",
   "wiring-description": "Créez une exécution, convertissez un PDF et vérifiez la livraison durable au Concept Note Builder.",
   "default-note-name": "Note conceptuelle",

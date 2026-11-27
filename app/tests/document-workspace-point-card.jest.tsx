@@ -165,6 +165,44 @@ it("shows the exact source and confirms the candidate through the versioned comm
     }),
   );
 });
+it("keeps each narrative item next to its own supporting quotation and page", async () => {
+  const quote = point.candidates[0].citations[0];
+  const candidate = {
+    ...point.candidates[0],
+    value: "• Retrofit the roof.\n• Install meters.",
+    citations: [
+      {
+        ...quote,
+        quote: "Pierwszy cytat",
+        page_number: 12,
+        component_values: ["Retrofit the roof."],
+      },
+      {
+        ...quote,
+        quote: "Drugi cytat",
+        page_number: 18,
+        component_values: ["Install meters."],
+      },
+    ],
+  };
+  await render({
+    ...point,
+    answer_type: "multiline",
+    candidates: [candidate],
+  });
+  const evidence = Array.from(container.querySelectorAll("details")).find(
+    (detail) =>
+      detail
+        .querySelector(":scope > summary")
+        ?.textContent?.includes("validation-check-evidence"),
+  );
+  expect(evidence).toBeDefined();
+  const first = evidence!.querySelector("blockquote")!.parentElement!;
+  expect(first.textContent).toContain("Retrofit the roof.");
+  expect(first.textContent).toContain("Pierwszy cytat");
+  expect(first.textContent).not.toContain("Drugi cytat");
+  expect(evidence!.querySelectorAll("blockquote")).toHaveLength(2);
+});
 it("submits zero as a number and requires an explanation for assumptions", async () => {
   await render();
   expect(button("workspace-save-assumption").disabled).toBe(true);

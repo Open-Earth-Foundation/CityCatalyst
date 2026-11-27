@@ -71,6 +71,7 @@ from app.services.document_workspace.point_draft import (
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.concept_note_context import (
     chapter_excerpts_for,
+    fit_quotation_groups,
     manual_population_context,
     omit_context_identifiers,
     render_source_documents_message,
@@ -98,6 +99,13 @@ class ChapterDraftingError(Exception):
 
     code = "chapter_drafting_conflict"
     status_code = 409
+
+
+class ChapterDraftingContextLimitError(ChapterDraftingError):
+    """The required chapter context exceeds the window even without source excerpts."""
+
+    code = "context_limit"
+    status_code = 422
 
 
 class ChapterDraftingTemplateError(ChapterDraftingError):
@@ -1010,21 +1018,30 @@ def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str,
     chapter over the window is drafted from summaries and quotations, and its
     ``source_text.mode`` says so.
     """
-    if not payload.get("source_documents"):
+    run_context = payload.get("run_context") or {}
+    bundle = run_context.get("context_bundle") or {}
+    sources = bundle.get("selected_sources") or []
+    has_quotes = any(source.get("chapter_excerpts") for source in sources)
+    if not payload.get("source_documents") and not has_quotes:
         return payload
     budget = settings.llm.generation.prompt_budget
     model = (
         settings.llm.models.cnb_chapter_drafter
         or settings.llm.models.cnb_source_synthesizer
     )
-    tokens = count_prompt_tokens(
-        [
-            settings.llm.prompts.get_prompt("cnb_chapter_drafting"),
-            *(message["content"] for message in _chapter_input_messages(payload)),
-        ],
-        model=model.name,
-        fallback_encoding=budget.tokenizer_encoding,
-    ).tokens
+    instructions = settings.llm.prompts.get_prompt("cnb_chapter_drafting")
+
+    def size(candidate):
+        return count_prompt_tokens(
+            [
+                instructions,
+                *(message["content"] for message in _chapter_input_messages(candidate)),
+            ],
+            model=model.name,
+            fallback_encoding=budget.tokenizer_encoding,
+        ).tokens
+
+    tokens = size(payload)
     window = budget.cnb_sources.context_window_tokens
     if tokens <= window:
         return payload
@@ -1033,8 +1050,7 @@ def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str,
         tokens,
         window,
     )
-    run_context = payload["run_context"]
-    return {
+    fitted = {
         **payload,
         "run_context": {
             **run_context,
@@ -1042,6 +1058,21 @@ def fit_context_window(payload: dict[str, Any], settings: Settings) -> dict[str,
         },
         "source_documents": [],
     }
+    if has_quotes:
+        # The persisted bundle and callers can reuse the complete, verified
+        # evidence. Trim only the lists owned by this model request.
+        copies = [
+            {**source, "chapter_excerpts": list(source.get("chapter_excerpts") or [])}
+            for source in sources
+        ]
+        fitted["run_context"]["context_bundle"] = {**bundle, "selected_sources": copies}
+        if not fit_quotation_groups(
+            [s["chapter_excerpts"] for s in copies], lambda: size(fitted), window
+        ):
+            raise ChapterDraftingContextLimitError(
+                "The chapter instructions and draft exceed the model context window."
+            )
+    return fitted
 
 
 def _optional_template_chapters(

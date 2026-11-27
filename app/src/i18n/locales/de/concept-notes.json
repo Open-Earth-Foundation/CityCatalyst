@@ -1,4 +1,6 @@
 {
+  "workspace-narrative-more-sections": "Weitere Abschnitte ({{count}})",
+  "workspace-narrative-partial-support": "Teilweise belegt",
   "wiring-eyebrow": "Konzeptnotizen-Ersteller · lokale Verdrahtung",
   "wiring-description": "Erstellen Sie einen Durchlauf, konvertieren Sie eine PDF und bestätigen Sie die dauerhafte Zustellung an den Concept Note Builder.",
   "default-note-name": "Konzeptnotiz",

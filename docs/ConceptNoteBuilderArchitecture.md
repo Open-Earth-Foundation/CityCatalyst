@@ -673,11 +673,12 @@ when a reused source cannot be re-read, `mode` is `summary`, `documents` is
 empty, and agents rely on summaries, quotations, and the source-query tool.
 
 `key_excerpts` (at most `max_key_excerpts`, 8) back the document summary.
-Once the run has an application template, `chapter_excerpts` hold up to
-`max_chapter_excerpts` (8) quotations per template chapter: one chapter-evidence
-reading of the complete source tags exact passages with the chapters whose
-title, description, and required fields they serve, and a selection call runs
-only for chapters with more verified candidates than the quota. The drafter
+Once the run has an application template, a complete source reading tags
+verified quotations with every chapter whose title, description and fields
+they serve. Chapters with sparse evidence receive a focused reread.
+`chapter_excerpts` keeps at most 300 quotations and normally 24,000 tokens
+per chapter. Overflow selection preserves priority evidence and distributes
+the available space across source locations. The drafter
 receives only the current chapter's quotations; the edit planner and reviewer
 read them as the chapter's `source_excerpts`. `chapter_evidence_fingerprint`
 hashes the template requirements, prompts, models, and limits; a build with a
